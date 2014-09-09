@@ -159,7 +159,8 @@ input.tinyButton {
 .contentViewUpperAction .langSelect {
   font-size: .8em;
   margin: 0;
-  padding: 0 }
+  padding: 0;
+  min-width: unset }
 
 .contentViewUpperAction .contentViewPageSelector {
   float: left;
