@@ -33,10 +33,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -127,7 +124,8 @@ public abstract class AbstractTest {
     public static final String CHROME_DRIVER_DEFAULT_PATH_LINUX = "/usr/bin/chromedriver";
 
     /**
-     * @since 5.7 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+     * @since 5.7
+     *        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
      *        doesn't work
      */
     public static final String CHROME_DRIVER_DEFAULT_PATH_MAC = "/Applications/chromedriver";
@@ -427,7 +425,8 @@ public abstract class AbstractTest {
 
     /**
      * Introspects the classpath and returns the list of files in it. FIXME:
-     * should use HarnessRuntime#getClassLoaderFiles that returns the same thing
+     * should use HarnessRuntime#getClassLoaderFiles that returns the same
+     * thing
      *
      * @return
      * @throws Exception
@@ -584,7 +583,7 @@ public abstract class AbstractTest {
 
     public static WebDriver getPopup() {
         String currentWindow = driver.getWindowHandle();
-        for(String popup : driver.getWindowHandles()) {
+        for (String popup : driver.getWindowHandles()) {
             if (popup.equals(currentWindow)) {
                 continue;
             }
@@ -638,8 +637,8 @@ public abstract class AbstractTest {
         }
 
         Wait<T> wait = new FluentWait<T>(page).withTimeout(
-                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(POLLING_FREQUENCY_MILLISECONDS,
-                TimeUnit.MILLISECONDS);
+                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
+                POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
 
         return wait.until(new Function<T, T>() {
             public T apply(T page) {
@@ -886,7 +885,8 @@ public abstract class AbstractTest {
                 "Collections", DublinCoreCreationDocumentFormPage.class);
 
         // Create File
-        DocumentBasePage documentBasePage = dublinCoreDocumentFormPage.createDocument(collectionsTitle, fileDescription);
+        DocumentBasePage documentBasePage = dublinCoreDocumentFormPage.createDocument(
+                collectionsTitle, fileDescription);
         return documentBasePage;
     }
 
@@ -899,14 +899,16 @@ public abstract class AbstractTest {
      * @return the created Collections page
      * @throws IOException if temporary file creation fails
      */
-    protected CollectionContentTabSubPage createCollection(DocumentBasePage currentPage,
-            String collectionsTitle, String fileDescription){
+    protected CollectionContentTabSubPage createCollection(
+            DocumentBasePage currentPage, String collectionsTitle,
+            String fileDescription) {
 
         CollectionCreationFormPage collectionCreationFormPage = currentPage.getContentTab().getDocumentCreatePage(
                 "Collection", CollectionCreationFormPage.class);
 
         // Create File
-        CollectionContentTabSubPage documentBasePage = collectionCreationFormPage.createDocument(collectionsTitle, fileDescription);
+        CollectionContentTabSubPage documentBasePage = collectionCreationFormPage.createDocument(
+                collectionsTitle, fileDescription);
         return documentBasePage;
     }
 
@@ -918,7 +920,6 @@ public abstract class AbstractTest {
      * @param fileContent the file content
      * @return the temporary file to upload path
      * @throws IOException if temporary file creation fails
-     *
      * @since 5.9.3
      */
     public static String getTmpFileToUploadPath(String filePrefix,
