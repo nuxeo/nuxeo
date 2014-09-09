@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.AjaxRequestManager;
@@ -59,6 +60,10 @@ public class ContentTabSubPage extends DocumentBasePage {
     private static final String CHECK_BOX_XPATH = "td/input[@type=\"checkbox\"]";
 
     private static final String DOCUEMNT_TITLE_XPATH = "td//span[@id[starts-with(.,'title_')]]";
+
+    private static final String LOADING_START_XPATH = "//span[@class='rf-st-start']";
+
+    private static final String LOADING_STOP_XPATH = "//span[@class='rf-st-stop']";
 
     @Required
     @FindBy(id = "document_content")
@@ -208,6 +213,14 @@ public class ContentTabSubPage extends DocumentBasePage {
         });
     }
 
+    public void waitForLoading() {
+        Locator.waitUntilGivenFunction(new Function<WebDriver,Boolean>() {
+            public Boolean apply(WebDriver driver) {
+                return driver.findElement(By.xpath(LOADING_START_XPATH)).getAttribute("style").contains("display: none;") && StringUtils.isBlank(driver.findElement(By.xpath(LOADING_STOP_XPATH)).getAttribute("style"));
+            }
+        });
+    }
+
     /**
      * Select the document by their index in the content view.
      *
@@ -217,11 +230,10 @@ public class ContentTabSubPage extends DocumentBasePage {
      */
     public void selectDocumentByIndex(int ... indexes) {
         for (int i : indexes) {
-            AjaxRequestManager a = new AjaxRequestManager(driver);
-            a.watchAjaxRequests();
+            waitForLoading();
             getChildDocumentRows().get(i).findElement(By.xpath(CHECK_BOX_XPATH)).click();
-            a.waitForAjaxRequests();
         }
+        waitForLoading();
     }
 
     /**
