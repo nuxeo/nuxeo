@@ -116,7 +116,7 @@
     <module>nuxeo-template-rendering</module>
     <module>nuxeo-web-mobile</module>
     <module>nuxeo-groups-rights-audit</module>
-    <module>nuxeo-drive</module>
+    <module>nuxeo-drive-server</module>
   </modules>
 
   <dependencyManagement>
