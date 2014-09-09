@@ -9,16 +9,14 @@
 
   <require>org.nuxeo.theme.core</require>
 
-  <extension target="org.nuxeo.theme.services.ThemeService"
-    point="template-engines">
+  <extension target="org.nuxeo.theme.services.ThemeService" point="template-engines">
 
     <template-engine name="html" title="Plain HTML"
       template-view="org.nuxeo.theme.html.HTMLView" />
 
   </extension>
 
-  <extension target="org.nuxeo.theme.services.ThemeService"
-    point="resources">
+  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
 
     <!-- Prototype 1.6.1 -->
     <!-- when changing prototype version, please make
@@ -28,17 +26,18 @@
     </resource>
 
     <!-- JQuery 1.8.3 -->
+    <!-- Needed by opensocial gadgets, not needed by JSF pages anymore
+      (so not included by default since JSF2 migration, see NXP-13805) -->
     <resource name="jquery.js">
       <path>nxthemes/html/scripts/jquery.js</path>
     </resource>
-
 
     <!-- Keyboard shortcuts http://www.openjs.com/scripts/events/keyboard_shortcuts/shortcut.js -->
     <resource name="shortcut.js">
       <path>nxthemes/html/scripts/shortcut.js</path>
     </resource>
 
-    <!-- ObjTree 0.24 (http://www.kawa.net/works/js/xml/objtree-e.html)  -->
+    <!-- ObjTree 0.24 (http://www.kawa.net/works/js/xml/objtree-e.html) -->
     <resource name="objtree.js">
       <path>nxthemes/html/scripts/objtree.js</path>
     </resource>
@@ -99,7 +98,7 @@
       <require>prototype.js</require>
     </resource>
 
-    <!--  nxthemes lib -->
+    <!-- nxthemes lib -->
     <resource name="nxthemes.js">
       <path>nxthemes/html/scripts/nxthemes/nxthemes.js</path>
       <require>prototype.js</require>
@@ -135,20 +134,20 @@
       <require>nxthemes.js</require>
     </resource>
 
- <!--  AutoSuggest lib -->
+    <!-- AutoSuggest lib -->
     <resource name="autosuggest.css">
       <path>nxthemes/html/styles/autosuggest.css</path>
     </resource>
     <resource name="bsn.AutoSuggest_2.1.3.js">
       <path>nxthemes/html/scripts/bsn.AutoSuggest_2.1.3.js</path>
     </resource>
-    
-     <!-- JQuery UI Slider 1.9.2-->
+
+    <!-- JQuery UI Slider 1.9.2 -->
     <resource name="jquery.ui.slider.js">
       <path>nxthemes/html/scripts/jquery-ui-1.9.2.slider.js</path>
     </resource>
-    
-         <!-- JQuery UI CSS Slider 1.9.2-->
+
+    <!-- JQuery UI CSS Slider 1.9.2 -->
     <resource name="jquery.ui.slider.css">
       <path>nxthemes/html/styles/jquery-ui-1.9.2.slider.min.css</path>
     </resource>
@@ -156,8 +155,7 @@
   </extension>
 
 
-  <extension target="org.nuxeo.theme.services.ThemeService"
-    point="standalone-filters">
+  <extension target="org.nuxeo.theme.services.ThemeService" point="standalone-filters">
 
     <standalone-filter name="collect xmlns">
       <class>
@@ -172,8 +170,7 @@
     </standalone-filter>
   </extension>
 
-  <extension target="org.nuxeo.theme.services.ThemeService"
-    point="engines">
+  <extension target="org.nuxeo.theme.services.ThemeService" point="engines">
 
     <engine name="default">
 
