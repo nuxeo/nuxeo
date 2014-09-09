@@ -27,14 +27,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author Thierry Martins
  */
-public class TestUserAdapter extends NXRuntimeTestCase {
+public class TestUserAdapter extends UserManagerTestCase {
 
     protected UserManager userManager;
 
@@ -43,21 +41,8 @@ public class TestUserAdapter extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        DatabaseHelper.DATABASE.setUp();
-
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.directory.api");
-        deployBundle("org.nuxeo.ecm.directory");
-        deployBundle("org.nuxeo.ecm.directory.sql");
-        deployBundle("org.nuxeo.ecm.directory.types.contrib");
-        deployBundle("org.nuxeo.ecm.platform.usermanager");
-
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
                 "test-usermanagerimpl/directory-config.xml");
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl/userservice-config.xml");
 
         userService = (UserService) Framework.getRuntime().getComponent(
                 UserService.NAME);
@@ -67,7 +52,6 @@ public class TestUserAdapter extends NXRuntimeTestCase {
 
     @After
     public void tearDown() throws Exception {
-        DatabaseHelper.DATABASE.tearDown();
         super.tearDown();
     }
 

@@ -47,7 +47,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author Benjamin JALON
  */
-public class TestUserManagerWithContext extends NXRuntimeTestCase {
+public class TestUserManagerWithContext extends UserManagerMultiTenantTestCase {
 
     protected UserManagerImpl userManager;
 
@@ -56,24 +56,17 @@ public class TestUserManagerWithContext extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        DatabaseHelper.DATABASE.setUp();
 
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core");
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
                 "test-usermanagerimpl-multitenant/DirectoryServiceMock.xml");
-        deployBundle("org.nuxeo.ecm.directory.api");
+
+        deployBundle("org.nuxeo.ecm.directory.multi");
+
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.directory.sql");
-        deployBundle("org.nuxeo.ecm.directory.multi");
-        deployBundle("org.nuxeo.ecm.directory.types.contrib");
-        deployBundle("org.nuxeo.ecm.platform.usermanager");
 
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
                 "test-usermanagerimpl-multitenant/directory-for-context-config.xml");
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl/userservice-config.xml");
 
         userService = (UserService) Framework.getRuntime().getComponent(
                 UserService.NAME);
@@ -86,7 +79,6 @@ public class TestUserManagerWithContext extends NXRuntimeTestCase {
 
     @After
     public void tearDown() throws Exception {
-        DatabaseHelper.DATABASE.tearDown();
         super.tearDown();
     }
 
@@ -120,8 +112,8 @@ public class TestUserManagerWithContext extends NXRuntimeTestCase {
         HashSet<String> fulltext = new HashSet<String>();
         DocumentModel fakeDoc = new SimpleDocumentModel();
 
-        DocumentModelList groups = userManager.searchGroups(filter,
-                fulltext, null);
+        DocumentModelList groups = userManager.searchGroups(filter, fulltext,
+                null);
         assertEquals(4, groups.size());
 
         groups = userManager.searchGroups(filter, fulltext, fakeDoc);
