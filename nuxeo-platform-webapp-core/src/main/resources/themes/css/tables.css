@@ -145,7 +145,7 @@ table.smallTable td {
 
 th:first-child input[type="checkbox"] {
   margin: 0 auto;
-  width: 20px }
+  width: 1.9em }
 
 .fieldColumn .dataTable.widgetTable {
   border: 1px solid;
