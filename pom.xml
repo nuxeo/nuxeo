@@ -2065,6 +2065,10 @@
             <artifactId>jaxb-api</artifactId>
           </exclusion>
           <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jsr173_api</artifactId>
+          </exclusion>
+          <exclusion>
             <groupId>apache-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
           </exclusion>
