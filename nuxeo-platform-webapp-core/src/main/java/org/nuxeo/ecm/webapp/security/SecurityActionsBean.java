@@ -53,20 +53,13 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.platform.query.api.PageSelection;
+import org.nuxeo.ecm.platform.query.api.PageSelections;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-import org.nuxeo.ecm.webapp.table.cell.AbstractTableCell;
-import org.nuxeo.ecm.webapp.table.cell.IconTableCell;
-import org.nuxeo.ecm.webapp.table.cell.PermissionsTableCell;
-import org.nuxeo.ecm.webapp.table.cell.SelectionTableCell;
-import org.nuxeo.ecm.webapp.table.cell.UserTableCell;
-import org.nuxeo.ecm.webapp.table.header.CheckBoxColHeader;
-import org.nuxeo.ecm.webapp.table.header.TableColHeader;
-import org.nuxeo.ecm.webapp.table.model.UserPermissionsTableModel;
-import org.nuxeo.ecm.webapp.table.row.UserPermissionsTableRow;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -116,7 +109,7 @@ public class SecurityActionsBean extends InputController implements
 
     protected boolean obsoleteSecurityData = true;
 
-    protected UserPermissionsTableModel tableModel;
+    protected PageSelections<String> entries;
 
     protected transient List<String> cachedValidatedUserAndGroups;
 
@@ -164,96 +157,27 @@ public class SecurityActionsBean extends InputController implements
     }
 
     /**
-     * @return update the dataTableModel from the current {@link SecurityData}
-     *         this method is automatically called by rebuildSecurityData method
+     * Update the dataTableModel from the current {@link SecurityData} this
+     * method is automatically called by rebuildSecurityData method
      */
-    protected UserPermissionsTableModel reconstructTableModel()
+    protected void reconstructTableModel()
             throws ClientException {
-        List<TableColHeader> headers = new ArrayList<TableColHeader>();
-
-        TableColHeader header = new CheckBoxColHeader(
-                "label.content.header.selection", "c0", false);
-        headers.add(header);
-
-        header = new TableColHeader("label.content.header.type", "c4");
-        headers.add(header);
-
-        header = new TableColHeader("label.username", "c1");
-        headers.add(header);
-
-        header = new TableColHeader("label.security.grantedPerms", "c2");
-        headers.add(header);
-
-        header = new TableColHeader("label.security.deniedPerms", "c3");
-        headers.add(header);
-
-        List<UserPermissionsTableRow> rows = new ArrayList<UserPermissionsTableRow>();
-
-        /*
-         * This is a fix for NXP-1122 issue (ghost users in access rights
-         * lists): for the parent document users list and current document users
-         * list are now used the new getters defined in this class, not the ones
-         * defined in SecurityData. The best solution would be to remove de user
-         * from the ACP/ACE entries too at the deletion moment. When this will
-         * be done, the getters from SecurityData will have to be used again
-         * (here and in documents_rights.xhtml)
-         */
-        // for (String user : securityData.getCurrentDocumentUsers()) {
-        for (String user : getCurrentDocumentUsers()) {
-            UserPermissionsTableRow row = createDataTableRow(user);
-            if (row != null) {
-                rows.add(row);
+        List<String> items = securityData.getCurrentDocumentUsers();
+        entries = new PageSelections<String>();
+        if (items != null) {
+            for (String item : items) {
+                entries.add(new PageSelection<String>(item, false));
             }
         }
-
-        tableModel = new UserPermissionsTableModel(headers, rows);
-
-        return tableModel;
     }
 
-    protected UserPermissionsTableRow createDataTableRow(String user)
-            throws ClientException {
-
-        List<AbstractTableCell> cells = new ArrayList<AbstractTableCell>();
-
-        final List<String> grantedPerms = securityData.getCurrentDocGrant().get(user);
-        final List<String> deniedPerms = securityData.getCurrentDocDeny().get(user);
-        if (user.equals(SecurityConstants.EVERYONE)) {
-
-            if (deniedPerms != null
-                    && deniedPerms.contains(SecurityConstants.EVERYTHING)) {
-                blockRightInheritance = true;
-                if (grantedPerms == null && deniedPerms.size() == 1) {
-                    // the only perm is deny everything, there is no need to display the row
-                    return null;
-                }
-            }
-        }
-
-        cells.add(new SelectionTableCell(false));
-
-        String principalType = principalListManager.getPrincipalType(user);
-        IconTableCell iconTableCell = new IconTableCell(getIconPathMap().get(
-                principalType));
-        iconTableCell.setIconAlt(getIconAltMap().get(principalType));
-        cells.add(iconTableCell);
-
-        cells.add(new UserTableCell(user, principalType));
-
-        cells.add(new PermissionsTableCell(user, grantedPerms));
-
-        cells.add(new PermissionsTableCell(user, deniedPerms));
-
-        return new UserPermissionsTableRow(user, cells);
-    }
-
-    public UserPermissionsTableModel getDataTableModel() throws ClientException {
+    public PageSelections<String> getDataTableModel() throws ClientException {
         if (obsoleteSecurityData) {
             // lazy initialization at first time access
             rebuildSecurityData();
         }
 
-        return tableModel;
+        return entries;
     }
 
     public SecurityData getSecurityData() throws ClientException {
@@ -443,8 +367,8 @@ public class SecurityActionsBean extends InputController implements
     }
 
     public String removePermissions() throws ClientException {
-        for (String user : getDataTableModel().getSelectedUsers()) {
-            securityData.removeModifiablePrivilege(user);
+        for (PageSelection<String> user : getSelectedRows()) {
+            securityData.removeModifiablePrivilege((String)user.getData());
             if (!checkPermissions()) {
                 facesMessages.add(
                         StatusMessage.Severity.ERROR,
@@ -458,8 +382,8 @@ public class SecurityActionsBean extends InputController implements
     }
 
     public String removePermissionsAndUpdate() throws ClientException {
-        for (String user : getDataTableModel().getSelectedUsers()) {
-            securityData.removeModifiablePrivilege(user);
+        for (PageSelection<String> user : getDataTableModel().getEntries()) {
+            securityData.removeModifiablePrivilege((String)user.getData());
             if (!checkPermissions()) {
                 facesMessages.add(
                         StatusMessage.Severity.ERROR,
@@ -484,10 +408,26 @@ public class SecurityActionsBean extends InputController implements
         try {
             return documentManager.hasPermission(currentDocument.getRef(),
                     "WriteSecurity")
-                    && !getDataTableModel().getSelectedRows().isEmpty();
+                    && !getSelectedRows().isEmpty();
         } catch (Exception e) {
             throw ClientException.wrap(e);
         }
+    }
+
+    /**
+     * @return The list of selected rows in the local rights table.
+     *
+     * @since 5.9.6
+     */
+    private List<PageSelection<String>> getSelectedRows() {
+        List<PageSelection<String>> selectedRows = new ArrayList<PageSelection<String>>();
+
+        for (PageSelection<String> entry : getDataTableModel().getEntries()) {
+            if (entry.isSelected()) {
+                selectedRows.add(entry);
+            }
+        }
+        return selectedRows;
     }
 
     public List<UserVisiblePermission> getVisibleUserPermissions(
@@ -733,5 +673,4 @@ public class SecurityActionsBean extends InputController implements
     public void setSelectedEntries(List<String> selectedEntries) {
         this.selectedEntries = selectedEntries;
     }
-
 }

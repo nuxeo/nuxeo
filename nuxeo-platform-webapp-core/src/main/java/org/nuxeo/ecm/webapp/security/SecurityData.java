@@ -109,6 +109,13 @@ public class SecurityData implements Serializable {
         return buildLabelMap(parentDocsDeny);
     }
 
+    /**
+     * @since 5.9.6
+     */
+    public Map<String, List<String>> getCurrentDocDenyLabels() {
+        return buildLabelMap(currentDocDeny);
+    }
+
     public Map<String, List<String>> getParentDocsDeny() {
         return parentDocsDeny;
     }
@@ -123,6 +130,13 @@ public class SecurityData implements Serializable {
 
     public Map<String, List<String>> getParentDocsGrantLabels() {
         return buildLabelMap(parentDocsGrant);
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public Map<String, List<String>> getCurrentDocGrantLabels() {
+        return buildLabelMap(currentDocGrant);
     }
 
     public void setParentDocsGrant(Map<String, List<String>> parentDocsGrant) {

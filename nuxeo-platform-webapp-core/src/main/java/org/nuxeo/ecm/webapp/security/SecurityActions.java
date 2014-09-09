@@ -25,7 +25,7 @@ import java.util.Map;
 import javax.faces.model.SelectItem;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.webapp.table.model.UserPermissionsTableModel;
+import org.nuxeo.ecm.platform.query.api.PageSelections;
 
 /**
  * Provides security related operations on the current document.
@@ -115,10 +115,10 @@ public interface SecurityActions {
     void rebuildSecurityData() throws ClientException;
 
     /**
-     * @return a UserPermissionsTableModel used to build a checkboxable listing
+     * @return a PageSelections used to build a checkboxable listing
      *         of managed permissions
      */
-    UserPermissionsTableModel getDataTableModel() throws ClientException;
+    PageSelections<String> getDataTableModel() throws ClientException;
 
     /**
      * @return the SecurityData object that manages a stateful representation of

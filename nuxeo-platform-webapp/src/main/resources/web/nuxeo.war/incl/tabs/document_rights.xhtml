@@ -83,76 +83,75 @@
  rendered="#{securityActions.securityData.needSave}"/>
 </h3>
 
-<a4j:region renderRegionOnly="true">
+<a4j:outputPanel id="panel_local_rights">
   <h:form id="rights_content">
-    <nxu:dataTable var="user" id="dataTable_local_rights"
-      rowClasses="dataRowEven,dataRowOdd" styleClass="dataTableLine"
-      value="#{securityActions.dataTableModel.data}"
-      rendered="#{not empty securityActions.currentDocumentUsers}">
-      <nxu:columns id="columns"
-        value="#{securityActions.dataTableModel.columnHeaders}"
-        styleClass="${columnHeader.id=='c4' ? 'iconColumn' : ''}"
-        var="columnHeader">
-        <!--  Selection checkbox -->
-        <f:facet name="header">
-          <h:panelGroup>
-            <h:selectBooleanCheckbox rendered="${columnHeader.id=='c0'}"
-              value="#{columnHeader.allSelected}">
-
-              <a4j:ajax event="click"
-                render="dataTable_local_rights,security_button_remove"
-                onbeforesubmit="disableCheckBoxesIn('rights_content:dataTable_local_rights')"
-                oncomplete="enableCheckBoxesIn('rights_content:dataTable_local_rights')"
-                listener="#{securityActions.dataTableModel.selectAllRows}" />
-            </h:selectBooleanCheckbox>
-
-            <h:outputText rendered="${columnHeader.id != 'c0'}"
-              value="#{messages[columnHeader.label]}" />
-          </h:panelGroup>
-        </f:facet>
-        <h:selectBooleanCheckbox rendered="${columnHeader.id=='c0'}"
-          value="#{securityActions.dataTableModel.currentCellDisplayedValue}">
-          <a4j:ajax event="click" render="security_button_remove_script"
-            onbeforesubmit="disableCheckBoxesIn('rights_content:dataTable_local_rights')"
-            oncomplete="enableCheckBoxesIn('rights_content:dataTable_local_rights')"
-            listener="#{securityActions.dataTableModel.process}" />
-        </h:selectBooleanCheckbox>
-
-        <!-- Icon -->
-        <h:graphicImage rendered="${columnHeader.id == 'c4'}"
-          value="#{securityActions.dataTableModel.currentCellDisplayedValue}"
-          title="#{securityActions.dataTableModel.currentCellDisplayedValue}" />
-
-        <!--  Username -->
-        <f:subview rendered="${columnHeader.id == 'c1'}">
-          <h:outputLink
-            value="#{nxu:userUrl('user', securityActions.dataTableModel.currentCellDisplayedValue, null, false)}"
-            rendered="#{securityActions.dataTableModel.currentUserType=='USER_TYPE'}">
-            <h:outputText
-              value="#{nxu:userFullName(securityActions.dataTableModel.currentCellDisplayedValue)}" />
-          </h:outputLink>
-          <h:commandLink
-            value="#{nxu:groupFullName(securityActions.dataTableModel.currentCellDisplayedValue)}"
-            immediate="true"
-            action="#{groupManagementActions.viewGroup(securityActions.dataTableModel.currentCellDisplayedValue)}"
-            rendered="#{securityActions.dataTableModel.currentUserType!='USER_TYPE'}">
+    <table class="dataTableLine" id="dataTable_local_rights">
+	  <thead>
+	    <tr>
+	      <th class="iconColumn">
+	        <h:selectBooleanCheckbox
+	          value="#{securityActions.dataTableModel.selected}">
+	          <f:ajax execute="@this"
+	            render="security_button_remove panel_local_rights" />
+	        </h:selectBooleanCheckbox>
+	      </th>
+	      <th>
+	        <h:outputText value="#{messages['label.content.header.type']}" />
+	      </th>
+	      <th>
+	        <h:outputText value="#{messages['label.username']}" />
+	      </th>
+	      <th>
+            <h:outputText value="#{messages['label.security.grantedPerms']}" />
+          </th>
+          <th>
+            <h:outputText value="#{messages['label.security.deniedPerms']}" />
+          </th>
+	    </tr>
+	  </thead>
+	<tbody>
+	<c:forEach var="item" items="#{securityActions.dataTableModel.entries}">
+	  <tr>
+	    <td>
+	      <h:selectBooleanCheckbox
+	        value="#{item.selected}">
+	        <f:ajax event="click" execute="@this"
+	          render="security_button_remove" />
+	      </h:selectBooleanCheckbox>
+	    </td>
+	    <nxu:set var="user" value="#{item.data}">
+	    <nxu:set var="principalType" value="#{principalListManager.getPrincipalType(user)}">
+	    <td>
+          <h:graphicImage value="#{securityActions.iconPathMap[principalType]}"
+            title="#{securityActions.iconAltMap[principalType]}" />
+	    </td>
+	    <td>
+	      <h:outputLink value="#{nxu:userUrl('user', user, null, false)}"
+            rendered="#{principalType=='USER_TYPE'}">
+	          <h:outputText value="#{nxu:userFullName(user)}" />
+	      </h:outputLink>
+	      <h:commandLink value="#{nxu:groupFullName(user)}" immediate="true"
+             action="#{groupManagementActions.viewGroup(user)}"
+             rendered="#{principalType!='USER_TYPE'}">
           </h:commandLink>
-        </f:subview>
+	    </td>
+	    </nxu:set>
 
-        <!-- Grant permissions -->
-        <nxu:dataList var="perm" rendered="${columnHeader.id == 'c2'}"
-          value="#{securityActions.dataTableModel.currentCellDisplayedValue}">
-          <h:outputText value="#{messages[perm]}" />
-        </nxu:dataList>
-
-        <!-- Deny permissions -->
-        <nxu:dataList var="perm" rendered="${columnHeader.id == 'c3'}"
-          value="#{securityActions.dataTableModel.currentCellDisplayedValue}">
-          <h:outputText value="#{messages[perm]}" />
-        </nxu:dataList>
-
-      </nxu:columns>
-    </nxu:dataTable>
+	    <td>
+	      <nxu:dataList var="perm" value="#{securityActions.securityData.currentDocGrantLabels[user]}">
+	        <h:outputText value="#{messages[perm]}" />
+	      </nxu:dataList>
+	    </td>
+	    <td>
+          <nxu:dataList var="perm" value="#{securityActions.securityData.currentDocDenyLabels[user]}">
+            <h:outputText value="#{messages[perm]}" />
+          </nxu:dataList>
+	    </td>
+	    </nxu:set>
+	  </tr>
+	</c:forEach>
+	</tbody>
+	</table>
 
     <p><h:outputText
       rendered="${empty securityActions.currentDocumentUsers}"
@@ -165,7 +164,7 @@
       id="security_button_remove_script">
       <script>
      <!--
-     var checked=isOneCheckBoxChecked("rights_content:dataTable_local_rights");
+     var checked=isOneCheckBoxChecked("dataTable_local_rights");
      var btn = document.getElementById("rights_content:security_button_remove");
      if (btn)
      {
@@ -182,7 +181,7 @@
      </script>
     </h:panelGroup></p>
   </h:form>
-</a4j:region>
+</a4j:outputPanel>
 
 <h:form id="validate_rights">
 <h:commandButton
