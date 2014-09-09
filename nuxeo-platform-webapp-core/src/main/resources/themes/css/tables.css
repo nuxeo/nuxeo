@@ -27,6 +27,7 @@ table td {
 .dataTableNoBorder,
 .dataInput {
   border-color: "neutral.lighter (__FLAVOR__ border)";
+  clear: both;
   line-height: 1.3em;
   margin: 0 0 .8em;
   width: 100% }
@@ -142,6 +143,10 @@ table.smallTable th,
 table.smallTable td {
   padding: .2em .4em .3em 0 }
 
+th:first-child input[type="checkbox"] {
+  margin: 0 auto;
+  width: 20px }
+
 .fieldColumn .dataTable.widgetTable {
   border: 1px solid;
   border-color: "neutral.lighter (__FLAVOR__ border)" }
@@ -214,7 +219,8 @@ table.noHover tr:hover {
 .smallButtonsGadget {
   margin: 0 0 .4em 7em }
 
-.buttonsGadget .actionsWidgetPanel {
+.buttonsGadget .actionsWidgetPanel,
+#selection_buttons .actionsWidgetPanel {
   padding: 0 }
 
 .buttonsGadget .smallButton:first-child {

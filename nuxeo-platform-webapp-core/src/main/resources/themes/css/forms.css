@@ -107,6 +107,16 @@ input[placeholder] {
   color: "gray.medium (__FLAVOR__ color)";
   text-overflow: ellipsis; }
 
+.contentViewQuickFilterForm input.dataInputText {
+  border-radius: 3px 0 0 3px;
+  border-right: medium none;
+  margin: 0 }
+
+.contentViewQuickFilterForm input.button {
+  border-radius: 0 3px 3px 0;
+  margin: 0;
+  padding: .3em .7em .37em }
+
 /* in Tables */
 .dataTableNoBorder textarea,
 .dataTableNoBorder input[type="text"] {

@@ -19,7 +19,8 @@ author: lkemen@nuxeo.com
   margin: 1em 0 .5em 0 }
 
 .contentViewTitle h3 {
-  padding: .3em 0 0;
+  padding: .3em 0 .2em;
+  font-size: 1.3em;
   border: none; }
 
 .description_block {

@@ -18,7 +18,7 @@ author: lkemen@nuxeo.com
 
 .nxMainContainer .column {
   font-size: .85em;
-  padding: 1.2em .5em }
+  padding: 1.2em .75em }
 
 /* =List of available servers  */
 .serverChoice {
@@ -93,7 +93,9 @@ author: lkemen@nuxeo.com
   right: 0 }
 
 .userClipboard .tabsBar img {
-  opacity: .6 }
+  opacity: .6;
+  height: 14px;
+  width: 14px }
 
 .userClipboard .tabsBar li:hover img,
 .userClipboard .tabsBar .selected img {

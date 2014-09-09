@@ -66,13 +66,22 @@ author: lkemen@nuxeo.com
   border-radius: 3px 0 0 }
 
 .column .tabsBar {
-  border-style: none none solid }
+  background-color: #eee;
+  border-radius: 0;
+  border-style: none }
 
-.column .tabsBar li:first-child a {
+.column .tabsBar li:first-child a,
+.tabsBar.vertical li:first-child a {
   border-radius: 0 }
 
 .tabsBar li.selected a {
   font-weight: bold }
+
+.column .tabsbar li:hover a,
+.column .tabsbar li a:hover,
+.column .tabsBar li.selected a {
+  background-color: #fff;
+  border-top: 3px solid transparent }
 
 .subtabsBar {
   background: none transparent;
@@ -129,8 +138,6 @@ author: lkemen@nuxeo.com
   padding: 2em 0; }
 
 .tabsBar.vertical li {
-  font-size: .9em;
-  font-weight: bold;
   border: 1px solid transparent;
   float: none;
   margin: 0 0 .15em .1em;
@@ -138,8 +145,9 @@ author: lkemen@nuxeo.com
 
 .tabsBar.vertical li a,
 .tabsBar.vertical li a:visited {
-  color: #fff;
+  color: "link (__FLAVOR__ color)";
   display: block;
+  font-size: 1.1em;
   border-top: none;
   float: none;
   padding: .7em 0 .7em .6em;

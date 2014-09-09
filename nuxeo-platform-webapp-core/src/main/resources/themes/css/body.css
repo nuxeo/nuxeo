@@ -11,8 +11,8 @@ author: lkemen@nuxeo.com
 
 /* Left column */
 .column {
-  background-color: #bcdce8;
-  width: 18% }
+  background: none "color.major.stronger (__FLAVOR__ background)";
+  width: 19% }
 
 /* Main region */
 .mainFragment {

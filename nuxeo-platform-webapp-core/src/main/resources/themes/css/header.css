@@ -75,15 +75,15 @@ author: lkemen@nuxeo.com
   width: 160px }
 
 .userSearchBlock .directoryFilter {
-  background: #fff url('${basePath}/icons/search.png') no-repeat 98% center;
+  background: #e4e4e4 url('${basePath}/icons/search.png') no-repeat 95% center;
   box-sizing: border-box;
   box-shadow: none;
-  border: 1px solid #ddd;
-  border-radius: .25em;
+  border: 1px solid #e4e4e4;
+  border-radius: 1em;
   font-size: 1em;
   height: 25px;
   line-height: normal;
-  padding: .4em 1.8em .3em .3em;
+  padding: .4em 2em .3em .6em;
   margin: 0 .6em 0 0;
   transition: all 0.2s ease 0.1s }
 
@@ -133,13 +133,9 @@ author: lkemen@nuxeo.com
 .mainTabs li.selected {
   background-color: "header.tabs.selected (__FLAVOR__ background)"; } 
 
-.mainTabs li a:hover,
-.mainTabs li.selected a,
-.mainTabs li.selected a:visited {
-  opacity: 1 }
-
 .mainTabs li.selected a {
-  font-weight: bold }
+  font-weight: bold;
+  color: #fff; }
 
 .nxHeader .userActions {
   float: left;
