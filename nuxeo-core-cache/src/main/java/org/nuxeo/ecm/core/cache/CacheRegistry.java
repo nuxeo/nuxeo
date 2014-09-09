@@ -36,7 +36,7 @@ public final class CacheRegistry extends
 
     private static final Log log = LogFactory.getLog(CacheRegistry.class);
 
-    // cache of cacheManager
+    // map of cache
     protected final Map<String, CacheDescriptor> caches = new HashMap<String, CacheDescriptor>();
 
     @Override
@@ -106,7 +106,11 @@ public final class CacheRegistry extends
     }
 
     public CacheAttributesChecker getCache(String name) {
-        return caches.get(name).cacheChecker;
+        if(caches.containsKey(name))
+        {
+            return caches.get(name).cacheChecker;
+        }
+        return null;
     }
 
     public List<CacheAttributesChecker> getCaches() {

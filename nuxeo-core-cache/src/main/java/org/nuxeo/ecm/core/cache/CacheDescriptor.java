@@ -94,8 +94,11 @@ public class CacheDescriptor {
     }
 
     public void stop() {
-        cacheChecker.cache = null;
-        cacheChecker = null;
+        if(cacheChecker != null)
+        {
+            cacheChecker.cache = null;
+            cacheChecker = null;
+        }
     }
 
 }
