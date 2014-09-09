@@ -49,8 +49,10 @@ public class AjaxRequestManager {
     }
 
     public void watchAjaxRequests() {
-        StringBuilder sb = new StringBuilder(
-                "window.NuxeoTestFaces = function() {");
+        StringBuilder sb = new StringBuilder();
+        sb.append("if (window.ajaxListenerSet === undefined) {");
+        sb.append("window.ajaxListenerSet = true;");
+        sb.append("window.NuxeoTestFaces = function() {");
         sb.append("  var e = {};");
         sb.append("  e.jsf2AjaxRequestStarted = false;");
         sb.append("  e.jsf2AjaxRequestFinished = false;");
@@ -76,6 +78,7 @@ public class AjaxRequestManager {
                 + "if (e.status == 'begin') {window.NuxeoTestFaces.increment();}"
                 + "if (e.status == 'success') {window.NuxeoTestFaces.decrement();}"
                 + "})");
+        sb.append("}");
         sb.append("}");
         js.executeScript(sb.toString());
     }
