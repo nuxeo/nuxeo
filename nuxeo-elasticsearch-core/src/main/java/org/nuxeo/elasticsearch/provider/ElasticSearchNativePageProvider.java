@@ -43,6 +43,7 @@ public class ElasticSearchNativePageProvider extends
         AbstractPageProvider<DocumentModel> {
 
     public static final String CORE_SESSION_PROPERTY = "coreSession";
+    public static final String SEARCH_ON_ALL_REPOSITORIES_PROPERTY = "searchAllRepositories";
     protected static final Log log = LogFactory
             .getLog(ElasticSearchNativePageProvider.class);
     private static final long serialVersionUID = 1L;
@@ -82,6 +83,9 @@ public class ElasticSearchNativePageProvider extends
                     .esQuery(query).offset((int) getCurrentPageOffset())
                     .limit((int) getMinMaxPageSize()).addSort(sortArray)
                     .addAggregates(getAggregatesQuery());
+            if (searchOnAllRepositories()) {
+                nxQuery.searchOnAllRepositories();
+            }
             EsResult ret = ess.queryAndAggregate(nxQuery);
             DocumentModelList dmList = ret.getDocuments();
             currentAggregates = ret.getAggregates();
@@ -140,6 +144,15 @@ public class ElasticSearchNativePageProvider extends
             throw new ClientRuntimeException("cannot find core session");
         }
         return coreSession;
+    }
+
+    protected boolean searchOnAllRepositories() {
+        String value = (String) getProperties().get(
+                SEARCH_ON_ALL_REPOSITORIES_PROPERTY);
+        if (value == null) {
+            return false;
+        }
+        return Boolean.valueOf(value);
     }
 
     public boolean isNativeQuery() {

@@ -37,7 +37,7 @@ import org.nuxeo.common.utils.Path;
 public class JsonDocumentModelReader {
     private static final Log log = LogFactory
             .getLog(JsonDocumentModelReader.class);
-    private Map<String, Object> source;
+    private final Map<String, Object> source;
     private String sid;
 
     public JsonDocumentModelReader(String json) {

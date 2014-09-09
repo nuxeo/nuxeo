@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -41,7 +40,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.bcel.generic.RET;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -75,7 +73,6 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.filter.InternalFilter;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
@@ -88,7 +85,6 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
-import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
@@ -104,7 +100,7 @@ import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
-import org.nuxeo.elasticsearch.io.DocumentModelReaders;
+import org.nuxeo.elasticsearch.fetcher.Fetcher;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.work.ChildrenIndexingWorker;
 import org.nuxeo.elasticsearch.work.IndexingWorker;
@@ -138,6 +134,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     // indexing command that where received before the index initialization
     protected final List<IndexingCommand> stackedCommands = new ArrayList<>();
     protected final Map<String, String> indexNames = new HashMap<String, String>();
+    protected final Map<String, String> repoNames = new HashMap<String, String>();
     // temporary hack until we are able to list pending indexing jobs cluster
     // wide
     protected final Set<String> pendingWork = Collections
@@ -183,6 +180,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 log.info("Associate index " + idx.getName()
                         + " with repository: " + idx.getRepositoryName());
                 indexNames.put(idx.getRepositoryName(), idx.getName());
+                repoNames.put(idx.getName(), idx.getRepositoryName());
                 Set<String> set = new LinkedHashSet<String>();
                 if (includeSourceFields != null) {
                     set.addAll(Arrays.asList(includeSourceFields));
@@ -527,8 +525,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     protected String getSearchIndexesAsString(NxQueryBuilder query) {
-        return StringUtils.join(getSearchIndexes(query.getSearchRepositories()),
-                ',');
+        return StringUtils.join(
+                getSearchIndexes(query.getSearchRepositories()), ',');
     }
 
     @Override
@@ -699,12 +697,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
             return ret;
         }
         Context stopWatch = fetchTimer.time();
+        Fetcher fetcher = queryBuilder.getFetcher(response, repoNames);
         try {
-            if (queryBuilder.isFetchFromElasticsearch()) {
-                ret = fetchDocumentsFromElasticsearch(queryBuilder, response);
-            } else {
-                ret = fetchDocumentsFromVcs(queryBuilder, response);
-            }
+            ret = fetcher.fetchDocuments();
         } finally {
             stopWatch.stop();
         }
@@ -762,8 +757,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     protected SearchRequestBuilder buildEsSearchRequest(NxQueryBuilder query) {
         SearchRequestBuilder request = getClient()
-                .prepareSearch(getSearchIndexes(query.getSearchRepositories())).setTypes(
-                        DOC_TYPE)
+                .prepareSearch(getSearchIndexes(query.getSearchRepositories()))
+                .setTypes(DOC_TYPE)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
         if (query.isFetchFromElasticsearch()) {
             // fetch the _source without the binaryfulltext field
@@ -792,62 +787,6 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
     }
 
-    protected DocumentModelListImpl fetchDocumentsFromElasticsearch(
-            NxQueryBuilder queryBuilder, SearchResponse response) {
-        DocumentModelListImpl ret = new DocumentModelListImpl(response
-                .getHits().getHits().length);
-        DocumentModel doc;
-        String sid = queryBuilder.getSession().getSessionId();
-        for (SearchHit hit : response.getHits()) {
-            doc = DocumentModelReaders.fromSource(hit.getSource()).sid(sid)
-                    .getDocumentModel();
-            ret.add(doc);
-        }
-        return ret;
-    }
-
-    protected DocumentModelListImpl fetchDocumentsFromVcs(
-            NxQueryBuilder queryBuilder, SearchResponse response) {
-        List<String> ids = new ArrayList<String>(queryBuilder.getLimit());
-        for (SearchHit hit : response.getHits()) {
-            ids.add(hit.getId());
-        }
-        DocumentModelListImpl ret = new DocumentModelListImpl(ids.size());
-        if (!ids.isEmpty()) {
-            try {
-                ret.addAll(fetchDocumentsFromVcs(ids, queryBuilder.getSession()));
-            } catch (ClientException e) {
-                log.error(e.getMessage(), e);
-            }
-        }
-        return ret;
-    }
-
-    /**
-     * Fetch document models from VCS, return results in the same order.
-     *
-     */
-    protected List<DocumentModel> fetchDocumentsFromVcs(final List<String> ids,
-            CoreSession session) throws ClientException {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT * FROM Document WHERE ecm:uuid IN (");
-        for (int i = 0; i < ids.size(); i++) {
-            sb.append(NXQL.escapeString(ids.get(i)));
-            if (i < ids.size() - 1) {
-                sb.append(", ");
-            }
-        }
-        sb.append(")");
-        DocumentModelList ret = session.query(sb.toString());
-        // Order the results
-        Collections.sort(ret, new Comparator<DocumentModel>() {
-            @Override
-            public int compare(DocumentModel a, DocumentModel b) {
-                return ids.indexOf(a.getId()) - ids.indexOf(b.getId());
-            }
-        });
-        return ret;
-    }
 
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {

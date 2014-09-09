@@ -96,9 +96,11 @@ public class TestFetchDocumentsFromEs {
         DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(
                 "select * from Document").limit(20).fetchFromElasticsearch());
         Assert.assertEquals(10, docs.totalSize());
+        /*
         for (DocumentModel doc : docs) {
             System.out.println(doc);
         }
+        */
 
     }
 

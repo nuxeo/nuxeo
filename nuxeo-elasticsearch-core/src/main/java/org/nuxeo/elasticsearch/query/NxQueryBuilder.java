@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.AndFilterBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
@@ -48,6 +49,9 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.query.api.AggregateQuery;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
+import org.nuxeo.elasticsearch.fetcher.EsFetcher;
+import org.nuxeo.elasticsearch.fetcher.Fetcher;
+import org.nuxeo.elasticsearch.fetcher.VcsFetcher;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -61,13 +65,13 @@ public class NxQueryBuilder {
     private int limit = DEFAULT_LIMIT;
     private final CoreSession session;
     private int offset = 0;
-    private List<SortInfo> sortInfos = new ArrayList<SortInfo>();
+    private final List<SortInfo> sortInfos = new ArrayList<SortInfo>();
     private String nxql;
     private org.elasticsearch.index.query.QueryBuilder esQueryBuilder;
     private boolean fetchFromElasticsearch = false;
-    private List<AggregateQuery> aggregates = new ArrayList<AggregateQuery>();
+    private final List<AggregateQuery> aggregates = new ArrayList<AggregateQuery>();
     private static final String AGG_FILTER_SUFFIX = "_filter";
-    private List<String> repositories = new ArrayList<String>();
+    private final List<String> repositories = new ArrayList<String>();
     private boolean searchOnAllRepo = false;
 
     public NxQueryBuilder(CoreSession coreSession) {
@@ -413,4 +417,15 @@ public class NxQueryBuilder {
         return repositories;
     }
 
+    /**
+     *
+     * @since 5.9.6
+     */
+    public Fetcher getFetcher(SearchResponse response,
+            Map<String, String> repoNames) {
+        if (isFetchFromElasticsearch()) {
+            return new EsFetcher(session, response, repoNames);
+        }
+        return new VcsFetcher(session, response, repoNames);
+    }
 }
