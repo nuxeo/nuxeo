@@ -13,12 +13,20 @@ button, keygen, isindex, legend, a {
   font-family: "default (__FLAVOR__ font)" }
 
 /* =Tree */
+.menu dl,
+.menu dd {
+  margin: 0 }
+
+.menu .menuForm {
+  margin: 1em 0 1em -0.7em }
+
 a.treeLink,
 a.treeLink:link,
 a.treeLink:visited {
   border: 1px solid transparent;
   border-radius: 3px;
-  padding: 0 .4em .1em;
+  padding: 0 .3em .1em;
+  font-size: .9em;
   font-weight: normal }
 
 a.treeLink:hover,
@@ -27,31 +35,39 @@ a.treeLink:hover,
   color: #000;
   text-decoration: none }
 
+.rf-trn-lbl {
+  padding: 0 0 0 1px }
+
+.rf-trn-ico {
+  height: 13px;
+  width: 13px }
+
+.rf-trn-hnd-exp,
+.rf-trn-hnd-colps {
+  background: #fff url("${basePath}/icons/arrow_unfolded.gif") no-repeat left center;
+  height: 1.7em }
+
+.rf-trn-hnd-colps {
+  background: #fff url("${basePath}/icons/arrow_folded.gif") no-repeat left center; }
+
+.rf-trn {
+  background: transparent url("${basePath}/img/tree_line.png") repeat-y 0 0 }
+
+.rf-tr-nd .rf-tr-nd {
+  margin-left: 12px;
+  background: none }
+
+.rf-trn-sel {
+  background: none }
+
 .cell img,
 .clipboardFunction img {
   vertical-align: middle }
 
-.menu dl,
-.menu dd {
-  margin: 0 }
-
-.menu .menuForm {
-  margin-bottom: 2em }
-
-td.dr-tree-h-text,
-td.dr-tree-h-text span,
-td.dr-tree-h-text a.treeLink {
+.rf-trn,
+.rf-trn span,
+.rf-trn a.treeLink {
   white-space: normal }
-
-td.dr-tree-h-text {
-  padding: 0 4px }
-
-td.dr-tree-i-sel {
-  padding: 0 4px }
-
-.dr-tree-h-ic-div {
-  margin-left: 8px;
-  padding-left: 10px }
 
 .treeNodeHighlightedClass {
   text-decoration: none }
@@ -59,11 +75,7 @@ td.dr-tree-i-sel {
 .treeNodeSelectedClass {
   border: none }
 
-.dataInput .dr-tree td,
-.dataInput .dr-tree td td {
-  padding: .1em }
-
-.fieldColumn .dr-tree img {
+.fieldColumn .rf-trn img {
   margin: 0 }
 
 /* =FileUpload */
