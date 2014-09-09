@@ -192,7 +192,7 @@ class BasePage:
 
     def usersAndGroupsPage(self):
         fl = self.fl
-        if not "Exit admin center" in fl.getBody():
+        if not "Exit admin" in fl.getBody():
             self.adminCenter()
 
         self.viewDocumentUid(self.getDocUid(), category="NUXEO_ADMIN",

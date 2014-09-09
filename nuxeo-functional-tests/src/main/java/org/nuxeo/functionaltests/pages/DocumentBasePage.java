@@ -89,7 +89,7 @@ public class DocumentBasePage extends AbstractPage {
     @FindBy(className = "currentDocumentDescription")
     public WebElement currentFolderishDescription;
 
-    @FindBy(linkText = "DOCUMENT MANAGEMENT")
+    @FindBy(linkText = "WORKSPACE")
     public WebElement documentManagementLink;
 
     @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']//a/span[text()='Edit']")
@@ -158,7 +158,7 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     public AdminCenterBasePage getAdminCenter() {
-        findElementWithTimeout(By.linkText("ADMIN CENTER")).click();
+        findElementWithTimeout(By.linkText("ADMIN")).click();
         return asPage(AdminCenterBasePage.class);
     }
 

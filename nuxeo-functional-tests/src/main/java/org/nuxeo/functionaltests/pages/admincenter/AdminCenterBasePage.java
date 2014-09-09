@@ -39,7 +39,7 @@ public class AdminCenterBasePage extends AbstractPage {
     @FindBy(linkText = "Users & Groups")
     public WebElement userAndGroupsLink;
 
-    @FindBy(linkText = "DOCUMENT MANAGEMENT")
+    @FindBy(linkText = "WORKSPACE")
     public WebElement documentManagementLink;
 
     @FindBy(linkText = "Update Center")
