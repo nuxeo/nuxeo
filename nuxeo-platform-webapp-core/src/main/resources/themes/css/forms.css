@@ -142,7 +142,8 @@ input.rf-cal-inp {
   width: 80%; }
 
 .inputDate {
-  white-space: nowrap }
+  white-space: nowrap;
+  margin-right: .3em }
 
 /* rfFaces calendar styles override */
 table.rf-cal-extr {

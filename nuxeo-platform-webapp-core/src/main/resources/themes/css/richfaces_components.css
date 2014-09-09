@@ -17,8 +17,10 @@ button, keygen, isindex, legend, a {
 .menu dd {
   margin: 0 }
 
-.menu .menuForm {
-  margin: 1em 0 1em -0.7em }
+.column > .menu {
+  background-color: #fff;
+  margin: 0 .2em 1em;
+  padding: .5em }
 
 a.treeLink,
 a.treeLink:link,
@@ -77,6 +79,22 @@ a.treeLink:hover,
 
 .fieldColumn .rf-trn img {
   margin: 0 }
+
+/* waiter */
+.rf-st-start {
+  background-color: "info (__FLAVOR__ background)";
+  border: 1px solid #fff;
+  height: 20px;
+  padding: .7em .5em .5em;
+  position: fixed;
+  right: 40px;
+  text-align: center;
+  top: 55px;
+  width: 20px;
+  z-index: 10000 }
+
+.rf-st-stop {
+  display: none }
 
 /* =FileUpload */
 .rf-fu {
