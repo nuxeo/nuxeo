@@ -95,7 +95,6 @@
       <properties widgetMode="view">
         <property name="category">SEARCH_RESULTS_ACTIONS</property>
         <property name="styleClass">globalActionBar</property>
-        <property name="subStyleClass">contextActions</property>
         <property name="overallDisplay">horizontal_block</property>
         <property name="actionStyleClass">button</property>
         <property name="actionsDisplay">buttons</property>

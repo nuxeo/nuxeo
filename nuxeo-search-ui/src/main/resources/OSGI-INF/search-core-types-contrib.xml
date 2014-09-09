@@ -10,7 +10,7 @@
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
 
-    <facet name="Search" perDocumentQuery="false">
+    <facet name="SavedSearch" perDocumentQuery="false">
       <schema name="common" />
       <schema name="dublincore" />
       <schema name="uid" />
@@ -18,7 +18,7 @@
 
     <!-- For default search -->
     <doctype name="DefaultSearch" extends="Document">
-      <facet name="Search" />
+      <facet name="SavedSearch" />
       <facet name="ContentViewDisplay" />
       <facet name="HiddenInNavigation" />
       <schema name="default_search" />

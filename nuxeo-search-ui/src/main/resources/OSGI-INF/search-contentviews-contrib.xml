@@ -64,12 +64,7 @@
         <layout name="document_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
           showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
-        <layout name="document_listing_ajax_compact_2_columns" title="document_listing_compact_2_columns"
-          translateTitle="true" iconPath="/icons/document_listing_compact_2_columns_icon.png"
-          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
-        <layout name="document_listing_ajax_icon_2_columns" title="document_listing_icon_2_columns"
-          translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
-          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+
       </resultLayouts>
 
       <selectionList>CURRENT_SELECTION</selectionList>
@@ -80,58 +75,58 @@
       </flags>
     </contentView>
 
-    <!--<contentView name="dam_saved_searches">-->
+    <contentView name="all_saved_searches">
 
-      <!--<showTitle>false</showTitle>-->
+      <showTitle>false</showTitle>
 
-      <!--<coreQueryPageProvider>-->
-        <!--<property name="coreSession">#{documentManager}</property>-->
-        <!--<whereClause docType="AdvancedSearch">-->
-          <!--<predicate parameter="ecm:fulltext" operator="FULLTEXT">-->
-            <!--<field schema="advanced_search" name="fulltext_all" />-->
-          <!--</predicate>-->
-          <!--<predicate parameter="dc:title" operator="FULLTEXT">-->
-            <!--<field schema="advanced_search" name="title" />-->
-          <!--</predicate>-->
-          <!--<predicate parameter="dc:modified" operator="BETWEEN">-->
-            <!--<field schema="advanced_search" name="modified_min" />-->
-            <!--<field schema="advanced_search" name="modified_max" />-->
-          <!--</predicate>-->
-          <!--<fixedPart>-->
-            <!--ecm:mixinType = 'defaultsearch'-->
-            <!--AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0-->
-            <!--AND ecm:currentLifeCycleState != 'deleted'-->
-            <!--AND ecm:parentId = ?-->
-            <!--AND SORTED_COLUMN IS NOT NULL-->
-          <!--</fixedPart>-->
-        <!--</whereClause>-->
-        <!--<parameter>#{userWorkspaceManagerActions.currentUserPersonalWorkspace.id}</parameter>-->
-        <!--<sort column="dc:title" ascending="true" />-->
-        <!--<pageSize>20</pageSize>-->
-      <!--</coreQueryPageProvider>-->
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <whereClause docType="AdvancedSearch">
+          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+            <field schema="advanced_search" name="fulltext_all" />
+          </predicate>
+          <predicate parameter="dc:title" operator="FULLTEXT">
+            <field schema="advanced_search" name="title" />
+          </predicate>
+          <predicate parameter="dc:modified" operator="BETWEEN">
+            <field schema="advanced_search" name="modified_min" />
+            <field schema="advanced_search" name="modified_max" />
+          </predicate>
+          <fixedPart>
+            ecm:mixinType = 'SavedSearch'
+            AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0
+            AND ecm:currentLifeCycleState != 'deleted'
+            AND ecm:parentId = ?
+            AND SORTED_COLUMN IS NOT NULL
+          </fixedPart>
+        </whereClause>
+        <parameter>#{userWorkspaceManagerActions.currentUserPersonalWorkspace.id}</parameter>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
 
-      <!--<searchLayout name="document_content_filter"-->
-        <!--filterDisplayType="quick" />-->
-      <!--<showFilterForm>true</showFilterForm>-->
+      <searchLayout name="document_content_filter"
+        filterDisplayType="quick" />
+      <showFilterForm>true</showFilterForm>
 
-      <!--<showPageSizeSelector>true</showPageSizeSelector>-->
-      <!--<useGlobalPageSize>false</useGlobalPageSize>-->
-      <!--<refresh>-->
-        <!--<event>documentChanged</event>-->
-        <!--<event>documentChildrenChanged</event>-->
-      <!--</refresh>-->
-      <!--<cacheKey>only_one_cache</cacheKey>-->
-      <!--<cacheSize>1</cacheSize>-->
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>false</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
 
-      <!--<resultLayouts>-->
-        <!--<layout name="document_listing_ajax" title="document_listing"-->
-          <!--translateTitle="true" iconPath="/icons/document_listing_icon.png"-->
-          <!--showCSVExport="true" showPDFExport="true" />-->
-      <!--</resultLayouts>-->
+      <resultLayouts>
+        <layout name="document_listing_ajax" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" showPDFExport="true" />
+      </resultLayouts>
 
-      <!--<selectionList>DAM_SAVED_SEARCHES_CURRENT_SELECTION</selectionList>-->
-      <!--<actions category="DAM_SAVED_SEARCHES_CURRENT_SELECTION_LIST" />-->
-    <!--</contentView>-->
+      <selectionList>SAVED_SEARCHES_CURRENT_SELECTION</selectionList>
+      <actions category="SAVED_SEARCHES_CURRENT_SELECTION_LIST" />
+    </contentView>
 
   </extension>
 

@@ -16,15 +16,17 @@
 
     <!-- Search actions -->
 
-    <!--<action id="damSaveSearchAction" link="#{damSearchActions.saveSearch()}"-->
-      <!--label="command.save" order="10">-->
-      <!--<properties>-->
-        <!--<property name="ajaxSupport">true</property>-->
-        <!--<property name="ajaxReRender">-->
-          <!--damPanelLeft-->
-        <!--</property>-->
-      <!--</properties>-->
-    <!--</action>-->
+    <action id="saveSearch" type="fancybox" label="command.search.save"
+      icon="" order="0">
+      <category>SEARCH_RESULTS_ACTIONS</category>
+      <properties>
+        <property name="include">/search/incl/save_search_box.xhtml</property>
+        <property name="autoDimensions">true</property>
+        <property name="modal">true</property>
+        <property name="scrolling">auto</property>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
 
     <action id="submitSearch" link="#{searchActions.refreshAndRewind()}"
       label="label.search.filter" order="10">
@@ -47,6 +49,55 @@
         </property>
       </properties>
     </action>
+
+    <!-- Home Searches tab -->
+
+    <action id="AllSavedSearches" link="search/incl/all_saved_searches.xhtml"
+      label="label.home.all.searches" order="-10">
+      <category>SavedSearches_sub_tab</category>
+      <filter-id>not_anonymous</filter-id>
+    </action>
+
+    <action id="savedSearchesCurrentSelectionDelete"
+      link="#{deleteActions.purgeSelection('SAVED_SEARCHES_CURRENT_SELECTION')}"
+      label="command.trashDocs" icon="" help="command.deleteDocs.help"
+      confirm="if( !confirmDeleteDocumentsForever() ) return false;">
+      <category>SAVED_SEARCHES_CURRENT_SELECTION_LIST</category>
+      <filter id="canDeleteSavedSearches">
+        <rule grant="true">
+          <condition>#{deleteActions.getCanDelete('DAM_SAVED_SEARCHES_CURRENT_SELECTION')}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="TAB_MY_SUBSCRIPTIONS">
+      <filter-id>denyForDefaultSearch</filter-id>
+    </action>
+
+    <action id="TAB_MANAGE_SUBSCRIPTIONS">
+      <filter-id>denyForDefaultSearch</filter-id>
+    </action>
+
+    <action id="TAB_RELATIONS">
+      <filter-id>denyForDefaultSearch</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="rights" append="true">
+      <rule grant="true">
+        <facet>DefaultSearch</facet>
+      </rule>
+    </filter>
+
+    <filter id="denyForDefaultSearch">
+      <rule grant="false">
+        <facet>DefaultSearch</facet>
+      </rule>
+    </filter>
 
   </extension>
 

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.search.documentsLists">
+
+  <extension target="org.nuxeo.ecm.webapp.documentsLists.DocumentsListsService"
+    point="list">
+
+    <documentsList name="SAVED_SEARCHES_CURRENT_SELECTION">
+      <events>
+        <event>folderishDocumentSelectionChanged</event>
+      </events>
+      <isSession>false</isSession>
+    </documentsList>
+
+  </extension>
+
+</component>

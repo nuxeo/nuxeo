@@ -30,12 +30,16 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.core.Events;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
@@ -50,6 +54,7 @@ import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
+import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.webapp.action.MainTabsActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
@@ -126,6 +131,9 @@ public class SearchActions implements Serializable {
 
     @In(create = true)
     protected ContentViewActions contentViewActions;
+
+    @In(create = true, required = false)
+    protected FacesMessages facesMessages;
 
     @In(create = true)
     protected Map<String, String> messages;
@@ -338,33 +346,37 @@ public class SearchActions implements Serializable {
     }
 
     public String saveSearch() throws ClientException {
-//        ContentView contentView = contentViewActions.getContentView(getCurrentContentViewName());
-//        if (contentView != null) {
-//            UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
-//            DocumentModel uws = userWorkspaceService.getCurrentUserPersonalWorkspace(
-//                    documentManager, null);
-//
-//            DocumentModel searchDoc = contentView.getSearchDocumentModel();
-//            searchDoc.setPropertyValue("cvd:contentViewName",
-//                    contentView.getName());
-//            searchDoc.setPropertyValue("dc:title", savedSearchTitle);
-//            PathSegmentService pathService = Framework.getLocalService(PathSegmentService.class);
-//            searchDoc.setPathInfo(uws.getPathAsString(),
-//                    pathService.generatePathSegment(searchDoc));
-//            searchDoc = documentManager.createDocument(searchDoc);
-//            documentManager.save();
-//
-//            facesMessages.add(StatusMessage.Severity.INFO,
-//                    messages.get(SEARCH_SAVED_LABEL));
-//
-//            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-//                    uws);
-//
-//            savedSearchTitle = null;
-//            currentSelectedSavedSearchId = searchDoc.getId();
-//        }
+        ContentView contentView = contentViewActions.getContentView(getCurrentContentViewName());
+        if (contentView != null) {
+            UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
+            DocumentModel uws = userWorkspaceService.getCurrentUserPersonalWorkspace(
+                    documentManager, null);
+
+            DocumentModel searchDoc = contentView.getSearchDocumentModel();
+            searchDoc.setPropertyValue("cvd:contentViewName",
+                    contentView.getName());
+            searchDoc.setPropertyValue("dc:title", savedSearchTitle);
+            PathSegmentService pathService = Framework.getLocalService(PathSegmentService.class);
+            searchDoc.setPathInfo(uws.getPathAsString(),
+                    pathService.generatePathSegment(searchDoc));
+            searchDoc = documentManager.createDocument(searchDoc);
+            documentManager.save();
+
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    messages.get(SEARCH_SAVED_LABEL));
+
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+                    uws);
+
+            savedSearchTitle = null;
+            currentSelectedSavedSearchId = searchDoc.getId();
+        }
 
         return null;
+    }
+
+    public void cancelSaveSearch() {
+        savedSearchTitle = null;
     }
 
     /*
