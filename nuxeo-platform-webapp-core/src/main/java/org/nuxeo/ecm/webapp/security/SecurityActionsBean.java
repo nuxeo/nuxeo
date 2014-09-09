@@ -146,6 +146,13 @@ public class SecurityActionsBean extends InputController implements
                 }
 
                 reconstructTableModel();
+
+                // Check if the inherited rights are activated
+                List<String> deniedPerms = securityData.getCurrentDocDeny().get(SecurityConstants.EVERYONE);
+                if (deniedPerms != null && deniedPerms.contains(SecurityConstants.EVERYTHING)) {
+                    blockRightInheritance = true;
+                }
+
                 if (blockRightInheritance == null) {
                     blockRightInheritance = false;
                 }
@@ -490,7 +497,6 @@ public class SecurityActionsBean extends InputController implements
 
     public String blockRightInheritance() throws ClientException {
         Boolean needBlockRightInheritance = this.blockRightInheritance;
-        rebuildSecurityData();
 
         if (needBlockRightInheritance) {
             // Block
@@ -515,7 +521,6 @@ public class SecurityActionsBean extends InputController implements
                     SecurityConstants.EVERYTHING, false);
         }
         updateSecurityOnDocument();
-        resetSecurityData();
         selectedEntries = null;
         return null;
     }
