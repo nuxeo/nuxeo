@@ -125,7 +125,7 @@
     <module>nuxeo-csv</module>
     <module>nuxeo-tree-snapshot</module>
     <module>nuxeo-groups-rights-audit</module>
-    <module>nuxeo-drive</module>
+    <module>nuxeo-drive-server</module>
     <module>nuxeo-dam-pdf-export</module>
     <module>nuxeo-resources-compat</module>
     <module>nuxeo-dmk-adaptor</module>
