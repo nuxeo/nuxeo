@@ -10,8 +10,6 @@
   <c:if test="#{tagServiceEnabled}">
 
     <c:set var="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
-    <c:set var="outputPanelId" value="#{widget.id}_panel" />
-    <c:set var="listRegionId" value="#{widget.id}_listRegion" />
 
     <c:if test="#{widget.handlingLabels}">
       <c:if test="#{!empty widget.label}">
@@ -33,11 +31,13 @@
     </c:if>
 
     <a4j:jsFunction name="addTagging"
+      render="#{ajaxReRender}"
       action="#{tagSelect2Support.addTagging}">
       <a4j:param name="param1" assignTo="#{tagSelect2Support.label}" />
     </a4j:jsFunction>
 
     <a4j:jsFunction name="removeTagging"
+      render="#{ajaxReRender}"
       action="#{tagSelect2Support.removeTagging}">
       <a4j:param name="param1" assignTo="#{tagSelect2Support.label}" />
     </a4j:jsFunction>
@@ -45,8 +45,7 @@
     <ui:include src="/incl/select2_js.xhtml" />
 
     <a4j:region>
-      <h:inputHidden id="#{widget.id}_select2" immediate="true"
-        ajaxSingle="true" value="#{documentTagIds}">
+      <h:inputHidden id="#{widget.id}_select2" value="#{documentTagIds}">
         <f:converter converterId="select2Converter" />
       </h:inputHidden>
       <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
