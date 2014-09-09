@@ -1,0 +1,10 @@
+*.swp
+*~
+target
+pojo-bin
+seam-bin
+bin
+.DS_Store
+.classpath
+.project
+.settings
