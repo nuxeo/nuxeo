@@ -32,6 +32,7 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedExceptio
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.FluentWait;
@@ -141,7 +142,7 @@ public class ITRichfileUploadTest extends AbstractTest {
         Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
                 AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
                 AbstractTest.POLLING_FREQUENCY_MILLISECONDS,
-                TimeUnit.MILLISECONDS);
+                TimeUnit.MILLISECONDS).ignoring(StaleElementReferenceException.class);
         Function<WebDriver, Boolean> function = new Function<WebDriver, Boolean>() {
             public Boolean apply(WebDriver driver) {
                 try {
