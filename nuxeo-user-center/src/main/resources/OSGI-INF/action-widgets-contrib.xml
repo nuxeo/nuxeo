@@ -108,6 +108,7 @@
       <category>Profile_sub_tab</category>
       <category>Preferences_sub_tab</category>
       <category>relationship_network_sub_tab</category>
+      <category>SavedSearches_sub_tab</category>
     </typeCompatibility>
 
   </extension>
