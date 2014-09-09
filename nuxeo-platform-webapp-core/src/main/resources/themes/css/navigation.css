@@ -28,14 +28,13 @@ author: lkemen@nuxeo.com
   border-width: 1px;
   border-style: none solid none none;
   border-color: "neutral.lighter (__FLAVOR__ border)";
-  float: left;
+  display: inline-block;
   padding: 0 }
 
 .tabsBar.vertical li {
   border-width: 1px;
   border-style: none solid none none;
   border-color: "neutral.lighter (__FLAVOR__ border)";
-  float: none;
   padding: 0 }
 
 .tabsBar a,
@@ -43,8 +42,7 @@ author: lkemen@nuxeo.com
   background: transparent;
   border-top: 4px solid transparent;
   color: "gray.dark (__FLAVOR__ color)";
-  display: block;
-  float: left;
+  display: inline-block;
   padding: .3em .5em .6em;
   text-decoration: none }
 
@@ -139,7 +137,6 @@ author: lkemen@nuxeo.com
 
 .tabsBar.vertical li {
   border: 1px solid transparent;
-  float: none;
   margin: 0 0 .15em .1em;
   padding: 0 }
 
@@ -149,9 +146,9 @@ author: lkemen@nuxeo.com
   display: block;
   font-size: 1.1em;
   border-top: none;
-  float: none;
   padding: .7em 0 .7em .6em;
-  text-decoration: none }
+  text-decoration: none;
+  transition: none }
 
 .tabsBar.vertical li a img {
   margin: 0 .4em -0.15em 0 }
@@ -175,33 +172,36 @@ author: lkemen@nuxeo.com
 /* =Navigation controls */
 .pageNavigationControls,
 #pageNavigationControls {
-  border-width: 1px;
-  border-style: none none solid;
-  border-color: "neutral.lighter (__FLAVOR__ border)";
-  margin: 0 0 .5em;
+  border: medium none;
+  margin: .2em 0;
   padding: 0;
-  text-align: center }
+  text-align: right }
 
-.pageNavigationControls span,
-#pageNavigationControls span {
+.pageNavigationControls .currentPageStatus,
+#pageNavigationControls .currentPageStatus {
   color: "gray.dark (__FLAVOR__ color)";
+  display: inline-block;
   font-weight: bold;
   font-size: .9em;
   margin: 0 .5em;
-  vertical-align: middle }
+  padding-top: .3em;
+  vertical-align: top; }
 
-.pageNavigationControls input,
-#pageNavigationControls input {
-  border: medium none;
-  box-shadow: none;
-  margin: 0 .3em;
-  padding: 0;
-  vertical-align: middle }
+.pageNavigationControls input[type="image"],
+#pageNavigationControls input[type="image"] {
+  border: 1px solid #eee !important;
+  border-radius: 2px;
+  padding: 0.3em; }
+
+.pageNavigationControls input:hover,
+#pageNavigationControls input:hover {
+  background-color: "neutral.medium (__FLAVOR__ background)";
+  border-color: #ddd }
 
 .pageNavigationControls input[disabled=disabled],
 #pageNavigationControls input[disabled=disabled] {
   cursor: default;
-  filter: alpha(opacity=50);
+  filter: alpha(opacity=40);
   opacity: .4 }
 
 /* =Back Arrow */
