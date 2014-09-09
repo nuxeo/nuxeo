@@ -557,7 +557,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     protected boolean useCache() {
-        return (!Framework.isTestModeSet()) && principalCache != null;
+        return principalCache != null;
     }
 
     @Override
