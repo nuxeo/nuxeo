@@ -40,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
 @Operation(id = AuditPageProviderOperation.ID, category = Constants.CAT_FETCH, label = "AuditPageProvider", description = "Perform "
         + "a query or a named provider query against Audit logs. Result is "
         + "paginated. The query result will become the input for the next "
-        + "operation. If no query or provider name is given, a query based on default Audit page provider will be executed.", addToStudio = false)
+        + "operation. If no query or provider name is given, a query based on default Audit page provider will be executed.", addToStudio=false)
 public class AuditPageProviderOperation {
 
     public static final String ID = "Audit.PageProvider";
@@ -50,6 +50,10 @@ public class AuditPageProviderOperation {
     public static final String CURRENT_REPO_PATTERN = "$currentRepository";
 
     private static final String SORT_PARAMETER_SEPARATOR = " ";
+
+    public static final String DESC = "DESC";
+
+    public static final String ASC = "ASC";
 
     @Context
     protected OperationContext context;
@@ -80,7 +84,7 @@ public class AuditPageProviderOperation {
     protected Integer pageSize;
 
     /**
-     * @deprecated since 5.9.6 use instead sortBy and sortOrder
+     * @deprecated since 5.9.6 use instead {@link #sortBy and @link #sortOrder}.
      */
     @Deprecated
     @Param(name = "sortInfo", required = false)
@@ -92,6 +96,10 @@ public class AuditPageProviderOperation {
     @Param(name = "namedQueryParams", required = false)
     protected Properties namedQueryParams;
 
+    /**
+     * @deprecated since 5.9.6, not used in operation.
+     */
+    @Deprecated
     @Param(name = "maxResults", required = false)
     protected Integer maxResults = 100;
 
@@ -106,14 +114,13 @@ public class AuditPageProviderOperation {
      * @since 5.9.6
      */
     @Param(name = "sortOrder", required = false, description = "Sort order, " +
-            "ASC or DESC")
+            "ASC or DESC", widget = Constants.W_OPTION,
+            values = { ASC, DESC })
     protected String sortOrder;
 
     @SuppressWarnings("unchecked")
     @OperationMethod
     public Paginable<LogEntry> run() throws Exception {
-
-        PageProviderService pps = Framework.getLocalService(PageProviderService.class);
 
         List<SortInfo> sortInfos = null;
         if (sortInfoAsStringList != null) {
@@ -177,25 +184,20 @@ public class AuditPageProviderOperation {
 
         Long targetPage = null;
         if (page != null) {
-            targetPage = Long.valueOf(page.longValue());
+            targetPage = page.longValue();
         }
         if (currentPageIndex != null) {
             targetPage = currentPageIndex.longValue();
         }
         Long targetPageSize = null;
         if (pageSize != null) {
-            targetPageSize = Long.valueOf(pageSize.longValue());
+            targetPageSize = pageSize.longValue();
         }
 
         if (query != null) {
 
             AuditPageProvider app = new AuditPageProvider();
             app.setProperties(props);
-            if (maxResults != null && !maxResults.equals("-1")) {
-                // set the maxResults to avoid slowing down queries
-                app.getProperties().put("maxResults", maxResults);
-                app.setMaxPageSize(maxResults);
-            }
             GenericPageProviderDescriptor desc = new GenericPageProviderDescriptor();
             desc.setPattern(query);
             app.setParameters(parameters);
@@ -208,16 +210,16 @@ public class AuditPageProviderOperation {
 
             DocumentModel searchDoc = null;
             if (namedQueryParams != null && namedQueryParams.size() > 0) {
-                String docType = pps.getPageProviderDefinition(providerName).getSearchDocumentType();
+                String docType = ppService.getPageProviderDefinition(providerName).getWhereClause().getDocType();
                 searchDoc = session.createDocumentModel(docType);
                 DocumentHelper.setProperties(session, searchDoc,
                         namedQueryParams);
             }
 
-            PageProvider<LogEntry> pp = (PageProvider<LogEntry>) pps.getPageProvider(
+            PageProvider<LogEntry> pp = (PageProvider<LogEntry>) ppService.getPageProvider(
                     providerName, searchDoc, sortInfos, targetPageSize,
                     targetPage, props, parameters);
-            // return new PaginablePageProvider<LogEntry>(pp);
+            //return new PaginablePageProvider<LogEntry>(pp);
             return new LogEntryList(pp);
         }
 
