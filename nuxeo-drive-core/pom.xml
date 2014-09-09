@@ -4,8 +4,8 @@
   <parent>
     <groupId>org.nuxeo.ecm</groupId>
     <artifactId>nuxeo-drive-parent</artifactId>
-    <version>5.8.0-HF22-SNAPSHOT</version>
-    <relativePath>../../pom.xml</relativePath>
+    <version>5.8.0-HF26-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.ecm</groupId>
@@ -161,25 +161,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <configuration>
-          <additionalProjectnatures>
-            <projectnature>org.nuxeo.ide.NuxeoNature</projectnature>
-          </additionalProjectnatures>
-          <classpathContainers>
-            <classpathContainer>org.eclipse.jdt.launching.JRE_CONTAINER
-            </classpathContainer>
-            <classpathContainer>org.nuxeo.ide.SDK_CONTAINER
-            </classpathContainer>
-            <classpathContainer>org.nuxeo.ide.SDK_TEST_CONTAINER
-            </classpathContainer>
-          </classpathContainers>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
