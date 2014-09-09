@@ -179,7 +179,8 @@
       <category>DAM_ASSET_VIEW_ACTIONS</category>
     </action>
 
-    <action id="damViewInDAM" type="bare_link" link="#{damActions.getAssetPermanentLinkUrl(false)}" label="label.dam.action.viewInDAM"
+    <action id="damViewInDAM" type="bare_link"
+      link="#{damActions.getAssetPermanentLinkUrl(false)}" label="label.dam.action.viewInDAM"
       icon="/icons/switch.png" order="65">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>hasAssetFacet</filter-id>
@@ -256,7 +257,8 @@
 
     <!-- Saved searches -->
     <action id="DamSavedSearches" link="dam/incl/saved_searches.xhtml"
-      label="label.home.dam.saved.searches" order="10">
+      type="home_rest_document_link" label="label.home.dam.saved.searches"
+      order="10">
       <category>SavedSearches_sub_tab</category>
       <filter-id>not_readonly</filter-id>
     </action>
