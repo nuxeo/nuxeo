@@ -54,6 +54,11 @@ public class PageSelections<T> {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+        if (entries != null) {
+            for (PageSelection<T> item : entries) {
+                item.setSelected(selected);
+            }
+        }
     }
 
     public boolean isSelected() {
@@ -66,6 +71,16 @@ public class PageSelections<T> {
 
     public void setEntries(List<PageSelection<T>> entries) {
         this.entries = entries;
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public void add(PageSelection<T> entry) {
+        if (entries == null) {
+            entries = new ArrayList<>();
+        }
+        entries.add(entry);
     }
 
     public int getSize() {
