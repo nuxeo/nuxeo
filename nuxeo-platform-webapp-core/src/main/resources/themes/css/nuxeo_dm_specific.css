@@ -14,11 +14,17 @@ author: lkemen@nuxeo.com
   height: 660px }
 
 .nxMainContainer .content {
-  padding: 1em 3em 3em }
+  padding: 1em 3em 3em;
+  background-color: #f9f9f9; }
 
 .nxMainContainer .column {
   font-size: .85em;
   padding: 1.2em .75em }
+
+.nxMainContainer .tabsContent {
+  background: none #fff;
+  margin: 2px 1px 0;
+  padding: 1em 1.5em }
 
 /* =List of available servers  */
 .serverChoice {
