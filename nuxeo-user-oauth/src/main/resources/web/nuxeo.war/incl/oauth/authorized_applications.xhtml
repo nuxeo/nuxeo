@@ -12,7 +12,7 @@
 
 
       <p><h:outputText value="#{messages['user.center.authorizedApplication.description']}" rendered="#{authorizedApplications.size gt 0}"/></p>
-      <p><h:outputText value="#{messages['user.center.noAuthorizedApplication']}" rendered="#{authorizedApplications.size le 0}" /></p>
+      <p class="emptyResult emptyResultBig"><h:outputText value="#{messages['user.center.noAuthorizedApplication']}" rendered="#{authorizedApplications.size le 0}" /></p>
 
   <h:form id="authorizedApplicationsForm">
   <table class="dataOutput">
