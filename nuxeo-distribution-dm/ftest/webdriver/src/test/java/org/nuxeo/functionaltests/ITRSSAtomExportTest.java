@@ -18,7 +18,6 @@ package org.nuxeo.functionaltests;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.AtomPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
@@ -29,8 +28,6 @@ import org.openqa.selenium.WebElement;
 /**
  * @since 5.9.3
  */
-//NXP-15004: needs to be adapted for JSF2 (randomly failing)
-@Ignore
 public class ITRSSAtomExportTest extends AbstractTest {
 
     @Test

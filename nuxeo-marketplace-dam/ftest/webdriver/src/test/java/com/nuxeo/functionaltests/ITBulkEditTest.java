@@ -17,7 +17,6 @@
 
 package com.nuxeo.functionaltests;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.functionaltests.dam.BulkEditFancyBoxFragment;
 import org.nuxeo.functionaltests.dam.DAMPage;
@@ -26,8 +25,6 @@ import org.nuxeo.functionaltests.dam.SearchResultsFragment;
 /**
  * @since 5.7.3
  */
-//NXP-15004: needs to be adapted for JSF2
-@Ignore
 public class ITBulkEditTest extends AbstractDAMTest {
 
     @Test
