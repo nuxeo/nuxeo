@@ -23,8 +23,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public abstract class UserManagerMultiTenantTestCase extends NXRuntimeTestCase {
 
-    protected boolean useCache = true;
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -34,29 +32,25 @@ public abstract class UserManagerMultiTenantTestCase extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core.cache");
-        deployBundle("org.nuxeo.ecm.core.redis");
         deployBundle("org.nuxeo.ecm.directory.api");
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
 
-        if (useCache) {
+        if (!RedisFeature.getMode().equals(RedisFeature.Mode.disabled)) {
+            RedisFeature.setup(this);
+            deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+                    "test-usermanagerimpl/usermanager-redis-cache-config.xml");
 
-            if (!RedisFeature.getMode().equals(RedisFeature.Mode.disabled)) {
-                RedisFeature.setup(this);
-                deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                        "test-usermanagerimpl/usermanager-redis-cache-config.xml");
-
-            } else {
-                deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                        "test-usermanagerimpl/usermanager-inmemory-cache-config.xml");
-            }
-            fireFrameworkStarted();
+        } else {
+            deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+                    "test-usermanagerimpl/usermanager-inmemory-cache-config.xml");
         }
+        fireFrameworkStarted();
 
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
                 "test-usermanagerimpl/userservice-config.xml");
     }
-    
+
     @Override
     public void tearDown() throws Exception {
         DatabaseHelper.DATABASE.tearDown();
