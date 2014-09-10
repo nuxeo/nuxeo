@@ -55,6 +55,14 @@ public interface PageProviderDefinition extends Serializable {
 
     WhereClauseDefinition getWhereClause();
 
+    /**
+     * Returns the search document type used for wher clause, aggregates and
+     * named parameters.
+     *
+     * @since 5.9.6
+     */
+    String getSearchDocumentType();
+
     boolean isSortable();
 
     List<SortInfo> getSortInfos();

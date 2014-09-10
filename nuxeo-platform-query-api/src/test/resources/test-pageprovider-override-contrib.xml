@@ -12,7 +12,8 @@
 
     <!-- test override -->
     <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT">
-      <whereClause docType="File">
+      <searchDocumentType>File2</searchDocumentType>
+      <whereClause>
         <predicate parameter="dc:title" operator="FULLTEXT">
           <field schema="dublincore" name="title" />
         </predicate>

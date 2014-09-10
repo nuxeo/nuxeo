@@ -30,9 +30,11 @@ import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 
 /**
+ * Base class for page provider descriptors.
+ *
  * @since 5.9.6
  */
-public class BasePageProviderDescriptor {
+public abstract class BasePageProviderDescriptor {
 
     @XNode("@name")
     protected String name;
@@ -75,6 +77,12 @@ public class BasePageProviderDescriptor {
     @XNode("whereClause")
     protected WhereClauseDescriptor whereClause;
 
+    /**
+     * @since 5.9.6
+     */
+    @XNode("searchDocumentType")
+    protected String searchDocumentType;
+
     @XNode("pattern")
     public void setPattern(String pattern) {
         // remove new lines and following spaces
@@ -83,6 +91,9 @@ public class BasePageProviderDescriptor {
         }
     }
 
+    /**
+     * @since 5.9.6
+     */
     @XNodeList(value = "aggregates/aggregate", type = ArrayList.class, componentType = AggregateDescriptor.class)
     protected List<AggregateDescriptor> aggregates;
 
@@ -159,5 +170,64 @@ public class BasePageProviderDescriptor {
     public List<AggregateDefinition> getAggregates() {
         return (List<AggregateDefinition>) (List<?>) aggregates;
     }
+
+    /**
+     * Returns the search document type used for wher clause, aggregates and
+     * named parameters.
+     *
+     * @since 5.9.6
+     */
+    public String getSearchDocumentType() {
+        if (searchDocumentType == null) {
+            // BBB
+            WhereClauseDefinition wc = getWhereClause();
+            if (wc != null) {
+                return wc.getDocType();
+            }
+        }
+        return searchDocumentType;
+    }
+
+    protected BasePageProviderDescriptor cloneDescriptor() {
+        BasePageProviderDescriptor clone = newInstance();
+        clone.name = getName();
+        clone.enabled = isEnabled();
+        Map<String, String> props = getProperties();
+        if (props != null) {
+            clone.properties = new HashMap<String, String>();
+            clone.properties.putAll(props);
+        }
+        String[] params = getQueryParameters();
+        if (params != null) {
+            clone.queryParameters = params.clone();
+        }
+        clone.pageSize = getPageSize();
+        clone.pageSizeBinding = getPageSizeBinding();
+        clone.maxPageSize = getMaxPageSize();
+        clone.sortable = isSortable();
+        if (sortInfos != null) {
+            clone.sortInfos = new ArrayList<SortInfoDescriptor>();
+            for (SortInfoDescriptor item : sortInfos) {
+                clone.sortInfos.add(item.clone());
+            }
+        }
+        clone.sortInfosBinding = getSortInfosBinding();
+        clone.pattern = getPattern();
+        clone.quotePatternParameters = getQuotePatternParameters();
+        clone.escapePatternParameters = getEscapePatternParameters();
+        if (whereClause != null) {
+            clone.whereClause = whereClause.clone();
+        }
+        if (aggregates != null) {
+            clone.aggregates = new ArrayList<AggregateDescriptor>();
+            for (AggregateDescriptor agg : aggregates) {
+                clone.aggregates.add(agg.clone());
+            }
+        }
+        clone.searchDocumentType = searchDocumentType;
+        return clone;
+    }
+
+    protected abstract BasePageProviderDescriptor newInstance();
 
 }

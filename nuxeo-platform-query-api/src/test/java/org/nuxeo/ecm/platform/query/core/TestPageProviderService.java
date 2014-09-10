@@ -77,7 +77,31 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
 
         assertNull(service.getPageProviderDefinition(FOO));
 
-        PageProviderDefinition def = service.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
+        PageProviderDefinition def = service.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
+        assertNotNull(def);
+        assertEquals(CURRENT_DOCUMENT_CHILDREN, def.getName());
+        assertNull(def.getWhereClause());
+        assertEquals(
+                "SELECT * FROM Document WHERE ecm:parentId = ? AND "
+                        + "ecm:isCheckedInVersion = 0 AND ecm:mixinType != "
+                        + "'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'",
+                def.getPattern());
+        assertEquals(1, def.getSortInfos().size());
+        assertEquals("dc:title", def.getSortInfos().get(0).getSortColumn());
+        assertTrue(def.getSortInfos().get(0).getSortAscending());
+        assertNull(def.getSearchDocumentType());
+
+        def = service.getPageProviderDefinition("ADVANCED_SEARCH");
+        assertNotNull(def);
+        assertEquals("ADVANCED_SEARCH", def.getName());
+        assertEquals("ecm:parentId = ?", def.getWhereClause().getFixedPart());
+        assertNull(def.getWhereClause().getSelectStatement());
+        assertEquals(1, def.getSortInfos().size());
+        assertEquals("dc:title", def.getSortInfos().get(0).getSortColumn());
+        assertTrue(def.getSortInfos().get(0).getSortAscending());
+        assertEquals("AdvancedSearch", def.getSearchDocumentType());
+
+        def = service.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
         assertNotNull(def);
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT",
                 def.getName());
@@ -89,6 +113,7 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
         assertEquals(1, def.getSortInfos().size());
         assertEquals("dc:title", def.getSortInfos().get(0).getSortColumn());
         assertTrue(def.getSortInfos().get(0).getSortAscending());
+        assertEquals("File", def.getSearchDocumentType());
 
         // test override
         deployContrib("org.nuxeo.ecm.platform.query.api.test",
@@ -103,6 +128,7 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
         assertEquals("dc:description",
                 def.getSortInfos().get(0).getSortColumn());
         assertFalse(def.getSortInfos().get(0).getSortAscending());
+        assertEquals("File2", def.getSearchDocumentType());
     }
 
     /**
@@ -171,4 +197,3 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
     }
 
 }
-
