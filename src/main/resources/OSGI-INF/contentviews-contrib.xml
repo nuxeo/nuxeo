@@ -51,7 +51,7 @@
         <event>documentChildrenChanged</event>
       </refresh>
       <cacheSize>10</cacheSize>
-      <cacheKey>#{currentDocument.id}</cacheKey>
+      <cacheKey>#{currentDocument.repositoryName}_#{currentDocument.id}</cacheKey>
 
       <resultLayouts>
         <layout name="tenant_event_listing" title="history_listing"
