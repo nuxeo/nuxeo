@@ -80,6 +80,8 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
         m.alias("triggerImg", "buttonIcon");
         m.alias("triggerStyleClass", "buttonClass");
 
+        m.alias("onclick", "oninputclick");
+
         // setup some default properties
         m.add(new TagMetaData());
 
