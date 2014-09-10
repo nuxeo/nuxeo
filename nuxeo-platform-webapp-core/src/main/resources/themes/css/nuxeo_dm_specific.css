@@ -23,8 +23,11 @@ author: lkemen@nuxeo.com
 
 .nxMainContainer .tabsContent {
   background: none #fff;
-  margin: 2px 1px 0;
+  margin: 1px 1px 0;
   padding: 1em 1.5em }
+
+.tabsContent .tabsContent {
+  padding: 1em 0 }
 
 /* =List of available servers  */
 .serverChoice {
