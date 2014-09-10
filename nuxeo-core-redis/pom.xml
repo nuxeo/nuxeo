@@ -63,7 +63,7 @@
           <execution>
             <configuration>
               <archive>
-		<manifestFile>src/test/resources/META-INF/MANIFEST.MF</manifestFile>
+                <manifestFile>src/test/resources/META-INF/MANIFEST.MF</manifestFile>
               </archive>
             </configuration>
             <goals>
