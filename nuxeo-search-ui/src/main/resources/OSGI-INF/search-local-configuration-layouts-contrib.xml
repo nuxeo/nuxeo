@@ -1,0 +1,71 @@
+<component name="org.nuxeo.search.local.configuration.layouts">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="SEARCH_CONFIGURATION" link="/search/incl/tabs/search_configuration.xhtml"
+      order="100" label="action.view.theme" icon="/icons/file.gif">
+      <category>LOCAL_CONFIGURATION</category>
+      <filter-id>manage</filter-id>
+    </action>
+
+  </extension>
+
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="search_content_views_selection">
+      <configuration>
+        <categories>
+          <category>configuration_not_ready</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">/search/widgets/search_content_view_selection_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="search_content_views_selection" type="search_content_views_selection">
+      <labels>
+        <label mode="any">label.search.local.configuration.content.view.selection.label</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>searchc:deniedContentViews</field>
+      </fields>
+    </widget>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="search_configuration">
+      <templates>
+        <template mode="any">
+          /layouts/layout_local_configuration_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="layoutTemplateToInclude">/layouts/layout_default_template.xhtml</property>
+        <property name="foldableBoxLabel">label.search.local.configuration.content.view.selection</property>
+        <property name="localConfigurationFacet">SearchConfiguration</property>
+        <property name="helpLabel">label.search.local.configuration.content.view.selection.info</property>
+      </properties>
+      <rows>
+        <row>
+          <widget>search_content_views_selection</widget>
+        </row>
+      </rows>
+    </layout>
+
+  </extension>
+
+</component>

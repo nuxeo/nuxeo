@@ -20,6 +20,21 @@ package org.nuxeo.search.seam;
 import static org.apache.commons.logging.LogFactory.getLog;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.LOCAL_CONFIGURATION_CHANGED;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED;
+
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.faces.component.UIViewRoot;
+import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
+import javax.faces.model.SelectItemGroup;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -30,7 +45,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
-import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -39,39 +53,22 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
-import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewState;
 import org.nuxeo.ecm.platform.contentview.json.JSONContentViewState;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
-import org.nuxeo.ecm.platform.query.api.PageProvider;
-import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
-import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
-import org.nuxeo.ecm.webapp.action.MainTabsActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
-
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.faces.component.UIViewRoot;
-import javax.faces.context.FacesContext;
-import javax.faces.model.SelectItem;
-import javax.faces.model.SelectItemGroup;
+import org.nuxeo.search.SearchUIService;
 
 /**
  * Seam bean handling SEARCH main tab actions.
@@ -103,12 +100,6 @@ public class SearchActions implements Serializable {
 
     public static final String SEARCH_CODEC = "docpathsearch";
 
-    public static final String SEARCH_CONTENT_VIEW_FLAG = "SEARCH";
-
-    public static final String SAVED_SEARCHES_PROVIDER_NAME = "SAVED_SEARCHES";
-
-    public static final String SHARED_SEARCHES_PROVIDER_NAME = "SHARED_SAVED_SEARCHES";
-
     public static final String CONTENT_VIEW_NAME_PARAMETER = "contentViewName";
 
     public static final String CURRENT_PAGE_PARAMETER = "currentPage";
@@ -117,14 +108,14 @@ public class SearchActions implements Serializable {
 
     public static final String CONTENT_VIEW_STATE_PARAMETER = "state";
 
+    @In(create = true)
+    protected transient NavigationContext navigationContext;
+
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
     @In(create = true)
     protected transient WebActions webActions;
-
-    @In(create = true)
-    protected MainTabsActions mainTabsActions;
 
     @In(create = true)
     protected RestHelper restHelper;
@@ -184,7 +175,7 @@ public class SearchActions implements Serializable {
     public String getJSONContentViewState() throws ClientException,
             UnsupportedEncodingException {
         ContentView contentView = contentViewActions.getContentView(currentContentViewName);
-        ContentViewService contentViewService = Framework.getLocalService(ContentViewService.class);
+        ContentViewService contentViewService = Framework.getService(ContentViewService.class);
         ContentViewState state = contentViewService.saveContentView(contentView);
         return JSONContentViewState.toJSON(state, true);
     }
@@ -224,7 +215,7 @@ public class SearchActions implements Serializable {
     }
 
     public void loadSavedSearch(String contentViewName,
-                                DocumentModel searchDocument) throws ClientException {
+            DocumentModel searchDocument) throws ClientException {
         ContentView contentView = contentViewActions.getContentView(
                 contentViewName, searchDocument);
         if (contentView != null) {
@@ -235,9 +226,9 @@ public class SearchActions implements Serializable {
 
     public List<String> getContentViewNames() {
         if (contentViewNames == null) {
-            ContentViewService contentViewService = Framework.getLocalService(ContentViewService.class);
+            SearchUIService searchUIService = Framework.getService(SearchUIService.class);
             contentViewNames = new ArrayList<>(
-                    contentViewService.getContentViewNames(SEARCH_CONTENT_VIEW_FLAG));
+                    searchUIService.getContentViewNames(navigationContext.getCurrentDocument()));
         }
         return contentViewNames;
     }
@@ -246,7 +237,7 @@ public class SearchActions implements Serializable {
             throws ClientException {
         if (contentViewHeaders == null) {
             contentViewHeaders = new HashSet<>();
-            ContentViewService contentViewService = Framework.getLocalService(ContentViewService.class);
+            ContentViewService contentViewService = Framework.getService(ContentViewService.class);
             for (String name : getContentViewNames()) {
                 ContentViewHeader header = contentViewService.getContentViewHeader(name);
                 if (header != null) {
@@ -261,11 +252,9 @@ public class SearchActions implements Serializable {
         contentViewActions.reset(getCurrentContentViewName());
     }
 
-//    @Observer(value = { REFRESH_DAM_SEARCH }, create = true)
     public void refreshAndRewind() throws ClientException {
         contentViewActions.refreshAndRewind(getCurrentContentViewName());
     }
-
 
     /*
      * ----- Load / Save searches -----
@@ -275,19 +264,26 @@ public class SearchActions implements Serializable {
             throws ClientException {
         List<SelectItem> items = new ArrayList<>();
         // Add saved searches
-        SelectItemGroup userGroup = new SelectItemGroup(
-                messages.get(SAVED_SEARCHES_LABEL));
         List<DocumentModel> userSavedSearches = getSavedSearches();
-        List<SelectItem> userSavedSearchesItems = convertToSelectItems(userSavedSearches);
-        userGroup.setSelectItems(userSavedSearchesItems.toArray(new SelectItem[userSavedSearchesItems.size()]));
-        items.add(userGroup);
+        if (!userSavedSearches.isEmpty()) {
+            SelectItemGroup userGroup = new SelectItemGroup(
+                    messages.get(SAVED_SEARCHES_LABEL));
+
+            List<SelectItem> userSavedSearchesItems = convertToSelectItems(userSavedSearches);
+            userGroup.setSelectItems(userSavedSearchesItems.toArray(new SelectItem[userSavedSearchesItems.size()]));
+            items.add(userGroup);
+        }
+
         // Add shared searches
         List<DocumentModel> otherUsersSavedFacetedSearches = getSharedSearches();
-        List<SelectItem> otherUsersSavedSearchesItems = convertToSelectItems(otherUsersSavedFacetedSearches);
-        SelectItemGroup allGroup = new SelectItemGroup(
-                messages.get(SHARED_SEARCHES_LABEL));
-        allGroup.setSelectItems(otherUsersSavedSearchesItems.toArray(new SelectItem[otherUsersSavedSearchesItems.size()]));
-        items.add(allGroup);
+        if (!otherUsersSavedFacetedSearches.isEmpty()) {
+            List<SelectItem> otherUsersSavedSearchesItems = convertToSelectItems(otherUsersSavedFacetedSearches);
+            SelectItemGroup allGroup = new SelectItemGroup(
+                    messages.get(SHARED_SEARCHES_LABEL));
+            allGroup.setSelectItems(otherUsersSavedSearchesItems.toArray(new SelectItem[otherUsersSavedSearchesItems.size()]));
+            items.add(allGroup);
+        }
+
         SelectItemGroup flaggedGroup = new SelectItemGroup(
                 messages.get(SEARCH_FILTERS_LABEL));
         // Add flagged content views
@@ -299,23 +295,13 @@ public class SearchActions implements Serializable {
     }
 
     protected List<DocumentModel> getSavedSearches() throws ClientException {
-        return getDocuments(SAVED_SEARCHES_PROVIDER_NAME,
-                documentManager.getPrincipal().getName());
+        SearchUIService searchUIService = Framework.getService(SearchUIService.class);
+        return searchUIService.getCurrentUserSavedSearches(documentManager);
     }
 
     protected List<DocumentModel> getSharedSearches() throws ClientException {
-        return getDocuments(SHARED_SEARCHES_PROVIDER_NAME,
-                documentManager.getPrincipal().getName());
-    }
-
-    @SuppressWarnings("unchecked")
-    protected List<DocumentModel> getDocuments(String pageProviderName,
-                                               Object... parameters) throws ClientException {
-        PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put("coreSession", (Serializable) documentManager);
-        return ((PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                pageProviderName, null, null, null, properties, parameters)).getCurrentPage();
+        SearchUIService searchUIService = Framework.getService(SearchUIService.class);
+        return searchUIService.getSharedSavedSearches(documentManager);
     }
 
     protected List<SelectItem> convertToSelectItems(List<DocumentModel> docs)
@@ -348,30 +334,19 @@ public class SearchActions implements Serializable {
     public String saveSearch() throws ClientException {
         ContentView contentView = contentViewActions.getContentView(getCurrentContentViewName());
         if (contentView != null) {
-            UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
-            DocumentModel uws = userWorkspaceService.getCurrentUserPersonalWorkspace(
-                    documentManager, null);
+            SearchUIService searchUIService = Framework.getService(SearchUIService.class);
+            DocumentModel savedSearch = searchUIService.saveSearch(
+                    documentManager, contentView, savedSearchTitle);
+            currentSelectedSavedSearchId = savedSearch.getId();
 
-            DocumentModel searchDoc = contentView.getSearchDocumentModel();
-            searchDoc.setPropertyValue("cvd:contentViewName",
-                    contentView.getName());
-            searchDoc.setPropertyValue("dc:title", savedSearchTitle);
-            PathSegmentService pathService = Framework.getLocalService(PathSegmentService.class);
-            searchDoc.setPathInfo(uws.getPathAsString(),
-                    pathService.generatePathSegment(searchDoc));
-            searchDoc = documentManager.createDocument(searchDoc);
-            documentManager.save();
-
+            savedSearchTitle = null;
             facesMessages.add(StatusMessage.Severity.INFO,
                     messages.get(SEARCH_SAVED_LABEL));
 
-            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                    uws);
+            // Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+            // uws);
 
-            savedSearchTitle = null;
-            currentSelectedSavedSearchId = searchDoc.getId();
         }
-
         return null;
     }
 
@@ -441,16 +416,16 @@ public class SearchActions implements Serializable {
         }
 
         String currentContentViewName = getCurrentContentViewName();
-        DocumentModel currentDocument = mainTabsActions.getDocumentFor(SEARCH_MAIN_TAB_ACTION_ID);
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentView docView = computeDocumentView(currentDocument);
         docView.setViewId("search");
         docView.addParameter(CONTENT_VIEW_NAME_PARAMETER,
                 currentContentViewName);
         docView.addParameter(CONTENT_VIEW_STATE_PARAMETER,
                 getJSONContentViewState());
-        DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
-        String url = documentViewCodecManager.getUrlFromDocumentView(SEARCH_CODEC,
-                docView, true, BaseURL.getBaseURL());
+        DocumentViewCodecManager documentViewCodecManager = Framework.getService(DocumentViewCodecManager.class);
+        String url = documentViewCodecManager.getUrlFromDocumentView(
+                SEARCH_CODEC, docView, true, BaseURL.getBaseURL());
         return RestHelper.addCurrentConversationParameters(url);
     }
 
@@ -458,7 +433,7 @@ public class SearchActions implements Serializable {
         if (doc != null) {
             return new DocumentViewImpl(new DocumentLocationImpl(
                     documentManager.getRepositoryName(), new PathRef(
-                    doc.getPathAsString())));
+                            doc.getPathAsString())));
         } else {
             return new DocumentViewImpl(new DocumentLocationImpl(
                     documentManager.getRepositoryName(), null));
@@ -472,16 +447,38 @@ public class SearchActions implements Serializable {
         return "search";
     }
 
-//    @Observer(value = { CONTENT_VIEW_PAGE_CHANGED_EVENT,
-//            CONTENT_VIEW_PAGE_SIZE_CHANGED_EVENT, CONTENT_VIEW_REFRESH_EVENT }, create = true)
-//    public void onContentViewPageProviderChanged(String contentViewName)
-//            throws ClientException {
-//        String currentContentViewName = getCurrentContentViewName();
-//        if (currentContentViewName != null
-//                && currentContentViewName.equals(contentViewName)) {
-//            updateCurrentDocument();
-//        }
-//    }
+    // @Observer(value = { CONTENT_VIEW_PAGE_CHANGED_EVENT,
+    // CONTENT_VIEW_PAGE_SIZE_CHANGED_EVENT, CONTENT_VIEW_REFRESH_EVENT },
+    // create = true)
+    // public void onContentViewPageProviderChanged(String contentViewName)
+    // throws ClientException {
+    // String currentContentViewName = getCurrentContentViewName();
+    // if (currentContentViewName != null
+    // && currentContentViewName.equals(contentViewName)) {
+    // updateCurrentDocument();
+    // }
+    // }
+
+    @Observer(value = LOCAL_CONFIGURATION_CHANGED)
+    public void invalidateContentViewsName() {
+        clearSearch();
+        contentViewNames = null;
+        contentViewHeaders = null;
+        currentContentViewName = null;
+    }
+
+    @Observer(value = USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED)
+    public void invalidateContentViewsNameIfChanged() throws ClientException {
+        List<String> temp = new ArrayList<>(Framework.getLocalService(
+                SearchUIService.class).getContentViewNames(
+                navigationContext.getCurrentDocument()));
+        if (!temp.isEmpty()) {
+            String s = temp.get(0);
+            if (s != null && !s.equals(currentContentViewName)) {
+                invalidateContentViewsName();
+            }
+        }
+    }
 
     /**
      * Reset attributes.
@@ -494,4 +491,5 @@ public class SearchActions implements Serializable {
         currentSelectedSavedSearchId = null;
         currentContentViewName = null;
     }
+
 }

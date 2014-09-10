@@ -25,14 +25,6 @@
 
   </extension>
 
-  <!--<extension target="org.nuxeo.theme.services.ThemeService" point="resources">-->
-
-    <!--<resource name="nuxeo-search.js">-->
-      <!--<path>search/scripts/nuxeo-search.js</path>-->
-    <!--</resource>-->
-
-  <!--</extension>-->
-
   <extension target="org.nuxeo.theme.services.ThemeService" point="applications">
 
     <application root="${org.nuxeo.ecm.contextPath}" template-engine="jsf-facelets">

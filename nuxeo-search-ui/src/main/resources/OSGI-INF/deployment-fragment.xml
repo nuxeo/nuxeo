@@ -36,6 +36,12 @@
     </filter-mapping>
   </extension>
 
+  <extension target="pages#PAGES">
+    <page view-id="/search/search.xhtml">
+      breadcrumb=breadcrumb.search
+    </page>
+  </extension>
+
   <extension target="faces-config#NAVIGATION">
     <navigation-case>
       <from-outcome>search</from-outcome>

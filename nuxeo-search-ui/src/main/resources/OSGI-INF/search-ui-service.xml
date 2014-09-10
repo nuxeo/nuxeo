@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.search.ui.SearchUIService">
+
+  <documentation>
+    The Search UI Service handles registered searches and related saved searches.
+
+    @author Thomas Roger (troger@nuxeo.com)
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.search.SearchUIServiceImpl" />
+
+  <service>
+    <provide
+      interface="org.nuxeo.search.SearchUIService" />
+  </service>
+
+</component>
