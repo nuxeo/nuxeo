@@ -65,12 +65,12 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             .getLog(ElasticSearchIndexingImpl.class);
 
     // Metrics
-    protected final MetricRegistry registry = SharedMetricRegistries
+    private final MetricRegistry registry = SharedMetricRegistries
             .getOrCreate(MetricsService.class.getName());
     private final ElasticSearchAdminImpl esa;
-    protected Timer deleteTimer;
-    protected Timer indexTimer;
-    protected Timer bulkIndexTimer;
+    private final Timer deleteTimer;
+    private final Timer indexTimer;
+    private final Timer bulkIndexTimer;
 
     public ElasticSearchIndexingImpl(ElasticSearchAdminImpl esa) {
         this.esa = esa;
@@ -104,7 +104,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         esa.totalCommandProcessed.addAndGet(nbCommands);
     }
 
-    protected void processBulkDeleteCommands(List<IndexingCommand> cmds) {
+    void processBulkDeleteCommands(List<IndexingCommand> cmds) {
         // Can be optimized with a single delete by query
         for (IndexingCommand cmd : cmds) {
             if (IndexingCommand.DELETE.equals(cmd.getName())) {
@@ -118,7 +118,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         }
     }
 
-    protected void processBulkIndexCommands(List<IndexingCommand> cmds)
+    void processBulkIndexCommands(List<IndexingCommand> cmds)
             throws ClientException {
         BulkRequestBuilder bulkRequest = esa.getClient().prepareBulk();
         for (IndexingCommand cmd : cmds) {
@@ -181,7 +181,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         }
     }
 
-    protected void processIndexCommand(IndexingCommand cmd)
+    void processIndexCommand(IndexingCommand cmd)
             throws ClientException {
         String docId = cmd.getDocId();
         assert (!cmd.getDocId().equals(IndexingCommand.UNKOWN_DOCUMENT_ID));
@@ -195,7 +195,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         request.execute().actionGet();
     }
 
-    protected void processDeleteCommand(IndexingCommand cmd) {
+    void processDeleteCommand(IndexingCommand cmd) {
         if (cmd.isRecurse()) {
             processDeleteCommandRecursive(cmd);
         } else {
@@ -203,7 +203,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         }
     }
 
-    protected void processDeleteCommandNonRecursive(IndexingCommand cmd) {
+    void processDeleteCommandNonRecursive(IndexingCommand cmd) {
         String indexName = esa.getRepositoryIndex(cmd.getRepository());
         DeleteRequestBuilder request = esa.getClient().prepareDelete(indexName,
                 DOC_TYPE, cmd.getDocId());
@@ -215,7 +215,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         request.execute().actionGet();
     }
 
-    protected void processDeleteCommandRecursive(IndexingCommand cmd) {
+    void processDeleteCommandRecursive(IndexingCommand cmd) {
         String indexName = esa.getRepositoryIndex(cmd.getRepository());
         // we don't want to rely on target document because the document can be
         // already removed
@@ -251,7 +251,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     /**
      * Return the ecm:path of an ES document or null if not found.
      */
-    protected String getPathOfDocFromEs(String repository, String docId) {
+    String getPathOfDocFromEs(String repository, String docId) {
         String indexName = esa.getRepositoryIndex(repository);
         GetRequestBuilder getRequest = esa.getClient()
                 .prepareGet(indexName, DOC_TYPE, docId).setFields(PATH_FIELD);
@@ -268,7 +268,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         return ret.getField(PATH_FIELD).getValue().toString();
     }
 
-    protected IndexRequestBuilder buildEsIndexingRequest(IndexingCommand cmd)
+    IndexRequestBuilder buildEsIndexingRequest(IndexingCommand cmd)
             throws ClientException {
         DocumentModel doc = cmd.getTargetDocument();
         try {

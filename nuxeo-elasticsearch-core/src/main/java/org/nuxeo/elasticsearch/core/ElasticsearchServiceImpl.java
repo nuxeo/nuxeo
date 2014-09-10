@@ -66,9 +66,8 @@ public class ElasticsearchServiceImpl implements ElasticSearchService {
     protected final MetricRegistry registry = SharedMetricRegistries
             .getOrCreate(MetricsService.class.getName());
     private final ElasticSearchAdminImpl esa;
-    protected Client client;
-    protected Timer searchTimer;
-    protected Timer fetchTimer;
+    protected final Timer searchTimer;
+    protected final Timer fetchTimer;
 
     public ElasticsearchServiceImpl(ElasticSearchAdminImpl esa) {
         this.esa = esa;

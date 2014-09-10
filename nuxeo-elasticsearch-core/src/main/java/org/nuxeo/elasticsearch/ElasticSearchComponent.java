@@ -65,16 +65,16 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class ElasticSearchComponent extends DefaultComponent implements
         ElasticSearchAdmin, ElasticSearchIndexing, ElasticSearchService {
 
-    public static final String EP_REMOTE = "elasticSearchRemote";
-    public static final String EP_LOCAL = "elasticSearchLocal";
-    public static final String EP_INDEX = "elasticSearchIndex";
+    private static final String EP_REMOTE = "elasticSearchRemote";
+    private static final String EP_LOCAL = "elasticSearchLocal";
+    private static final String EP_INDEX = "elasticSearchIndex";
     private static final Log log = LogFactory
             .getLog(ElasticSearchComponent.class);
     // temporary hack until we are able to list pending indexing jobs cluster
     // wide
-    protected final Set<String> pendingWork = Collections
+    private final Set<String> pendingWork = Collections
             .synchronizedSet(new HashSet<String>());
-    protected final Set<String> pendingCommands = Collections
+    private final Set<String> pendingCommands = Collections
             .synchronizedSet(new HashSet<String>());
     private final Map<String, ElasticSearchIndexConfig> indexConfig = new HashMap<String, ElasticSearchIndexConfig>();
     // indexing command that where received before the index initialization
@@ -139,7 +139,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return component.getApplicationStartedOrder() / 2;
     }
 
-    protected void processStackedCommands() {
+    void processStackedCommands() {
         if (!stackedCommands.isEmpty()) {
             log.info(String.format(
                     "Processing %d indexing commands stacked during startup",
@@ -266,7 +266,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
     }
 
-    protected void schedulePostCommitIndexing(IndexingCommand cmd)
+    void schedulePostCommitIndexing(IndexingCommand cmd)
             throws ClientException {
         try {
             EventProducer evtProducer = Framework
@@ -338,10 +338,10 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     // misc ====================================================================
     private boolean isReady() {
-        return (esa != null) ? esa.isReady() : false;
+        return (esa != null) && esa.isReady();
     }
 
-    protected int markCommandInProgress(List<IndexingCommand> cmds) {
+    int markCommandInProgress(List<IndexingCommand> cmds) {
         int ret = 0;
         for (IndexingCommand cmd : cmds) {
             ret += markCommandInProgress(cmd);
@@ -349,12 +349,12 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return ret;
     }
 
-    protected String getWorkKey(IndexingCommand cmd) {
+    String getWorkKey(IndexingCommand cmd) {
         return cmd.getRepository() + ":" + cmd.getDocId() + ":"
                 + cmd.isRecurse();
     }
 
-    protected int markCommandInProgress(IndexingCommand cmd) {
+    int markCommandInProgress(IndexingCommand cmd) {
         pendingWork.remove(getWorkKey(cmd));
         boolean isRemoved = pendingCommands.remove(cmd.getId());
         return isRemoved ? 1 : 0;

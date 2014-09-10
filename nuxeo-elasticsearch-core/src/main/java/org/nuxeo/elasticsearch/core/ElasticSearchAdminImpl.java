@@ -62,16 +62,16 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     private static final Log log = LogFactory
             .getLog(ElasticSearchAdminImpl.class);
-    protected final AtomicInteger totalCommandProcessed = new AtomicInteger(0);
-    protected final AtomicInteger totalCommandRunning = new AtomicInteger(0);
+    final AtomicInteger totalCommandProcessed = new AtomicInteger(0);
+    final AtomicInteger totalCommandRunning = new AtomicInteger(0);
     private final Map<String, String> indexNames = new HashMap<String, String>();
     private final Map<String, String> repoNames = new HashMap<String, String>();
     private final Map<String, ElasticSearchIndexConfig> indexConfig;
     private Node localNode;
     private Client client;
     private boolean indexInitDone = false;
-    private ElasticSearchLocalConfig localConfig;
-    private ElasticSearchRemoteConfig remoteConfig;
+    private final ElasticSearchLocalConfig localConfig;
+    private final ElasticSearchRemoteConfig remoteConfig;
     private String[] includeSourceFields;
     private String[] excludeSourceFields;
 
@@ -95,12 +95,9 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         }
         if (remoteConfig != null) {
             client = connectToRemote(remoteConfig);
-            checkClient();
-
         } else {
             localNode = createEmbeddedNode(localConfig);
             client = connectToEmbedded();
-            checkClient();
         }
         checkClient();
         log.info("ES Connected");
@@ -124,8 +121,8 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         log.info("ES embedded Node Initializing (local in JVM)");
         if (!Framework.isTestModeSet()) {
             log.warn("Elasticsearch embedded configuration is ONLY for testing"
-                    + " purpose. You need to create a dedicated Elasticsearch "
-                    + "cluster for production.");
+                    + " purpose. You need to create a dedicated Elasticsearch"
+                    + " cluster for production.");
         }
         if (conf == null) {
             conf = getDefaultLocalConfig();
@@ -271,7 +268,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     /**
      * Get the elastic search index for a repository
      */
-    protected String getRepositoryIndex(String repositoryName) {
+    String getRepositoryIndex(String repositoryName) {
         String ret = indexNames.get(repositoryName);
         if (ret == null) {
             throw new NoSuchElementException(
@@ -319,7 +316,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         indexInitDone = true;
     }
 
-    protected void initIndex(ElasticSearchIndexConfig conf, boolean dropIfExists) {
+    void initIndex(ElasticSearchIndexConfig conf, boolean dropIfExists) {
         if (!conf.mustCreate()) {
             return;
         }
@@ -397,7 +394,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     /**
      * Get the elastic search indexes for searches
      */
-    protected String[] getSearchIndexes(List<String> searchRepositories) {
+    String[] getSearchIndexes(List<String> searchRepositories) {
         if (searchRepositories.isEmpty()) {
             Collection<String> values = indexNames.values();
             return values.toArray(new String[values.size()]);
@@ -414,15 +411,15 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         return indexInitDone;
     }
 
-    protected String[] getIncludeSourceFields() {
+    String[] getIncludeSourceFields() {
         return includeSourceFields;
     }
 
-    protected String[] getExcludeSourceFields() {
+    String[] getExcludeSourceFields() {
         return excludeSourceFields;
     }
 
-    protected Map<String, String> getRepositoryMap() {
+    Map<String, String> getRepositoryMap() {
         return repoNames;
     }
 }
