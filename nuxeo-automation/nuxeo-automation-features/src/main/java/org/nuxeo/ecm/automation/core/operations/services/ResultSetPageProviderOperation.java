@@ -67,6 +67,8 @@ public class ResultSetPageProviderOperation {
 
     public static final String ASC = "ASC";
 
+    public static final String CMIS = "CMIS";
+
     @Context
     protected OperationContext context;
 
@@ -84,7 +86,7 @@ public class ResultSetPageProviderOperation {
     protected String query;
 
     @Param(name = "language", required = false, widget = Constants.W_OPTION,
-            values = { NXQL.NXQL })
+            values = { NXQL.NXQL, CMIS })
     protected String lang = NXQL.NXQL;
 
     @Param(name = "page", required = false)

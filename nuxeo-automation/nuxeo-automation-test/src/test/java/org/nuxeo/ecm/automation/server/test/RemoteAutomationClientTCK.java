@@ -41,7 +41,8 @@ import org.nuxeo.ecm.automation.client.model.PathRef;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
-import org.nuxeo.ecm.automation.core.operations.services.query.DocumentQuery;
+import org.nuxeo.ecm.automation.core.operations.services.query
+        .DocumentPaginatedQuery;
 import org.nuxeo.ecm.automation.server.test.business.client.BusinessBean;
 import org.nuxeo.ecm.automation.test.RemoteAutomationServerFeature;
 import org.nuxeo.runtime.api.Framework;
@@ -214,7 +215,7 @@ public class RemoteAutomationClientTCK {
         blob.setMimeType("text/xml");
         session.newRequest("FileManager.Import").setInput(blob).setContextProperty(
                 "currentDocument", folder.getPath()).execute();
-        Documents docs = (Documents) session.newRequest(DocumentQuery.ID).setHeader(
+        Documents docs = (Documents) session.newRequest(DocumentPaginatedQuery.ID).setHeader(
                 Constants.HEADER_NX_SCHEMAS, "*").set("query",
                 "SELECT * from Document WHERE ecm:path STARTSWITH '/FolderBlob/'").execute();
         assertEquals(1, docs.size());

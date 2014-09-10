@@ -18,10 +18,12 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.core.operations.services.query.DocumentQuery;
+import org.nuxeo.ecm.automation.core.operations.services.query
+        .DocumentPaginatedQuery;
 import org.nuxeo.ecm.automation.core.operations.document.SaveDocument;
 import org.nuxeo.ecm.automation.core.operations.document.SetDocumentProperty;
-import org.nuxeo.ecm.automation.core.operations.services.query.ResultSetQuery;
+import org.nuxeo.ecm.automation.core.operations.services.query
+        .ResultSetPaginatedQuery;
 import org.nuxeo.ecm.automation.core.util.PaginableRecordSet;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -80,7 +82,7 @@ public class SearchOperationTest {
         OperationContext ctx = new OperationContext(session);
 
         OperationChain chain = new OperationChain("testChain");
-        chain.add(DocumentQuery.ID).set("query", "SELECT * FROM Workspace");
+        chain.add(DocumentPaginatedQuery.ID).set("query", "SELECT * FROM Workspace");
         chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set(
                 "value", "samedesc");
         chain.add(SaveDocument.ID);
@@ -109,7 +111,7 @@ public class SearchOperationTest {
         Map<String, Object> params = new HashMap<>();
         params.put("query", "SELECT * FROM Workspace");
         PaginableRecordSet list = (PaginableRecordSet) service.run(ctx,
-                ResultSetQuery.ID, params);
+                ResultSetPaginatedQuery.ID, params);
 
         // And verify number results and id entry
         assertEquals(2, list.size());
@@ -127,7 +129,7 @@ public class SearchOperationTest {
         params.put("sortBy", "dc:title");
         params.put("sortOrder", "ASC");
         DocumentModelList list = (DocumentModelList) service.run(ctx,
-                DocumentQuery.ID, params);
+                DocumentPaginatedQuery.ID, params);
 
         // And verify number results and id entry
         assertEquals(2, list.size());
@@ -137,7 +139,7 @@ public class SearchOperationTest {
         params.put("sortBy", "dc:title");
         params.put("sortOrder", "DESC");
         list = (DocumentModelList) service.run(ctx,
-                DocumentQuery.ID, params);
+                DocumentPaginatedQuery.ID, params);
 
         // And verify number results and id entry
         assertEquals(2, list.size());

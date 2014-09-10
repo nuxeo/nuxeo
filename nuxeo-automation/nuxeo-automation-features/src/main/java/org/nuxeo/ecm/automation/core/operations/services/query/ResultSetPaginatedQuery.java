@@ -17,20 +17,19 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.operations.services.PaginableRecordSetImpl;
 import org.nuxeo.ecm.automation.core.util.Properties;
+import org.nuxeo.ecm.automation.core.util.RecordSet;
 import org.nuxeo.ecm.automation.core.util.StringList;
-import org.nuxeo.ecm.automation.jaxrs.io.documents
-        .PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
+import org.nuxeo.ecm.platform.query.core.GenericPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.core.PageProviderServiceImpl;
+import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 
 import java.io.Serializable;
@@ -41,23 +40,25 @@ import java.util.Map;
 
 /**
  * @since 5.9.6
- * Document query operation to perform queries on the repository.
+ * Result set query operation to perform queries on the repository.
  */
-@Operation(id = DocumentQuery.ID, category = Constants.CAT_FETCH,
-        label = "Query", description = "Perform a query on the repository. " +
-        "The document list returned will become the input for the next " +
-        "operation.", since = "5.9.6", addToStudio = true)
-public class DocumentQuery {
+@Operation(id = ResultSetPaginatedQuery.ID, category = Constants.CAT_FETCH,
+        label = "ResultSet Query", description = "Perform a query on the " +
+        "repository. The result set returned will become the input for the " +
+        "next operation.", since = "5.9.6", addToStudio = true)
+public class ResultSetPaginatedQuery {
 
-    public static final String ID = "Document.Query";
+    public static final String ID = "ResultSet.PaginatedQuery";
 
     public static final String CURRENT_USERID_PATTERN = "$currentUser";
 
     public static final String CURRENT_REPO_PATTERN = "$currentRepository";
 
+    public static final String ASC = "ASC";
+
     public static final String DESC = "DESC";
 
-    public static final String ASC = "ASC";
+    public static final String CMIS = "CMIS";
 
     @Context
     protected CoreSession session;
@@ -71,8 +72,13 @@ public class DocumentQuery {
 
     @Param(name = "language", required = false, description = "The query " +
             "language.", widget = Constants.W_OPTION,
-            values = { NXQL.NXQL })
+            values = { NXQL.NXQL, CMIS })
     protected String lang = NXQL.NXQL;
+
+    @Param(name = PageProviderServiceImpl.NAMED_PARAMETERS, required = false,
+            description = "Named parameters to pass to the page provider to " +
+                    "fill in query variables.")
+    protected Properties namedParameters;
 
     @Param(name = "currentPageIndex", required = false,
             description = "Target listing page.")
@@ -93,16 +99,12 @@ public class DocumentQuery {
     @Param(name = "sortOrder", required = false, description = "Sort order, " +
             "ASC or DESC", widget = Constants.W_OPTION,
             values = { ASC, DESC })
-    protected String sortOrder;
 
-    @Param(name = PageProviderServiceImpl.NAMED_PARAMETERS, required = false,
-            description = "Named parameters to pass to the page provider to " +
-                    "fill in query variables.")
-    protected Properties namedParameters;
+    protected String sortOrder;
 
     @SuppressWarnings("unchecked")
     @OperationMethod
-    public DocumentModelList run() throws Exception {
+    public RecordSet run() throws Exception {
         // Ordered parameters
         Object[] orderedParameters = null;
         if (strParameters != null && !strParameters.isEmpty()) {
@@ -119,6 +121,7 @@ public class DocumentQuery {
                 }
             }
         }
+
         // Target query page
         Long targetPage = null;
         if (currentPageIndex != null) {
@@ -156,15 +159,32 @@ public class DocumentQuery {
                             .NAMED_PARAMETERS,
                     namedParameters);
         }
-        CoreQueryPageProviderDescriptor desc = new
-                CoreQueryPageProviderDescriptor();
+        QueryAndFetchProviderDescriptor desc = new
+                QueryAndFetchProviderDescriptor();
         desc.setPattern(query);
-        return new PaginableDocumentModelListImpl(
-                (PageProvider<DocumentModel>) pageProviderService
-                        .getPageProvider(StringUtils.EMPTY, desc,
-                                searchDocumentModel, sortInfoList,
-                                targetPageSize,
-                                targetPage, props, orderedParameters), null);
+        PageProvider<Map<String, Serializable>> pp = (PageProvider<Map
+                <String, Serializable>>) pageProviderService.getPageProvider
+                (StringUtils
+                                .EMPTY, desc,
+                        searchDocumentModel, sortInfoList, targetPageSize,
+                        targetPage, props, orderedParameters);
+        return new PaginableRecordSetImpl(pp);
     }
-}
 
+    @SuppressWarnings("unchecked")
+    final class QueryAndFetchProviderDescriptor extends
+            GenericPageProviderDescriptor {
+        private static final long serialVersionUID = 1L;
+
+        public QueryAndFetchProviderDescriptor() {
+            super();
+            try {
+                this.klass = (Class<PageProvider<?>>) Class.forName
+                        (CoreQueryAndFetchPageProvider.class.getName());
+            } catch (ClassNotFoundException e) {
+
+            }
+        }
+    }
+
+}

@@ -6,7 +6,7 @@
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations">
 
-    <operation class="org.nuxeo.ecm.automation.core.operations.services.query.DocumentQuery">
+    <operation class="org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery">
       <widgets>
         <widget name="query" type="codearea">
           <labels>
@@ -23,7 +23,7 @@
         </widget>
       </widgets>
     </operation>
-    <operation class="org.nuxeo.ecm.automation.core.operations.services.query.ResultSetQuery">
+    <operation class="org.nuxeo.ecm.automation.core.operations.services.query.ResultSetPaginatedQuery">
       <widgets>
         <widget name="query" type="codearea">
           <labels>
