@@ -39,7 +39,7 @@
         </c:if>
         <div class="gridBox verticalTabsContent #{showTabsBar?'gridStyle10':'gridStyle12'}">
           <a4j:outputPanel id="#{tabContentPanelId}" layout="block"
-            styleClass="tabsContent ">
+            styleClass="#{nxu:test(showTabsBar, 'tabsContent', '')}">
             <ui:include src="/widgets/actions/tabs_widget_content_template.xhtml" />
           </a4j:outputPanel>
         </div>
@@ -56,7 +56,7 @@
       <div class="clear" />
     </c:if>
     <a4j:outputPanel id="#{tabContentPanelId}" layout="block"
-      styleClass="tabsContent">
+      styleClass="#{nxu:test(showTabsBar, 'tabsContent', '')}">
       <ui:include src="/widgets/actions/tabs_widget_content_template.xhtml" />
     </a4j:outputPanel>
   </c:otherwise>
