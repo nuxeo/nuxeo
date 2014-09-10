@@ -25,7 +25,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.functionaltests.forms.AddToCollectionForm;
 import org.nuxeo.functionaltests.pages.CollectionsPage;
