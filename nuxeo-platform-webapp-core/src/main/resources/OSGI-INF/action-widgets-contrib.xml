@@ -25,6 +25,7 @@
         <property name="useAjaxForm">#{useAjaxTabs}</property>
         <property name="actions">#{subTabsActionsList}</property>
         <property name="currentTabAction">#{webActions.currentSubTabAction}</property>
+        <property name="styleClass">subtabsBar</property>
       </properties>
     </widget>
 
