@@ -93,4 +93,9 @@ public class ElasticSearchRemoteConfig implements Serializable {
     public String getNumberOfReplicas() {
         return numberOfReplicas;
     }
+
+    @Override public String toString() {
+        return String.format("remoteConfig(%s, [%s], %s, %s)", getClusterName(),
+                addressList, getNumberOfReplicas(), getNumberOfShards());
+    }
 }

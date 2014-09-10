@@ -99,4 +99,9 @@ public class ElasticSearchLocalConfig implements Serializable {
         this.nodeName = nodeName;
     }
 
+    @Override public String toString() {
+        return String.format("localConfig(%s, %s, %s, %s)", getClusterName(),
+                getDataPath(), httpEnabled(), getIndexStorageType());
+
+    }
 }

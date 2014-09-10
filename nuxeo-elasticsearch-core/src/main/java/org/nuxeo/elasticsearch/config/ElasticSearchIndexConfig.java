@@ -33,6 +33,11 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.BINARYTEXT_FIELD;
 @XObject(value = "elasticSearchIndex")
 public class ElasticSearchIndexConfig {
 
+    @Override public String toString() {
+        return String.format("IndexConfig(%s, %s, %s)",
+                getName(), getRepositoryName(), getType());
+    }
+
     @XNode("@name")
     protected String name;
 
@@ -46,7 +51,9 @@ public class ElasticSearchIndexConfig {
     protected boolean create = true;
 
     @XNode("settings")
-    protected String settings = "{\n"
+    protected String settings;
+
+    public static String DEFAULT_SETTING = "{\n"
             + "   \"analysis\" : {\n"
             + "      \"filter\" : {\n"
             + "         \"en_stem_filter\" : {\n"
@@ -91,7 +98,9 @@ public class ElasticSearchIndexConfig {
             + "}";
 
     @XNode("mapping")
-    protected String mapping = "{\n"
+    protected String mapping;
+
+    public static String DEFAULT_MAPPING = "{\n"
             + "   \"_all\" : {\n"
             + "      \"analyzer\" : \"fulltext\"\n"
             + "   },\n"
@@ -184,11 +193,11 @@ public class ElasticSearchIndexConfig {
     }
 
     public String getSettings() {
-        return settings;
+        return settings == null ? DEFAULT_SETTING: settings;
     }
 
     public String getMapping() {
-        return mapping;
+        return mapping == null ? DEFAULT_MAPPING: mapping;
     }
 
     public boolean mustCreate() {
@@ -198,18 +207,19 @@ public class ElasticSearchIndexConfig {
     public String getRepositoryName() {
         return repositoryName;
     }
+
     /**
-     * Uses settings, mapping fields if not defined.
+     * Replace mapping and settings if defined.
      */
     public void merge(final ElasticSearchIndexConfig other) {
         if (other == null) {
             return;
         }
-        if (mapping == null) {
-            mapping = other.getMapping();
+        if (other.mapping != null) {
+            mapping = other.mapping;
         }
-        if (settings == null) {
-            settings = other.getSettings();
+        if (other.settings != null) {
+            settings = other.settings;
         }
     }
 
