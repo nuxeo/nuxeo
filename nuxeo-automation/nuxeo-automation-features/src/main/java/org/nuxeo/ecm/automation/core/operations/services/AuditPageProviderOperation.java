@@ -39,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 @Operation(id = AuditPageProviderOperation.ID, category = Constants.CAT_FETCH, label = "AuditPageProvider", description = "Perform "
         + "a query or a named provider query against Audit logs. Result is "
         + "paginated. The query result will become the input for the next "
-        + "operation. If no query or provider name is given, a query based on default Audit page provider will be executed.", addToStudio=false)
+        + "operation. If no query or provider name is given, a query based on default Audit page provider will be executed.", addToStudio = false)
 public class AuditPageProviderOperation {
 
     public static final String ID = "Audit.PageProvider";
@@ -173,7 +173,7 @@ public class AuditPageProviderOperation {
 
             DocumentModel searchDoc = null;
             if (namedQueryParams != null && namedQueryParams.size() > 0) {
-                String docType = pps.getPageProviderDefinition(providerName).getWhereClause().getDocType();
+                String docType = pps.getPageProviderDefinition(providerName).getSearchDocumentType();
                 searchDoc = session.createDocumentModel(docType);
                 DocumentHelper.setProperties(session, searchDoc,
                         namedQueryParams);
@@ -182,7 +182,7 @@ public class AuditPageProviderOperation {
             PageProvider<LogEntry> pp = (PageProvider<LogEntry>) pps.getPageProvider(
                     providerName, searchDoc, sortInfos, targetPageSize,
                     targetPage, props, parameters);
-            //return new PaginablePageProvider<LogEntry>(pp);
+            // return new PaginablePageProvider<LogEntry>(pp);
             return new LogEntryList(pp);
         }
 
