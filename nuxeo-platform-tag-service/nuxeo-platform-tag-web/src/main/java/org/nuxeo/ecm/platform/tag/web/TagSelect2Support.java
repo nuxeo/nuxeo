@@ -25,19 +25,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.el.ELContext;
-
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
-import org.jboss.el.lang.FunctionMapperImpl;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
-import org.jboss.seam.el.EL;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -45,8 +41,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.platform.actions.seam.SeamActionContext;
-import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.tag.Tag;
 import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
@@ -190,38 +184,39 @@ public class TagSelect2Support {
     }
 
 
-    public String encodePrameters(final Widget widget) {
-        return encodeCommonPrameters(widget).toString();
+    public String encodePrameters(final Map<String, Serializable> widgetProperties) {
+        return encodeCommonPrameters(widgetProperties).toString();
     }
 
-    public String encodeParametersForCurrentDocument(final Widget widget) {
+    public String encodeParametersForCurrentDocument(
+            final Map<String, Serializable> widgetProperties) {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("onAddEntryHandler", "addTagHandler");
         parameters.put("onRemoveEntryHandler", "removeTagHandler");
         parameters.put("containerCssClass", "s2tagContainerCssClass");
         parameters.put("dropdownCssClass", "s2tagDropdownCssClass");
         parameters.put("createSearchChoice", "createNewTag");
-        if (!widget.getProperties().containsKey("canSelectNewTag")
-                && Boolean.getBoolean((String) widget.getProperties().get(
-                        "canSelectNewTag"))) {
+        if (!widgetProperties.containsKey("canSelectNewTag")
+                && Boolean.getBoolean((String) widgetProperties.get("canSelectNewTag"))) {
             parameters.put("createSearchChoice", "createNewTag");
         }
-        return encodeCommonPrameters(widget, parameters).toString();
+        return encodeCommonPrameters(widgetProperties, parameters).toString();
     }
 
-    protected JSONObject encodeCommonPrameters(final Widget widget) {
-        return encodeCommonPrameters(widget, null);
+    protected JSONObject encodeCommonPrameters(
+            final Map<String, Serializable> widgetProperties) {
+        return encodeCommonPrameters(widgetProperties, null);
     }
 
-    protected JSONObject encodeCommonPrameters(final Widget widget, final Map<String, String> additionalParameters) {
+    protected JSONObject encodeCommonPrameters(
+            final Map<String, Serializable> widgetProperties,
+            final Map<String, String> additionalParameters) {
         JSONObject obj = new JSONObject();
-        Map<String, Serializable> widgetProperties = widget.getProperties();
         obj.put("multiple", "true");
         obj.put(Select2Common.MIN_CHARS, "1");
         obj.put(Select2Common.READ_ONLY_PARAM, "false");
         if (widgetProperties.containsKey("canSelectNewTag")
-                && Boolean.getBoolean((String) widgetProperties.get(
-                        "canSelectNewTag"))) {
+                && Boolean.getBoolean((String) widgetProperties.get("canSelectNewTag"))) {
             obj.put("createSearchChoice", "createNewTag");
         }
         obj.put(Select2Common.OPERATION_ID, "Tag.Suggestion");
@@ -238,15 +233,6 @@ public class TagSelect2Support {
         }
         for (Entry<String, Serializable> entry : widgetProperties.entrySet()) {
             obj.put(entry.getKey(), entry.getValue().toString());
-        }
-        if (widgetProperties.containsKey("placeholder")) {
-            ELContext elContext = EL.createELContext(
-                    SeamActionContext.EL_RESOLVER, new FunctionMapperImpl());
-            String placeholder = (String) SeamActionContext.EXPRESSION_FACTORY.createValueExpression(
-                    elContext,
-                    (String) widgetProperties.get("placeholder"),
-                    String.class).getValue(elContext);
-            obj.put(Select2Common.PLACEHOLDER, placeholder);
         }
         return obj;
     }
