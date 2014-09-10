@@ -79,6 +79,7 @@ import org.apache.chemistry.opencmis.commons.enums.CapabilityContentStreamUpdate
 import org.apache.chemistry.opencmis.commons.enums.CapabilityJoin;
 import org.apache.chemistry.opencmis.commons.enums.CapabilityQuery;
 import org.apache.chemistry.opencmis.commons.enums.CapabilityRenditions;
+import org.apache.chemistry.opencmis.commons.enums.CmisVersion;
 import org.apache.chemistry.opencmis.commons.enums.SupportedPermissions;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AclCapabilitiesDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PermissionDefinitionDataImpl;
@@ -241,7 +242,7 @@ public class NuxeoRepository {
         repositoryInfo.setId(repositoryId);
         repositoryInfo.setName("Nuxeo Repository " + repositoryId);
         repositoryInfo.setDescription("Nuxeo Repository " + repositoryId);
-        repositoryInfo.setCmisVersionSupported("1.1");
+        repositoryInfo.setCmisVersionSupported(CmisVersion.CMIS_1_1.value());
         repositoryInfo.setPrincipalAnonymous("Guest"); // TODO
         repositoryInfo.setPrincipalAnyone(SecurityConstants.EVERYONE);
         repositoryInfo.setThinClientUri(getBaseURL(callContext));

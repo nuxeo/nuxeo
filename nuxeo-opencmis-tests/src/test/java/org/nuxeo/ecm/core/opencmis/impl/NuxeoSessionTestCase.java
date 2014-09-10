@@ -161,6 +161,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
         deployBundle("org.nuxeo.ecm.platform.login");
         deployBundle("org.nuxeo.ecm.platform.web.common");
+        fireFrameworkStarted();
 
         openSession(); // nuxeo
 
@@ -564,6 +565,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
     @Test
     public void testRenditions() throws Exception {
+        boolean checkStream = !(isAtomPub || isBrowser);
+
         CmisObject ob = session.getObjectByPath("/testfolder1/testfile1");
         List<Rendition> renditions = ob.getRenditions();
         assertTrue(renditions.isEmpty());
@@ -586,7 +589,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         renditions = ob.getRenditions();
         assertEquals(2, renditions.size());
         Collections.sort(renditions, RENDITION_CMP);
-        check(renditions.get(0), true);
+        check(renditions.get(0), checkStream);
 
         // get renditions with query
 
@@ -976,7 +979,9 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
         {
             Acl acl = session.getAcl(session.createObjectId(file1Id), false);
-            assertEquals(Boolean.TRUE, acl.isExact());
+            if (!(isAtomPub || isBrowser)) { // OpenCMIS 0.12 bug
+                assertEquals(Boolean.TRUE, acl.isExact());
+            }
             Map<String, Set<String>> actual = getActualAcl(acl);
             Map<String, Set<String>> expected = new HashMap<>();
             expected.put("bob", set("Browse"));
@@ -988,7 +993,9 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
             // with only basic permissions
 
             acl = session.getAcl(session.createObjectId(file1Id), true);
-            assertEquals(Boolean.FALSE, acl.isExact());
+            if (!(isAtomPub || isBrowser)) { // OpenCMIS 0.12 bug
+                assertEquals(Boolean.FALSE, acl.isExact());
+            }
             actual = getActualAcl(acl);
             expected = new HashMap<>();
             expected.put("members*", set(READ));
@@ -1032,7 +1039,9 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         }
 
         Acl acl = session.getAcl(session.createObjectId(file1Id), false);
-        assertEquals(Boolean.TRUE, acl.isExact());
+        if (!(isAtomPub || isBrowser)) { // OpenCMIS 0.12 bug
+            assertEquals(Boolean.TRUE, acl.isExact());
+        }
         Map<String, Set<String>> actual = getActualAcl(acl);
         Map<String, Set<String>> expected = new HashMap<>();
         expected.put("pete", set(READ, WRITE, "ReadWrite"));
@@ -1051,14 +1060,18 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         oc.setIncludeAcls(true);
         Document ob = (Document) session.getObjectByPath("/testfolder1/testfile1", oc);
         acl = ob.getAcl();
-        assertEquals(Boolean.TRUE, acl.isExact());
+        if (!(isAtomPub || isBrowser)) { // OpenCMIS 0.12 bug
+            assertEquals(Boolean.TRUE, acl.isExact());
+        }
         actual = getActualAcl(acl);
         assertEquals(expected, actual);
 
         // check blocking
 
         acl = session.getAcl(session.createObjectId(file4Id), false);
-        assertEquals(Boolean.TRUE, acl.isExact());
+        if (!(isAtomPub || isBrowser)) { // OpenCMIS 0.12 bug
+            assertEquals(Boolean.TRUE, acl.isExact());
+        }
         actual = getActualAcl(acl);
         expected = new HashMap<>();
         expected.put("Administrator", set(READ, "Read"));
@@ -1081,7 +1094,9 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         Acl acl = session.applyAcl(session.createObjectId(file1Id), addAces,
                 removeAces, null);
 
-        assertEquals(Boolean.TRUE, acl.isExact());
+        if (!(isAtomPub || isBrowser)) { // OpenCMIS 0.12 bug
+            assertEquals(Boolean.TRUE, acl.isExact());
+        }
         Map<String, Set<String>> actual = getActualAcl(acl);
         Map<String, Set<String>> expected = new HashMap<>();
         expected.put("bob", set("Browse"));
@@ -1099,7 +1114,9 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         acl = session.applyAcl(session.createObjectId(file1Id), addAces,
                 removeAces, null);
 
-        assertEquals(Boolean.TRUE, acl.isExact());
+        if (!(isAtomPub || isBrowser)) { // OpenCMIS 0.12 bug
+            assertEquals(Boolean.TRUE, acl.isExact());
+        }
         actual = getActualAcl(acl);
         expected = new HashMap<>();
         expected.put("bob", set("Browse"));

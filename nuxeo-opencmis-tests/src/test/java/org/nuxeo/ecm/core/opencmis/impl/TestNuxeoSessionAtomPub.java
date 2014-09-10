@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisContextListener;
 /**
  * Test the high-level session using an AtomPub connection.
  */
-@Ignore
 public class TestNuxeoSessionAtomPub extends NuxeoSessionClientServerTestCase {
 
     @Override

@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisContextListener;
 /**
  * Test the high-level session using an JSON Browser connection.
  */
-@Ignore
 public class TestNuxeoSessionBrowser extends NuxeoSessionClientServerTestCase {
 
     @Override

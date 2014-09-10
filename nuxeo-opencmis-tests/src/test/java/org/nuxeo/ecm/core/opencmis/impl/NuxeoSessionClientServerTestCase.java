@@ -33,6 +33,7 @@ import org.apache.chemistry.opencmis.client.api.SessionFactory;
 import org.apache.chemistry.opencmis.client.bindings.CmisBindingFactory;
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
+import org.apache.chemistry.opencmis.commons.enums.CmisVersion;
 import org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet;
 import org.apache.chemistry.opencmis.server.shared.BasicAuthCallContextHandler;
 import org.apache.commons.logging.Log;
@@ -196,6 +197,8 @@ public abstract class NuxeoSessionClientServerTestCase extends
         Wrapper servlet = tomcat.addServlet("/", SERVLET_NAME, getServlet());
         servlet.addInitParameter(CmisAtomPubServlet.PARAM_CALL_CONTEXT_HANDLER,
                 BasicAuthCallContextHandler.class.getName());
+        servlet.addInitParameter(CmisAtomPubServlet.PARAM_CMIS_VERSION,
+                CmisVersion.CMIS_1_1.value());
         context.addServletMapping("/*", SERVLET_NAME);
         context.setApplicationLifecycleListeners(getEventListeners());
         Filter filter = getFilter();
