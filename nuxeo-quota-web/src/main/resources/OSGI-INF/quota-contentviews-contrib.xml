@@ -30,7 +30,7 @@
         <event>documentChanged</event>
         <event>documentChildrenChanged</event>
       </refresh>
-      <cacheKey>#{currentDocument.id}</cacheKey>
+      <cacheKey>#{currentDocument.repositoryName}_#{currentDocument.id}</cacheKey>
       <cacheSize>10</cacheSize>
       <selectionList>CURRENT_SELECTION</selectionList>
       <showTitle>false</showTitle>
@@ -68,7 +68,7 @@
         <event>documentChanged</event>
         <event>documentChildrenChanged</event>
       </refresh>
-      <cacheKey>#{currentDocument.id}</cacheKey>
+      <cacheKey>#{currentDocument.repositoryName}_#{currentDocument.id}</cacheKey>
       <cacheSize>10</cacheSize>
       <selectionList>CURRENT_SELECTION</selectionList>
       <showTitle>false</showTitle>
