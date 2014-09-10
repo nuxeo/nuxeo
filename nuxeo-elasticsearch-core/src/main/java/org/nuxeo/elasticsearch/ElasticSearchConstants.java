@@ -17,6 +17,8 @@
 package org.nuxeo.elasticsearch;
 
 public class ElasticSearchConstants {
+    private ElasticSearchConstants() {
+    }
 
     public static final String AGG_INCLUDE_PROP = "include";
     public static final String AGG_SIZE_PROP = "size";
@@ -28,8 +30,7 @@ public class ElasticSearchConstants {
     public static final String AGG_ORDER_TERM_DESC = "term desc";
     public static final String AGG_ORDER_TERM_ASC = "term asc";
 
-    private ElasticSearchConstants() {
-    }
+    public static final String ID_FIELD = "_id";
 
     /**
      * Elasticsearch type name used to index Nuxeo documents
