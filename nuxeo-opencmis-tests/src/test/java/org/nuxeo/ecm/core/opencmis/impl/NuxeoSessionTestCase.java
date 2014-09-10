@@ -11,6 +11,9 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl;
 
+import static org.apache.chemistry.opencmis.commons.BasicPermissions.ALL;
+import static org.apache.chemistry.opencmis.commons.BasicPermissions.READ;
+import static org.apache.chemistry.opencmis.commons.BasicPermissions.WRITE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -29,6 +32,7 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,10 +53,14 @@ import org.apache.chemistry.opencmis.client.api.Rendition;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
+import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.AllowableActions;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
+import org.apache.chemistry.opencmis.commons.data.ObjectData;
+import org.apache.chemistry.opencmis.commons.data.Principal;
 import org.apache.chemistry.opencmis.commons.data.RenditionData;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
+import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
 import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
@@ -60,6 +68,9 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.impl.Base64;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlEntryImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlPrincipalDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.apache.commons.httpclient.util.DateUtil;
 import org.apache.commons.io.IOUtils;
@@ -74,6 +85,13 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepositories;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
@@ -928,6 +946,167 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
     private Lock lockDocument(CmisObject ob) throws ClientException {
         return getCoreSession().getDocument(new IdRef(ob.getId())).setLock();
+    }
+
+    protected static Set<String> set(String... strings) {
+        return new HashSet<String>(Arrays.asList(strings));
+    }
+
+    /** Get ACL, using * suffix on username to denote non-direct. */
+    protected static Map<String, Set<String>> getActualAcl(Acl acl) {
+        Map<String, Set<String>> actual = new HashMap<>();
+        for (Ace ace : acl.getAces()) {
+            actual.put(ace.getPrincipalId() + (ace.isDirect() ? "" : "*"),
+                    new HashSet<String>(ace.getPermissions()));
+        }
+        return actual;
+    }
+
+    @Test
+    public void testGetACL() throws Exception {
+        CoreSession coreSession = getCoreSession();
+
+        String folder1Id = coreSession.getDocument(new PathRef("/testfolder1")).getId();
+        String file1Id = coreSession.getDocument(
+                new PathRef("/testfolder1/testfile1")).getId();
+        String file4Id = coreSession.getDocument(
+                new PathRef("/testfolder2/testfolder3/testfile4")).getId();
+
+        // file1 already has a bob -> Browse permission from setUp
+
+        {
+            Acl acl = session.getAcl(session.createObjectId(file1Id), false);
+            assertEquals(Boolean.TRUE, acl.isExact());
+            Map<String, Set<String>> actual = getActualAcl(acl);
+            Map<String, Set<String>> expected = new HashMap<>();
+            expected.put("bob", set("Browse"));
+            expected.put("members*", set(READ, "Read"));
+            expected.put("administrators*", set(READ, WRITE, ALL, "Everything"));
+            expected.put("Administrator*", set(READ, WRITE, ALL, "Everything"));
+            assertEquals(expected, actual);
+
+            // with only basic permissions
+
+            acl = session.getAcl(session.createObjectId(file1Id), true);
+            assertEquals(Boolean.FALSE, acl.isExact());
+            actual = getActualAcl(acl);
+            expected = new HashMap<>();
+            expected.put("members*", set(READ));
+            expected.put("administrators*", set(READ, WRITE, ALL));
+            expected.put("Administrator*", set(READ, WRITE, ALL));
+            assertEquals(expected, actual);
+        }
+
+        // set more complex ACLs
+
+        {
+            ACP acp = new ACPImpl();
+            ACL acl = new ACLImpl();
+            acl.add(new ACE("pete", SecurityConstants.READ_WRITE, true));
+            acl.add(new ACE("john", SecurityConstants.WRITE, true));
+            acp.addACL(acl);
+            // other ACL
+            acl = new ACLImpl("workflow");
+            acl.add(new ACE("steve", SecurityConstants.READ, true));
+            acp.addACL(acl);
+            coreSession.setACP(new IdRef(file1Id), acp, true);
+
+            // folder1
+            acp = new ACPImpl();
+            acl = new ACLImpl();
+            acl.add(new ACE("mary", SecurityConstants.READ, true));
+            acp.addACL(acl);
+            coreSession.setACP(new IdRef(folder1Id), acp, true);
+
+            // block on testfile4
+            acp = new ACPImpl();
+            acl = new ACLImpl();
+            acl.add(new ACE(SecurityConstants.ADMINISTRATOR,
+                    SecurityConstants.READ, true));
+            acl.add(new ACE(SecurityConstants.EVERYONE,
+                    SecurityConstants.EVERYTHING, false));
+            acp.addACL(acl);
+            coreSession.setACP(new IdRef(file4Id), acp, true);
+
+            coreSession.save();
+        }
+
+        Acl acl = session.getAcl(session.createObjectId(file1Id), false);
+        assertEquals(Boolean.TRUE, acl.isExact());
+        Map<String, Set<String>> actual = getActualAcl(acl);
+        Map<String, Set<String>> expected = new HashMap<>();
+        expected.put("pete", set(READ, WRITE, "ReadWrite"));
+        expected.put("john", set("Write"));
+        // * for inherited or not local acl
+        expected.put("steve*", set(READ, "Read"));
+        expected.put("mary*", set(READ, "Read"));
+        expected.put("members*", set(READ, "Read"));
+        expected.put("administrators*", set(READ, WRITE, ALL, "Everything"));
+        expected.put("Administrator*", set(READ, WRITE, ALL, "Everything"));
+        assertEquals(expected, actual);
+
+        // direct Object API
+
+        OperationContext oc = session.createOperationContext();
+        oc.setIncludeAcls(true);
+        Document ob = (Document) session.getObjectByPath("/testfolder1/testfile1", oc);
+        acl = ob.getAcl();
+        assertEquals(Boolean.TRUE, acl.isExact());
+        actual = getActualAcl(acl);
+        assertEquals(expected, actual);
+
+        // check blocking
+
+        acl = session.getAcl(session.createObjectId(file4Id), false);
+        assertEquals(Boolean.TRUE, acl.isExact());
+        actual = getActualAcl(acl);
+        expected = new HashMap<>();
+        expected.put("Administrator", set(READ, "Read"));
+        expected.put("Everyone", set("Nothing"));
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testApplyACL() throws Exception {
+        String file1Id = session.getObjectByPath("/testfolder1/testfile1").getId();
+
+        // file1 already has a bob -> Browse permission from setUp
+
+        // add
+
+        Principal p = new AccessControlPrincipalDataImpl("mary");
+        Ace ace = new AccessControlEntryImpl(p, Arrays.asList(READ));
+        List<Ace> addAces = Arrays.asList(ace);
+        List<Ace> removeAces = null;
+        Acl acl = session.applyAcl(session.createObjectId(file1Id), addAces,
+                removeAces, null);
+
+        assertEquals(Boolean.TRUE, acl.isExact());
+        Map<String, Set<String>> actual = getActualAcl(acl);
+        Map<String, Set<String>> expected = new HashMap<>();
+        expected.put("bob", set("Browse"));
+        expected.put("mary", set(READ, "Read"));
+        expected.put("members*", set(READ, "Read"));
+        expected.put("administrators*", set(READ, WRITE, ALL, "Everything"));
+        expected.put("Administrator*", set(READ, WRITE, ALL, "Everything"));
+        assertEquals(expected, actual);
+
+        // remove
+
+        ace = new AccessControlEntryImpl(p, Arrays.asList(READ));
+        addAces = null;
+        removeAces = Arrays.asList(ace);
+        acl = session.applyAcl(session.createObjectId(file1Id), addAces,
+                removeAces, null);
+
+        assertEquals(Boolean.TRUE, acl.isExact());
+        actual = getActualAcl(acl);
+        expected = new HashMap<>();
+        expected.put("bob", set("Browse"));
+        expected.put("members*", set(READ, "Read"));
+        expected.put("administrators*", set(READ, WRITE, ALL, "Everything"));
+        expected.put("Administrator*", set(READ, WRITE, ALL, "Everything"));
+        assertEquals(expected, actual);
     }
 
 }

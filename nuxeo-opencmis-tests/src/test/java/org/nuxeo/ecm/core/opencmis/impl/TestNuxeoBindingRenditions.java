@@ -35,7 +35,7 @@ public class TestNuxeoBindingRenditions extends NuxeoBindingTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        Helper.makeNuxeoRepository(nuxeotc.getSession());
+        Helper.makeNuxeoRepository(nuxeotc.session);
         sleepForFulltext();
     }
 

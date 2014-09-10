@@ -44,6 +44,7 @@ import org.apache.chemistry.opencmis.commons.enums.ExtensionLevel;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListImpl;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
@@ -252,28 +253,34 @@ public abstract class NuxeoObject implements CmisObject {
 
     @Override
     public Acl addAcl(List<Ace> addAces, AclPropagation aclPropagation) {
-        throw new CmisNotSupportedException();
+        return service.applyAcl(getRepositoryId(), getId(),
+                new AccessControlListImpl(addAces), null, aclPropagation, null);
     }
 
     @Override
     public Acl applyAcl(List<Ace> addAces, List<Ace> removeAces,
             AclPropagation aclPropagation) {
-        throw new CmisNotSupportedException();
+        return service.applyAcl(getRepositoryId(), getId(),
+                new AccessControlListImpl(addAces), new AccessControlListImpl(
+                        removeAces), aclPropagation, null);
     }
 
     @Override
     public Acl setAcl(List<Ace> aces) {
-        throw new CmisNotSupportedException();
+        return service.applyAcl(getRepositoryId(), getId(),
+                new AccessControlListImpl(aces),
+                AclPropagation.REPOSITORYDETERMINED);
     }
 
     @Override
     public Acl getAcl() {
-        throw new CmisNotSupportedException();
+        return data.getAcl();
     }
 
     @Override
     public Acl removeAcl(List<Ace> removeAces, AclPropagation aclPropagation) {
-        throw new CmisNotSupportedException();
+        return service.applyAcl(getRepositoryId(), getId(), null,
+                new AccessControlListImpl(removeAces), aclPropagation, null);
     }
 
     @Override

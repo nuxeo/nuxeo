@@ -29,9 +29,12 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 
 import org.apache.chemistry.opencmis.client.api.ObjectId;
@@ -39,6 +42,7 @@ import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.runtime.ObjectIdImpl;
+import org.apache.chemistry.opencmis.commons.BasicPermissions;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.Acl;
@@ -121,6 +125,10 @@ import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils.BatchedList;
 import org.nuxeo.ecm.core.opencmis.impl.util.SimpleImageInfo;
@@ -128,6 +136,7 @@ import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
@@ -158,7 +167,7 @@ public class NuxeoCmisService extends AbstractCmisService {
 
     public static final int DEFAULT_MAX_RELATIONSHIPS = 100;
 
-    public static final String NUXEO_WAR = "nuxeo.war";
+    public static final String PERMISSION_NOTHING = "Nothing";
 
     private static final Log log = LogFactory.getLog(NuxeoCmisService.class);
 
@@ -174,10 +183,14 @@ public class NuxeoCmisService extends AbstractCmisService {
     /** When false, we don't own the core session and shouldn't close it. */
     protected final boolean coreSessionOwned;
 
+    protected final CallContext callContext;
+
     /** Filter that hides HiddenInNavigation and deleted objects. */
     protected final Filter documentFilter;
 
-    protected final CallContext callContext;
+    protected final Set<String> readPermissions;
+
+    protected final Set<String> writePermissions;
 
     /**
      * Constructs a Nuxeo CMIS Service when no {@link CoreSession} is available
@@ -189,13 +202,8 @@ public class NuxeoCmisService extends AbstractCmisService {
      */
     // Constructor called by binding.
     public NuxeoCmisService(String repositoryName, CallContext callContext) {
-        repository = repositoryName == null ? null : Framework.getService(
-                NuxeoRepositories.class).getRepository(repositoryName);
-        this.callContext = callContext;
-        coreSession = repositoryName == null ? null
-                : openCoreSession(repositoryName);
-        coreSessionOwned = true;
-        documentFilter = getDocumentFilter();
+        this(getNuxeoRepository(repositoryName),
+                openCoreSession(repositoryName), true, callContext);
     }
 
     /**
@@ -207,13 +215,23 @@ public class NuxeoCmisService extends AbstractCmisService {
      */
     // Constructor called by high-level session from existing core session.
     public NuxeoCmisService(CoreSession coreSession, CallContext callContext) {
-        String repositoryName = coreSession.getRepositoryName();
-        repository = Framework.getService(
-                NuxeoRepositories.class).getRepository(repositoryName);
-        this.callContext = callContext;
+        this(getNuxeoRepository(coreSession.getRepositoryName()), coreSession,
+                false, callContext);
+    }
+
+    private NuxeoCmisService(NuxeoRepository repository,
+            CoreSession coreSession, boolean coreSessionOwned,
+            CallContext callContext) {
+        this.repository = repository;
         this.coreSession = coreSession;
-        coreSessionOwned = false;
+        this.coreSessionOwned = coreSessionOwned;
+        this.callContext = callContext;
         documentFilter = getDocumentFilter();
+        SecurityService securityService = Framework.getService(SecurityService.class);
+        readPermissions = new HashSet<>(
+                Arrays.asList(securityService.getPermissionsToCheck(SecurityConstants.READ)));
+        writePermissions = new HashSet<>(
+                Arrays.asList(securityService.getPermissionsToCheck(SecurityConstants.READ_WRITE)));
     }
 
     // called in a finally block from dispatcher
@@ -225,7 +243,18 @@ public class NuxeoCmisService extends AbstractCmisService {
         clearObjectInfos();
     }
 
-    protected CoreSession openCoreSession(String repositoryName) {
+    protected static NuxeoRepository getNuxeoRepository(String repositoryName) {
+        if (repositoryName == null) {
+            return null;
+        }
+        return Framework.getService(NuxeoRepositories.class).getRepository(
+                repositoryName);
+    }
+
+    protected static CoreSession openCoreSession(String repositoryName) {
+        if (repositoryName == null) {
+            return null;
+        }
         try {
             return CoreInstance.openCoreSession(repositoryName);
         } catch (ClientException e) {
@@ -299,8 +328,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             latestChangeLogToken = getLatestChangeLogToken(repositoryId);
             cachedChangeLogToken = latestChangeLogToken;
         }
-        NuxeoRepository repository = Framework.getService(
-                NuxeoRepositories.class).getRepository(repositoryId);
+        NuxeoRepository repository = getNuxeoRepository(repositoryId);
         return repository.getRepositoryInfo(latestChangeLogToken, callContext);
     }
 
@@ -1220,19 +1248,127 @@ public class NuxeoCmisService extends AbstractCmisService {
     public Acl applyAcl(String repositoryId, String objectId, Acl addAces,
             Acl removeAces, AclPropagation aclPropagation,
             ExtensionsData extension) {
-        throw new CmisNotSupportedException();
+        return applyAcl(objectId, addAces, removeAces, false, aclPropagation);
     }
 
     @Override
     public Acl applyAcl(String repositoryId, String objectId, Acl aces,
             AclPropagation aclPropagation) {
-        throw new CmisNotSupportedException();
+        return applyAcl(objectId, aces, null, true, aclPropagation);
+    }
+
+    protected Acl applyAcl(String objectId, Acl addAces, Acl removeAces,
+            boolean clearFirst, AclPropagation aclPropagation) {
+        DocumentModel doc = getDocumentModel(objectId); // does filtering
+        if (aclPropagation == null) {
+            aclPropagation = AclPropagation.REPOSITORYDETERMINED;
+        }
+        if (aclPropagation == AclPropagation.OBJECTONLY
+                && doc.getDocumentType().isFolder()) {
+            throw new CmisInvalidArgumentException(
+                    "Cannot use ACLPropagation=objectonly on Folder");
+        }
+        DocumentRef docRef = new IdRef(objectId);
+
+        ACP acp;
+        try {
+            acp = coreSession.getACP(docRef);
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
+
+        ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        if (clearFirst) {
+            acl.clear();
+        }
+
+        if (addAces != null) {
+            for (Ace ace : addAces.getAces()) {
+                String principalId = ace.getPrincipalId();
+                for (String permission : ace.getPermissions()) {
+                    String perm = permissionToNuxeo(permission);
+                    if (PERMISSION_NOTHING.equals(perm)) {
+                        // block everything
+                        acl.add(new ACE(SecurityConstants.EVERYONE,
+                                SecurityConstants.EVERYTHING, false));
+                    } else {
+                        acl.add(new ACE(principalId, perm, true));
+                    }
+                }
+            }
+        }
+
+        if (removeAces != null) {
+            for (Iterator<ACE> it = acl.iterator(); it.hasNext();) {
+                ACE ace = it.next();
+                String username = ace.getUsername();
+                String perm = ace.getPermission();
+                if (ace.isDenied()) {
+                    if (SecurityConstants.EVERYONE.equals(username)
+                            && SecurityConstants.EVERYTHING.equals(perm)) {
+                        perm = PERMISSION_NOTHING;
+                    } else {
+                        continue;
+                    }
+                }
+                String permission = permissionFromNuxeo(perm);
+                for (Ace race : removeAces.getAces()) {
+                    String principalId = race.getPrincipalId();
+                    if (!username.equals(principalId)) {
+                        continue;
+                    }
+                    if (race.getPermissions().contains(permission)) {
+                        it.remove();
+                        break;
+                    }
+                }
+            }
+        }
+        try {
+            coreSession.setACP(docRef, acp, true);
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
+        return NuxeoObjectData.getAcl(acp, false, this);
+    }
+
+    protected static String permissionToNuxeo(String permission) {
+        switch (permission) {
+        case BasicPermissions.READ:
+            return SecurityConstants.READ;
+        case BasicPermissions.WRITE:
+            return SecurityConstants.READ_WRITE;
+        case BasicPermissions.ALL:
+            return SecurityConstants.EVERYTHING;
+        default:
+            return permission;
+        }
+    }
+
+    protected static String permissionFromNuxeo(String permission) {
+        switch (permission) {
+        case SecurityConstants.READ:
+            return BasicPermissions.READ;
+        case SecurityConstants.READ_WRITE:
+            return BasicPermissions.WRITE;
+        case SecurityConstants.EVERYTHING:
+            return BasicPermissions.ALL;
+        default:
+            return permission;
+        }
     }
 
     @Override
     public Acl getAcl(String repositoryId, String objectId,
             Boolean onlyBasicPermissions, ExtensionsData extension) {
-        throw new CmisNotSupportedException();
+        boolean basic = !Boolean.FALSE.equals(onlyBasicPermissions);
+        try {
+            getDocumentModel(objectId); // does filtering
+            ACP acp = coreSession.getACP(new IdRef(objectId));
+            return NuxeoObjectData.getAcl(acp, basic, this);
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
     }
 
     @Override

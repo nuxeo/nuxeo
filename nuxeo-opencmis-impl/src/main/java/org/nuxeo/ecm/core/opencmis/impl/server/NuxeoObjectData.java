@@ -22,13 +22,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletContext;
 
 import org.apache.chemistry.opencmis.client.api.OperationContext;
+import org.apache.chemistry.opencmis.commons.BasicPermissions;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.Acl;
@@ -36,6 +40,8 @@ import org.apache.chemistry.opencmis.commons.data.AllowableActions;
 import org.apache.chemistry.opencmis.commons.data.ChangeEventInfo;
 import org.apache.chemistry.opencmis.commons.data.CmisExtensionElement;
 import org.apache.chemistry.opencmis.commons.data.ExtensionsData;
+import org.apache.chemistry.opencmis.commons.data.MutableAce;
+import org.apache.chemistry.opencmis.commons.data.MutableAcl;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.PolicyIdList;
 import org.apache.chemistry.opencmis.commons.data.Properties;
@@ -47,7 +53,9 @@ import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlEntryImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlPrincipalDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AllowableActionsImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PolicyIdListImpl;
@@ -60,6 +68,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
 import org.nuxeo.ecm.core.opencmis.impl.util.SimpleImageInfo;
@@ -297,6 +308,7 @@ public class NuxeoObjectData implements ObjectData {
             set.add(Action.CAN_GET_APPLIED_POLICIES);
             set.add(Action.CAN_GET_ACL);
             set.add(Action.CAN_APPLY_ACL);
+            set.add(Action.CAN_CREATE_ITEM);
         }
 
         AllowableActionsImpl aa = new AllowableActionsImpl();
@@ -436,10 +448,81 @@ public class NuxeoObjectData implements ObjectData {
         if (!Boolean.TRUE.equals(includeAcl)) {
             return null;
         }
-        AccessControlListImpl acl = new AccessControlListImpl();
+        try {
+            ACP acp = doc.getACP();
+            return getAcl(acp, false, service);
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
+    }
+
+    protected static Acl getAcl(ACP acp, boolean onlyBasicPermissions,
+            NuxeoCmisService service) {
+        Boolean exact = Boolean.TRUE;
         List<Ace> aces = new ArrayList<Ace>();
-        acl.setAces(aces);
-        return acl; // TODO
+        for (ACL acl : acp.getACLs()) {
+            // inherited and non-local ACLs are non-direct
+            boolean direct = ACL.LOCAL_ACL.equals(acl.getName());
+            Map<String, Set<String>> permissionMap = new LinkedHashMap<>();
+            for (ACE ace : acl.getACEs()) {
+                boolean denied = ace.isDenied();
+                String username = ace.getUsername();
+                String permission = ace.getPermission();
+                if (denied) {
+                    if (SecurityConstants.EVERYONE.equals(username)
+                            && SecurityConstants.EVERYTHING.equals(permission)) {
+                        permission = NuxeoCmisService.PERMISSION_NOTHING;
+                    } else {
+                        // we cannot represent this blocking
+                        exact = Boolean.FALSE;
+                        continue;
+                    }
+                }
+                Set<String> permissions = permissionMap.get(username);
+                if (permissions == null) {
+                    permissionMap.put(username,
+                            permissions = new LinkedHashSet<String>());
+                }
+                // derive CMIS permission from Nuxeo permissions
+                boolean isBasic = false;
+                if (service.readPermissions.contains(permission)) { // Read
+                    isBasic = true;
+                    permissions.add(BasicPermissions.READ);
+                }
+                if (service.writePermissions.contains(permission)) { // ReadWrite
+                    isBasic = true;
+                    permissions.add(BasicPermissions.WRITE);
+                }
+                if (SecurityConstants.EVERYTHING.equals(permission)) {
+                    isBasic = true;
+                    permissions.add(BasicPermissions.ALL);
+                }
+                if (!onlyBasicPermissions) {
+                    permissions.add(permission);
+                } else if (!isBasic) {
+                    exact = Boolean.FALSE;
+                }
+                if (NuxeoCmisService.PERMISSION_NOTHING.equals(permission)) {
+                    break;
+                }
+            }
+            for (Entry<String, Set<String>> en : permissionMap.entrySet()) {
+                String username = en.getKey();
+                Set<String> permissions = en.getValue();
+                if (permissions.isEmpty()) {
+                    continue;
+                }
+                MutableAce entry = new AccessControlEntryImpl();
+                entry.setPrincipal(new AccessControlPrincipalDataImpl(username));
+                entry.setPermissions(new ArrayList<String>(permissions));
+                entry.setDirect(direct);
+                aces.add(entry);
+            }
+        }
+        MutableAcl result = new AccessControlListImpl();
+        result.setAces(aces);
+        result.setExact(exact);
+        return result;
     }
 
     @Override

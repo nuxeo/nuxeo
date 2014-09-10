@@ -59,6 +59,7 @@ import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BulkUpdateObjectIdAndChangeTokenImpl;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -533,18 +534,22 @@ public class NuxeoSession implements Session {
 
     @Override
     public Acl getAcl(ObjectId objectId, boolean onlyBasicPermissions) {
-        throw new CmisNotSupportedException();
+        return service.getAcl(repositoryId, objectId.getId(),
+                Boolean.valueOf(onlyBasicPermissions), null);
     }
 
     @Override
     public Acl setAcl(ObjectId objectId, List<Ace> aces) {
-        throw new CmisNotSupportedException();
+        return service.applyAcl(repositoryId, objectId.getId(),
+                new AccessControlListImpl(aces), null);
     }
 
     @Override
     public Acl applyAcl(ObjectId objectId, List<Ace> addAces,
             List<Ace> removeAces, AclPropagation aclPropagation) {
-        throw new CmisNotSupportedException();
+        return service.applyAcl(repositoryId, objectId.getId(),
+                new AccessControlListImpl(addAces), new AccessControlListImpl(
+                        removeAces), aclPropagation, null);
     }
 
     @Override

@@ -62,13 +62,6 @@ public class NuxeoBindingTestCase {
     }
 
     public static class NuxeoTestCase extends SQLRepositoryTestCase {
-        public String getRepositoryId() {
-            return database.repositoryName;
-        }
-
-        public CoreSession getSession() {
-            return session;
-        }
     }
 
     public NuxeoTestCase nuxeotc;
@@ -77,6 +70,7 @@ public class NuxeoBindingTestCase {
         nuxeotc = new NuxeoTestCase();
         nuxeotc.setUp();
         deployBundles();
+        nuxeotc.fireFrameworkStarted();
         nuxeotc.openSession();
 
         Map<String, String> params = new HashMap<String, String>();
@@ -119,8 +113,8 @@ public class NuxeoBindingTestCase {
 
     /** Init fields from session. */
     public void init() throws Exception {
-        repositoryId = nuxeotc.getRepositoryId();
-        CoreSession coreSession = nuxeotc.getSession();
+        repositoryId = nuxeotc.database.repositoryName;
+        CoreSession coreSession = nuxeotc.session;
         NuxeoRepository repository = Framework.getService(
                 NuxeoRepositories.class).getRepository(repositoryId);
         repository.setSupportsJoins(supportsJoins());
