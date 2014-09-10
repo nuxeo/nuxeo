@@ -40,7 +40,7 @@
       <reset>
         <event>documentChanged</event>
       </reset>
-      <cacheKey>#{currentDocument.id}</cacheKey>
+      <cacheKey>#{currentDocument.repositoryName}_#{currentDocument.id}</cacheKey>
       <cacheSize>10</cacheSize>
 
       <resultLayouts>
