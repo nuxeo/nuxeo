@@ -39,22 +39,23 @@ public class DefaultAutomationRenditionProvider implements RenditionProvider {
             log.error("Unable to test Rendition availability", e);
             return false;
         }
-        
+
         if (!def.isEmptyBlobAllowed()) {
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
-            if (bh==null) {
+            if (bh == null) {
                 return false;
             }
             try {
                 Blob blob = bh.getBlob();
-                if (blob==null) {
+                if (blob == null) {
                     return false;
                 }
-            } catch  (Exception e) {
-                log.error("Unable to get Blob to test Rendition availability", e);
+            } catch (Exception e) {
+                log.error("Unable to get Blob to test Rendition availability",
+                        e);
                 return false;
             }
-        }        
+        }
         return true;
     }
 
@@ -68,12 +69,28 @@ public class DefaultAutomationRenditionProvider implements RenditionProvider {
         }
 
         AutomationService as = Framework.getLocalService(AutomationService.class);
-
         OperationContext oc = new OperationContext();
+        oc.push(Constants.O_DOCUMENT, doc);
 
         try {
-            oc.push(Constants.O_BLOB,
-                    doc.getAdapter(BlobHolder.class).getBlob());
+            BlobHolder bh = doc.getAdapter(BlobHolder.class);
+            if (bh != null) {
+                try {
+                    Blob blob = bh.getBlob();
+                    if (blob != null) {
+                        oc.push(Constants.O_BLOB, blob);
+                    }
+                } catch (Exception e) {
+                    if (!definition.isEmptyBlobAllowed()) {
+                        throw new RenditionException("No Blob available", e);
+                    }
+                }
+            } else {
+                if (!definition.isEmptyBlobAllowed()) {
+                    throw new RenditionException("No Blob available");
+                }
+            }
+
             Blob blob = (Blob) as.run(oc, definition.getOperationChain());
             List<Blob> blobs = new ArrayList<Blob>();
             blobs.add(blob);

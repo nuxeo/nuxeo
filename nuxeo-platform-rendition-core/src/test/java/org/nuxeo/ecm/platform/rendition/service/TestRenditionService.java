@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mvel2.ast.AssertNode;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -92,7 +93,7 @@ public class TestRenditionService {
     public void testDeclaredRenditionDefinitions() {
         List<RenditionDefinition> renditionDefinitions = renditionService.getDeclaredRenditionDefinitions();
         assertFalse(renditionDefinitions.isEmpty());
-        assertEquals(2, renditionDefinitions.size());
+        assertEquals(3, renditionDefinitions.size());
 
         RenditionServiceImpl renditionServiceImpl = (RenditionServiceImpl) renditionService;
         assertTrue(renditionServiceImpl.renditionDefinitions.containsKey(PDF_RENDITION_DEFINITION));
@@ -108,7 +109,7 @@ public class TestRenditionService {
         assertNotNull(rd);
         assertEquals("renditionDefinitionWithCustomOperationChain",
                 rd.getName());
-        assertEquals("PDFRendition", rd.getOperationChain());
+        assertEquals("Dummy", rd.getOperationChain());
     }
 
     @Test
@@ -336,7 +337,18 @@ public class TestRenditionService {
         DocumentModel file = session.createDocumentModel("/", "dummy", "File");
         file = session.createDocument(file);
         renditionService.storeRendition(file,
-                "renditionDefinitionWithCustomOperationChain");
+                "renditionDefinitionWithUnknownOperationChain");
+    }
+
+    @Test
+    public void shouldRenderOnFolder()
+            throws Exception {
+        DocumentModel folder = session.createDocumentModel("/", "dummy", "Folder");        
+        folder = session.createDocument(folder);
+        Rendition rendition = renditionService.getRendition(folder, "renditionDefinitionWithCustomOperationChain");
+        assertNotNull(rendition);
+        assertNotNull(rendition.getBlob());
+        assertEquals(rendition.getBlob().getString(), "dummy");
     }
 
     @Test
