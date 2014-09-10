@@ -40,7 +40,7 @@ import redis.clients.jedis.Protocol;
  *
  * @since 5.8
  */
-@Features({ CoreFeature.class })
+@Features({ CacheFeature.class, CoreFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 public class RedisFeature extends SimpleFeature {
 
