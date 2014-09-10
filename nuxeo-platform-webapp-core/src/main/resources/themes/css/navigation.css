@@ -35,6 +35,7 @@ author: lkemen@nuxeo.com
   border-width: 1px;
   border-style: none solid none none;
   border-color: "neutral.lighter (__FLAVOR__ border)";
+  display: block;
   padding: 0 }
 
 .tabsBar a,
