@@ -53,7 +53,6 @@ public class SearchResultsFragment extends WebFragmentImpl {
 
     public DAMPage createAsset(DAMPage damPage, String type, String title,
             String description, String originalAuthor, String authoringDate) {
-        newAssetButton.click();
         AssetCreationFancyBoxFragment fancyBoxFragment = showAssetCreation(damPage);
         LayoutElement layout = new LayoutElement(
                 driver,
