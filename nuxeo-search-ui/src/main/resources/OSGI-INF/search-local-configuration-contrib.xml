@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.search.local.configuration">
+<component name="org.nuxeo.search.ui.local.configuration">
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
     point="schema">
@@ -21,8 +21,8 @@
   <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService" point="adapters">
 
     <adapter
-      class="org.nuxeo.search.localconfiguration.SearchConfiguration"
-      factory="org.nuxeo.search.localconfiguration.SearchConfigurationFactory" />
+      class="org.nuxeo.search.ui.localconfiguration.SearchConfiguration"
+      factory="org.nuxeo.search.ui.localconfiguration.SearchConfigurationFactory" />
 
   </extension>
 

@@ -1,4 +1,4 @@
-<component name="org.nuxeo.search.local.configuration.layouts">
+<component name="org.nuxeo.search.ui.local.configuration.layouts">
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">

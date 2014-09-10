@@ -15,10 +15,10 @@
  *     Thomas Roger
  */
 
-package org.nuxeo.search.seam;
+package org.nuxeo.search.ui.seam;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.nuxeo.search.localconfiguration.Constants.SEARCH_CONFIGURATION_FACET;
+import static org.nuxeo.search.ui.localconfiguration.Constants.SEARCH_CONFIGURATION_FACET;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -37,13 +37,13 @@ import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.search.SearchUIService;
-import org.nuxeo.search.localconfiguration.SearchConfiguration;
+import org.nuxeo.search.ui.SearchUIService;
+import org.nuxeo.search.ui.localconfiguration.SearchConfiguration;
 
-@Name("searchConfigurationActions")
+@Name("searchUIConfigurationActions")
 @Scope(CONVERSATION)
 @Install(precedence = Install.FRAMEWORK)
-public class SearchConfigurationActions implements Serializable {
+public class SearchUIConfigurationActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

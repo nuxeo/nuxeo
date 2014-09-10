@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.search.documentsLists">
+<component name="org.nuxeo.search.ui.documentsLists">
 
   <extension target="org.nuxeo.ecm.webapp.documentsLists.DocumentsListsService"
     point="list">

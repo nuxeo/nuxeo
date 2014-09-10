@@ -15,7 +15,7 @@
  *     Thomas Roger
  */
 
-package org.nuxeo.search.seam;
+package org.nuxeo.search.ui.seam;
 
 import static org.apache.commons.logging.LogFactory.getLog;
 import static org.jboss.seam.ScopeType.CONVERSATION;
@@ -68,21 +68,21 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.search.SearchUIService;
+import org.nuxeo.search.ui.SearchUIService;
 
 /**
  * Seam bean handling SEARCH main tab actions.
  *
  * @since 5.9.6
  */
-@Name("searchActions")
+@Name("searchUIActions")
 @Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)
-public class SearchActions implements Serializable {
+public class SearchUIActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = getLog(SearchActions.class);
+    private static final Log log = getLog(SearchUIActions.class);
 
     public static final String SAVED_SEARCHES_LABEL = "label.saved.searches";
 

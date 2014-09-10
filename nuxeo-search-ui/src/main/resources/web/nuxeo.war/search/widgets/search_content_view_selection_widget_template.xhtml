@@ -28,7 +28,7 @@
                 size="5"
                 styleClass="listShuttleSelect">
                 <nxu:selectItems
-                  value="#{searchConfigurationActions.getNotSelectedContentViewHeaders(layoutValue)}"
+                  value="#{searchUIConfigurationActions.getNotSelectedContentViewHeaders(layoutValue)}"
                   var="contentViewHeader"
                   itemValue="#{contentViewHeader.name}"
                   itemLabel="#{contentViewHeader.translateTitle ? messages[contentViewHeader.title] : contentViewHeader.title}"
@@ -103,7 +103,7 @@
                 size="5"
                 styleClass="listShuttleSelect">
                 <nxu:selectItems
-                  value="#{searchConfigurationActions.getSelectedContentViewHeaders(layoutValue)}"
+                  value="#{searchUIConfigurationActions.getSelectedContentViewHeaders(layoutValue)}"
                   var="contentViewHeader"
                   itemValue="#{contentViewHeader.name}"
                   itemLabel="#{contentViewHeader.translateTitle ? messages[contentViewHeader.title] : contentViewHeader.title}"

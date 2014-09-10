@@ -10,9 +10,9 @@
     <nxd:restDocumentLink document="#{currentDocument}" pattern="search"
       view="search" addTabInfo="false">
       <f:param name="contentViewName"
-        value="#{searchActions.currentContentViewName}" />
+        value="#{searchUIActions.currentContentViewName}" />
       <f:param name="state"
-        value="#{searchActions.getJSONContentViewState()}" />
+        value="#{searchUIActions.getJSONContentViewState()}" />
       <h:outputText value="#{messages[action.label]}" />
     </nxd:restDocumentLink>
   </a4j:outputPanel>

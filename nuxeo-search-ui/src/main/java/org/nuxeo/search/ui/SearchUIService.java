@@ -15,7 +15,7 @@
  *     Thomas Roger
  */
 
-package org.nuxeo.search;
+package org.nuxeo.search.ui;
 
 import java.util.List;
 import java.util.Set;

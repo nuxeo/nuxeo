@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component name="org.nuxeo.search.theme">
+<component name="org.nuxeo.search.ui.theme">
 
   <require>org.nuxeo.theme.core</require>
   <require>org.nuxeo.theme.fragments</require>
@@ -13,7 +13,6 @@
     </theme>
 
   </extension>
-
 
   <extension target="org.nuxeo.theme.services.ThemeService" point="views">
 

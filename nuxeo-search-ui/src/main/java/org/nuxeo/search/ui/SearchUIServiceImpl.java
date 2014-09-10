@@ -15,9 +15,9 @@
  *     Thomas Roger
  */
 
-package org.nuxeo.search;
+package org.nuxeo.search.ui;
 
-import static org.nuxeo.search.localconfiguration.Constants.SEARCH_CONFIGURATION_FACET;
+import static org.nuxeo.search.ui.localconfiguration.Constants.SEARCH_CONFIGURATION_FACET;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -38,7 +38,7 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.search.localconfiguration.SearchConfiguration;
+import org.nuxeo.search.ui.localconfiguration.SearchConfiguration;
 
 /**
  * @since 5.9.6

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component name="org.nuxeo.search.urlservice">
+<component name="org.nuxeo.search.ui.urlservice">
 
   <extension
     target="org.nuxeo.ecm.platform.url.service.DocumentViewCodecService"
@@ -7,7 +7,7 @@
 
     <documentViewCodec name="docpathsearch" enabled="true" default="false"
       prefix="nxsearch"
-      class="org.nuxeo.search.codec.SearchCodec" />
+      class="org.nuxeo.search.ui.codec.SearchCodec" />
 
   </extension>
 
@@ -21,7 +21,7 @@
       <needFilterPreprocessing>true</needFilterPreprocessing>
       <codecName>docpathsearch</codecName>
       <actionBinding>
-        #{searchActions.loadPermanentLink}
+        #{searchUIActions.loadPermanentLink}
       </actionBinding>
       <documentViewBindingApplies>
         #{mainTabsActions.isOnMainTab('search')}
@@ -31,21 +31,21 @@
         #{restHelper.getNewDocumentView(null)}
       </newDocumentViewBinding>
       <bindings>
-        <binding name="tabIds">#{searchActions.searchMainTab}</binding>
+        <binding name="tabIds">#{searchUIActions.searchMainTab}</binding>
         <binding name="language" callGetter="false">
           #{restHelper.localeString}
         </binding>
         <binding name="contentViewName" callGetter="true">
-          #{searchActions.currentContentViewName}
+          #{searchUIActions.currentContentViewName}
         </binding>
         <binding name="currentPage" callGetter="true">
-          #{searchActions.currentPage}
+          #{searchUIActions.currentPage}
         </binding>
         <binding name="pageSize" callGetter="true">
-          #{searchActions.pageSize}
+          #{searchUIActions.pageSize}
         </binding>
         <binding name="state" callGetter="false">
-          #{searchActions.state}
+          #{searchUIActions.state}
         </binding>
       </bindings>
     </urlPattern>

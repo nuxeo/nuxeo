@@ -5,8 +5,8 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <a4j:outputPanel id="searchPermanentLink_panel" ajaxRendered="true" layout="block">
-    <c:if test="#{useHtml5DragAndDrop and searchActions.isOnSearchView()}">
-      <nxu:set var="searchPermanentLinkUrl" value="#{searchActions.searchPermanentLinkUrl}" cache="true">
+    <c:if test="#{useHtml5DragAndDrop and searchUIActions.isOnSearchView()}">
+      <nxu:set var="searchPermanentLinkUrl" value="#{searchUIActions.searchPermanentLinkUrl}" cache="true">
         <c:if test="#{not empty searchPermanentLinkUrl}">
           <script type="text/javascript">
             history.pushState(null, '#{currentDocument.title}', '#{searchPermanentLinkUrl}');

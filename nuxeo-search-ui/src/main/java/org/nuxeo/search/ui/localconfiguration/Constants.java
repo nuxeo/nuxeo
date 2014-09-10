@@ -15,24 +15,14 @@
  *     Thomas Roger
  */
 
-package org.nuxeo.search.localconfiguration;
-
-import static org.nuxeo.search.localconfiguration.Constants.SEARCH_CONFIGURATION_FACET;
-
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
+package org.nuxeo.search.ui.localconfiguration;
 
 /**
- * Factory class to instantiate a {@link SearchConfiguration}.
- *
  * @since 5.9.6
  */
-public class SearchConfigurationFactory implements DocumentAdapterFactory {
-    @Override
-    public Object getAdapter(DocumentModel doc, Class<?> itf) {
-        if (doc.hasFacet(SEARCH_CONFIGURATION_FACET)) {
-            return new SearchConfigurationAdapter(doc);
-        }
-        return null;
-    }
+public class Constants {
+
+    public static final String SEARCH_CONFIGURATION_DENIED_CONTENT_VIEWS = "searchc:deniedContentViews";
+
+    public static final String SEARCH_CONFIGURATION_FACET = "SearchConfiguration";
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component name="org.nuxeo.search.layouts">
+<component name="org.nuxeo.search.ui.layouts">
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
@@ -76,7 +76,7 @@
 
     <widget name="searchFilters" type="contentViewSearchLayout">
       <properties widgetMode="any">
-        <property name="contentViewName">#{searchActions.currentContentViewName}</property>
+        <property name="contentViewName">#{searchUIActions.currentContentViewName}</property>
       </properties>
     </widget>
 
@@ -106,7 +106,7 @@
 
     <widget name="searchContentView" type="contentViewWithForms">
       <properties widgetMode="any">
-        <property name="contentViewName">#{searchActions.currentContentViewName}</property>
+        <property name="contentViewName">#{searchUIActions.currentContentViewName}</property>
         <property name="showFilterForm">false</property>
         <property name="useAjaxForm">true</property>
         <property name="useAjaxPagination">true</property>

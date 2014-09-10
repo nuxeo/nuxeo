@@ -15,7 +15,7 @@
  *     Thomas Roger
  */
 
-package org.nuxeo.search.codec;
+package org.nuxeo.search.ui.codec;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

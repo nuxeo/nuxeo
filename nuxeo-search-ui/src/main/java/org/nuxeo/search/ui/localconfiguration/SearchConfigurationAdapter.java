@@ -15,9 +15,9 @@
  *     Thomas Roger
  */
 
-package org.nuxeo.search.localconfiguration;
+package org.nuxeo.search.ui.localconfiguration;
 
-import static org.nuxeo.search.localconfiguration.Constants.SEARCH_CONFIGURATION_DENIED_CONTENT_VIEWS;
+import static org.nuxeo.search.ui.localconfiguration.Constants.SEARCH_CONFIGURATION_DENIED_CONTENT_VIEWS;
 
 import java.util.ArrayList;
 import java.util.Arrays;

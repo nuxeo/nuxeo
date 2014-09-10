@@ -17,20 +17,20 @@
         <h:outputText value="#{messages['label.search.save.description']}" />
       </p>
 
-      <h:inputText value="#{searchActions.savedSearchTitle}"
+      <h:inputText value="#{searchUIActions.savedSearchTitle}"
         placeholder="#{messages['label.search.save.placeholder']}"
         required="true" />
     </div>
 
     <div class="buttonsGadget">
       <h:commandButton value="#{messages['command.save']}"
-        action="#{searchActions.saveSearch()}"
+        action="#{searchUIActions.saveSearch()}"
         styleClass="button">
         <f:ajax execute="@form" onevent="jQuery.fancybox.close"
           render="searchPanelLeft" />
       </h:commandButton>
       <h:commandButton value="#{messages['command.cancel']}"
-        action="#{searchActions.cancelSaveSearch()}"
+        action="#{searchUIActions.cancelSaveSearch()}"
         styleClass="button">
         <f:ajax execute="@this" onevent="jQuery.fancybox.close" />
       </h:commandButton>

@@ -8,11 +8,11 @@
   </documentation>
 
   <implementation
-    class="org.nuxeo.search.SearchUIServiceImpl" />
+    class="org.nuxeo.search.ui.SearchUIServiceImpl" />
 
   <service>
     <provide
-      interface="org.nuxeo.search.SearchUIService" />
+      interface="org.nuxeo.search.ui.SearchUIService" />
   </service>
 
 </component>

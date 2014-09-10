@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component name="org.nuxeo.search.actions">
+<component name="org.nuxeo.search.ui.actions">
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
@@ -28,7 +28,7 @@
       </properties>
     </action>
 
-    <action id="submitSearch" link="#{searchActions.refreshAndRewind()}"
+    <action id="submitSearch" link="#{searchUIActions.refreshAndRewind()}"
       label="label.search.filter" order="10">
       <category>SEARCH_FILTER_ACTIONS</category>
       <properties>
@@ -39,7 +39,7 @@
       </properties>
     </action>
 
-    <action id="clearSearch" link="#{searchActions.clearSearch()}"
+    <action id="clearSearch" link="#{searchUIActions.clearSearch()}"
       label="label.search.clear" order="20" immediate="true">
       <category>SEARCH_FILTER_ACTIONS</category>
       <properties>
@@ -65,7 +65,7 @@
       <category>SAVED_SEARCHES_CURRENT_SELECTION_LIST</category>
       <filter id="canDeleteSavedSearches">
         <rule grant="true">
-          <condition>#{deleteActions.getCanDelete('DAM_SAVED_SEARCHES_CURRENT_SELECTION')}</condition>
+          <condition>#{deleteActions.getCanDelete('SAVED_SEARCHES_CURRENT_SELECTION')}</condition>
         </rule>
       </filter>
     </action>

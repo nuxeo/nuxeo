@@ -4,12 +4,12 @@
 
   <a4j:region id="#{widget.id}_region">
     <h:selectOneMenu
-      value="#{searchActions.currentSelectedSavedSearchId}"
+      value="#{searchUIActions.currentSelectedSavedSearchId}"
       id="#{widget.id}" styleClass="langSelect">
       <f:ajax execute="@this"
-        listener="#{searchActions.refreshAndRewind()}"
+        listener="#{searchUIActions.refreshAndRewind()}"
         render="#{widgetProperty_ajaxReRender}" />
-      <f:selectItems value="#{searchActions.allSavedSearchesSelectItems}" />
+      <f:selectItems value="#{searchUIActions.allSavedSearchesSelectItems}" />
     </h:selectOneMenu>
   </a4j:region>
 
