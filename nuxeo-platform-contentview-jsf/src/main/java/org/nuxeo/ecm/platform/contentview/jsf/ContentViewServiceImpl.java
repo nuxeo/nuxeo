@@ -36,7 +36,6 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.core.GenericPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.core.ReferencePageProviderDescriptor;
@@ -121,20 +120,16 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                 refQueryParams = refDesc.getQueryParameters();
             }
         }
-        WhereClauseDefinition whereClause = null;
         if (coreDesc != null && coreDesc.isEnabled()) {
-            whereClause = coreDesc.getWhereClause();
             queryParams = coreDesc.getQueryParameters();
             sortInfosBinding = coreDesc.getSortInfosBinding();
             pageSizeBinding = coreDesc.getPageSizeBinding();
+            searchDocumentType = coreDesc.getSearchDocumentType();
         } else if (genDesc != null && genDesc.isEnabled()) {
-            whereClause = genDesc.getWhereClause();
             queryParams = genDesc.getQueryParameters();
             sortInfosBinding = genDesc.getSortInfosBinding();
             pageSizeBinding = genDesc.getPageSizeBinding();
-        }
-        if (whereClause != null) {
-            searchDocumentType = whereClause.getDocType();
+            searchDocumentType = genDesc.getSearchDocumentType();
         }
         List<String> allQueryParams = new ArrayList<String>();
         if (queryParams != null) {
@@ -239,20 +234,20 @@ public class ContentViewServiceImpl extends DefaultComponent implements
 
         PageProvider<?> provider = null;
         if (refDesc != null && refDesc.isEnabled()) {
-            provider = ppService.getPageProvider(refDesc.getName(), searchDocument,
-                    sortInfos, pageSize,
-                    currentPage,
-                    resolvePageProviderProperties(refDesc.getProperties()), parameters);
+            provider = ppService.getPageProvider(refDesc.getName(),
+                    searchDocument, sortInfos, pageSize, currentPage,
+                    resolvePageProviderProperties(refDesc.getProperties()),
+                    parameters);
         } else if (coreDesc != null && coreDesc.isEnabled()) {
-            provider = ppService.getPageProvider(name, coreDesc, searchDocument,
-                    sortInfos, pageSize,
-                    currentPage,
-                    resolvePageProviderProperties(coreDesc.getProperties()), parameters);
+            provider = ppService.getPageProvider(name, coreDesc,
+                    searchDocument, sortInfos, pageSize, currentPage,
+                    resolvePageProviderProperties(coreDesc.getProperties()),
+                    parameters);
         } else if (genDesc != null && genDesc.isEnabled()) {
             provider = ppService.getPageProvider(name, genDesc, searchDocument,
-                    sortInfos, pageSize,
-                    currentPage,
-                    resolvePageProviderProperties(genDesc.getProperties()), parameters);
+                    sortInfos, pageSize, currentPage,
+                    resolvePageProviderProperties(genDesc.getProperties()),
+                    parameters);
         }
 
         return provider;
