@@ -68,7 +68,7 @@ public class SortInfoListValidator implements Validator {
      */
     public static final String EMPTY_CRITERION_MESSAGE_ID = "error.sortInfoValidator.emptyCriterion";
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void validate(FacesContext context, UIComponent component,
             Object value) throws ValidatorException {
         if (context == null || component == null) {

@@ -48,6 +48,7 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 public class ErrorPageForwarder {
 
     private static final Log nuxeoErrorLog = LogFactory.getLog("nuxeo-error-log");
+
     private static final Log log = LogFactory.getLog(ErrorPageForwarder.class);
 
     private static final String SEAM_MESSAGES = "org.jboss.seam.international.messages";
@@ -62,6 +63,7 @@ public class ErrorPageForwarder {
                 exceptionMessage, userMessage, securityError, servletContext);
     }
 
+    @SuppressWarnings("rawtypes")
     public void forwardToErrorPage(HttpServletRequest request,
             HttpServletResponse response, String stackTrace,
             String exceptionMessage, String userMessage, Boolean securityError,
@@ -76,8 +78,8 @@ public class ErrorPageForwarder {
         // if the event context was cleaned up, fish the conversation id
         // directly out of the ServletRequest attributes, else get it from
         // the event context
-        Manager manager = Contexts.isEventContextActive()
-                ? (Manager) Contexts.getEventContext().get(Manager.class)
+        Manager manager = Contexts.isEventContextActive() ? (Manager) Contexts.getEventContext().get(
+                Manager.class)
                 : (Manager) request.getAttribute(Seam.getComponentName(Manager.class));
         String conversationId = manager == null ? null
                 : manager.getCurrentConversationId();
@@ -102,11 +104,10 @@ public class ErrorPageForwarder {
         request.setAttribute("request_dump", getRequestDump(request));
         request.getRequestDispatcher("/nuxeo_error.jsp").forward(request,
                 response);
-        //FacesLifecycle.endRequest( facesContext.getExternalContext() );
-        //facesContext.release();
+        // FacesLifecycle.endRequest( facesContext.getExternalContext() );
+        // facesContext.release();
     }
 
-    @SuppressWarnings("unchecked")
     private String getRequestDump(HttpServletRequest request) {
         StringBuilder builder = new StringBuilder();
         builder.append("\nParameter:\n");
@@ -131,16 +132,19 @@ public class ErrorPageForwarder {
                 continue;
             }
             Object obj = request.getAttribute(name);
-            builder.append(name).append(": ").append(obj.toString()).append("\n");
+            builder.append(name).append(": ").append(obj.toString()).append(
+                    "\n");
         }
         builder.append("\n");
         Collection<RegistrationInfo> infos = Framework.getRuntime().getComponentManager().getRegistrations();
         builder.append("Components:\n");
         for (RegistrationInfo info : infos) {
-            builder.append(info.getComponent().getName()).append(",")
-                    .append(info.isActivated() ? "activated" : "not activated").append("\n");
+            builder.append(info.getComponent().getName()).append(",").append(
+                    info.isActivated() ? "activated" : "not activated").append(
+                    "\n");
         }
-        nuxeoErrorLog.trace("User Principal: " + request.getUserPrincipal() + "\n" + builder.toString());
+        nuxeoErrorLog.trace("User Principal: " + request.getUserPrincipal()
+                + "\n" + builder.toString());
         return builder.toString();
     }
 

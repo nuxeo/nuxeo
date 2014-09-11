@@ -97,8 +97,7 @@ public class NuxeoErrorInterceptor implements Serializable {
 
             ClientException cException = new ClientException(t);
             // redirect is not allowed during render response phase => throw
-            // the
-            // error without redirecting
+            // the error without redirecting
             if (FacesLifecycle.getPhaseId() == PhaseId.RENDER_RESPONSE) {
                 if (facesContext != null) {
                     Object req = facesContext.getExternalContext().getRequest();
@@ -175,7 +174,8 @@ public class NuxeoErrorInterceptor implements Serializable {
 
         HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
         // avoid further redirection
-        request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
+        request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY,
+                Boolean.TRUE);
 
         Redirect.instance().setViewId(viewId);
         Redirect.instance().execute();

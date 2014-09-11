@@ -62,7 +62,8 @@ public class NxFormRenderer extends FormRenderer {
         return false;
     }
 
-    protected static boolean containsDoubleClickShieldClass(final String styleClass) {
+    protected static boolean containsDoubleClickShieldClass(
+            final String styleClass) {
         if (styleClass != null) {
             String[] split = styleClass.split(" ");
             for (String s : split) {
@@ -80,13 +81,14 @@ public class NxFormRenderer extends FormRenderer {
 
         if (component.isRendered() && isDoubleShieldEnabled()) {
             if (!dcDisabledOnElement(component)) {
-                String styleClass =
-                        (String) ((HtmlForm) component).getAttributes().get("styleClass");
+                String styleClass = (String) ((HtmlForm) component).getAttributes().get(
+                        "styleClass");
                 if (StringUtils.isBlank(styleClass)) {
                     ((HtmlForm) component).setStyleClass(DOUBLE_CLICK_SHIELD_CSS_CLASS_FLAG);
                 } else {
                     if (!containsDoubleClickShieldClass(styleClass)) {
-                        ((HtmlForm) component).setStyleClass(styleClass + " " + DOUBLE_CLICK_SHIELD_CSS_CLASS_FLAG);
+                        ((HtmlForm) component).setStyleClass(styleClass + " "
+                                + DOUBLE_CLICK_SHIELD_CSS_CLASS_FLAG);
                     }
                 }
             }

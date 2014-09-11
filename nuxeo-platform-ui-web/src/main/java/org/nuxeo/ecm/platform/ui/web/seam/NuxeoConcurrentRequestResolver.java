@@ -57,7 +57,7 @@ public class NuxeoConcurrentRequestResolver extends AbstractResolver implements
         if (request.getMethod().equalsIgnoreCase("get")) {
             // flag request to skip apply method bindings
             request.setAttribute(URLPolicyService.DISABLE_ACTION_BINDING_KEY,
-                    true);
+                    Boolean.TRUE);
             // let's try to continue
             addTransientMessage(
                     Severity.WARN,
@@ -66,7 +66,7 @@ public class NuxeoConcurrentRequestResolver extends AbstractResolver implements
             return true;
         } else if (request.getMethod().equalsIgnoreCase("post")) {
 
-            if (FacesContext.getCurrentInstance()==null) {
+            if (FacesContext.getCurrentInstance() == null) {
                 // we are not inside JSF
                 // may be an Automation call inside the Seam context
                 // continuing is not safe !
