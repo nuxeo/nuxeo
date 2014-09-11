@@ -891,8 +891,13 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     @Override
-    public List<Aggregate> getAggregates() {
+    public Map<String, Aggregate> getAggregates() {
         throw new NotImplementedException();
+    }
+
+    @Override
+    public boolean hasAggregateSupport() {
+        return false;
     }
 
 }
