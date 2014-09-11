@@ -65,7 +65,8 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
         
     protected PersistenceProvider persistenceProvider;
 
-    protected PersistenceProvider getOrCreatePersistenceProvider() {
+    // public for testing purpose !
+    public PersistenceProvider getOrCreatePersistenceProvider() {
         if (persistenceProvider == null) {
             activatePersistenceProvider();
         }

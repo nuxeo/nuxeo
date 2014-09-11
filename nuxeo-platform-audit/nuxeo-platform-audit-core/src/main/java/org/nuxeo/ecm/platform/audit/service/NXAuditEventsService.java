@@ -204,4 +204,8 @@ public class NXAuditEventsService extends DefaultComponent {
         return documentAdapters;
     }
 
+    public AuditBackend getBackend() {
+        return backend;
+    }
+    
 }
