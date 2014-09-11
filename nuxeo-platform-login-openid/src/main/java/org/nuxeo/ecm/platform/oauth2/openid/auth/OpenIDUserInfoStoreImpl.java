@@ -34,10 +34,13 @@ public class OpenIDUserInfoStoreImpl implements OpenIDUserInfoStore {
     protected static final Log log = LogFactory.getLog(OpenIDUserInfoStoreImpl.class);
 
     public static final String DIRECTORY_NAME = "openIdUserInfos";
+
     public static final String SCHEMA_NAME = "openIdUserInfo";
 
     public static final String NUXEO_LOGIN_KEY = "nuxeoLogin";
+
     public static final String OPENID_SUBJECT_KEY = "subject";
+
     public static final String OPENID_PROVIDER_KEY = "provider";
 
     public static final String ID = "id";
@@ -57,7 +60,7 @@ public class OpenIDUserInfoStoreImpl implements OpenIDUserInfoStore {
             Map<String, Object> data = new HashMap<String, Object>();
 
             // Generate an ID
-            data.put(ID, getID(providerName, userInfo.getSubject()));
+            String userInfoId = getID(providerName, userInfo.getSubject());
 
             data.put(NUXEO_LOGIN_KEY, userId);
             data.put(OPENID_PROVIDER_KEY, providerName);
@@ -83,15 +86,24 @@ public class OpenIDUserInfoStoreImpl implements OpenIDUserInfoStore {
             data.put("address", userInfo.getAddress());
             data.put("updated_time", userInfo.getUpdatedTime());
 
-            session.createEntry(data);
+            if (session.hasEntry(userInfoId)) {
+                DocumentModel userInfoDoc = session.getEntry(userInfoId);
+                userInfoDoc.setProperties(SCHEMA_NAME, data);
+                session.updateEntry(userInfoDoc);
+            } else {
+                data.put(ID, userInfoId);
+                session.createEntry(data);
+            }
 
-        } catch (Exception e) {
+        } catch (DirectoryException e) {
             log.error("Error during token storage", e);
         } finally {
             if (session != null) {
                 try {
                     session.close();
-                } catch (DirectoryException e) {}
+                } catch (DirectoryException e) {
+                    log.debug(e);
+                }
             }
         }
     }
@@ -103,11 +115,13 @@ public class OpenIDUserInfoStoreImpl implements OpenIDUserInfoStore {
         try {
             DirectoryService ds = Framework.getService(DirectoryService.class);
             session = ds.open(DIRECTORY_NAME);
-            DocumentModel entry = session.getEntry(getID(providerName, userInfo.getSubject()));
+            DocumentModel entry = session.getEntry(getID(providerName,
+                    userInfo.getSubject()));
             if (entry == null) {
                 return null;
             }
-            return (String) entry.getPropertyValue(SCHEMA_NAME + ":" + NUXEO_LOGIN_KEY);
+            return (String) entry.getPropertyValue(SCHEMA_NAME + ":"
+                    + NUXEO_LOGIN_KEY);
         } catch (Exception e) {
             log.error("Error retrieving OpenID user info", e);
             return null;
@@ -115,7 +129,8 @@ public class OpenIDUserInfoStoreImpl implements OpenIDUserInfoStore {
             if (session != null) {
                 try {
                     session.close();
-                } catch (DirectoryException e) {}
+                } catch (DirectoryException e) {
+                }
             }
         }
     }
@@ -145,7 +160,8 @@ public class OpenIDUserInfoStoreImpl implements OpenIDUserInfoStore {
             if (session != null) {
                 try {
                     session.close();
-                } catch (DirectoryException e) {}
+                } catch (DirectoryException e) {
+                }
             }
         }
     }
