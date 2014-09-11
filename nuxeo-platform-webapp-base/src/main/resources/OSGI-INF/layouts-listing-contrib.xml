@@ -541,6 +541,9 @@
           <category>listing</category>
         </categories>
         <properties>
+          <defaultValues mode="any">
+            <property name="hideExternalLink">true</property>
+          </defaultValues>
           <layouts mode="any">
             <layout name="listing_title_link_widget_type_properties_any">
               <rows>
