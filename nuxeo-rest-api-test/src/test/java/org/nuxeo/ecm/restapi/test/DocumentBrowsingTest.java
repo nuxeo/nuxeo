@@ -339,6 +339,28 @@ public class DocumentBrowsingTest extends BaseTest {
     }
 
     @Test
+    public void iCanGetThePermissionsOnADocumentThroughContributor() throws Exception {
+        // Given an existing document
+        DocumentModel note = RestServerInit.getNote(0, session);
+        Map<String, String> headers = new HashMap<>();
+        headers.put(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER,
+                "permissions");
+
+        // When i do a GET Request on the note repository
+        ClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path"
+                        + note.getPathAsString(), headers);
+
+        // Then i get a list of permissions
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        JsonNode permissions = node.get(
+                RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("permissions");
+        assertNotNull(permissions);
+        assertTrue(permissions.isArray());
+    }
+
+    @Test
     public void itCanBrowseDocumentWithSpacesInPath() throws Exception {
         DocumentModel folder = RestServerInit.getFolder(0, session);
         DocumentModel note = session.createDocumentModel(
