@@ -62,12 +62,11 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BulkUpdateObjectIdAndChangeTokenImpl;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
+import org.apache.chemistry.opencmis.commons.server.CmisService;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
-import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
 
 /**
  * Nuxeo Persistent Session, having a direct connection to a Nuxeo
@@ -87,18 +86,18 @@ public class NuxeoSession implements Session {
 
     protected final NuxeoObjectFactory objectFactory;
 
-    private final NuxeoCmisService service;
+    private final CmisService service;
 
     private final NuxeoBinding binding;
 
     private OperationContext defaultContext = DEFAULT_CONTEXT;
 
-    public NuxeoSession(CoreSession coreSession, CallContext context) {
-        this.coreSession = coreSession;
-        repositoryId = coreSession.getRepositoryName();
+    public NuxeoSession(NuxeoBinding binding, CallContext context) {
+        this.coreSession = binding.getCoreSession();
+        repositoryId = context.getRepositoryId();
         objectFactory = new NuxeoObjectFactory(this);
-        service = new NuxeoCmisService(coreSession, context);
-        binding = new NuxeoBinding(service);
+        service = binding.service;
+        this.binding = binding;
     }
 
     @Override
@@ -111,7 +110,7 @@ public class NuxeoSession implements Session {
         return binding;
     }
 
-    public NuxeoCmisService getService() {
+    public CmisService getService() {
         return service;
     }
 
@@ -356,7 +355,7 @@ public class NuxeoSession implements Session {
         if (context == null) {
             throw new CmisInvalidArgumentException("Missing operation context");
         }
-        NuxeoObjectData data = service.getObject(repositoryId, objectId,
+        ObjectData data = service.getObject(repositoryId, objectId,
                 context.getFilterString(),
                 Boolean.valueOf(context.isIncludeAllowableActions()),
                 context.getIncludeRelationships(),

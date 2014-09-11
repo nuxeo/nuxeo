@@ -61,6 +61,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFact
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PolicyIdListImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.RenditionDataImpl;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
+import org.apache.chemistry.opencmis.commons.server.CmisService;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -92,7 +93,7 @@ public class NuxeoObjectData implements ObjectData {
 
     public static final String REND_KIND_NUXEO_RENDITION = "nuxeo:rendition";
 
-    public NuxeoCmisService service;
+    public CmisService service;
 
     public DocumentModel doc;
 
@@ -123,7 +124,9 @@ public class NuxeoObjectData implements ObjectData {
 
     private CallContext callContext;
 
-    public NuxeoObjectData(NuxeoCmisService service, DocumentModel doc,
+    private NuxeoCmisService nuxeoCmisService;
+
+    public NuxeoObjectData(CmisService service, DocumentModel doc,
             String filter, Boolean includeAllowableActions,
             IncludeRelationships includeRelationships, String renditionFilter,
             Boolean includePolicyIds, Boolean includeAcl,
@@ -136,15 +139,16 @@ public class NuxeoObjectData implements ObjectData {
         this.renditionFilter = renditionFilter;
         this.includePolicyIds = includePolicyIds;
         this.includeAcl = includeAcl;
-        type = service.repository.getTypeDefinition(NuxeoTypeHelper.mappedId(doc.getType()));
-        callContext = service.callContext;
+        nuxeoCmisService = NuxeoCmisService.extractFromCmisService(service);
+        type = nuxeoCmisService.repository.getTypeDefinition(NuxeoTypeHelper.mappedId(doc.getType()));
+        callContext = nuxeoCmisService.callContext;
     }
 
-    protected NuxeoObjectData(NuxeoCmisService service, DocumentModel doc) {
+    protected NuxeoObjectData(CmisService service, DocumentModel doc) {
         this(service, doc, null, null, null, null, null, null, null);
     }
 
-    public NuxeoObjectData(NuxeoCmisService service, DocumentModel doc,
+    public NuxeoObjectData(CmisService service, DocumentModel doc,
             OperationContext context) {
         this(service, doc, context.getFilterString(),
                 Boolean.valueOf(context.isIncludeAllowableActions()),
@@ -402,7 +406,7 @@ public class NuxeoObjectData implements ObjectData {
 
     @Override
     public List<ObjectData> getRelationships() {
-        return getRelationships(getId(), includeRelationships, service);
+        return getRelationships(getId(), includeRelationships, nuxeoCmisService);
     }
 
     public static List<ObjectData> getRelationships(String id,
@@ -450,7 +454,7 @@ public class NuxeoObjectData implements ObjectData {
         }
         try {
             ACP acp = doc.getACP();
-            return getAcl(acp, false, service);
+            return getAcl(acp, false, nuxeoCmisService);
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }

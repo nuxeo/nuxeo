@@ -46,7 +46,7 @@ public abstract class NuxeoFileableObject extends NuxeoObject implements
             CoreSession coreSession = data.doc.getCoreSession();
             DocumentModel parent = coreSession.getParentDocument(new IdRef(
                     getId()));
-            if (parent == null || service.isFilteredOut(parent)) {
+            if (parent == null || nuxeoCmisService.isFilteredOut(parent)) {
                 return Collections.emptyList();
             }
             Folder folder = (Folder) session.getObject(parent,

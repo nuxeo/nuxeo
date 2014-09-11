@@ -9,7 +9,9 @@ Eclipse-ExtensibleAPI: true
 Nuxeo-Component: OSGI-INF/atom-contrib.xml,
  OSGI-INF/soap-contrib.xml,
  OSGI-INF/json-contrib.xml,
- OSGI-INF/ws-contrib.xml
+ OSGI-INF/ws-contrib.xml,
+ OSGI-INF/servicefactorymanager-service.xml,
+ OSGI-INF/servicefactorymanager-contrib.xml
 Bundle-Version: 5.4.2.qualifier
 Import-Package: com.sun.xml.ws.api.handler;resolution:=optional,
  javax.servlet,
@@ -26,3 +28,4 @@ Import-Package: com.sun.xml.ws.api.handler;resolution:=optional,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.api.login
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Activator: org.nuxeo.ecm.core.opencmis.bindings.Activator

@@ -36,6 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -56,11 +57,9 @@ import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.AllowableActions;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
-import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.Principal;
 import org.apache.chemistry.opencmis.commons.data.RenditionData;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
-import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
 import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
@@ -69,7 +68,6 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentExcep
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.impl.Base64;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlEntryImpl;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlPrincipalDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.apache.commons.httpclient.util.DateUtil;
@@ -84,7 +82,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.Lock;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -93,10 +90,9 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
-import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepositories;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
+import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 
 /**
  * Tests that hit the high-level Session abstraction.
@@ -155,6 +151,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.audit");
         deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
                 "OSGI-INF/audit-persistence-config.xml");
+        // NuxeoCmisServiceFactoryManager registration
+        deployBundle("org.nuxeo.ecm.core.opencmis.bindings");
         // QueryMaker registration
         deployBundle("org.nuxeo.ecm.core.opencmis.impl");
         // these deployments needed for NuxeoAuthenticationFilter.loginAs
@@ -365,6 +363,12 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
     @Test
     public void testCreateRelationship() throws Exception {
+        if (!(isAtomPub || isBrowser)) {
+            // createRelationship admin user only empowered for AtomPub &
+            // Browser tests
+            return;
+        }
+
         String id1 = session.getObjectByPath("/testfolder1/testfile1").getId();
         String id2 = session.getObjectByPath("/testfolder1/testfile2").getId();
 
@@ -375,16 +379,6 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         properties.put(PropertyIds.TARGET_ID, id2);
         ObjectId relid = session.createRelationship(properties);
 
-        // note: has to be an administrator to get relations
-        closeSession();
-        NuxeoPrincipal admin = new NuxeoPrincipalImpl("admin", false, true);
-        super.session = openSessionAs(admin);
-        tearDownCmisSession();
-        Thread.sleep(1000); // otherwise sometimes fails to set up again
-        // for tests, server-side TrustingLoginProvider makes "admin*" an admin
-        setUpCmisSession(admin.getName());
-
-        session.clear(); // clear cache
         ItemIterable<Relationship> rels = session.getRelationships(
                 session.createObjectId(id1), false,
                 RelationshipDirection.SOURCE, null,
@@ -934,6 +928,62 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertNotNull(ws);
     }
 
+    @Test
+    public void testLastModifiedServiceWrapper() throws Exception {
+        if (!(isAtomPub || isBrowser)) {
+            // test only makes sense in the context of REST HTTP
+            return;
+        }
+
+        tearDownData();
+        tearDownCmisSession();
+        Thread.sleep(1000); // otherwise sometimes fails to set up again
+        // deploy the LastModifiedServiceWrapper
+        deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
+                "OSGI-INF/test-servicefactorymanager-contrib.xml");
+        setUpCmisSession();
+        setUpData();
+
+        GregorianCalendar lastModifiedCalendar = Helper.getCalendar(2007, 4,
+                11, 12, 0, 0); // in GMT-02
+        Folder folder = (Folder) session.getObjectByPath("/testfolder1");
+        Map<String, Serializable> properties = new HashMap<>();
+        properties.put("dc:description", "my description");
+        properties.put("dc:modified", lastModifiedCalendar);
+        folder.updateProperties(properties, true);
+        // TODO XXX fix timezone issues with H2
+        if (!(database instanceof DatabaseH2)) {
+            assertEquals(
+                    lastModifiedCalendar.getTimeInMillis(),
+                    ((GregorianCalendar) folder.getPropertyValue("dc:modified")).getTimeInMillis());
+        }
+
+        // check Last-Modified Cache Response Header
+        RepositoryInfo ri = session.getRepositoryInfo();
+        String uri = ri.getThinClientUri() + ri.getId() + "/";
+        uri += isAtomPub ? "children?id=" : "root?objectId=";
+        uri += folder.getId();
+        String lastModified = DateUtil.formatDate(lastModifiedCalendar.getTime());
+        String encoding = Base64.encodeBytes(new String(USERNAME + ":"
+                + PASSWORD).getBytes());
+        DefaultHttpClient client = new DefaultHttpClient();
+        HttpGet request = new HttpGet(uri);
+        HttpResponse response = null;
+        request.setHeader("Authorization", "Basic " + encoding);
+        try {
+            response = client.execute(request);
+            assertEquals(HttpServletResponse.SC_OK,
+                    response.getStatusLine().getStatusCode());
+            // TODO XXX fix timezone issues with H2
+            if (!(database instanceof DatabaseH2)) {
+                assertEquals(lastModified,
+                        response.getLastHeader("Last-Modified").getValue());
+            }
+        } finally {
+            client.getConnectionManager().shutdown();
+        }
+    }
+
     protected void checkValue(String prop, Object expected, CmisObject ob) {
         Object value = ob.getPropertyValue(prop);
         if (expected == NOT_NULL) {
@@ -966,6 +1016,36 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     }
 
     @Test
+    public void testGetACLBase() throws Exception {
+        String file1Id = session.getObjectByPath("/testfolder1/testfile1").getId();
+
+        Acl acl = session.getAcl(session.createObjectId(file1Id), false);
+        if (!(isAtomPub || isBrowser)) { // OpenCMIS 0.12 bug
+            assertEquals(Boolean.TRUE, acl.isExact());
+        }
+        Map<String, Set<String>> actual = getActualAcl(acl);
+        Map<String, Set<String>> expected = new HashMap<>();
+        expected.put("bob", set("Browse"));
+        expected.put("members*", set(READ, "Read"));
+        expected.put("administrators*", set(READ, WRITE, ALL, "Everything"));
+        expected.put("Administrator*", set(READ, WRITE, ALL, "Everything"));
+        assertEquals(expected, actual);
+
+        // with only basic permissions
+
+        acl = session.getAcl(session.createObjectId(file1Id), true);
+        if (!(isAtomPub || isBrowser)) { // OpenCMIS 0.12 bug
+            assertEquals(Boolean.FALSE, acl.isExact());
+        }
+        actual = getActualAcl(acl);
+        expected = new HashMap<>();
+        expected.put("members*", set(READ));
+        expected.put("administrators*", set(READ, WRITE, ALL));
+        expected.put("Administrator*", set(READ, WRITE, ALL));
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void testGetACL() throws Exception {
         CoreSession coreSession = getCoreSession();
 
@@ -975,38 +1055,10 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         String file4Id = coreSession.getDocument(
                 new PathRef("/testfolder2/testfolder3/testfile4")).getId();
 
-        // file1 already has a bob -> Browse permission from setUp
-
-        {
-            Acl acl = session.getAcl(session.createObjectId(file1Id), false);
-            if (!(isAtomPub || isBrowser)) { // OpenCMIS 0.12 bug
-                assertEquals(Boolean.TRUE, acl.isExact());
-            }
-            Map<String, Set<String>> actual = getActualAcl(acl);
-            Map<String, Set<String>> expected = new HashMap<>();
-            expected.put("bob", set("Browse"));
-            expected.put("members*", set(READ, "Read"));
-            expected.put("administrators*", set(READ, WRITE, ALL, "Everything"));
-            expected.put("Administrator*", set(READ, WRITE, ALL, "Everything"));
-            assertEquals(expected, actual);
-
-            // with only basic permissions
-
-            acl = session.getAcl(session.createObjectId(file1Id), true);
-            if (!(isAtomPub || isBrowser)) { // OpenCMIS 0.12 bug
-                assertEquals(Boolean.FALSE, acl.isExact());
-            }
-            actual = getActualAcl(acl);
-            expected = new HashMap<>();
-            expected.put("members*", set(READ));
-            expected.put("administrators*", set(READ, WRITE, ALL));
-            expected.put("Administrator*", set(READ, WRITE, ALL));
-            assertEquals(expected, actual);
-        }
-
         // set more complex ACLs
 
         {
+            // file1
             ACP acp = new ACPImpl();
             ACL acl = new ACLImpl();
             acl.add(new ACE("pete", SecurityConstants.READ_WRITE, true));

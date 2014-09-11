@@ -60,8 +60,8 @@ public class TestNuxeoBindingRenditions extends NuxeoBindingTestCase {
     }
 
     @Override
-    public void init() throws Exception {
-        super.init();
+    public void initBinding() throws Exception {
+        super.initBinding();
         objService = binding.getObjectService();
     }
 

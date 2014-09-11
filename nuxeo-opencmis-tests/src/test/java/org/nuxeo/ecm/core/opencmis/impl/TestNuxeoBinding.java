@@ -147,6 +147,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoBinding;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoTypeHelper;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
@@ -194,8 +195,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Override
-    public void init() throws Exception {
-        super.init();
+    public void initBinding(String username) throws Exception {
+        super.initBinding(username);
         repoService = binding.getRepositoryService();
         objService = binding.getObjectService();
         navService = binding.getNavigationService();
@@ -1353,9 +1354,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         res = query(statement);
         assertEquals(3, res.getNumItems().intValue());
 
-        nuxeotc.closeSession();
-        nuxeotc.session = nuxeotc.openSessionAs("bob");
-        init();
+        closeBinding();
+        initBinding("bob");
 
         statement = "SELECT cmis:objectId FROM File";
         res = query(statement);
@@ -2316,10 +2316,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     public void testQueryJoinWithSecurity() throws Exception {
         assumeTrue(supportsJoins());
 
-        nuxeotc.closeSession();
-        nuxeotc.session = nuxeotc.openSessionAs("bob");
+        closeBinding();
+        initBinding("bob");
         // only testfile1 and testfile2 are accessible by bob
-        init();
 
         String statement;
         ObjectList res;
@@ -3092,9 +3091,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(id2, getValue(od, PropertyIds.TARGET_ID));
 
         // normal user has security applied to its queries
-        nuxeotc.closeSession();
-        nuxeotc.session = nuxeotc.openSessionAs("john");
-        init();
+        closeBinding();
+        initBinding("john");
 
         statement = "SELECT A.cmis:objectId, B.cmis:objectId"
                 + " FROM cmis:document A"
@@ -3105,9 +3103,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(0, res.getNumItems().intValue());
 
         // bob has Browse on testfile1 and testfile2
-        nuxeotc.closeSession();
-        nuxeotc.session = nuxeotc.openSessionAs("bob");
-        init();
+        closeBinding();
+        initBinding("bob");
 
         // no security check on relationship itself
         statement = "SELECT A.cmis:objectId, B.cmis:objectId"
@@ -3185,44 +3182,43 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
+    public void testGetACLBase() throws Exception {
+        String file1Id = getObjectByPath("/testfolder1/testfile1").getId();
+
+        Acl acl = aclService.getAcl(repositoryId, file1Id, Boolean.FALSE, null);
+        assertEquals(Boolean.TRUE, acl.isExact());
+        Map<String, Set<String>> actual = getActualAcl(acl);
+        Map<String, Set<String>> expected = new HashMap<>();
+        expected.put("bob", set("Browse"));
+        expected.put("members*", set(READ, "Read"));
+        expected.put("administrators*", set(READ, WRITE, ALL, "Everything"));
+        expected.put("Administrator*", set(READ, WRITE, ALL, "Everything"));
+        assertEquals(expected, actual);
+
+        // with only basic permissions
+
+        acl = aclService.getAcl(repositoryId, file1Id, Boolean.TRUE, null);
+        assertEquals(Boolean.FALSE, acl.isExact());
+        actual = getActualAcl(acl);
+        expected = new HashMap<>();
+        expected.put("members*", set(READ));
+        expected.put("administrators*", set(READ, WRITE, ALL));
+        expected.put("Administrator*", set(READ, WRITE, ALL));
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void testGetACL() throws Exception {
-        CoreSession session = nuxeotc.session;
+        CoreSession coreSession = nuxeotc.session;
 
-        String folder1Id = session.getDocument(new PathRef("/testfolder1")).getId();
-        String file1Id = session.getDocument(
-                new PathRef("/testfolder1/testfile1")).getId();
-        String file4Id = session.getDocument(
-                new PathRef("/testfolder2/testfolder3/testfile4")).getId();
-
-        // file1 already has a bob -> Browse permission from setUp
-
-        {
-            Acl acl = aclService.getAcl(repositoryId, file1Id, Boolean.FALSE,
-                    null);
-            assertEquals(Boolean.TRUE, acl.isExact());
-            Map<String, Set<String>> actual = getActualAcl(acl);
-            Map<String, Set<String>> expected = new HashMap<>();
-            expected.put("bob", set("Browse"));
-            expected.put("members*", set(READ, "Read"));
-            expected.put("administrators*", set(READ, WRITE, ALL, "Everything"));
-            expected.put("Administrator*", set(READ, WRITE, ALL, "Everything"));
-            assertEquals(expected, actual);
-
-            // with only basic permissions
-
-            acl = aclService.getAcl(repositoryId, file1Id, Boolean.TRUE, null);
-            assertEquals(Boolean.FALSE, acl.isExact());
-            actual = getActualAcl(acl);
-            expected = new HashMap<>();
-            expected.put("members*", set(READ));
-            expected.put("administrators*", set(READ, WRITE, ALL));
-            expected.put("Administrator*", set(READ, WRITE, ALL));
-            assertEquals(expected, actual);
-        }
+        String folder1Id = getObjectByPath("/testfolder1").getId();
+        String file1Id = getObjectByPath("/testfolder1/testfile1").getId();
+        String file4Id = getObjectByPath("/testfolder2/testfolder3/testfile4").getId();
 
         // set more complex ACLs
 
         {
+            // file1
             ACP acp = new ACPImpl();
             ACL acl = new ACLImpl();
             acl.add(new ACE("pete", SecurityConstants.READ_WRITE, true));
@@ -3232,14 +3228,14 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
             acl = new ACLImpl("workflow");
             acl.add(new ACE("steve", SecurityConstants.READ, true));
             acp.addACL(acl);
-            session.setACP(new IdRef(file1Id), acp, true);
+            coreSession.setACP(new IdRef(file1Id), acp, true);
 
             // folder1
             acp = new ACPImpl();
             acl = new ACLImpl();
             acl.add(new ACE("mary", SecurityConstants.READ, true));
             acp.addACL(acl);
-            session.setACP(new IdRef(folder1Id), acp, true);
+            coreSession.setACP(new IdRef(folder1Id), acp, true);
 
             // block on testfile4
             acp = new ACPImpl();
@@ -3249,9 +3245,11 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
             acl.add(new ACE(SecurityConstants.EVERYONE,
                     SecurityConstants.EVERYTHING, false));
             acp.addACL(acl);
-            session.setACP(new IdRef(file4Id), acp, true);
+            coreSession.setACP(new IdRef(file4Id), acp, true);
 
-            session.save();
+            coreSession.save();
+            // process invalidations
+            ((NuxeoBinding) binding).getCoreSession().save();
         }
 
         Acl acl = aclService.getAcl(repositoryId, file1Id, Boolean.FALSE, null);
@@ -3291,8 +3289,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testApplyACL() throws Exception {
-        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
-        String file1Id = ob.getId();
+        String file1Id = getObjectByPath("/testfolder1/testfile1").getId();
 
         // file1 already has a bob -> Browse permission from setUp
 

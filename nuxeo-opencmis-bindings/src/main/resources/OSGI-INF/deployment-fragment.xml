@@ -4,7 +4,9 @@
   <extension target="web#LISTENER">
     <listener>
       <listener-class>
-        org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisContextListener
+        <!-- this is a wrapper that holds off running NuxeoCmisContextListener
+        (the real listener) until Nuxeo is fully initialized -->
+        org.nuxeo.ecm.core.opencmis.bindings.ContextListenerDelayer
       </listener-class>
     </listener>
   </extension>

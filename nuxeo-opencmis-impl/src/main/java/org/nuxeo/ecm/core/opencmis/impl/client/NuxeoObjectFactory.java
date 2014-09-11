@@ -162,7 +162,13 @@ public class NuxeoObjectFactory implements ObjectFactory {
 
     @Override
     public ContentStream convertContentStream(ContentStream contentStream) {
-        throw new UnsupportedOperationException();
+        if (contentStream == null) {
+            return null;
+        }
+        long len = contentStream.getLength();
+        BigInteger length = len < 0 ? null : BigInteger.valueOf(len);
+        return of.createContentStream(contentStream.getFileName(), length,
+                contentStream.getMimeType(), contentStream.getStream());
     }
 
     @Override
@@ -187,6 +193,9 @@ public class NuxeoObjectFactory implements ObjectFactory {
     public Properties convertProperties(Map<String, ?> properties,
             ObjectType type, Collection<SecondaryType> secondaryTypes,
             Set<Updatability> updatabilityFilter) {
+        if (properties == null) {
+            return null;
+        }
         // TODO secondaryTypes
         // TODO updatabilityFilter
         PropertiesImpl props = new PropertiesImpl();

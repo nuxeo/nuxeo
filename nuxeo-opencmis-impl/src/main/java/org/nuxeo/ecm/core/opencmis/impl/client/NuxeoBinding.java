@@ -12,9 +12,12 @@
 package org.nuxeo.ecm.core.opencmis.impl.client;
 
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
+import org.apache.chemistry.opencmis.commons.server.CmisService;
 import org.apache.chemistry.opencmis.commons.spi.AuthenticationProvider;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.commons.spi.CmisBinding;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
 
 /**
@@ -22,9 +25,13 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
  */
 public class NuxeoBinding implements CmisBinding {
 
-    public final NuxeoCmisService service;
+    private static final BindingsObjectFactory OBJECT_FACTORY = new BindingsObjectFactoryImpl();
 
-    public NuxeoBinding(NuxeoCmisService service) {
+    public final CmisService service;
+
+    private NuxeoCmisService nuxeoCmisService;
+
+    public NuxeoBinding(CmisService service) {
         this.service = service;
     }
 
@@ -34,53 +41,53 @@ public class NuxeoBinding implements CmisBinding {
     }
 
     @Override
-    public NuxeoCmisService getRepositoryService() {
+    public CmisService getRepositoryService() {
         return service;
     }
 
     @Override
-    public NuxeoCmisService getNavigationService() {
+    public CmisService getNavigationService() {
         return service;
     }
 
     @Override
-    public NuxeoCmisService getObjectService() {
+    public CmisService getObjectService() {
         return service;
     }
 
     @Override
-    public NuxeoCmisService getDiscoveryService() {
+    public CmisService getDiscoveryService() {
         return service;
     }
 
     @Override
-    public NuxeoCmisService getRelationshipService() {
+    public CmisService getRelationshipService() {
         return service;
     }
 
     @Override
-    public NuxeoCmisService getVersioningService() {
+    public CmisService getVersioningService() {
         return service;
     }
 
     @Override
-    public NuxeoCmisService getAclService() {
+    public CmisService getAclService() {
         return service;
     }
 
     @Override
-    public NuxeoCmisService getMultiFilingService() {
+    public CmisService getMultiFilingService() {
         return service;
     }
 
     @Override
-    public NuxeoCmisService getPolicyService() {
+    public CmisService getPolicyService() {
         return service;
     }
 
     @Override
     public BindingsObjectFactory getObjectFactory() {
-        return service.getObjectFactory();
+        return OBJECT_FACTORY;
     }
 
     @Override
@@ -111,4 +118,19 @@ public class NuxeoBinding implements CmisBinding {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
+
+    public CoreSession getCoreSession() {
+        return getNuxeoCmisService() == null ? null : nuxeoCmisService.getCoreSession();
+    }
+
+    /**
+     * Gets the potentially wrapped NuxeoCmisService.
+     */
+    public NuxeoCmisService getNuxeoCmisService() {
+        if (nuxeoCmisService == null) {
+            nuxeoCmisService = NuxeoCmisService.extractFromCmisService(service);
+        }
+        return nuxeoCmisService;
+    }
+
 }

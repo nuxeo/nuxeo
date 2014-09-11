@@ -21,13 +21,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.CmisVersion;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
+import org.apache.chemistry.opencmis.commons.server.CmisService;
 import org.apache.chemistry.opencmis.commons.spi.CmisBinding;
 import org.apache.chemistry.opencmis.server.impl.CallContextImpl;
 import org.apache.chemistry.opencmis.server.shared.ThresholdOutputStreamFactory;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactory;
+import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactoryManager;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoBinding;
-import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepositories;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -35,7 +35,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class NuxeoBindingTestCase {
 
-    public static final String USERNAME = "test";
+    public static final String USERNAME = "Administrator";
 
     public static final String PASSWORD = "test";
 
@@ -79,10 +79,12 @@ public class NuxeoBindingTestCase {
         params.put(SessionParameter.LOCAL_FACTORY,
                 NuxeoCmisServiceFactory.class.getName());
 
-        init();
+        initBinding();
     }
 
     protected void deployBundles() throws Exception {
+        // NuxeoCmisServiceFactoryManager registration
+        nuxeotc.deployBundle("org.nuxeo.ecm.core.opencmis.bindings");
         // QueryMaker registration
         nuxeotc.deployBundle("org.nuxeo.ecm.core.opencmis.impl");
         // MyDocType
@@ -111,28 +113,31 @@ public class NuxeoBindingTestCase {
                 "OSGI-INF/types-contrib.xml");
     }
 
-    /** Init fields from session. */
-    public void init() throws Exception {
+    public void initBinding() throws Exception {
+        initBinding(USERNAME);
+    }
+
+    public void initBinding(String username) throws Exception {
         repositoryId = nuxeotc.database.repositoryName;
-        CoreSession coreSession = nuxeotc.session;
         NuxeoRepository repository = Framework.getService(
                 NuxeoRepositories.class).getRepository(repositoryId);
         repository.setSupportsJoins(supportsJoins());
         rootFolderId = repository.getRootFolderId();
 
+        NuxeoCmisServiceFactoryManager manager = Framework.getService(NuxeoCmisServiceFactoryManager.class);
+        NuxeoCmisServiceFactory serviceFactory = manager.getNuxeoCmisServiceFactory();
         ThresholdOutputStreamFactory streamFactory = ThresholdOutputStreamFactory.newInstance(
-                new File((String) System.getProperty("java.io.tmpdir")),
+                new File(System.getProperty("java.io.tmpdir")),
                 THRESHOLD, MAX_SIZE, false);
         HttpServletRequest request = null;
         HttpServletResponse response = null;
         CallContextImpl context = new CallContextImpl(
                 CallContext.BINDING_LOCAL, CmisVersion.CMIS_1_1, repositoryId,
                 FakeServletContext.getServletContext(), request, response,
-                new NuxeoCmisServiceFactory(), streamFactory);
-        context.put(CallContext.USERNAME, USERNAME);
+                serviceFactory, streamFactory);
+        context.put(CallContext.USERNAME, username);
         context.put(CallContext.PASSWORD, PASSWORD);
-        // use manual local bindings to keep the session open
-        NuxeoCmisService service = new NuxeoCmisService(coreSession, context);
+        CmisService service = serviceFactory.getService(context);
         binding = new NuxeoBinding(service);
     }
 
@@ -149,9 +154,16 @@ public class NuxeoBindingTestCase {
     }
 
     public void tearDown() throws Exception {
+        closeBinding();
         if (nuxeotc != null) {
             nuxeotc.closeSession();
             nuxeotc.tearDown();
+        }
+    }
+
+    public void closeBinding() {
+        if (binding != null) {
+            binding.close();
         }
     }
 

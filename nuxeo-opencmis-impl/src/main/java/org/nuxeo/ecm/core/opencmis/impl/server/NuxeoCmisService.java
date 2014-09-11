@@ -81,6 +81,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentExcep
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
+import org.apache.chemistry.opencmis.commons.impl.Constants;
 import org.apache.chemistry.opencmis.commons.impl.WSConverter;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AbstractPropertyData;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
@@ -99,9 +100,12 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyIdImpl;
 import org.apache.chemistry.opencmis.commons.impl.jaxb.CmisTypeContainer;
 import org.apache.chemistry.opencmis.commons.impl.server.AbstractCmisService;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
+import org.apache.chemistry.opencmis.commons.server.CmisService;
 import org.apache.chemistry.opencmis.commons.server.ObjectInfo;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
+import org.apache.chemistry.opencmis.server.support.wrapper.AbstractCmisServiceWrapper;
+import org.apache.chemistry.opencmis.server.support.wrapper.CallContextAwareCmisService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -151,7 +155,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Nuxeo implementation of the CMIS Services, on top of a {@link CoreSession}.
  */
-public class NuxeoCmisService extends AbstractCmisService {
+public class NuxeoCmisService extends AbstractCmisService implements CallContextAwareCmisService {
 
     public static final int DEFAULT_TYPE_LEVELS = 2;
 
@@ -175,15 +179,12 @@ public class NuxeoCmisService extends AbstractCmisService {
 
     protected final NuxeoRepository repository;
 
-    protected final CoreSession coreSession;
+    protected CoreSession coreSession;
 
     /* To avoid refetching it several times per session. */
     protected String cachedChangeLogToken;
 
-    /** When false, we don't own the core session and shouldn't close it. */
-    protected final boolean coreSessionOwned;
-
-    protected final CallContext callContext;
+    protected CallContext callContext;
 
     /** Filter that hides HiddenInNavigation and deleted objects. */
     protected final Filter documentFilter;
@@ -192,40 +193,29 @@ public class NuxeoCmisService extends AbstractCmisService {
 
     protected final Set<String> writePermissions;
 
+    public static NuxeoCmisService extractFromCmisService(CmisService service) {
+        if (service == null) {
+            throw new NullPointerException();
+        }
+        for (;;) {
+            if (service instanceof NuxeoCmisService) {
+                return (NuxeoCmisService) service;
+            }
+            if (!(service instanceof AbstractCmisServiceWrapper)) {
+                return null;
+            }
+            service = ((AbstractCmisServiceWrapper) service).getWrappedService();
+        }
+    }
+
     /**
-     * Constructs a Nuxeo CMIS Service when no {@link CoreSession} is available
-     * but just a repository name.
+     * Constructs a Nuxeo CMIS Service.
      *
      * @param repositoryName the repository name
-     * @param callContext the call context
      * @since 5.9.6
      */
-    // Constructor called by binding.
-    public NuxeoCmisService(String repositoryName, CallContext callContext) {
-        this(getNuxeoRepository(repositoryName),
-                openCoreSession(repositoryName), true, callContext);
-    }
-
-    /**
-     * Constructs a Nuxeo CMIS Service from an existing {@link CoreSession}.
-     *
-     * @param coreSession the session
-     * @param callContext the call context
-     * @since 5.9.6
-     */
-    // Constructor called by high-level session from existing core session.
-    public NuxeoCmisService(CoreSession coreSession, CallContext callContext) {
-        this(getNuxeoRepository(coreSession.getRepositoryName()), coreSession,
-                false, callContext);
-    }
-
-    private NuxeoCmisService(NuxeoRepository repository,
-            CoreSession coreSession, boolean coreSessionOwned,
-            CallContext callContext) {
-        this.repository = repository;
-        this.coreSession = coreSession;
-        this.coreSessionOwned = coreSessionOwned;
-        this.callContext = callContext;
+    public NuxeoCmisService(String repositoryName) {
+        this.repository = getNuxeoRepository(repositoryName);
         documentFilter = getDocumentFilter();
         SecurityService securityService = Framework.getService(SecurityService.class);
         readPermissions = new HashSet<>(
@@ -237,8 +227,9 @@ public class NuxeoCmisService extends AbstractCmisService {
     // called in a finally block from dispatcher
     @Override
     public void close() {
-        if (coreSession != null && coreSessionOwned) {
-            closeCoreSession();
+        if (coreSession != null) {
+            coreSession.close();
+            coreSession = null;
         }
         clearObjectInfos();
     }
@@ -251,19 +242,16 @@ public class NuxeoCmisService extends AbstractCmisService {
                 repositoryName);
     }
 
-    protected static CoreSession openCoreSession(String repositoryName) {
+    protected static CoreSession openCoreSession(String repositoryName,
+            String username) {
         if (repositoryName == null) {
             return null;
         }
         try {
-            return CoreInstance.openCoreSession(repositoryName);
+            return CoreInstance.openCoreSession(repositoryName, username);
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
-    }
-
-    protected void closeCoreSession() {
-        coreSession.close();
     }
 
     public NuxeoRepository getNuxeoRepository() {
@@ -278,8 +266,21 @@ public class NuxeoCmisService extends AbstractCmisService {
         return objectFactory;
     }
 
+    @Override
     public CallContext getCallContext() {
         return callContext;
+    }
+
+    @Override
+    public void setCallContext(CallContext callContext) {
+        close();
+        this.callContext = callContext;
+        // for non-local binding, the principal is found
+        // in the login stack
+        String username = callContext.getBinding().equals(
+                CallContext.BINDING_LOCAL) ? callContext.getUsername() : null;
+        coreSession = repository == null ? null : openCoreSession(
+                repository.getId(), username);
     }
 
     /** Gets the filter that hides HiddenInNavigation and deleted objects. */
@@ -1602,7 +1603,8 @@ public class NuxeoCmisService extends AbstractCmisService {
                                 id, includeRelationships, this);
                         od.setRelationships(relationships);
                     }
-                    if (renditionFilter != null && renditionFilter.length() > 0) {
+                    if (renditionFilter != null && renditionFilter.length() > 0
+                            && !renditionFilter.equals(Constants.RENDITION_NONE)) {
                         if (doc == null) {
                             doc = getDocumentModel(id);
                         }

@@ -45,29 +45,36 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
 
     @Override
     public void cancelCheckOut() {
-        service.cancelCheckOut(getId());
+        service.cancelCheckOut(getRepositoryId(), getId(), null);
     }
 
     @Override
     public ObjectId checkIn(boolean major, Map<String, ?> properties,
             ContentStream contentStream, String checkinComment) {
-        String verId = service.checkIn(getId(), major, properties, type,
-                contentStream, checkinComment);
-        return session.createObjectId(verId);
+        return checkIn(major, properties, contentStream, checkinComment, null,
+                null, null);
     }
 
     @Override
     public ObjectId checkIn(boolean major, Map<String, ?> properties,
             ContentStream contentStream, String checkinComment,
             List<Policy> policies, List<Ace> addAces, List<Ace> removeAces) {
-        // TODO policies, addAces, removeAces
-        return checkIn(major, properties, contentStream, checkinComment);
+        Holder<String> idHolder = new Holder<>(getId());
+        service.checkIn(getRepositoryId(), idHolder, Boolean.valueOf(major),
+                objectFactory.convertProperties(properties, type, null,
+                        UPDATABILITY_READWRITE),
+                objectFactory.convertContentStream(contentStream),
+                checkinComment, objectFactory.convertPolicies(policies),
+                objectFactory.convertAces(addAces),
+                objectFactory.convertAces(removeAces), null);
+        return session.createObjectId(idHolder.getValue());
     }
 
     @Override
     public ObjectId checkOut() {
-        String pwcId = service.checkOut(getId());
-        return session.createObjectId(pwcId);
+        Holder<String> idHolder = new Holder<>(getId());
+        service.checkOut(getRepositoryId(), idHolder, null, null);
+        return session.createObjectId(idHolder.getValue());
     }
 
     @Override
@@ -86,7 +93,7 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
         if (context == null) {
             context = session.getDefaultContext();
         }
-        NuxeoObjectData newData = service.copy(getId(), target.getId(),
+        NuxeoObjectData newData = nuxeoCmisService.copy(getId(), target.getId(),
                 properties, type, versioningState, policies, addACEs,
                 removeACEs, context);
         return (NuxeoDocument) session.getObjectFactory().convertObject(

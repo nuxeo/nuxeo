@@ -44,7 +44,7 @@ import org.apache.chemistry.opencmis.commons.enums.ExtensionLevel;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListImpl;
+import org.apache.chemistry.opencmis.commons.server.CmisService;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
@@ -62,7 +62,11 @@ public abstract class NuxeoObject implements CmisObject {
 
     protected final NuxeoSession session;
 
-    protected final NuxeoCmisService service;
+    protected final CmisService service;
+
+    protected final NuxeoCmisService nuxeoCmisService;
+
+    protected final NuxeoObjectFactory objectFactory;
 
     public final NuxeoObjectData data;
 
@@ -89,6 +93,8 @@ public abstract class NuxeoObject implements CmisObject {
             ObjectType type) {
         this.session = session;
         service = session.getService();
+        nuxeoCmisService = NuxeoCmisService.extractFromCmisService(service);
+        objectFactory = session.getObjectFactory();
         this.data = data;
         this.type = type;
     }
@@ -254,21 +260,21 @@ public abstract class NuxeoObject implements CmisObject {
     @Override
     public Acl addAcl(List<Ace> addAces, AclPropagation aclPropagation) {
         return service.applyAcl(getRepositoryId(), getId(),
-                new AccessControlListImpl(addAces), null, aclPropagation, null);
+                objectFactory.convertAces(addAces), null, aclPropagation, null);
     }
 
     @Override
     public Acl applyAcl(List<Ace> addAces, List<Ace> removeAces,
             AclPropagation aclPropagation) {
         return service.applyAcl(getRepositoryId(), getId(),
-                new AccessControlListImpl(addAces), new AccessControlListImpl(
-                        removeAces), aclPropagation, null);
+                objectFactory.convertAces(addAces),
+                objectFactory.convertAces(removeAces), aclPropagation, null);
     }
 
     @Override
     public Acl setAcl(List<Ace> aces) {
         return service.applyAcl(getRepositoryId(), getId(),
-                new AccessControlListImpl(aces),
+                objectFactory.convertAces(aces),
                 AclPropagation.REPOSITORYDETERMINED);
     }
 
@@ -280,7 +286,7 @@ public abstract class NuxeoObject implements CmisObject {
     @Override
     public Acl removeAcl(List<Ace> removeAces, AclPropagation aclPropagation) {
         return service.applyAcl(getRepositoryId(), getId(), null,
-                new AccessControlListImpl(removeAces), aclPropagation, null);
+                objectFactory.convertAces(removeAces), aclPropagation, null);
     }
 
     @Override
