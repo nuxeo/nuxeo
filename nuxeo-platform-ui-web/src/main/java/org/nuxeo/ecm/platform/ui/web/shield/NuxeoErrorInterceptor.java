@@ -74,12 +74,6 @@ public class NuxeoErrorInterceptor implements Serializable {
             return invocation.proceed();
         } catch (Throwable t) {
 
-            if (t.getClass().getAnnotation(NuxeoUserFeedBackException.class) != null) {
-                // don't intercept this Exception !!!
-                Exception e = (Exception) t;
-                throw e;
-            }
-
             if (Transaction.instance().isActive()) {
                 Transaction.instance().setRollbackOnly();
             }
