@@ -62,7 +62,7 @@ import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
-import org.nuxeo.ecm.platform.audit.api.AuditReader;
+import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
@@ -505,8 +505,8 @@ public class TestPermissionHierarchyFileSystemChanges {
     }
 
     protected void cleanUpAuditLog() {
-        NXAuditEventsService auditService = (NXAuditEventsService) Framework.getService(AuditReader.class);
-        auditService.getOrCreatePersistenceProvider().run(true, new RunVoid() {
+        NXAuditEventsService auditService = (NXAuditEventsService) Framework.getRuntime().getComponent(NXAuditEventsService.NAME);
+        ((DefaultAuditBackend)auditService.getBackend()).getOrCreatePersistenceProvider().run(true, new RunVoid() {
             @Override
             public void runWith(EntityManager em) throws ClientException {
                 em.createNativeQuery("delete from nxp_logs_mapextinfos").executeUpdate();
