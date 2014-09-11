@@ -1,19 +1,16 @@
-<html xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:a4j="http://richfaces.org/a4j">
-
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core">
   <f:view contentType="text/html" />
   <h:head>
-    <title>Test errors in nuxeo jsf</title>
+    <title>Test error management in Nuxeo</title>
   </h:head>
   <h:outputScript name="js/fixviewstate.js" target="head" />
   <h:outputScript name="js/fixformtargetframeid.js" target="head" />
 
 <body>
 
-<h3>Test errors in nuxeo jsf</h3>
+<h3>Test errors in Nuxeo JSF</h3>
 
 <h:messages globalOnly="true"/>
 
@@ -23,6 +20,10 @@
       value="Error invalid html" /></li>
     <li><h:commandLink action="error_ui_include_not_found"
       value="Error ui:include not found" /></li>
+    <li><h:commandLink action="error_ui_decorate_not_found"
+      value="Error ui:decorate not found" /></li>
+    <li><h:commandLink action="error_ui_composition_not_found"
+      value="Error ui:composition not found" /></li>
     <li><h:commandLink action="error_jsf_function_checked"
       value="JSF checked error" /></li>
     <li><h:commandLink action="error_jsf_function_unchecked"
@@ -30,7 +31,7 @@
   </ul>
 </h:form>
 
-<h3>Test errors in nuxeo seam</h3>
+<h3>Test errors in Nuxeo Seam</h3>
 
 <h:form disableDoubleClickShield="true">
   <ul>
@@ -64,49 +65,17 @@
   </ul>
 </h:form>
 
-<h3>Test Seam concurrency issues </h3>
+<h3>Test behaviours in Nuxeo Seam</h3>
 
 <h:form disableDoubleClickShield="true">
   <ul>
-    <li><h:commandLink
-      action="#{errorSeamComponent.performConcurrentRequestTimeoutException}"
-      value="Seam long blocking call" /> (increment a counter)
-      -- current value of counter is #{errorSeamComponent.counterValue}
-    </li>
-    <li>
-      <h:outputLink value ="/nuxeo/error_test_web/error_index.faces?conversationId=#{nxu:htmlEscape(org.jboss.seam.core.manager.currentConversationId)}">Refresh this page</h:outputLink> (simple GET)
-    </li>
-    <li>
-      <nxd:restDocumentLink document="#{currentDocument}" pattern="home" view="view_home">Rest link</nxd:restDocumentLink>
-    </li>
+    <li><h:commandLink action="test_seam_concurrency"
+      value="Test Seam concurrency issues" /></li>
+    <li><h:commandLink action="test_seam_page_scope"
+      value="Test Seam page scope" /></li>
+    <li><h:commandLink action="test_distributed_transaction"
+      value="Test distributed transaction" /></li>
   </ul>
-</h:form>
-
-<h3>Test Seam page scope</h3>
-
-<h:form disableDoubleClickShield="true">
-  <ul>
-    <li><h:commandLink action="error_seam_page_scope"
-        value="Seam page scope" /></li>
-  </ul>
-</h:form>
-<h3>Test distributed transaction</h3>
-<h:form disableDoubleClickShield="true">
-<ul>
-    <li><a4j:commandLink
-      action="#{errorSeamComponent.clearDistributedRollbackEnv}"
-      value="clear dummies"/></li>
-    <li><a4j:commandLink
-      action="#{errorSeamComponent.performDistributedRollback}"
-      value="rollback alter transaction"/></li>
-</ul>
-<a4j:outputPanel ajaxRendered="true" id="roots">
-<ul>Persistence roots
-  <li>dictionary is <h:outputText value="#{errorSeamComponent.dummyUserExists?' not':' '} empty"/></li>
-  <li>audit is <h:outputText value="#{errorSeamComponent.dummyAuditExists?' not':' '} empty"/></li>
-  <li>repository is<h:outputText value="#{errorSeamComponent.dummyDocExists?' not':' '} empty"/></li>
-</ul>
-</a4j:outputPanel>
 </h:form>
 
 </body>

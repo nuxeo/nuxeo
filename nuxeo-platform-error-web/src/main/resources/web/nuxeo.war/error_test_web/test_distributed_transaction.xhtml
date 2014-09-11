@@ -1,0 +1,39 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j">
+  <f:view contentType="text/html" />
+  <h:head>
+    <title>Test distributed transaction</title>
+  </h:head>
+  <h:outputScript name="js/fixviewstate.js" target="head" />
+  <h:outputScript name="js/fixformtargetframeid.js" target="head" />
+
+<body>
+
+<h3>Test distributed transaction</h3>
+
+<h:messages globalOnly="true"/>
+
+<h:form disableDoubleClickShield="true">
+<ul>
+    <li><a4j:commandLink
+      action="#{errorSeamComponent.clearDistributedRollbackEnv}"
+      value="clear dummies"/></li>
+    <li><a4j:commandLink
+      action="#{errorSeamComponent.performDistributedRollback}"
+      value="rollback alter transaction"/></li>
+</ul>
+<a4j:outputPanel ajaxRendered="true" id="roots">
+<ul>Persistence roots
+  <li>dictionary is <h:outputText value="#{errorSeamComponent.dummyUserExists?' not':' '} empty"/></li>
+  <li>audit is <h:outputText value="#{errorSeamComponent.dummyAuditExists?' not':' '} empty"/></li>
+  <li>repository is<h:outputText value="#{errorSeamComponent.dummyDocExists?' not':' '} empty"/></li>
+</ul>
+</a4j:outputPanel>
+</h:form>
+
+</body>
+
+</html>

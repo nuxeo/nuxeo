@@ -26,6 +26,18 @@
     </navigation-case>
 
     <navigation-case>
+      <from-outcome>error_ui_decorate_not_found</from-outcome>
+      <to-view-id>/error_test_web/error_ui_decorate_not_found.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>error_ui_composition_not_found</from-outcome>
+      <to-view-id>/error_test_web/error_ui_composition_not_found.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
       <from-outcome>error_jsf_function_checked</from-outcome>
       <to-view-id>/error_test_web/error_jsf_function_checked.xhtml</to-view-id>
       <redirect />
@@ -78,8 +90,20 @@
     </navigation-case>
 
     <navigation-case>
-      <from-outcome>error_seam_page_scope</from-outcome>
-      <to-view-id>/error_test_web/error_seam_page_scope.xhtml</to-view-id>
+      <from-outcome>test_seam_concurrency</from-outcome>
+      <to-view-id>/error_test_web/test_seam_concurrency.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>test_seam_page_scope</from-outcome>
+      <to-view-id>/error_test_web/test_seam_page_scope.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>test_distributed_transaction</from-outcome>
+      <to-view-id>/error_test_web/test_distributed_transaction.xhtml</to-view-id>
       <redirect />
     </navigation-case>
 

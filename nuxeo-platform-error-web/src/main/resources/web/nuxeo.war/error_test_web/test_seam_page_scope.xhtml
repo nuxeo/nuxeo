@@ -2,13 +2,19 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:s="http://jboss.com/products/seam/taglib">
+  xmlns:a4j="http://richfaces.org/a4j">
+  <f:view contentType="text/html" />
+  <h:head>
+    <title>Test Seam page scope in Nuxeo</title>
+  </h:head>
+  <h:outputScript name="js/fixviewstate.js" target="head" />
+  <h:outputScript name="js/fixformtargetframeid.js" target="head" />
 
-<title>Test seam page scope in Nuxeo</title>
 <body>
 
   <h3>Test seam page scope in Nuxeo</h3>
+
+  <h:messages globalOnly="true"/>
 
   <p>Seam page scope is currently broken in Nuxeo</p>
 
@@ -40,7 +46,7 @@
 
     <h:outputText value="#{dummySeamBean.dummyBoolean}" />
 
-    <h:commandLink action="error_seam_page_scope" value="Refresh" />
+    <h:commandLink action="test_seam_page_scope" value="Refresh" />
 
   </h:form>
 
