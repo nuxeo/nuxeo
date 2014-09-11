@@ -9,10 +9,10 @@ author: lkemen@nuxeo.com
   padding: .5em }
 
 .nxSearchForm {
+  font-size: .8em;
   background-color: "neutral.lighter (__FLAVOR__ background)";
   width: 19% }
 
 .nxSearchResults {
   background-color: #fff;
-  text-align: center;
   width: 81% }
