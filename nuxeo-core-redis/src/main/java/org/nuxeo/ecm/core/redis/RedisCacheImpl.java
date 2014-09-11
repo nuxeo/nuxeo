@@ -24,11 +24,14 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.cache.AbstractCache;
 import org.nuxeo.ecm.core.cache.CacheDescriptor;
 import org.nuxeo.runtime.api.Framework;
+
+import redis.clients.jedis.Jedis;
 
 /**
  * Cache implementation on top of Redis
@@ -90,7 +93,7 @@ public class RedisCacheImpl extends AbstractCache {
         return executor.execute(new RedisCallable<Serializable>() {
 
             @Override
-            public Serializable call() throws Exception {
+            public Serializable call(Jedis jedis) throws Exception {
                 return deserializeValue(jedis.get(bytes(formatKey(key))));
             }
         });
@@ -111,7 +114,7 @@ public class RedisCacheImpl extends AbstractCache {
         executor.execute(new RedisCallable<Void>() {
 
             @Override
-            public Void call() throws Exception {
+            public Void call(Jedis jedis) throws Exception {
                 jedis.del(new String[] { formatKey(key)});
                 return null;
             }
@@ -129,7 +132,7 @@ public class RedisCacheImpl extends AbstractCache {
         executor.execute(new RedisCallable<Void>() {
 
             @Override
-            public Void call() throws Exception {
+            public Void call(Jedis jedis) throws Exception {
                 byte[] bkey = bytes(formatKey(key));
                 jedis.set(bkey, serializeValue(value));
                 // Redis set in second ttl but descriptor set as mn

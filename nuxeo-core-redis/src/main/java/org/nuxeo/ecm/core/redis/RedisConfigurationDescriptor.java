@@ -110,7 +110,7 @@ public class RedisConfigurationDescriptor {
         pool = new JedisPool(new JedisPoolConfig(), hosts[0].name,
                 hosts[0].port, timeout, StringUtils.defaultIfBlank(password,
                         null), database);
-        executor = new RedisPoolExecutor(pool, prefix);
+        executor = new RedisPoolExecutor(pool);
         return true;
     }
 
@@ -120,7 +120,7 @@ public class RedisConfigurationDescriptor {
                     new JedisPoolConfig(), timeout, StringUtils.defaultIfBlank(
                             password, null), database);
             executor = new RedisFailoverExecutor(failoverTimeout,
-                    new RedisPoolExecutor(pool, prefix));
+                    new RedisPoolExecutor(pool));
         } catch (Exception cause) {
             throw new RuntimeException("Cannot connect to redis", cause);
         }

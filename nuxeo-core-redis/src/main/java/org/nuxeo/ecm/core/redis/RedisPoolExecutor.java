@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,11 +19,9 @@ public class RedisPoolExecutor implements RedisExecutor {
 
     protected final Pool<Jedis> pool;
 
-    protected final String prefix;
 
-    public RedisPoolExecutor(Pool<Jedis> pool, String prefix) {
+    public RedisPoolExecutor(Pool<Jedis> pool) {
         this.pool = pool;
-        this.prefix = prefix;
     }
 
     @Override
@@ -32,9 +30,7 @@ public class RedisPoolExecutor implements RedisExecutor {
         Jedis jedis = pool.getResource();
         boolean brokenResource = false;
         try {
-            callable.jedis = jedis;
-            callable.prefix = prefix;
-            return callable.call();
+            return callable.call(jedis);
         } catch (JedisConnectionException cause) {
             brokenResource = true;
             throw cause;

@@ -31,6 +31,8 @@ import org.nuxeo.ecm.core.redis.RedisExecutor;
 import org.nuxeo.ecm.core.storage.lock.AbstractLockManager;
 import org.nuxeo.runtime.api.Framework;
 
+import redis.clients.jedis.Jedis;
+
 /**
  * Redis-based lock manager.
  *
@@ -112,7 +114,7 @@ public class RedisLockManager extends AbstractLockManager {
             return redisExecutor.execute(new RedisCallable<Lock>() {
 
                 @Override
-                public Lock call() {
+                public Lock call(Jedis jedis) {
                     String lockString = jedis.get(redisPrefix + id);
                     return lockFromString(lockString);
                 }
@@ -128,7 +130,7 @@ public class RedisLockManager extends AbstractLockManager {
             return redisExecutor.execute(new RedisCallable<Lock>() {
 
                 @Override
-                public Lock call() {
+                public Lock call(Jedis jedis) {
                     String lockString = (String) jedis.evalsha(scriptSetSha,
                             Arrays.asList(redisPrefix + id),
                             Arrays.asList(stringFromLock(lock)));
@@ -146,7 +148,7 @@ public class RedisLockManager extends AbstractLockManager {
             return redisExecutor.execute(new RedisCallable<Lock>() {
 
                 @Override
-                public Lock call() {
+                public Lock call(Jedis jedis) {
                     String lockString = (String) jedis.evalsha(scriptRemoveSha,
                             Arrays.asList(redisPrefix + id),
                             Arrays.asList(owner == null ? "" : owner));

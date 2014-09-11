@@ -20,4 +20,5 @@ public interface RedisExecutor {
      * @since 5.9.6
      */
     <T> T execute(RedisCallable<T> call) throws IOException, JedisException;
+
 }
