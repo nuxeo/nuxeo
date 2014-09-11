@@ -8,6 +8,10 @@
                  class="org.nuxeo.ecm.automation.io.services.enricher.ACLContentEnricher">
       <category>acls</category>
     </enricher>
+    <enricher name="permissions"
+            class="org.nuxeo.ecm.automation.io.services.enricher.UserPermissionsContentEnricher">
+      <category>permissions</category>
+    </enricher>
     <enricher name="thumbnail"
                  class="org.nuxeo.ecm.automation.io.services.enricher.ThumbnailContentEnricher">
       <category>thumbnail</category>
