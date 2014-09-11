@@ -155,7 +155,8 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Nuxeo implementation of the CMIS Services, on top of a {@link CoreSession}.
  */
-public class NuxeoCmisService extends AbstractCmisService implements CallContextAwareCmisService {
+public class NuxeoCmisService extends AbstractCmisService implements
+        CallContextAwareCmisService {
 
     public static final int DEFAULT_TYPE_LEVELS = 2;
 
@@ -178,6 +179,9 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
     protected final BindingsObjectFactory objectFactory = new BindingsObjectFactoryImpl();
 
     protected final NuxeoRepository repository;
+
+    /** When false, we don't own the core session and shouldn't close it. */
+    protected final boolean coreSessionOwned;
 
     protected CoreSession coreSession;
 
@@ -209,13 +213,29 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
     }
 
     /**
+     * Constructs a Nuxeo CMIS Service from an existing {@link CoreSession}.
+     *
+     * @param coreSession the session
+     * @since 5.9.6
+     */
+    public NuxeoCmisService(CoreSession coreSession) {
+        this(coreSession, coreSession.getRepositoryName());
+    }
+
+    /**
      * Constructs a Nuxeo CMIS Service.
      *
      * @param repositoryName the repository name
      * @since 5.9.6
      */
     public NuxeoCmisService(String repositoryName) {
-        this.repository = getNuxeoRepository(repositoryName);
+        this(null, repositoryName);
+    }
+
+    protected NuxeoCmisService(CoreSession coreSession, String repositoryName) {
+        this.coreSession = coreSession;
+        coreSessionOwned = coreSession == null;
+        repository = getNuxeoRepository(repositoryName);
         documentFilter = getDocumentFilter();
         SecurityService securityService = Framework.getService(SecurityService.class);
         readPermissions = new HashSet<>(
@@ -227,7 +247,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
     // called in a finally block from dispatcher
     @Override
     public void close() {
-        if (coreSession != null) {
+        if (coreSessionOwned && coreSession != null) {
             coreSession.close();
             coreSession = null;
         }
@@ -275,12 +295,14 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
     public void setCallContext(CallContext callContext) {
         close();
         this.callContext = callContext;
-        // for non-local binding, the principal is found
-        // in the login stack
-        String username = callContext.getBinding().equals(
-                CallContext.BINDING_LOCAL) ? callContext.getUsername() : null;
-        coreSession = repository == null ? null : openCoreSession(
-                repository.getId(), username);
+        if (coreSessionOwned) {
+            // for non-local binding, the principal is found
+            // in the login stack
+            String username = callContext.getBinding().equals(
+                    CallContext.BINDING_LOCAL) ? callContext.getUsername() : null;
+            coreSession = repository == null ? null : openCoreSession(
+                    repository.getId(), username);
+        }
     }
 
     /** Gets the filter that hides HiddenInNavigation and deleted objects. */
@@ -1406,7 +1428,8 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
                 max = MAX_CHANGE_LOG_SIZE;
             }
             List<ObjectData> ods = null;
-            // retry with increasingly larger page size if some items are skipped
+            // retry with increasingly larger page size if some items are
+            // skipped
             for (int scale = 1; scale < 128; scale *= 2) {
                 int pageSize = max * scale + 1;
                 if (pageSize < 0) { // overflow
@@ -1603,7 +1626,8 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
                                 id, includeRelationships, this);
                         od.setRelationships(relationships);
                     }
-                    if (renditionFilter != null && renditionFilter.length() > 0
+                    if (renditionFilter != null
+                            && renditionFilter.length() > 0
                             && !renditionFilter.equals(Constants.RENDITION_NONE)) {
                         if (doc == null) {
                             doc = getDocumentModel(id);
