@@ -24,7 +24,7 @@ import org.nuxeo.ecm.core.work.WorkManagerTest;
  *
  * @since 5.8
  */
-public class RedisWorkManagerTest extends WorkManagerTest {
+public class TestRedisWorkManager extends WorkManagerTest {
 
     protected RedisConfigurationDescriptor redisConfigurationDescriptor;
 

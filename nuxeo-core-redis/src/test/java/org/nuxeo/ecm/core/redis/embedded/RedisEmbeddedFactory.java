@@ -3,24 +3,26 @@ package org.nuxeo.ecm.core.redis.embedded;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
 
 import redis.clients.jedis.Jedis;
 
 import com.lordofthejars.nosqlunit.proxy.RedirectProxy;
 import com.lordofthejars.nosqlunit.redis.embedded.NoArgsJedis;
 
-public class ReddisEmbeddedFactory implements PooledObjectFactory<Jedis> {
+public class RedisEmbeddedFactory implements PooledObjectFactory<Jedis> {
 
-    protected final Jedis jedis = RedirectProxy.createProxy(NoArgsJedis.class,
-            new RedisEmbeddedConnection(this));
+    protected final RedisEmbeddedConnection connection = new RedisEmbeddedConnection(this);
 
     protected final RedisEmbeddedLuaEngine lua =
-            new RedisEmbeddedLuaEngine(this);
+            new RedisEmbeddedLuaEngine(connection);
 
     @Override
     public PooledObject<Jedis> makeObject() throws Exception {
-        PooledObject<Jedis> pooled = new RedisEmbeddedPooledObject(jedis);
-        LogFactory.getLog(ReddisEmbeddedFactory.class).trace("created " + pooled);
+        Jedis jedis = RedirectProxy.createProxy(NoArgsJedis.class,
+                connection);
+        PooledObject<Jedis> pooled = new DefaultPooledObject<>(jedis);
+        LogFactory.getLog(RedisEmbeddedFactory.class).trace("created " + pooled);
         return pooled;
     }
 
