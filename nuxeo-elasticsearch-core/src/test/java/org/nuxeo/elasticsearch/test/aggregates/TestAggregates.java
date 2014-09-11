@@ -16,16 +16,12 @@
  */
 
 package org.nuxeo.elasticsearch.test.aggregates;
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
-
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.SystemUtils;
 import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,9 +29,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
-import org.nuxeo.ecm.platform.query.api.AggregateQuery;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -303,16 +297,15 @@ public class TestAggregates {
         PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
                 null, null, (long) 0, props);
 
-        List<Aggregate> aggs = pp.getAggregates();
-        Assert.assertEquals(3, aggs.size());
+        Assert.assertEquals(3,  pp.getAggregates().size());
         Assert.assertEquals(
                 "AggregateImpl(source, terms, [BucketTerm(Source0, 1), BucketTerm(Source1, 1), BucketTerm(Source2, 1), BucketTerm(Source3, 1), BucketTerm(Source4, 1)])",
-                aggs.get(0).toString());
+                pp.getAggregates().get("source").toString());
         Assert.assertEquals(
                 "AggregateImpl(coverage, terms, [BucketTerm(Coverage2, 1)])",
-                aggs.get(1).toString());
+                pp.getAggregates().get("coverage").toString());
         Assert.assertEquals("AggregateImpl(nature, terms, [BucketTerm(Nature0, 1)])",
-                aggs.get(2).toString());
+                pp.getAggregates().get("nature").toString());
 
     }
 

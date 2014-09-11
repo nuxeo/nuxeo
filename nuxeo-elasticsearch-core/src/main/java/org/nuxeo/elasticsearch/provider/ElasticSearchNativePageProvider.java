@@ -18,6 +18,7 @@
 package org.nuxeo.elasticsearch.provider;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,10 +50,10 @@ public class ElasticSearchNativePageProvider extends
     private static final long serialVersionUID = 1L;
     protected List<DocumentModel> currentPageDocuments;
 
-    protected List<Aggregate> currentAggregates;
+    protected HashMap<String, Aggregate> currentAggregates;
 
     @Override
-    public List<Aggregate> getAggregates() {
+    public Map<String, Aggregate> getAggregates() {
         getCurrentPage();
         return currentAggregates;
     }
@@ -88,13 +89,21 @@ public class ElasticSearchNativePageProvider extends
             }
             EsResult ret = ess.queryAndAggregate(nxQuery);
             DocumentModelList dmList = ret.getDocuments();
-            currentAggregates = ret.getAggregates();
+            currentAggregates = new HashMap<String, Aggregate>(ret.getAggregates().size());
+            for (Aggregate agg : ret.getAggregates()) {
+                currentAggregates.put(agg.getId(), agg);
+            }
             setResultsCount(dmList.totalSize());
             currentPageDocuments = dmList;
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
         return currentPageDocuments;
+    }
+
+    @Override
+    public boolean hasAggregateSupport() {
+        return true;
     }
 
     protected QueryBuilder makeQueryBuilder() {
