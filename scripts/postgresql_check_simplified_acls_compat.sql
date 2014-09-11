@@ -6,7 +6,8 @@ AS $$
 BEGIN
   RETURN (SELECT array_to_string(array_agg(name),'/','/')
     FROM hierarchy h
-    JOIN (SELECT unnest(ancestors) AS id FROM ancestors WHERE id=docid) v ON v.id = h.id);
+    JOIN (SELECT unnest(ancestors) AS id FROM ancestors WHERE id=docid
+          UNION ALL SELECT docid) v ON v.id = h.id);
 END $$
 LANGUAGE plpgsql
 STABLE;
