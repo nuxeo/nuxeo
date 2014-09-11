@@ -20,12 +20,10 @@ package org.nuxeo.ecm.platform.query.core;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
@@ -51,8 +49,11 @@ public class AggregateDescriptor implements AggregateDefinition {
     @XNode("jsonProperties")
     protected String jsonProperties;
 
-    @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
-    protected Map<String, String> properties = new HashMap<String, String>();
+/*    @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
+    protected Map<String, String> properties = new HashMap<String, String>();*/
+
+    @XNode(value = "properties")
+    protected PropertiesDescriptor aggregateProperties = new PropertiesDescriptor();
 
     @Override
     public String getId() {
@@ -75,7 +76,7 @@ public class AggregateDescriptor implements AggregateDefinition {
 
     @Override
     public void setProperty(String name, String value) {
-        properties.put(name, value);
+        aggregateProperties.properties.put(name, value);
     }
 
     @Override
@@ -84,7 +85,7 @@ public class AggregateDescriptor implements AggregateDefinition {
             StringWriter out = new StringWriter();
             ObjectMapper objectMapper = new ObjectMapper();
             try {
-                objectMapper.writeValue(out, properties);
+                objectMapper.writeValue(out, aggregateProperties.getProperties());
             } catch (IOException e) {
                 throw new IllegalArgumentException(e.getMessage(), e);
             }
@@ -96,7 +97,7 @@ public class AggregateDescriptor implements AggregateDefinition {
 
     @Override
     public Map<String, String> getProperties() {
-        return properties;
+        return aggregateProperties.getProperties();
     }
 
     @Override
@@ -134,9 +135,9 @@ public class AggregateDescriptor implements AggregateDefinition {
             clone.field = field.clone();
         }
         clone.jsonProperties = jsonProperties;
-        if (properties != null) {
-            clone.properties = new HashMap<String, String>();
-            clone.properties.putAll(properties);
+        if (aggregateProperties != null) {
+            clone.aggregateProperties = new PropertiesDescriptor();
+            clone.aggregateProperties.properties.putAll(aggregateProperties.properties);
         }
         return clone;
     }

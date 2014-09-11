@@ -113,8 +113,10 @@
       <aggregates>
         <aggregate id="source_agg" type="terms" parameter="dc:source">
           <field schema="advanced_search" name="source_agg"/>
-          <property name="minDocSize">5</property>
-          <property name="order">terms desc</property>
+          <properties>
+            <property name="minDocSize">5</property>
+            <property name="order">terms desc</property>
+          </properties>
         </aggregate>
         <aggregate id="coverage_agg" type="histogram" parameter="dc:coverage">
           <field schema="search" name="coverage_agg"/>
