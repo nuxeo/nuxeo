@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -36,6 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.webapp.action.ActionContextProvider;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.search.ui.SearchUIService;
 import org.nuxeo.search.ui.localconfiguration.SearchConfiguration;
@@ -47,16 +47,19 @@ public class SearchUIConfigurationActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected Set<String> registeredContentViewNames;
-
     @In(create = true)
     protected transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
+    @In(create = true, required = false)
+    protected transient ActionContextProvider actionContextProvider;
+
     @In(create = true)
     protected transient ContentViewService contentViewService;
+
+    protected List<ContentViewHeader> registeredContentViewHeaders;
 
     public List<ContentViewHeader> getSelectedContentViewHeaders()
             throws Exception {
@@ -72,9 +75,11 @@ public class SearchUIConfigurationActions implements Serializable {
 
         List<String> notAllowedContentView = getDeniedContentViewNames(document);
         List<ContentViewHeader> allowedContentView = new ArrayList<>();
-        for (String cvName : getRegisteredContentViewNames()) {
-            if (!notAllowedContentView.contains(cvName)) {
-                allowedContentView.add(contentViewService.getContentViewHeader(cvName));
+        SearchUIService searchUIService = Framework.getService(SearchUIService.class);
+        List<ContentViewHeader> contentViewHeaders = searchUIService.getContentViewHeaders(actionContextProvider.createActionContext());
+        for (ContentViewHeader contentViewHeader : contentViewHeaders) {
+            if (!notAllowedContentView.contains(contentViewHeader.getName())) {
+                allowedContentView.add(contentViewHeader);
             }
         }
 
@@ -113,11 +118,4 @@ public class SearchUIConfigurationActions implements Serializable {
         return contentViews;
     }
 
-    protected Set<String> getRegisteredContentViewNames() throws Exception {
-        if (registeredContentViewNames == null) {
-            SearchUIService searchUIService = Framework.getService(SearchUIService.class);
-            registeredContentViewNames = searchUIService.getContentViewNames();
-        }
-        return registeredContentViewNames;
-    }
 }

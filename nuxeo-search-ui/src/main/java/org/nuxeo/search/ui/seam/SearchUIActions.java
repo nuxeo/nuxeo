@@ -26,10 +26,8 @@ import static org.nuxeo.ecm.webapp.helpers.EventNames.USER_ALL_DOCUMENT_TYPES_SE
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
@@ -66,6 +64,7 @@ import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
+import org.nuxeo.ecm.webapp.action.ActionContextProvider;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.search.ui.SearchUIService;
@@ -114,6 +113,9 @@ public class SearchUIActions implements Serializable {
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
+    @In(create = true, required = false)
+    protected transient ActionContextProvider actionContextProvider;
+
     @In(create = true)
     protected transient WebActions webActions;
 
@@ -129,9 +131,7 @@ public class SearchUIActions implements Serializable {
     @In(create = true)
     protected Map<String, String> messages;
 
-    protected List<String> contentViewNames;
-
-    protected Set<ContentViewHeader> contentViewHeaders;
+    protected List<ContentViewHeader> contentViewHeaders;
 
     protected String currentContentViewName;
 
@@ -182,9 +182,9 @@ public class SearchUIActions implements Serializable {
 
     public String getCurrentContentViewName() {
         if (currentContentViewName == null) {
-            List<String> contentViewNames = getContentViewNames();
-            if (!contentViewNames.isEmpty()) {
-                currentContentViewName = contentViewNames.get(0);
+            List<ContentViewHeader> contentViewHeaders = getContentViewHeaders();
+            if (!contentViewHeaders.isEmpty()) {
+                currentContentViewName = contentViewHeaders.get(0).getName();
             }
         }
         return currentContentViewName;
@@ -202,16 +202,18 @@ public class SearchUIActions implements Serializable {
 
     public void setCurrentSelectedSavedSearchId(String selectedSavedSearchId)
             throws ClientException {
-        if (contentViewNames.contains(selectedSavedSearchId)) {
-            contentViewActions.reset(currentContentViewName);
-            currentContentViewName = selectedSavedSearchId;
-            currentSelectedSavedSearchId = null;
-        } else {
-            DocumentModel savedSearch = documentManager.getDocument(new IdRef(
-                    selectedSavedSearchId));
-            String contentViewName = (String) savedSearch.getPropertyValue("cvd:contentViewName");
-            loadSavedSearch(contentViewName, savedSearch);
+        for (ContentViewHeader contentViewHeader : contentViewHeaders) {
+            if (contentViewHeader.getName().equals(selectedSavedSearchId)) {
+                contentViewActions.reset(currentContentViewName);
+                currentContentViewName = selectedSavedSearchId;
+                currentSelectedSavedSearchId = null;
+                return;
+            }
         }
+        DocumentModel savedSearch = documentManager.getDocument(new IdRef(
+                selectedSavedSearchId));
+        String contentViewName = (String) savedSearch.getPropertyValue("cvd:contentViewName");
+        loadSavedSearch(contentViewName, savedSearch);
     }
 
     public void loadSavedSearch(String contentViewName,
@@ -224,26 +226,13 @@ public class SearchUIActions implements Serializable {
         }
     }
 
-    public List<String> getContentViewNames() {
-        if (contentViewNames == null) {
-            SearchUIService searchUIService = Framework.getService(SearchUIService.class);
-            contentViewNames = new ArrayList<>(
-                    searchUIService.getContentViewNames(navigationContext.getCurrentDocument()));
-        }
-        return contentViewNames;
-    }
-
-    public Set<ContentViewHeader> getContentViewHeaders()
+    public List<ContentViewHeader> getContentViewHeaders()
             throws ClientException {
         if (contentViewHeaders == null) {
-            contentViewHeaders = new HashSet<>();
-            ContentViewService contentViewService = Framework.getService(ContentViewService.class);
-            for (String name : getContentViewNames()) {
-                ContentViewHeader header = contentViewService.getContentViewHeader(name);
-                if (header != null) {
-                    contentViewHeaders.add(header);
-                }
-            }
+            SearchUIService searchUIService = Framework.getService(SearchUIService.class);
+            contentViewHeaders = searchUIService.getContentViewHeaders(
+                    actionContextProvider.createActionContext(),
+                    navigationContext.getCurrentDocument());
         }
         return contentViewHeaders;
     }
@@ -263,6 +252,15 @@ public class SearchUIActions implements Serializable {
     public List<SelectItem> getAllSavedSearchesSelectItems()
             throws ClientException {
         List<SelectItem> items = new ArrayList<>();
+
+        // Add flagged content views
+        SelectItemGroup flaggedGroup = new SelectItemGroup(
+                messages.get(SEARCH_FILTERS_LABEL));
+        List<ContentViewHeader> flaggedSavedSearches = getContentViewHeaders();
+        List<SelectItem> flaggedSavedSearchesItems = convertCVToSelectItems(flaggedSavedSearches);
+        flaggedGroup.setSelectItems(flaggedSavedSearchesItems.toArray(new SelectItem[flaggedSavedSearchesItems.size()]));
+        items.add(flaggedGroup);
+
         // Add saved searches
         List<DocumentModel> userSavedSearches = getSavedSearches();
         if (!userSavedSearches.isEmpty()) {
@@ -283,14 +281,6 @@ public class SearchUIActions implements Serializable {
             allGroup.setSelectItems(otherUsersSavedSearchesItems.toArray(new SelectItem[otherUsersSavedSearchesItems.size()]));
             items.add(allGroup);
         }
-
-        SelectItemGroup flaggedGroup = new SelectItemGroup(
-                messages.get(SEARCH_FILTERS_LABEL));
-        // Add flagged content views
-        Set<ContentViewHeader> flaggedSavedSearches = getContentViewHeaders();
-        List<SelectItem> flaggedSavedSearchesItems = convertCVToSelectItems(flaggedSavedSearches);
-        flaggedGroup.setSelectItems(flaggedSavedSearchesItems.toArray(new SelectItem[flaggedSavedSearchesItems.size()]));
-        items.add(flaggedGroup);
         return items;
     }
 
@@ -314,7 +304,7 @@ public class SearchUIActions implements Serializable {
     }
 
     protected List<SelectItem> convertCVToSelectItems(
-            Set<ContentViewHeader> contentViewHeaders) {
+            List<ContentViewHeader> contentViewHeaders) {
         List<SelectItem> items = new ArrayList<>();
         for (ContentViewHeader contentViewHeader : contentViewHeaders) {
             items.add(new SelectItem(contentViewHeader.getName(),
@@ -447,33 +437,21 @@ public class SearchUIActions implements Serializable {
         return "search";
     }
 
-    // @Observer(value = { CONTENT_VIEW_PAGE_CHANGED_EVENT,
-    // CONTENT_VIEW_PAGE_SIZE_CHANGED_EVENT, CONTENT_VIEW_REFRESH_EVENT },
-    // create = true)
-    // public void onContentViewPageProviderChanged(String contentViewName)
-    // throws ClientException {
-    // String currentContentViewName = getCurrentContentViewName();
-    // if (currentContentViewName != null
-    // && currentContentViewName.equals(contentViewName)) {
-    // updateCurrentDocument();
-    // }
-    // }
-
     @Observer(value = LOCAL_CONFIGURATION_CHANGED)
     public void invalidateContentViewsName() {
         clearSearch();
-        contentViewNames = null;
         contentViewHeaders = null;
         currentContentViewName = null;
     }
 
     @Observer(value = USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED)
     public void invalidateContentViewsNameIfChanged() throws ClientException {
-        List<String> temp = new ArrayList<>(Framework.getLocalService(
-                SearchUIService.class).getContentViewNames(
-                navigationContext.getCurrentDocument()));
+        List<ContentViewHeader> temp = new ArrayList<>(
+                Framework.getLocalService(SearchUIService.class).getContentViewHeaders(
+                        actionContextProvider.createActionContext(),
+                        navigationContext.getCurrentDocument()));
         if (!temp.isEmpty()) {
-            String s = temp.get(0);
+            String s = temp.get(0).getName();
             if (s != null && !s.equals(currentContentViewName)) {
                 invalidateContentViewsName();
             }
@@ -487,7 +465,6 @@ public class SearchUIActions implements Serializable {
     @BypassInterceptors
     public void resetOnFlush() {
         contentViewHeaders = null;
-        contentViewNames = null;
         currentSelectedSavedSearchId = null;
         currentContentViewName = null;
     }

@@ -22,9 +22,7 @@ import static org.nuxeo.search.ui.localconfiguration.Constants.SEARCH_CONFIGURAT
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -46,7 +44,6 @@ public class SearchConfigurationAdapter extends
 
     public SearchConfigurationAdapter(DocumentModel doc) {
         docRef = doc.getRef();
-
         deniedContentViews = getList(doc,
                 SEARCH_CONFIGURATION_DENIED_CONTENT_VIEWS);
     }
@@ -99,8 +96,8 @@ public class SearchConfigurationAdapter extends
     }
 
     @Override
-    public Set<String> filterAllowedContentViewNames(Set<String> names) {
-        Set<String> filtered = new HashSet<>();
+    public List<String> filterAllowedContentViewNames(List<String> names) {
+        List<String> filtered = new ArrayList<>();
 
         for (String name : names) {
             if (isAllowedName(name)) {

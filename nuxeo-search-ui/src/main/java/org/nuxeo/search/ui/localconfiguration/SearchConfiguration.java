@@ -18,7 +18,6 @@
 package org.nuxeo.search.ui.localconfiguration;
 
 import java.util.List;
-import java.util.Set;
 
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfiguration;
 
@@ -42,5 +41,5 @@ public interface SearchConfiguration extends
      * @param names set of possible content views name
      * @return a set without unauthorised content views, it should be empty.
      */
-    Set<String> filterAllowedContentViewNames(Set<String> names);
+    List<String> filterAllowedContentViewNames(List<String> names);
 }

@@ -18,12 +18,13 @@
 package org.nuxeo.search.ui;
 
 import java.util.List;
-import java.util.Set;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
+import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
 
 /**
  * Service handling contributed searches and related saved searches.
@@ -33,41 +34,31 @@ import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 public interface SearchUIService {
 
     /**
-     * Returns the list of Content view names associated to a search.
-     *
-     * @throws org.nuxeo.ecm.core.api.ClientException in case of any error
+     * Returns the list of Content view headers associated to a search.
      */
-    Set<String> getContentViewNames() throws ClientException;
+    List<ContentViewHeader> getContentViewHeaders(ActionContext actionContext);
 
     /**
-     * Returns the list of Content view names associated to a search and
+     * Returns the list of Content view headers associated to a search and
      * depending of a local configuration.
-     *
-     * @param doc corresponds to current navigation context, to try to get some
-     *            local configuration of a parent.
-     * @throws ClientException in case of any error
      */
-    Set<String> getContentViewNames(DocumentModel doc) throws ClientException;
+    List<ContentViewHeader> getContentViewHeaders(ActionContext actionContext,
+            DocumentModel doc);
 
     /**
      * Save the current search in the user workspace with the given title.
      *
      * @param session the {@code CoreSession} to use
-     * @param facetedSearchContentView the Faceted Search to save
-     * @param title the title of the being saved Faceted Search
-     * @return the saved Faceted Search DocumentModel
-     * @throws ClientException in case of any error during the save
+     * @param searchContentView the search to save
+     * @param title the title of the being saved search
+     * @return the saved search DocumentModel
      */
     DocumentModel saveSearch(CoreSession session,
-            ContentView facetedSearchContentView, String title)
-            throws ClientException;
+            ContentView searchContentView, String title) throws ClientException;
 
     /**
      * Returns the current user saved searches, located into its own user
      * workspace.
-     *
-     * @param session the {@code CoreSession} to use
-     * @throws ClientException in case of any error
      */
     List<DocumentModel> getCurrentUserSavedSearches(CoreSession session)
             throws ClientException;
@@ -75,9 +66,6 @@ public interface SearchUIService {
     /**
      * Returns all the accessible saved searches except the ones for the current
      * user.
-     *
-     * @param session the {@code CoreSession} to use
-     * @throws ClientException in case of any error
      */
     List<DocumentModel> getSharedSavedSearches(CoreSession session)
             throws ClientException;

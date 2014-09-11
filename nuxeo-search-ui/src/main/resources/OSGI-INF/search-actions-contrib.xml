@@ -82,6 +82,14 @@
       <filter-id>denyForDefaultSearch</filter-id>
     </action>
 
+    <!-- Search content views -->
+    <action id="defaultSearchContentView" order="0">
+      <category>SEARCH_CONTENT_VIEWS</category>
+      <properties>
+        <property name="contentViewName">default_search</property>
+      </properties>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
