@@ -58,63 +58,26 @@ public class UISelectItem extends javax.faces.component.UISelectItem {
     @Override
     public Object getValue() {
         Object value = super.getValue();
-        return createSelectItem(value);
-    }
+        return new SelectItemFactory() {
 
-    /**
-     * Returns the value exposed in request map for the var name.
-     * <p>
-     * This is useful for restoring this value in the request map.
-     *
-     * @since 5.4.2
-     */
-    protected final Object saveRequestMapVarValue() {
-        String varName = getVar();
-        return VariableManager.saveRequestMapVarValue(varName);
-    }
-
-    /**
-     * Restores the given value in the request map for the var name.
-     *
-     * @since 5.4.2
-     */
-    protected final void restoreRequestMapVarValue(Object value) {
-        String varName = getVar();
-        VariableManager.restoreRequestMapVarValue(varName, value);
-    }
-
-    protected SelectItem createSelectItem(Object value) {
-        SelectItem item = null;
-
-        if (value instanceof SelectItem) {
-            item = (SelectItem) value;
-        } else {
-            Object varValue = saveRequestMapVarValue();
-            try {
-                putIteratorToRequestParam(value);
-                item = createSelectItem();
-                removeIteratorFromRequestParam();
-            } finally {
-                restoreRequestMapVarValue(varValue);
+            @Override
+            protected String getVar() {
+                return UISelectItem.this.getVar();
             }
-        }
-        return item;
+
+            @Override
+            protected SelectItem createSelectItem() {
+                return UISelectItem.this.createSelectItem();
+            }
+
+        }.createSelectItem(value);
     }
 
     protected SelectItem createSelectItem() {
         Object value = getItemValue();
-        String label = getItemLabel();
-        return new SelectItem(value, label);
-    }
-
-    protected void putIteratorToRequestParam(Object object) {
-        String var = getVar();
-        VariableManager.putVariableToRequestParam(var, object);
-    }
-
-    protected void removeIteratorFromRequestParam() {
-        String var = getVar();
-        VariableManager.removeVariableFromRequestParam(var);
+        Object labelObject = getItemLabel();
+        String label = labelObject != null ? labelObject.toString() : null;
+        return new SelectItem(value, label, null, false);
     }
 
     @Override

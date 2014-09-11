@@ -19,31 +19,12 @@
 
 package org.nuxeo.ecm.platform.ui.web.directory;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.context.FacesContext;
-import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
-import javax.faces.model.SelectItemGroup;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.ui.web.component.UISelectItems;
 
 /**
@@ -52,8 +33,6 @@ import org.nuxeo.ecm.platform.ui.web.component.UISelectItems;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public class UIDirectorySelectItems extends UISelectItems {
-
-    private static final Log log = LogFactory.getLog(UIDirectorySelectItems.class);
 
     public static final String COMPONENT_TYPE = UIDirectorySelectItems.class.getName();
 
@@ -95,13 +74,13 @@ public class UIDirectorySelectItems extends UISelectItems {
         ValueExpression ve = getValueExpression("displayAll");
         if (ve != null) {
             try {
-                return !Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext()));
+                return Boolean.valueOf(!Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext())));
             } catch (ELException e) {
                 throw new FacesException(e);
             }
         } else {
             // default value
-            return true;
+            return Boolean.TRUE;
         }
     }
 
@@ -116,13 +95,13 @@ public class UIDirectorySelectItems extends UISelectItems {
         ValueExpression ve = getValueExpression("displayObsoleteEntries");
         if (ve != null) {
             try {
-                return !Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext()));
+                return Boolean.valueOf(!Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext())));
             } catch (ELException e) {
                 throw new FacesException(e);
             }
         } else {
             // default value
-            return false;
+            return Boolean.FALSE;
         }
     }
 
@@ -130,174 +109,51 @@ public class UIDirectorySelectItems extends UISelectItems {
         this.displayObsoleteEntries = displayObsoleteEntries;
     }
 
-    protected Session getDirectorySession() {
-        String dirName = getDirectoryName();
-        Session directorySession = null;
-        if (dirName != null) {
-            try {
-                DirectoryService service = DirectoryHelper.getDirectoryService();
-                directorySession = service.open(dirName);
-            } catch (Exception e) {
-                log.error(String.format("Error when retrieving directory %s",
-                        dirName), e);
-            }
-        }
-        return directorySession;
-    }
-
-    protected void closeDirectorySession(Session directorySession) {
-        if (directorySession != null) {
-            try {
-                directorySession.close();
-            } catch (DirectoryException e) {
-            }
-        }
-    }
-
     @Override
     public Object getValue() {
         Boolean showAll = getDisplayAll();
-        if (showAll) {
+        DirectorySelectItemsFactory f = new DirectorySelectItemsFactory() {
+
+            @Override
+            protected String getVar() {
+                return UIDirectorySelectItems.this.getVar();
+            }
+
+            @Override
+            protected SelectItem createSelectItem() {
+                return UIDirectorySelectItems.this.createSelectItem();
+            }
+
+            @Override
+            protected String getOrdering() {
+                return UIDirectorySelectItems.this.getOrdering();
+            }
+
+            @Override
+            protected Boolean getCaseSensitive() {
+                return UIDirectorySelectItems.this.getCaseSensitive();
+            }
+
+            @Override
+            protected Boolean getDisplayObsoleteEntries() {
+                return UIDirectorySelectItems.this.getDisplayObsoleteEntries();
+            }
+
+            @Override
+            protected String getDirectoryName() {
+                return UIDirectorySelectItems.this.getDirectoryName();
+            }
+
+        };
+
+        if (Boolean.TRUE.equals(showAll)) {
             if (allValues == null) {
-                allValues = createAllSelectItems();
+                allValues = f.createAllSelectItems();
             }
             return allValues;
         } else {
             Object value = super.getValue();
-            return createSelectItems(value);
-        }
-    }
-
-    /**
-     * Builds the selection map using values as entry ids.
-     * <p />
-     * Supports {@link ListDataModel}, {@link Collection} and String[].
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    protected SelectItem[] createSelectItems(Object value) {
-        if (value instanceof SelectItem[]) {
-            return (SelectItem[]) value;
-        }
-        Object varValue = saveRequestMapVarValue();
-        try {
-            // build select items
-            List<SelectItem> items = new ArrayList<SelectItem>();
-            Session directorySession = getDirectorySession();
-            if (directorySession != null) {
-                if (value instanceof ListDataModel) {
-                    ListDataModel ldm = (ListDataModel) value;
-                    List<String> entryIds = (List) ldm.getWrappedData();
-                    DocumentModel entry = null;
-                    for (String entryId : entryIds) {
-                        try {
-                            entry = directorySession.getEntry(entryId);
-                            if (entry != null) {
-                                putIteratorToRequestParam(entry);
-                                SelectItem selectItem = createSelectItem();
-                                removeIteratorFromRequestParam();
-                                if (selectItem != null) {
-                                    items.add(selectItem);
-                                }
-                            }
-                        } catch (DirectoryException e) {
-                        }
-                    }
-                } else if (value instanceof Collection) {
-                    Collection<Object> collection = (Collection<Object>) value;
-                    DocumentModel entry;
-                    for (Object currentItem : collection) {
-                        if (currentItem instanceof SelectItemGroup) {
-                            SelectItemGroup itemGroup = (SelectItemGroup) currentItem;
-                            SelectItem[] itemsFromGroup = itemGroup.getSelectItems();
-                            items.addAll(Arrays.asList(itemsFromGroup));
-                        } else if (currentItem instanceof String) {
-                            try {
-                                entry = directorySession.getEntry((String) currentItem);
-                                if (entry != null) {
-                                    putIteratorToRequestParam(entry);
-                                    SelectItem selectItem = createSelectItem();
-                                    removeIteratorFromRequestParam();
-                                    if (selectItem != null) {
-                                        items.add(selectItem);
-                                    }
-                                }
-                            } catch (DirectoryException e) {
-                            }
-                        }
-                    }
-                } else if (value instanceof String[]) {
-                    String[] entryIds = (String[]) value;
-                    DocumentModel entry = null;
-                    for (String entryId : entryIds) {
-                        try {
-                            entry = directorySession.getEntry(entryId);
-                            if (entry != null) {
-                                putIteratorToRequestParam(entry);
-                                SelectItem selectItem = createSelectItem();
-                                removeIteratorFromRequestParam();
-                                if (selectItem != null) {
-                                    items.add(selectItem);
-                                }
-                            }
-                        } catch (DirectoryException e) {
-                        }
-                    }
-                }
-            } else {
-                log.error("No session provided for directory, returning empty selection");
-            }
-            closeDirectorySession(directorySession);
-            String ordering = getOrdering();
-            Boolean caseSensitive = getCaseSensitive();
-            if (ordering != null && !"".equals(ordering)) {
-                Collections.sort(items, new SelectItemComparator(ordering,
-                        caseSensitive));
-            }
-            return items.toArray(new SelectItem[] {});
-        } finally {
-            restoreRequestMapVarValue(varValue);
-        }
-    }
-
-    protected SelectItem[] createAllSelectItems() {
-        Object varValue = saveRequestMapVarValue();
-        try {
-            List<SelectItem> items = new ArrayList<SelectItem>();
-            Session directorySession = getDirectorySession();
-            if (directorySession != null) {
-                try {
-                    Map<String, Serializable> filter = new HashMap<String, Serializable>();
-                    if (!getDisplayObsoleteEntries()) {
-                        filter.put("obsolete", 0);
-                    }
-                    DocumentModelList entries = directorySession.query(filter);
-                    for (DocumentModel entry : entries) {
-                        if (entry != null) {
-                            putIteratorToRequestParam(entry);
-                            SelectItem selectItem = createSelectItem();
-                            removeIteratorFromRequestParam();
-                            if (selectItem != null) {
-                                items.add(selectItem);
-                            }
-                        }
-                    }
-                } catch (ClientException e) {
-                    log.error(e, e);
-                }
-            } else {
-                log.error("No session provided for directory, returning empty selection");
-            }
-            closeDirectorySession(directorySession);
-            String ordering = getOrdering();
-            Boolean caseSensitive = getCaseSensitive();
-            if (ordering != null && !"".equals(ordering)) {
-                Collections.sort(items, new SelectItemComparator(ordering,
-                        caseSensitive));
-            }
-            return items.toArray(new SelectItem[] {});
-        } finally {
-            restoreRequestMapVarValue(varValue);
+            return f.createSelectItems(value);
         }
     }
 

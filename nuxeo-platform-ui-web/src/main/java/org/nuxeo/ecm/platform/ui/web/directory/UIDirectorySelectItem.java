@@ -25,12 +25,6 @@ import javax.faces.FacesException;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.ui.web.component.UISelectItem;
 
 /**
@@ -39,8 +33,6 @@ import org.nuxeo.ecm.platform.ui.web.component.UISelectItem;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public class UIDirectorySelectItem extends UISelectItem {
-
-    private static final Log log = LogFactory.getLog(UIDirectorySelectItem.class);
 
     public static final String COMPONENT_TYPE = UIDirectorySelectItem.class.getName();
 
@@ -69,69 +61,26 @@ public class UIDirectorySelectItem extends UISelectItem {
         this.directoryName = directoryName;
     }
 
-    protected Session getDirectorySession() {
-        String dirName = getDirectoryName();
-        Session directorySession = null;
-        if (dirName != null) {
-            try {
-                DirectoryService service = DirectoryHelper.getDirectoryService();
-                directorySession = service.open(dirName);
-            } catch (Exception e) {
-                log.error(String.format("Error when retrieving directory %s",
-                        dirName), e);
-            }
-        }
-        return directorySession;
-    }
-
-    protected static void closeDirectorySession(Session directorySession) {
-        if (directorySession != null) {
-            try {
-                directorySession.close();
-            } catch (DirectoryException e) {
-            }
-        }
-    }
-
     @Override
     public Object getValue() {
         Object value = super.getValue();
-        return createSelectItem(value);
-    }
+        return new DirectorySelectItemFactory() {
 
-    @Override
-    protected SelectItem createSelectItem(Object value) {
-        SelectItem item = null;
-
-        if (value instanceof SelectItem) {
-            item = (SelectItem) value;
-        } else if (value instanceof String) {
-            Object varValue = saveRequestMapVarValue();
-            try {
-                String entryId = (String) value;
-                putIteratorToRequestParam(value);
-                Session directorySession = getDirectorySession();
-                if (directorySession != null) {
-                    try {
-                        DocumentModel entry = directorySession.getEntry(entryId);
-                        if (entry != null) {
-                            putIteratorToRequestParam(entry);
-                            item = createSelectItem();
-                            removeIteratorFromRequestParam();
-                        }
-                    } catch (DirectoryException e) {
-                    }
-                } else {
-                    log.error("No session provided for directory, returning empty selection");
-                }
-                closeDirectorySession(directorySession);
-
-                removeIteratorFromRequestParam();
-            } finally {
-                restoreRequestMapVarValue(varValue);
+            @Override
+            protected String getVar() {
+                return UIDirectorySelectItem.this.getVar();
             }
-        }
-        return item;
+
+            @Override
+            protected SelectItem createSelectItem() {
+                return UIDirectorySelectItem.this.createSelectItem();
+            }
+
+            @Override
+            protected String getDirectoryName() {
+                return UIDirectorySelectItem.this.getDirectoryName();
+            }
+        }.createSelectItem(value);
     }
 
     @Override

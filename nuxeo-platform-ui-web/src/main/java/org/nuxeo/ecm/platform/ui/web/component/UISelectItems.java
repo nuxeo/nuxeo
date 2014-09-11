@@ -15,25 +15,11 @@
  */
 package org.nuxeo.ecm.platform.ui.web.component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.context.FacesContext;
-import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
-import javax.faces.model.SelectItemGroup;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.ui.web.directory.SelectItemComparator;
 
 /**
  * EasySelectItems from
@@ -47,8 +33,6 @@ import org.nuxeo.ecm.platform.ui.web.directory.SelectItemComparator;
  */
 public class UISelectItems extends javax.faces.component.UISelectItems
         implements ResettableComponent {
-
-    private static final Log log = LogFactory.getLog(UISelectItems.class);
 
     public static final String COMPONENT_TYPE = UISelectItems.class.getName();
 
@@ -130,12 +114,12 @@ public class UISelectItems extends javax.faces.component.UISelectItems
         ValueExpression ve = getValueExpression(name);
         if (ve != null) {
             try {
-                return (!Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext())));
+                return Boolean.valueOf(!Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext())));
             } catch (ELException e) {
                 throw new FacesException(e);
             }
         } else {
-            return defaultValue;
+            return Boolean.valueOf(defaultValue);
         }
     }
 
@@ -196,124 +180,42 @@ public class UISelectItems extends javax.faces.component.UISelectItems
     @Override
     public Object getValue() {
         Object value = super.getValue();
-        return createSelectItems(value);
-    }
+        return new SelectItemsFactory() {
 
-    /**
-     * Returns the value exposed in request map for the var name.
-     * <p>
-     * This is useful for restoring this value in the request map.
-     *
-     * @since 5.4.2
-     */
-    protected final Object saveRequestMapVarValue() {
-        String varName = getVar();
-        return VariableManager.saveRequestMapVarValue(varName);
-    }
-
-    /**
-     * Restores the given value in the request map for the var name.
-     *
-     * @since 5.4.2
-     */
-    protected final void restoreRequestMapVarValue(Object value) {
-        String varName = getVar();
-        VariableManager.restoreRequestMapVarValue(varName, value);
-    }
-
-    @SuppressWarnings("unchecked")
-    protected SelectItem[] createSelectItems(Object value) {
-        Object varValue = saveRequestMapVarValue();
-        try {
-            List items = new ArrayList();
-            if (value instanceof ListDataModel) {
-                ListDataModel ldm = (ListDataModel) value;
-                value = ldm.getWrappedData();
+            @Override
+            protected String getVar() {
+                return UISelectItems.this.getVar();
             }
 
-            if (value instanceof SelectItem[]) {
-                return (SelectItem[]) value;
-            } else if (value instanceof Object[]) {
-                Object[] array = (Object[]) value;
-                for (Object currentItem : array) {
-                    if (currentItem instanceof SelectItemGroup) {
-                        SelectItemGroup itemGroup = (SelectItemGroup) currentItem;
-                        SelectItem[] itemsFromGroup = itemGroup.getSelectItems();
-                        items.addAll(Arrays.asList(itemsFromGroup));
-                    } else {
-                        putIteratorToRequestParam(currentItem);
-                        SelectItem selectItem = createSelectItem();
-                        removeIteratorFromRequestParam();
-                        if (selectItem != null) {
-                            items.add(selectItem);
-                        }
-                    }
-                }
-            } else if (value instanceof Collection) {
-                Collection collection = (Collection) value;
-                for (Object currentItem : collection) {
-                    if (currentItem instanceof SelectItemGroup) {
-                        SelectItemGroup itemGroup = (SelectItemGroup) currentItem;
-                        SelectItem[] itemsFromGroup = itemGroup.getSelectItems();
-                        items.addAll(Arrays.asList(itemsFromGroup));
-                    } else {
-                        putIteratorToRequestParam(currentItem);
-                        SelectItem selectItem = createSelectItem();
-                        removeIteratorFromRequestParam();
-                        if (selectItem != null) {
-                            items.add(selectItem);
-                        }
-                    }
-                }
-            } else if (value instanceof Map) {
-                Map map = (Map) value;
-                for (Object obj : map.entrySet()) {
-                    Entry currentItem = (Entry) obj;
-                    putIteratorToRequestParam(currentItem);
-                    SelectItem selectItem = createSelectItem();
-                    removeIteratorFromRequestParam();
-                    if (selectItem != null) {
-                        items.add(selectItem);
-                    }
-                }
-            } else if (value != null) {
-                log.warn("Could not map values to select items, value is not supported: "
-                        + value);
+            @Override
+            protected String getOrdering() {
+                return UISelectItems.this.getOrdering();
             }
 
-            String ordering = getOrdering();
-            Boolean caseSensitive = getCaseSensitive();
-            if (ordering != null && !"".equals(ordering)) {
-                Collections.sort(items, new SelectItemComparator(ordering,
-                        caseSensitive));
+            @Override
+            protected Boolean getCaseSensitive() {
+                return UISelectItems.this.getCaseSensitive();
             }
-            return (SelectItem[]) items.toArray(new SelectItem[0]);
-        } finally {
-            restoreRequestMapVarValue(varValue);
-        }
+
+            @Override
+            protected SelectItem createSelectItem() {
+                return UISelectItems.this.createSelectItem();
+            }
+
+        }.createSelectItems(value);
     }
 
     protected SelectItem createSelectItem() {
         Boolean rendered = getItemRendered();
-        if (!rendered) {
+        if (!Boolean.TRUE.equals(rendered)) {
             return null;
         }
         Object value = getItemValue();
         Object labelObject = getItemLabel();
-        Boolean disabled = getItemDisabled();
         String label = labelObject != null ? labelObject.toString() : null;
+        Boolean disabled = getItemDisabled();
         return new SelectItem(value, label, null,
                 !Boolean.FALSE.equals(disabled));
-    }
-
-    protected void putIteratorToRequestParam(Object object) {
-        String var = getVar();
-        VariableManager.putVariableToRequestParam(var, object);
-    }
-
-    protected void removeIteratorFromRequestParam() {
-        String var = getVar();
-        VariableManager.removeVariableFromRequestParam(var);
     }
 
     @Override
