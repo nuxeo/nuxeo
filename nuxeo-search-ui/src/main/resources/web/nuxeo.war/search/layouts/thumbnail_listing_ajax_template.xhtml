@@ -1,0 +1,54 @@
+<f:subview
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:a4j="http://richfaces.org/a4j"
+  id="#{layout.id}">
+
+  <c:if test="false">
+    Layout template applying to an item instance of PageSelections&lt;DocumentModel&gt; named "documents"
+    in the search tab
+
+    Other needed parameters are:
+    - provider: instance of a PageProvider&lt;DocumentModel&gt; to handle sort
+    - layoutListingStatus: iteration status, used to print table header
+    matching widget label.
+    - formId: the surrounding form id
+  </c:if>
+
+  <c:if test="#{layoutListingStatus.index == 0}">
+    <div class="detail">
+      <a4j:outputPanel id="#{layout.id}_selectAll_panel" layout="block">
+        <nxu:set var="selectAllLabel" value="#{nxu:test(documents.selected, 'label.search.deselect.all', 'label.search.select.all')}">
+          <span>#{messages[selectAllLabel]}</span>
+          <h:selectBooleanCheckbox id="#{layoutColumn.widgets[0].name}_header"
+            title="#{messages[selectAllLabel]}"
+            value="#{documents.selected}">
+            <a4j:ajax event="click"
+              listener="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, documents.selected)}"
+              onbeforesubmit="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
+              render="#{layout.id}_selectAll_panel, #{formId}_buttons:ajax_selection_buttons" />
+          </h:selectBooleanCheckbox>
+        </nxu:set>
+      </a4j:outputPanel>
+    </div>
+  </c:if>
+
+  <c:set var="boxSelectedStyleClass" value="#{nxu:test(value.data.id == currentDocument.id, 'selectedItem', '')}" />
+  <div data-docref="#{value.data.id}" class="bubbleBox #{boxSelectedStyleClass}">
+    <nxl:layout name="thumbnail_listing_header" value="#{value}" mode="view" />
+    <nxl:layoutColumn>
+      <nxu:set var="divStyleClass" value="#{nxu:test(layoutColumn.properties.isBoxTitle, 'bubbleHeader', '')}">
+        <div class="#{layoutColumn.properties.columnStyleClass} #{divStyleClass}" dir="auto">
+          <nxl:layoutColumnWidget>
+            <nxl:widget widget="#{widget}" value="#{value}" />
+          </nxl:layoutColumnWidget>
+        </div>
+      </nxu:set>
+    </nxl:layoutColumn>
+  </div>
+
+</f:subview>

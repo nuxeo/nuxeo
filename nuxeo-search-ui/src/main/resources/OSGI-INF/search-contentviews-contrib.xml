@@ -62,6 +62,9 @@
       <cacheSize>1</cacheSize>
 
       <resultLayouts>
+        <layout name="thumbnail_listing_ajax" title="document_thumbnail_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
         <layout name="document_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
           showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
@@ -329,6 +332,37 @@
       </subWidgets>
     </widget>
 
+    <widget name="listing_size_and_format" type="container">
+      <properties widgetMode="view">
+        <property name="display">inline</property>
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgetRefs>
+        <widget>listing_size</widget>
+        <widget>listing_main_file_format</widget>
+      </subWidgetRefs>
+    </widget>
+
+    <widget name="listing_size" type="listing_main_file_size">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>false</translated>
+      <fields>
+        <field>data</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_main_file_format" type="listing_main_file_format">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>false</translated>
+      <fields>
+        <field>data</field>
+      </fields>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -363,6 +397,41 @@
           <widget>default_location_search</widget>
         </row>
       </rows>
+    </layout>
+
+    <layout name="thumbnail_listing_header">
+      <templates>
+        <template mode="any">
+          /layouts/layout_div_template.xhtml
+        </template>
+      </templates>
+      <columns>
+        <column>
+          <widget>listing_thumbnail</widget>
+        </column>
+        <column>
+          <widget>listing_title_link</widget>
+        </column>
+      </columns>
+    </layout>
+
+    <layout name="thumbnail_listing_ajax">
+      <templates>
+        <template mode="any">
+          /search/layouts/thumbnail_listing_ajax_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="display">block</property>
+      </properties>
+      <columns>
+        <column>
+          <widget>listing_last_contributor</widget>
+        </column>
+        <column>
+          <widget>listing_size_and_format</widget>
+        </column>
+      </columns>
     </layout>
 
   </extension>
