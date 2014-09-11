@@ -511,6 +511,9 @@
       </templates>
       <columns>
         <column>
+          <widget>listing_ajax_selection_box</widget>
+        </column>
+        <column>
           <widget>listing_thumbnail</widget>
         </column>
         <column>
