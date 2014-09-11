@@ -183,15 +183,21 @@
       <aggregates>
         <aggregate id="source" type="terms" parameter="dc:source">
           <field schema="advanced_search" name="source_agg"/>
-          <property name="size">5</property>
+          <properties>
+            <property name="size">5</property>
+          </properties>
         </aggregate>
         <aggregate id="coverage" type="terms" parameter="dc:coverage">
           <field schema="advanced_search" name="coverage_agg"/>
-          <property name="size">5</property>
+          <properties>
+            <property name="size">5</property>
+          </properties>
         </aggregate>
         <aggregate id="nature" type="terms" parameter="dc:nature">
           <field schema="advanced_search" name="nature_agg"/>
-          <property name="size">5</property>
+          <properties>
+            <property name="size">5</property>
+          </properties>
         </aggregate>
       </aggregates>
     </genericPageProvider>
