@@ -6,8 +6,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.util.Pool;
 
 public class RedisEmbeddedPool extends Pool<Jedis> {
-    public RedisEmbeddedPool(GenericObjectPoolConfig config) {
-        super(config, new RedisEmbeddedFactory());
+    public RedisEmbeddedPool() {
+        super(new GenericObjectPoolConfig(), new RedisEmbeddedFactory());
     }
-
 }

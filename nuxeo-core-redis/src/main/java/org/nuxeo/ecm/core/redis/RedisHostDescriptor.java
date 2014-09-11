@@ -12,7 +12,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 @XObject("host")
-public class RedisConfigurationHostDescriptor {
+public class RedisHostDescriptor {
 
     @XNode("@name")
     public String name;
@@ -20,7 +20,7 @@ public class RedisConfigurationHostDescriptor {
     @XNode("@port")
     public int port;
 
-    protected RedisConfigurationHostDescriptor(String name, int port) {
+    protected RedisHostDescriptor(String name, int port) {
         this.name = name;
         this.port = port;
     }

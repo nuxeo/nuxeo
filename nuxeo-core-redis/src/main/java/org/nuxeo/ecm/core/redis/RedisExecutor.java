@@ -14,11 +14,19 @@ import redis.clients.jedis.exceptions.JedisException;
 
 public interface RedisExecutor {
 
+    public static final RedisExecutor NOOP = new RedisExecutor() {
+
+        @Override
+        public <T> T execute(RedisCallable<T> call) throws IOException,
+                JedisException {
+            throw new UnsupportedOperationException("No redis executor available");
+        }
+
+    };
     /**
      * Invoke the jedis statement
      *
      * @since 5.9.6
      */
     <T> T execute(RedisCallable<T> call) throws IOException, JedisException;
-
 }

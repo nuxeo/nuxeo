@@ -26,8 +26,6 @@ import org.nuxeo.ecm.core.work.WorkManagerTest;
  */
 public class TestRedisWorkManager extends WorkManagerTest {
 
-    protected RedisConfigurationDescriptor redisConfigurationDescriptor;
-
     @Override
     public boolean persistent() {
         return true;

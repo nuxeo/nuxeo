@@ -19,7 +19,6 @@ public class RedisPoolExecutor implements RedisExecutor {
 
     protected final Pool<Jedis> pool;
 
-
     public RedisPoolExecutor(Pool<Jedis> pool) {
         this.pool = pool;
     }

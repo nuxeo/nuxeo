@@ -123,7 +123,7 @@ public class RedisCacheImpl extends AbstractCache {
 
     @Override
     public void invalidateAll() throws IOException {
-        Framework.getService(RedisServiceImpl.class).clear(formatKey("*"));
+        Framework.getService(RedisAdmin.class).clear(formatKey("*"));
     }
 
     @Override

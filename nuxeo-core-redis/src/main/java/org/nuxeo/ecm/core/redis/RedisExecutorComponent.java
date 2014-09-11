@@ -23,15 +23,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.SimpleContributionRegistry;
 import org.osgi.framework.Bundle;
 
 import redis.clients.jedis.Jedis;
@@ -42,124 +39,77 @@ import redis.clients.util.Pool;
  *
  * @since 5.8
  */
-public class RedisServiceImpl extends DefaultComponent implements
-        RedisConfiguration {
+public class RedisExecutorComponent extends DefaultComponent implements
+        RedisConfiguration, RedisAdmin {
 
-    private static final Log log = LogFactory.getLog(RedisServiceImpl.class);
+    protected static RedisExecutorComponent INSTANCE;
 
-    public static final String DEFAULT_PREFIX = "nuxeo:";
+    protected SingletonContributionRegistry<RedisExecutorDescriptor> registry = new SingletonContributionRegistry<>();
 
-    protected final ConfigRegistry configRegistry = new ConfigRegistry();
+    protected volatile RedisExecutor executor = RedisExecutor.NOOP;
 
-    protected class ConfigRegistry extends
-            SimpleContributionRegistry<RedisConfigurationDescriptor> {
+    protected String delsha;
 
-        @Override
-        public String getContributionId(RedisConfigurationDescriptor contrib) {
-            return "main";
-        }
-
-        protected RedisConfigurationDescriptor getDescriptor() {
-            return currentContribs.get("main");
-        }
-
-        @Override
-        public void contributionUpdated(String id,
-                RedisConfigurationDescriptor contrib,
-                RedisConfigurationDescriptor newOrigContrib) {
-            activate(contrib);
-        }
-
-        @Override
-        public void contributionRemoved(String id,
-                RedisConfigurationDescriptor contrib) {
-            deactivate(contrib);
-        }
+    @Override
+    public void activate(ComponentContext context) throws Exception {
+        super.activate(context);
+        INSTANCE = this;
     }
 
-    protected RedisConfigurationDescriptor config;
-
-    protected Pool<Jedis> pool;
-
-    protected RedisExecutor executor;
+    @Override
+    public void deactivate(ComponentContext context) throws Exception {
+        INSTANCE = null;
+        super.deactivate(context);
+    }
 
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if ("configuration".equals(extensionPoint)) {
-            configRegistry.addContribution((RedisConfigurationDescriptor) contribution);
-            return;
+        if (contribution instanceof RedisExecutorDescriptor) {
+            registry.addContribution((RedisExecutorDescriptor) contribution);
+        } else {
+            super.registerContribution(contribution, extensionPoint,
+                    contributor);
         }
-        throw new RuntimeException("Unknown extension point : "
-                + extensionPoint);
     }
 
     @Override
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if ("configuration".equals(extensionPoint)) {
-            configRegistry.removeContribution((RedisConfigurationDescriptor) contribution);
-            return;
+        if (contribution instanceof RedisPoolDescriptor) {
+            registry.removeContribution((RedisExecutorDescriptor) contribution);
+        } else {
+            super.unregisterContribution(contribution, extensionPoint,
+                    contributor);
         }
-        log.warn("Unknown extension point : " + extensionPoint);
     }
 
-    protected String delsha;
-
-    protected void activate(RedisConfigurationDescriptor desc) {
-        config = desc;
-        if (config.disabled) {
-            return;
+    protected void handleNewPool(Pool<Jedis> pool) {
+        executor = new RedisPoolExecutor(pool);
+        if (registry.main.timeout > 0) {
+            executor = new RedisFailoverExecutor(registry.main.timeout,
+                    executor);
         }
-        if (!config.start()) {
-            config.disabled = true;
-            return;
-        }
-        handleNewExecutor(config.executor);
-    }
-
-    protected void handleNewExecutor(RedisExecutor candidate) {
-        executor = candidate;
         try {
             delsha = load("org.nuxeo.ecm.core.redis", "del-keys");
         } catch (IOException cause) {
-            try {
-                config.stop();
-            } finally {
-                executor = null;
-            }
-            throw new NuxeoException("Cannot activate redis", cause);
+            executor = null;
+            throw new NuxeoException("Cannot activate redis executor", cause);
         }
     }
 
-    protected void deactivate(RedisConfigurationDescriptor desc) {
-        if (desc.disabled) {
-            return;
-        }
-        try {
-            desc.stop();
-        } finally {
-            config = null;
-            executor = null;
-        }
+    protected void handlePoolDestroyed(Pool<Jedis> pool) {
+        executor = RedisExecutor.NOOP;
     }
 
     @Override
     public String getPrefix() {
-        if (config == null) {
-            return null;
-        }
-        String prefix = config.prefix;
-        if ("NULL".equals(prefix)) {
-            prefix = "";
-        } else if (StringUtils.isBlank(prefix)) {
-            prefix = DEFAULT_PREFIX;
-        }
-        return prefix;
+        return registry.main.prefix;
     }
 
+    @Override
     public Long clear(final String pattern) throws IOException {
         return executor.execute(new RedisCallable<Long>() {
 
