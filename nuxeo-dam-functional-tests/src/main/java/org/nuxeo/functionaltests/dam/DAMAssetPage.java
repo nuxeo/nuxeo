@@ -19,6 +19,7 @@ package org.nuxeo.functionaltests.dam;
 
 import static org.junit.Assert.assertEquals;
 
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -34,7 +35,7 @@ public class DAMAssetPage extends DocumentBasePage {
     }
 
     public String getAssetTitle() {
-        return driver.findElement(By.className("documentTitle")).getText();
+        return Locator.findElementWithTimeout(By.className("documentTitle")).getText();
     }
 
     public void checkAssetTitle(String expectedTitle) {
