@@ -449,6 +449,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     public void refresh() {
         setResultsCount(UNKNOWN_SIZE);
         setCurrentHigherNonEmptyPageIndex(-1);
+        aggregateQuery = null;
         currentSelectPage = null;
         errorMessage = null;
         error = null;
