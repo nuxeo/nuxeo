@@ -16,134 +16,104 @@
  */
 package org.nuxeo.ecm.core.redis;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
-import junit.framework.Assert;
-
-import org.junit.Assume;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.nuxeo.common.utils.TextTemplate;
+import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.cache.CacheFeature;
-import org.nuxeo.ecm.core.redis.embedded.RedisEmbeddedConfigurationDescriptor;
+import org.nuxeo.ecm.core.redis.embedded.RedisEmbeddedPool;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.runtime.test.InlineRef;
+import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
-import redis.clients.jedis.Protocol;
+import redis.clients.jedis.Jedis;
+import redis.clients.util.Pool;
 
-/**
- * This defines system properties that can be used to run Redis tests with a
- * given Redis host configured, independently of XML configuration.
- *
- * @since 5.8
- */
-@Features({ CacheFeature.class })
+@Features({ CoreFeature.class, CacheFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 public class RedisFeature extends SimpleFeature {
 
-    private static final String REDIS_DEFAULT_MODE = "embedded";
+    /**
+     * This defines configuration that can be used to run Redis tests with a
+     * given Redis configured.
+     *
+     * @since 5.9.6
+     */
+    public @interface Config {
+        Mode mode() default Mode.embedded;
 
-    private static final int REDIS_SENTINEL_PORT_OFFSET = 20000;
+        String host() default "localhost";
 
-    public static final String REDIS_MODE_PROP = "nuxeo.test.redis.mode";
+        int port() default 0;
 
-    public static final String REDIS_HOST_PROP = "nuxeo.test.redis.host";
+        String prefix() default "nuxeo:test:";
 
-    public static final String REDIS_PORT_PROP = "nuxeo.test.redis.port";
-
-    public static final String REDIS_SENTINEL_HOST_PROP = "nuxeo.test.redis.sentinel.host";
-
-    public static final String REDIS_SENTINEL_PORT_PROP = "nuxeo.test.redis.sentinel.port";
-
-    public static final String REDIS_PREFIX_PROP = "nuxeo.test.redis.prefix";
+        long failoverTimeout() default -1;
+    }
 
     public enum Mode {
         disabled, embedded, server, sentinel
     }
 
-    public static Mode getMode() {
-        return Mode.valueOf(Framework.getProperty(REDIS_MODE_PROP,
-                REDIS_DEFAULT_MODE));
+    public RedisFeature() {
+
     }
 
-    public static String getHost() {
-        return Framework.getProperty(REDIS_HOST_PROP, "localhost");
+    public RedisFeature(Config config) {
+        this.config = config;
     }
 
-    public static int getPort() {
-        String port = Framework.getProperty(REDIS_PORT_PROP,
-                Integer.toString(Protocol.DEFAULT_PORT));
-        return Integer.parseInt(port);
-    }
-
-    public static String getSentinelHost() {
-        return Framework.getProperty(REDIS_SENTINEL_HOST_PROP, "localhost");
-    }
-
-    public static int getSentinelPort() {
-        String port = Framework.getProperty(
-                REDIS_SENTINEL_PORT_PROP,
-                Integer.toString(REDIS_SENTINEL_PORT_OFFSET
-                        + Protocol.DEFAULT_PORT));
-        return Integer.parseInt(port);
-    }
-
-    public static String getPrefix() {
-        return Framework.getProperty(REDIS_PREFIX_PROP, "nuxeo:test:");
-    }
-
-    public static RedisConfigurationDescriptor getRedisDescriptor() {
-        switch (getMode()) {
-        case embedded:
-            return getRedisEmbeddedServerDescriptor();
-        case server:
-            return getRedisServerDescriptor();
-        case sentinel:
-            return getRedisSentinelDescriptor();
-        default:
-            return getRedisDisabledDescriptor();
-        }
-    }
-
-    public static RedisConfigurationDescriptor getRedisEmbeddedServerDescriptor() {
-        RedisConfigurationDescriptor desc = new RedisEmbeddedConfigurationDescriptor();
-        desc.prefix = getPrefix();
-        return desc;
-    }
-
-    public static RedisConfigurationDescriptor getRedisDisabledDescriptor() {
+    protected RedisConfigurationDescriptor getRedisDisabledDescriptor() {
         RedisConfigurationDescriptor desc = new RedisConfigurationDescriptor();
         desc.disabled = true;
         return desc;
     }
 
-    public static RedisConfigurationDescriptor getRedisServerDescriptor() {
+    protected RedisConfigurationDescriptor getRedisServerDescriptor() {
         RedisConfigurationDescriptor desc = new RedisConfigurationDescriptor();
         desc.hosts = new RedisConfigurationHostDescriptor[] { new RedisConfigurationHostDescriptor(
-                getHost(), getPort()) };
-        desc.prefix = getPrefix();
+                config.host(), config.port()) };
+        desc.prefix = config.prefix();
         return desc;
     }
 
-    public static RedisConfigurationDescriptor getRedisSentinelDescriptor() {
+    protected RedisConfigurationDescriptor getRedisSentinelDescriptor() {
         RedisConfigurationDescriptor desc = new RedisConfigurationDescriptor();
         desc.master = "mymaster";
         desc.hosts = new RedisConfigurationHostDescriptor[] { new RedisConfigurationHostDescriptor(
-                getSentinelHost(), getSentinelPort()) };
-        desc.prefix = getPrefix();
+                config.host(), config.port()) };
+        desc.prefix = config.prefix();
         return desc;
     }
 
     public static void clearRedis(RedisConfiguration redisService)
             throws IOException {
-        Framework.getService(RedisServiceImpl.class).clear(redisService.getPrefix().concat("*"));
+        Framework.getService(RedisServiceImpl.class).clear(
+                redisService.getPrefix().concat("*"));
     }
 
     public static void setup(RuntimeHarness harness) throws Exception {
+        new RedisFeature(Defaults.of(Config.class)).setupMe(harness);
+    }
+
+    protected void setupMe(RuntimeHarness harness) throws Exception {
+        if (Mode.disabled.equals(config.mode())) {
+            return;
+        }
         if (harness.getOSGiAdapter().getBundle("org.nuxeo.ecm.core.event") == null) {
             harness.deployBundle("org.nuxeo.ecm.core.event");
         }
@@ -156,23 +126,76 @@ public class RedisFeature extends SimpleFeature {
         harness.deployBundle("org.nuxeo.ecm.core.redis");
         harness.deployTestContrib("org.nuxeo.ecm.core.redis",
                 RedisFeature.class.getResource("/redis-contribs.xml"));
-        final RedisConfigurationDescriptor config = getRedisDescriptor();
-        Assume.assumeTrue(!config.disabled);
-        final RedisServiceImpl redis = Framework.getService(RedisServiceImpl.class);
-        if (!redis.activate(config)) {
-            Assert.fail("Cannot configure redis pool");
+        if (Mode.embedded.equals(config.mode())) {
+            RedisServiceImpl redis = Framework.getService(RedisServiceImpl.class);
+            redis.handleNewExecutor(newEmbeddedExecutor());
+        } else {
+            RuntimeContext context = Framework.getRuntime().getContext();
+            context.deploy(toDescriptor(config));
         }
-        redis.clear(config.prefix.concat("*"));
     }
+
+    private InlineRef toDescriptor(Config config) throws IOException,
+            URISyntaxException {
+        File sourceFile = new File(RedisFeature.class.getResource(
+                "/redis-config.xml").toURI());
+
+        RedisConfigurationDescriptor desc = null;
+        switch (config.mode()) {
+        case sentinel:
+            desc = getRedisSentinelDescriptor();
+            break;
+        case server:
+            desc = getRedisServerDescriptor();
+            break;
+        default:
+            throw new IllegalArgumentException(
+                    "unsupported descriptor serialization for " + config.mode());
+        }
+        XMap xmap = new XMap();
+        xmap.register(RedisConfigurationDescriptor.class);
+        TextTemplate template = new TextTemplate();
+        template.setVariable("descriptor", xmap.toXML(desc));
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        template.process(new FileInputStream(sourceFile), bos);
+        return new InlineRef("redis-test", bos.toString());
+    }
+
+    protected RedisExecutor newEmbeddedExecutor() {
+        Pool<Jedis> pool = new RedisEmbeddedPool(new GenericObjectPoolConfig());
+        RedisExecutor executor = new RedisPoolExecutor(pool);
+        if (config.failoverTimeout() > 0) {
+            executor = new RedisFailoverExecutor(config.failoverTimeout(),
+                    executor);
+        }
+        return executor;
+    }
+
+    protected Config config;
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
+        config = runner.getConfig(Config.class);
         runner.getFeature(CacheFeature.class).enable();
     }
 
     @Override
     public void start(FeaturesRunner runner) throws Exception {
-        setup(runner.getFeature(RuntimeFeature.class).getHarness());
+        setupMe(runner.getFeature(RuntimeFeature.class).getHarness());
+    }
+
+    public void setFailover() {
+        switch (config.mode()) {
+        case disabled:
+            break;
+        case sentinel:
+        case server:
+            throw new IllegalStateException("Cannot run failover test in mode "
+                    + config.mode());
+        case embedded:
+            ;
+        }
+
     }
 
 }

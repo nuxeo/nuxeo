@@ -27,12 +27,15 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 import org.osgi.framework.Bundle;
+
+import redis.clients.jedis.Jedis;
+import redis.clients.util.Pool;
 
 /**
  * Implementation of the Redis Service holding the configured Jedis pool.
@@ -64,21 +67,21 @@ public class RedisServiceImpl extends DefaultComponent implements
         public void contributionUpdated(String id,
                 RedisConfigurationDescriptor contrib,
                 RedisConfigurationDescriptor newOrigContrib) {
-            if (contrib.disabled) {
-                deactivate();
-            } else {
-                activate(contrib);
-            }
+            activate(contrib);
         }
 
         @Override
         public void contributionRemoved(String id,
-                RedisConfigurationDescriptor origContrib) {
-            deactivate();
+                RedisConfigurationDescriptor contrib) {
+            deactivate(contrib);
         }
     }
 
     protected RedisConfigurationDescriptor config;
+
+    protected Pool<Jedis> pool;
+
+    protected RedisExecutor executor;
 
     @Override
     public void registerContribution(Object contribution,
@@ -103,52 +106,44 @@ public class RedisServiceImpl extends DefaultComponent implements
         log.warn("Unknown extension point : " + extensionPoint);
     }
 
-    protected ComponentContext context;
-
-    @Override
-    public void activate(ComponentContext context) throws Exception {
-        this.context = context;
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) throws Exception {
-        if (config != null) {
-            deactivate();
-        }
-        this.context = null;
-    }
-
     protected String delsha;
 
-    public boolean activate(RedisConfigurationDescriptor desc) {
-        log.info("Registering Redis configuration");
-        deactivate();
-        if (desc.disabled) {
-            return false;
-        }
-        if (!desc.start()) {
-            return false;
-        }
+    protected void activate(RedisConfigurationDescriptor desc) {
         config = desc;
+        if (config.disabled) {
+            return;
+        }
+        if (!config.start()) {
+            config.disabled = true;
+            return;
+        }
+        handleNewExecutor(config.executor);
+    }
+
+    protected void handleNewExecutor(RedisExecutor candidate) {
+        executor = candidate;
         try {
             delsha = load("org.nuxeo.ecm.core.redis", "del-keys");
         } catch (IOException cause) {
-            deactivate();
-            return false;
+            try {
+                config.stop();
+            } finally {
+                executor = null;
+            }
+            throw new NuxeoException("Cannot activate redis", cause);
         }
-        return true;
     }
 
-    protected void deactivate() {
-        if (config == null) {
+    protected void deactivate(RedisConfigurationDescriptor desc) {
+        if (desc.disabled) {
             return;
         }
         try {
-            config.stop();
+            desc.stop();
         } finally {
             config = null;
+            executor = null;
         }
-
     }
 
     @Override
@@ -166,10 +161,10 @@ public class RedisServiceImpl extends DefaultComponent implements
     }
 
     public Long clear(final String pattern) throws IOException {
-        return config.executor.execute(new RedisCallable<Long>() {
+        return executor.execute(new RedisCallable<Long>() {
 
             @Override
-            public Long call() throws Exception {
+            public Long call(Jedis jedis) throws Exception {
                 List<String> keys = Arrays.asList(pattern);
                 List<String> args = Arrays.asList();
                 return (Long) jedis.evalsha(delsha, keys, args);
@@ -186,10 +181,10 @@ public class RedisServiceImpl extends DefaultComponent implements
         for (String line : IOUtils.readLines(is)) {
             builder.appendln(line);
         }
-        return config.executor.execute(new RedisCallable<String>() {
+        return executor.execute(new RedisCallable<String>() {
 
             @Override
-            public String call() throws Exception {
+            public String call(Jedis jedis) throws Exception {
                 return jedis.scriptLoad(builder.toString());
             }
         });
@@ -198,7 +193,7 @@ public class RedisServiceImpl extends DefaultComponent implements
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter.isAssignableFrom(RedisExecutor.class)) {
-            return adapter.cast(config.executor);
+            return adapter.cast(executor);
         }
         return super.getAdapter(adapter);
     }
