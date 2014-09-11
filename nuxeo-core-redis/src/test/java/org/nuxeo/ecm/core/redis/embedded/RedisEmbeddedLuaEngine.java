@@ -12,24 +12,20 @@ import javax.script.ScriptException;
 
 import org.apache.commons.codec.binary.Hex;
 import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.script.LuaScriptEngine;
 import org.luaj.vm2.script.LuaScriptEngineFactory;
 import org.luaj.vm2.script.LuajContext;
 import org.nuxeo.ecm.core.api.NuxeoException;
 
-import redis.clients.jedis.Jedis;
-
 public class RedisEmbeddedLuaEngine {
 
     protected final Map<String, CompiledScript> binaries = new HashMap<>();
 
-    protected final Jedis jedis;
-
     protected final LuaScriptEngine engine;
 
-    public RedisEmbeddedLuaEngine(ReddisEmbeddedFactory factory) {
-        jedis = factory.jedis;
-        engine = initEngine(factory.jedis);
+    public RedisEmbeddedLuaEngine(RedisEmbeddedConnection connection) {
+        engine = initEngine(connection);
     }
 
     public String load(String content) throws ScriptException {
@@ -44,10 +40,10 @@ public class RedisEmbeddedLuaEngine {
         return md5;
     }
 
-    protected LuaScriptEngine initEngine(Jedis jedis) {
+    protected LuaScriptEngine initEngine(RedisEmbeddedConnection connection) {
         LuaScriptEngine engine = (LuaScriptEngine) new LuaScriptEngineFactory().getScriptEngine();
         LuajContext context = (LuajContext) engine.getContext();
-        LuaValue redis = context.globals.load(new RedisEmbeddedLuaLibrary(jedis));
+        LuaValue redis = context.globals.load(new RedisEmbeddedLuaLibrary(connection));
         context.globals.set("redis", redis);
         return engine;
     }

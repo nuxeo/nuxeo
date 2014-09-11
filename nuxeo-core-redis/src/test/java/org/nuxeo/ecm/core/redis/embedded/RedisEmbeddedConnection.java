@@ -10,10 +10,10 @@ import com.lordofthejars.nosqlunit.redis.embedded.EmbeddedJedis;
 
 class RedisEmbeddedConnection extends EmbeddedJedis {
 
-    protected final ReddisEmbeddedFactory factory;
+    protected final RedisEmbeddedLuaEngine lua;
 
-    RedisEmbeddedConnection(ReddisEmbeddedFactory reddisEmbeddedFactory) {
-        factory = reddisEmbeddedFactory;
+    RedisEmbeddedConnection(RedisEmbeddedFactory reddisEmbeddedFactory) {
+        lua = new RedisEmbeddedLuaEngine(this);
     }
 
     public String rpoplpush(final String srckey, final String dstkey) {
@@ -48,7 +48,7 @@ class RedisEmbeddedConnection extends EmbeddedJedis {
     @Override
     public String scriptLoad(String content) {
         try {
-            return factory.lua.load(content);
+            return lua.load(content);
         } catch (ScriptException e) {
             throw new JedisException("Cannot load script " + content);
         }
@@ -57,7 +57,7 @@ class RedisEmbeddedConnection extends EmbeddedJedis {
     @Override
     public Object evalsha(String sha, List<String> keys, List<String> args) {
         try {
-            return factory.lua.evalsha(sha, keys, args);
+            return lua.evalsha(sha, keys, args);
         } catch (ScriptException e) {
             throw new JedisException("Cannot evaluate script " + sha);
         }

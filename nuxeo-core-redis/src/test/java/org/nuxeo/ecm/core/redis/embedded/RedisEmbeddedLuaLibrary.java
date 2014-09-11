@@ -4,19 +4,18 @@ import java.util.Collection;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.ThreeArgFunction;
+import org.luaj.vm2.Varargs;
+import org.luaj.vm2.lib.LibFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.CoerceLuaToJava;
 
-import redis.clients.jedis.Jedis;
-
 public class RedisEmbeddedLuaLibrary extends TwoArgFunction {
 
-    protected final Jedis jedis;
+    protected final RedisEmbeddedConnection connection;
 
-    public RedisEmbeddedLuaLibrary(Jedis jedis) {
-        this.jedis = jedis;
+    public RedisEmbeddedLuaLibrary(RedisEmbeddedConnection connection) {
+        this.connection = connection;
     }
 
     @Override
@@ -38,7 +37,45 @@ public class RedisEmbeddedLuaLibrary extends TwoArgFunction {
         return CoerceJavaToLua.coerce(value);
     }
 
-    class RedisCall extends ThreeArgFunction {
+    class RedisCall extends LibFunction {
+
+        @Override
+        public Varargs invoke(Varargs varargs) {
+            String opcode = varargs.checkjstring(1);
+            switch (opcode.toLowerCase()) {
+
+            case "del": {
+                return call(varargs.arg(1), LuaValue.tableOf(varargs, 1));
+            }
+
+            }
+            throw new UnsupportedOperationException(opcode);
+        }
+
+        @Override
+        public LuaValue call(LuaValue luaOpcode, LuaValue luaKey) {
+            String opcode = (String) CoerceLuaToJava.coerce(luaOpcode,
+                    String.class);
+            String key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
+            switch (opcode.toLowerCase()) {
+            case "get": {
+                return valueOfOrFalse(connection.get(key));
+            }
+            case "del": {
+                return valueOfOrFalse(connection.del((String[]) CoerceLuaToJava.coerce(
+                        luaKey, String[].class)));
+            }
+            case "keys": {
+                LuaTable table = LuaValue.tableOf();
+                int i = 0;
+                for (String value : connection.keys(key)) {
+                    table.rawset(++i, LuaValue.valueOf(value));
+                }
+                return table;
+            }
+            }
+            throw new UnsupportedOperationException(opcode);
+        }
 
         @Override
         public LuaValue call(LuaValue luaOpcode, LuaValue luaKey,
@@ -48,23 +85,8 @@ public class RedisEmbeddedLuaLibrary extends TwoArgFunction {
             String key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
             String arg = (String) CoerceLuaToJava.coerce(luaArg, String.class);
             switch (opcode.toLowerCase()) {
-            case "get": {
-
-                return valueOfOrFalse(jedis.get(key));
-            }
             case "set": {
-                return valueOfOrFalse(jedis.set(key, arg));
-            }
-            case "del": {
-                return valueOfOrFalse(jedis.del(new String[] { key }));
-            }
-            case "keys": {
-                LuaTable table = LuaValue.tableOf();
-                int i = 0;
-                for (String value : jedis.keys(key)) {
-                    table.rawset(++i, LuaValue.valueOf(value));
-                }
-                return table;
+                return valueOfOrFalse(connection.set(key, arg));
             }
             }
             throw new UnsupportedOperationException(opcode);
