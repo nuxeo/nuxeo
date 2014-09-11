@@ -18,6 +18,8 @@ package org.nuxeo.functionaltests;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.AtomPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
@@ -31,16 +33,16 @@ import org.openqa.selenium.WebElement;
 public class ITRSSAtomExportTest extends AbstractTest {
 
     @Test
-    public void testRSSPage() throws UserNotConnectedException {
+    public void testRSSPage() throws UserNotConnectedException, IOException {
         login();
 
-        get(NUXEO_URL + "/nxpath/default/default-domain@rss?contentViewName=document_content", RSSPage.class);
+        getWithoutErrorHandler(NUXEO_URL + "/nxpath/default/default-domain@rss?contentViewName=document_content", RSSPage.class);
 
         WebElement rssTitle = driver.findElement(By.id("feedTitleText"));
 
         assertEquals("RSS feed for document 'Default domain' and content view 'Document content'", rssTitle.getText());
 
-        get(NUXEO_URL + "/nxpath/default/default-domain@atom?contentViewName=document_content", AtomPage.class);
+        getWithoutErrorHandler(NUXEO_URL + "/nxpath/default/default-domain@atom?contentViewName=document_content", AtomPage.class);
 
         WebElement atomTitle = driver.findElement(By.id("feedTitleText"));
 

@@ -74,13 +74,16 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.internal.WrapsElement;
 import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.Command;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.DriverCommand;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
 
 /**
  * Base functions for all pages.
@@ -578,6 +581,20 @@ public abstract class AbstractTest {
 
     public static <T> T get(String url, Class<T> pageClassToProxy) {
         driver.get(url);
+        return asPage(pageClassToProxy);
+    }
+
+    /**
+     * Do not wait for page load. Do not handle error. Do not give explicit
+     * error in case of failure. This is a very raw get.
+     *
+     * @since 5.9.6
+     */
+    public static <T> T getWithoutErrorHandler(String url,
+            Class<T> pageClassToProxy) throws IOException {
+        Command command = new Command(AbstractTest.driver.getSessionId(),
+                DriverCommand.GET, ImmutableMap.of("url", url));
+        AbstractTest.driver.getCommandExecutor().execute(command);
         return asPage(pageClassToProxy);
     }
 
