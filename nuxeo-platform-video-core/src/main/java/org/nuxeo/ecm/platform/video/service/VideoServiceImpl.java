@@ -76,7 +76,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        if (workManager != null) {
+        if (workManager != null && workManager.isStarted()) {
             workManager.shutdownQueue(
                     workManager.getCategoryQueueId(VideoConversionWork.CATEGORY_VIDEO_CONVERSION),
                     10, TimeUnit.SECONDS);
