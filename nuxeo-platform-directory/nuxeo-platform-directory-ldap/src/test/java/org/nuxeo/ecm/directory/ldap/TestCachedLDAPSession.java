@@ -22,8 +22,12 @@ package org.nuxeo.ecm.directory.ldap;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jdt.internal.core.Assert;
+import org.junit.Test;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.redis.RedisFeature;
 import org.nuxeo.ecm.directory.DirectoryCache;
+import org.nuxeo.ecm.directory.Session;
 
 /**
  * Test class for LDAP directory that use cache
@@ -61,5 +65,19 @@ public class TestCachedLDAPSession extends TestLDAPSession {
             cache.setEntryCacheWithoutReferencesName(ENTRY_CACHE_WITHOUT_REFERENCES_NAME);
         }
     }
+    
+    @Test
+    public void testGetFromCache() {
+        Session ldapSession = getLDAPDirectory("userDirectory").getSession();
+        
+        //First call will update cache
+        DocumentModel entry = ldapSession.getEntry("user1");
+        Assert.isNotNull(entry);
+        
+        //Second call will use the cache
+        entry = ldapSession.getEntry("user1");
+        Assert.isNotNull(entry);
+    }
+    
 
 }

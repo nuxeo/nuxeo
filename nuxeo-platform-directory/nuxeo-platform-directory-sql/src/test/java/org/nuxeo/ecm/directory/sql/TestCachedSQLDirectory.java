@@ -19,9 +19,14 @@
 
 package org.nuxeo.ecm.directory.sql;
 
+import org.eclipse.jdt.internal.core.Assert;
+import org.junit.Test;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.redis.RedisFeature;
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.DirectoryCache;
+import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.Session;
 
 public class TestCachedSQLDirectory extends TestSQLDirectory {
 
@@ -36,13 +41,13 @@ public class TestCachedSQLDirectory extends TestSQLDirectory {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        
+
         deployBundle("org.nuxeo.ecm.core.cache");
-        
+
         if (!RedisFeature.getMode().equals(RedisFeature.Mode.disabled)) {
             RedisFeature.setup(this);
-                deployTestContrib("org.nuxeo.ecm.directory.sql.tests",
-                        REDIS_CACHE_CONFIG);
+            deployTestContrib("org.nuxeo.ecm.directory.sql.tests",
+                    REDIS_CACHE_CONFIG);
 
         } else {
             deployTestContrib("org.nuxeo.ecm.directory.sql.tests",
@@ -54,7 +59,20 @@ public class TestCachedSQLDirectory extends TestSQLDirectory {
         DirectoryCache cache = dir.getCache();
         cache.setEntryCacheName(ENTRY_CACHE_NAME);
         cache.setEntryCacheWithoutReferencesName(ENTRY_CACHE_WITHOUT_REFERENCES_NAME);
-        
+
+    }
+
+    @Test
+    public void testGetFromCache() throws DirectoryException, Exception {
+        Session sqlSession = getSQLDirectory().getSession();
+
+        // First call will update cache
+        DocumentModel entry = sqlSession.getEntry("user_1");
+        Assert.isNotNull(entry);
+
+        // Second call will use the cache
+        entry = sqlSession.getEntry("user_1");
+        Assert.isNotNull(entry);
     }
 
 }
