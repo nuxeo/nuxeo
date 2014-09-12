@@ -131,7 +131,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         sBuilder.put("http.enabled", conf.httpEnabled())
                 .put("path.data", conf.getDataPath())
                 .put("index.number_of_shards", 1)
-                .put("index.number_of_replicas", 1)
+                .put("index.number_of_replicas", 0)
                 .put("cluster.name", conf.getClusterName())
                 .put("node.name", conf.getNodeName());
         if (conf.getIndexStorageType() != null) {
