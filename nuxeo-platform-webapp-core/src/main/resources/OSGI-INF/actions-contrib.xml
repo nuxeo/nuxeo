@@ -25,11 +25,6 @@
       <filter-id>anonymous</filter-id>
     </action>
 
-    <action id="advanced_search" link="search_form" label="command.advancedSearch"
-      order="10">
-      <category>SEARCH_ACTIONS</category>
-    </action>
-
     <action id="newDomain" link="#{documentActions.createDocument('Domain')}"
       label="command.create.domain" icon="/icons/action_add.gif">
       <category>SUBVIEW_UPPER_LIST</category>
@@ -634,18 +629,6 @@
     </action>
 
     <!-- end of actions on document create and edit pages -->
-
-    <!-- header actions -->
-
-    <action id="simple_search_box" order="1" type="template">
-      <category>SEARCH_ACTIONS</category>
-      <filter-id>isSearchEnabled</filter-id>
-      <properties>
-        <property name="template">/search/search_box.xhtml</property>
-      </properties>
-    </action>
-
-    <!-- end of header actions -->
 
     <!-- footer links -->
 
