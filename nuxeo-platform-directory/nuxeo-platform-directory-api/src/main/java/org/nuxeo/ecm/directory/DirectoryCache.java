@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import org.mortbay.log.Log;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.cache.Cache;
 import org.nuxeo.ecm.core.cache.CacheService;
@@ -86,36 +87,46 @@ public class DirectoryCache {
             boolean fetchReferences) throws DirectoryException {
         if (!isCacheEnabled()) {
             return source.getEntryFromSource(entryId, fetchReferences);
+        } else if (isCacheEnabled()
+                && (getEntryCache() == null || getEntryCacheWithoutReferences() == null)) {
+
+            Log.warn("Your directory configuration for cache is wrong, directory cache will not be used.");
+            if (getEntryCache() == null) {
+                Log.warn(String.format(
+                        "The cache for entry '%s' has not been found, please check the cache name or make sure you have deployed it",
+                        entryCacheName));
+            }
+            if (getEntryCacheWithoutReferences() == null) {
+                Log.warn(String.format(
+                        "The cache for entry without references '%s' has not been found, please check the cache name or make sure you have deployed it",
+                        entryCacheWithoutReferencesName));
+            }
+
+            return source.getEntryFromSource(entryId, fetchReferences);
         }
         try {
             DocumentModel dm = null;
             if (fetchReferences) {
-
-                DocumentModel entry = (DocumentModel) getEntryCache().get(
-                        entryId);
-                if (entry == null) {
+                dm = (DocumentModel) getEntryCache().get(entryId);
+                if (dm == null) {
                     // fetch the entry from the backend and cache it for later
                     // reuse
                     dm = source.getEntryFromSource(entryId, fetchReferences);
-                    synchronized (this) {
-                        if (dm != null) {
-                            getEntryCache().put(entryId, dm);
-                        }
+                    if (dm != null) {
+                        getEntryCache().put(entryId, dm);
                     }
                 } else {
                     hitsCounter.inc();
                 }
             } else {
-                DocumentModel entry = (DocumentModel) getEntryCacheWithoutReferences().get(
+                dm = (DocumentModel) getEntryCacheWithoutReferences().get(
                         entryId);
-                if (entry == null) {
+                if (dm == null) {
                     // fetch the entry from the backend and cache it for later
                     // reuse
                     dm = source.getEntryFromSource(entryId, fetchReferences);
-                    synchronized (this) {
-                        if (dm != null) {
-                            getEntryCacheWithoutReferences().put(entryId, dm);
-                        }
+                    if (dm != null) {
+                        getEntryCacheWithoutReferences().put(entryId, dm);
                     }
                 } else {
                     hitsCounter.inc();
