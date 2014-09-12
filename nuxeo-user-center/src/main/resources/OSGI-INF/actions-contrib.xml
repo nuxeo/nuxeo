@@ -30,9 +30,6 @@
     <action id="SavedSearches" link="/user_center_fragment.xhtml"
       label="user.center.saved.searches" icon="/icons/saved_searches.png" order="70">
       <category>USER_CENTER</category>
-      <properties>
-        <property name="alwaysDisplaySubTabs">true</property>
-      </properties>
       <filter-id>not_anonymous</filter-id>
       <filter id="SavedSearches_has_subtabs">
         <rule grant="false">
