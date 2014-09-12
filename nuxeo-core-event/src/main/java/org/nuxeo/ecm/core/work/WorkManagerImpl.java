@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -44,6 +44,7 @@ import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.ecm.core.event.EventServiceComponent;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
@@ -90,15 +91,16 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
     // @GuardedBy("itself")
-    protected final WorkQueueDescriptorRegistry workQueueDescriptors = new WorkQueueDescriptorRegistry(this);
+    protected final WorkQueueDescriptorRegistry workQueueDescriptors = new WorkQueueDescriptorRegistry(
+            this);
 
     // used synchronized
-    protected final Map<String, WorkThreadPoolExecutor> executors = new HashMap<String, WorkThreadPoolExecutor>();
+    protected final Map<String, WorkThreadPoolExecutor> executors = new HashMap<>();
 
-    protected final WorkCompletionSynchronizer completionSynchronizer = new WorkCompletionSynchronizer("all");
+    protected final WorkCompletionSynchronizer completionSynchronizer = new WorkCompletionSynchronizer(
+            "all");
 
     protected WorkQueuing queuing = newWorkQueuing(MemoryWorkQueuing.class);
-
 
     @Override
     public void registerContribution(Object contribution,
@@ -128,8 +130,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         }
     }
 
-    protected void activateQueue(
-            WorkQueueDescriptor workQueueDescriptor) {
+    protected void activateQueue(WorkQueueDescriptor workQueueDescriptor) {
         Boolean processing = workQueueDescriptor.processing;
         Boolean queuing = workQueueDescriptor.queuing;
         if (WorkQueueDescriptor.ALL_QUEUES.equals(workQueueDescriptor.id)) {
@@ -140,7 +141,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 return;
             }
             // activate/deactivate processing/queueing on all queues
-            List<String> queueIds = new ArrayList<String>(
+            List<String> queueIds = new ArrayList<>(
                     workQueueDescriptors.getQueueIds()); // copy
             String what = processing == null ? ""
                     : (" processing=" + processing);
@@ -181,8 +182,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         log.info("Activated work queue " + workQueueDescriptor.id + what);
     }
 
-    public void deactivateQueue(
-            WorkQueueDescriptor workQueueDescriptor) {
+    public void deactivateQueue(WorkQueueDescriptor workQueueDescriptor) {
         if (WorkQueueDescriptor.ALL_QUEUES.equals(workQueueDescriptor.id)) {
             return;
         }
@@ -190,7 +190,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         executor.shutdownAndSuspend();
         log.info("Deactivated work queue " + workQueueDescriptor.id);
     }
-
 
     public void registerWorkQueuingDescriptor(WorkQueuingImplDescriptor descr) {
         WorkQueuing q = newWorkQueuing(descr.getWorkQueuingClass());
@@ -202,8 +201,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         queuing = q;
     }
 
-    public void unregisterWorkQueuingDescriptor(
-            WorkQueuingImplDescriptor descr) {
+    public void unregisterWorkQueuingDescriptor(WorkQueuingImplDescriptor descr) {
         unregisterWorkQueing();
     }
 
@@ -271,7 +269,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public int getApplicationStartedOrder() {
-        return EventServiceComponent.APPLICATION_STARTED_ORDER-1;
+        return EventServiceComponent.APPLICATION_STARTED_ORDER - 1;
     }
 
     @Override
@@ -287,7 +285,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         if (started) {
             return;
         }
-        synchronized(this) {
+        synchronized (this) {
             if (started) {
                 return;
             }
@@ -373,7 +371,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     @Override
     public boolean shutdown(long timeout, TimeUnit unit)
             throws InterruptedException {
-        List<WorkThreadPoolExecutor> executorList = new ArrayList<WorkThreadPoolExecutor>(
+        List<WorkThreadPoolExecutor> executorList = new ArrayList<>(
                 executors.values());
         executors.clear();
         started = false;
@@ -452,7 +450,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
                 @Override
                 public void uncaughtException(Thread t, Throwable e) {
-                    LogFactory.getLog(WorkManagerImpl.class).error("Uncaught error on thread " + t.getName(), e);
+                    LogFactory.getLog(WorkManagerImpl.class).error(
+                            "Uncaught error on thread " + t.getName(), e);
                 }
             });
             return thread;
@@ -480,14 +479,14 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
         protected final Condition completion = completionLock.newCondition();
 
+        @SuppressWarnings("hiding")
         protected final Log log = LogFactory.getLog(WorkCompletionSynchronizer.class);
 
         protected final String queueid;
 
         protected WorkCompletionSynchronizer(String id) {
-           queueid = id;
+            queueid = id;
         }
-
 
         protected long await(long timeout) throws InterruptedException {
             completionLock.lock();
@@ -733,7 +732,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             boolean terminated = super.awaitTermination(timeout, unit);
             if (!terminated) {
                 // drain queue from remaining scheduled work
-                List<Runnable> drained = new ArrayList<Runnable>();
+                List<Runnable> drained = new ArrayList<>();
                 getQueue().drainTo(drained);
                 for (Runnable r : drained) {
                     removedFromQueue(r);
@@ -769,8 +768,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     @Override
-    public void schedule(Work work, Scheduling scheduling,
-            boolean afterCommit) {
+    public void schedule(Work work, Scheduling scheduling, boolean afterCommit) {
         String workId = work.getId();
         String queueId = getCategoryQueueId(work.getCategory());
         if (!isQueuingEnabled(queueId)) {
@@ -796,7 +794,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             if (w != null) {
                 w.setWorkInstanceState(State.CANCELED);
                 if (log.isDebugEnabled()) {
-                    log.debug("Canceling existing scheduled work before scheduling (" + completionSynchronizer.scheduledOrRunning.get() + ")");
+                    log.debug("Canceling existing scheduled work before scheduling ("
+                            + completionSynchronizer.scheduledOrRunning.get()
+                            + ")");
                 }
             }
             break;
@@ -954,7 +954,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             throws InterruptedException {
         return completionSynchronizer.await(unit.toNanos(duration)) > 0;
     }
-
 
     @Override
     public synchronized void clearCompletedWork(String queueId) {
