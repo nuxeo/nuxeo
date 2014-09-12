@@ -984,5 +984,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         }
     }
 
+    @Override
+    public boolean isStarted() {
+        return started;
+    }
 
 }

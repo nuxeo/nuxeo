@@ -308,4 +308,14 @@ public interface WorkManager {
      */
     void cleanup();
 
+    /**
+     * @return {@code true} if active
+     * @see org.nuxeo.runtime.model.DefaultComponent#applicationStarted(org.nuxeo.runtime.model.ComponentContext)
+     * @see #init()
+     * @see #shutdown(long, TimeUnit)
+     *
+     * @since 5.9.6
+     */
+    boolean isStarted();
+
 }
