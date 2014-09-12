@@ -230,7 +230,7 @@ public class TestAggregates {
                         + "  \"post_filter\" : {\n" //
                         + "    \"and\" : {\n" //
                         + "      \"filters\" : [ {\n" //
-                        + "        \"term\" : {\n" //
+                        + "        \"terms\" : {\n" //
                         + "          \"dc:source\" : [ \"foo\", \"bar\" ]\n" //
                         + "        }\n" //
                         + "      } ]\n" //

@@ -236,7 +236,7 @@ public class NxQueryBuilder {
         AndFilterBuilder ret = FilterBuilders.andFilter();
         for (AggregateQuery aggQuery : aggregates) {
             if (!aggQuery.getSelection().isEmpty()) {
-                ret.add(FilterBuilders.termFilter(aggQuery.getField(),
+                ret.add(FilterBuilders.termsFilter(aggQuery.getField(),
                         aggQuery.getSelection()));
                 hasFilter = true;
             }
