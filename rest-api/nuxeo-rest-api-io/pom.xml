@@ -1,0 +1,24 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-rest-api-parent</artifactId>
+    <version>5.8.0-HF22-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-rest-api-io</artifactId>
+  <name>Nuxeo Rest API io</name>
+  <description>io part of the Nuxeo REST API</description>
+  <dependencies>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.automation</groupId>
+      <artifactId>nuxeo-automation-io</artifactId>
+    </dependency>
+  </dependencies>
+</project>
