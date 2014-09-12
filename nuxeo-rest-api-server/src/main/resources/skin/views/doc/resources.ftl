@@ -11,6 +11,10 @@
             "description": "Access documents by their id"
         },
         {
+        "path": "/query.{format}",
+        "description": "Document Search"
+        },
+        {
             "path": "/automation.{format}",
             "description": "Run automation operations"
         },
