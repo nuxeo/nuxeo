@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 @Operation(id = Query.ID, category = Constants.CAT_FETCH, label = "Query",
         description = "Perform a query on the repository. The query result " +
                 "will become the input for the next operation.",
-        addToStudio = false, deprecatedSince = "5.9.6")
+        addToStudio = true, deprecatedSince = "5.9.6")
 public class Query {
 
     public static final String ID = "Document.Query";
