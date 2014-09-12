@@ -120,7 +120,6 @@
         </aggregate>
         <aggregate id="coverage_agg" type="histogram" parameter="dc:coverage">
           <field schema="search" name="coverage_agg"/>
-          <jsonProperties>{"interval" : 50}</jsonProperties>
         </aggregate>
         <aggregate id="subject_agg" type="terms" parameter="dc:subjects">
           <field schema="search" name="subjects_agg"/>

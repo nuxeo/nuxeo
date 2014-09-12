@@ -29,8 +29,6 @@ public interface AggregateQuery {
 
     String getField();
 
-    String getPropertiesAsJson();
-
     Map<String, String> getProperties();
 
     List<String> getSelection();

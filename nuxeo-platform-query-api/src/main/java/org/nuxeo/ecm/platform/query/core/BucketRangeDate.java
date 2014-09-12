@@ -27,6 +27,7 @@ public class BucketRangeDate implements Bucket {
 
     private final String key;
     private final long docCount;
+    // DateTime are immutables
     private final DateTime from;
     private final DateTime to;
 

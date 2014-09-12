@@ -18,11 +18,11 @@
 
 package org.nuxeo.ecm.platform.query.core;
 
+import java.util.HashMap;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
@@ -45,12 +45,6 @@ public class AggregateDescriptor implements AggregateDefinition {
 
     @XNode("field")
     protected FieldDescriptor field;
-
-    @XNode("jsonProperties")
-    protected String jsonProperties;
-
-/*    @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
-    protected Map<String, String> properties = new HashMap<String, String>();*/
 
     @XNode(value = "properties")
     protected PropertiesDescriptor aggregateProperties = new PropertiesDescriptor();
@@ -80,29 +74,8 @@ public class AggregateDescriptor implements AggregateDefinition {
     }
 
     @Override
-    public String getPropertiesAsJson() {
-        if (jsonProperties == null) {
-            StringWriter out = new StringWriter();
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                objectMapper.writeValue(out, aggregateProperties.getProperties());
-            } catch (IOException e) {
-                throw new IllegalArgumentException(e.getMessage(), e);
-            }
-            out.flush();
-            jsonProperties = out.toString();
-        }
-        return jsonProperties;
-    }
-
-    @Override
     public Map<String, String> getProperties() {
         return aggregateProperties.getProperties();
-    }
-
-    @Override
-    public void setPropertiesAsJson(String json) {
-        this.jsonProperties = json;
     }
 
     @Override
@@ -134,7 +107,6 @@ public class AggregateDescriptor implements AggregateDefinition {
         if (field != null) {
             clone.field = field.clone();
         }
-        clone.jsonProperties = jsonProperties;
         if (aggregateProperties != null) {
             clone.aggregateProperties = new PropertiesDescriptor();
             clone.aggregateProperties.properties.putAll(aggregateProperties.properties);

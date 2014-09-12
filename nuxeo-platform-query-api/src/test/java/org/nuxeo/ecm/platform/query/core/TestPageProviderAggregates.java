@@ -99,13 +99,9 @@ public class TestPageProviderAggregates extends SQLRepositoryTestCase {
         assertEquals("dc:source", source_agg.getDocumentField());
         assertEquals("advanced_search", source_agg.getSearchField().getSchema());
         assertEquals("source_agg", source_agg.getSearchField().getName());
-        assertTrue(source_agg.getPropertiesAsJson().contains("minDocSize"));
         assertTrue(source_agg.getProperties().containsKey("minDocSize"));
 
         assertEquals("coverage_agg", coverage_agg.getId());
-        assertEquals("{\"interval\" : 50}", coverage_agg.getPropertiesAsJson());
-
-        assertEquals("{}", subject_agg.getPropertiesAsJson());
 
         assertNotNull(source_agg.getProperties());
         assertEquals(2, source_agg.getProperties().size());

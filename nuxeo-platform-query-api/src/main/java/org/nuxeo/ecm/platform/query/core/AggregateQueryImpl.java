@@ -58,11 +58,6 @@ public class AggregateQueryImpl implements AggregateQuery {
     }
 
     @Override
-    public String getPropertiesAsJson() {
-        return definition.getPropertiesAsJson();
-    }
-
-    @Override
     public Map<String, String> getProperties() {
         return definition.getProperties();
     }

@@ -36,10 +36,6 @@ public interface AggregateDefinition {
 
     Map<String, String> getProperties();
 
-    String getPropertiesAsJson();
-
-    void setPropertiesAsJson(String json);
-
     /**
      * Get the document aggregator field
      */
