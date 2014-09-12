@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -124,7 +125,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     @Override
     public void launchAutomaticConversions(DocumentModel doc) {
-        List<AutomaticVideoConversion> conversions = new ArrayList<AutomaticVideoConversion>(
+        List<AutomaticVideoConversion> conversions = new ArrayList<>(
                 automaticVideoConversions.registry.values());
         Collections.sort(conversions);
         for (AutomaticVideoConversion conversion : conversions) {
@@ -150,7 +151,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
             BlobHolder blobHolder = new SimpleBlobHolder(
                     originalVideo.getBlob());
             VideoConversion conversion = videoConversions.registry.get(conversionName);
-            Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+            Map<String, Serializable> parameters = new HashMap<>();
             parameters.put("height", conversion.getHeight());
             parameters.put("videoInfo", originalVideo.getVideoInfo());
             ConversionService conversionService = Framework.getLocalService(ConversionService.class);
