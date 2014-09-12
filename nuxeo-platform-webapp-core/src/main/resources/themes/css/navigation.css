@@ -176,7 +176,8 @@ author: lkemen@nuxeo.com
   border: medium none;
   margin: .2em 0;
   padding: 0;
-  text-align: right }
+  text-align: right;
+  float: right }
 
 .pageNavigationControls .currentPageStatus,
 #pageNavigationControls .currentPageStatus {
@@ -204,6 +205,10 @@ author: lkemen@nuxeo.com
   cursor: default;
   filter: alpha(opacity=40);
   opacity: .4 }
+
+.pageNavigationControls input[disabled=disabled]:hover,
+#pageNavigationControls input[disabled=disabled]:hover {
+  background: none }
 
 /* =Back Arrow */
 .directoryBack {
