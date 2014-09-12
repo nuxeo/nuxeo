@@ -19,7 +19,7 @@
       <cache name="newCache" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
         <ttl>20</ttl>
         <option name="maxSize">10</option>
-        <option name="concurrency-level">10</option>
+        <option name="concurrencyLevel">10</option>
       </cache>
       The class attribute must link a class that implements the
       CoreCache

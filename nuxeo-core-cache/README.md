@@ -27,7 +27,7 @@ The configuration require the following steps :
 			class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
 			<ttl>20</ttl><!-- in minutes -->
 			<option name="maxSize">10</option>
-			<option name="concurrency-level">10</option>
+			<option name="concurrencyLevel">10</option>
 		</cache>
 	</extension>
       
