@@ -253,7 +253,7 @@ public class TestAggregates {
                         + "      \"filter\" : {\n" //
                         + "        \"and\" : {\n" //
                         + "          \"filters\" : [ {\n" //
-                        + "            \"term\" : {\n" //
+                        + "            \"terms\" : {\n" //
                         + "              \"dc:source\" : [ \"foo\", \"bar\" ]\n" //
                         + "            }\n" //
                         + "          } ]\n" //
@@ -302,9 +302,9 @@ public class TestAggregates {
                 "AggregateImpl(source, terms, [BucketTerm(Source0, 1), BucketTerm(Source1, 1), BucketTerm(Source2, 1), BucketTerm(Source3, 1), BucketTerm(Source4, 1)])",
                 pp.getAggregates().get("source").toString());
         Assert.assertEquals(
-                "AggregateImpl(coverage, terms, [BucketTerm(Coverage2, 1)])",
+                "AggregateImpl(coverage, terms, [BucketTerm(Coverage1, 1), BucketTerm(Coverage2, 1)])",
                 pp.getAggregates().get("coverage").toString());
-        Assert.assertEquals("AggregateImpl(nature, terms, [BucketTerm(Nature0, 1)])",
+        Assert.assertEquals("AggregateImpl(nature, terms, [BucketTerm(Nature0, 1), BucketTerm(Nature1, 1)])",
                 pp.getAggregates().get("nature").toString());
 
     }
