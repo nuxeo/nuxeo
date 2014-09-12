@@ -65,7 +65,7 @@
         <layout name="thumbnail_listing_ajax" title="document_thumbnail_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
           showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
-        <layout name="document_listing_ajax" title="document_listing"
+        <layout name="search_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
           showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
       </resultLayouts>
@@ -117,19 +117,11 @@
       <cacheSize>1</cacheSize>
 
       <resultLayouts>
-        <!--<layout name="search_listing_ajax" title="document_listing"-->
-          <!--translateTitle="true" iconPath="/icons/document_listing_icon.png"-->
-          <!--showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />-->
-        <layout name="document_listing_ajax" title="document_listing"
+        <layout name="thumbnail_listing_ajax" title="document_thumbnail_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+        <layout name="search_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
-        <layout name="document_virtual_navigation_listing_ajax_compact_2_columns"
-          title="document_listing_compact_2_columns" translateTitle="true"
-          iconPath="/icons/document_listing_compact_2_columns_icon.png"
-          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
-        <layout name="document_virtual_navigation_listing_ajax_icon_2_columns"
-          title="document_listing_icon_2_columns" translateTitle="true"
-          iconPath="/icons/document_listing_icon_2_columns_icon.png"
           showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
       </resultLayouts>
 
@@ -165,19 +157,11 @@
       <cacheSize>1</cacheSize>
 
       <resultLayouts>
-        <!--<layout name="search_listing_ajax" title="document_listing"-->
-          <!--translateTitle="true" iconPath="/icons/document_listing_icon.png"-->
-          <!--showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />-->
-        <layout name="document_listing_ajax" title="document_listing"
+        <layout name="thumbnail_listing_ajax" title="document_thumbnail_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+        <layout name="search_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
-        <layout name="document_virtual_navigation_listing_ajax_compact_2_columns"
-          title="document_listing_compact_2_columns" translateTitle="true"
-          iconPath="/icons/document_listing_compact_2_columns_icon.png"
-          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
-        <layout name="document_virtual_navigation_listing_ajax_icon_2_columns"
-          title="document_listing_icon_2_columns" translateTitle="true"
-          iconPath="/icons/document_listing_icon_2_columns_icon.png"
           showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
       </resultLayouts>
 
