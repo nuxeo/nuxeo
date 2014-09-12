@@ -18,6 +18,9 @@
 
 package org.nuxeo.ecm.core.cache;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.RuntimeServiceEvent;
@@ -50,7 +53,8 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
     @Override
     public void deactivate(ComponentContext context) {
         if (cacheRegistry.caches.size() > 0) {
-            for (CacheDescriptor desc : cacheRegistry.caches.values()) {
+            Map<String,CacheDescriptor> descriptors = new HashMap<String, CacheDescriptor>(cacheRegistry.caches);
+            for (CacheDescriptor desc : descriptors.values()) {
                 log.warn("Unregistery leaked contribution " + desc.name);
                 cacheRegistry.contributionRemoved(desc.name, desc);
             }
