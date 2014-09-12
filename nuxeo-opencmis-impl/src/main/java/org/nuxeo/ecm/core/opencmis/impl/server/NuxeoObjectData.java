@@ -432,6 +432,9 @@ public class NuxeoObjectData implements ObjectData {
         List<RenditionDefinition> defs = renditionService.getAvailableRenditionDefinitions(doc);
         List<RenditionData> list = new ArrayList<RenditionData>(defs.size());
         for (RenditionDefinition def : defs) {
+            if (!def.isVisible()) {
+                continue;
+            }
             RenditionDataImpl ren = new RenditionDataImpl();
             ren.setStreamId(REND_STREAM_RENDITION_PREFIX + def.getName());
             ren.setKind(REND_KIND_NUXEO_RENDITION);
