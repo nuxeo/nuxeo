@@ -154,6 +154,8 @@ public class RedisFeature extends SimpleFeature {
             xmap.register(RedisServerDescriptor.class);
             desc = newRedisServerDescriptor();
             break;
+        default:
+            break;
         }
         String ext = "";
         if (desc != null) {

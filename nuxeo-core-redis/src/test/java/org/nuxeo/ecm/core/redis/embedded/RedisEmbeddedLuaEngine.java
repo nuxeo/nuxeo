@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +20,6 @@ import javax.script.ScriptException;
 
 import org.apache.commons.codec.binary.Hex;
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.script.LuaScriptEngine;
 import org.luaj.vm2.script.LuaScriptEngineFactory;
 import org.luaj.vm2.script.LuajContext;
