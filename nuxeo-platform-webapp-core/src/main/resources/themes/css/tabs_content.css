@@ -11,6 +11,13 @@ author: lkemen@nuxeo.com
   margin: 0;
   padding: 2em 0 }
 
+.mainNoTabs {
+  background-color: #fff;
+  border-radius: 3px;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
+  min-height: 30em;
+  padding: 2em }
+
 .contentViewTitle {
   border-bottom: 1px solid;
   border-color: "neutral.lighter (__FLAVOR__ border)";
