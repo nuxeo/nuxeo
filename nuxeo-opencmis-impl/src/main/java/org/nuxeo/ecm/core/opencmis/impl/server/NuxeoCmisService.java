@@ -991,9 +991,12 @@ public class NuxeoCmisService extends AbstractCmisService implements
     public List<RenditionData> getRenditions(String repositoryId,
             String objectId, String renditionFilter, BigInteger maxItems,
             BigInteger skipCount, ExtensionsData extension) {
+        if (!NuxeoObjectData.needsRenditions(renditionFilter)) {
+            return Collections.emptyList();
+        }
         DocumentModel doc = getDocumentModel(objectId);
-        return NuxeoObjectData.getRenditions(doc, maxItems, skipCount,
-                callContext);
+        return NuxeoObjectData.getRenditions(doc, renditionFilter, maxItems,
+                skipCount, callContext);
     }
 
     @Override
@@ -1626,15 +1629,12 @@ public class NuxeoCmisService extends AbstractCmisService implements
                                 id, includeRelationships, this);
                         od.setRelationships(relationships);
                     }
-                    if (renditionFilter != null
-                            && renditionFilter.length() > 0
-                            && !renditionFilter.equals(Constants.RENDITION_NONE)) {
+                    if (NuxeoObjectData.needsRenditions(renditionFilter)) {
                         if (doc == null) {
                             doc = getDocumentModel(id);
                         }
-                        // TODO parse rendition filter; for now returns them all
                         List<RenditionData> renditions = NuxeoObjectData.getRenditions(
-                                doc, null, null, callContext);
+                                doc, renditionFilter, null, null, callContext);
                         od.setRenditions(renditions);
                     }
                 }

@@ -20,6 +20,7 @@ import java.util.List;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.RenditionData;
+import org.apache.chemistry.opencmis.commons.impl.Constants;
 import org.apache.chemistry.opencmis.commons.spi.ObjectService;
 import org.junit.After;
 import org.junit.Before;
@@ -85,7 +86,7 @@ public class TestNuxeoBindingRenditions extends NuxeoBindingTestCase {
 
         // list renditions
         List<RenditionData> renditions = objService.getRenditions(repositoryId,
-                ob.getId(), null, null, null, null);
+                ob.getId(), "*", null, null, null);
         assertEquals(2, renditions.size());
         Collections.sort(renditions, RENDITION_CMP);
 
@@ -113,6 +114,59 @@ public class TestNuxeoBindingRenditions extends NuxeoBindingTestCase {
                 "nuxeo:rendition:pdf", null, null, null);
         assertEquals("application/pdf", cs.getMimeType());
         assertEquals("testfile1_Title.pdf", cs.getFileName());
+    }
+
+
+    @Test
+    public void testRenditionFilter() throws Exception {
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
+
+        // cmis:none
+        List<RenditionData> renditions = objService.getRenditions(repositoryId,
+                ob.getId(), Constants.RENDITION_NONE, null, null, null);
+        assertEquals(0, renditions.size());
+
+        // null is cmis:none
+        renditions = objService.getRenditions(repositoryId,
+                ob.getId(), null, null, null, null);
+        assertEquals(0, renditions.size());
+
+        // specific kind
+        renditions = objService.getRenditions(repositoryId,
+                ob.getId(), "cmis:thumbnail", null, null, null);
+        assertEquals(1, renditions.size());
+        assertEquals("nuxeo:icon", renditions.get(0).getStreamId());
+
+        // non-existent mimetype
+        renditions = objService.getRenditions(repositoryId,
+                ob.getId(), "foo/bar", null, null, null);
+        assertEquals(0, renditions.size());
+
+        // specific mimetype
+        renditions = objService.getRenditions(repositoryId,
+                ob.getId(), "application/pdf", null, null, null);
+        assertEquals(1, renditions.size());
+        assertEquals("nuxeo:rendition:pdf", renditions.get(0).getStreamId());
+
+        // wildcard mimetype
+        renditions = objService.getRenditions(repositoryId,
+                ob.getId(), "application/*", null, null, null);
+        assertEquals(1, renditions.size());
+        assertEquals("nuxeo:rendition:pdf", renditions.get(0).getStreamId());
+
+        // several kind / mimetypes
+        renditions = objService.getRenditions(repositoryId,
+                ob.getId(), "foo/*,foo/bar,foo", null, null, null);
+        assertEquals(0, renditions.size());
+
+        renditions = objService.getRenditions(repositoryId,
+                ob.getId(), "application/*,foo/bar,foo", null, null, null);
+        assertEquals(1, renditions.size());
+        assertEquals("nuxeo:rendition:pdf", renditions.get(0).getStreamId());
+
+        renditions = objService.getRenditions(repositoryId,
+                ob.getId(), "application/*,cmis:thumbnail", null, null, null);
+        assertEquals(2, renditions.size());
     }
 
     @Test

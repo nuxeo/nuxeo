@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -63,9 +64,8 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.RenditionDataImpl;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.server.CmisService;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
-import org.nuxeo.common.utils.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -322,20 +322,58 @@ public class NuxeoObjectData implements ObjectData {
 
     @Override
     public List<RenditionData> getRenditions() {
-        if (renditionFilter == null || renditionFilter.isEmpty()
-                || RENDITION_NONE.equals(renditionFilter)) {
-            return null;
+        if (!needsRenditions(renditionFilter)) {
+            return Collections.emptyList();
         }
-        // TODO parse rendition filter; for now returns them all
-        return getRenditions(doc, null, null, callContext);
+        return getRenditions(doc, renditionFilter, null, null, callContext);
+    }
+
+    public static boolean needsRenditions(String renditionFilter) {
+        return !StringUtils.isBlank(renditionFilter)
+                && !RENDITION_NONE.equals(renditionFilter);
     }
 
     public static List<RenditionData> getRenditions(DocumentModel doc,
-            BigInteger maxItems, BigInteger skipCount, CallContext callContext) {
+            String renditionFilter, BigInteger maxItems, BigInteger skipCount,
+            CallContext callContext) {
         try {
             List<RenditionData> list = new ArrayList<RenditionData>();
             list.addAll(getIconRendition(doc, callContext));
             list.addAll(getRenditionServiceRenditions(doc, callContext));
+            // rendition filter
+            if (!STAR.equals(renditionFilter)) {
+                String[] filters = renditionFilter.split(",");
+                for (Iterator<RenditionData> it = list.iterator(); it.hasNext();) {
+                    RenditionData ren = it.next();
+                    boolean keep = false;
+                    for (String filter : filters) {
+                        if (filter.contains("/")) {
+                            // mimetype
+                            if (filter.endsWith("/*")) {
+                                String typeSlash = filter.substring(0, filter.indexOf('/') + 1);
+                                if (ren.getMimeType().startsWith(typeSlash)) {
+                                    keep = true;
+                                    break;
+                                }
+                            } else {
+                                if (ren.getMimeType().equals(filter)) {
+                                    keep = true;
+                                    break;
+                                }
+                            }
+                        } else {
+                            // kind
+                            if (ren.getKind().equals(filter)) {
+                                keep = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!keep) {
+                        it.remove();
+                    }
+                }
+            }
             list = ListUtils.batchList(list, maxItems, skipCount, DEFAULT_MAX_RENDITIONS);
             return list;
         } catch (IOException e) {
