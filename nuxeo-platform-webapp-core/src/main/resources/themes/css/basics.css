@@ -84,7 +84,7 @@ h2 {
 
 h3 {
   font-size: 1.2em;
-  padding: .8em 0 1em }
+  padding: .5em 0 2em }
 
 h4 {
   font-size: 1.1em;
@@ -101,3 +101,7 @@ h6 {
 
 .icon {
   margin-right: .3em }
+
+input, select, textarea,
+button, keygen, isindex, legend, a {
+  font-size: inherit }
