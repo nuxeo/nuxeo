@@ -10,9 +10,43 @@ author: lkemen@nuxeo.com
 
 .nxSearchForm {
   font-size: .8em;
-  background-color: "neutral.lighter (__FLAVOR__ background)";
+  background-color: #fff;
   width: 19% }
 
+.nxSearchForm .containerSubWidget {
+  margin: 0 }
+
 .nxSearchResults {
-  background-color: #fff;
+  background-color: "neutral.lighter (__FLAVOR__ background)";
+  padding: 1em 3em 3em;
+  min-height: 650px;
   width: 81% }
+
+.nxSearchResults .containerWidgetPanel {
+  padding: 0 }
+
+/* Search Column */
+.compactLayout .searchFilterActions {
+  border: none;
+  padding: .5em 0 }
+
+.nxSearchForm .searchesSelector select {
+  background-color: rgba(255,255,255,0.9);
+  border: none }
+
+.searchesSelector {
+  margin: 0 -0.5em;
+  padding: 1em .5em;
+  background-color: #213f7d }
+
+/* Main content */
+.contentViewTitle {
+  border: none }
+
+.bubbleBox {
+  background-color: #fff;
+  display: inline-block;
+  width: 20% }
+
+div.detail {
+  clear: both }
