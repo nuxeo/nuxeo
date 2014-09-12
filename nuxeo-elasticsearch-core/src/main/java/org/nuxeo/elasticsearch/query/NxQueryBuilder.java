@@ -253,7 +253,7 @@ public class NxQueryBuilder {
         for (AggregateQuery aggQuery : aggregates) {
             if (!aggQuery.getSelection().isEmpty()
                     && !aggQuery.getId().equals(id)) {
-                ret.add(FilterBuilders.termFilter(aggQuery.getField(),
+                ret.add(FilterBuilders.termsFilter(aggQuery.getField(),
                         aggQuery.getSelection()));
                 hasFilter = true;
             }
