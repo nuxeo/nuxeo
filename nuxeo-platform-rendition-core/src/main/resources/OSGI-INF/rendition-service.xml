@@ -27,8 +27,12 @@
         </renditionDefinition>
       </code>
       
-      Since 5.9.6, a new allowEmptyBlob tag has been added. Setting it's value to true will allow the rendition to be available even if the target Document does not contains a Blob.
-      
+      Since 5.9.6 : 
+      <ul>
+         <li> a new allowEmptyBlob tag has been added. Setting it's value to true will allow the rendition to be available even if the target Document does not contains a Blob.</li>
+         <li> a new visible attribute has been added. Setting it's value to false will allow the rendition to be hidden from the UI services.</li>
+      </ul>
+            
     </documentation>
     <object class="org.nuxeo.ecm.platform.rendition.service.RenditionDefinition" />
   </extension-point>

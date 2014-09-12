@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.rendition.action;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.seam.ScopeType;
@@ -26,6 +27,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendition.Rendition;
+import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.runtime.api.Framework;
@@ -50,5 +52,19 @@ public class RenditionActionBean implements Serializable {
         DocumentModel doc = navigationContext.getCurrentDocument();
         RenditionService rs = Framework.getLocalService(RenditionService.class);
         return rs.getAvailableRenditions(doc);
+    }
+    
+    @Factory(value = "currentDocumentVisibleRenditionDefinitions", scope = ScopeType.EVENT)
+    public List<RenditionDefinition> getVisibleRenditionDefinitions() throws Exception{
+        
+        List<RenditionDefinition> result = new ArrayList<>();
+        DocumentModel doc = navigationContext.getCurrentDocument();
+        RenditionService rs = Framework.getLocalService(RenditionService.class);
+        for (RenditionDefinition rd : rs.getAvailableRenditionDefinitions(doc)) {
+            if (rd.isVisible()) {
+                result.add(rd);
+            }
+        }        
+        return result;
     }
 }

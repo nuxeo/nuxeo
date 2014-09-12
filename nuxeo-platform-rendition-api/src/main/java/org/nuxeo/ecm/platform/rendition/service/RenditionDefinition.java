@@ -48,20 +48,29 @@ public class RenditionDefinition {
 
     @XNode("operationChain")
     protected String operationChain;
-    
-    
+        
     /**
      * @since 5.9.6
      */
     @XNode("allowEmptyBlob")
     protected boolean allowEmptyBlob = false;
 
+    /**
+     * @since 5.9.6
+     */
+    @XNode("@visible")
+    protected boolean visible = true;
+            
     @XNode("@class")
     protected Class<? extends RenditionProvider> providerClass;
 
     @XNode("contentType")
     protected String contentType;
 
+    
+    
+    
+    
     public String getName() {
         return name;
     }
@@ -113,5 +122,9 @@ public class RenditionDefinition {
     public boolean isEmptyBlobAllowed() {
         return allowEmptyBlob;
     }
+
+    public boolean isVisible() {
+        return visible;
+    }    
     
 }

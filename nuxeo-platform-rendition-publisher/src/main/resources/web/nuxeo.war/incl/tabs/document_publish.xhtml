@@ -9,8 +9,6 @@
   <ui:composition template="/incl/tabs/document_publish_template.xhtml">
 
     <ui:define name="document_publish_before_tree">
-      <nxu:set var="renditionDefinitions"
-          value="#{renditionService.getAvailableRenditionDefinitions(currentDocument)}">
       <c:if test="#{not renditionDefinitions.isEmpty()}">
         <h:panelGrid styleClass="dataInput"
                      columnClasses="labelColumn, fieldColumn" columns="2">
@@ -20,7 +18,7 @@
           <h:panelGroup>
             <h:selectOneMenu value="#{publishActions.publicationParameters['renditionName']}">
               <f:selectItem itemValue="" itemLabel="#{messages['label.none']}"/>
-              <c:forEach var="renditionDefinition" items="#{renditionDefinitions}">
+              <c:forEach var="renditionDefinition" items="#{currentDocumentVisibleRenditionDefinitions}">
                 <f:selectItem itemValue="#{renditionDefinition.name}" itemLabel="#{messages[renditionDefinition.label]}"/>
               </c:forEach>
               <a4j:ajax event="change">
@@ -30,7 +28,6 @@
           </h:panelGroup>
         </h:panelGrid>
       </c:if>
-      </nxu:set>
     </ui:define>
 
     <ui:define name="document_publish_after_tree">
