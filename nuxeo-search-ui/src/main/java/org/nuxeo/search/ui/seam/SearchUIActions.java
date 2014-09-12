@@ -29,10 +29,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
+import javax.faces.validator.ValidatorException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -61,6 +64,7 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
@@ -70,7 +74,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.search.ui.SearchUIService;
 
 /**
- * Seam bean handling SEARCH main tab actions.
+ * Seam bean handling Search main tab actions.
  *
  * @since 5.9.6
  */
@@ -95,9 +99,16 @@ public class SearchUIActions implements Serializable {
 
     public static final String SEARCH_VIEW_ID = "/search/search.xhtml";
 
-    public static final String SEARCH_MAIN_TAB_ACTION_ID = "search";
-
     public static final String SEARCH_CODEC = "docpathsearch";
+
+    public static final String SIMPLE_SEARCH_CONTENT_VIEW_NAME = "simple_search";
+
+    public static final String NXQL_SEARCH_CONTENT_VIEW_NAME = "nxql_search";
+
+    public static final String DEFAULT_NXQL_QUERY = "SELECT * FROM Document" +
+            " WHERE ecm:mixinType != 'HiddenInNavigation'" +
+            " AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0" +
+            " AND ecm:currentLifeCycleState != 'deleted'";
 
     public static final String CONTENT_VIEW_NAME_PARAMETER = "contentViewName";
 
@@ -130,6 +141,10 @@ public class SearchUIActions implements Serializable {
 
     @In(create = true)
     protected Map<String, String> messages;
+
+    protected String simpleSearchKeywords = "";
+
+    protected String nxqlQuery = DEFAULT_NXQL_QUERY;
 
     protected List<ContentViewHeader> contentViewHeaders;
 
@@ -420,14 +435,70 @@ public class SearchUIActions implements Serializable {
     }
 
     protected DocumentView computeDocumentView(DocumentModel doc) {
-        if (doc != null) {
-            return new DocumentViewImpl(new DocumentLocationImpl(
-                    documentManager.getRepositoryName(), new PathRef(
-                            doc.getPathAsString())));
-        } else {
-            return new DocumentViewImpl(new DocumentLocationImpl(
-                    documentManager.getRepositoryName(), null));
+        return new DocumentViewImpl(new DocumentLocationImpl(
+                documentManager.getRepositoryName(), doc != null ? new PathRef(
+                        doc.getPathAsString()) : null));
+    }
+
+    /*
+     * ----- Simple Search -----
+     */
+    public String getSimpleSearchKeywords() {
+        return simpleSearchKeywords;
+    }
+
+    public void setSimpleSearchKeywords(String simpleSearchKeywords) {
+        this.simpleSearchKeywords = simpleSearchKeywords;
+    }
+
+    public void validateSimpleSearchKeywords(FacesContext context,
+                                             UIComponent component, Object value) {
+        if (!(value instanceof String)
+                || StringUtils.isEmpty(((String) value).trim())) {
+            FacesMessage message = new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
+                    context, "feedback.search.noKeywords"), null);
+            // also add global message
+            context.addMessage(null, message);
+            throw new ValidatorException(message);
         }
+        String[] keywords = ((String) value).trim().split(" ");
+        for (String keyword : keywords) {
+            if (keyword.startsWith("*")) {
+                // Can't begin search with * character
+                FacesMessage message = new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
+                        context, "feedback.search.star"), null);
+                // also add global message
+                context.addMessage(null, message);
+                throw new ValidatorException(message);
+            }
+        }
+    }
+
+    public String doSimpleSearch() {
+        setSearchMainTab(null);
+        currentContentViewName = SIMPLE_SEARCH_CONTENT_VIEW_NAME;
+        ContentView contentView = contentViewActions.getContentView(SIMPLE_SEARCH_CONTENT_VIEW_NAME);
+        DocumentModel searchDoc = contentView.getSearchDocumentModel();
+        searchDoc.setPropertyValue("defaults:ecm_fulltext", simpleSearchKeywords);
+        refreshAndRewind();
+        return "search";
+    }
+
+    /*
+     * ----- NXQL Search -----
+     */
+    public String getNxqlQuery() {
+        return nxqlQuery;
+    }
+
+    public void setNxqlQuery(String nxqlQuery) {
+        this.nxqlQuery = nxqlQuery;
+    }
+
+    public boolean isNxqlSearchSelected() {
+        return NXQL_SEARCH_CONTENT_VIEW_NAME.equals(currentContentViewName);
     }
 
     @Begin(id = "#{conversationIdGenerator.currentOrNewMainConversationId}", join = true)
@@ -467,6 +538,8 @@ public class SearchUIActions implements Serializable {
         contentViewHeaders = null;
         currentSelectedSavedSearchId = null;
         currentContentViewName = null;
+        nxqlQuery = DEFAULT_NXQL_QUERY;
+        simpleSearchKeywords = "";
     }
 
 }

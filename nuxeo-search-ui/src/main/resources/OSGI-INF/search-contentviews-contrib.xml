@@ -68,7 +68,6 @@
         <layout name="document_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
           showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
-
       </resultLayouts>
 
       <selectionList>CURRENT_SELECTION</selectionList>
@@ -77,6 +76,114 @@
       <flags>
         <flag>SEARCH</flag>
       </flags>
+    </contentView>
+
+    <contentView name="simple_search">
+
+      <title>label.search.form.simple</title>
+      <translateTitle>true</translateTitle>
+      <iconPath>/icons/document_listing_icon.png</iconPath>
+      <showTitle>true</showTitle>
+
+      <emptySentence>label.content.empty.search</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
+
+      <coreQueryPageProvider>
+        <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
+        <property name="coreSession">#{documentManager}</property>
+        <whereClause docType="DefaultSearch">
+          <fixedPart>
+            ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0
+            AND ecm:currentLifeCycleState != 'deleted'
+            AND SORTED_COLUMN IS NOT NULL
+          </fixedPart>
+          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+            <field schema="default_search" name="ecm_fulltext" />
+          </predicate>
+        </whereClause>
+        <!-- sort column="dc:title" ascending="true" / sort by fulltext relevance -->
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
+
+      <searchLayout name="simple_search_layout" />
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+
+      <resultLayouts>
+        <!--<layout name="search_listing_ajax" title="document_listing"-->
+          <!--translateTitle="true" iconPath="/icons/document_listing_icon.png"-->
+          <!--showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />-->
+        <layout name="document_listing_ajax" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+        <layout name="document_virtual_navigation_listing_ajax_compact_2_columns"
+          title="document_listing_compact_2_columns" translateTitle="true"
+          iconPath="/icons/document_listing_compact_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+        <layout name="document_virtual_navigation_listing_ajax_icon_2_columns"
+          title="document_listing_icon_2_columns" translateTitle="true"
+          iconPath="/icons/document_listing_icon_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+      </resultLayouts>
+
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <actions category="CURRENT_SELECTION_LIST" />
+
+    </contentView>
+
+    <contentView name="nxql_search">
+
+      <title>label.search.nxql</title>
+      <translateTitle>true</translateTitle>
+      <emptySentence>label.content.empty.search</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
+
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
+        <searchDocumentType>DefaultSearch</searchDocumentType>
+        <pattern quoteParameters="false" escapeParameters="false">?</pattern>
+        <parameter>#{searchUIActions.nxqlQuery}</parameter>
+        <!-- sort column="dc:title" ascending="true" / sort by fulltext relevance -->
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+
+      <resultLayouts>
+        <!--<layout name="search_listing_ajax" title="document_listing"-->
+          <!--translateTitle="true" iconPath="/icons/document_listing_icon.png"-->
+          <!--showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />-->
+        <layout name="document_listing_ajax" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+        <layout name="document_virtual_navigation_listing_ajax_compact_2_columns"
+          title="document_listing_compact_2_columns" translateTitle="true"
+          iconPath="/icons/document_listing_compact_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+        <layout name="document_virtual_navigation_listing_ajax_icon_2_columns"
+          title="document_listing_icon_2_columns" translateTitle="true"
+          iconPath="/icons/document_listing_icon_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+      </resultLayouts>
+
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <actions category="CURRENT_SELECTION_LIST" />
+
     </contentView>
 
     <contentView name="all_saved_searches">
@@ -395,6 +502,19 @@
         </row>
         <row>
           <widget>default_location_search</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="simple_search_layout">
+      <templates>
+        <template mode="any">
+          /layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>default_text_search</widget>
         </row>
       </rows>
     </layout>

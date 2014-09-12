@@ -1,0 +1,16 @@
+<f:subview
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html">
+  <h:inputText
+    value="#{searchUIActions.simpleSearchKeywords}"
+    size="15"
+    styleClass="directoryFilter"
+    required="true"
+    requiredMessage="#{messages['feedback.search.noKeywords']}"
+    validator="#{searchUIActions.validateSimpleSearchKeywords}"
+    onkeydown="if (event.keyCode == 13) {Element.next(Element.next(this)).select();} else return true;" />
+  <h:commandButton action="#{searchUIActions.doSimpleSearch()}"
+    value="#{messages['command.search']}"
+    styleClass="button" />
+</f:subview>

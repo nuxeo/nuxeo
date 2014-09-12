@@ -1,0 +1,16 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <h:outputText value="#{messages['label.search.form.enterNXQL']}"/>
+  <h:inputText value="#{searchUIActions.nxqlQuery}"
+    size="80"
+    required="true" />
+  <br/>
+  <h:commandButton value="#{messages['command.search']}"
+    action="#{searchUIActions.refreshAndRewind()}"
+    styleClass="button">
+    <f:ajax execute="@form" render="#{widgetProperty_ajaxReRender}" />
+  </h:commandButton>
+
+</div>

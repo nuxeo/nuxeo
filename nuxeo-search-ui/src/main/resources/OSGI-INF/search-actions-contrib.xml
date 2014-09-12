@@ -14,6 +14,8 @@
       </properties>
     </action>
 
+    <!-- End of Main tab actions -->
+
     <!-- Search actions -->
 
     <action id="saveSearch" type="fancybox" label="command.search.save"
@@ -26,6 +28,7 @@
         <property name="scrolling">auto</property>
         <property name="ajaxSupport">true</property>
       </properties>
+      <filter-id>notNxqlSearchSelected</filter-id>
     </action>
 
     <action id="submitSearch" link="#{searchUIActions.refreshAndRewind()}"
@@ -50,7 +53,9 @@
       </properties>
     </action>
 
-    <!-- Home Searches tab -->
+    <!-- End of Search actions -->
+
+    <!-- Home Searches tab actions -->
 
     <action id="AllSavedSearches" link="search/incl/all_saved_searches.xhtml"
       type="home_rest_document_link" label="label.home.all.searches" order="-10">
@@ -82,13 +87,44 @@
       <filter-id>denyForDefaultSearch</filter-id>
     </action>
 
+    <!-- End of Home Searches tab actions -->
+
     <!-- Search content views -->
+
     <action id="defaultSearchContentView" order="0">
       <category>SEARCH_CONTENT_VIEWS</category>
       <properties>
         <property name="contentViewName">default_search</property>
       </properties>
     </action>
+
+    <action id="simpleSearchContentView" order="100">
+      <category>SEARCH_CONTENT_VIEWS</category>
+      <properties>
+        <property name="contentViewName">simple_search</property>
+      </properties>
+    </action>
+
+    <action id="nxqlSearchContentView" order="200">
+      <category>SEARCH_CONTENT_VIEWS</category>
+      <properties>
+        <property name="contentViewName">nxql_search</property>
+      </properties>
+    </action>
+
+    <!-- End of Search content views -->
+
+    <!-- header actions -->
+
+    <action id="simple_search_box" order="1" type="template">
+      <category>SEARCH_ACTIONS</category>
+      <filter-id>isSearchEnabled</filter-id>
+      <properties>
+        <property name="template">/search/incl/search_box.xhtml</property>
+      </properties>
+    </action>
+
+    <!-- End of header actions -->
 
   </extension>
 
@@ -104,6 +140,18 @@
     <filter id="denyForDefaultSearch">
       <rule grant="false">
         <facet>DefaultSearch</facet>
+      </rule>
+    </filter>
+
+    <filter id="nxqlSearchSelected">
+      <rule grant="true">
+        <condition>#{searchUIActions.isNxqlSearchSelected()}</condition>
+      </rule>
+    </filter>
+
+    <filter id="notNxqlSearchSelected">
+      <rule grant="false">
+        <condition>#{searchUIActions.isNxqlSearchSelected()}</condition>
       </rule>
     </filter>
 
