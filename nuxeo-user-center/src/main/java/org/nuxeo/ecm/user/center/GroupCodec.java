@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,25 +12,24 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Thomas Roger <troger@nuxeo.com>
+ *     <a href="mailto:glefevre@nuxeo.com">Gildas</a>
  */
-
 package org.nuxeo.ecm.user.center;
 
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 
 /**
- * Codec handling a username, an optional view and additional request
+ * Codec handling a groupname, an optional view and additional request
  * parameters.
  *
- * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * @since 5.5
+ * @since 5.9.6
  */
-public class UserCodec extends AbstractUserGroupCodec {
+public class GroupCodec extends
+        AbstractUserGroupCodec {
 
-    public static final String PREFIX = "user";
+    public static final String PREFIX = "group";
 
-    public static final String DEFAULT_USERS_TAB = "USER_CENTER:UsersGroupsHome:UsersHome";
+    public static final String DEFAULT_GROUPS_TAB = "USER_CENTER:UsersGroupsHome:GroupsHome";
 
     @Override
     public String getPrefix() {
@@ -41,17 +40,21 @@ public class UserCodec extends AbstractUserGroupCodec {
     }
 
     @Override
-    public DocumentView getDocumentViewFromUrl(String url) {
+    public DocumentView getDocumentViewFromUrl(
+            String url) {
+
         return getDocumentViewFromUrl(
                 url,
-                DEFAULT_USERS_TAB,
-                "username",
-                "showUser");
+                DEFAULT_GROUPS_TAB,
+                "groupname",
+                "showGroup");
     }
 
     @Override
-    public String getUrlFromDocumentView(DocumentView docView) {
-        return getUrlFromDocumentViewAndID(docView, "username");
+    public String getUrlFromDocumentView(
+            DocumentView docView) {
+        return getUrlFromDocumentViewAndID(
+                docView, "groupname");
     }
 
 }

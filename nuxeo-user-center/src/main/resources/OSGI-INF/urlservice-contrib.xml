@@ -17,6 +17,9 @@
     <documentViewCodec name="user" enabled="true" default="false"
       prefix="user"
       class="org.nuxeo.ecm.user.center.UserCodec" />
+    <documentViewCodec name="group" enabled="true" default="false"
+      prefix="group"
+      class="org.nuxeo.ecm.user.center.GroupCodec" />
 
   </extension>
 
@@ -69,6 +72,28 @@
         </binding>
         <binding name="showUser" callGetter="false">
           #{userManagementActions.showUser}
+        </binding>
+      </bindings>
+    </urlPattern>
+
+    <urlPattern name="group" enabled="true">
+      <defaultURLPolicy>false</defaultURLPolicy>
+      <needBaseURL>true</needBaseURL>
+      <needRedirectFilter>true</needRedirectFilter>
+      <needFilterPreprocessing>true</needFilterPreprocessing>
+      <codecName>group</codecName>
+      <actionBinding>
+        #{restHelper.initContextFromRestRequest}
+      </actionBinding>
+      <bindings>
+        <binding name="tabIds" callGetter="false">
+          #{webActions.currentTabIds}
+        </binding>
+        <binding name="groupname" callGetter="false">
+          #{groupManagementActions.selectedGroupName}
+        </binding>
+        <binding name="showGroup" callGetter="false">
+          #{groupManagementActions.showGroup}
         </binding>
       </bindings>
     </urlPattern>

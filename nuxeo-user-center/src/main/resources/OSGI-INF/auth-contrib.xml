@@ -9,6 +9,7 @@
       <patterns>
         <pattern>nxhome/</pattern>
         <pattern>user/</pattern>
+        <pattern>group/</pattern>
       </patterns>
     </startURLPattern>
 
