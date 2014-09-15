@@ -13,6 +13,8 @@
       class="org.nuxeo.ecm.platform.suggestbox.handlers.NavigateToUserSuggestionHandler" />
     <operation
       class="org.nuxeo.ecm.platform.suggestbox.handlers.NavigateToGroupSuggestionHandler" />
+    <operation
+      class="org.nuxeo.ecm.platform.suggestbox.automation.SuggestOperation" />
 
   </extension>
 
