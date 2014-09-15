@@ -1,11 +1,43 @@
 <div xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxdir="http://nuxeo.org/nxdirectory"
-  xmlns:cm="http://org.nuxeo.cm/" xmlns:rich="http://richfaces.org/rich"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   style="display: inline; float: left">
+
+  <a4j:outputPanel id="#{widget.id}_panel" layout="block">
+    <span id="#{widget.id}_suggestDiv">
+      <script type="text/javascript">
+	    function nxSelectedSuggestBoxFormatter(item) {
+	      return '';
+	    }
+
+	    function nxSuggestedSuggestBoxFormatter(item) {
+	      return '&lt;span&gt;&lt;img src="/nuxeo'+ item.icon +'" /&gt;'+ item.label + '&lt;/span&gt;'
+	    }
+
+	    function nxSuggestionEntryHandler(item) {
+          var docUrl = item.url;
+          if (typeof currentConversationId != 'undefined') {
+            docUrl += "?conversationId=" + currentConversationId;
+          }
+          window.location.replace(docUrl);
+	    }
+	  </script>
+	  <ui:include src="/incl/select2_js.xhtml" />
+
+	  <a4j:region>
+	    <h:inputHidden id="#{widget.id}_select2" value="#{documentTagIds}">
+	      <f:converter converterId="select2Converter" />
+	    </h:inputHidden>
+	    <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
+	      value="#{resolveDocumentTags}" />
+	  </a4j:region>
+
+	  <h:inputHidden readonly="true" id="#{widget.id}_select2_params"
+	    value='{"minChars": "1","multiple": "false","operationId": "Search.SuggestersLauncher",
+	    "placeholder": "Select a value","readonly": "false","selectionFormatter": "nxSelectedSuggestBoxFormatter",
+	    "suggestionFormatter": "nxSuggestedSuggestBoxFormatter","width": "200px","onAddEntryHandler": "nxSuggestionEntryHandler"}' />
+    </span>
+  </a4j:outputPanel>
 
 </div>
