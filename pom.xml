@@ -61,7 +61,6 @@
     <nuxeo.dam.pdf.export.version>5.9.6-SNAPSHOT</nuxeo.dam.pdf.export.version>
     <nuxeo.resources.compat.version>5.9.6-SNAPSHOT</nuxeo.resources.compat.version>
     <nuxeo.dmk.version>5.9.6-SNAPSHOT</nuxeo.dmk.version>
-    <nuxeo.rest-api.version>5.9.6-SNAPSHOT</nuxeo.rest-api.version>
     <nuxeo.webengine.sites.version>5.9.6-SNAPSHOT</nuxeo.webengine.sites.version>
     <nuxeo.style.guide.version>5.9.6-SNAPSHOT</nuxeo.style.guide.version>
     <nuxeo.imaging.recompute.version>5.9.6-SNAPSHOT</nuxeo.imaging.recompute.version>
@@ -130,7 +129,6 @@
     <module>nuxeo-resources-compat</module>
     <module>nuxeo-dmk-adaptor</module>
     <module>nuxeo-webengine-sites</module>
-    <module>nuxeo-rest-api</module>
     <module>nuxeo-style-guide</module>
     <module>nuxeo-imaging-recompute</module>
     <module>nuxeo-javaagent</module>
@@ -1078,21 +1076,6 @@
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-sites-core-contrib</artifactId>
         <version>${nuxeo.webengine.sites.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-rest-api-io</artifactId>
-        <version>${nuxeo.rest-api.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-rest-api-server</artifactId>
-        <version>${nuxeo.rest-api.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-rest-api-test</artifactId>
-        <version>${nuxeo.rest-api.version}</version>
       </dependency>
 
       <!-- jBPM -->
