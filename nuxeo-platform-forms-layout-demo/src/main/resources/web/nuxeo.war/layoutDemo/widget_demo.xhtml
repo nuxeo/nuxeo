@@ -54,7 +54,6 @@ Needed parameters:
             </c:if>
             <c:if test="#{not useMultipartForm}">
               <h:form id="#{demoLayout.name}_edit_form"
-                ajaxSubmit="true"
                 onsubmit="removeAllTinyMCEEditors(); return true;">
                 <nxl:layout value="#{layoutDemoDocument}"
                   mode="edit"
