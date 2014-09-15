@@ -17,6 +17,8 @@ package org.nuxeo.ecm.platform.ui.web.component;
 
 import javax.faces.model.SelectItem;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * EasySelectItem from
  * http://jsf-comp.sourceforge.net/components/easysi/index.html, adapted to
@@ -76,6 +78,10 @@ public class UISelectItem extends javax.faces.component.UISelectItem {
         Object value = getItemValue();
         Object labelObject = getItemLabel();
         String label = labelObject != null ? labelObject.toString() : null;
+        // make sure label is never blank
+        if (StringUtils.isBlank(label)) {
+            label = String.valueOf(value);
+        }
         return new SelectItem(value, label, null, isItemDisabled(),
                 isItemEscaped());
     }

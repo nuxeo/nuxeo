@@ -17,20 +17,14 @@
 package org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.view.facelets.FaceletContext;
-import javax.faces.view.facelets.FaceletHandler;
-import javax.faces.view.facelets.TagAttributes;
 
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
-import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
-import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.plugins.AbstractSelectWidgetTypeHandler;
-import org.nuxeo.ecm.platform.ui.web.component.UISelectItem;
-import org.nuxeo.ecm.platform.ui.web.component.UISelectItems;
 
 /**
  * @since 5.9.6
@@ -45,24 +39,22 @@ public abstract class SelectAggregateWidgetTypeHandler extends
     }
 
     @Override
-    protected FaceletHandler getOptionFaceletHandler(FaceletContext ctx,
-            FaceletHandlerHelper helper, Widget widget,
-            WidgetSelectOption selectOption, FaceletHandler nextHandler) {
-        String componentType;
-        if (selectOption instanceof WidgetSelectOptions) {
-            componentType = UISelectItems.COMPONENT_TYPE;
-        } else {
-            componentType = UISelectItem.COMPONENT_TYPE;
+    protected List<String> getExcludedProperties() {
+        List<String> res = super.getExcludedProperties();
+        for (AggregatePropertyMappings mapping : AggregatePropertyMappings.values()) {
+            res.add(mapping.name());
         }
-        Map<String, Serializable> additionalProps = new HashMap<>();
-        additionalProps.put(
-                SelectPropertyMappings.itemLabel.name(),
-                selectOption.getItemLabel()
-                        + (String) widget.getProperty(AggregatePropertyMappings.itemCount.name()));
-        TagAttributes attrs = helper.getTagAttributes(selectOption,
-                additionalProps);
-        return helper.getHtmlComponentHandler(widget.getTagConfigId(), attrs,
-                nextHandler, componentType, null);
+        return res;
+    }
+
+    protected Map<String, Serializable> getOptionProperties(FaceletContext ctx,
+            Widget widget, WidgetSelectOption selectOption) {
+        Map<String, Serializable> props = super.getOptionProperties(ctx,
+                widget, selectOption);
+        props.put(
+                SelectPropertyMappings.itemLabelSuffix.name(),
+                widget.getProperty(AggregatePropertyMappings.itemCount.name()));
+        return props;
     }
 
 }

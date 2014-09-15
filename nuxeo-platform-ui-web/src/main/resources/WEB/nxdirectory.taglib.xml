@@ -47,23 +47,15 @@
   </tag>
   <tag>
     <tag-name>selectOneListbox</tag-name>
-    <component>
-      <component-type>nxdirectory.selectOneListbox</component-type>
-      <renderer-type>nxdirectory.selectOneListbox</renderer-type>
-      <handler-class>
-        org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler
-      </handler-class>
-    </component>
+    <handler-class>
+      org.nuxeo.ecm.platform.ui.web.directory.DirectorySelectOneListboxHandler
+    </handler-class>
   </tag>
   <tag>
     <tag-name>selectManyListbox</tag-name>
-    <component>
-      <component-type>nxdirectory.selectManyListbox</component-type>
-      <renderer-type>nxdirectory.selectManyListbox</renderer-type>
-      <handler-class>
-        org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler
-      </handler-class>
-    </component>
+    <handler-class>
+      org.nuxeo.ecm.platform.ui.web.directory.DirectorySelectManyListboxHandler
+    </handler-class>
   </tag>
   <tag>
     <tag-name>directoryEntryOutput</tag-name>

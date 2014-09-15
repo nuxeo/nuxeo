@@ -431,18 +431,6 @@
     </component>
 
     <component>
-      <component-type>nxdirectory.selectOneListbox</component-type>
-      <component-class>
-        org.nuxeo.ecm.platform.ui.web.directory.SelectOneListboxComponent
-      </component-class>
-    </component>
-    <component>
-      <component-type>nxdirectory.selectManyListbox</component-type>
-      <component-class>
-        org.nuxeo.ecm.platform.ui.web.directory.SelectManyListboxComponent
-      </component-class>
-    </component>
-    <component>
       <component-type>nxdirectory.DirectoryEntryOutput</component-type>
       <component-class>
         org.nuxeo.ecm.platform.ui.web.directory.DirectoryEntryOutputComponent
@@ -644,20 +632,6 @@
       </renderer-class>
     </renderer>
 
-    <renderer>
-      <component-family>nxdirectory.selectOneListbox</component-family>
-      <renderer-type>nxdirectory.selectOneListbox</renderer-type>
-      <renderer-class>
-        org.nuxeo.ecm.platform.ui.web.directory.SelectOneListboxRenderer
-      </renderer-class>
-    </renderer>
-    <renderer>
-      <component-family>nxdirectory.selectManyListbox</component-family>
-      <renderer-type>nxdirectory.selectManyListbox</renderer-type>
-      <renderer-class>
-        org.nuxeo.ecm.platform.ui.web.directory.SelectManyListboxRenderer
-      </renderer-class>
-    </renderer>
     <renderer>
       <component-family>nxdirectory.DirectoryEntryOutput</component-family>
       <renderer-type>nxdirectory.DirectoryEntryOutput</renderer-type>

@@ -30,22 +30,24 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class DirectorySelectItemComparator implements
         Comparator<DirectorySelectItem>, Serializable {
 
-    private static final long serialVersionUID = 1869118968287728886L;
+    private static final long serialVersionUID = 1L;
 
     private final String[] ordering;
-    private Boolean caseSentitive;
+
+    private Boolean caseSensitive;
+
     private Collator collator;
+
     private Locale locale;
 
     public DirectorySelectItemComparator(String ordering,
-            Boolean caseSentitive, Locale locale) {
-        this.caseSentitive = caseSentitive;
+            Boolean caseSensitive, Locale locale) {
         this.ordering = StringUtils.split(ordering, ",");
+        this.caseSensitive = caseSensitive;
         if (locale == null) {
             FacesContext context = FacesContext.getCurrentInstance();
             this.locale = context.getViewRoot().getLocale();
@@ -53,7 +55,7 @@ public class DirectorySelectItemComparator implements
             this.locale = locale;
         }
         collator = Collator.getInstance(this.locale);
-        if (this.caseSentitive) {
+        if (Boolean.TRUE.equals(this.caseSensitive)) {
             collator.setStrength(Collator.TERTIARY); // TERTIARY will make a
                                                      // difference between 'a'
                                                      // and 'A'
@@ -67,36 +69,26 @@ public class DirectorySelectItemComparator implements
     }
 
     public DirectorySelectItemComparator(String ordering) {
-        this(ordering, false);
+        this(ordering, Boolean.FALSE);
     }
 
-    protected int compareField(String field, DirectorySelectItem item1, DirectorySelectItem item2) {
-        String v1 = (String) item1.getValue();
-        String v2 = (String) item2.getValue();
-        if (!v1.equals(v2)) {
-            if (v1.length() == 0) {
-                return -1;
-            } else if (v2.length() == 0) {
-                return 1;
-            }
-        }
-
-        if (field.equals("label")) {
-            String str1 = StringUtils.isBlank(item1.getLocalizedLabel()) ?
-                    item1.getLabel() : item1.getLocalizedLabel();
-            String str2 = StringUtils.isBlank(item1.getLocalizedLabel()) ?
-                    item2.getLabel() : item2.getLocalizedLabel();
-
-            return collator.compare(str1, str2);
-        } else if (field.equals("id")) {
-            return ((String) item1.getValue()).compareTo((String) item2.getValue());
-        } else if (field.equals("ordering")) {
+    protected int compareField(String field, DirectorySelectItem item1,
+            DirectorySelectItem item2) {
+        if ("label".equals(field)) {
+            String label1 = item1.getLabel();
+            String label2 = item2.getLabel();
+            return collator.compare(label1, label2);
+        } else if ("id".equals(field)) {
+            String value1 = String.valueOf(item1.getValue());
+            String value2 = String.valueOf(item2.getValue());
+            // TODO: maybe deal with numbers comparisons (?)
+            return collator.compare(value1, value2);
+        } else if ("ordering".equals(field)) {
             long orderItem1 = item1.getOrdering();
             long orderItem2 = item2.getOrdering();
-
-            return Long.valueOf(orderItem1).compareTo(orderItem2);
+            return Long.valueOf(orderItem1).compareTo(Long.valueOf(orderItem2));
         } else {
-            throw new RuntimeException("invalid sort criteria");
+            throw new RuntimeException("Invalid sort criteria " + field);
         }
     }
 

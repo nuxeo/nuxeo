@@ -17,6 +17,8 @@ package org.nuxeo.ecm.platform.ui.web.component;
 
 import javax.faces.model.SelectItem;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * EasySelectItems from
  * http://jsf-comp.sourceforge.net/components/easysi/index.html, adapted to
@@ -33,7 +35,13 @@ public class UISelectItems extends javax.faces.component.UISelectItems
     public static final String COMPONENT_TYPE = UISelectItems.class.getName();
 
     enum PropertyKeys {
-        var, itemLabel, itemValue, itemRendered, itemDisabled, itemEscaped, ordering, caseSensitive
+        var, itemLabel, itemLabelPrefix, itemLabelPrefixSeparator,
+        //
+        itemLabelSuffix, itemLabelSuffixSeparator, itemValue,
+        //
+        itemRendered, itemDisabled, itemEscaped, ordering, caseSensitive,
+        //
+        displayIdAndLabel, displayIdAndLabelSeparator;
     }
 
     public String getVar() {
@@ -50,6 +58,38 @@ public class UISelectItems extends javax.faces.component.UISelectItems
 
     public void setItemLabel(Object itemLabel) {
         getStateHelper().put(PropertyKeys.itemLabel, itemLabel);
+    }
+
+    public String getItemLabelPrefix() {
+        return (String) getStateHelper().eval(PropertyKeys.itemLabelPrefix);
+    }
+
+    public void setItemLabelPrefix(String itemLabelPrefix) {
+        getStateHelper().put(PropertyKeys.itemLabelPrefix, itemLabelPrefix);
+    }
+
+    public String getItemLabelPrefixSeparator() {
+        return (String) getStateHelper().eval(PropertyKeys.itemLabelPrefix, " ");
+    }
+
+    public void setItemLabelPrefixSeparator(String itemLabelPrefix) {
+        getStateHelper().put(PropertyKeys.itemLabelPrefix, itemLabelPrefix);
+    }
+
+    public String getItemLabelSuffix() {
+        return (String) getStateHelper().eval(PropertyKeys.itemLabelSuffix);
+    }
+
+    public void setItemLabelSuffix(String itemLabelSuffix) {
+        getStateHelper().put(PropertyKeys.itemLabelSuffix, itemLabelSuffix);
+    }
+
+    public String getItemLabelSuffixSeparator() {
+        return (String) getStateHelper().eval(PropertyKeys.itemLabelSuffix, " ");
+    }
+
+    public void setItemLabelSuffixSeparator(String itemLabelSuffix) {
+        getStateHelper().put(PropertyKeys.itemLabelSuffix, itemLabelSuffix);
     }
 
     public Object getItemValue() {
@@ -72,7 +112,7 @@ public class UISelectItems extends javax.faces.component.UISelectItems
 
     public boolean isItemRendered() {
         return Boolean.TRUE.equals(getStateHelper().eval(
-                PropertyKeys.itemRendered, Boolean.FALSE));
+                PropertyKeys.itemRendered, Boolean.TRUE));
     }
 
     @SuppressWarnings("boxing")
@@ -106,6 +146,26 @@ public class UISelectItems extends javax.faces.component.UISelectItems
     @SuppressWarnings("boxing")
     public void setCaseSensitive(boolean caseSensitive) {
         getStateHelper().put(PropertyKeys.caseSensitive, caseSensitive);
+    }
+
+    public boolean isDisplayIdAndLabel() {
+        return Boolean.TRUE.equals(getStateHelper().eval(
+                PropertyKeys.displayIdAndLabel));
+    }
+
+    @SuppressWarnings("boxing")
+    public void setDisplayIdAndLabel(boolean displayIdAndLabel) {
+        getStateHelper().put(PropertyKeys.displayIdAndLabel, displayIdAndLabel);
+    }
+
+    public String getDisplayIdAndLabelSeparator() {
+        return (String) getStateHelper().eval(
+                PropertyKeys.displayIdAndLabelSeparator, " ");
+    }
+
+    public void setDisplayIdAndLabelSeparator(String idAndLabelSeparator) {
+        getStateHelper().put(PropertyKeys.displayIdAndLabelSeparator,
+                idAndLabelSeparator);
     }
 
     @Override
@@ -143,6 +203,21 @@ public class UISelectItems extends javax.faces.component.UISelectItems
         Object value = getItemValue();
         Object labelObject = getItemLabel();
         String label = labelObject != null ? labelObject.toString() : null;
+        if (isDisplayIdAndLabel() && label != null) {
+            label = value + getDisplayIdAndLabelSeparator() + label;
+        }
+        // make sure label is never blank
+        if (StringUtils.isBlank(label)) {
+            label = String.valueOf(value);
+        }
+        String labelPrefix = getItemLabelPrefix();
+        if (!StringUtils.isBlank(labelPrefix)) {
+            label = labelPrefix + getItemLabelPrefixSeparator() + label;
+        }
+        String labelSuffix = getItemLabelSuffix();
+        if (!StringUtils.isBlank(labelSuffix)) {
+            label = label + getItemLabelSuffixSeparator() + labelSuffix;
+        }
         return new SelectItem(value, label, null, isItemDisabled(),
                 isItemEscaped());
     }

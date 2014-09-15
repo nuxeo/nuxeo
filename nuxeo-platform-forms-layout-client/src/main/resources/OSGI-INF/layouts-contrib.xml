@@ -996,6 +996,28 @@
       </selectOptions>
     </widget>
 
+    <widget name="select_layout" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Layout</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The select layout binding.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>layout</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Line direction (default)" itemValue="" />
+        <option itemLabel="Page direction" itemValue="pageDirection" />
+        <option itemLabel="Line direction" itemValue="lineDirection" />
+      </selectOptions>
+    </widget>
+
     <widget name="select_selectOptions" type="text">
       <categories>
         <category>widgetTypeConf</category>
@@ -1885,101 +1907,6 @@
       </handler-class>
     </widgetType>
 
-    <widgetType name="selectOneDirectory">
-      <configuration>
-        <title>Vocabulary</title>
-        <description>
-          <p>
-            The selectOneDirectory widget displays a selection of vocabulary
-            entries in create or edit mode, with additional message tag for
-            errors, and the directory entry label in other modes.
-          </p>
-          <p>
-            Widgets using this type can provide properties accepted on a
-            &lt;nxd:selectOneListbox /&gt; tag in create or edit mode, and
-            properties accepted on a &lt;nxd:directoryEntryOutput /&gt; tag in
-            other modes.
-          </p>
-        </description>
-        <demo id="selectOneDirectoryWidget" previewEnabled="true" />
-        <categories>
-          <category>document</category>
-        </categories>
-        <supportedModes>
-          <mode>edit</mode>
-          <mode>view</mode>
-        </supportedModes>
-        <fields>
-          <list>false</list>
-          <complex>false</complex>
-          <supportedTypes>
-            <type>string</type>
-          </supportedTypes>
-        </fields>
-        <properties>
-          <layouts mode="any">
-            <layout name="selectOneDirectory_widget_type_properties_any">
-              <rows>
-                <row>
-                  <widget category="widgetTypeConf">directoryName</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">directoryNameDemoPreview</widget>
-                </row>
-              </rows>
-            </layout>
-          </layouts>
-          <layouts mode="view">
-            <layout name="selectOneDirectory_widget_type_properties_view">
-              <rows>
-                <row>
-                  <widget category="widgetTypeConf">directory_localize</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
-                </row>
-              </rows>
-            </layout>
-          </layouts>
-          <layouts mode="edit">
-            <layout name="selectOneDirectory_widget_type_properties_edit">
-              <rows>
-                <row>
-                  <widget category="widgetTypeConf">required</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">directory_localize</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">directory_displayObsoleteEntries
-                  </widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">directory_notDisplayDefaultOption
-                  </widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">directory_ordering</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">directory_cssStyle</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">directory_cssStyleClass</widget>
-                </row>
-              </rows>
-            </layout>
-          </layouts>
-        </properties>
-      </configuration>
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.DirectorySelectOneWidgetTypeHandler
-      </handler-class>
-    </widgetType>
-
     <widgetType name="selectOneListbox">
       <configuration>
         <sinceVersion>5.4.2</sinceVersion>
@@ -2214,6 +2141,9 @@
             <layout name="selectOneRadio_widget_type_properties_edit">
               <rows>
                 <row>
+                  <widget category="widgetTypeConf">select_layout</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">select_selectOptions</widget>
                 </row>
                 <row>
@@ -2265,6 +2195,9 @@
             <layout name="selectManyCheckbox_widget_type_properties_edit">
               <rows>
                 <row>
+                  <widget category="widgetTypeConf">select_layout</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">select_selectOptions</widget>
                 </row>
                 <row>
@@ -2286,6 +2219,195 @@
       </handler-class>
     </widgetType>
 
+    <widgetType name="selectOneDirectory">
+      <configuration>
+        <title>Single vocabulary</title>
+        <description>
+          <p>
+            The selectOneDirectory widget displays a selection of vocabulary
+            entries in create or edit mode, with additional message tag for
+            errors, and the directory entry label in other modes.
+          </p>
+        </description>
+        <demo id="selectOneDirectoryWidget" previewEnabled="true" />
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.id}</property>
+            <property name="ordering">label</property>
+          </defaultValues>
+          <layouts mode="any">
+            <layout name="selectOneDirectory_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">directoryName</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directoryNameDemoPreview</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="view">
+            <layout name="selectOneDirectory_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="selectOneDirectory_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_displayObsoleteEntries
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_notDisplayDefaultOption
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_ordering</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_cssStyle</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_cssStyleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.DirectorySelectOneWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectOneRadioDirectory">
+      <configuration>
+        <title>Single vocabulary radio</title>
+        <description>
+          <p>
+            This widget displays radio buttons in edit mode for given category.
+          </p>
+        </description>
+        <demo id="selectOneDirectoryWidget" previewEnabled="true" />
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.id}</property>
+            <property name="ordering">label</property>
+          </defaultValues>
+          <layouts mode="any">
+            <layout name="selectOneRadioDirectory_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">directoryName</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directoryNameDemoPreview</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="view">
+            <layout name="selectOneRadioDirectory_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="selectOneRadioDirectory_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_layout</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_displayObsoleteEntries
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_notDisplayDefaultOption
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_ordering</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_cssStyle</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_cssStyleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.DirectorySelectOneRadioWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
     <widgetType name="selectManyDirectory">
       <configuration>
         <title>Multiple vocabulary</title>
@@ -2294,11 +2416,6 @@
             The selectManyDirectory widget displays a multi selection of
             vocabulary entries in create or edit mode, with additional message
             tag for errors, and the directory entries labels in other modes.
-          </p>
-          <p>
-            Widgets using this type can provide properties accepted on a c tag
-            in create or edit mode, and properties accepted on a
-            &lt;nxd:directoryEntryOutput /&gt; tag in other modes.
           </p>
         </description>
         <demo id="selectManyDirectoryWidget" previewEnabled="true" />
@@ -2317,6 +2434,11 @@
           </supportedTypes>
         </fields>
         <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.id}</property>
+            <property name="ordering">label</property>
+          </defaultValues>
           <layouts mode="any">
             <layout name="selectManyDirectory_widget_type_properties_any">
               <rows>
@@ -2377,6 +2499,104 @@
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.DirectorySelectManyWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyCheckboxDirectory">
+      <configuration>
+        <title>Multiple vocabulary checkbox</title>
+        <description>
+          <p>
+            The selectManyCheckboxDirectory widget displays a multi selection
+            of
+            vocabulary entries in create or edit mode, with additional message
+            tag for errors, and the directory entries labels in other modes.
+          </p>
+        </description>
+        <demo id="selectManyDirectoryWidget" previewEnabled="true" />
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.id}</property>
+            <property name="ordering">label</property>
+          </defaultValues>
+          <layouts mode="any">
+            <layout name="selectManyCheckboxDirectory_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">directoryName</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directoryNameDemoPreview</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="view">
+            <layout name="selectManyCheckboxDirectory_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="selectManyCheckboxDirectory_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_layout</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_displayObsoleteEntries
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_notDisplayDefaultOption
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_ordering</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_cssStyle</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_cssStyleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.DirectorySelectManyCheckboxWidgetTypeHandler
       </handler-class>
     </widgetType>
 

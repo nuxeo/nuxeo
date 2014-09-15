@@ -25,10 +25,10 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class DirectorySelectItem extends SelectItem {
-    private static final long serialVersionUID = -4397185989571829723L;
+
+    private static final long serialVersionUID = 1L;
 
     private String localizedLabel;
 
@@ -42,37 +42,59 @@ public class DirectorySelectItem extends SelectItem {
 
     public DirectorySelectItem(Object value, String label, long ordering) {
         super(value, label);
-        if(value == null) {
+        if (value == null) {
             throw new IllegalArgumentException("value is null");
         }
-        if(label == null) {
+        if (label == null) {
             this.setLabel("");
         }
 
         try {
             this.ordering = ordering;
-        } catch(NumberFormatException nfe) {
+        } catch (NumberFormatException nfe) {
             this.ordering = 0;
         }
+    }
+
+    public DirectorySelectItem(Object value, String label, long ordering,
+            boolean disabled, boolean escape) {
+        this(value, label, ordering);
+        setDisabled(disabled);
+        setEscape(escape);
     }
 
     /**
      * Gets the label as it should be displayed.
      *
-     * @return
+     * @deprecated as of 5.9.6, use {@link #getLabel()} instead.
      */
+    @Deprecated
     public String getDisplayedLabel() {
         return displayedLabel;
     }
 
+    /**
+     * @deprecated as of 5.9.6, use {@link #setLabel(String)} instead.
+     */
+    @Deprecated
     public void setDisplayedLabel(String displayedLabel) {
         this.displayedLabel = displayedLabel;
     }
 
+    /**
+     * Gets the label as it should be displayed.
+     *
+     * @deprecated as of 5.9.6, use {@link #getLabel()} instead.
+     */
+    @Deprecated
     public String getLocalizedLabel() {
         return localizedLabel;
     }
 
+    /**
+     * @deprecated as of 5.9.6, use {@link #setLabel(String)} instead.
+     */
+    @Deprecated
     public void setLocalizedLabel(String localizedLabel) {
         this.localizedLabel = localizedLabel;
     }
@@ -81,7 +103,13 @@ public class DirectorySelectItem extends SelectItem {
         return ordering;
     }
 
+    /**
+     * @deprecated since 5.9.6, seems useless
+     */
+    @Deprecated
     public String getSortLabel() {
-        return StringUtils.isBlank(localizedLabel) ? displayedLabel : localizedLabel;
+        return StringUtils.isBlank(localizedLabel) ? displayedLabel
+                : localizedLabel;
     }
+
 }

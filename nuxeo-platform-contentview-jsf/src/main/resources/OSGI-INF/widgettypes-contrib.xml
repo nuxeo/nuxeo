@@ -1,0 +1,474 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.contentview.jsf.widgettypes">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="widgets">
+
+    <widget name="actions_headerStyleClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Header style class</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Style class for the header, displaying this
+          widget
+          label.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>headerStyleClass</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_styleClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Style class</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Style class for the global container div.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>styleClass</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_actionStyleClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Action style class</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Style class for each action link.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>actionStyleClass</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_addForm" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Add form</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          If set to true, actions will be surrounded
+          by a form,
+          so there should be no other surrounding form.
+          This property is useful
+          when fancybox actions need to open a
+          popup in another form. Available
+          since 5.7, defaults to false.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>addForm</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_useAjaxForm" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Use ajax actions</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          If set to true, actions will be performed
+          using ajax.
+          Note that sometimes, selection actions will
+          require you to reload the
+          whole page for other elements than
+          the content view to be re-rendered,
+          so using ajax will not
+          be user friendly in these cases. Available from
+          5.7, defaults to false.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>useAjaxForm</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_disableFiltered" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Disable filtered actions</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          If set to true, actions will appear as disabled if
+          they are supposed to be filtered (instead of not being displayed at
+          all). Available from 5.7, defaults to false.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>disableFiltered</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_category" type="selectOneResource">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Category</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The category of actions to use.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>category</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit_demo_preview">hidden</mode>
+      </widgetModes>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+      </properties>
+      <properties mode="any">
+        <property name="resourceName">actionCategories</property>
+      </properties>
+    </widget>
+
+    <widget name="tabs_category" type="selectOneResource">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Category</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The category of tabs to use.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>category</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit_demo_preview">hidden</mode>
+      </widgetModes>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+      </properties>
+      <properties mode="any">
+        <property name="resourceName">tabCategories</property>
+      </properties>
+    </widget>
+
+    <widget name="actions_actionId" type="selectOneResource">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Action</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The action to display.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>actionId</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit_demo_preview">hidden</mode>
+      </widgetModes>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+      </properties>
+      <properties mode="any">
+        <property name="resourceName">actions</property>
+      </properties>
+    </widget>
+
+    <widget name="actions_overallDisplay" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Overall display</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Overall display of actions.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>overallDisplay</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Vertical block (default)" itemValue="" />
+        <option itemLabel="Horizontal block" itemValue="horizontal_block" />
+        <option itemLabel="Menu" itemValue="menu" />
+        <option itemLabel="Rollover menu" itemValue="rollover_menu" />
+      </selectOptions>
+    </widget>
+
+    <widget name="tabs_overallDisplay" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Overall display</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Overall display of tabs.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>overallDisplay</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Horizontal block (default)" itemValue="" />
+        <option itemLabel="Vertical block" itemValue="vertical_block" />
+      </selectOptions>
+    </widget>
+
+    <widget name="tabs_hideSingleTab" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Hide single tab</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Boolean stating if the tabs bar should be hidden in
+          case there is only one tab.
+          Defaults to false, available since 5.9.6.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>hideSingleTab</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_maxActionsNumber" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Maximum number of actions</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Integer indicating the maximum number of
+          actions to
+          display. When this limit is reached, other
+          actions are displayed in a
+          menu.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>maxActionsNumber</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_moreMenuLabel" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Label for the "more" menu</label>
+      </labels>
+      <fields>
+        <field>moreMenuLabel</field>
+      </fields>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="selectManyCheckboxAggregate">
+      <configuration>
+        <sinceVersion>5.9.6</sinceVersion>
+        <title>Select Many Checkbox Aggregate</title>
+        <description></description>
+        <categories>
+          <category>aggregates</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemLabel">#{item.key}</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="ordering">label</property>
+          </defaultValues>
+          <layouts mode="edit">
+            <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyCheckboxAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyListboxAggregate">
+      <configuration>
+        <sinceVersion>5.9.6</sinceVersion>
+        <title>Select Many Listbox Aggregate</title>
+        <description></description>
+        <categories>
+          <category>aggregates</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemLabel">#{item.key}</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="ordering">label</property>
+          </defaultValues>
+          <layouts mode="edit">
+            <layout name="selectManyListboxAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyListboxAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="SelectManyListboxDirectoryAggregateWidgetTypeHandler">
+      <configuration>
+        <sinceVersion>5.9.6</sinceVersion>
+        <title>Select Many Listbox Directory Aggregate</title>
+        <description></description>
+        <categories>
+          <category>aggregates</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="ordering">label</property>
+          </defaultValues>
+          <layouts mode="edit">
+            <layout name="selectManyListboxDirectoryAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyListboxDirectoryAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="SelectManyListboxDirectoryAggregateWidgetTypeHandler">
+      <configuration>
+        <sinceVersion>5.9.6</sinceVersion>
+        <title>Select Many Checkbox Directory Aggregate</title>
+        <description></description>
+        <categories>
+          <category>aggregates</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="ordering">label</property>
+          </defaultValues>
+          <layouts mode="edit">
+            <layout name="selectManyCheckboxDirectoryAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyCheckboxDirectoryAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+  </extension>
+
+</component>

@@ -151,7 +151,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     }
 
     protected String getStoreCategory(String cat) {
-        if (cat == null) {
+        if (StringUtils.isBlank(cat)) {
             return getDefaultStoreCategory();
         }
         return cat;

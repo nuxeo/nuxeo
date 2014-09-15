@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import javax.faces.component.html.HtmlSelectOneListbox;
 import javax.faces.view.facelets.ComponentHandler;
 import javax.faces.view.facelets.CompositeFaceletHandler;
 import javax.faces.view.facelets.FaceletContext;
@@ -27,8 +28,6 @@ import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
@@ -36,7 +35,6 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
 import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryEntryOutputComponent;
-import org.nuxeo.ecm.platform.ui.web.directory.SelectOneListboxComponent;
 
 import com.sun.faces.facelets.tag.TagAttributesImpl;
 
@@ -46,17 +44,24 @@ import com.sun.faces.facelets.tag.TagAttributesImpl;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public class DirectorySelectOneWidgetTypeHandler extends
-        AbstractWidgetTypeHandler {
+        AbstractDirectorySelectWidgetTypeHandler {
 
-    private static final long serialVersionUID = 1495841177711755669L;
+    private static final long serialVersionUID = 1L;
 
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(DirectorySelectOneWidgetTypeHandler.class);
+    protected String getEditComponentType() {
+        return HtmlSelectOneListbox.COMPONENT_TYPE;
+    }
 
     @Override
     public FaceletHandler getFaceletHandler(FaceletContext ctx,
             TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
             throws WidgetException {
+        String mode = widget.getMode();
+        if (BuiltinWidgetModes.EDIT.equals(mode)) {
+            return super.getFaceletHandler(ctx, tagConfig, widget, subHandlers,
+                    getEditComponentType());
+        }
+
         FaceletHandler leaf = null;
         if (subHandlers != null) {
             leaf = new CompositeFaceletHandler(subHandlers);
@@ -64,9 +69,7 @@ public class DirectorySelectOneWidgetTypeHandler extends
             leaf = new LeafFaceletHandler();
         }
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
-        String mode = widget.getMode();
         String widgetId = widget.getId();
-        String widgetName = widget.getName();
         String widgetTagConfigId = widget.getTagConfigId();
         TagAttributes attributes;
         if (BuiltinWidgetModes.isLikePlainMode(mode)) {
@@ -75,27 +78,16 @@ public class DirectorySelectOneWidgetTypeHandler extends
         } else {
             attributes = helper.getTagAttributes(widgetId, widget);
         }
-        if (BuiltinWidgetModes.EDIT.equals(mode)) {
-            ComponentHandler input = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, leaf,
-                    SelectOneListboxComponent.COMPONENT_TYPE, null);
-            String msgId = helper.generateMessageId(widgetName);
-            ComponentHandler message = helper.getMessageComponentHandler(
-                    widgetTagConfigId, msgId, widgetId, null);
-            FaceletHandler[] handlers = { input, message };
-            return new CompositeFaceletHandler(handlers);
+        ComponentHandler output = helper.getHtmlComponentHandler(
+                widgetTagConfigId, attributes, leaf,
+                DirectoryEntryOutputComponent.COMPONENT_TYPE, null);
+        if (BuiltinWidgetModes.PDF.equals(mode)) {
+            // add a surrounding p:html tag handler
+            return helper.getHtmlComponentHandler(widgetTagConfigId,
+                    new TagAttributesImpl(new TagAttribute[0]), output,
+                    UIHtmlText.class.getName(), null);
         } else {
-            ComponentHandler output = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, leaf,
-                    DirectoryEntryOutputComponent.COMPONENT_TYPE, null);
-            if (BuiltinWidgetModes.PDF.equals(mode)) {
-                // add a surrounding p:html tag handler
-                return helper.getHtmlComponentHandler(widgetTagConfigId,
-                        new TagAttributesImpl(new TagAttribute[0]), output,
-                        UIHtmlText.class.getName(), null);
-            } else {
-                return output;
-            }
+            return output;
         }
     }
 }
