@@ -124,7 +124,7 @@
     </widgetType>
 
     <widgetType name="selectOneDirectory">
-      <label>Vocabulary</label>
+      <label>Single vocabulary</label>
       <viewId>selectOneDirectoryWidget</viewId>
       <category>standard</category>
       <preview enabled="true">
@@ -141,6 +141,25 @@
           src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-widget.xml" />
         <layout name="selectOneDirectoryWidgetListingLayout" isListing="true"
           src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-listing-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="selectOneRadioDirectory">
+      <label>Single vocabulary radio</label>
+      <viewId>selectOneRadioDirectoryWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:selectVocabularyField</field>
+        </fields>
+        <defaultProperties>
+          <property name="directoryName">layout_demo_crew</property>
+          <property name="ordering">label</property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="selectOneRadioDirectoryWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-widget.xml" />
       </layouts>
     </widgetType>
 
@@ -162,6 +181,25 @@
           src="sources/OSGI-INF/demo/layout-demo-selectManyDirectory-widget.xml" />
         <layout name="selectManyDirectoryWidgetListingLayout" isListing="true"
           src="sources/OSGI-INF/demo/layout-demo-selectManyDirectory-listing-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="selectManyCheckboxDirectory">
+      <label>Multiple vocabulary checkbox</label>
+      <viewId>selectManyCheckboxDirectoryWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:selectMultiVocabularyField</field>
+        </fields>
+        <defaultProperties>
+          <property name="directoryName">layout_demo_crew</property>
+          <property name="ordering">label</property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="selectManyCheckboxDirectoryWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectManyCheckboxDirectory-widget.xml" />
       </layouts>
     </widgetType>
 

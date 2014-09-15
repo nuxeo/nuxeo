@@ -72,9 +72,23 @@
       <redirect />
     </navigation-case>
     <navigation-case>
+      <from-outcome>selectOneRadioDirectoryWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/selectOneRadioDirectoryWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
       <from-outcome>selectManyDirectoryWidget</from-outcome>
       <to-view-id>
         /layoutDemo/demoWidgets/selectManyDirectoryWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>selectManyCheckboxDirectoryWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/selectManyCheckboxDirectoryWidget.xhtml
       </to-view-id>
       <redirect />
     </navigation-case>
