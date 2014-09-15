@@ -260,6 +260,7 @@ public class RepositoryDescriptor {
         fulltextIndexes = other.fulltextIndexes;
         neverPerInstanceMixins = other.neverPerInstanceMixins;
         pathOptimizationsEnabled = other.pathOptimizationsEnabled;
+        pathOptimizationsVersion = other.pathOptimizationsVersion;
         aclOptimizationsEnabled = other.aclOptimizationsEnabled;
         aclOptimizationsConcurrentUpdate = other.aclOptimizationsConcurrentUpdate;
         readAclMaxSize = other.readAclMaxSize;
