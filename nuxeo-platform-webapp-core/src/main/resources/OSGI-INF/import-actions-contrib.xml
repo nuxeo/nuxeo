@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webapp.import.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="dndBulkImportDocuments" link=""
+      order="10" label="label.smart.import"
+      help="desc.smart.import.file">
+      <category>IMPORT_DOCUMENTS</category>
+      <properties>
+        <property name="chainId">FileManager.ImportWithMetaDataInSeam</property>
+        <property name="layout">bulkImport@create</property>
+      </properties>
+    </action>
+
+  </extension>
+
+</component>

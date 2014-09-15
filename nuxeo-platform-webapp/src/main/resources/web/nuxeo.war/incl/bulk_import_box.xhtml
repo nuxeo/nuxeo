@@ -1,0 +1,151 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <h3><h:outputText value="#{messages['label.bulk.import.documents']}" /></h3>
+
+  <h:form enctype="multipart/form-data" id="#{fancyboxFormId}" disableDoubleClickShield="#{!useHtml5DragAndDrop}">
+
+    <div class="content positionR">
+
+      <table class="dataInput fullWidth separator">
+        <tbody>
+        <tr>
+          <td class="labelColumn required">
+            #{messages['label.bulk.import.documents.select.location']}
+          </td>
+          <td class="fieldColumn">
+            <nxl:widgetType name="singleDocumentSuggestion" mode="edit"
+              value="#{importActions}"
+              field="selectedImportFolderId"
+              required="true"
+              width="100%"
+              translated="true"
+              minChars="3"
+              placeholder="label.bulk.import.documents.select.location.placeholder"
+              ajaxReRender="#{fancyboxFormId}_typeDescriptionsPanel #{fancyboxFormId}_buttons"
+              pageProviderName="importFolders"
+              documentSchemas = "dublincore,common">
+            </nxl:widgetType>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <nxu:set var="importOptions" value="#{importActions.getImportOptions(action.properties.dropContext)}" cache="true">
+        <table class="dataInput fullWidth">
+          <tbody>
+          <tr>
+            <td class="labelColumn required">
+              #{messages['label.files.files']}
+            </td>
+            <td class="fieldColumn">
+              <c:if test="#{useHtml5DragAndDrop}">
+                <div class="jsDocumentsImportZone dropArea" id="#{action.id}_dropzone" context="#{action.properties.dropContext}"
+                  data-loadalreadyuploadedfiles="#{importActions.hasUploadedFiles()}">
+                  <div class="dropZoneLabel jsTips">
+                    #{messages['label.bulk.import.documents.tips']}
+                  </div>
+                </div>
+              </c:if>
+
+              <c:if test="#{!useHtml5DragAndDrop}">
+                <rich:fileUpload id="fileUploadForm" uploadData="#{importActions.uploadedFiles}"
+                  maxFilesQuantity="10" immediateUpload="true"
+                  locale="#{localeSelector.localeString}"
+                  execute="@this"
+                  onadd="nuxeo.documentsImport.disableBulkImportButton();"
+                  onuploadcomplete="nuxeo.documentsImport.enableBulkImportButton();"
+                  listWidth="60%" listHeight="150px">
+                </rich:fileUpload>
+              </c:if>
+            </td>
+          </tr>
+          <c:if test="#{importOptions.size() > 1}">
+            <tr>
+              <td class="labelColumn">
+                #{messages['label.bulk.import.documents.select.option']}
+              </td>
+              <td class="fieldColumn">
+                <h:selectOneMenu
+                  value="#{importActions.selectedImportOptionId}"
+                  id="#{widget.id}" styleClass="langSelect">
+                  <a4j:ajax event="change"
+                    render="importLayout_panel" />
+                  <nxu:selectItems
+                    var="importOption" value="#{importOptions}"
+                    itemValue="#{importOption.id}" itemLabel="#{messages[importOption.label]}" />
+                </h:selectOneMenu>
+              </td>
+            </tr>
+          </c:if>
+          </tbody>
+        </table>
+
+      </nxu:set>
+
+      <a4j:outputPanel id="importLayout_panel">
+
+        <nxl:layout name="#{importActions.selectedImportOption.properties.layout}" mode="create"
+          value="#{importActions.importDocumentModel}"/>
+
+      </a4j:outputPanel>
+
+      <c:if test="#{useHtml5DragAndDrop}">
+        <script type="text/javascript">
+          if (jQuery('#fancybox-content').html() !== '') {
+            jQuery(".jsDocumentsImportZone").nxDropZone({
+              url : "#{contextPath}/site/automation/",
+              uploadRateRefreshTime : 500,
+              numConcurrentUploads : 3,
+              dropContext : ctx,
+              uploadTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.upload.timeout","30000")},
+              execTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.exec.timeout","30000")},
+              extendedModeTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.extendedmode.timeout","2000")},
+              handler : nuxeo.documentsImport.createDocumentsImportAssetHandler("#{importActions.generateBatchId()}")
+            });
+          }
+        </script>
+      </c:if>
+
+    </div>
+
+    <a4j:outputPanel id="#{fancyboxFormId}_buttons" layout="block">
+      <div class="buttonsGadget" data-selectedimportfolder="#{!empty importActions.selectedImportFolderId}">
+        <nxu:set var="importButtonDisabled"
+          value="#{empty importActions.selectedImportFolderId or !importActions.hasUploadedFiles()}"
+          cache="true">
+          <nxu:set var="disabledButtonStyleClass"
+            value="#{nxu:test(importButtonDisabled, 'disabled', '')}">
+
+            <nxh:commandButton value="#{messages['command.import']}"
+              action="#{importActions.importAssets()}"
+              styleClass="button jsDocumentsImportButton #{disabledButtonStyleClass}"
+              data-selectedimportfolder="#{!empty importActions.selectedImportFolderId}"/>
+            <nxh:commandButton value="#{messages['command.cancel']}"
+              immediate="true"
+              action="#{importActions.cancel()}"
+              styleClass="button" />
+
+            <c:if test="#{importButtonDisabled}">
+              <script type="text/javascript">
+                nuxeo.documentsImport.disableBulkImportButton();
+              </script>
+            </c:if>
+            <c:if test="#{!importButtonDisabled}">
+              <script type="text/javascript">
+                nuxeo.documentsImport.enableBulkImportButton();
+              </script>
+            </c:if>
+
+          </nxu:set>
+        </nxu:set>
+      </div>
+    </a4j:outputPanel>
+  </h:form>
+
+</div>

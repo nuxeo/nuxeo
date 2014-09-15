@@ -13,7 +13,7 @@
       <sort column="dc:title" ascending="true" />
       <pageSize>100</pageSize>
     </coreQueryPageProvider>
-    
+
     <coreQueryPageProvider name="search_media_by_title">
       <property name="maxResults">PAGE_SIZE</property>
       <pattern>
@@ -23,6 +23,18 @@
       <sort column="dc:title" ascending="true" />
       <pageSize>100</pageSize>
     </coreQueryPageProvider>
+
+    <genericPageProvider name="importFolders"
+      class="org.nuxeo.ecm.webapp.provider.ImportFolderPageProvider">
+      <pattern quoteParameters="false" escapeParameters="true">
+        SELECT * FROM Document WHERE ecm:fulltext.dc:title LIKE '?' AND ecm:mixinType !=
+        'HiddenInNavigation' AND ecm:mixinType = 'Folderish'
+        AND ecm:currentLifeCycleState != 'deleted'
+        AND SORTED_COLUMN IS NOT NULL
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>10</pageSize>
+    </genericPageProvider>
 
   </extension>
 </component>

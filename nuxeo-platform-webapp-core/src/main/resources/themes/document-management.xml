@@ -18,6 +18,8 @@
       </section>
       <section class="nxMainContainer">
         <cell class="column">
+          <!-- import view -->
+          <fragment perspectives="default,multiple_domains" type="generic fragment"/>
           <!-- NXP-6413: keep multiple_domains perspective as BBB -->
           <!-- tree view -->
           <fragment perspectives="default,multiple_domains" type="generic fragment"/>
@@ -108,9 +110,12 @@
       <view>cell frame</view>
     </widget>
     <widget element="page[1]/section[2]/cell[1]/fragment[1]">
-      <view>nuxeo5 tree explorer</view>
+      <view>nuxeo import</view>
     </widget>
     <widget element="page[1]/section[2]/cell[1]/fragment[2]">
+      <view>nuxeo5 tree explorer</view>
+    </widget>
+    <widget element="page[1]/section[2]/cell[1]/fragment[3]">
       <view>nuxeo5 clip board</view>
     </widget>
     <widget element="page[1]/section[2]/cell[2]/fragment[1]">

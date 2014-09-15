@@ -132,6 +132,16 @@
       </properties>
     </widget>
 
+    <widget name="importActions" type="documentActionsWithForms">
+      <properties mode="view">
+        <property name="category">IMPORT_ACTIONS</property>
+        <property name="actionsDisplay">buttons</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="styleClass">action_bar</property>
+        <property name="actionStyleClass">button</property>
+      </properties>
+    </widget>
+
   </extension>
 
 </component>

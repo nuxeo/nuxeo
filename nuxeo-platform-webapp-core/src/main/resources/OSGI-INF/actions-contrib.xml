@@ -718,6 +718,21 @@
 
     <!-- end of footer links -->
 
+    <action id="bulkImportDocuments" order="0" label="label.bulk.import.documents"
+      type="fancybox">
+      <category>IMPORT_ACTIONS</category>
+      <properties>
+        <property name="include">/incl/bulk_import_box.xhtml</property>
+        <property name="dropContext">IMPORT_DOCUMENTS</property>
+        <property name="autoDimensions">false</property>
+        <property name="width">85%</property>
+        <property name="height">95%</property>
+        <property name="modal">true</property>
+        <property name="scrolling">auto</property>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"

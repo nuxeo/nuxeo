@@ -68,6 +68,7 @@
       <resource>magnific-popup.css</resource>
       <resource>nuxeo-lightbox.js</resource>
       <resource>jquery.nuxeo.cv-lightbox.js</resource>
+      <resource>nuxeo-documents-import.js</resource>
     </view>
 
     <view name="Nuxeo header" template-engine="jsf-facelets">
@@ -79,6 +80,11 @@
     <view name="nuxeo5 breadcrumbs" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/breadcrumb.xhtml</template>
+    </view>
+
+    <view name="nuxeo import" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/import.xhtml</template>
     </view>
 
     <view name="nuxeo5 tree explorer" template-engine="jsf-facelets">
@@ -246,6 +252,9 @@
       <path>scripts/jquery.nuxeo.cv-lightbox.js</path>
       <require>jquery.magnific-popup.js</require>
       <require>nuxeo-lightbox.js</require>
+    </resource>
+    <resource name="nuxeo-documents-import.js">
+      <path>scripts/nuxeo-documents-import.js</path>
     </resource>
   </extension>
 
