@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<project name="Gulp build" default="build" basedir=".">
+  <property file="build.properties" />
+  <target name="init" description="Download all node and web dependencies">
+    <exec executable="npm" failonerror="true">
+      <arg value="install" />
+    </exec>
+    <exec executable="bower" failonerror="true">
+      <arg value="install" />
+    </exec>
+  </target>
+
+  <target name="build" depends="init,build-with-tests,build-skip-tests" />
+  <target name="build-with-tests" unless="skipTests">
+    <echo message="build and test" />
+    <exec executable="gulp" failonerror="true">
+      <arg value="build" />
+    </exec>
+    <mkdir dir="../../../target/surefire-reports" />
+    <copy file="test-results.xml"
+          todir="../../../target/surefire-reports"
+          failonerror="false" />
+  </target>
+  <target name="build-skip-tests" if="skipTests">
+    <exec executable="gulp" failonerror="true">
+      <arg value="build-skip-tests" />
+    </exec>
+  </target>
+
+  <target name="web" depends="build" description="Build and copy to nuxeo.war directory">
+    <copy todir="${nuxeo.war.dir}">
+      <fileset dir="../../../target/classes/web/nuxeo.war" />
+    </copy>
+  </target>
+
+</project>

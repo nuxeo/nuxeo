@@ -1,0 +1,13 @@
+{
+  "name": "nuxeo-datagrid",
+  "private": true,
+  "dependencies": {
+    "es6-module-loader": "~0.8.2",
+    "handsontable": "~0.11.2",
+    "nuxeo": "~0.2.0",
+    "select2": "~3.5.1",
+    "traceur-runtime": "~0.0.59",
+    "system.js": "~0.8.2"
+  },
+  "devDependencies": {}
+}

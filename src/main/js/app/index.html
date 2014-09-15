@@ -1,0 +1,47 @@
+<html>
+<head>
+  <!-- build:css styles/vendor.css -->
+  <link rel="stylesheet" href="bower_components/handsontable/lib/jquery-ui/css/smoothness/jquery-ui.custom.css">
+  <link rel="stylesheet" href="bower_components/handsontable/dist/jquery.handsontable.full.css">
+  <link rel="stylesheet" href="bower_components/select2/select2.css">
+  <!-- endbuild -->
+  <!-- build:css styles/style.css -->
+  <link rel="stylesheet" href="styles/styles.css">
+  <!-- endbuild -->
+  <!-- build:js scripts/vendor.js -->
+  <script src="bower_components/jquery/dist/jquery.js"></script>
+  <script src="bower_components/handsontable/lib/jquery-ui/js/jquery-ui.custom.js"></script>
+  <script src="bower_components/handsontable/dist/jquery.handsontable.full.js"></script>
+  <script src="bower_components/select2/select2.js"></script>
+  <script src="lib/select2-editor.js"></script>
+  <script src="bower_components/nuxeo/lib/jquery/nuxeo.js"></script>
+  <script src="bower_components/traceur-runtime/traceur-runtime.js"></script>
+  <script src="bower_components/es6-module-loader/dist/es6-module-loader.js"></script>
+  <script src="bower_components/system.js/lib/extension-register.js"></script>
+  <!-- endbuild -->
+</head>
+<body>
+
+  <div id="queryArea" style="display:none">
+    <input id="query" type="text" size="70" placeholder="SELECT * FROM Document" />
+    <button id="execute">Execute</button>
+  </div>
+
+  <div id="grid"></div>
+
+  <pre id="console" class="console"></pre>
+  <p>
+    <button id="save">Save</button>
+    <label><input type="checkbox" name="autosave" autocomplete="off"> Autosave</label>
+  </p>
+  <script>register(System);</script>
+  <!-- build:js scripts/app.js -->
+  <script src="app-build.js"></script>
+  <!-- endbuild -->
+  <script>
+    System.import('app')
+      .then(function(app) { app.run(); })
+      .catch(console.error.bind(console));
+  </script>
+</body>
+</html>

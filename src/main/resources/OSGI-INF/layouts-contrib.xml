@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.dataGrid.layouts">
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+             point="widgets">
+    <widget name="listing_creator" type="singleUserSuggestion">
+      <labels>
+        <label mode="any">label.content.header.author</label>
+      </labels>
+      <fields>
+        <field>data.dc.creator</field>
+      </fields>
+      <properties mode="any">
+        <property name="userSuggestionSearchType">USER_TYPE</property>
+        <property name="firstLabelField">firstName</property>
+        <property name="secondLabelField">lastName</property>
+        <property name="hideFirstLabel">true</property>
+        <property name="hideSecondLabel">true</property>
+        <property name="displayAction">edit</property>
+        <property name="hideIcon">true</property>
+      </properties>
+    </widget>
+
+    <widget name="l10nsubjects_listing" type="suggestManyDirectory">
+      <labels>
+        <label mode="any">label.dublincore.subject</label>
+      </labels>
+      <helpLabels>
+        <label mode="edit">label.dublincore.subjects.info</label>
+      </helpLabels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.subjects</field>
+      </fields>
+      <properties mode="any">
+        <property name="width">100%</property>
+        <property name="dbl10n">true</property>
+        <property name="minChars">0</property>
+        <property name="hideHelpLabel">true</property>
+        <property name="directoryName">l10nsubjects</property>
+      </properties>
+    </widget>
+
+    <!-- TODO: REMOVE -->
+    <widget name="collections_listing" type="multipleDocumentsSuggestion">
+      <labels>
+        <label mode="any">Collections</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.collectionMember.collectionIds</field>
+      </fields>
+      <properties mode="any">
+        <property name="query">
+          select * from Collection where dc:title LIKE ?
+        </property>
+        <property name="documentSchemas">dublincore</property>
+      </properties>
+    </widget>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+             point="layouts">
+    <layout name="datagrid_listing">
+      <columns>
+        <column name="title">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:title</property>
+            <property name="label">label.selection.column.title_link</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_title_link</widget>
+        </column>
+        <column name="author" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:creator</property>
+            <property name="label">author</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_creator</widget>
+        </column>
+        <column name="description" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:description</property>
+            <property name="label">description</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_description</widget>
+        </column>
+        <column name="modification_date">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:modified</property>
+            <property name="label">label.content.header.modified</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_modification_date</widget>
+        </column>
+        <column name="nature" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:nature</property>
+            <property name="label">label.dublincore.nature</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_nature</widget>
+        </column>
+        <column name="subjects" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="label">label.dublincore.subject</property>
+          </properties>
+          <widget>l10nsubjects_listing</widget>
+        </column>
+        <!-- TODO: REMOVE -->
+        <column name="collections" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="label">Collections</property>
+          </properties>
+          <widget>collections_listing</widget>
+        </column>
+      </columns>
+    </layout>
+  </extension>
+</component>
