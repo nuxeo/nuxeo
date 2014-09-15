@@ -48,10 +48,10 @@
 
     <suggesterGroup name="searchbox">
       <suggesters>
-        <suggesterName>searchByKeywords</suggesterName>
+        <!-- suggesterName>searchByKeywords</suggesterName-->
         <suggesterName>documentLookupByTitle</suggesterName>
         <suggesterName>searchByUsersAndGroups</suggesterName>
-        <suggesterName>searchByDate</suggesterName>
+        <!-- suggesterName>searchByDate</suggesterName-->
       </suggesters>
     </suggesterGroup>
 
