@@ -57,7 +57,7 @@ public interface PageProvider<T> extends Serializable {
      * Default maximum page size value.
      * @since 5.9.6, default value is 1000.
      */
-    public static final long DEFAULT_MAX_PAGE_SIZE = 100;
+    public static final long DEFAULT_MAX_PAGE_SIZE = 1000;
 
     /**
      * Page limit unknown.

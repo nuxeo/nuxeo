@@ -332,7 +332,7 @@ public class TestPageProvider {
         // only set page size => should fallback on default max page size
         assertEquals(20, getMinMaxPageSize(Long.valueOf(20), null));
         assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
-                getMinMaxPageSize(Long.valueOf(2000), null));
+                getMinMaxPageSize(Long.valueOf(200), null));
         assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
                 getMinMaxPageSize(Long.valueOf(500), null));
         assertEquals(PageProvider.DEFAULT_MAX_PAGE_SIZE,
