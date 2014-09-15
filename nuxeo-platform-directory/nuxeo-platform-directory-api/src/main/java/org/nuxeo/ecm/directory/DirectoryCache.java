@@ -21,7 +21,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.mortbay.log.Log;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.cache.Cache;
 import org.nuxeo.ecm.core.cache.CacheService;
@@ -62,6 +63,9 @@ public class DirectoryCache {
 
     protected final Counter sizeCounter;
 
+    private final static Log log = LogFactory.getLog(DirectoryCache.class);
+    
+    
     protected DirectoryCache(String name) {
         this.name = name;
         hitsCounter = metrics.counter(MetricRegistry.name("nuxeo",
@@ -90,14 +94,14 @@ public class DirectoryCache {
         } else if (isCacheEnabled()
                 && (getEntryCache() == null || getEntryCacheWithoutReferences() == null)) {
 
-            Log.warn("Your directory configuration for cache is wrong, directory cache will not be used.");
+            log.warn("Your directory configuration for cache is wrong, directory cache will not be used.");
             if (getEntryCache() == null) {
-                Log.warn(String.format(
+                log.warn(String.format(
                         "The cache for entry '%s' has not been found, please check the cache name or make sure you have deployed it",
                         entryCacheName));
             }
             if (getEntryCacheWithoutReferences() == null) {
-                Log.warn(String.format(
+                log.warn(String.format(
                         "The cache for entry without references '%s' has not been found, please check the cache name or make sure you have deployed it",
                         entryCacheWithoutReferencesName));
             }
