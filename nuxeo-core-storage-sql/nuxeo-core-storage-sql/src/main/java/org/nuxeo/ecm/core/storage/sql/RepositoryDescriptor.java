@@ -227,6 +227,7 @@ public class RepositoryDescriptor {
         fulltextCatalog = other.fulltextCatalog;
         fulltextIndexes = other.fulltextIndexes;
         pathOptimizationsEnabled = other.pathOptimizationsEnabled;
+        pathOptimizationsVersion = other.pathOptimizationsVersion;
         aclOptimizationsEnabled = other.aclOptimizationsEnabled;
         aclOptimizationsConcurrentUpdate = other.aclOptimizationsConcurrentUpdate;
         readAclMaxSize = other.readAclMaxSize;
