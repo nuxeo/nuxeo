@@ -49,7 +49,7 @@ import java.util.Map;
         "operation.", since = "5.9.6", addToStudio = true)
 public class DocumentPaginatedQuery {
 
-    public static final String ID = "Document.PaginatedQuery";
+    public static final String ID = "Document.Query";
 
     public static final String CURRENT_USERID_PATTERN = "$currentUser";
 

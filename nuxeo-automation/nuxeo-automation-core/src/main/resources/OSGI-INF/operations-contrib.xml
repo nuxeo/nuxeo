@@ -50,23 +50,6 @@
       class="org.nuxeo.ecm.automation.core.operations.document.DeleteDocument" />
     <operation class="org.nuxeo.ecm.automation.core.operations.document.FetchDocument" />
     <operation class="org.nuxeo.ecm.automation.core.operations.document.LockDocument" />
-    <operation class="org.nuxeo.ecm.automation.core.operations.document.Query">
-      <widgets>
-        <widget name="query" type="codearea">
-          <labels>
-            <label mode="any">Query</label>
-          </labels>
-          <properties mode="any">
-            <property name="language">nxql</property>
-            <property name="width">100%</property>
-            <property name="height">100%</property>
-          </properties>
-          <fields>
-            <field>query</field>
-          </fields>
-        </widget>
-      </widgets>
-    </operation>
     <operation
       class="org.nuxeo.ecm.automation.core.operations.document.FetchByProperty" />
     <operation
