@@ -15,7 +15,7 @@
   </ui:define>
 
   <ui:define name="body">
-    <div>
+    <div class="mainNoTabs">
 
     <h3><h:outputText value="#{messages['title.create.picturebook']}" /></h3>
     <ui:include src="/incl/message_banner.xhtml" /> <h:form
@@ -25,11 +25,11 @@
 
       <a4j:region>
 
-        <h3><h:outputText value="#{messages['label.picture.views']}" /></h3>
+        <h4><h:outputText value="#{messages['label.picture.views']}" /></h4>
 
         <nxu:dataTable id="dataTable" value="#{pictureBookManager.views}"
           var="myview" rowClasses="dataRowEven,dataRowOdd"
-          styleClass="dataOutput">
+          styleClass="dataTable">
 
           <!--  Title -->
           <h:column>
@@ -105,11 +105,13 @@
 
 
       </a4j:region>
-      <h:commandButton class="button"
-        value="#{messages['command.create']}"
-        action="#{pictureBookManager.createPictureBook}" />
-      <h:commandButton class="button" value="#{messages['command.cancel']}"
-        action="#{navigationContext.goBack()}" immediate="true" />
+      <div class="buttonsGadget">
+        <h:commandButton class="button"
+          value="#{messages['command.create']}"
+          action="#{pictureBookManager.createPictureBook}" />
+        <h:commandButton class="button" value="#{messages['command.cancel']}"
+          action="#{navigationContext.goBack()}" immediate="true" />
+      </div>
     </h:form>
 
     </div>
