@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.automation.featuresContrib" version="1.0">
+
+  <documentation>@author Bogdan Stefanescu (bs@nuxeo.com)</documentation>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+
+    <operation class="org.nuxeo.ecm.automation.core.operations.document.Query">
+      <widgets>
+        <widget name="query" type="codearea">
+          <labels>
+            <label mode="any">Query</label>
+          </labels>
+          <properties mode="any">
+            <property name="language">nxql</property>
+            <property name="width">100%</property>
+            <property name="height">100%</property>
+          </properties>
+          <fields>
+            <field>query</field>
+          </fields>
+        </widget>
+      </widgets>
+    </operation>
+  </extension>
+</component>
