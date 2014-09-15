@@ -62,6 +62,8 @@ public class UserGroupLookupSuggester implements Suggester {
 
     protected int groupSuggestionsLimit = 5;
 
+    protected String suggesterId = "UserGroupLookupSuggester";
+
     @Override
     public List<Suggestion> suggest(String userInput, SuggestionContext context)
             throws SuggestionException {
@@ -94,8 +96,11 @@ public class UserGroupLookupSuggester implements Suggester {
                     String i18nLabel = i18n.translate(searchLabelPrefix
                             + searchField.replaceAll(":", "_"), userLabel);
                     Suggestion suggestion = new SearchDocumentsSuggestion(
-                            i18nLabel, searchIconURL).withSearchCriterion(
-                            searchField, userDoc.getId());
+                            suggesterId,
+                            i18nLabel,
+                            searchIconURL).withSearchCriterion(
+                            searchField,
+                            userDoc.getId());
                     searchSuggestions.add(suggestion);
                 }
                 count++;

@@ -16,6 +16,11 @@
  */
 package org.nuxeo.ecm.platform.suggestbox.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Suggest to navigate to a specific user profile.
  */
@@ -23,14 +28,24 @@ public class UserSuggestion extends Suggestion {
 
     private static final long serialVersionUID = 1L;
 
+    private static final String PREFIX = "user";
+
     protected final String userId;
 
     public UserSuggestion(String userId, String label, String iconURL) {
-        super(CommonSuggestionTypes.USER, label, iconURL);
+        super(userId, CommonSuggestionTypes.USER, label, iconURL);
         this.userId = userId;
     }
 
     public String getUserId() {
         return userId;
+    }
+
+    @Override
+    public String getObjectUrl() {
+        List<String> items = new ArrayList<String>();
+        items.add(PREFIX);
+        items.add(userId);
+        return StringUtils.join(items, "/");
     }
 }

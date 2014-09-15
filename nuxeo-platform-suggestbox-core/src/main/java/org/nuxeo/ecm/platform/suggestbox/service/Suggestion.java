@@ -24,11 +24,13 @@ import java.io.Serializable;
  *
  * @author ogrisel
  */
-public class Suggestion implements Serializable {
+public abstract class Suggestion implements Serializable {
 
     public static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd";
 
     private static final long serialVersionUID = 1L;
+
+    protected final String id;
 
     protected final String type;
 
@@ -40,10 +42,20 @@ public class Suggestion implements Serializable {
 
     protected boolean disabled = false;
 
-    public Suggestion(String type, String label, String iconURL) {
+    public Suggestion(String id, String type, String label, String iconURL) {
+        this.id = id;
         this.type = type;
         this.label = label;
         this.iconURL = iconURL;
+    }
+
+    /**
+     * The id of the object associated to the suggestion.
+     *
+     * @since 5.9.6
+     */
+    public String getId() {
+        return id;
     }
 
     /**
@@ -96,6 +108,13 @@ public class Suggestion implements Serializable {
         this.disabled = true;
         return this;
     }
+
+    /**
+     * @return the url to access to the object. It used by the navigation in the select2.
+     *
+     * @since 5.9.6
+     */
+    public abstract String getObjectUrl();
 
     @Override
     public String toString() {

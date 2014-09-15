@@ -26,11 +26,17 @@ public class GroupSuggestion extends Suggestion {
     protected final String groupId;
 
     public GroupSuggestion(String groupId, String label, String iconURL) {
-        super(CommonSuggestionTypes.GROUP, label, iconURL);
+        super(groupId, CommonSuggestionTypes.GROUP, label, iconURL);
         this.groupId = groupId;
     }
 
     public String getGroupId() {
         return groupId;
+    }
+
+    @Override
+    public String getObjectUrl() {
+        // TODO Generate the url to access the group page
+        return null;
     }
 }

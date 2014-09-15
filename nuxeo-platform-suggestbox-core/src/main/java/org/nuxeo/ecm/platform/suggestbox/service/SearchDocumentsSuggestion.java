@@ -29,8 +29,8 @@ public class SearchDocumentsSuggestion extends Suggestion {
 
     protected final Map<String, Serializable> searchCriteria = new HashMap<String, Serializable>();
 
-    public SearchDocumentsSuggestion(String label, String iconURL) {
-        super(CommonSuggestionTypes.SEARCH_DOCUMENTS, label, iconURL);
+    public SearchDocumentsSuggestion(String id, String label, String iconURL) {
+        super(id, CommonSuggestionTypes.SEARCH_DOCUMENTS, label, iconURL);
     }
 
     public SearchDocumentsSuggestion withSearchCriterion(String searchField,
@@ -41,6 +41,12 @@ public class SearchDocumentsSuggestion extends Suggestion {
 
     public Map<String, Serializable> getSearchCriteria() {
         return searchCriteria;
+    }
+
+    @Override
+    public String getObjectUrl() {
+        // TODO Generate the url to access the search page
+        return null;
     }
 
 }

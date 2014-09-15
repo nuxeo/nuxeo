@@ -36,6 +36,8 @@ public class DocumentSearchByPropertySuggester implements Suggester {
 
     protected String searchField = "fsd:ecm_fulltext";
 
+    protected String suggesterId = "DocumentSearchByPropertySuggester";
+
     /**
      * @since 5.8
      */
@@ -54,7 +56,7 @@ public class DocumentSearchByPropertySuggester implements Suggester {
             throws SuggestionException {
         I18nHelper i18n = I18nHelper.instanceFor(context.messages);
         String i18nLabel = i18n.translate(label, userInput);
-        SearchDocumentsSuggestion suggestion = new SearchDocumentsSuggestion(
+        SearchDocumentsSuggestion suggestion = new SearchDocumentsSuggestion(suggesterId,
                 i18nLabel, iconURL).withSearchCriterion(searchField, userInput);
         if (searchFields != null) {
             for (String field : searchFields) {

@@ -51,6 +51,8 @@ public class DocumentSearchByDateSuggester implements Suggester {
 
     protected String iconURL;
 
+    protected String suggesterId = "DocumentSearchByDateSuggester";
+
     @Override
     public List<Suggestion> suggest(String userInput, SuggestionContext context)
             throws SuggestionException {
@@ -73,7 +75,7 @@ public class DocumentSearchByDateSuggester implements Suggester {
                         + field.replace(':', '_');
                 String labelAfter = i18n.translate(labelAfterPrefix,
                         formattedDateLabel);
-                suggestions.add(new SearchDocumentsSuggestion(labelAfter,
+                suggestions.add(new SearchDocumentsSuggestion(suggesterId, labelAfter,
                         iconURL).withSearchCriterion(searchFieldAfter, date));
 
                 String searchFieldBefore = field + "_max";
@@ -81,7 +83,7 @@ public class DocumentSearchByDateSuggester implements Suggester {
                         + field.replace(':', '_');
                 String labelBefore = i18n.translate(labelBeforePrefix,
                         formattedDateLabel);
-                suggestions.add(new SearchDocumentsSuggestion(labelBefore,
+                suggestions.add(new SearchDocumentsSuggestion(suggesterId, labelBefore,
                         iconURL).withSearchCriterion(searchFieldBefore, date));
             }
         }

@@ -16,10 +16,14 @@
  */
 package org.nuxeo.ecm.platform.suggestbox.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 
@@ -30,11 +34,15 @@ public class DocumentSuggestion extends Suggestion {
 
     private static final long serialVersionUID = 1L;
 
+    private static final String PREFIX = "nxdoc";
+
+    private static final String VIEW_ID = "view_documents";
+
     protected final DocumentLocation documentLocation;
 
-    public DocumentSuggestion(DocumentLocation documentLocation, String label,
+    public DocumentSuggestion(String id, DocumentLocation documentLocation, String label,
             String iconURL) {
-        super(CommonSuggestionTypes.DOCUMENT, label, iconURL);
+        super(id, CommonSuggestionTypes.DOCUMENT, label, iconURL);
         this.documentLocation = documentLocation;
     }
 
@@ -50,7 +58,7 @@ public class DocumentSuggestion extends Suggestion {
         if (StringUtils.isEmpty(icon)) {
             icon = typeInfo.getIcon();
         }
-        return new DocumentSuggestion(new DocumentLocationImpl(doc),
+        return new DocumentSuggestion(doc.getId(), new DocumentLocationImpl(doc),
                 doc.getTitle(), icon).withDescription(description);
     }
 
@@ -58,4 +66,22 @@ public class DocumentSuggestion extends Suggestion {
         return documentLocation;
     }
 
+    @Override
+    public String getObjectUrl() {
+        if (documentLocation != null) {
+            List<String> items = new ArrayList<String>();
+            items.add(PREFIX);
+            items.add(documentLocation.getServerName());
+            IdRef docRef = documentLocation.getIdRef();
+            if (docRef == null) {
+                return null;
+            }
+            items.add(docRef.toString());
+            items.add(VIEW_ID);
+
+            String uri = StringUtils.join(items, "/");
+            return uri;
+        }
+        return null;
+    }
 }
