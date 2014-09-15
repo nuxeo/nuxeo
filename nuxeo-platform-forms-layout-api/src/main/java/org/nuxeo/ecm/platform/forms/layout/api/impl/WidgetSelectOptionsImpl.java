@@ -56,8 +56,8 @@ public class WidgetSelectOptionsImpl implements WidgetSelectOptions {
     }
 
     public WidgetSelectOptionsImpl(Serializable value, String var,
-            String itemLabel, String itemValue, Boolean itemDisabled,
-            Boolean itemRendered) {
+            String itemLabel, String itemValue, Serializable itemDisabled,
+            Serializable itemRendered) {
         this(value, var, itemLabel, itemValue, itemDisabled, itemRendered,
                 null, null);
     }
