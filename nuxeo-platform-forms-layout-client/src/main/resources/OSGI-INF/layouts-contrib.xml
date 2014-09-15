@@ -996,6 +996,77 @@
       </selectOptions>
     </widget>
 
+    <widget name="select_selectOptions" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Select Options</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The select options binding.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>selectOptions</field>
+      </fields>
+    </widget>
+
+    <widget name="select_var" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Variable</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The variable name for select options expressions
+          resolution. Usually defaults to 'item'.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>var</field>
+      </fields>
+    </widget>
+
+    <widget name="select_itemLabel" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Item label</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Expression referencing the variable name to display
+          the option label.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>itemLabel</field>
+      </fields>
+    </widget>
+
+    <widget name="select_itemValue" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Item label</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Expression referencing the variable name to display
+          the option id.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>itemValue</field>
+      </fields>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -1934,6 +2005,26 @@
             <type>string</type>
           </supportedTypes>
         </fields>
+        <properties>
+          <layouts mode="edit">
+            <layout name="selectOneListbox_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_var</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_itemLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_itemValue</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.SelectOneListboxWidgetTypeHandler
@@ -1965,6 +2056,26 @@
             <type>string</type>
           </supportedTypes>
         </fields>
+        <properties>
+          <layouts mode="edit">
+            <layout name="selectManyListbox_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_var</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_itemLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_itemValue</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.SelectManyListboxWidgetTypeHandler
@@ -1989,6 +2100,26 @@
             <mode>view</mode>
           -->
         </supportedModes>
+        <properties>
+          <layouts mode="edit">
+            <layout name="selectOneMenu_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_var</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_itemLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_itemValue</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
         <fields>
           <list>false</list>
           <complex>false</complex>
@@ -2027,6 +2158,26 @@
             <type>string</type>
           </supportedTypes>
         </fields>
+        <properties>
+          <layouts mode="edit">
+            <layout name="selectManyMenu_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_var</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_itemLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_itemValue</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.SelectManyMenuWidgetTypeHandler
@@ -2058,6 +2209,26 @@
             <type>string</type>
           </supportedTypes>
         </fields>
+        <properties>
+          <layouts mode="edit">
+            <layout name="selectOneRadio_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_var</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_itemLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_itemValue</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.SelectOneRadioWidgetTypeHandler
@@ -2067,7 +2238,7 @@
     <widgetType name="selectManyCheckbox">
       <configuration>
         <sinceVersion>5.9.6</sinceVersion>
-        <title>Select Many Checbox</title>
+        <title>Select Many Checkbox</title>
         <description></description>
         <categories>
           <!-- don't export it yet -->
@@ -2089,6 +2260,26 @@
             <type>string</type>
           </supportedTypes>
         </fields>
+        <properties>
+          <layouts mode="edit">
+            <layout name="selectManyCheckbox_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_var</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_itemLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_itemValue</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.SelectManyCheckboxWidgetTypeHandler

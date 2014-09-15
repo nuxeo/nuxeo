@@ -15,10 +15,6 @@
  */
 package org.nuxeo.ecm.platform.ui.web.component;
 
-import javax.el.ELException;
-import javax.el.ValueExpression;
-import javax.faces.FacesException;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 /**
@@ -36,145 +32,80 @@ public class UISelectItems extends javax.faces.component.UISelectItems
 
     public static final String COMPONENT_TYPE = UISelectItems.class.getName();
 
-    protected String var;
-
-    protected Object itemLabel;
-
-    protected Object itemValue;
-
-    protected Boolean itemRendered;
-
-    protected Boolean itemDisabled;
-
-    protected String ordering;
-
-    protected Boolean caseSensitive;
+    enum PropertyKeys {
+        var, itemLabel, itemValue, itemRendered, itemDisabled, itemEscaped, ordering, caseSensitive
+    }
 
     public String getVar() {
-        if (var != null) {
-            return var;
-        }
-        ValueExpression ve = getValueExpression("var");
-        if (ve != null) {
-            try {
-                return (String) ve.getValue(getFacesContext().getELContext());
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            return null;
-        }
+        return (String) getStateHelper().eval(PropertyKeys.var);
     }
 
     public void setVar(String var) {
-        this.var = var;
+        getStateHelper().put(PropertyKeys.var, var);
     }
 
     public Object getItemLabel() {
-        if (itemLabel != null) {
-            return itemLabel;
-        }
-        ValueExpression ve = getValueExpression("itemLabel");
-        if (ve != null) {
-            try {
-                return ve.getValue(getFacesContext().getELContext());
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            return null;
-        }
+        return getStateHelper().eval(PropertyKeys.itemLabel);
     }
 
     public void setItemLabel(Object itemLabel) {
-        this.itemLabel = itemLabel;
+        getStateHelper().put(PropertyKeys.itemLabel, itemLabel);
     }
 
     public Object getItemValue() {
-        if (itemValue != null) {
-            return itemValue;
-        }
-        ValueExpression ve = getValueExpression("itemValue");
-        if (ve != null) {
-            try {
-                return ve.getValue(getFacesContext().getELContext());
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            return null;
-        }
+        return getStateHelper().eval(PropertyKeys.itemValue);
     }
 
     public void setItemValue(Object itemValue) {
-        this.itemValue = itemValue;
+        getStateHelper().put(PropertyKeys.itemValue, itemValue);
     }
 
-    protected Boolean getBooleanValue(String name, boolean defaultValue) {
-        ValueExpression ve = getValueExpression(name);
-        if (ve != null) {
-            try {
-                return Boolean.valueOf(!Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext())));
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            return Boolean.valueOf(defaultValue);
-        }
+    public boolean isItemDisabled() {
+        return Boolean.TRUE.equals(getStateHelper().eval(
+                PropertyKeys.itemDisabled, Boolean.FALSE));
     }
 
-    public Boolean getItemDisabled() {
-        if (itemDisabled != null) {
-            return itemDisabled;
-        }
-        return getBooleanValue("itemDisabled", false);
+    @SuppressWarnings("boxing")
+    public void setItemDisabled(boolean itemDisabled) {
+        getStateHelper().put(PropertyKeys.itemDisabled, itemDisabled);
     }
 
-    public void setItemDisabled(Boolean itemDisabled) {
-        this.itemDisabled = itemDisabled;
+    public boolean isItemRendered() {
+        return Boolean.TRUE.equals(getStateHelper().eval(
+                PropertyKeys.itemRendered, Boolean.FALSE));
     }
 
-    public Boolean getItemRendered() {
-        if (itemRendered != null) {
-            return itemRendered;
-        }
-        return getBooleanValue("itemRendered", true);
+    @SuppressWarnings("boxing")
+    public void setItemRendered(boolean itemRendered) {
+        getStateHelper().put(PropertyKeys.itemRendered, itemRendered);
     }
 
-    public void setItemRendered(Boolean itemRendered) {
-        this.itemRendered = itemRendered;
+    public boolean isItemEscaped() {
+        return Boolean.TRUE.equals(getStateHelper().eval(
+                PropertyKeys.itemEscaped, Boolean.FALSE));
+    }
+
+    @SuppressWarnings("boxing")
+    public void setItemEscaped(boolean itemEscaped) {
+        getStateHelper().put(PropertyKeys.itemEscaped, itemEscaped);
     }
 
     public String getOrdering() {
-        if (ordering != null) {
-            return ordering;
-        }
-        ValueExpression ve = getValueExpression("ordering");
-        if (ve != null) {
-            try {
-                return (String) ve.getValue(getFacesContext().getELContext());
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            // default value
-            return null;
-        }
-    }
-
-    public Boolean getCaseSensitive() {
-        if (caseSensitive != null) {
-            return caseSensitive;
-        }
-        return getBooleanValue("caseSensitive", false);
-    }
-
-    public void setCaseSensitive(Boolean caseSensitive) {
-        this.caseSensitive = caseSensitive;
+        return (String) getStateHelper().eval(PropertyKeys.ordering);
     }
 
     public void setOrdering(String ordering) {
-        this.ordering = ordering;
+        getStateHelper().put(PropertyKeys.ordering, ordering);
+    }
+
+    public boolean isCaseSensitive() {
+        return Boolean.TRUE.equals(getStateHelper().eval(
+                PropertyKeys.caseSensitive));
+    }
+
+    @SuppressWarnings("boxing")
+    public void setCaseSensitive(boolean caseSensitive) {
+        getStateHelper().put(PropertyKeys.caseSensitive, caseSensitive);
     }
 
     @Override
@@ -193,8 +124,8 @@ public class UISelectItems extends javax.faces.component.UISelectItems
             }
 
             @Override
-            protected Boolean getCaseSensitive() {
-                return UISelectItems.this.getCaseSensitive();
+            protected boolean isCaseSensitive() {
+                return UISelectItems.this.isCaseSensitive();
             }
 
             @Override
@@ -206,43 +137,14 @@ public class UISelectItems extends javax.faces.component.UISelectItems
     }
 
     protected SelectItem createSelectItem() {
-        Boolean rendered = getItemRendered();
-        if (!Boolean.TRUE.equals(rendered)) {
+        if (!isItemRendered()) {
             return null;
         }
         Object value = getItemValue();
         Object labelObject = getItemLabel();
         String label = labelObject != null ? labelObject.toString() : null;
-        Boolean disabled = getItemDisabled();
-        return new SelectItem(value, label, null,
-                !Boolean.FALSE.equals(disabled));
-    }
-
-    @Override
-    public Object saveState(FacesContext context) {
-        Object[] values = new Object[8];
-        values[0] = super.saveState(context);
-        values[1] = var;
-        values[2] = itemLabel;
-        values[3] = itemValue;
-        values[4] = itemDisabled;
-        values[5] = itemRendered;
-        values[6] = ordering;
-        values[7] = caseSensitive;
-        return values;
-    }
-
-    @Override
-    public void restoreState(FacesContext context, Object state) {
-        Object[] values = (Object[]) state;
-        super.restoreState(context, values[0]);
-        var = (String) values[1];
-        itemLabel = values[2];
-        itemValue = values[3];
-        itemDisabled = (Boolean) values[4];
-        itemRendered = (Boolean) values[5];
-        ordering = (String) values[6];
-        caseSensitive = (Boolean) values[7];
+        return new SelectItem(value, label, null, isItemDisabled(),
+                isItemEscaped());
     }
 
     /**

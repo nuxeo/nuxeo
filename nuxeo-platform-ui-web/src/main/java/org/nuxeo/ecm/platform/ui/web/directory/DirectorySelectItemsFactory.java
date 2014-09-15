@@ -115,7 +115,7 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
             }
             DirectorySelectItemFactory.closeDirectorySession(directorySession);
             String ordering = getOrdering();
-            Boolean caseSensitive = getCaseSensitive();
+            Boolean caseSensitive = isCaseSensitive();
             if (ordering != null && !"".equals(ordering)) {
                 Collections.sort(items, new SelectItemComparator(ordering,
                         caseSensitive));
@@ -155,7 +155,7 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
             }
             DirectorySelectItemFactory.closeDirectorySession(directorySession);
             String ordering = getOrdering();
-            Boolean caseSensitive = getCaseSensitive();
+            Boolean caseSensitive = isCaseSensitive();
             if (ordering != null && !"".equals(ordering)) {
                 Collections.sort(items, new SelectItemComparator(ordering,
                         caseSensitive));

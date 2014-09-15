@@ -19,10 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.directory;
 
-import javax.el.ELException;
-import javax.el.ValueExpression;
-import javax.faces.FacesException;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 import org.nuxeo.ecm.platform.ui.web.component.UISelectItem;
@@ -36,29 +32,18 @@ public class UIDirectorySelectItem extends UISelectItem {
 
     public static final String COMPONENT_TYPE = UIDirectorySelectItem.class.getName();
 
-    protected String directoryName;
+    enum PropertyKeys {
+        directoryName
+    }
 
     // setters & getters
 
     public String getDirectoryName() {
-        if (directoryName != null) {
-            return directoryName;
-        }
-        ValueExpression ve = getValueExpression("directoryName");
-        if (ve != null) {
-            try {
-                return (String) ve.getValue(getFacesContext().getELContext());
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            // default value
-            return null;
-        }
+        return (String) getStateHelper().eval(PropertyKeys.directoryName);
     }
 
     public void setDirectoryName(String directoryName) {
-        this.directoryName = directoryName;
+        getStateHelper().put(PropertyKeys.directoryName, directoryName);
     }
 
     @Override
@@ -81,21 +66,6 @@ public class UIDirectorySelectItem extends UISelectItem {
                 return UIDirectorySelectItem.this.getDirectoryName();
             }
         }.createSelectItem(value);
-    }
-
-    @Override
-    public Object saveState(FacesContext context) {
-        Object[] values = new Object[2];
-        values[0] = super.saveState(context);
-        values[1] = directoryName;
-        return values;
-    }
-
-    @Override
-    public void restoreState(FacesContext context, Object state) {
-        Object[] values = (Object[]) state;
-        super.restoreState(context, values[0]);
-        directoryName = (String) values[1];
     }
 
 }

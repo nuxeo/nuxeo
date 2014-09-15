@@ -15,10 +15,6 @@
  */
 package org.nuxeo.ecm.platform.ui.web.component;
 
-import javax.el.ELException;
-import javax.el.ValueExpression;
-import javax.faces.FacesException;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 /**
@@ -33,26 +29,26 @@ public class UISelectItem extends javax.faces.component.UISelectItem {
 
     public static final String COMPONENT_TYPE = UISelectItem.class.getName();
 
-    protected String var;
+    enum PropertyKeys {
+        var, itemRendered,
+    }
 
     public String getVar() {
-        if (var != null) {
-            return var;
-        }
-        ValueExpression ve = getValueExpression("var");
-        if (ve != null) {
-            try {
-                return (String) ve.getValue(getFacesContext().getELContext());
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            return null;
-        }
+        return (String) getStateHelper().eval(PropertyKeys.var);
     }
 
     public void setVar(String var) {
-        this.var = var;
+        getStateHelper().put(PropertyKeys.var, var);
+    }
+
+    @SuppressWarnings("boxing")
+    public boolean isItemRendered() {
+        return (Boolean) getStateHelper().eval(PropertyKeys.itemRendered, false);
+    }
+
+    @SuppressWarnings("boxing")
+    public void setItemRendered(boolean itemRendered) {
+        getStateHelper().put(PropertyKeys.itemRendered, itemRendered);
     }
 
     @Override
@@ -74,25 +70,14 @@ public class UISelectItem extends javax.faces.component.UISelectItem {
     }
 
     protected SelectItem createSelectItem() {
+        if (!isItemRendered()) {
+            return null;
+        }
         Object value = getItemValue();
         Object labelObject = getItemLabel();
         String label = labelObject != null ? labelObject.toString() : null;
-        return new SelectItem(value, label, null, false);
-    }
-
-    @Override
-    public Object saveState(FacesContext context) {
-        Object[] values = new Object[2];
-        values[0] = super.saveState(context);
-        values[1] = var;
-        return values;
-    }
-
-    @Override
-    public void restoreState(FacesContext context, Object state) {
-        Object[] values = (Object[]) state;
-        super.restoreState(context, values[0]);
-        var = (String) values[1];
+        return new SelectItem(value, label, null, isItemDisabled(),
+                isItemEscaped());
     }
 
 }

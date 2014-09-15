@@ -43,7 +43,7 @@ public abstract class SelectItemsFactory extends SelectItemFactory {
 
     protected abstract String getOrdering();
 
-    protected abstract Boolean getCaseSensitive();
+    protected abstract boolean isCaseSensitive();
 
     @SuppressWarnings({ "unchecked", "rawtypes", "boxing" })
     public SelectItem[] createSelectItems(Object value) {
@@ -88,7 +88,7 @@ public abstract class SelectItemsFactory extends SelectItemFactory {
             }
 
             String ordering = getOrdering();
-            Boolean caseSensitive = getCaseSensitive();
+            Boolean caseSensitive = isCaseSensitive();
             if (ordering != null && !"".equals(ordering)) {
                 Collections.sort(items, new SelectItemComparator(ordering,
                         caseSensitive));

@@ -19,10 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.directory;
 
-import javax.el.ELException;
-import javax.el.ValueExpression;
-import javax.faces.FacesException;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 import org.nuxeo.ecm.platform.ui.web.component.UISelectItems;
@@ -36,77 +32,45 @@ public class UIDirectorySelectItems extends UISelectItems {
 
     public static final String COMPONENT_TYPE = UIDirectorySelectItems.class.getName();
 
-    protected String directoryName;
-
-    protected SelectItem[] allValues;
-
-    protected Boolean displayAll;
-
-    protected Boolean displayObsoleteEntries;
+    enum PropertyKeys {
+        directoryName, allValues, displayAll, displayObsoleteEntries
+    }
 
     // setters & getters
 
     public String getDirectoryName() {
-        if (directoryName != null) {
-            return directoryName;
-        }
-        ValueExpression ve = getValueExpression("directoryName");
-        if (ve != null) {
-            try {
-                return (String) ve.getValue(getFacesContext().getELContext());
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            // default value
-            return null;
-        }
+        return (String) getStateHelper().eval(PropertyKeys.directoryName);
     }
 
     public void setDirectoryName(String directoryName) {
-        this.directoryName = directoryName;
+        getStateHelper().put(PropertyKeys.directoryName, directoryName);
+    }
+
+    public SelectItem[] getAllValues() {
+        return (SelectItem[]) getStateHelper().eval(PropertyKeys.allValues);
+    }
+
+    public void setAllValues(SelectItem[] allValues) {
+        getStateHelper().put(PropertyKeys.allValues, allValues);
     }
 
     public Boolean getDisplayAll() {
-        if (displayAll != null) {
-            return displayAll;
-        }
-        ValueExpression ve = getValueExpression("displayAll");
-        if (ve != null) {
-            try {
-                return Boolean.valueOf(!Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext())));
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            // default value
-            return Boolean.TRUE;
-        }
+        return (Boolean) getStateHelper().eval(PropertyKeys.displayAll,
+                Boolean.TRUE);
     }
 
     public void setDisplayAll(Boolean displayAll) {
-        this.displayAll = displayAll;
+        getStateHelper().put(PropertyKeys.displayAll, displayAll);
     }
 
     public Boolean getDisplayObsoleteEntries() {
-        if (displayObsoleteEntries != null) {
-            return displayObsoleteEntries;
-        }
-        ValueExpression ve = getValueExpression("displayObsoleteEntries");
-        if (ve != null) {
-            try {
-                return Boolean.valueOf(!Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext())));
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            // default value
-            return Boolean.FALSE;
-        }
+        return (Boolean) getStateHelper().eval(
+                PropertyKeys.displayObsoleteEntries, Boolean.FALSE);
     }
 
     public void setDisplayObsoleteEntries(Boolean displayObsoleteEntries) {
-        this.displayObsoleteEntries = displayObsoleteEntries;
+        getStateHelper().put(PropertyKeys.displayObsoleteEntries,
+                displayObsoleteEntries);
     }
 
     @Override
@@ -130,8 +94,8 @@ public class UIDirectorySelectItems extends UISelectItems {
             }
 
             @Override
-            protected Boolean getCaseSensitive() {
-                return UIDirectorySelectItems.this.getCaseSensitive();
+            protected boolean isCaseSensitive() {
+                return UIDirectorySelectItems.this.isCaseSensitive();
             }
 
             @Override
@@ -147,35 +111,12 @@ public class UIDirectorySelectItems extends UISelectItems {
         };
 
         if (Boolean.TRUE.equals(showAll)) {
-            if (allValues == null) {
-                allValues = f.createAllSelectItems();
-            }
-            return allValues;
+            setAllValues(f.createAllSelectItems());
+            return getAllValues();
         } else {
             Object value = super.getValue();
             return f.createSelectItems(value);
         }
-    }
-
-    @Override
-    public Object saveState(FacesContext context) {
-        Object[] values = new Object[5];
-        values[0] = super.saveState(context);
-        values[1] = directoryName;
-        values[2] = displayAll;
-        values[3] = allValues;
-        values[4] = displayObsoleteEntries;
-        return values;
-    }
-
-    @Override
-    public void restoreState(FacesContext context, Object state) {
-        Object[] values = (Object[]) state;
-        super.restoreState(context, values[0]);
-        directoryName = (String) values[1];
-        displayAll = (Boolean) values[2];
-        allValues = (SelectItem[]) values[3];
-        displayObsoleteEntries = (Boolean) values[4];
     }
 
 }

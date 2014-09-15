@@ -421,14 +421,25 @@ public final class FaceletHandlerHelper {
         return attrs;
     }
 
-    public TagAttributes getTagAttributes(WidgetSelectOption selectOption) {
+    /**
+     * @since 5.9.6
+     */
+    public TagAttributes getTagAttributes(WidgetSelectOption selectOption,
+            Map<String, Serializable> additionalProps) {
         Map<String, Serializable> props = getSelectOptionProperties(selectOption);
+        if (additionalProps != null) {
+            props.putAll(additionalProps);
+        }
         List<TagAttribute> attrs = getTagAttributes(props, null, false, null,
                 null, null);
         if (attrs == null) {
             attrs = Collections.emptyList();
         }
         return getTagAttributes(attrs);
+    }
+
+    public TagAttributes getTagAttributes(WidgetSelectOption selectOption) {
+        return getTagAttributes(selectOption, null);
     }
 
     public Map<String, Serializable> getSelectOptionProperties(
