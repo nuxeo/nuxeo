@@ -82,6 +82,7 @@ public class SuggestOperation {
             suggestionJSON.put(
                     "icon",
                     suggestion.getIconURL());
+            suggestionJSON.put("url", suggestion.getObjectUrl());
 
             result.add(suggestionJSON);
         }

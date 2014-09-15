@@ -16,12 +16,19 @@
  */
 package org.nuxeo.ecm.platform.suggestbox.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Suggest to navigate to a specific group profile.
  */
 public class GroupSuggestion extends Suggestion {
 
     private static final long serialVersionUID = 1L;
+
+    private static final String PREFIX = "group";
 
     protected final String groupId;
 
@@ -36,7 +43,9 @@ public class GroupSuggestion extends Suggestion {
 
     @Override
     public String getObjectUrl() {
-        // TODO Generate the url to access the group page
-        return null;
+        List<String> items = new ArrayList<String>();
+        items.add(PREFIX);
+        items.add(groupId);
+        return StringUtils.join(items, "/");
     }
 }
