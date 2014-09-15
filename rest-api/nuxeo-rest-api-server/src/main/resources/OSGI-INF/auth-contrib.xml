@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.restapi.server.auth.config">
+<!--
+Setup a Basic Auth plugin for /automation paths that will always send 401 on authentication failures
+-->
+
+  <require>org.nuxeo.ecm.automation.server.auth.config</require>
+
+  <extension point="openUrl" target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
+    <openUrl name="RestApiDoc">
+      <grantPattern>/nuxeo/api/v[0-9]+/doc/.*</grantPattern>
+    </openUrl>
+    <openUrl name="RestApiDocJson">
+        <grantPattern>/nuxeo/site/api/v[0-9]+/doc/.*</grantPattern>
+    </openUrl>
+    <openUrl name="RestApiDocSiteSkin">
+        <grantPattern>/nuxeo/site/skin/api/.*</grantPattern>
+    </openUrl>
+  </extension>
+
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="specificChains">
+
+    <specificAuthenticationChain name="RestAPI">
+        <urlPatterns>
+            <url>(.*)/api/v.*</url>
+        </urlPatterns>
+
+        <replacementChain>
+            <plugin>AUTOMATION_BASIC_AUTH</plugin>
+            <plugin>TOKEN_AUTH</plugin>
+            <plugin>ANONYMOUS_AUTH</plugin>
+        </replacementChain>
+    </specificAuthenticationChain>
+
+  </extension>
+</component>
