@@ -78,7 +78,14 @@
 
 <c:if test="#{widget.mode == 'tab_content'}">
   <c:if test="#{not empty action.link}">
-    <ui:include src="#{action.link}" />
+    <c:choose>
+      <c:when test="#{action.link.startsWith('/')}">
+        <ui:include src="#{action.link}" />
+      </c:when>
+      <c:otherwise>
+        <ui:include src="/#{action.link}" />
+      </c:otherwise>
+    </c:choose>
   </c:if>
 </c:if>
 
