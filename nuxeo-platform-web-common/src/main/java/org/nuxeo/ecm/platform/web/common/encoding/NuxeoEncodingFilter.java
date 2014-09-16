@@ -25,6 +25,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
@@ -59,10 +60,15 @@ public class NuxeoEncodingFilter implements Filter {
                     log.error(e, e);
                 }
             }
+            String requestURI = ((HttpServletRequest)request).getRequestURI();
+            String gcfMeta = ",chrome=1";
+            if (requestURI != null && requestURI.contains("login.jsp")) {
+                gcfMeta = "";
+            }
             if (response instanceof HttpServletResponse
                     && !((HttpServletResponse) response).containsHeader("X-UA-Compatible")) {
                 ((HttpServletResponse) response).addHeader("X-UA-Compatible",
-                        "IE=Edge,chrome=1");
+                        "IE=Edge" + gcfMeta);
             }
         }
 
