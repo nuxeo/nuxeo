@@ -5,6 +5,7 @@
     point="actions">
 
     <action id="AuthorizedApplication" link="/user_center_fragment.xhtml"
+      type="home_rest_document_link"
       label="user.center.authorizedApplication"
       order="50" icon="/icons/authorized_apps.png">
       <category>USER_CENTER</category>
