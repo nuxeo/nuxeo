@@ -107,11 +107,14 @@ public class PooledDataSourceFactory implements
             String password = refAttribute(ref, "password", "");
             String name = refAttribute(ref, "driverClassName", null);
             String url = refAttribute(ref, "url", null);
+            boolean commitBeforeAutocommit = Boolean.valueOf(
+                    refAttribute(ref, "commitBeforeAutocommit", "true")).booleanValue();
             JDBCDriverMCF factory = new JDBCDriverMCF();
             factory.setDriver(name);
             factory.setUserName(user);
             factory.setPassword(password);
             factory.setConnectionURL(url);
+            factory.setCommitBeforeAutocommit(commitBeforeAutocommit);
             return factory;
         }
         throw new IllegalArgumentException("unsupported class " + className);
