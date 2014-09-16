@@ -181,6 +181,20 @@
       <groupId>org.nuxeo.ecm.opensocial</groupId>
       <artifactId>nuxeo-webengine-gadgets</artifactId>
     </dependency>
+
+    <!-- Faceted Search -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-faceted-search-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-faceted-search-jsf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-faceted-search-dm</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
