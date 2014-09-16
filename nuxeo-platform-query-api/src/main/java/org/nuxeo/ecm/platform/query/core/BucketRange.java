@@ -26,16 +26,16 @@ public final class BucketRange implements Bucket {
 
     private final String key;
     private final long docCount;
-    private final Long from;
-    private final Long to;
+    private final Double from;
+    private final Double to;
 
-    public BucketRange(String key, Long from, Long to, long docCount) {
+    public BucketRange(String key, Number from, Number to, long docCount) {
         if (key == null) {
             throw new IllegalArgumentException("key is null");
         };
         this.key = key;
-        this.from = from;
-        this.to = to;
+        this.from = from.doubleValue();
+        this.to = to.doubleValue();
         this.docCount = docCount;
     }
 
@@ -52,20 +52,20 @@ public final class BucketRange implements Bucket {
     /**
      * @return null if there are no minimal limit
      */
-    public Long getFrom() {
+    public Double getFrom() {
         return from;
     }
 
     /**
      * @return null if there are no max limit
      */
-    public Long getTo() {
+    public Double getTo() {
         return to;
     }
 
     @Override
     public String toString() {
-        return String.format("BucketRange(%s, %d, %d, %d)", key, docCount, from,
+        return String.format("BucketRange(%s, %d, %.2f, %.2f)", key, docCount, from,
                         to);
     }
 }

@@ -34,11 +34,20 @@ public class AggregateRangeDescriptor implements AggregateRangeDefinition,
     @XNode("@key")
     public String key;
 
+    public AggregateRangeDescriptor() {
+    }
+
     @XNode("@from")
-    public String from;
+    public Double from;
 
     @XNode("@to")
-    public String to;
+    public Double to;
+
+    public AggregateRangeDescriptor(String key, Double from, Double to) {
+        this.key = key;
+        this.from = from;
+        this.to = to;
+    }
 
     @Override
     public String getKey() {
@@ -46,12 +55,12 @@ public class AggregateRangeDescriptor implements AggregateRangeDefinition,
     }
 
     @Override
-    public String getFrom() {
+    public Double getFrom() {
         return from;
     }
 
     @Override
-    public String getTo() {
+    public Double getTo() {
         return to;
     }
 
@@ -61,7 +70,7 @@ public class AggregateRangeDescriptor implements AggregateRangeDefinition,
     }
 
     @Override
-    public void setFrom(String from) {
+    public void setFrom(Double from) {
         this.from = from;
     }
 
@@ -72,17 +81,13 @@ public class AggregateRangeDescriptor implements AggregateRangeDefinition,
     }
 
     @Override
-    public void setTo(String to) {
+    public void setTo(Double to) {
         this.to = to;
     }
 
     @Override
     public AggregateRangeDefinition clone() {
-        AggregateRangeDescriptor clone = new AggregateRangeDescriptor();
-        clone.setKey(key);
-        clone.setFrom(from);
-        clone.setTo(to);
+        AggregateRangeDescriptor clone = new AggregateRangeDescriptor(key, from, to);
         return clone;
     }
-
 }

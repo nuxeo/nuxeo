@@ -31,6 +31,8 @@ public interface AggregateQuery {
 
     Map<String, String> getProperties();
 
+    List<AggregateRangeDefinition> getRanges();
+
     List<String> getSelection();
 
     void setSelection(List<String> selection);

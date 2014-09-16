@@ -30,9 +30,9 @@ public class AggregateImpl implements Aggregate {
 
     protected final AggregateQuery query;
 
-    protected final List<Bucket> buckets;
+    protected final List<? extends Bucket> buckets;
 
-    public AggregateImpl(AggregateQuery query, List<Bucket> buckets) {
+    public AggregateImpl(AggregateQuery query, List<? extends Bucket> buckets) {
         if (query == null) {
             throw new IllegalArgumentException("query is null");
         }
@@ -54,7 +54,7 @@ public class AggregateImpl implements Aggregate {
     }
 
     @Override
-    public List<Bucket> getBuckets() {
+    public List<? extends Bucket> getBuckets() {
         return buckets;
     }
 

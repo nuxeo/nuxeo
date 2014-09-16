@@ -107,10 +107,13 @@ public class TestPageProviderAggregates extends SQLRepositoryTestCase {
         assertNotNull(source_agg.getProperties());
         assertEquals(2, source_agg.getProperties().size());
         assertEquals(0, subject_agg.getProperties().size());
+        assertEquals(0, source_agg.getRanges().size());
 
         assertEquals("size_agg", size_agg.getId());
         assertEquals(3, size_agg.getRanges().size());
-        assertEquals("foo", size_agg.getRanges().get(0));
+        assertEquals("AggregateRangeDescriptor(small, null, 1024.0)", size_agg.getRanges().get(0).toString());
+        assertEquals("AggregateRangeDescriptor(medium, 1024.0, 4096.0)", size_agg.getRanges().get(1).toString());
+        assertEquals("AggregateRangeDescriptor(big, 4096.0, null)", size_agg.getRanges().get(2).toString());
     }
 
     @Test

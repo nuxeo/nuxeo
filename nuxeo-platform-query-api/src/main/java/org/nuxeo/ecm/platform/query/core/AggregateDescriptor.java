@@ -90,6 +90,11 @@ public class AggregateDescriptor implements AggregateDefinition {
     }
 
     @Override
+    public void setRanges(List<AggregateRangeDefinition> ranges) {
+        aggregateRanges = (List<AggregateRangeDescriptor>) (List<?>) ranges;
+    }
+
+    @Override
     public String getDocumentField() {
         return parameter;
     }
@@ -122,6 +127,10 @@ public class AggregateDescriptor implements AggregateDefinition {
             clone.aggregateProperties = new PropertiesDescriptor();
             clone.aggregateProperties.properties
                     .putAll(aggregateProperties.properties);
+        }
+        if (aggregateRanges != null) {
+            clone.aggregateRanges = new ArrayList<AggregateRangeDescriptor>(aggregateRanges.size());
+            clone.aggregateRanges.addAll(aggregateRanges);
         }
         return clone;
     }

@@ -125,6 +125,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements
         return pageProvider;
     }
 
+    @Deprecated
     @Override
     public PageProvider<?> getPageProvider(String name,
             PageProviderDefinition desc, List<SortInfo> sortInfos,

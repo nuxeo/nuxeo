@@ -39,6 +39,8 @@ public interface AggregateDefinition {
 
     List<AggregateRangeDefinition> getRanges();
 
+    void setRanges(List<AggregateRangeDefinition> ranges);
+
     /**
      * Get the document aggregator field
      */

@@ -24,15 +24,16 @@ public interface AggregateRangeDefinition {
 
     String getKey();
 
-    String getFrom();
+    Double getFrom();
 
-    String getTo();
+    Double getTo();
 
     void setKey(String key);
 
-    void setFrom(String from);
+    void setFrom(Double from);
 
-    void setTo(String to);
+    void setTo(Double from);
+
 
     AggregateRangeDefinition clone();
 }

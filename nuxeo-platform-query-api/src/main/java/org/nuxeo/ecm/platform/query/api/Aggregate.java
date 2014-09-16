@@ -26,7 +26,7 @@ public interface Aggregate {
 
     String getType();
 
-    List<Bucket> getBuckets();
+    List<? extends Bucket> getBuckets();
 
     AggregateQuery getQuery();
 }
