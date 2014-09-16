@@ -154,33 +154,25 @@ public class ActionRegistry implements Serializable {
     }
 
     /**
-     * Helper for migration of specific actions.
+     * Displays specific help messages for migration of actions.
      *
      * @since 5.9.6
      */
     protected boolean applyCustomCompatibility(String compatType, Action action) {
-        if ("admin_rest_document_link".equals(compatType)) {
+        // 5.9.6 BBB: home/admin tab actions migrated to widgets
+        if ("admin_rest_document_link".equals(compatType)
+                || "home_rest_document_link".equals(compatType)) {
             boolean applied = false;
             String link = action.getLink();
             if (link != null && !link.startsWith("/")) {
                 action.setLink("/" + link);
                 applied = true;
             }
-            Map<String, Serializable> props = action.getProperties();
-            if (props == null) {
-                props = new HashMap<>();
-            }
-            if (!props.containsKey("view")) {
-                props.put("view", "view_admin");
-                action.setProperties(props);
-                applied = true;
-            }
             if (applied) {
                 log.warn(String.format(
-                        "Applied compatibility to action '%s': its configuration "
-                                + "should be changed, make sure the link references an "
-                                + "absolute path, and set the property 'view' to 'view_admin'",
-                        action.getId()));
+                        "Applied compatibility to action '%s', its configuration "
+                                + "should be reviewed: make sure the link references an "
+                                + "absolute path", action.getId()));
                 return true;
             }
         }
