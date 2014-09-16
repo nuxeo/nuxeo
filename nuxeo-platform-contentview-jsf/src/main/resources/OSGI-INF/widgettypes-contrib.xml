@@ -327,7 +327,6 @@
             <property name="itemLabel">#{item.key}</property>
             <property name="itemValue">#{item.key}</property>
             <property name="itemCount">(#{item.docCount})</property>
-            <property name="ordering">label</property>
             <property name="layout">pageDirection</property>
             <property name="notDisplayDefaultOption">true</property>
           </defaultValues>
@@ -371,7 +370,6 @@
             <property name="itemLabel">#{item.key}</property>
             <property name="itemValue">#{item.key}</property>
             <property name="itemCount">(#{item.docCount})</property>
-            <property name="ordering">label</property>
           </defaultValues>
           <layouts mode="edit">
             <layout name="selectManyListboxAggregate_widget_type_properties_edit">
@@ -412,7 +410,6 @@
             <property name="var">item</property>
             <property name="itemValue">#{item.key}</property>
             <property name="itemCount">(#{item.docCount})</property>
-            <property name="ordering">label</property>
           </defaultValues>
           <layouts mode="edit">
             <layout name="selectManyListboxDirectoryAggregate_widget_type_properties_edit">
@@ -453,7 +450,6 @@
             <property name="var">item</property>
             <property name="itemValue">#{item.key}</property>
             <property name="itemCount">(#{item.docCount})</property>
-            <property name="ordering">label</property>
             <property name="notDisplayDefaultOption">true</property>
             <property name="layout">pageDirection</property>
           </defaultValues>

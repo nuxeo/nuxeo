@@ -70,30 +70,12 @@ public abstract class AbstractSelectWidgetTypeHandler extends
     protected Map<String, Serializable> getOptionProperties(FaceletContext ctx,
             Widget widget, WidgetSelectOption selectOption) {
         Map<String, Serializable> props = new HashMap<>();
-        addPropertyMapping(widget, props,
-                SelectPropertyMappings.itemLabelPrefix);
-        addPropertyMapping(widget, props,
-                SelectPropertyMappings.itemLabelPrefixSeparator);
-        addPropertyMapping(widget, props,
-                SelectPropertyMappings.itemLabelSuffix);
-        addPropertyMapping(widget, props,
-                SelectPropertyMappings.itemLabelSuffixSeparator);
-        addPropertyMapping(widget, props, SelectPropertyMappings.ordering);
-        addPropertyMapping(widget, props, SelectPropertyMappings.caseSensitive);
-        addPropertyMapping(widget, props,
-                SelectPropertyMappings.notDisplayDefaultOption);
-        addPropertyMapping(widget, props,
-                SelectPropertyMappings.displayIdAndLabel);
-        addPropertyMapping(widget, props,
-                SelectPropertyMappings.displayIdAndLabelSeparator);
-        return props;
-    }
-
-    protected void addPropertyMapping(Widget widget,
-            Map<String, Serializable> props, SelectPropertyMappings mapping) {
-        if (widget.getProperties().containsKey(mapping.name())) {
-            props.put(mapping.name(), widget.getProperty(mapping.name()));
+        for (SelectPropertyMappings mapping : SelectPropertyMappings.values()) {
+            if (widget.getProperties().containsKey(mapping.name())) {
+                props.put(mapping.name(), widget.getProperty(mapping.name()));
+            }
         }
+        return props;
     }
 
     protected String getOptionComponentType(WidgetSelectOption selectOption) {
