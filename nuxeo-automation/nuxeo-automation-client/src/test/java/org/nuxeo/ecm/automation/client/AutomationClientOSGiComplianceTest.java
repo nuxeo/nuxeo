@@ -99,16 +99,5 @@ public class AutomationClientOSGiComplianceTest {
         client = factory.getClient(new URL(
                 "http://localhost:8080/nuxeo/site/automation"));
         client.registerPojoMarshaller(acBundle.getClass());
-
-        // Reset
-        client.shutdown();
-        // Test request interceptors
-        client = factory.getClient(new URL(
-                "http://localhost:8080/nuxeo/site/automation"));
-        RequestInterceptor requestInterceptor = new BasicAuthInterceptor
-                ("Administrator", "Administrator");
-        client.setRequestInterceptor(requestInterceptor);
-        Session session = client.getSession();
-        Assert.assertNotNull(session);
     }
 }
