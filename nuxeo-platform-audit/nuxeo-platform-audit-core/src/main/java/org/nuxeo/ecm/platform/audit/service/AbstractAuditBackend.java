@@ -327,7 +327,7 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         return ExtendedInfoImpl.createExtendedInfo(value);
     }
 
-    protected long syncLogCreationEntries(LogEntryProvider provider,
+    protected long syncLogCreationEntries(BaseLogEntryProvider provider,
             String repoId, String path, Boolean recurs) {
 
         provider.removeEntries(DocumentEventTypes.DOCUMENT_CREATED, path);
@@ -347,7 +347,7 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         }
     }
 
-    protected long doSyncNode(LogEntryProvider provider, CoreSession session,
+    protected long doSyncNode(BaseLogEntryProvider provider, CoreSession session,
             DocumentModel node, boolean recurs) {
 
         long nbSyncedEntries = 1;

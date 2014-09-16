@@ -92,7 +92,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements
     }
 
     protected void addLogEntries(EntityManager em, List<LogEntry> entries) {
-        EMLogEntryProvider.createProvider(em).addLogEntries(entries);
+        LogEntryProvider.createProvider(em).addLogEntries(entries);
     }
 
     @Override
@@ -110,7 +110,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements
     }
 
     protected List<LogEntry> getLogEntriesFor(EntityManager em, String uuid) {
-        return EMLogEntryProvider.createProvider(em).getLogEntriesFor(uuid);
+        return LogEntryProvider.createProvider(em).getLogEntriesFor(uuid);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements
 
     protected List<LogEntry> getLogEntriesFor(EntityManager em, String uuid,
             Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
-        return EMLogEntryProvider.createProvider(em).getLogEntriesFor(uuid,
+        return LogEntryProvider.createProvider(em).getLogEntriesFor(uuid,
                 filterMap, doDefaultSort);
     }
 
@@ -151,7 +151,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements
     }
 
     protected LogEntry getLogEntryByID(EntityManager em, long id) {
-        return EMLogEntryProvider.createProvider(em).getLogEntryByID(id);
+        return LogEntryProvider.createProvider(em).getLogEntryByID(id);
     }
 
     @Override
@@ -172,7 +172,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements
 
     protected List<LogEntry> nativeQueryLogs(EntityManager em,
             String whereClause, int pageNb, int pageSize) {
-        return EMLogEntryProvider.createProvider(em).nativeQueryLogs(
+        return LogEntryProvider.createProvider(em).nativeQueryLogs(
                 whereClause, pageNb, pageSize);
     }
 
@@ -193,7 +193,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements
 
     protected List<?> nativeQuery(EntityManager em, String query, int pageNb,
             int pageSize) {
-        return EMLogEntryProvider.createProvider(em).nativeQuery(query, pageNb,
+        return LogEntryProvider.createProvider(em).nativeQuery(query, pageNb,
                 pageSize);
     }
 
@@ -216,7 +216,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements
 
     protected List<?> nativeQuery(EntityManager em, String query,
             Map<String, Object> params, int pageNb, int pageSize) {
-        return EMLogEntryProvider.createProvider(em).nativeQuery(query, params,
+        return LogEntryProvider.createProvider(em).nativeQuery(query, params,
                 pageNb, pageSize);
     }
 
@@ -237,7 +237,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements
 
     protected List<LogEntry> queryLogs(EntityManager em, String[] eventIds,
             String dateRange) {
-        return EMLogEntryProvider.createProvider(em).queryLogs(eventIds,
+        return LogEntryProvider.createProvider(em).queryLogs(eventIds,
                 dateRange);
     }
 
@@ -262,7 +262,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements
             String[] eventIds, String dateRange, String[] category,
             String path, int pageNb, int pageSize) {
         try {
-            return EMLogEntryProvider.createProvider(em).queryLogsByPage(
+            return LogEntryProvider.createProvider(em).queryLogsByPage(
                     eventIds, dateRange, category, path, pageNb, pageSize);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
@@ -289,7 +289,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements
     protected List<LogEntry> queryLogsByPage(EntityManager em,
             String[] eventIds, Date limit, String[] category, String path,
             int pageNb, int pageSize) {
-        return EMLogEntryProvider.createProvider(em).queryLogsByPage(eventIds,
+        return LogEntryProvider.createProvider(em).queryLogsByPage(eventIds,
                 limit, category, path, pageNb, pageSize);
     }
 
@@ -311,7 +311,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements
 
     protected long syncLogCreationEntries(EntityManager em, String repoId,
             String path, Boolean recurs) {
-        EMLogEntryProvider provider = EMLogEntryProvider.createProvider(em);
+        LogEntryProvider provider = LogEntryProvider.createProvider(em);
         return syncLogCreationEntries(provider, repoId, path, recurs);
     }
 
@@ -330,7 +330,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements
     }
 
     public void addLogEntry(EntityManager em, LogEntry entry) {
-        EMLogEntryProvider.createProvider(em).addLogEntry(entry);
+        LogEntryProvider.createProvider(em).addLogEntry(entry);
     }
 
     @Override
@@ -349,7 +349,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements
     }
 
     public Long getEventsCount(EntityManager em, String eventId) {
-        return EMLogEntryProvider.createProvider(em).countEventsById(eventId);
+        return LogEntryProvider.createProvider(em).countEventsById(eventId);
     }
 
     public List<String> getLoggedEventIds() {
@@ -367,7 +367,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements
     }
 
     protected List<String> getLoggedEventIds(EntityManager em) {
-        return EMLogEntryProvider.createProvider(em).findEventIds();
+        return LogEntryProvider.createProvider(em).findEventIds();
     }
 
     public void logEvent(final Event event) {

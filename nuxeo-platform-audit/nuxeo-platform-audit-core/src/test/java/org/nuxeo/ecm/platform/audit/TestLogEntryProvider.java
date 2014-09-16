@@ -40,7 +40,7 @@ import org.nuxeo.ecm.platform.audit.api.query.AuditQueryException;
 import org.nuxeo.ecm.platform.audit.api.query.DateRangeParser;
 import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
-import org.nuxeo.ecm.platform.audit.service.EMLogEntryProvider;
+import org.nuxeo.ecm.platform.audit.service.LogEntryProvider;
 
 /**
  * Test the log entries persistence
@@ -51,12 +51,12 @@ public class TestLogEntryProvider extends PersistenceTestCase {
 
     protected static final Log log = LogFactory.getLog(TestLogEntryProvider.class);
 
-    private EMLogEntryProvider providerUnderTest;
+    private LogEntryProvider providerUnderTest;
 
 
     @Override
     protected void handleAfterSetup(EntityManager entityManager) {
-        providerUnderTest = EMLogEntryProvider.createProvider(entityManager);
+        providerUnderTest = LogEntryProvider.createProvider(entityManager);
     }
 
     protected Map<String, ExtendedInfo> createExtendedInfos() {
