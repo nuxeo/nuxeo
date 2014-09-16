@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Audit ElasticSearch backend
+Bundle-SymbolicName: org.nuxeo.elasticsearch.audit;singleton:=true
+Bundle-Version: 1.0.0
+Nuxeo-Component: OSGI-INF/elasticsearch-audit-index-contrib.xml

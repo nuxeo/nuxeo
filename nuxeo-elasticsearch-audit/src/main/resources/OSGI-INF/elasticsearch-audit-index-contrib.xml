@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.audit.contrib">
+
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
+    point="elasticSearchIndex">
+
+    <elasticSearchIndex name="audit" type="entry" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+    point="backend">
+    
+    <backend class="org.nuxeo.elasticsearch.ESAuditBackend"/>
+    
+  </extension>
+  
+</component>
