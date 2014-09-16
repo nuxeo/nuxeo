@@ -12,6 +12,8 @@
  */
 package org.nuxeo.ecm.automation.client;
 
+import org.nuxeo.ecm.automation.client.jaxrs.spi.RequestInterceptor;
+
 /**
  * The connection to the automation service is done the first time you create a
  * session. To create a session you need to pass the authentication information.
@@ -29,6 +31,12 @@ package org.nuxeo.ecm.automation.client;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface AutomationClient {
+
+    /**
+     * @since 5.9.6
+     * @param interceptor
+     */
+    void setRequestInterceptor(RequestInterceptor interceptor);
 
     /**
      * Gets the automation service URL.

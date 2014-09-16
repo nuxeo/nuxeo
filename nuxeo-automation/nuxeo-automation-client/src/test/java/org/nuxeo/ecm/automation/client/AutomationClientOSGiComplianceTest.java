@@ -29,6 +29,8 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.client.jaxrs.spi.RequestInterceptor;
+import org.nuxeo.ecm.automation.client.jaxrs.spi.auth.BasicAuthInterceptor;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.ExamReactorStrategy;
@@ -97,5 +99,16 @@ public class AutomationClientOSGiComplianceTest {
         client = factory.getClient(new URL(
                 "http://localhost:8080/nuxeo/site/automation"));
         client.registerPojoMarshaller(acBundle.getClass());
+
+        // Reset
+        client.shutdown();
+        // Test request interceptors
+        client = factory.getClient(new URL(
+                "http://localhost:8080/nuxeo/site/automation"));
+        RequestInterceptor requestInterceptor = new BasicAuthInterceptor
+                ("Administrator", "Administrator");
+        client.setRequestInterceptor(requestInterceptor);
+        Session session = client.getSession();
+        Assert.assertNotNull(session);
     }
 }
