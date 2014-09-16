@@ -500,8 +500,7 @@
     <tag-name>inputDateTime</tag-name>
     <component>
       <component-type>org.richfaces.Calendar</component-type>
-      <renderer-type>
-		org.richfaces.CalendarRenderer</renderer-type>
+      <renderer-type>org.richfaces.CalendarRenderer</renderer-type>
       <handler-class>
         org.nuxeo.ecm.platform.ui.web.tag.handler.InputDateTimeTagHandler
       </handler-class>
