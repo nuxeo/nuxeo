@@ -71,6 +71,15 @@ public abstract class AbstractDirectorySelectWidgetTypeHandler extends
         for (DirectoryPropertyMappings mapping : DirectoryPropertyMappings.values()) {
             if (widget.getProperties().containsKey(mapping.name())) {
                 props.put(mapping.name(), widget.getProperty(mapping.name()));
+            } else {
+                // if selectOptions is filled on widget properties, force
+                // displayAll value to false by default
+                if (DirectoryPropertyMappings.displayAll.equals(mapping)) {
+                    if (widget.getProperties().containsKey(
+                            SelectPropertyMappings.selectOptions)) {
+                        props.put(mapping.name(), Boolean.TRUE);
+                    }
+                }
             }
         }
         return props;
