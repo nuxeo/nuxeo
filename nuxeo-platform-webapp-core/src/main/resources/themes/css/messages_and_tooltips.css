@@ -9,10 +9,13 @@ author: lkemen@nuxeo.com
 
 /* =Messages */
 .ambiance {
-  border: none;
   font-size: .75em;
   font-weight: normal;
   padding: .7em 1em }
+
+.ambiance,
+.ambiance:hover {
+  border: none }
 
 .ambiance-title {
   font-size: 1.1em;
