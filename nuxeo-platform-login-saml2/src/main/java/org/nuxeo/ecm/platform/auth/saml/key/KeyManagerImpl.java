@@ -21,7 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.opensaml.common.SAMLRuntimeException;
-import org.opensaml.xml.security.*;
+import org.opensaml.xml.security.CriteriaSet;
 import org.opensaml.xml.security.SecurityException;
 import org.opensaml.xml.security.credential.Credential;
 import org.opensaml.xml.security.credential.KeyStoreCredentialResolver;
@@ -36,8 +36,13 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 
+/**
+ * An implementation of {@link KeyManager} that uses a JKS key store.
+ */
 public class KeyManagerImpl extends DefaultComponent implements KeyManager {
 
     private static final Log log = LogFactory.getLog(KeyManagerImpl.class);
@@ -47,20 +52,25 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
     KeyDescriptor config;
 
     private KeyStore keyStore;
+
     private KeyStoreCredentialResolver credentialResolver;
+
     private Set<String> availableCredentials;
 
     @Override
     public void registerContribution(Object contribution,
-                                     String extensionPoint, ComponentInstance contributor) throws SecurityException {
+            String extensionPoint, ComponentInstance contributor)
+            throws SecurityException {
         config = (KeyDescriptor) contribution;
         setup();
     }
 
-    protected void setup() throws SecurityException {
+    private void setup() throws SecurityException {
         if (config != null) {
-            keyStore = getKeyStore(config.getKeystoreFilePath(), config.getKeystorePassword());
-            credentialResolver = new KeyStoreCredentialResolver(keyStore, config.getPasswords());
+            keyStore = getKeyStore(config.getKeystoreFilePath(),
+                    config.getKeystorePassword());
+            credentialResolver = new KeyStoreCredentialResolver(keyStore,
+                    config.getPasswords());
         } else {
             keyStore = null;
             credentialResolver = null;
@@ -68,13 +78,15 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
         }
     }
 
-    protected KeyStore getKeyStore(String path, String password)
+    private KeyStore getKeyStore(String path, String password)
             throws SecurityException {
         KeyStore ks;
         try {
             File rootKeystoreFile = new File(path);
             if (!rootKeystoreFile.exists()) {
-                throw new SecurityException("Unable to find keyStore at " + new File(".").getAbsolutePath() + File.separator + path);
+                throw new SecurityException("Unable to find keyStore at " +
+                        new File(".").getAbsolutePath() + File.separator +
+                        path);
             }
             InputStream keystoreIS = new FileInputStream(rootKeystoreFile);
             ks = java.security.KeyStore.getInstance(KEYSTORE_TYPE);
@@ -91,7 +103,8 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
 
     @Override
     public void unregisterContribution(Object contribution,
-                                       String extensionPoint, ComponentInstance contributor) throws SecurityException {
+            String extensionPoint, ComponentInstance contributor)
+            throws SecurityException {
         config = null;
         setup();
     }
@@ -121,11 +134,11 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
             }
             return availableCredentials;
         } catch (KeyStoreException e) {
-            throw new RuntimeException("Unable to load aliases from keyStore", e);
+            throw new RuntimeException("Unable to load aliases from keyStore",
+                    e);
         }
     }
 
-    @Override
     public X509Certificate getCertificate(String alias) {
         if (alias == null || alias.length() == 0) {
             return null;
@@ -163,12 +176,14 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
     }
 
     @Override
-    public Iterable<Credential> resolve(CriteriaSet criteria) throws org.opensaml.xml.security.SecurityException {
+    public Iterable<Credential> resolve(CriteriaSet criteria)
+            throws org.opensaml.xml.security.SecurityException {
         return credentialResolver.resolve(criteria);
     }
 
     @Override
-    public Credential resolveSingle(CriteriaSet criteria) throws SecurityException {
+    public Credential resolveSingle(CriteriaSet criteria)
+            throws SecurityException {
         return credentialResolver.resolveSingle(criteria);
     }
 

@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.auth.saml;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -23,11 +24,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Matchers.startsWith;
 
-import static junit.framework.Assert.assertEquals;
-
 import com.google.common.collect.ImmutableMap;
-
 import com.google.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +37,7 @@ import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
+import org.nuxeo.ecm.platform.auth.saml.binding.HTTPRedirectBinding;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -71,14 +71,15 @@ import java.util.Map;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
+@RepositoryConfig(init = DefaultRepositoryInit.class,
+        cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.directory.api",
-          "org.nuxeo.ecm.directory",
-          "org.nuxeo.ecm.directory.sql",
-          "org.nuxeo.ecm.directory.types.contrib",
-          "org.nuxeo.ecm.platform.usermanager",
-          "org.nuxeo.ecm.platform.web.common",
-          "org.nuxeo.ecm.platform.login.saml2"})
+        "org.nuxeo.ecm.directory",
+        "org.nuxeo.ecm.directory.sql",
+        "org.nuxeo.ecm.directory.types.contrib",
+        "org.nuxeo.ecm.platform.usermanager",
+        "org.nuxeo.ecm.platform.web.common",
+        "org.nuxeo.ecm.platform.login.saml2" })
 @LocalDeploy("org.nuxeo.ecm.platform.auth.saml:OSGI-INF/test-sql-directory.xml")
 public class SAMLAuthenticatorTest {
 
@@ -96,8 +97,8 @@ public class SAMLAuthenticatorTest {
         String metadata = getClass().getResource("/idp-meta.xml").toURI().getPath();
 
         Map<String, String> params = new ImmutableMap.Builder<String, String>() //
-            .put("metadata", metadata)
-            .build();
+                .put("metadata", metadata)
+                .build();
 
         samlAuth.initPlugin(params);
 
@@ -118,7 +119,7 @@ public class SAMLAuthenticatorTest {
         HttpServletResponse resp = mock(HttpServletResponse.class);
         samlAuth.handleLoginPrompt(req, resp, "/");
 
-        verify(resp).sendRedirect(startsWith("http://dummy/SSOPOST"));
+        verify(resp).sendRedirect(startsWith("http://dummy/SSORedirect"));
     }
 
     @Test
@@ -130,10 +131,11 @@ public class SAMLAuthenticatorTest {
         String loginURL = samlAuth.getSSOUrl(req, resp);
         String query = URI.create(loginURL).getQuery();
 
-        assertTrue(loginURL.startsWith("http://dummy/SSOPOST"));
-        assertTrue(query.startsWith(SAMLAuthenticationProvider.SAML_REQUEST));
+        assertTrue(loginURL.startsWith("http://dummy/SSORedirect"));
+        assertTrue(query.startsWith(HTTPRedirectBinding.SAML_REQUEST));
 
-        String samlRequest = query.replaceFirst(SAMLAuthenticationProvider.SAML_REQUEST + "=", "");
+        String samlRequest = query.replaceFirst(
+                HTTPRedirectBinding.SAML_REQUEST + "=", "");
 
         SAMLObject message = decodeMessage(samlRequest);
 
@@ -143,13 +145,15 @@ public class SAMLAuthenticatorTest {
         AuthnRequest auth = (AuthnRequest) message;
         assertEquals(SAMLVersion.VERSION_20, auth.getVersion());
         assertNotNull(auth.getID());
-        assertEquals(SAMLConstants.SAML2_POST_BINDING_URI, auth.getProtocolBinding());
+        assertEquals(SAMLConstants.SAML2_POST_BINDING_URI,
+                auth.getProtocolBinding());
     }
 
     @Test
     public void testRetrieveIdentity() throws Exception {
 
-        HttpServletRequest req = getMockRequest("/saml-response.xml", "POST", "http://localhost:8080/login", "text/html");
+        HttpServletRequest req = getMockRequest("/saml-response.xml", "POST",
+                "http://localhost:8080/login", "text/html");
 
         HttpServletResponse resp = mock(HttpServletResponse.class);
 
@@ -170,16 +174,18 @@ public class SAMLAuthenticatorTest {
 
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
-        Cookie [] cookies = new Cookie[] {
-            new Cookie(SAMLAuthenticationProvider.SAML_SESSION_KEY, "sessionId|user@dummy|format")
+        Cookie[] cookies = new Cookie[] {
+                new Cookie(SAMLAuthenticationProvider.SAML_SESSION_KEY,
+                        "sessionId|user@dummy|format")
         };
         when(req.getCookies()).thenReturn(cookies);
         String logoutURL = samlAuth.getSLOUrl(req, resp);
 
-        assertTrue(logoutURL.startsWith("http://dummy/SLOPOST"));
+        assertTrue(logoutURL.startsWith("http://dummy/SLORedirect"));
     }
 
-    protected HttpServletRequest getMockRequest(String messageFile, String method, String url, String contentType) throws Exception {
+    protected HttpServletRequest getMockRequest(String messageFile,
+            String method, String url, String contentType) throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         URL urlP = new URL(url);
         File file = new File(getClass().getResource(messageFile).toURI());
@@ -200,11 +206,12 @@ public class SAMLAuthenticatorTest {
         return request;
     }
 
-    protected SAMLObject decodeMessage(String message)  {
+    protected SAMLObject decodeMessage(String message) {
         try {
             byte[] decodedBytes = Base64.decode(message);
             if (decodedBytes == null) {
-                throw new MessageDecodingException("Unable to Base64 decode incoming message");
+                throw new MessageDecodingException(
+                        "Unable to Base64 decode incoming message");
             }
 
             InputStream is = new ByteArrayInputStream(decodedBytes);
@@ -212,7 +219,8 @@ public class SAMLAuthenticatorTest {
             Document messageDoc = new BasicParserPool().parse(is);
             Element messageElem = messageDoc.getDocumentElement();
 
-            Unmarshaller unmarshaller = Configuration.getUnmarshallerFactory().getUnmarshaller(messageElem);
+            Unmarshaller unmarshaller = Configuration.getUnmarshallerFactory()
+                    .getUnmarshaller(messageElem);
 
             return (SAMLObject) unmarshaller.unmarshall(messageElem);
         } catch (MessageDecodingException | XMLParserException | UnmarshallingException e) {

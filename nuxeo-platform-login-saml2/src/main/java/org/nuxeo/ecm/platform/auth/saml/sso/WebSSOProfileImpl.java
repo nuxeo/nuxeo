@@ -37,6 +37,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * WebSSO (Single Sign On) profile implementation.
+ *
+ * @since 5.9.6
+ */
 public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProfile {
 
     public WebSSOProfileImpl(SingleSignOnService sso) {
@@ -49,13 +54,15 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
     }
 
     @Override
-    public SAMLCredential processAuthenticationResponse(SAMLMessageContext context) throws SAMLException {
+    public SAMLCredential processAuthenticationResponse(SAMLMessageContext context)
+            throws SAMLException {
         SAMLObject message = context.getInboundSAMLMessage();
 
         // Validate type
         if (!(message instanceof Response)) {
             log.debug("Received response is not of a Response object type");
-            throw new SAMLException("Received response is not of a Response object type");
+            throw new SAMLException(
+                    "Received response is not of a Response object type");
         }
         Response response = (Response) message;
 
@@ -63,14 +70,16 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
         String statusCode = response.getStatus().getStatusCode().getValue();
         if (!StringUtils.equals(statusCode, StatusCode.SUCCESS_URI)) {
             log.debug("StatusCode was not a success: " + statusCode);
-            throw new SAMLException("StatusCode was not a success: " +  statusCode);
+            throw new SAMLException(
+                    "StatusCode was not a success: " + statusCode);
         }
 
         // Validate signature of the response if present
         if (response.getSignature() != null) {
             log.debug("Verifying message signature");
             try {
-                validateSignature(response.getSignature(), context.getPeerEntityId());
+                validateSignature(response.getSignature(),
+                        context.getPeerEntityId());
             } catch (ValidationException e) {
                 log.error("Error validating signature", e);
             } catch (org.opensaml.xml.security.SecurityException e) {
@@ -102,7 +111,9 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
                 log.debug("Decrypting assertion");
                 assertions.add(getDecrypter().decrypt(ea));
             } catch (DecryptionException e) {
-                log.debug("Decryption of received assertion failed, assertion will be skipped", e);
+                log.debug(
+                        "Decryption of received assertion failed, assertion will be skipped",
+                        e);
             }
         }
 
@@ -124,7 +135,9 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
                     }
 
                 } catch (Exception e) {
-                    log.debug("Validation of received assertion failed, assertion will be skipped", e);
+                    log.debug(
+                            "Validation of received assertion failed, assertion will be skipped",
+                            e);
                     continue;
                 }
             }
@@ -151,7 +164,8 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
 
         // Make sure that at least one storage contains authentication statement and subject with bearer confirmation
         if (subject == null) {
-            log.debug("Response doesn't have any valid assertion which would pass subject validation");
+            log.debug(
+                    "Response doesn't have any valid assertion which would pass subject validation");
             throw new SAMLException("Error validating SAML response");
         }
 
@@ -164,20 +178,26 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
         }
 
         if (nameID == null) {
-            log.debug("NameID element must be present as part of the Subject in the Response message, please enable it in the IDP configuration");
-            throw new SAMLException("NameID element must be present as part of the Subject in the Response message, please enable it in the IDP configuration");
+            log.debug("NameID element must be present as part of the Subject in " +
+                    "the Response message, please enable it in the IDP configuration");
+            throw new SAMLException("NameID element must be present as part of the Subject " +
+                    "in the Response message, please enable it in the IDP configuration");
         }
 
         // Populate custom data, if any
         Serializable additionalData = null; //processAdditionalData(context);
 
         // Create the credential
-        return new SAMLCredential(nameID, sessionIndexes, context.getPeerEntityMetadata().getEntityID(), context.getRelayState(), attributes, context.getLocalEntityId(), additionalData);
+        return new SAMLCredential(nameID, sessionIndexes,
+                context.getPeerEntityMetadata().getEntityID(),
+                context.getRelayState(), attributes, context.getLocalEntityId(),
+                additionalData);
 
     }
 
     @Override
-    public AuthnRequest buildAuthRequest(HttpServletRequest httpRequest) throws SAMLException {
+    public AuthnRequest buildAuthRequest(HttpServletRequest httpRequest)
+            throws SAMLException {
 
         AuthnRequest request = build(AuthnRequest.DEFAULT_ELEMENT_NAME);
         request.setID(newUUID());
@@ -196,28 +216,38 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
         nameIDPolicy.setFormat(NameIDType.UNSPECIFIED);
         request.setNameIDPolicy(nameIDPolicy);
 
-        RequestedAuthnContext requestedAuthnContext = build(RequestedAuthnContext.DEFAULT_ELEMENT_NAME);
-        requestedAuthnContext.setComparison(AuthnContextComparisonTypeEnumeration.EXACT);
+        RequestedAuthnContext requestedAuthnContext = build(
+                RequestedAuthnContext.DEFAULT_ELEMENT_NAME);
+        requestedAuthnContext.setComparison(
+                AuthnContextComparisonTypeEnumeration.EXACT);
         request.setRequestedAuthnContext(requestedAuthnContext);
 
-        AuthnContextClassRef authnContextClassRef = build(AuthnContextClassRef.DEFAULT_ELEMENT_NAME);
-        authnContextClassRef.setAuthnContextClassRef(AuthnContext.PPT_AUTHN_CTX);
-        requestedAuthnContext.getAuthnContextClassRefs().add(authnContextClassRef);
+        AuthnContextClassRef authnContextClassRef = build(
+                AuthnContextClassRef.DEFAULT_ELEMENT_NAME);
+        authnContextClassRef.setAuthnContextClassRef(
+                AuthnContext.PPT_AUTHN_CTX);
+        requestedAuthnContext.getAuthnContextClassRefs().add(
+                authnContextClassRef);
 
         return request;
 
     }
 
     @Override
-    protected void validateAssertion(Assertion assertion, SAMLMessageContext context) throws SAMLException, org.opensaml.xml.security.SecurityException, ValidationException, DecryptionException {
+    protected void validateAssertion(Assertion assertion,
+            SAMLMessageContext context)
+            throws SAMLException, org.opensaml.xml.security.SecurityException,
+            ValidationException, DecryptionException {
         super.validateAssertion(assertion, context);
         Signature signature = assertion.getSignature();
         if (signature == null) {
             SPSSODescriptor roleMetadata = (SPSSODescriptor) context.getLocalEntityRoleMetadata();
 
-            if (roleMetadata != null && roleMetadata.getWantAssertionsSigned()) {
+            if (roleMetadata != null &&
+                    roleMetadata.getWantAssertionsSigned()) {
                 if (!context.isInboundSAMLMessageAuthenticated()) {
-                    throw new SAMLException("Metadata includes wantAssertionSigned, but neither Response nor included Assertion is signed");
+                    throw new SAMLException("Metadata includes wantAssertionSigned, " +
+                            "but neither Response nor included Assertion is signed");
                 }
             }
         }

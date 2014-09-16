@@ -24,17 +24,27 @@ import org.opensaml.ws.transport.http.HTTPInTransport;
 import org.opensaml.ws.transport.http.HTTPOutTransport;
 import org.opensaml.ws.transport.http.HTTPTransport;
 
-
+/**
+ * HTTP Post Binding
+ *
+ * @since 5.9.6
+ */
 public class HTTPPostBinding extends SAMLBinding {
 
+    public static final String SAML_REQUEST = "SAMLRequest";
+
+    public static final String SAML_RESPONSE = "SAMLResponse";
+
     public HTTPPostBinding() {
-        super(new HTTPPostDecoder(), null);// TODO(nfgs): new HTTPPostEncoder(velocityEngine, "saml2-post-binding-template.vm"));
+        super(new HTTPPostDecoder(), null);// TODO(nfgs): add HTTPPostEncoder
     }
 
     public boolean supports(InTransport transport) {
         if (transport instanceof HTTPInTransport) {
             HTTPTransport t = (HTTPTransport) transport;
-            return "POST".equalsIgnoreCase(t.getHTTPMethod()) && (t.getParameterValue("SAMLRequest") != null || t.getParameterValue("SAMLResponse") != null);
+            return "POST".equalsIgnoreCase(t.getHTTPMethod()) &&
+                    (t.getParameterValue(SAML_REQUEST) != null ||
+                            t.getParameterValue(SAML_RESPONSE) != null);
         } else {
             return false;
         }

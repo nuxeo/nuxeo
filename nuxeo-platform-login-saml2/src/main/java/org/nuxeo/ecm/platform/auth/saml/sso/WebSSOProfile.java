@@ -17,21 +17,31 @@
 package org.nuxeo.ecm.platform.auth.saml.sso;
 
 import org.nuxeo.ecm.platform.auth.saml.SAMLCredential;
-import org.nuxeo.ecm.platform.auth.saml.SAMLProfile;
 import org.opensaml.common.SAMLException;
 import org.opensaml.common.binding.SAMLMessageContext;
 import org.opensaml.saml2.core.AuthnRequest;
+import org.opensaml.saml2.metadata.Endpoint;
 
 import javax.servlet.http.HttpServletRequest;
 
-public interface WebSSOProfile extends SAMLProfile {
+/**
+ * WebSSO (Single Sign On) profile.
+ *
+ * @since 5.9.6
+ */
+public interface WebSSOProfile {
 
     /**
      * Identifier of the WebSSO profile.
      */
     public static final String PROFILE_URI = "urn:oasis:names:tc:SAML:2.0:profiles:SSO:browser";
 
-    SAMLCredential processAuthenticationResponse(SAMLMessageContext context) throws SAMLException;
+    SAMLCredential processAuthenticationResponse(SAMLMessageContext context)
+            throws SAMLException;
 
-    AuthnRequest buildAuthRequest(HttpServletRequest request) throws SAMLException;
+    AuthnRequest buildAuthRequest(HttpServletRequest request)
+            throws SAMLException;
+
+    Endpoint getEndpoint();
+
 }

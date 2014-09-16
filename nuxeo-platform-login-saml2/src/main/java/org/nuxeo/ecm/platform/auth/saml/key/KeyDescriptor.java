@@ -41,13 +41,13 @@ public class KeyDescriptor {
     @XNode("tlsKey")
     protected String tlsKey;
 
-    @XNodeMap(value = "passwords/password", key = "@key", type = HashMap.class, componentType = String.class)
+    @XNodeMap(value = "passwords/password", key = "@key", type = HashMap.class,
+            componentType = String.class)
     protected Map<String, String> passwords;
 
     public String getKeystoreFilePath() {
         return keystoreFilePath;
     }
-
 
     public String getKeystorePassword() {
         return keystorePassword;
@@ -68,5 +68,4 @@ public class KeyDescriptor {
     public String getTlsKey() {
         return tlsKey;
     }
-
 }

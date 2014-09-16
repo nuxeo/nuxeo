@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.platform.auth.saml.web;
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.auth.saml.key.KeyManager;
@@ -36,7 +35,6 @@ import org.opensaml.xml.security.SecurityHelper;
 import org.opensaml.xml.security.credential.Credential;
 import org.opensaml.xml.security.credential.UsageType;
 import org.opensaml.xml.security.keyinfo.KeyInfoGenerator;
-import org.opensaml.xml.security.x509.BasicX509Credential;
 import org.opensaml.xml.signature.KeyInfo;
 import org.opensaml.xml.util.XMLHelper;
 import org.w3c.dom.Element;
@@ -47,35 +45,39 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
 
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.*;
-
+/**
+ * Servlet that return local SP metadata for configuring IdPs.
+ *
+ * @since 5.9.6
+ */
 public class MetadataServlet extends HttpServlet {
-
-    protected static final Log log = LogFactory.getLog(MetadataServlet.class);
-
-    private KeyManager keyManager;
-
-    private String entityBaseURL;
-    private String entityId = "nuxeo";
-
-    private boolean signMetadata = true;
-    private boolean requestSigned = true;
-    private boolean wantAssertionSigned = true;
-
-
-    protected XMLObjectBuilderFactory builderFactory;
 
     public static final Collection<String> nameID = Arrays.asList(
             NameIDType.EMAIL,
             NameIDType.TRANSIENT,
             NameIDType.PERSISTENT,
             NameIDType.UNSPECIFIED,
-            NameIDType.X509_SUBJECT
-    );
+            NameIDType.X509_SUBJECT);
 
+    protected static final Log log = LogFactory.getLog(MetadataServlet.class);
+
+    protected XMLObjectBuilderFactory builderFactory;
+
+    private KeyManager keyManager;
+
+    private String entityBaseURL;
+
+    private String entityId = "nuxeo";
+
+    private boolean signMetadata = true;
+
+    private boolean requestSigned = true;
+
+    private boolean wantAssertionSigned = true;
 
     @Override
     public void init() throws ServletException {
@@ -93,7 +95,8 @@ public class MetadataServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
-        entityBaseURL = VirtualHostHelper.getBaseURL(request) + '/' + NuxeoAuthenticationFilter.DEFAULT_START_PAGE;
+        entityBaseURL = VirtualHostHelper.getBaseURL(request) + '/' +
+                NuxeoAuthenticationFilter.DEFAULT_START_PAGE;
         /*
         id = entityId.replaceAll("[^a-zA-Z0-9-_.]", "_");
         if (id.startsWith("-")) {
@@ -103,10 +106,12 @@ public class MetadataServlet extends HttpServlet {
         EntityDescriptor descriptor = buildEntityDescriptor();
 
         try {
-            Marshaller marshaller = Configuration.getMarshallerFactory().getMarshaller(descriptor);
+            Marshaller marshaller = Configuration.getMarshallerFactory().getMarshaller(
+                    descriptor);
             if (marshaller == null) {
-                log.error("Unable to marshall message, no marshaller registered for message object: "
-                        + descriptor.getElementQName());
+                log.error(
+                        "Unable to marshall message, no marshaller registered for message object: "
+                                + descriptor.getElementQName());
             }
             Element dom = marshaller.marshall(descriptor);
             XMLHelper.writeNode(dom, response.getWriter());
@@ -118,12 +123,14 @@ public class MetadataServlet extends HttpServlet {
     protected EntityDescriptor buildEntityDescriptor() {
 
         // Entity Descriptor
-        EntityDescriptor descriptor = build(EntityDescriptor.DEFAULT_ELEMENT_NAME);
+        EntityDescriptor descriptor = build(
+                EntityDescriptor.DEFAULT_ELEMENT_NAME);
         //descriptor.setID(id);
         descriptor.setEntityID(entityId);
 
         // SPSSO Descriptor
-        SPSSODescriptor spDescriptor = build(SPSSODescriptor.DEFAULT_ELEMENT_NAME);
+        SPSSODescriptor spDescriptor = build(
+                SPSSODescriptor.DEFAULT_ELEMENT_NAME);
         spDescriptor.setAuthnRequestsSigned(requestSigned);
         spDescriptor.setWantAssertionsSigned(wantAssertionSigned);
         spDescriptor.addSupportedProtocol(SAMLConstants.SAML20P_NS);
@@ -133,25 +140,36 @@ public class MetadataServlet extends HttpServlet {
 
         // Generate key info
         if (getKeyManager().getSigningCredential() != null) {
-            spDescriptor.getKeyDescriptors().add(buildKeyDescriptor(UsageType.SIGNING, generateKeyInfoForCredential(getKeyManager().getSigningCredential())));
+            spDescriptor.getKeyDescriptors().add(
+                    buildKeyDescriptor(UsageType.SIGNING,
+                            generateKeyInfoForCredential(
+                                    getKeyManager().getSigningCredential())));
         }
         if (getKeyManager().getEncryptionCredential() != null) {
-            spDescriptor.getKeyDescriptors().add(buildKeyDescriptor(UsageType.ENCRYPTION, generateKeyInfoForCredential(getKeyManager().getEncryptionCredential())));
+            spDescriptor.getKeyDescriptors().add(
+                    buildKeyDescriptor(UsageType.ENCRYPTION,
+                            generateKeyInfoForCredential(
+                                    getKeyManager().getEncryptionCredential())));
         }
         if (getKeyManager().getTlsCredential() != null) {
-            spDescriptor.getKeyDescriptors().add(buildKeyDescriptor(UsageType.UNSPECIFIED, generateKeyInfoForCredential(getKeyManager().getTlsCredential())));
+            spDescriptor.getKeyDescriptors().add(
+                    buildKeyDescriptor(UsageType.UNSPECIFIED,
+                            generateKeyInfoForCredential(
+                                    getKeyManager().getTlsCredential())));
         }
 
         // LOGIN -  SAML2_POST_BINDING_URI
-        AssertionConsumerService consumer = build(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
+        AssertionConsumerService consumer = build(
+                AssertionConsumerService.DEFAULT_ELEMENT_NAME);
         consumer.setLocation(entityBaseURL);
         consumer.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
         consumer.setIsDefault(true);
-        //consumer.setIndex(0);
+        consumer.setIndex(0);
         spDescriptor.getAssertionConsumerServices().add(consumer);
 
         // LOGOUT - SAML2_POST_BINDING_URI
-        SingleLogoutService logoutService = build(SingleLogoutService.DEFAULT_ELEMENT_NAME);
+        SingleLogoutService logoutService = build(
+                SingleLogoutService.DEFAULT_ELEMENT_NAME);
         logoutService.setLocation(entityBaseURL);
         logoutService.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
         spDescriptor.getSingleLogoutServices().add(logoutService);
@@ -168,7 +186,8 @@ public class MetadataServlet extends HttpServlet {
         return descriptor;
     }
 
-    protected Collection<NameIDFormat> buildNameIDFormats(Collection<String> nameIDs) {
+    protected Collection<NameIDFormat> buildNameIDFormats(
+            Collection<String> nameIDs) {
 
         Collection<NameIDFormat> formats = new LinkedList<>();
 
@@ -184,8 +203,10 @@ public class MetadataServlet extends HttpServlet {
 
     protected KeyInfo generateKeyInfoForCredential(Credential credential) {
         try {
-
-            KeyInfoGenerator keyInfoGenerator = SecurityHelper.getKeyInfoGenerator(credential, null, null);
+            KeyInfoGenerator keyInfoGenerator = SecurityHelper.getKeyInfoGenerator(
+                    credential,
+                    null,
+                    null);
             return keyInfoGenerator.generate(credential);
         } catch (org.opensaml.xml.security.SecurityException e) {
             log.error("Failed to  generate key info.");

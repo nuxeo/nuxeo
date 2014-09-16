@@ -22,13 +22,18 @@ import org.opensaml.xml.security.credential.CredentialResolver;
 import java.security.cert.X509Certificate;
 import java.util.Set;
 
+/**
+ * A manager for {@link Credential}s.
+ *
+ * @since 5.9.6
+ */
 public interface KeyManager extends CredentialResolver {
 
-    public Credential getCredential(String keyName);
+    Credential getCredential(String keyName);
 
-    public Set<String> getAvailableCredentials();
+    Set<String> getAvailableCredentials();
 
-    public X509Certificate getCertificate(String alias);
+    X509Certificate getCertificate(String alias);
 
     Credential getSigningCredential();
 

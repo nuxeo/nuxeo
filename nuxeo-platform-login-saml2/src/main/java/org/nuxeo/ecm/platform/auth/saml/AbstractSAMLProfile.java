@@ -21,11 +21,12 @@ import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
-import org.opensaml.common.SAMLObject;
-import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.Configuration;
 import org.opensaml.common.SAMLException;
+import org.opensaml.common.SAMLObject;
 import org.opensaml.common.binding.SAMLMessageContext;
+import org.opensaml.common.xml.SAMLConstants;
+
 import org.opensaml.saml2.core.*;
 import org.opensaml.saml2.encryption.Decrypter;
 import org.opensaml.saml2.metadata.AssertionConsumerService;
@@ -35,7 +36,7 @@ import org.opensaml.security.MetadataCriteria;
 import org.opensaml.security.SAMLSignatureProfileValidator;
 import org.opensaml.xml.XMLObjectBuilderFactory;
 import org.opensaml.xml.encryption.DecryptionException;
-import org.opensaml.xml.security.*;
+import org.opensaml.xml.security.CriteriaSet;
 import org.opensaml.xml.security.SecurityException;
 import org.opensaml.xml.security.credential.UsageType;
 import org.opensaml.xml.security.criteria.EntityIDCriteria;
@@ -49,13 +50,20 @@ import javax.xml.namespace.QName;
 import java.util.Date;
 import java.util.UUID;
 
-
-public abstract class AbstractSAMLProfile implements SAMLProfile {
+/**
+ * Base abstract class for SAML profile processors.
+ *
+ * @since 5.9.6
+ */
+public abstract class AbstractSAMLProfile {
     protected final static Log log = LogFactory.getLog(AbstractSAMLProfile.class);
 
     protected final XMLObjectBuilderFactory builderFactory;
+
     private final Endpoint endpoint;
+
     private SignatureTrustEngine trustEngine;
+
     private Decrypter decrypter;
 
     public AbstractSAMLProfile(Endpoint endpoint) {
@@ -63,9 +71,10 @@ public abstract class AbstractSAMLProfile implements SAMLProfile {
         this.builderFactory = Configuration.getBuilderFactory();
     }
 
-    public Endpoint getEndpoint() {
-        return endpoint;
-    }
+    /**
+     * @return the profile identifier (Uri).
+     */
+    abstract public String getProfileIdentifier();
 
     protected <T extends SAMLObject> T build(QName qName) {
         return (T) builderFactory.getBuilder(qName).buildObject(qName);
@@ -73,37 +82,48 @@ public abstract class AbstractSAMLProfile implements SAMLProfile {
 
     // VALIDATION
 
-    protected void validateSignature(Signature signature, String IDPEntityID) throws ValidationException, org.opensaml.xml.security.SecurityException {
+    protected void validateSignature(Signature signature, String IDPEntityID)
+            throws ValidationException,
+            org.opensaml.xml.security.SecurityException {
 
         if (trustEngine == null) {
-            throw new SecurityException("Trust engine is not set, signature can't be verified");
+            throw new SecurityException(
+                    "Trust engine is not set, signature can't be verified");
         }
 
         SAMLSignatureProfileValidator validator = new SAMLSignatureProfileValidator();
         validator.validate(signature);
         CriteriaSet criteriaSet = new CriteriaSet();
         criteriaSet.add(new EntityIDCriteria(IDPEntityID));
-        criteriaSet.add(new MetadataCriteria(IDPSSODescriptor.DEFAULT_ELEMENT_NAME, SAMLConstants.SAML20P_NS));
+        criteriaSet.add(
+                new MetadataCriteria(IDPSSODescriptor.DEFAULT_ELEMENT_NAME,
+                        SAMLConstants.SAML20P_NS));
         criteriaSet.add(new UsageCriteria(UsageType.SIGNING));
         log.debug("Verifying signature: " + signature);
 
         if (!getTrustEngine().validate(signature, criteriaSet)) {
-            throw new ValidationException("Signature is not trusted or invalid");
+            throw new ValidationException(
+                    "Signature is not trusted or invalid");
         }
     }
 
-    protected void validateIssuer(Issuer issuer, SAMLMessageContext context) throws SAMLException {
+    protected void validateIssuer(Issuer issuer, SAMLMessageContext context)
+            throws SAMLException {
         // Validate format of issuer
-        if (issuer.getFormat() != null && !issuer.getFormat().equals(NameIDType.ENTITY)) {
+        if (issuer.getFormat() != null &&
+                !issuer.getFormat().equals(NameIDType.ENTITY)) {
             throw new SAMLException("Assertion invalidated by issuer type");
         }
         // Validate that issuer is expected peer entity
-        if (!context.getPeerEntityMetadata().getEntityID().equals(issuer.getValue())) {
-            throw new SAMLException("Assertion invalidated by unexpected issuer value");
+        if (!context.getPeerEntityMetadata().getEntityID().equals(
+                issuer.getValue())) {
+            throw new SAMLException(
+                    "Assertion invalidated by unexpected issuer value");
         }
     }
 
-    protected void validateEndpoint(Response response, Endpoint endpoint) throws SAMLException {
+    protected void validateEndpoint(Response response, Endpoint endpoint)
+            throws SAMLException {
         // Verify that destination in the response matches one of the available endpoints
         String destination = response.getDestination();
 
@@ -111,8 +131,10 @@ public abstract class AbstractSAMLProfile implements SAMLProfile {
             if (destination.equals(endpoint.getLocation())) {
             } else if (destination.equals(endpoint.getResponseLocation())) {
             } else {
-                log.debug("Intended destination " + destination + " doesn't match any of the endpoint URLs");
-                throw new SAMLException("Intended destination " + destination + " doesn't match any of the endpoint URLs");
+                log.debug("Intended destination " + destination +
+                        " doesn't match any of the endpoint URLs");
+                throw new SAMLException("Intended destination " + destination +
+                        " doesn't match any of the endpoint URLs");
             }
         }
 
@@ -123,21 +145,26 @@ public abstract class AbstractSAMLProfile implements SAMLProfile {
         if (request != null) {
             AssertionConsumerService assertionConsumerService = (AssertionConsumerService) endpoint;
             if (request.getAssertionConsumerServiceIndex() != null) {
-                if (!request.getAssertionConsumerServiceIndex().equals(assertionConsumerService.getIndex())) {
-                    log.info("SAML response was received at a different endpoint index than was requested");
+                if (!request.getAssertionConsumerServiceIndex().equals(
+                        assertionConsumerService.getIndex())) {
+                    log.info("SAML response was received at a different endpoint " +
+                            "index than was requested");
                 }
             } else {
                 String requestedResponseURL = request.getAssertionConsumerServiceURL();
                 String requestedBinding = request.getProtocolBinding();
                 if (requestedResponseURL != null) {
                     String responseLocation;
-                    if (assertionConsumerService.getResponseLocation() != null) {
+                    if (assertionConsumerService.getResponseLocation() !=
+                            null) {
                         responseLocation = assertionConsumerService.getResponseLocation();
                     } else {
                         responseLocation = assertionConsumerService.getLocation();
                     }
                     if (!requestedResponseURL.equals(responseLocation)) {
-                        log.info("SAML response was received at a different endpoint URL " + responseLocation + " than was requested " + requestedResponseURL);
+                        log.info("SAML response was received at a different endpoint URL " +
+                                        responseLocation +  " than was requested " +
+                                        requestedResponseURL);
                     }
                 }
                 /*
@@ -150,7 +177,10 @@ public abstract class AbstractSAMLProfile implements SAMLProfile {
         }
     }
 
-    protected void validateAssertion(Assertion assertion, SAMLMessageContext context) throws SAMLException, org.opensaml.xml.security.SecurityException, ValidationException, DecryptionException {
+    protected void validateAssertion(Assertion assertion,
+            SAMLMessageContext context)
+            throws SAMLException, org.opensaml.xml.security.SecurityException,
+            ValidationException, DecryptionException {
 
         validateIssuer(assertion.getIssuer(), context);
 
@@ -167,10 +197,13 @@ public abstract class AbstractSAMLProfile implements SAMLProfile {
             condition_NotOnOrAfter = conditions.getNotOnOrAfter().toDate();
         }
         if (condition_notBefore != null && now.before(condition_notBefore)) {
-            log.debug("Current time: [" + now + "] NotBefore: [" + condition_notBefore + "]");
+            log.debug("Current time: [" + now + "] NotBefore: [" +
+                    condition_notBefore + "]");
             throw new SAMLException("Conditions are not yet active");
-        } else if (condition_NotOnOrAfter != null && (now.after(condition_NotOnOrAfter) || now.equals(condition_NotOnOrAfter))) {
-            log.debug("Current time: [" + now + "] NotOnOrAfter: [" + condition_NotOnOrAfter + "]");
+        } else if (condition_NotOnOrAfter != null && (
+                now.after(condition_NotOnOrAfter) || now.equals(condition_NotOnOrAfter))) {
+            log.debug("Current time: [" + now + "] NotOnOrAfter: [" +
+                    condition_NotOnOrAfter + "]");
             throw new SAMLException("Conditions have expired");
         }
 
@@ -180,11 +213,11 @@ public abstract class AbstractSAMLProfile implements SAMLProfile {
             validateSignature(signature, context.getPeerEntityMetadata().getEntityID());
         }
 
-
         // TODO(nfgs) : Check subject
     }
 
-    protected AuthnRequest retrieveRequest(Response response) throws SAMLException {
+    protected AuthnRequest retrieveRequest(Response response)
+            throws SAMLException {
         return null;
         /* TODO(nfgs) - Store SAML messages
         SAMLMessageStorage messageStorage = context.getMessageStorage();
@@ -204,6 +237,26 @@ public abstract class AbstractSAMLProfile implements SAMLProfile {
         */
     }
 
+    public Endpoint getEndpoint() {
+        return endpoint;
+    }
+
+    public SignatureTrustEngine getTrustEngine() {
+        return trustEngine;
+    }
+
+    public void setTrustEngine(SignatureTrustEngine trustEngine) {
+        this.trustEngine = trustEngine;
+    }
+
+    public Decrypter getDecrypter() {
+        return decrypter;
+    }
+
+    public void setDecrypter(Decrypter decrypter) {
+        this.decrypter = decrypter;
+    }
+
     protected String newUUID() {
         return UUID.randomUUID().toString();
     }
@@ -213,23 +266,7 @@ public abstract class AbstractSAMLProfile implements SAMLProfile {
     }
 
     protected String getStartPageURL(ServletRequest request) {
-        return getBaseURL(request) + NuxeoAuthenticationFilter.DEFAULT_START_PAGE;
+        return getBaseURL(request) +
+                NuxeoAuthenticationFilter.DEFAULT_START_PAGE;
     }
-
-    public void setTrustEngine(SignatureTrustEngine trustEngine) {
-        this.trustEngine = trustEngine;
-    }
-
-    public SignatureTrustEngine getTrustEngine() {
-        return trustEngine;
-    }
-
-    public void setDecrypter(Decrypter decrypter) {
-        this.decrypter = decrypter;
-    }
-
-    public Decrypter getDecrypter() {
-        return decrypter;
-    }
-
 }

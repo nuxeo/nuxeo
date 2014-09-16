@@ -24,9 +24,15 @@ import org.opensaml.ws.message.encoder.MessageEncodingException;
 import org.opensaml.ws.transport.InTransport;
 import org.opensaml.ws.transport.OutTransport;
 
+/**
+ * Based class for SAML bindings, used for parsing messages.
+ *
+ * @since 5.9.6
+ */
 public abstract class SAMLBinding {
 
     private MessageDecoder decoder;
+
     private MessageEncoder encoder;
 
     public SAMLBinding(MessageDecoder decoder, MessageEncoder encoder) {
@@ -34,15 +40,49 @@ public abstract class SAMLBinding {
         this.encoder = encoder;
     }
 
-    public void decode(MessageContext context) throws org.opensaml.xml.security.SecurityException, MessageDecodingException {
+    /**
+     * Decodes the given message.
+     *
+     * @param context the message to decode
+     * @throws org.opensaml.xml.security.SecurityException
+     * @throws MessageDecodingException
+     */
+    public void decode(MessageContext context)
+            throws org.opensaml.xml.security.SecurityException,
+            MessageDecodingException {
         decoder.decode(context);
     }
 
-    public  void encode(MessageContext context) throws MessageEncodingException {
+    /**
+     * Encodes the given message.
+     *
+     * @param context the message to encode
+     * @throws MessageEncodingException
+     */
+    public void encode(MessageContext context) throws MessageEncodingException {
         encoder.encode(context);
     }
 
+    /**
+     * Returns the URI that identifies this binding.
+     *
+     * @return the URI
+     */
     public abstract String getBindingURI();
+
+    /**
+     * Checks if this binding can be used to extract the message from the request.
+     *
+     * @param transport
+     * @return true if this binding supports the transport
+     */
     public abstract boolean supports(InTransport transport);
+
+    /**
+     * Checks if this binding can use the given transport to send a message
+     *
+     * @param transport
+     * @return true if this binding supports the transport
+     */
     public abstract boolean supports(OutTransport transport);
 }

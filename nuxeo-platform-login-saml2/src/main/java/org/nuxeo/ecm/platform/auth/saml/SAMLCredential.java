@@ -23,6 +23,10 @@ import org.opensaml.saml2.core.NameID;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ *
+ * @since 5.9.6
+ */
 public class SAMLCredential {
     private final NameID nameID;
     private final List<String> sessionIndexes;
