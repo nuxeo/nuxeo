@@ -114,9 +114,9 @@ public class LockActionsBean implements LockActions {
                 NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
                 Lock lock = documentManager.getLockInfo(document.getRef());
                 canLock = lock == null
-                        && (userName.isAdministrator() || documentManager.hasPermission(
-                                document.getRef(),
-                                WRITE_PROPERTIES))
+                        && (userName.isAdministrator()
+                                || isManagerOnDocument(document.getRef()) || documentManager.hasPermission(
+                                document.getRef(), WRITE_PROPERTIES))
                         && !document.isVersion();
             } catch (Exception e) {
                 log.debug("evaluation of document lock "
@@ -128,6 +128,10 @@ public class LockActionsBean implements LockActions {
             }
         }
         return canLock;
+    }
+
+    protected boolean isManagerOnDocument(DocumentRef ref) {
+        return documentManager.hasPermission(ref, EVERYTHING);
     }
 
     @Factory(value = "currentDocumentCanBeLocked", scope = ScopeType.EVENT)

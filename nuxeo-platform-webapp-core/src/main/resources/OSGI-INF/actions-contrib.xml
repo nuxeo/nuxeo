@@ -492,7 +492,6 @@
       <filter-id>mutable_document</filter-id>
       <filter id="popup_can_unlock_doc">
         <rule grant="true">
-          <permission>Write</permission>
           <condition>#{lockActions.getCanUnlockDoc(document)}</condition>
         </rule>
         <rule grant="false">
@@ -936,7 +935,6 @@
 
     <filter id="can_unlock">
       <rule grant="true">
-        <permission>Write</permission>
         <condition>#{lockActions.canUnlockCurrentDoc}</condition>
       </rule>
       <rule grant="false">
