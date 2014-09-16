@@ -65,14 +65,19 @@ public abstract class DirectorySelectItemFactory extends SelectItemFactory {
 
     public SelectItem createSelectItem(Object value) {
         SelectItem item = null;
-
         if (value instanceof SelectItem) {
-            item = (SelectItem) value;
+            Object varValue = saveRequestMapVarValue();
+            try {
+                putIteratorToRequestParam(value);
+                item = createSelectItem();
+                removeIteratorFromRequestParam();
+            } finally {
+                restoreRequestMapVarValue(varValue);
+            }
         } else if (value instanceof String) {
             Object varValue = saveRequestMapVarValue();
             try {
                 String entryId = (String) value;
-                putIteratorToRequestParam(value);
                 Session directorySession = getDirectorySession();
                 if (directorySession != null) {
                     try {
@@ -88,8 +93,6 @@ public abstract class DirectorySelectItemFactory extends SelectItemFactory {
                     log.error("No session provided for directory, returning empty selection");
                 }
                 closeDirectorySession(directorySession);
-
-                removeIteratorFromRequestParam();
             } finally {
                 restoreRequestMapVarValue(varValue);
             }

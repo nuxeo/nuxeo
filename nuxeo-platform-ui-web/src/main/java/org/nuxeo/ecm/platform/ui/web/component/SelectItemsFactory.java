@@ -100,9 +100,7 @@ public abstract class SelectItemsFactory extends SelectItemFactory {
     }
 
     protected SelectItem[] createSelectItemsFrom(Object item) {
-        if (item instanceof SelectItem) {
-            return new SelectItem[] { (SelectItem) item };
-        } else if (item instanceof SelectItemGroup) {
+        if (item instanceof SelectItemGroup) {
             return ((SelectItemGroup) item).getSelectItems();
         } else {
             putIteratorToRequestParam(item);

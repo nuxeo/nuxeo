@@ -31,18 +31,13 @@ public abstract class SelectItemFactory {
 
     public SelectItem createSelectItem(Object value) {
         SelectItem item = null;
-
-        if (value instanceof SelectItem) {
-            item = (SelectItem) value;
-        } else {
-            Object varValue = saveRequestMapVarValue();
-            try {
-                putIteratorToRequestParam(value);
-                item = createSelectItem();
-                removeIteratorFromRequestParam();
-            } finally {
-                restoreRequestMapVarValue(varValue);
-            }
+        Object varValue = saveRequestMapVarValue();
+        try {
+            putIteratorToRequestParam(value);
+            item = createSelectItem();
+            removeIteratorFromRequestParam();
+        } finally {
+            restoreRequestMapVarValue(varValue);
         }
         return item;
     }

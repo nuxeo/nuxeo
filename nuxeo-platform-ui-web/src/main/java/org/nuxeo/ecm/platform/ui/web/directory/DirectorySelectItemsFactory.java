@@ -174,15 +174,11 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
     }
 
     protected DirectorySelectItem[] createSelectItemsFrom(Object item) {
-        if (item instanceof DirectorySelectItem) {
-            return new DirectorySelectItem[] { (DirectorySelectItem) item };
-        } else {
-            putIteratorToRequestParam(item);
-            DirectorySelectItem selectItem = createSelectItem();
-            removeIteratorFromRequestParam();
-            if (selectItem != null) {
-                return new DirectorySelectItem[] { selectItem };
-            }
+        putIteratorToRequestParam(item);
+        DirectorySelectItem selectItem = createSelectItem();
+        removeIteratorFromRequestParam();
+        if (selectItem != null) {
+            return new DirectorySelectItem[] { selectItem };
         }
         return null;
     }
