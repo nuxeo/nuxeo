@@ -31,7 +31,7 @@
     </action>
 
     <!--since 5.7.3 -->
-    <action id="WorkflowHome" link="view_home_task.xhtml" label="tab.admin.workflow"
+    <action id="WorkflowHome" link="/view_home_task.xhtml" label="tab.admin.workflow"
       order="20" icon="/icons/workflow_definition.png">
       <properties>
         <property name="alwaysDisplaySubTabs">false</property>
