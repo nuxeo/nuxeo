@@ -15,12 +15,12 @@
       <filter-id>not_anonymous</filter-id>
       <filter-id>not_readonly</filter-id>
     </action>
-    <action id="UsersHome" link="users/view_users.xhtml"
+    <action id="UsersHome" link="/users/view_users.xhtml"
       label="label.userManager.users" order="10">
       <category>UsersGroupsHome_sub_tab</category>
       <filter-id>not_readonly</filter-id>
     </action>
-    <action id="GroupsHome" link="users/view_groups.xhtml"
+    <action id="GroupsHome" link="/users/view_groups.xhtml"
       label="label.groupManager.groups" order="20">
       <category>UsersGroupsHome_sub_tab</category>
       <filter-id>not_readonly</filter-id>
