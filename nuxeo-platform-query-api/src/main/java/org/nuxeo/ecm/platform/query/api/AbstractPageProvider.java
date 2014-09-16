@@ -888,7 +888,9 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
                 }
             }
         }
-        return (List<AggregateQuery>)(List<?>) aggregateQuery;
+        @SuppressWarnings("unchecked")
+        List<AggregateQuery> ret = (List<AggregateQuery>) (List<?>) aggregateQuery;
+        return ret;
     }
 
     @Override

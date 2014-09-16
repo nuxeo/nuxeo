@@ -68,8 +68,10 @@ public class AggregateQueryImpl implements AggregateQuery {
             PredicateFieldDefinition field = definition.getSearchField();
             if (searchDocument != null) {
                 // property must be nxs:stringList
-                selection = (List<String>) searchDocument.getProperty(
+                @SuppressWarnings("unchecked")
+                List<String> value = (List<String>) searchDocument.getProperty(
                         field.getSchema(), field.getName());
+                selection = value;
             }
             if (selection == null) {
                 selection = Collections.<String> emptyList();
