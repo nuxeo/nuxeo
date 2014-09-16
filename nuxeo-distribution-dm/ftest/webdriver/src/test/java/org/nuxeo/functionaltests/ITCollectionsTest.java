@@ -77,7 +77,7 @@ public class ITCollectionsTest extends AbstractTest {
     @After
     public void tearDown() throws UserNotConnectedException {
         DocumentBasePage documentBasePage = login();
-        UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
+        UsersTabSubPage usersTab = documentBasePage.getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(TEST_USERNAME);
         if (usersTab.isUserFound(TEST_USERNAME)) {
             usersTab = usersTab.viewUser(TEST_USERNAME).deleteUser();
