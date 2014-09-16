@@ -13,15 +13,8 @@
 
   <ui:define name="body">
 
-    <nxl:widget name="homeLinks" mode="view" value="#{currentDocument}" />
-
-    <h:form id="document_header_layout_form" class="titleBlock">
-      <nxl:documentLayout documentMode="header" mode="view"
-        value="#{currentDocument}" defaultLayout="document_header"
-        includeAnyMode="false" />
-    </h:form>
-
-    <nxl:widget name="documentTabs" mode="view" value="#{currentDocument}" />
+    <nxl:widget name="homeTabs" mode="view" value="#{currentDocument}"
+      tabContentTemplate="/home_view_documents_tab_content.xhtml" />
 
   </ui:define>
 

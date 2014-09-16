@@ -8,18 +8,6 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <widget name="homeLinks" type="actions">
-      <properties mode="view">
-        <property name="actionsDisplay">links</property>
-        <property name="addForm">true</property>
-        <property name="useAjaxForm">#{useAjaxTabs}</property>
-        <property name="category">USER_CENTER</property>
-        <property name="actions">#{userCenterViews.availableActions}</property>
-        <property name="currentTabAction">#{userCenterViews.currentView}</property>
-        <property name="overallDisplay">vertical_block</property>
-      </properties>
-    </widget>
-
     <widget name="homeTabs" type="tabs">
       <properties mode="view">
         <property name="actionsDisplay">links</property>
