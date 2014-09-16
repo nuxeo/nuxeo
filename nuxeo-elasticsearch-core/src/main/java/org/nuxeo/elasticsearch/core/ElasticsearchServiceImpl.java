@@ -18,6 +18,9 @@
 
 package org.nuxeo.elasticsearch.core;
 
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_RANGE;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_SIGNIFICANT_TERMS;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_TERMS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 
 import java.util.ArrayList;
@@ -43,6 +46,7 @@ import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.AggregateQuery;
 import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.ecm.platform.query.core.AggregateImpl;
+import org.nuxeo.ecm.platform.query.core.BucketRange;
 import org.nuxeo.ecm.platform.query.core.BucketTerm;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
@@ -55,6 +59,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
+import org.elasticsearch.search.aggregations.bucket.range.Range;
 
 /**
  * @since 5.9.6
@@ -138,21 +143,21 @@ public class ElasticsearchServiceImpl implements ElasticSearchService {
         List<Aggregate> ret = new ArrayList<Aggregate>(queryBuilder
                 .getAggregatesQuery().size());
         for (AggregateQuery agg : queryBuilder.getAggregatesQuery()) {
+            InternalFilter filter = response.getAggregations().get(
+                    NxQueryBuilder.getAggregateFilderId(agg));
+            if (filter == null) {
+                continue;
+            }
+            MultiBucketsAggregation terms = filter.getAggregations().get(
+                    agg.getId());
+            if (terms == null) {
+                continue;
+            }
+            Collection<? extends MultiBucketsAggregation.Bucket> buckets = terms
+                    .getBuckets();
             switch (agg.getType()) {
-            case "significant_terms":
-            case "terms":
-                InternalFilter filter = response.getAggregations().get(
-                        NxQueryBuilder.getAggregateFilderId(agg));
-                if (filter == null) {
-                    continue;
-                }
-                MultiBucketsAggregation terms = filter.getAggregations().get(
-                        agg.getId());
-                if (terms == null) {
-                    continue;
-                }
-                Collection<? extends MultiBucketsAggregation.Bucket> buckets = terms
-                        .getBuckets();
+            case AGG_TYPE_SIGNIFICANT_TERMS:
+            case AGG_TYPE_TERMS:
                 List<Bucket> nxBuckets = new ArrayList<Bucket>(buckets.size());
                 for (MultiBucketsAggregation.Bucket bucket : buckets) {
                     nxBuckets.add(new BucketTerm(bucket.getKey(), bucket
@@ -160,6 +165,16 @@ public class ElasticsearchServiceImpl implements ElasticSearchService {
                 }
                 ret.add(new AggregateImpl(agg, nxBuckets));
                 break;
+            case AGG_TYPE_RANGE:
+                List<BucketRange> nxRangeBuckets = new ArrayList<BucketRange>(buckets.size());
+                for (MultiBucketsAggregation.Bucket bucket : buckets) {
+                    Range.Bucket rangeBucket = (Range.Bucket) bucket;
+                    nxRangeBuckets.add(new BucketRange(bucket.getKey(), rangeBucket.getFrom(),
+                            rangeBucket.getTo(), rangeBucket.getDocCount()));
+                }
+                ret.add(new AggregateImpl(agg, nxRangeBuckets));
+                break;
+
             default:
                 // not implemented
             }

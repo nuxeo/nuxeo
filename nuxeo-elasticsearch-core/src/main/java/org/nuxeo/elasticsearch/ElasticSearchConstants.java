@@ -30,21 +30,20 @@ public class ElasticSearchConstants {
     public static final String AGG_ORDER_TERM_DESC = "term desc";
     public static final String AGG_ORDER_TERM_ASC = "term asc";
 
-    public static final String ID_FIELD = "_id";
+    public static final String AGG_TYPE_TERMS = "terms";
+    public static final String AGG_TYPE_SIGNIFICANT_TERMS = "significant_terms";
+    public static final String AGG_TYPE_RANGE = "range";
 
+    public static final String ID_FIELD = "_id";
     /**
      * Elasticsearch type name used to index Nuxeo documents
      */
     public static final String DOC_TYPE = "doc";
 
     public static final String ACL_FIELD = "ecm:acl";
-
     public static final String PATH_FIELD = "ecm:path";
-
     public static final String CHILDREN_FIELD = "ecm:path.children";
-
     public static final String BINARYTEXT_FIELD = "ecm:binarytext";
-
     public static final String ALL_FIELDS = "*";
 
     public static final String FETCH_DOC_FROM_ES_PROPERTY = "elasticsearch.fetchDocFromEs";

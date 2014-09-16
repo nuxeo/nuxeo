@@ -18,6 +18,9 @@ package org.nuxeo.elasticsearch.query;
 
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_RANGE;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_SIGNIFICANT_TERMS;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_TERMS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.FETCH_DOC_FROM_ES_PROPERTY;
 
 import java.security.Principal;
@@ -27,16 +30,21 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
+
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.AndFilterBuilder;
+import org.elasticsearch.index.query.BaseFilterBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.OrFilterBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeFilterBuilder;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.filter.FilterAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.range.RangeBuilder;
 import org.elasticsearch.search.aggregations.bucket.significant.SignificantTermsBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
@@ -48,6 +56,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.query.api.AggregateQuery;
+import org.nuxeo.ecm.platform.query.api.AggregateRangeDefinition;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.fetcher.EsFetcher;
 import org.nuxeo.elasticsearch.fetcher.Fetcher;
@@ -236,9 +245,11 @@ public class NxQueryBuilder {
         AndFilterBuilder ret = FilterBuilders.andFilter();
         for (AggregateQuery aggQuery : aggregates) {
             if (!aggQuery.getSelection().isEmpty()) {
-                ret.add(FilterBuilders.termsFilter(aggQuery.getField(),
-                        aggQuery.getSelection()));
-                hasFilter = true;
+                BaseFilterBuilder filter = getFilterForSelection(aggQuery);
+                if (filter != null) {
+                    ret.add(filter);
+                    hasFilter = true;
+                }
             }
         }
         if (!hasFilter) {
@@ -251,15 +262,49 @@ public class NxQueryBuilder {
         boolean hasFilter = false;
         AndFilterBuilder ret = FilterBuilders.andFilter();
         for (AggregateQuery aggQuery : aggregates) {
-            if (!aggQuery.getSelection().isEmpty()
-                    && !aggQuery.getId().equals(id)) {
-                ret.add(FilterBuilders.termsFilter(aggQuery.getField(),
-                        aggQuery.getSelection()));
-                hasFilter = true;
+            if (!aggQuery.getId().equals(id)) {
+                BaseFilterBuilder filter = getFilterForSelection(aggQuery);
+                if (filter != null) {
+                    ret.add(filter);
+                    hasFilter = true;
+                }
             }
         }
         if (!hasFilter) {
             return FilterBuilders.matchAllFilter();
+        }
+        return ret;
+    }
+
+    private BaseFilterBuilder getFilterForSelection(
+            AggregateQuery aggQuery) {
+        if (aggQuery.getSelection().isEmpty()) {
+            return null;
+        }
+        BaseFilterBuilder ret = null;
+        switch (aggQuery.getType()) {
+        case AGG_TYPE_TERMS:
+        case AGG_TYPE_SIGNIFICANT_TERMS:
+            ret = FilterBuilders.termsFilter(aggQuery.getField(),
+                    aggQuery.getSelection());
+            break;
+        case AGG_TYPE_RANGE:
+            OrFilterBuilder orFilter = FilterBuilders.orFilter();
+            for (AggregateRangeDefinition range : aggQuery.getRanges()) {
+                if (aggQuery.getSelection().contains(range.getKey())) {
+                    RangeFilterBuilder rangeFilter = FilterBuilders
+                            .rangeFilter(aggQuery.getField());
+                    if (range.getFrom() != null) {
+                        rangeFilter.gte(range.getFrom());
+                    }
+                    if (range.getTo() != null) {
+                        rangeFilter.lt(range.getTo());
+                    }
+                    orFilter.add(rangeFilter);
+                }
+            }
+            ret = orFilter;
+            break;
         }
         return ret;
     }
@@ -276,13 +321,17 @@ public class NxQueryBuilder {
                     getAggregateFilderId(aggQuery));
             fagg.filter(getAggregateFilterExceptFor(aggQuery.getId()));
             switch (aggQuery.getType()) {
-            case "terms":
+            case AGG_TYPE_TERMS:
                 fagg.subAggregation(getTermsBuilder(aggQuery));
                 break;
-            case "significant_terms":
+            case AGG_TYPE_SIGNIFICANT_TERMS:
                 fagg.subAggregation(getSignificantTermsBuilder(aggQuery));
                 break;
+            case AGG_TYPE_RANGE :
+                fagg.subAggregation(getRangeBuilder(aggQuery));
+                break;
             default:
+                fagg.subAggregation(getRangeBuilder(aggQuery));
                 throw new NotImplementedException(String.format(
                         "%s aggregation type is unknown for agg: %s",
                         aggQuery.getType(), aggQuery));
@@ -341,6 +390,23 @@ public class NxQueryBuilder {
         if (props.containsKey(ElasticSearchConstants.AGG_MIN_DOC_COUNT_PROP)) {
             ret.minDocCount(Integer.parseInt(props.get(
                     ElasticSearchConstants.AGG_MIN_DOC_COUNT_PROP)));
+        }
+        return ret;
+    }
+
+    protected RangeBuilder getRangeBuilder(AggregateQuery aggQuery) {
+        RangeBuilder ret = AggregationBuilders.range(aggQuery.getId()).field(
+                aggQuery.getField());
+        for(AggregateRangeDefinition range: aggQuery.getRanges()) {
+            if (range.getFrom() != null) {
+                if (range.getTo() != null) {
+                    ret.addRange(range.getKey(),  range.getFrom(), range.getTo());
+                } else {
+                    ret.addUnboundedFrom(range.getKey(), range.getFrom());
+                }
+            } else if (range.getTo() != null) {
+                ret.addUnboundedTo(range.getKey(), range.getTo());
+            }
         }
         return ret;
     }

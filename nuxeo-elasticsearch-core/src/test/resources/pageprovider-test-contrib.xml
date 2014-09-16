@@ -199,6 +199,14 @@
             <property name="size">5</property>
           </properties>
         </aggregate>
+        <aggregate id="size" type="range" parameter="common:size">
+          <field schema="advanced_search" name="size_agg"/>
+          <ranges>
+            <range key="small" to="2048" />
+            <range key="medium" from="2048" to="6144" />
+            <range key="big" from="6144" />
+          </ranges>
+        </aggregate>
       </aggregates>
     </genericPageProvider>
 

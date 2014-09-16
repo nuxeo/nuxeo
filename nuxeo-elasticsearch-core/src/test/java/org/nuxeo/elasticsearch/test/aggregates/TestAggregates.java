@@ -17,7 +17,9 @@
 
 package org.nuxeo.elasticsearch.test.aggregates;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.SystemUtils;
@@ -30,11 +32,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
+import org.nuxeo.ecm.platform.query.api.AggregateRangeDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.core.AggregateDescriptor;
 import org.nuxeo.ecm.platform.query.core.AggregateQueryImpl;
+import org.nuxeo.ecm.platform.query.core.AggregateRangeDescriptor;
 import org.nuxeo.ecm.platform.query.core.FieldDescriptor;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -81,6 +85,7 @@ public class TestAggregates {
             doc.setPropertyValue("dc:source", "Source" + i);
             doc.setPropertyValue("dc:nature", "Nature" + i % 2);
             doc.setPropertyValue("dc:coverage", "Coverage" + i % 3);
+            doc.setPropertyValue("common:size", 1024*i);
             doc = session.createDocument(doc);
         }
         TransactionHelper.commitOrRollbackTransaction();
@@ -186,6 +191,63 @@ public class TestAggregates {
                 + "    }\n" //
                 + "  }\n" //
                 + "}", //
+                request.toString());
+    }
+
+    @Test
+    public void testAggregateRangeQuery() throws Exception {
+        AggregateDefinition aggDef = new AggregateDescriptor();
+        aggDef.setType("range");
+        aggDef.setId("source");
+        aggDef.setDocumentField("common:size");
+        aggDef.setSearchField(new FieldDescriptor("advanced_search",
+                "size_agg"));
+        List<AggregateRangeDescriptor> ranges = new ArrayList<AggregateRangeDescriptor>();
+        ranges.add(new AggregateRangeDescriptor("small", null, 2048.0));
+        ranges.add(new AggregateRangeDescriptor("medium", 2048.0, 6144.0));
+        ranges.add(new AggregateRangeDescriptor("big", 6144.0, null));
+        aggDef.setRanges((List<AggregateRangeDefinition>) (List<?>) ranges);
+
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document").addAggregate(
+                new AggregateQueryImpl(aggDef, null));
+
+        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME);
+        qb.updateRequest(request);
+
+        assertEqualsEvenUnderWindows("{\n" //
+                        + "  \"from\" : 0,\n" //
+                        + "  \"size\" : 10,\n" //
+                        + "  \"query\" : {\n" //
+                        + "    \"match_all\" : { }\n" //
+                        + "  },\n" //
+                        + "  \"aggregations\" : {\n" //
+                        + "    \"source_filter\" : {\n" //
+                        + "      \"filter\" : {\n" //
+                        + "        \"match_all\" : { }\n" //
+                        + "      },\n" //
+                        + "      \"aggregations\" : {\n" //
+                        + "        \"source\" : {\n" //
+                        + "          \"range\" : {\n" //
+                        + "            \"field\" : \"common:size\",\n" //
+                        + "            \"ranges\" : [ {\n" //
+                        + "              \"key\" : \"small\",\n" //
+                        + "              \"to\" : 2048.0\n" //
+                        + "            }, {\n" //
+                        + "              \"key\" : \"medium\",\n" //
+                        + "              \"from\" : 2048.0,\n" //
+                        + "              \"to\" : 6144.0\n" //
+                        + "            }, {\n" //
+                        + "              \"key\" : \"big\",\n" //
+                        + "              \"from\" : 6144.0\n" //
+                        + "            } ]\n" //
+                        + "          }\n" //
+                        + "        }\n" //
+                        + "      }\n" //
+                        + "    }\n" //
+                        + "  }\n" //
+                        + "}", //
                 request.toString());
     }
 
@@ -297,7 +359,7 @@ public class TestAggregates {
         PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
                 null, null, (long) 0, props);
 
-        Assert.assertEquals(3,  pp.getAggregates().size());
+        Assert.assertEquals(4,  pp.getAggregates().size());
         Assert.assertEquals(
                 "AggregateImpl(source, terms, [BucketTerm(Source0, 1), BucketTerm(Source1, 1), BucketTerm(Source2, 1), BucketTerm(Source3, 1), BucketTerm(Source4, 1)])",
                 pp.getAggregates().get("source").toString());
@@ -306,6 +368,45 @@ public class TestAggregates {
                 pp.getAggregates().get("coverage").toString());
         Assert.assertEquals("AggregateImpl(nature, terms, [BucketTerm(Nature0, 1), BucketTerm(Nature1, 1)])",
                 pp.getAggregates().get("nature").toString());
+        Assert.assertEquals("AggregateImpl(size, range, [BucketRange(small, 1, -Infinity, 2048,00), BucketRange(medium, 1, 2048,00, 6144,00), BucketRange(big, 0, 6144,00, Infinity)])",
+                pp.getAggregates().get("size").toString());
+
+    }
+
+    @Test
+    public void testPageProviderRange() throws Exception {
+        buildDocs();
+
+        PageProviderService pps = Framework
+                .getService(PageProviderService.class);
+        Assert.assertNotNull(pps);
+
+        PageProviderDefinition ppdef = pps
+                .getPageProviderDefinition("aggregates_1");
+        Assert.assertNotNull(ppdef);
+
+        DocumentModel model = new DocumentModelImpl("/", "doc",
+                "AdvancedSearch");
+        String[] sizes = { "big", "medium" };
+        model.setProperty("advanced_search", "size_agg", sizes);
+
+        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY,
+                (Serializable) session);
+
+        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
+                null, null, (long) 0, props);
+
+        Assert.assertEquals(4,  pp.getAggregates().size());
+        Assert.assertEquals("AggregateImpl(source, terms, [BucketTerm(Source2, 1), BucketTerm(Source3, 1), BucketTerm(Source4, 1), BucketTerm(Source5, 1), BucketTerm(Source6, 1)])",
+                pp.getAggregates().get("source").toString());
+        Assert.assertEquals(
+                "AggregateImpl(coverage, terms, [BucketTerm(Coverage0, 3), BucketTerm(Coverage2, 3), BucketTerm(Coverage1, 2)])",
+                pp.getAggregates().get("coverage").toString());
+        Assert.assertEquals("AggregateImpl(nature, terms, [BucketTerm(Nature0, 4), BucketTerm(Nature1, 4)])",
+                pp.getAggregates().get("nature").toString());
+        Assert.assertEquals("AggregateImpl(size, range, [BucketRange(small, 2, -Infinity, 2048,00), BucketRange(medium, 4, 2048,00, 6144,00), BucketRange(big, 4, 6144,00, Infinity)])x",
+                pp.getAggregates().get("size").toString());
 
     }
 

@@ -54,5 +54,6 @@
   <xs:element name="nature_agg" type="nxs:stringList"/>
   <xs:element name="coverage_agg" type="nxs:stringList"/>
   <xs:element name="subjects_agg" type="nxs:stringList"/>
+  <xs:element name="size_agg" type="nxs:stringList"/>
 
 </xs:schema>
