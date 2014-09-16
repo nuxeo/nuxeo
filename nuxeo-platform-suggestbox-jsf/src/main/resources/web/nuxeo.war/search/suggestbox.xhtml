@@ -34,9 +34,7 @@
 	  </a4j:region>
 
 	  <h:inputHidden readonly="true" id="#{widget.id}_select2_params"
-	    value='{"minChars": "1","multiple": "false","operationId": "Search.SuggestersLauncher",
-	    "placeholder": "Select a value","readonly": "false","selectionFormatter": "nxSelectedSuggestBoxFormatter",
-	    "suggestionFormatter": "nxSuggestedSuggestBoxFormatter","width": "200px","onAddEntryHandler": "nxSuggestionEntryHandler"}' />
+	    value='#{select2Actions.encodeParameters(widget, action.properties)}' />
     </span>
   </a4j:outputPanel>
 

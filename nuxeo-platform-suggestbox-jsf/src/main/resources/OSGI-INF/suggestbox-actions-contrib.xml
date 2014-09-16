@@ -19,6 +19,15 @@
       <properties>
         <property name="template">/search/suggestbox.xhtml</property>
         <property name="disableMultipartForm">true</property>
+        <property name="minChars">1</property>
+        <property name="multiple">false</property>
+        <property name="operationId">Search.SuggestersLauncher</property>
+        <property name="placeholder">Select a value</property>
+        <property name="readonly">false</property>
+        <property name="selectionFormatter">nxSelectedSuggestBoxFormatter</property>
+        <property name="suggestionFormatter">nxSuggestedSuggestBoxFormatter</property>
+        <property name="onAddEntryHandler">nxSuggestionEntryHandler</property>
+        <property name="width">200px</property>
       </properties>
     </action>
 
