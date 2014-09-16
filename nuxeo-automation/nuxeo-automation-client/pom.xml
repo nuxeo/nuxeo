@@ -168,7 +168,9 @@
             <Bundle-Version>0.0.0.qualifier</Bundle-Version>
             <Bundle-Activator>org.nuxeo.ecm.automation.client.jaxrs.impl.AutomationClientActivator</Bundle-Activator>
             <Export-Package>
-              org.nuxeo.ecm.automation.client.adapters,org.nuxeo.ecm.automation.client,org.nuxeo.ecm.automation.client.model,org.nuxeo.ecm.automation.client.annotations
+              org.nuxeo.ecm.automation.client.adapters,org.nuxeo.ecm.automation.client,org.nuxeo.ecm.automation.client.model,org.nuxeo.ecm.automation.client.annotations,
+              org.nuxeo.ecm.automation.client.jaxrs.spi,
+              org.nuxeo.ecm.automation.client.jaxrs.spi.auth
             </Export-Package>
           </instructions>
         </configuration>

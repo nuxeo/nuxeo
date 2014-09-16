@@ -67,6 +67,7 @@ public abstract class AbstractAutomationClient implements AutomationClient {
      * Can be used for intercepting requests before they are being sent to the
      * server.
      */
+    @Override
     public void setRequestInterceptor(RequestInterceptor interceptor) {
         requestInterceptor = interceptor;
     }
