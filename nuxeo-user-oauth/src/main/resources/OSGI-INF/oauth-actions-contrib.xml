@@ -4,7 +4,7 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="AuthorizedApplication" link="user_center_fragment.xhtml"
+    <action id="AuthorizedApplication" link="/user_center_fragment.xhtml"
       label="user.center.authorizedApplication"
       order="50" icon="/icons/authorized_apps.png">
       <category>USER_CENTER</category>

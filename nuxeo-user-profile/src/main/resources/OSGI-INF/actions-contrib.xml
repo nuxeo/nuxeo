@@ -4,7 +4,7 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="Profile" link="user_center_fragment.xhtml" label="user.center.profile"
+    <action id="Profile" link="/user_center_fragment.xhtml" label="user.center.profile"
       icon="/icons/profile.png" order="20">
       <category>USER_CENTER</category>
       <filter-id>not_anonymous</filter-id>
@@ -15,7 +15,7 @@
       <category>Profile_sub_tab</category>
     </action>
 
-    <action id="Preferences" link="user_center_fragment.xhtml"
+    <action id="Preferences" link="/user_center_fragment.xhtml"
       label="user.center.preferences" icon="/icons/preferences.png"
       order="30">
       <category>USER_CENTER</category>

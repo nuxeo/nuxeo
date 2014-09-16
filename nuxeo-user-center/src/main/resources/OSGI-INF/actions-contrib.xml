@@ -9,7 +9,7 @@
     </action>
 
     <!-- Users and Groups directory -->
-    <action id="UsersGroupsHome" link="user_center_fragment.xhtml"
+    <action id="UsersGroupsHome" link="/user_center_fragment.xhtml"
       label="command.manageMembers" icon="/icons/users_groups.png" order="60">
       <category>USER_CENTER</category>
       <filter-id>not_anonymous</filter-id>
@@ -27,7 +27,7 @@
     </action>
 
     <!-- Saved searches -->
-    <action id="SavedSearches" link="user_center_fragment.xhtml"
+    <action id="SavedSearches" link="/user_center_fragment.xhtml"
       label="user.center.saved.searches" icon="/icons/saved_searches.png" order="70">
       <category>USER_CENTER</category>
       <properties>
