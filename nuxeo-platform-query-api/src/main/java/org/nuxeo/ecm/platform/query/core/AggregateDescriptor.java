@@ -18,14 +18,15 @@
 
 package org.nuxeo.ecm.platform.query.core;
 
-import java.util.HashMap;
-import java.io.IOException;
-import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
+import org.nuxeo.ecm.platform.query.api.AggregateRangeDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 
 /**
@@ -48,6 +49,9 @@ public class AggregateDescriptor implements AggregateDefinition {
 
     @XNode(value = "properties")
     protected PropertiesDescriptor aggregateProperties = new PropertiesDescriptor();
+
+    @XNodeList(value = "ranges/range", type = ArrayList.class, componentType = AggregateRangeDescriptor.class)
+    protected List<AggregateRangeDescriptor> aggregateRanges;
 
     @Override
     public String getId() {
@@ -76,6 +80,13 @@ public class AggregateDescriptor implements AggregateDefinition {
     @Override
     public Map<String, String> getProperties() {
         return aggregateProperties.getProperties();
+    }
+
+    @Override
+    public List<AggregateRangeDefinition> getRanges() {
+        @SuppressWarnings("unchecked")
+        List<AggregateRangeDefinition> ret = (List<AggregateRangeDefinition>) (List<?>) aggregateRanges;
+        return ret;
     }
 
     @Override
@@ -109,7 +120,8 @@ public class AggregateDescriptor implements AggregateDefinition {
         }
         if (aggregateProperties != null) {
             clone.aggregateProperties = new PropertiesDescriptor();
-            clone.aggregateProperties.properties.putAll(aggregateProperties.properties);
+            clone.aggregateProperties.properties
+                    .putAll(aggregateProperties.properties);
         }
         return clone;
     }

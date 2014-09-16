@@ -93,6 +93,7 @@ public class TestPageProviderAggregates extends SQLRepositoryTestCase {
         AggregateDefinition source_agg = aggs.get(0);
         AggregateDefinition coverage_agg = aggs.get(1);
         AggregateDefinition subject_agg = aggs.get(2);
+        AggregateDefinition size_agg = aggs.get(3);
 
         assertEquals("source_agg", source_agg.getId());
         assertEquals("terms", source_agg.getType());
@@ -106,6 +107,10 @@ public class TestPageProviderAggregates extends SQLRepositoryTestCase {
         assertNotNull(source_agg.getProperties());
         assertEquals(2, source_agg.getProperties().size());
         assertEquals(0, subject_agg.getProperties().size());
+
+        assertEquals("size_agg", size_agg.getId());
+        assertEquals(3, size_agg.getRanges().size());
+        assertEquals("foo", size_agg.getRanges().get(0));
     }
 
     @Test

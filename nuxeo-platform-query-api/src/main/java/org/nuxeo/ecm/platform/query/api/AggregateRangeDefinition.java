@@ -17,43 +17,22 @@
 
 package org.nuxeo.ecm.platform.query.api;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * @since 5.9.6
  */
-public interface AggregateDefinition {
+public interface AggregateRangeDefinition {
 
-    String getId();
+    String getKey();
 
-    void setId(String id);
+    String getFrom();
 
-    String getType();
+    String getTo();
 
-    void setType(String type);
+    void setKey(String key);
 
-    void setProperty(String name, String value);
+    void setFrom(String from);
 
-    Map<String, String> getProperties();
+    void setTo(String to);
 
-    List<AggregateRangeDefinition> getRanges();
-
-    /**
-     * Get the document aggregator field
-     */
-    String getDocumentField();
-
-    void setDocumentField(String parameter);
-
-    /**
-     * Get the ref of the search input, the type of the field must be
-     * nxs:stringList
-     */
-    PredicateFieldDefinition getSearchField();
-
-    void setSearchField(PredicateFieldDefinition field);
-
-    AggregateDefinition clone();
-
+    AggregateRangeDefinition clone();
 }
