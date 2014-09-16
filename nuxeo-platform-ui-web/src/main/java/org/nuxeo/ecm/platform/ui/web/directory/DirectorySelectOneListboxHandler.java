@@ -83,8 +83,8 @@ public class DirectorySelectOneListboxHandler extends MetaTagHandler {
     }
 
     protected void initAttributes(TagAttribute[] attrs) {
-        List<TagAttribute> select = new ArrayList<>();
-        List<TagAttribute> options = new ArrayList<>();
+        select = new ArrayList<>();
+        options = new ArrayList<>();
         if (attrs != null) {
             for (TagAttribute attr : attrs) {
                 String name = attr.getLocalName();
