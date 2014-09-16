@@ -64,7 +64,8 @@ class Pages(NuxeoTestCase):
         p = (p.getRootWorkspaces()
              .personalWorkspace()
              .getRootWorkspaces()
-             .search('workspaces')
+             #XXX NXP-15036 Update search method with search tab 
+             #.search('workspaces')
              .logout())
 
     def testSections(self):
