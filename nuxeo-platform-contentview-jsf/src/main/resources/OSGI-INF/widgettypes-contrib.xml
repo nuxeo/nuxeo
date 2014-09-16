@@ -387,7 +387,7 @@
       </handler-class>
     </widgetType>
 
-    <widgetType name="SelectManyListboxDirectoryAggregateWidgetTypeHandler">
+    <widgetType name="selectManyListDirectoryAggregate">
       <configuration>
         <sinceVersion>5.9.6</sinceVersion>
         <title>Select Many Listbox Directory Aggregate</title>
@@ -428,7 +428,7 @@
       </handler-class>
     </widgetType>
 
-    <widgetType name="SelectManyListboxDirectoryAggregateWidgetTypeHandler">
+    <widgetType name="selectManyCheckboxDirectoryAggregate">
       <configuration>
         <sinceVersion>5.9.6</sinceVersion>
         <title>Select Many Checkbox Directory Aggregate</title>
