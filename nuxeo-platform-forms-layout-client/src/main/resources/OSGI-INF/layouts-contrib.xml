@@ -2533,6 +2533,7 @@
             <property name="var">item</property>
             <property name="itemValue">#{item.id}</property>
             <property name="ordering">label</property>
+            <property name="notDisplayDefaultOption">true</property>
           </defaultValues>
           <layouts mode="any">
             <layout name="selectManyCheckboxDirectory_widget_type_properties_any">

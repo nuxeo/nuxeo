@@ -328,6 +328,8 @@
             <property name="itemValue">#{item.key}</property>
             <property name="itemCount">(#{item.docCount})</property>
             <property name="ordering">label</property>
+            <property name="layout">pageDirection</property>
+            <property name="notDisplayDefaultOption">true</property>
           </defaultValues>
           <layouts mode="edit">
             <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
@@ -452,6 +454,8 @@
             <property name="itemValue">#{item.key}</property>
             <property name="itemCount">(#{item.docCount})</property>
             <property name="ordering">label</property>
+            <property name="notDisplayDefaultOption">true</property>
+            <property name="layout">pageDirection</property>
           </defaultValues>
           <layouts mode="edit">
             <layout name="selectManyCheckboxDirectoryAggregate_widget_type_properties_edit">
