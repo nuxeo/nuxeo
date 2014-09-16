@@ -73,11 +73,12 @@ public abstract class AbstractDirectorySelectWidgetTypeHandler extends
                 props.put(mapping.name(), widget.getProperty(mapping.name()));
             } else {
                 // if selectOptions is filled on widget properties, force
-                // displayAll value to false by default
+                // displayAll value to false to ensure filtering of presented
+                // items
                 if (DirectoryPropertyMappings.displayAll.equals(mapping)) {
                     if (widget.getProperties().containsKey(
                             SelectPropertyMappings.selectOptions)) {
-                        props.put(mapping.name(), Boolean.TRUE);
+                        props.put(mapping.name(), Boolean.FALSE);
                     }
                 }
             }
