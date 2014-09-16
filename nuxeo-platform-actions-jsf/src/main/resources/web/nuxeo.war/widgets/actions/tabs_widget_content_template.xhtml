@@ -4,6 +4,11 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://java.sun.com/jstl/core">
 
+<c:if test="#{not empty widgetProperty_tabContentTemplate}">
+  <ui:include src="#{widgetProperty_tabContentTemplate}" />
+</c:if>
+
+<c:if test="#{empty widgetProperty_tabContentTemplate}">
   <c:if test="#{not empty action.properties.tabContentBeforeInclude}">
     <ui:include src="#{action.properties.tabContentBeforeInclude}" />
   </c:if>
@@ -29,5 +34,6 @@
   <c:if test="#{not empty action.properties.tabContentAfterInclude}">
     <ui:include src="#{action.properties.tabContentAfterInclude}" />
   </c:if>
+</c:if>
 
 </ui:composition>
