@@ -18,10 +18,8 @@ package org.nuxeo.ecm.platform.suggestbox.handlers;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
-import org.jboss.seam.Component;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -32,9 +30,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
-import org.nuxeo.ecm.platform.faceted.search.jsf.FacetedSearchActions;
 import org.nuxeo.ecm.platform.suggestbox.service.SearchDocumentsSuggestion;
-import org.nuxeo.ecm.virtualnavigation.action.MultiNavTreeManager;
 
 /**
  * Handle SearchDocumentsSuggestion using the faceted search JSF UI.
@@ -51,7 +47,8 @@ public class FacetedSearchSuggestionHandler {
 
     @OperationMethod
     public Object run(Object input) throws OperationException, ClientException {
-        if (!(input instanceof SearchDocumentsSuggestion)) {
+        /* TODO reactivate when the Search tab will be deployed
+         * if (!(input instanceof SearchDocumentsSuggestion)) {
             throw new OperationException(String.format(
                     "Expected an instance of SearchDocumentsSuggestion,"
                             + " got '%s'", input));
@@ -80,7 +77,7 @@ public class FacetedSearchSuggestionHandler {
         }
 
         multiNavTreeManager.setSelectedNavigationTree("facetedSearch");
-        // JSF view id for the faceted search results page
+        // JSF view id for the faceted search results page*/
         return "faceted_search_results";
     }
 

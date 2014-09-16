@@ -24,7 +24,6 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
-import org.nuxeo.ecm.platform.faceted.search.jsf.FacetedSearchActions;
 import org.nuxeo.ecm.platform.suggestbox.service.DocumentSuggestion;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
@@ -59,10 +58,11 @@ public class NavigateToDocumentSuggestionHandler {
             MultiNavTreeManager multiNavTreeManager = (MultiNavTreeManager) Component.getInstance(MultiNavTreeManager.class);
             multiNavTreeManager.setSelectedNavigationTree(navigationTree);
         }
-        if (clearFacetedSearch) {
+        /* TODO reactivate when the Search tab will be deployed
+         * if (clearFacetedSearch) {
             FacetedSearchActions facetedSearchActions = (FacetedSearchActions) Component.getInstance(FacetedSearchActions.class);
             facetedSearchActions.clearSearch();
-        }
+        }*/
         DocumentSuggestion suggestion = (DocumentSuggestion) input;
         NavigationContext navigationContext = (NavigationContext) Component.getInstance(NavigationContextBean.class);
         DocumentLocation docLoc = suggestion.getDocumentLocation();

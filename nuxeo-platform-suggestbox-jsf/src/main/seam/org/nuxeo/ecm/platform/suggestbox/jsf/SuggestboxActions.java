@@ -34,7 +34,6 @@ import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
-import org.nuxeo.ecm.platform.faceted.search.jsf.FacetedSearchActions;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionContext;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionException;
@@ -76,8 +75,8 @@ public class SuggestboxActions extends DocumentContextBoundActionBean implements
     @In(create = true)
     protected MultiNavTreeManager multiNavTreeManager;
 
-    @In(create = true)
-    protected FacetedSearchActions facetedSearchActions;
+    /*@In(create = true)
+    protected FacetedSearchActions facetedSearchActions;*/
 
     @In(create = true)
     protected ContentViewActions contentViewActions;
