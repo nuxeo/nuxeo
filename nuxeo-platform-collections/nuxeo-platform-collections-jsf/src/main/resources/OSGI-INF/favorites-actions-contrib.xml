@@ -6,7 +6,7 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <!-- action id="Favorites" link="user_center_fragment.xhtml" label="user.center.favorites"
+    <!-- action id="Favorites" link="/user_center_fragment.xhtml" label="user.center.favorites"
       order="80" icon="/icons/favorite_tab.png"> <category>USER_CENTER</category> <properties>
       <property name="alwaysDisplaySubTabs">true</property> </properties> <filter-id>not_anonymous</filter-id>
       </action> <action id="favoritesContent" link="/incl/favorites_content_listing.xhtml"
