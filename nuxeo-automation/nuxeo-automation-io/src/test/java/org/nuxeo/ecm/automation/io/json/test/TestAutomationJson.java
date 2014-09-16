@@ -24,6 +24,7 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonWriter;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.ecm.webengine.test.WebEngineFeatureCore;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -36,9 +37,8 @@ import com.google.inject.Inject;
  * @since 5.9.4
  */
 @RunWith(FeaturesRunner.class)
-@Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io",
-        "org.nuxeo.ecm.webengine.core", "org.nuxeo.ecm.platform.web.common" })
+@Features({ PlatformFeature.class, WebEngineFeatureCore.class })
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io" })
 @LocalDeploy({ "org.nuxeo.ecm.automation.io:test-chains.xml",
         "org.nuxeo.ecm.automation.io:operations-contrib-test.xml" })
 public class TestAutomationJson {

@@ -36,19 +36,18 @@ import org.nuxeo.runtime.test.runner.web.WebDriverFeature;
 
 @Deploy({
         "org.nuxeo.ecm.platform.login",
-        "org.nuxeo.ecm.platform.web.common",
         "org.nuxeo.ecm.platform.login.default",
         "org.nuxeo.ecm.webengine.admin",
         "org.nuxeo.ecm.webengine.jaxrs",
         "org.nuxeo.ecm.webengine.base",
-        "org.nuxeo.ecm.webengine.core",
         "org.nuxeo.ecm.webengine.ui",
         "org.nuxeo.ecm.webengine.gwt",
         "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
         "org.nuxeo.ecm.webengine.test:login-anonymous-config.xml",
         "org.nuxeo.ecm.webengine.test:login-config.xml",
         "org.nuxeo.ecm.webengine.test:runtimeserver-contrib.xml" })
-@Features({ PlatformFeature.class, WebDriverFeature.class, JettyTransactionalFeature.class })
+@Features({ PlatformFeature.class, WebDriverFeature.class,
+        JettyTransactionalFeature.class, WebEngineFeatureCore.class })
 public class WebEngineFeature extends SimpleFeature implements
         WorkingDirectoryConfigurator {
 
