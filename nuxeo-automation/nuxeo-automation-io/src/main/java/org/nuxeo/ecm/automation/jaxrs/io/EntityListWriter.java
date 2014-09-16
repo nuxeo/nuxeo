@@ -107,6 +107,10 @@ public abstract class EntityListWriter<T> extends EntityWriter<List<T>> {
             jg.writeBooleanField("isSortable", paginable.isSortable());
             jg.writeBooleanField("hasError", paginable.hasError());
             jg.writeStringField("errorMessage", paginable.getErrorMessage());
+            if (paginable.hasAggregateSupport() && paginable.getAggregates() !=
+                    null && !paginable.getAggregates().isEmpty()) {
+                jg.writeObjectField("aggregations", paginable.getAggregates());
+            }
         }
     }
 

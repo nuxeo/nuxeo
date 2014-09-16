@@ -18,7 +18,11 @@
 package org.nuxeo.ecm.automation.core.util;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
+import org.nuxeo.ecm.platform.query.api.Aggregate;
+import org.nuxeo.ecm.platform.query.api.AggregateQuery;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 
 /**
@@ -93,5 +97,20 @@ public class PaginablePageProvider<T> extends ArrayList<T> implements Paginable<
     @Override
     public String getErrorMessage() {
         return pageProvider.getErrorMessage();
+    }
+
+    @Override
+    public List<AggregateQuery> getAggregatesQuery() {
+        return pageProvider.getAggregatesQuery();
+    }
+
+    @Override
+    public Map<String, Aggregate> getAggregates() {
+        return pageProvider.getAggregates();
+    }
+
+    @Override
+    public boolean hasAggregateSupport() {
+        return pageProvider.hasAggregateSupport();
     }
 }

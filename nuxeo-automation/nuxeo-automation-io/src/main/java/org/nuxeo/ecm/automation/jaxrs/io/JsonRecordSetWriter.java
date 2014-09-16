@@ -34,6 +34,7 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.core.util.PaginableRecordSet;
 import org.nuxeo.ecm.automation.core.util.RecordSet;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 
 /**
  * Manage JSON Marshalling for {@link RecordSet} objects
@@ -110,6 +111,15 @@ public class JsonRecordSetWriter implements MessageBodyWriter<RecordSet> {
         for (Map<String, Serializable> entry : records) {
             jg.writeObject(entry);
         }
+
+        if (records instanceof PaginableRecordSet) {
+            PaginableRecordSet pRecord = (PaginableRecordSet) records;
+            if (pRecord.hasAggregateSupport() && pRecord.getAggregates() !=
+                    null && !pRecord.getAggregates().isEmpty()) {
+                jg.writeObjectField("aggregations", pRecord.getAggregates());
+            }
+        }
+
         jg.writeEndArray();
         jg.writeEndObject();
         jg.flush();

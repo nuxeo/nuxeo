@@ -45,6 +45,9 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
+import org.nuxeo.ecm.platform.query.api.Aggregate;
+import org.nuxeo.ecm.platform.query.api.AggregateQuery;
+import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
@@ -189,6 +192,10 @@ public class JsonDocumentListWriter extends EntityListWriter<DocumentModel> {
                         contextParameters, headers, request);
             }
             jg.writeEndArray();
+            if (provider.hasAggregateSupport() && provider.getAggregates() !=
+                    null && !provider.getAggregates().isEmpty()) {
+                jg.writeObjectField("aggregations", provider.getAggregates());
+            }
         } else {
             jg.writeArrayFieldStart("entries");
             for (DocumentModel doc : docs) {

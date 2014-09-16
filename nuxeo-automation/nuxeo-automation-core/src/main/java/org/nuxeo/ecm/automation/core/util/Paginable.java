@@ -11,7 +11,11 @@
  */
 package org.nuxeo.ecm.automation.core.util;
 
+import org.nuxeo.ecm.platform.query.api.Aggregate;
+import org.nuxeo.ecm.platform.query.api.AggregateQuery;
+
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
@@ -79,5 +83,20 @@ public interface Paginable<T> extends List<T> {
     boolean hasError();
 
     String getErrorMessage();
+
+    /**
+     * @since 5.9.6
+     */
+    List<AggregateQuery> getAggregatesQuery();
+
+    /**
+     * @since 5.9.6
+     */
+    Map<String, Aggregate> getAggregates();
+
+    /**
+     * @since 5.9.6
+     */
+    boolean hasAggregateSupport();
 
 }
