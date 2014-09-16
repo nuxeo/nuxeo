@@ -69,11 +69,13 @@ public class UISelectItems extends javax.faces.component.UISelectItems
     }
 
     public String getItemLabelPrefixSeparator() {
-        return (String) getStateHelper().eval(PropertyKeys.itemLabelPrefix, " ");
+        return (String) getStateHelper().eval(
+                PropertyKeys.itemLabelPrefixSeparator, " ");
     }
 
     public void setItemLabelPrefixSeparator(String itemLabelPrefix) {
-        getStateHelper().put(PropertyKeys.itemLabelPrefix, itemLabelPrefix);
+        getStateHelper().put(PropertyKeys.itemLabelPrefixSeparator,
+                itemLabelPrefix);
     }
 
     public String getItemLabelSuffix() {
@@ -85,11 +87,13 @@ public class UISelectItems extends javax.faces.component.UISelectItems
     }
 
     public String getItemLabelSuffixSeparator() {
-        return (String) getStateHelper().eval(PropertyKeys.itemLabelSuffix, " ");
+        return (String) getStateHelper().eval(
+                PropertyKeys.itemLabelSuffixSeparator, " ");
     }
 
     public void setItemLabelSuffixSeparator(String itemLabelSuffix) {
-        getStateHelper().put(PropertyKeys.itemLabelSuffix, itemLabelSuffix);
+        getStateHelper().put(PropertyKeys.itemLabelSuffixSeparator,
+                itemLabelSuffix);
     }
 
     public Object getItemValue() {
