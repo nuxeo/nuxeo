@@ -4109,6 +4109,19 @@
       </dependency>
 
       <dependency>
+	<groupId>com.lordofthejars</groupId>
+	<artifactId>nosqlunit-redis</artifactId>
+	<version>0.7.9</version>
+	<scope>test</scope>
+      </dependency>
+
+      <dependency>
+	<groupId>org.luaj</groupId>
+	<artifactId>luaj-jse</artifactId>
+	<version>3.0</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-frontend-jaxws</artifactId>
         <version>${cxf.version}</version>
