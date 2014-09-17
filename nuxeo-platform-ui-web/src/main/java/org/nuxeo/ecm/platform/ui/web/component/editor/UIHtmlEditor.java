@@ -19,193 +19,79 @@
 
 package org.nuxeo.ecm.platform.ui.web.component.editor;
 
-import javax.el.ELException;
-import javax.el.ValueExpression;
-import javax.faces.FacesException;
 import javax.faces.component.UIInput;
-import javax.faces.context.FacesContext;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import javax.faces.component.html.HtmlInputText;
 
 /**
  * Html editor component.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class UIHtmlEditor extends UIInput {
+public class UIHtmlEditor extends HtmlInputText {
 
     public static final String COMPONENT_TYPE = UIHtmlEditor.class.getName();
 
     public static final String COMPONENT_FAMILY = UIInput.COMPONENT_FAMILY;
 
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(UIHtmlEditor.class);
-
-    // attributes TODO: add more.
-
-    private String width;
-
-    private String height;
-
-    private String cols;
-
-    private String rows;
-
-    private String editorSelector;
-
-    private Boolean disableHtmlInit;
-
-    public Boolean getDisableHtmlInit() {
-        if (disableHtmlInit != null) {
-            return (this.disableHtmlInit);
-        }
-        ValueExpression ve = getValueExpression("disableHtmlInit");
-        if (ve != null) {
-            try {
-                return Boolean.valueOf(Boolean.TRUE.equals(ve.getValue(getFacesContext().getELContext())));
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            // default value
-            return Boolean.FALSE;
-        }
-    }
-
-    public void setDisableHtmlInit(Boolean disableHtmlInit) {
-        this.disableHtmlInit = disableHtmlInit;
-    }
-
-    public String getCols() {
-        if (cols != null) {
-            return cols;
-        }
-        ValueExpression ve = getValueExpression("cols");
-        if (ve != null) {
-            try {
-                return (String) ve.getValue(getFacesContext().getELContext());
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            // default value
-            return "100";
-        }
-    }
-
-    public void setCols(String cols) {
-        this.cols = cols;
-    }
-
-    public String getRows() {
-        if (rows != null) {
-            return rows;
-        }
-        ValueExpression ve = getValueExpression("rows");
-        if (ve != null) {
-            try {
-                return (String) ve.getValue(getFacesContext().getELContext());
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            // default value
-            return "25";
-        }
-    }
-
-    public void setRows(String rows) {
-        this.rows = rows;
-    }
-
     public UIHtmlEditor() {
         setRendererType(COMPONENT_TYPE);
     }
 
+    // attributes TODO: add more.
+    protected enum PropertyKeys {
+        width, height, cols, rows, editorSelector, disableHtmlInit;
+    }
+
     // setters & getters
 
+    public Boolean getDisableHtmlInit() {
+        return (Boolean) getStateHelper().eval(PropertyKeys.disableHtmlInit,
+                Boolean.FALSE);
+    }
+
+    public void setDisableHtmlInit(Boolean disableHtmlInit) {
+        getStateHelper().put(PropertyKeys.disableHtmlInit, disableHtmlInit);
+    }
+
+    public String getCols() {
+        return (String) getStateHelper().eval(PropertyKeys.cols, "100");
+    }
+
+    public void setCols(String cols) {
+        getStateHelper().put(PropertyKeys.cols, cols);
+    }
+
+    public String getRows() {
+        return (String) getStateHelper().eval(PropertyKeys.rows, "25");
+    }
+
+    public void setRows(String rows) {
+        getStateHelper().put(PropertyKeys.rows, rows);
+    }
+
     public String getWidth() {
-        if (width != null) {
-            return width;
-        }
-        ValueExpression ve = getValueExpression("width");
-        if (ve != null) {
-            try {
-                return (String) ve.getValue(getFacesContext().getELContext());
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            // default value
-            return "640";
-        }
+        return (String) getStateHelper().eval(PropertyKeys.width, "640");
     }
 
     public void setWidth(String width) {
-        this.width = width;
+        getStateHelper().put(PropertyKeys.width, width);
     }
 
     public String getHeight() {
-        if (height != null) {
-            return height;
-        }
-        ValueExpression ve = getValueExpression("height");
-        if (ve != null) {
-            try {
-                return (String) ve.getValue(getFacesContext().getELContext());
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            // default value
-            return "400";
-        }
+        return (String) getStateHelper().eval(PropertyKeys.height, "400");
     }
 
     public void setHeight(String height) {
-        this.height = height;
+        getStateHelper().put(PropertyKeys.height, height);
     }
 
     public String getEditorSelector() {
-        if (editorSelector != null) {
-            return editorSelector;
-        }
-        ValueExpression ve = getValueExpression("editorSelector");
-        if (ve != null) {
-            try {
-                return (String) ve.getValue(getFacesContext().getELContext());
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            // default value
-            return "mceEditor";
-        }
+        return (String) getStateHelper().eval(PropertyKeys.editorSelector,
+                "mceEditor");
     }
 
     public void setEditorSelector(String editorSelector) {
-        this.editorSelector = editorSelector;
-    }
-
-    // state holder
-
-    @Override
-    public Object saveState(FacesContext context) {
-        return new Object[] { super.saveState(context), width, height,
-                editorSelector, cols, rows, disableHtmlInit };
-    }
-
-    @Override
-    public void restoreState(FacesContext context, Object state) {
-        Object[] values = (Object[]) state;
-        super.restoreState(context, values[0]);
-        width = (String) values[1];
-        height = (String) values[2];
-        editorSelector = (String) values[3];
-        cols = (String) values[4];
-        rows = (String) values[5];
-        disableHtmlInit = (Boolean) values[6];
+        getStateHelper().put(PropertyKeys.editorSelector, editorSelector);
     }
 
 }

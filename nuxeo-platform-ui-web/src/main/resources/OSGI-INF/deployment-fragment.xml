@@ -511,15 +511,6 @@
       </component-class>
     </component>
 
-    <component>
-      <component-type>
-        javax.faces.HtmlInputText
-      </component-type>
-      <component-class>
-        org.nuxeo.ecm.platform.ui.web.component.html.NXHtmlInputText
-      </component-class>
-    </component>
-
     <!-- override of buggy seam libraries -->
     <component>
       <component-type>
@@ -581,9 +572,10 @@
     <!--
       <component>
       <component-type>javax.faces.HtmlForm</component-type>
-      <component-class>org.nuxeo.ecm.platform.ui.web.component.NXHtmlForm</component-class>
+      <component-class>
+      org.nuxeo.ecm.platform.ui.web.component.NXHtmlForm
+      </component-class>
       </component>
-      <component>
     -->
 
   </extension>
@@ -613,14 +605,6 @@
       <renderer-type>javax.faces.NXImage</renderer-type>
       <renderer-class>
         org.nuxeo.ecm.platform.ui.web.renderer.NXImageRenderer
-      </renderer-class>
-    </renderer>
-
-    <renderer>
-      <component-family>javax.faces.Input</component-family>
-      <renderer-type>javax.faces.Text</renderer-type>
-      <renderer-class>
-        org.nuxeo.ecm.platform.ui.web.renderer.NXTextRenderer
       </renderer-class>
     </renderer>
 
@@ -668,14 +652,12 @@
     </renderer>
 
     <renderer>
-      <component-family>
-        javax.faces.Input
-      </component-family>
+      <component-family>javax.faces.Input</component-family>
       <renderer-type>
         org.nuxeo.ecm.platform.ui.web.component.holder.UIValueHolder
       </renderer-type>
       <renderer-class>
-        com.sun.faces.renderkit.html_basic.HiddenRenderer
+        org.nuxeo.ecm.platform.ui.web.component.holder.ValueHolderRenderer
       </renderer-class>
     </renderer>
     <render-kit>

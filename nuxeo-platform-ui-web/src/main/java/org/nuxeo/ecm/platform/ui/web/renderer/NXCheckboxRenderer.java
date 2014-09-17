@@ -16,12 +16,9 @@
  */
 package org.nuxeo.ecm.platform.ui.web.renderer;
 
-import java.io.IOException;
-
 import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
 import javax.faces.context.FacesContext;
-import javax.faces.context.ResponseWriter;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 
@@ -30,7 +27,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sun.faces.renderkit.Attribute;
 import com.sun.faces.renderkit.AttributeManager;
-import com.sun.faces.renderkit.RenderKitUtils;
 import com.sun.faces.renderkit.html_basic.CheckboxRenderer;
 import com.sun.faces.util.RequestStateManager;
 
@@ -81,37 +77,6 @@ public class NXCheckboxRenderer extends CheckboxRenderer {
         } else {
             return Boolean.valueOf(newValue);
         }
-    }
-
-    // Seems this is not needed anymore for JSF 2.2.5 (NXP-5813 not present)
-    protected void getEndTextToRender(FacesContext context,
-            UIComponent component, String currentValue) throws IOException {
-
-        ResponseWriter writer = context.getResponseWriter();
-        assert (writer != null);
-        String styleClass;
-
-        writer.startElement("input", component);
-        writeIdAttributeIfNecessary(context, writer, component);
-        writer.writeAttribute("type", "checkbox", "type");
-        writer.writeAttribute("name", component.getClientId(context),
-                "clientId");
-
-        // NXP-5813: check current value instead of calling
-        // UISelectBoolean#isSelected that does not handle conversion correctly
-        if ("true".equals(currentValue)) {
-            writer.writeAttribute("checked", Boolean.TRUE, "value");
-        }
-        if (null != (styleClass = (String) component.getAttributes().get(
-                "styleClass"))) {
-            writer.writeAttribute("class", styleClass, "styleClass");
-        }
-        RenderKitUtils.renderPassThruAttributes(context, writer, component,
-                ATTRIBUTES);
-        RenderKitUtils.renderXHTMLStyleBooleanAttributes(writer, component);
-
-        writer.endElement("input");
-
     }
 
 }

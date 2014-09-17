@@ -25,6 +25,7 @@ import javax.faces.FacesException;
 import javax.faces.component.ContextCallback;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
+import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.visit.VisitCallback;
 import javax.faces.component.visit.VisitContext;
 import javax.faces.context.FacesContext;
@@ -48,7 +49,7 @@ import com.sun.faces.facelets.tag.jsf.ComponentSupport;
  *
  * @since 5.5
  */
-public class UIValueHolder extends UIInput implements ResettableComponent {
+public class UIValueHolder extends HtmlInputText implements ResettableComponent {
 
     private static final Log log = LogFactory.getLog(UIValueHolder.class);
 
