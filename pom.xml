@@ -1,11 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.8.0-HF22-SNAPSHOT</version>
+    <version>5.8.0-HF23-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-addons-parent</artifactId>
@@ -20,56 +19,56 @@
   </scm>
 
   <properties>
-    <nuxeo.addons.version>5.8.0-HF22-SNAPSHOT</nuxeo.addons.version>
-    <nuxeo.opencmis.version>5.8.0-HF22-SNAPSHOT</nuxeo.opencmis.version>
-    <nuxeo.marianne.version>5.8.0-HF22-SNAPSHOT</nuxeo.marianne.version>
-    <nuxeo.login.version>5.8.0-HF22-SNAPSHOT</nuxeo.login.version>
-    <nuxeo.facetedsearch.version>5.8.0-HF22-SNAPSHOT</nuxeo.facetedsearch.version>
-    <nuxeo.shell.version>5.8.0-HF22-SNAPSHOT</nuxeo.shell.version>
-    <nuxeo.webembedded.version>5.8.0-HF22-SNAPSHOT</nuxeo.webembedded.version>
-    <nuxeo.opensocial.version>5.8.0-HF22-SNAPSHOT</nuxeo.opensocial.version>
-    <nuxeo.usercenter.version>5.8.0-HF22-SNAPSHOT</nuxeo.usercenter.version>
-    <nuxeo.fsconnectors.version>5.8.0-HF22-SNAPSHOT</nuxeo.fsconnectors.version>
-    <nuxeo.classification.version>5.8.0-HF22-SNAPSHOT</nuxeo.classification.version>
-    <nuxeo.importer.version>5.8.0-HF22-SNAPSHOT</nuxeo.importer.version>
-    <nuxeo.routing.version>5.8.0-HF22-SNAPSHOT</nuxeo.routing.version>
-    <nuxeo.smartsearch.version>5.8.0-HF22-SNAPSHOT</nuxeo.smartsearch.version>
-    <nuxeo.audio.version>5.8.0-HF22-SNAPSHOT</nuxeo.audio.version>
-    <nuxeo.video.version>5.8.0-HF22-SNAPSHOT</nuxeo.video.version>
-    <nuxeo.categorization.version>5.8.0-HF22-SNAPSHOT</nuxeo.categorization.version>
-    <nuxeo.rendition.version>5.8.0-HF22-SNAPSHOT</nuxeo.rendition.version>
-    <nuxeo.replication.version>5.8.0-HF22-SNAPSHOT</nuxeo.replication.version>
-    <nuxeo.activity.version>5.8.0-HF22-SNAPSHOT</nuxeo.activity.version>
-    <nuxeo.sc.version>5.8.0-HF22-SNAPSHOT</nuxeo.sc.version>
-    <nuxeo.birt.version>5.8.0-HF22-SNAPSHOT</nuxeo.birt.version>
-    <nuxeo.suggestbox.version>5.8.0-HF22-SNAPSHOT</nuxeo.suggestbox.version>
-    <nuxeo.rssreader.version>5.8.0-HF22-SNAPSHOT</nuxeo.rssreader.version>
-    <nuxeo.dam.version>5.8.0-HF22-SNAPSHOT</nuxeo.dam.version>
-    <nuxeo.cmf.version>5.8.0-HF22-SNAPSHOT</nuxeo.cmf.version>
-    <nuxeo.poll.version>5.8.0-HF22-SNAPSHOT</nuxeo.poll.version>
-    <nuxeo.flavors.version>5.8.0-HF22-SNAPSHOT</nuxeo.flavors.version>
-    <nuxeo.quota.version>5.8.0-HF22-SNAPSHOT</nuxeo.quota.version>
-    <nuxeo.web.mobile.version>5.8.0-HF22-SNAPSHOT</nuxeo.web.mobile.version>
-    <nuxeo.indexing.gateway.version>5.8.0-HF22-SNAPSHOT</nuxeo.indexing.gateway.version>
-    <nuxeo.exalead.connector.version>5.8.0-HF22-SNAPSHOT</nuxeo.exalead.connector.version>
-    <nuxeo.user.registration.version>5.8.0-HF22-SNAPSHOT</nuxeo.user.registration.version>
-    <nuxeo.rating.version>5.8.0-HF22-SNAPSHOT</nuxeo.rating.version>
-    <nuxeo.agenda.version>5.8.0-HF22-SNAPSHOT</nuxeo.agenda.version>
-    <nuxeo.templates.version>5.8.0-HF22-SNAPSHOT</nuxeo.templates.version>
-    <nuxeo.csv.version>5.8.0-HF22-SNAPSHOT</nuxeo.csv.version>
-    <nuxeo.drive.version>5.8.0-HF22-SNAPSHOT</nuxeo.drive.version>
-    <nuxeo.dam.pdf.export.version>5.8.0-HF22-SNAPSHOT</nuxeo.dam.pdf.export.version>
-    <nuxeo.resources.compat.version>5.8.0-HF22-SNAPSHOT</nuxeo.resources.compat.version>
-    <nuxeo.dmk.version>5.8.0-HF22-SNAPSHOT</nuxeo.dmk.version>
-    <nuxeo.rest-api.version>5.8.0-HF22-SNAPSHOT</nuxeo.rest-api.version>
-    <nuxeo.webengine.sites.version>5.8.0-HF22-SNAPSHOT</nuxeo.webengine.sites.version>
-    <nuxeo.style.guide.version>5.8.0-HF22-SNAPSHOT</nuxeo.style.guide.version>
+    <nuxeo.addons.version>5.8.0-HF23-SNAPSHOT</nuxeo.addons.version>
+    <nuxeo.opencmis.version>5.8.0-HF23-SNAPSHOT</nuxeo.opencmis.version>
+    <nuxeo.marianne.version>5.8.0-HF23-SNAPSHOT</nuxeo.marianne.version>
+    <nuxeo.login.version>5.8.0-HF23-SNAPSHOT</nuxeo.login.version>
+    <nuxeo.facetedsearch.version>5.8.0-HF23-SNAPSHOT</nuxeo.facetedsearch.version>
+    <nuxeo.shell.version>5.8.0-HF23-SNAPSHOT</nuxeo.shell.version>
+    <nuxeo.webembedded.version>5.8.0-HF23-SNAPSHOT</nuxeo.webembedded.version>
+    <nuxeo.opensocial.version>5.8.0-HF23-SNAPSHOT</nuxeo.opensocial.version>
+    <nuxeo.usercenter.version>5.8.0-HF23-SNAPSHOT</nuxeo.usercenter.version>
+    <nuxeo.fsconnectors.version>5.8.0-HF23-SNAPSHOT</nuxeo.fsconnectors.version>
+    <nuxeo.classification.version>5.8.0-HF23-SNAPSHOT</nuxeo.classification.version>
+    <nuxeo.importer.version>5.8.0-HF23-SNAPSHOT</nuxeo.importer.version>
+    <nuxeo.routing.version>5.8.0-HF23-SNAPSHOT</nuxeo.routing.version>
+    <nuxeo.smartsearch.version>5.8.0-HF23-SNAPSHOT</nuxeo.smartsearch.version>
+    <nuxeo.audio.version>5.8.0-HF23-SNAPSHOT</nuxeo.audio.version>
+    <nuxeo.video.version>5.8.0-HF23-SNAPSHOT</nuxeo.video.version>
+    <nuxeo.categorization.version>5.8.0-HF23-SNAPSHOT</nuxeo.categorization.version>
+    <nuxeo.rendition.version>5.8.0-HF23-SNAPSHOT</nuxeo.rendition.version>
+    <nuxeo.replication.version>5.8.0-HF23-SNAPSHOT</nuxeo.replication.version>
+    <nuxeo.activity.version>5.8.0-HF23-SNAPSHOT</nuxeo.activity.version>
+    <nuxeo.sc.version>5.8.0-HF23-SNAPSHOT</nuxeo.sc.version>
+    <nuxeo.birt.version>5.8.0-HF23-SNAPSHOT</nuxeo.birt.version>
+    <nuxeo.suggestbox.version>5.8.0-HF23-SNAPSHOT</nuxeo.suggestbox.version>
+    <nuxeo.rssreader.version>5.8.0-HF23-SNAPSHOT</nuxeo.rssreader.version>
+    <nuxeo.dam.version>5.8.0-HF23-SNAPSHOT</nuxeo.dam.version>
+    <nuxeo.cmf.version>5.8.0-HF23-SNAPSHOT</nuxeo.cmf.version>
+    <nuxeo.poll.version>5.8.0-HF23-SNAPSHOT</nuxeo.poll.version>
+    <nuxeo.flavors.version>5.8.0-HF23-SNAPSHOT</nuxeo.flavors.version>
+    <nuxeo.quota.version>5.8.0-HF23-SNAPSHOT</nuxeo.quota.version>
+    <nuxeo.web.mobile.version>5.8.0-HF23-SNAPSHOT</nuxeo.web.mobile.version>
+    <nuxeo.indexing.gateway.version>5.8.0-HF23-SNAPSHOT</nuxeo.indexing.gateway.version>
+    <nuxeo.exalead.connector.version>5.8.0-HF23-SNAPSHOT</nuxeo.exalead.connector.version>
+    <nuxeo.user.registration.version>5.8.0-HF23-SNAPSHOT</nuxeo.user.registration.version>
+    <nuxeo.rating.version>5.8.0-HF23-SNAPSHOT</nuxeo.rating.version>
+    <nuxeo.agenda.version>5.8.0-HF23-SNAPSHOT</nuxeo.agenda.version>
+    <nuxeo.templates.version>5.8.0-HF23-SNAPSHOT</nuxeo.templates.version>
+    <nuxeo.csv.version>5.8.0-HF23-SNAPSHOT</nuxeo.csv.version>
+    <nuxeo.drive.version>5.8.0-HF23-SNAPSHOT</nuxeo.drive.version>
+    <nuxeo.dam.pdf.export.version>5.8.0-HF23-SNAPSHOT</nuxeo.dam.pdf.export.version>
+    <nuxeo.resources.compat.version>5.8.0-HF23-SNAPSHOT</nuxeo.resources.compat.version>
+    <nuxeo.dmk.version>5.8.0-HF23-SNAPSHOT</nuxeo.dmk.version>
+    <nuxeo.rest-api.version>5.8.0-HF23-SNAPSHOT</nuxeo.rest-api.version>
+    <nuxeo.webengine.sites.version>5.8.0-HF23-SNAPSHOT</nuxeo.webengine.sites.version>
+    <nuxeo.style.guide.version>5.8.0-HF23-SNAPSHOT</nuxeo.style.guide.version>
 
     <!-- optional addons -->
-    <nuxeo.jbpm.version>5.8.0-HF22-SNAPSHOT</nuxeo.jbpm.version>
-    <nuxeo.semantic.entities.version>5.8.0-HF22-SNAPSHOT</nuxeo.semantic.entities.version>
-    <nuxeo.sync.version>5.8.0-HF22-SNAPSHOT</nuxeo.sync.version>
-    <nuxeo.imaging.recompute.version>5.8.0-HF22-SNAPSHOT</nuxeo.imaging.recompute.version>
+    <nuxeo.jbpm.version>5.8.0-HF23-SNAPSHOT</nuxeo.jbpm.version>
+    <nuxeo.semantic.entities.version>5.8.0-HF23-SNAPSHOT</nuxeo.semantic.entities.version>
+    <nuxeo.sync.version>5.8.0-HF23-SNAPSHOT</nuxeo.sync.version>
+    <nuxeo.imaging.recompute.version>5.8.0-HF23-SNAPSHOT</nuxeo.imaging.recompute.version>
     <!-- end of optional addons -->
   </properties>
 
