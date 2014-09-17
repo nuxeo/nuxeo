@@ -388,17 +388,21 @@ public class CollectionManagerImpl extends DefaultComponent implements
 
             @Override
             public void run() throws ClientException {
-
-                // We want to disable the following listener on a
-                // collection member when it is removed from a collection
-                disableEvents(documentToBeRemoved);
-
-                CollectionMember docAdapter = documentToBeRemoved.getAdapter(CollectionMember.class);
-                docAdapter.removeFromCollection(collection.getId());
-                session.saveDocument(docAdapter.getDocument());
+                doRemoveFromCollection(documentToBeRemoved, collection.getId(), session);
             }
 
         }.runUnrestricted();
+    }
+
+    @Override
+    public void doRemoveFromCollection(DocumentModel documentToBeRemoved, String collectionId, CoreSession session) {
+        // We want to disable the following listener on a
+        // collection member when it is removed from a collection
+        disableEvents(documentToBeRemoved);
+
+        CollectionMember docAdapter = documentToBeRemoved.getAdapter(CollectionMember.class);
+        docAdapter.removeFromCollection(collectionId);
+        session.saveDocument(docAdapter.getDocument());
     }
 
     @Override

@@ -18,14 +18,11 @@ package org.nuxeo.ecm.collections.core.worker;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
+import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.collections.core.listener.CollectionAsynchrnonousQuery;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.versioning.VersioningService;
-import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
-import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
-import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 5.9.3
@@ -66,23 +63,11 @@ public class RemovedCollectionWork extends RemovedAbstractWork {
     @Override
     protected void updateDocument(final DocumentModel collectionMember)
             throws ClientException {
-        log.trace(String.format("Worker %s, updating CollectionMember %s", getId(),
-                collectionMember.getTitle()));
+        log.trace(String.format("Worker %s, updating CollectionMember %s",
+                getId(), collectionMember.getTitle()));
 
-        // We want to disable the following listener on a
-        // collection member when it is removed from a collection
-        collectionMember.putContextData(
-                DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
-        collectionMember.putContextData(
-                NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
-        collectionMember.putContextData(
-                NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
-        collectionMember.putContextData(
-                VersioningService.DISABLE_AUTO_CHECKOUT, true);
-
-        final CollectionMember collectionMemberAdapter = collectionMember.getAdapter(CollectionMember.class);
-        collectionMemberAdapter.removeFromCollection(docId);
-        session.saveDocument(collectionMember);
+        Framework.getLocalService(CollectionManager.class).doRemoveFromCollection(
+                collectionMember, docId, session);
     }
 
 }
