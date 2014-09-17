@@ -25,8 +25,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.component.UISelectItems;
@@ -40,8 +38,6 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 public class UIDirectorySelectItems extends UISelectItems {
 
     public static final String COMPONENT_TYPE = UIDirectorySelectItems.class.getName();
-
-    private static final Log log = LogFactory.getLog(UIDirectorySelectItems.class);
 
     enum PropertyKeys {
         value
@@ -64,7 +60,7 @@ public class UIDirectorySelectItems extends UISelectItems {
     }
 
     public String getKeySeparator() {
-        return (String) getStateHelper().eval(DirPropertyKeys.keySeparator);
+        return (String) getStateHelper().eval(DirPropertyKeys.keySeparator, "/");
     }
 
     public void setKeySeparator(String keySeparator) {
@@ -241,28 +237,25 @@ public class UIDirectorySelectItems extends UISelectItems {
         // compute label
         Object labelObject = getItemLabel();
         String label = labelObject != null ? labelObject.toString() : null;
+        Locale locale = ctx.getViewRoot().getLocale();
         if (StringUtils.isBlank(label)) {
-            if (isLocalize()) {
-                Locale locale = ctx.getViewRoot().getLocale();
-                if (isdbl10n()) {
-                    // lookup label property, hardcode the "label_" prefix for
-                    // now
-                    // resolve property key
-                    String defaultPattern = "label_en";
-                    String pattern = "label_" + locale.getCountry();
-                    if (docEntry.getProperties(schema).containsKey(pattern)) {
-                        label = (String) docEntry.getProperties(schema).get(
-                                pattern);
-                    } else {
-                        label = (String) docEntry.getProperties(schema).get(
-                                defaultPattern);
-                    }
+            if (isLocalize() && isdbl10n()) {
+                // lookup label property, hardcode the "label_" prefix for
+                // now
+                // resolve property key
+                String defaultPattern = "label_en";
+                String pattern = "label_" + locale.getCountry();
+                if (docEntry.getProperties(schema).containsKey(pattern)) {
+                    label = (String) docEntry.getProperties(schema).get(pattern);
                 } else {
-                    label = translate(ctx, locale, label);
+                    label = (String) docEntry.getProperties(schema).get(
+                            defaultPattern);
                 }
             } else {
-                // fallback on directory default label
                 label = (String) docEntry.getProperties(schema).get("label");
+                if (isLocalize()) {
+                    label = translate(ctx, locale, label);
+                }
             }
         }
         if (isDisplayIdAndLabel() && label != null) {
@@ -285,6 +278,9 @@ public class UIDirectorySelectItems extends UISelectItems {
     }
 
     protected String translate(FacesContext context, Locale locale, String label) {
+        if (StringUtils.isBlank(label)) {
+            return label;
+        }
         String bundleName = context.getApplication().getMessageBundle();
         label = I18NUtils.getMessageString(bundleName, label, null, locale);
         return label;

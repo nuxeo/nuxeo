@@ -94,7 +94,11 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
                     }
                 }
             } else {
-                log.error("No session provided for directory, returning empty selection");
+                log.error("No session provided for directory, returning "
+                        + "selection with an error item");
+                items.add(new DirectorySelectItem("",
+                        "ERROR: mising directoryName property "
+                                + "configuration on widget"));
             }
             DirectorySelectItemFactory.closeDirectorySession(directorySession);
             String ordering = getOrdering();
