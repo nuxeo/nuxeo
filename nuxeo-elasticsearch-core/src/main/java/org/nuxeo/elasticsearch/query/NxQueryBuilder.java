@@ -19,6 +19,7 @@ package org.nuxeo.elasticsearch.query;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_RANGE;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_DATE_RANGE;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_SIGNIFICANT_TERMS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_TERMS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.FETCH_DOC_FROM_ES_PROPERTY;
@@ -45,6 +46,7 @@ import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.filter.FilterAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.range.RangeBuilder;
+import org.elasticsearch.search.aggregations.bucket.range.date.DateRangeBuilder;
 import org.elasticsearch.search.aggregations.bucket.significant.SignificantTermsBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
@@ -56,6 +58,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.query.api.AggregateQuery;
+import org.nuxeo.ecm.platform.query.api.AggregateRangeDateDefinition;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDefinition;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.fetcher.EsFetcher;
@@ -305,6 +308,23 @@ public class NxQueryBuilder {
             }
             ret = orFilter;
             break;
+        case AGG_TYPE_DATE_RANGE:
+            OrFilterBuilder orDateFilter = FilterBuilders.orFilter();
+            for (AggregateRangeDateDefinition range : aggQuery.getDateRanges()) {
+                if (aggQuery.getSelection().contains(range.getKey())) {
+                    RangeFilterBuilder rangeFilter = FilterBuilders
+                            .rangeFilter(aggQuery.getField());
+                    if (range.getFromAsString() != null) {
+                        rangeFilter.gte(range.getFromAsString());
+                    }
+                    if (range.getToAsString() != null) {
+                        rangeFilter.lt(range.getToAsString());
+                    }
+                    orDateFilter.add(rangeFilter);
+                }
+            }
+            ret = orDateFilter;
+            break;
         }
         return ret;
     }
@@ -329,6 +349,9 @@ public class NxQueryBuilder {
                 break;
             case AGG_TYPE_RANGE :
                 fagg.subAggregation(getRangeBuilder(aggQuery));
+                break;
+            case AGG_TYPE_DATE_RANGE :
+                fagg.subAggregation(getRangeDateBuilder(aggQuery));
                 break;
             default:
                 fagg.subAggregation(getRangeBuilder(aggQuery));
@@ -406,6 +429,23 @@ public class NxQueryBuilder {
                 }
             } else if (range.getTo() != null) {
                 ret.addUnboundedTo(range.getKey(), range.getTo());
+            }
+        }
+        return ret;
+    }
+
+    protected DateRangeBuilder getRangeDateBuilder(AggregateQuery aggQuery) {
+        DateRangeBuilder ret = AggregationBuilders.dateRange(aggQuery.getId()).field(
+                aggQuery.getField());
+        for(AggregateRangeDateDefinition range: aggQuery.getDateRanges()) {
+            if (range.getFromAsString() != null) {
+                if (range.getToAsString() != null) {
+                    ret.addRange(range.getKey(),  range.getFromAsString(), range.getToAsString());
+                } else {
+                    ret.addUnboundedFrom(range.getKey(), range.getFromAsString());
+                }
+            } else if (range.getToAsString() != null) {
+                ret.addUnboundedTo(range.getKey(), range.getToAsString());
             }
         }
         return ret;

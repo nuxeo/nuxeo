@@ -33,6 +33,7 @@ public class ElasticSearchConstants {
     public static final String AGG_TYPE_TERMS = "terms";
     public static final String AGG_TYPE_SIGNIFICANT_TERMS = "significant_terms";
     public static final String AGG_TYPE_RANGE = "range";
+    public static final String AGG_TYPE_DATE_RANGE = "date_range";
 
     public static final String ID_FIELD = "_id";
     /**

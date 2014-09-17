@@ -18,12 +18,14 @@
 package org.nuxeo.elasticsearch.test.aggregates;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.SystemUtils;
 import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,13 +34,16 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
+import org.nuxeo.ecm.platform.query.api.AggregateRangeDateDefinition;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.core.AggregateDescriptor;
 import org.nuxeo.ecm.platform.query.core.AggregateQueryImpl;
+import org.nuxeo.ecm.platform.query.core.AggregateRangeDateDescriptor;
 import org.nuxeo.ecm.platform.query.core.AggregateRangeDescriptor;
+import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
 import org.nuxeo.ecm.platform.query.core.FieldDescriptor;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -86,6 +91,8 @@ public class TestAggregates {
             doc.setPropertyValue("dc:nature", "Nature" + i % 2);
             doc.setPropertyValue("dc:coverage", "Coverage" + i % 3);
             doc.setPropertyValue("common:size", 1024*i);
+            doc.setPropertyValue("dc:created", new Date(new DateTime().minusWeeks(
+                    i).getMillis()));
             doc = session.createDocument(doc);
         }
         TransactionHelper.commitOrRollbackTransaction();
@@ -252,6 +259,63 @@ public class TestAggregates {
     }
 
     @Test
+    public void testAggregateRangeDateQuery() throws Exception {
+        AggregateDefinition aggDef = new AggregateDescriptor();
+        aggDef.setType("date_range");
+        aggDef.setId("created");
+        aggDef.setDocumentField("dc:created");
+        aggDef.setSearchField(new FieldDescriptor("advanced_search",
+                "created_agg"));
+        List<AggregateRangeDateDescriptor> ranges = new ArrayList<AggregateRangeDateDescriptor>();
+        ranges.add(new AggregateRangeDateDescriptor("10monthAgo", null, "now-10M/M"));
+        ranges.add(new AggregateRangeDateDescriptor("1monthAgo", "now-10M/M", "now-1M/M"));
+        ranges.add(new AggregateRangeDateDescriptor("thisMonth", "now-1M/M", null));
+        aggDef.setDateRanges((List<AggregateRangeDateDefinition>) (List<?>) ranges);
+
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document").addAggregate(
+                new AggregateQueryImpl(aggDef, null));
+
+        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME);
+        qb.updateRequest(request);
+
+        assertEqualsEvenUnderWindows("{\n"
+                        + "  \"from\" : 0,\n"
+                        + "  \"size\" : 10,\n"
+                        + "  \"query\" : {\n"
+                        + "    \"match_all\" : { }\n"
+                        + "  },\n"
+                        + "  \"aggregations\" : {\n"
+                        + "    \"created_filter\" : {\n"
+                        + "      \"filter\" : {\n"
+                        + "        \"match_all\" : { }\n"
+                        + "      },\n"
+                        + "      \"aggregations\" : {\n"
+                        + "        \"created\" : {\n"
+                        + "          \"date_range\" : {\n"
+                        + "            \"field\" : \"dc:created\",\n"
+                        + "            \"ranges\" : [ {\n"
+                        + "              \"key\" : \"10monthAgo\",\n"
+                        + "              \"to\" : \"now-10M/M\"\n"
+                        + "            }, {\n"
+                        + "              \"key\" : \"1monthAgo\",\n"
+                        + "              \"from\" : \"now-10M/M\",\n"
+                        + "              \"to\" : \"now-1M/M\"\n"
+                        + "            }, {\n"
+                        + "              \"key\" : \"thisMonth\",\n"
+                        + "              \"from\" : \"now-1M/M\"\n"
+                        + "            } ]\n"
+                        + "          }\n"
+                        + "        }\n"
+                        + "      }\n"
+                        + "    }\n"
+                        + "  }\n"
+                        + "}", //
+                request.toString());
+    }
+
+    @Test
     public void testAggregateQuery() throws Exception {
 
         AggregateDefinition aggDef1 = new AggregateDescriptor();
@@ -359,7 +423,7 @@ public class TestAggregates {
         PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
                 null, null, (long) 0, props);
 
-        Assert.assertEquals(4,  pp.getAggregates().size());
+        Assert.assertEquals(5,  pp.getAggregates().size());
         Assert.assertEquals(
                 "AggregateImpl(source, terms, [BucketTerm(Source0, 1), BucketTerm(Source1, 1), BucketTerm(Source2, 1), BucketTerm(Source3, 1), BucketTerm(Source4, 1)])",
                 pp.getAggregates().get("source").toString());
@@ -397,7 +461,7 @@ public class TestAggregates {
         PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
                 null, null, (long) 0, props);
 
-        Assert.assertEquals(4,  pp.getAggregates().size());
+        Assert.assertEquals(5,  pp.getAggregates().size());
         Assert.assertEquals("AggregateImpl(source, terms, [BucketTerm(Source2, 1), BucketTerm(Source3, 1), BucketTerm(Source4, 1), BucketTerm(Source5, 1), BucketTerm(Source6, 1)])",
                 pp.getAggregates().get("source").toString());
         Assert.assertEquals(
@@ -408,6 +472,45 @@ public class TestAggregates {
         Assert.assertEquals("AggregateImpl(size, range, [BucketRange(small, 2, -Infinity, 2048,00), BucketRange(medium, 4, 2048,00, 6144,00), BucketRange(big, 4, 6144,00, Infinity)])",
                 pp.getAggregates().get("size").toString());
 
+    }
+
+    @Test
+    public void testPageProviderDateRange() throws Exception {
+        buildDocs();
+
+        PageProviderService pps = Framework
+                .getService(PageProviderService.class);
+        Assert.assertNotNull(pps);
+
+        PageProviderDefinition ppdef = pps
+                .getPageProviderDefinition("aggregates_1");
+        Assert.assertNotNull(ppdef);
+
+        DocumentModel model = new DocumentModelImpl("/", "doc",
+                "AdvancedSearch");
+        String[] created = { "long_time_ago", "last_month"};
+        model.setProperty("advanced_search", "created_agg", created);
+
+        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY,
+                (Serializable) session);
+
+        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
+                null, null, (long) 0, props);
+
+        Assert.assertEquals(5,  pp.getAggregates().size());
+        Assert.assertEquals(
+                "AggregateImpl(coverage, terms, [BucketTerm(Coverage0, 3), BucketTerm(Coverage1, 2), BucketTerm(Coverage2, 2)])",
+                pp.getAggregates().get("coverage").toString());
+        Assert.assertEquals("AggregateImpl(nature, terms, [BucketTerm(Nature0, 4), BucketTerm(Nature1, 3)])",
+                pp.getAggregates().get("nature").toString());
+        List<BucketRangeDate> buckets = pp.getAggregates().get("created").getBuckets();
+        Assert.assertEquals(3, buckets.size());
+        Assert.assertEquals("long_time_ago", buckets.get(0).getKey());
+        Assert.assertEquals(0, buckets.get(0).getDocCount());
+        Assert.assertEquals(3, buckets.get(1).getDocCount());
+        Assert.assertEquals("last_month", buckets.get(2).getKey());
+        Assert.assertEquals(7, buckets.get(2).getDocCount());
     }
 
     protected void assertEqualsEvenUnderWindows(String expected, String actual) {

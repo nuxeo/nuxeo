@@ -19,6 +19,7 @@
 package org.nuxeo.elasticsearch.core;
 
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_RANGE;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_DATE_RANGE;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_SIGNIFICANT_TERMS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_TERMS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
@@ -37,6 +38,8 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.filter.InternalFilter;
+import org.elasticsearch.search.aggregations.bucket.range.date.DateRange;
+import org.joda.time.DateTime;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -47,6 +50,7 @@ import org.nuxeo.ecm.platform.query.api.AggregateQuery;
 import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.ecm.platform.query.core.AggregateImpl;
 import org.nuxeo.ecm.platform.query.core.BucketRange;
+import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
 import org.nuxeo.ecm.platform.query.core.BucketTerm;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
@@ -174,6 +178,17 @@ public class ElasticsearchServiceImpl implements ElasticSearchService {
                 }
                 ret.add(new AggregateImpl<BucketRange>(agg, nxRangeBuckets));
                 break;
+            case AGG_TYPE_DATE_RANGE:
+                List<BucketRangeDate> nxDateRangeBuckets = new ArrayList<BucketRangeDate>(buckets.size());
+                for (MultiBucketsAggregation.Bucket bucket : buckets) {
+                    DateRange.Bucket rangeBucket = (DateRange.Bucket) bucket;
+                    nxDateRangeBuckets.add(new BucketRangeDate(bucket.getKey(),
+                            getDateTime(rangeBucket.getFromAsDate()),
+                            getDateTime(rangeBucket.getToAsDate()),
+                            rangeBucket.getDocCount()));
+                }
+                ret.add(new AggregateImpl<BucketRangeDate>(agg, nxDateRangeBuckets));
+                break;
 
             default:
                 // not implemented
@@ -181,6 +196,14 @@ public class ElasticsearchServiceImpl implements ElasticSearchService {
 
         }
         return ret;
+    }
+
+    private DateTime getDateTime(
+            org.elasticsearch.common.joda.time.DateTime date) {
+        if (date == null) {
+            return null;
+        }
+        return new DateTime(date.getMillis());
     }
 
     protected SearchResponse search(NxQueryBuilder query) {
