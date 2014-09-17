@@ -16,7 +16,6 @@ Accepted parameters:
 - useAjaxForm: boolean stating if form should be ajaxified (optional, defaults to false)
 - disableMultiPartForm: boolean stating if non-ajaxified form should *not* use send
   multipart request
-- reRender: ajax elements ids to rerender (optional)
 - formStyleClass: style class to put on the form (optional)
 
 Templating zone to define:
@@ -38,9 +37,6 @@ Templating zone to define:
     <h:form id="#{formId}"
       styleClass="#{formStyleClass}"
       onsubmit="removeAllTinyMCEEditors(); return true;">
-      <c:if test="#{not empty render}">
-        <f:ajax execute="@form" render="#{reRender}" />
-      </c:if>
       <ui:insert name="form_template_content" />
     </h:form>
 
