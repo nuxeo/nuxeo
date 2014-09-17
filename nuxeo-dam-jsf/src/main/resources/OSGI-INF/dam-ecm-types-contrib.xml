@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component name="org.nuxeo.dam.ecm.types">
+<component name="org.nuxeo.dam.jsf.ecm.types">
 
   <require>org.nuxeo.ecm.platform.types</require>
   <require>org.nuxeo.ecm.platform.picture.jsf.types</require>
@@ -9,37 +9,6 @@
   <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
 
     <!-- Default DAM types -->
-
-    <type id="AssetLibrary">
-      <label>AssetLibrary</label>
-      <icon>/icons/assets_library.png</icon>
-      <bigIcon>/icons/assets_library_100.png</bigIcon>
-      <category>DAM</category>
-      <description>AssetLibrary.description</description>
-      <default-view>view_documents</default-view>
-      <subtypes>
-        <type>Folder</type>
-        <type>File</type>
-        <type>Picture</type>
-        <type>Video</type>
-        <type>Audio</type>
-      </subtypes>
-      <layouts mode="any">
-        <layout>heading</layout>
-      </layouts>
-      <layouts mode="edit">
-        <layout>heading</layout>
-        <layout>dublincore</layout>
-      </layouts>
-      <contentViews category="content">
-        <contentView>document_content</contentView>
-      </contentViews>
-      <contentViews category="trash_content">
-        <contentView showInExportView="false">
-          document_trash_content
-        </contentView>
-      </contentViews>
-    </type>
 
     <type id="File">
       <layouts mode="any">

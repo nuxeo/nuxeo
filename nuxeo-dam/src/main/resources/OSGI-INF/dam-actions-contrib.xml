@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.dam.actions">
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="create" append="true">
+      <rule grant="true">
+        <permission>AddChildren</permission>
+        <type>AssetLibrary</type>
+      </rule>
+    </filter>
+
+    <filter id="importFile" append="true">
+      <rule grant="true">
+        <permission>AddChildren</permission>
+        <type>AssetLibrary</type>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

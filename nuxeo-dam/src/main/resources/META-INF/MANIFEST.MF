@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Bundle-Name: Nuxeo DAM
+Bundle-ManifestVersion: 1
+Bundle-SymbolicName: org.nuxeo.dam;singleton=true
+Nuxeo-Component: OSGI-INF/dam-actions-contrib.xml,
+ OSGI-INF/dam-core-types-contrib.xml,
+ OSGI-INF/dam-ecm-types-contrib.xml
