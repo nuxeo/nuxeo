@@ -56,6 +56,11 @@
         <artifactId>maven-jar-plugin</artifactId>
         <executions>
           <execution>
+            <configuration>
+              <archive>
+                <manifestFile>src/test/resources/META-INF/MANIFEST.MF</manifestFile>
+              </archive>
+            </configuration>
             <goals>
               <goal>test-jar</goal>
             </goals>
