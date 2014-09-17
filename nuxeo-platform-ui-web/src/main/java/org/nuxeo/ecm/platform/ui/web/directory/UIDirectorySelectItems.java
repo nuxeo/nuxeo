@@ -226,13 +226,7 @@ public class UIDirectorySelectItems extends UISelectItems {
         if (value == null) {
             return null;
         }
-        Object labelObject = getItemLabel();
-        String label = labelObject != null ? labelObject.toString() : null;
-        // lookup label property, hardcode the "label_" prefix for now
-        if (label == null && docEntry != null) {
-            // fallback on directory default label
-            label = (String) docEntry.getProperties(schema).get("label");
-        }
+
         // compute ordering
         Long ordering = getItemOrdering();
         if (ordering == null && docEntry != null) {
@@ -243,11 +237,16 @@ public class UIDirectorySelectItems extends UISelectItems {
                 // nevermind
             }
         }
-        if (isLocalize() && label != null) {
-            Locale locale = ctx.getViewRoot().getLocale();
-            if (isdbl10n()) {
-                // lookup label property, hardcode the "label_" prefix for now
-                if (entry instanceof DocumentModel) {
+
+        // compute label
+        Object labelObject = getItemLabel();
+        String label = labelObject != null ? labelObject.toString() : null;
+        if (StringUtils.isBlank(label)) {
+            if (isLocalize()) {
+                Locale locale = ctx.getViewRoot().getLocale();
+                if (isdbl10n()) {
+                    // lookup label property, hardcode the "label_" prefix for
+                    // now
                     // resolve property key
                     String defaultPattern = "label_en";
                     String pattern = "label_" + locale.getCountry();
@@ -259,11 +258,11 @@ public class UIDirectorySelectItems extends UISelectItems {
                                 defaultPattern);
                     }
                 } else {
-                    log.error("Could not compute translated label for entry "
-                            + value);
+                    label = translate(ctx, locale, label);
                 }
             } else {
-                label = translate(ctx, locale, label);
+                // fallback on directory default label
+                label = (String) docEntry.getProperties(schema).get("label");
             }
         }
         if (isDisplayIdAndLabel() && label != null) {
