@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>5.6.0-HF39-SNAPSHOT</version>
+    <version>5.6.0-HF40-SNAPSHOT</version>
     <relativePath>../addons/pom.xml</relativePath>
   </parent>
 
@@ -15,7 +15,7 @@
   <description>Build package distributions of nuxeo applications</description>
 
   <properties>
-    <nuxeo.distribution.version>5.6.0-HF39-SNAPSHOT</nuxeo.distribution.version>
+    <nuxeo.distribution.version>5.6.0-HF40-SNAPSHOT</nuxeo.distribution.version>
   </properties>
 
   <modules>
