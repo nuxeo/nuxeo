@@ -20,9 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -56,7 +54,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @since 5.7.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RestServerFeature.class })
+@Features(RestServerFeature.class)
 @Jetty(port = 18090)
 @LocalDeploy("org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
@@ -162,7 +160,7 @@ public class DocumentListTest extends BaseTest {
         queryParams.add("note2", "Note 2");
         queryParams.add("parentIdVar", folder.getId());
         ClientResponse response = getResponse(RequestType.GET,
-                "query", queryParams);
+                QueryObject.PATH, queryParams);
 
         // Then I get document listing as result
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -177,7 +175,7 @@ public class DocumentListTest extends BaseTest {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("queryParams", folder.getId());
         ClientResponse response = getResponse(RequestType.GET,
-                "query/TEST_PP", queryParams);
+                QueryObject.PATH + "/TEST_PP", queryParams);
 
         // Then I get document listing as result
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -195,7 +193,7 @@ public class DocumentListTest extends BaseTest {
         queryParams.add("note2", "Note 2");
         queryParams.add("parentIdVar", folder.getId());
         ClientResponse response = getResponse(RequestType.GET,
-                "query/TEST_PP_PARAM", queryParams);
+                QueryObject.PATH + "/TEST_PP_PARAM", queryParams);
 
         // Then I get document listing as result
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());

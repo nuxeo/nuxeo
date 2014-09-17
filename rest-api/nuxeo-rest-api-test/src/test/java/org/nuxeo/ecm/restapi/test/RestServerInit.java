@@ -18,7 +18,6 @@ package org.nuxeo.ecm.restapi.test;
 
 import java.io.File;
 import java.util.Arrays;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -69,7 +68,9 @@ public class RestServerInit implements RepositoryInit {
             DocumentModel doc = session.createDocumentModel("/folder_1",
                     "note_" + i, "Note");
             doc.setPropertyValue("dc:title", "Note " + i);
-
+            doc.setPropertyValue("dc:source", "Source" + i);
+            doc.setPropertyValue("dc:nature", "Nature" + i % 2);
+            doc.setPropertyValue("dc:coverage", "Coverage" + i % 3);
             doc.setPropertyValue("note:note", "Note " + i);
             doc = session.createDocument(doc);
         }
