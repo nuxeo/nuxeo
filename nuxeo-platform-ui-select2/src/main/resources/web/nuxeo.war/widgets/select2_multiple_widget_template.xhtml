@@ -48,6 +48,7 @@
           <f:attribute name="separator" value="#{widgetProperty_separator}" />
           <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
             value="#{select2Actions.resolveMultipleReferences(currentValue, widgetProperty_repository,widgetProperty_initOperationId, widgetProperty_idProperty, widgetProperty_documentSchemas)}" />
+          <ui:insert name="inside_input_widget" />
         </nxu:valueHolder>
 
         <c:if test="#{not empty widgetProperty_ajaxReRender}">
