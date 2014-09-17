@@ -158,12 +158,12 @@ public class ElasticsearchServiceImpl implements ElasticSearchService {
             switch (agg.getType()) {
             case AGG_TYPE_SIGNIFICANT_TERMS:
             case AGG_TYPE_TERMS:
-                List<Bucket> nxBuckets = new ArrayList<Bucket>(buckets.size());
+                List<BucketTerm> nxBuckets = new ArrayList<BucketTerm>(buckets.size());
                 for (MultiBucketsAggregation.Bucket bucket : buckets) {
                     nxBuckets.add(new BucketTerm(bucket.getKey(), bucket
                             .getDocCount()));
                 }
-                ret.add(new AggregateImpl(agg, nxBuckets));
+                ret.add(new AggregateImpl<BucketTerm>(agg, nxBuckets));
                 break;
             case AGG_TYPE_RANGE:
                 List<BucketRange> nxRangeBuckets = new ArrayList<BucketRange>(buckets.size());
@@ -172,7 +172,7 @@ public class ElasticsearchServiceImpl implements ElasticSearchService {
                     nxRangeBuckets.add(new BucketRange(bucket.getKey(), rangeBucket.getFrom(),
                             rangeBucket.getTo(), rangeBucket.getDocCount()));
                 }
-                ret.add(new AggregateImpl(agg, nxRangeBuckets));
+                ret.add(new AggregateImpl<BucketRange>(agg, nxRangeBuckets));
                 break;
 
             default:

@@ -405,7 +405,7 @@ public class TestAggregates {
                 pp.getAggregates().get("coverage").toString());
         Assert.assertEquals("AggregateImpl(nature, terms, [BucketTerm(Nature0, 4), BucketTerm(Nature1, 4)])",
                 pp.getAggregates().get("nature").toString());
-        Assert.assertEquals("AggregateImpl(size, range, [BucketRange(small, 2, -Infinity, 2048,00), BucketRange(medium, 4, 2048,00, 6144,00), BucketRange(big, 4, 6144,00, Infinity)])x",
+        Assert.assertEquals("AggregateImpl(size, range, [BucketRange(small, 2, -Infinity, 2048,00), BucketRange(medium, 4, 2048,00, 6144,00), BucketRange(big, 4, 6144,00, Infinity)])",
                 pp.getAggregates().get("size").toString());
 
     }
