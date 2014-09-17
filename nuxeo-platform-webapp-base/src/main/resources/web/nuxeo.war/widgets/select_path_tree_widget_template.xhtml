@@ -99,40 +99,40 @@
         <h:outputText value="#{messages['label.search.popup.title']}"/>
       </h3>
       <div class="content">
-      <rich:tree preserveModel="none"
-        ajaxChildActivationEncodeBehavior="none"
-        ajaxNodeSelectionEncodeBehavior="none"
-        id="#{widget.id}_treeId"
-        adviseNodeOpened="#{reducedTreeActions.adviseNodeOpened}"
-        changeExpandListener="#{reducedTreeActions.changeExpandListener}"
-        icon="#{nxd:iconPath(node.document)}"
-        iconLeaf="#{nxd:iconPath(node.document)}"
-        iconExpanded="/icons/toggle_minus.png"
-        iconCollapsed="/icons/toggle_plus.png"
-        rowKeyVar="rowKey"
-        styleClass="labelTool"
-        stateVar="nodeState"
-        var="node">
-        <rich:treeModelRecursiveAdaptor
-          id="#{widget.id}_recursiveTreeNodesAdaptorId"
-          roots="#{widget.properties.showAllDomains ? reducedTreeActions.rootNode : reducedTreeActions.treeRoots}"
-          nodes="#{node.children}"
-          styleClass="labelTool">
-          <rich:treeNode
-            id="#{widget.id}_treeNodeId"
-            highlightedClass="treeNodeHighlightedClass"
-            selectedClass="treeNodeSelectedClass">
-            <a4j:commandLink immediate="true"
-              id="#{widget.id}_linkId"
-              actionListener="#{treeWidgetActions.addSelectionToList}"
-              styleClass="treeLink" render="#{widget.id}_listRegion">
-              <f:param name="selectionListId" value="#{widget.id}_list" />
-              <f:param name="selectedPath" value="#{node.path}" />
-              <h:outputText value="#{nxd:titleOrId(node.document)}" />
-            </a4j:commandLink>
-          </rich:treeNode>
-        </rich:treeModelRecursiveAdaptor>
-      </rich:tree>
+        <rich:tree preserveModel="none"
+          ajaxChildActivationEncodeBehavior="none"
+          ajaxNodeSelectionEncodeBehavior="none"
+          id="#{widget.id}_treeId"
+          adviseNodeOpened="#{reducedTreeActions.adviseNodeOpened}"
+          changeExpandListener="#{reducedTreeActions.changeExpandListener}"
+          icon="#{nxd:iconPath(node.document)}"
+          iconLeaf="#{nxd:iconPath(node.document)}"
+          iconExpanded="/icons/toggle_minus.png"
+          iconCollapsed="/icons/toggle_plus.png"
+          rowKeyVar="rowKey"
+          styleClass="labelTool"
+          stateVar="nodeState"
+          var="node">
+          <rich:treeModelRecursiveAdaptor
+            id="#{widget.id}_recursiveTreeNodesAdaptorId"
+            roots="#{widget.properties.showAllDomains ? reducedTreeActions.rootNode : reducedTreeActions.treeRoots}"
+            nodes="#{node.children}"
+            styleClass="labelTool">
+            <rich:treeNode
+              id="#{widget.id}_treeNodeId"
+              highlightedClass="treeNodeHighlightedClass"
+              selectedClass="treeNodeSelectedClass">
+              <a4j:commandLink immediate="true"
+                id="#{widget.id}_linkId"
+                actionListener="#{treeWidgetActions.addSelectionToList}"
+                styleClass="treeLink" render="#{widget.id}_listRegion">
+                <f:param name="selectionListId" value="#{widget.id}_list" />
+                <f:param name="selectedPath" value="#{node.path}" />
+                <h:outputText value="#{nxd:titleOrId(node.document)}" />
+              </a4j:commandLink>
+            </rich:treeNode>
+          </rich:treeModelRecursiveAdaptor>
+        </rich:tree>
       </div>
     </div>
   </div>
