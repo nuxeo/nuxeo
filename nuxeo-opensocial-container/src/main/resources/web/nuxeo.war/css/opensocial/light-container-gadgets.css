@@ -18,16 +18,15 @@
  */
 
 .gadgets-gadget-chrome, div.gadgets-gadget-chrome {
-  float: left;
   margin: 1px 0 15px !important;
+  display: inline-block;
   border: 1px solid #ddd;
 }
 
-#usersPanel .gadgets-gadget-chrome, #usersPanel div.gadgets-gadget-chrome {
-  float: none;
-}
-
-#viewUser .gadgets-gadget-chrome, #viewUser div.gadgets-gadget-chrome {
+#usersPanel .gadgets-gadget-chrome,
+#usersPanel div.gadgets-gadget-chrome,
+#viewUser .gadgets-gadget-chrome,
+#viewUser div.gadgets-gadget-chrome {
   float: none;
 }
 
@@ -36,7 +35,7 @@
 }
 
 .gadgets-gadget {
-  border: none;
+  border: none !important;
 }
 
 div.gadgets-gadget-title-bar {
@@ -54,21 +53,12 @@ div.gadgets-gadget-title-bar {
   float:right;
 }
 
-.gadgets-gadget-user-prefs-dialog {
-}
-
 .gadgets-gadget-user-prefs-dialog-action-bar {
   text-align: center;
   padding-bottom: 4px;
 }
 
-.gadgets-gadget-title-button {
-}
-
 div.gadgets-gadget-content {
   padding: 4px;
-}
-
-.gadgets-log-entry {
 }
 
