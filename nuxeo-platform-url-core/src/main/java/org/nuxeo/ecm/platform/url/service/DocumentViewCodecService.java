@@ -21,9 +21,9 @@ package org.nuxeo.ecm.platform.url.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,8 +53,8 @@ public class DocumentViewCodecService extends DefaultComponent implements
     protected final Map<String, DocumentViewCodec> codecs;
 
     public DocumentViewCodecService() {
-        descriptors = new HashMap<String, DocumentViewCodecDescriptor>();
-        codecs = new HashMap<String, DocumentViewCodec>();
+        descriptors = new ConcurrentHashMap<String, DocumentViewCodecDescriptor>();
+        codecs = new ConcurrentHashMap<String, DocumentViewCodec>();
     }
 
     @Override
