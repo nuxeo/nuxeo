@@ -77,7 +77,7 @@ public abstract class AbstractDirectorySelectWidgetTypeHandler extends
                 // items
                 if (DirectoryPropertyMappings.displayAll.equals(mapping)) {
                     if (widget.getProperties().containsKey(
-                            SelectPropertyMappings.selectOptions)) {
+                            SelectPropertyMappings.selectOptions.name())) {
                         props.put(mapping.name(), Boolean.FALSE);
                     }
                 }
