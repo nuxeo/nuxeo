@@ -47,9 +47,11 @@ public class PageProviderQueryBuilder {
             final boolean escapePatternParameters,
             final boolean useNativeQuery) {
         String query = pattern;
-        for (Object param : params) {
-            query = query.replaceFirst("\\?",
-                    convertParam(param, quotePatternParameters));
+        if(params!=null) {
+            for (Object param : params) {
+                query = query.replaceFirst("\\?",
+                        convertParam(param, quotePatternParameters));
+            }
         }
         if (useNativeQuery) {
             return QueryBuilders.queryString(query);
