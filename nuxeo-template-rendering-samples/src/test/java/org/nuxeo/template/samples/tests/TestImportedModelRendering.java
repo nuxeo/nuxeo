@@ -126,12 +126,24 @@ public class TestImportedModelRendering {
         assertNotNull(textBH);
         String text = textBH.getBlob().getString();
 
-        // check TOC
-        assertTrue(text.contains("1   Overview"));
-        assertTrue(text.contains("1.1   Introduction"));
+        // check TOC (well, content: spaces vary within the TOC)
+        String checkedText = "1 Overview";
+        assertTrue(String.format("Expecting text '%s' inside '%s'",
+                checkedText, text), text.contains(checkedText));
+        checkedText = "1.1 Introduction";
+        assertTrue(String.format("Expecting text '%s' inside '%s'",
+                checkedText, text), text.contains(checkedText));
+
+        // remove "unbreakable spaces"
+        text = text.replaceAll("\\u00A0", " ");
+        
+        
 
         // check include
-        assertTrue(text.contains("This set of plugins provides a way to associate a Nuxeo Document with a Template."));
+        checkedText = "This set of plugins provides a way to "
+                + "associate a Nuxeo Document with a Template.";
+        assertTrue(String.format("Expecting text '%s' inside '%s'",
+                checkedText, text), text.contains(checkedText));
     }
 
     @Test
@@ -196,7 +208,7 @@ public class TestImportedModelRendering {
         assertNotNull(textBH);
         String text = textBH.getBlob().getString();
 
-        assertTrue(text.contains("110"));
+        assertTrue(text.contains("2012"));
         assertTrue(text.contains("Freeman"));
         assertTrue(text.contains("Poissonniers"));
     }
