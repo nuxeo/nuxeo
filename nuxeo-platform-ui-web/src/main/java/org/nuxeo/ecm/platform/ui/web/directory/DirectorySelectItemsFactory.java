@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItemGroup;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -65,70 +64,30 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
             if (directorySession != null) {
                 if (value instanceof ListDataModel) {
                     ListDataModel ldm = (ListDataModel) value;
-                    List<String> entryIds = (List) ldm.getWrappedData();
-                    DocumentModel entry = null;
-                    for (String entryId : entryIds) {
-                        try {
-                            entry = directorySession.getEntry(entryId);
-                            if (entry != null) {
-                                DirectorySelectItem[] res = createSelectItemsFrom(entry);
-                                if (res != null) {
-                                    items.addAll(Arrays.asList(res));
-                                }
-                            }
-                        } catch (DirectoryException e) {
+                    List<Object> entries = (List) ldm.getWrappedData();
+                    for (Object entry : entries) {
+                        DirectorySelectItem[] res = createSelectItemsFrom(
+                                directorySession, entry);
+                        if (res != null) {
+                            items.addAll(Arrays.asList(res));
                         }
                     }
                 } else if (value instanceof Collection) {
                     Collection<Object> collection = (Collection<Object>) value;
-                    DocumentModel entry;
-                    for (Object currentItem : collection) {
-                        if (currentItem instanceof SelectItemGroup) {
-                            DirectorySelectItem[] res = createSelectItemsFrom(currentItem);
-                            if (res != null) {
-                                items.addAll(Arrays.asList(res));
-                            }
-                        } else if (currentItem instanceof String) {
-                            try {
-                                entry = directorySession.getEntry((String) currentItem);
-                                DirectorySelectItem[] res = createSelectItemsFrom(entry);
-                                if (res != null) {
-                                    items.addAll(Arrays.asList(res));
-                                }
-                            } catch (DirectoryException e) {
-                            }
-                        }
-                    }
-                } else if (value instanceof String[]) {
-                    String[] entryIds = (String[]) value;
-                    DocumentModel entry = null;
-                    for (String entryId : entryIds) {
-                        try {
-                            entry = directorySession.getEntry(entryId);
-                            DirectorySelectItem[] res = createSelectItemsFrom(entry);
-                            if (res != null) {
-                                items.addAll(Arrays.asList(res));
-                            }
-                        } catch (DirectoryException e) {
+                    for (Object entry : collection) {
+                        DirectorySelectItem[] res = createSelectItemsFrom(
+                                directorySession, entry);
+                        if (res != null) {
+                            items.addAll(Arrays.asList(res));
                         }
                     }
                 } else if (value instanceof Object[]) {
                     Object[] entries = (Object[]) value;
-                    DocumentModel docEntry = null;
                     for (Object entry : entries) {
-                        // first resolve entry id to be able to lookup
-                        // corresponding doc entry
-                        String entryId = retrieveEntryIdFrom(entry);
-                        if (StringUtils.isBlank(entryId)) {
-                            continue;
-                        }
-                        try {
-                            docEntry = directorySession.getEntry(entryId);
-                            DirectorySelectItem[] res = createSelectItemsFrom(docEntry);
-                            if (res != null) {
-                                items.addAll(Arrays.asList(res));
-                            }
-                        } catch (DirectoryException e) {
+                        DirectorySelectItem[] res = createSelectItemsFrom(
+                                directorySession, entry);
+                        if (res != null) {
+                            items.addAll(Arrays.asList(res));
                         }
                     }
                 }
@@ -196,6 +155,27 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
         String id = retrieveSelectEntryId();
         removeIteratorFromRequestParam();
         return id;
+    }
+
+    protected DirectorySelectItem[] createSelectItemsFrom(Session session,
+            Object entry) {
+        String entryId;
+        if (entry instanceof String) {
+            entryId = (String) entry;
+        } else {
+            // first resolve entry id to be able to lookup
+            // corresponding doc entry
+            entryId = retrieveEntryIdFrom(entry);
+        }
+        if (StringUtils.isBlank(entryId)) {
+            return null;
+        }
+        try {
+            DocumentModel docEntry = session.getEntry(entryId);
+            return createSelectItemsFrom(docEntry);
+        } catch (DirectoryException e) {
+        }
+        return null;
     }
 
     protected DirectorySelectItem[] createSelectItemsFrom(Object item) {
