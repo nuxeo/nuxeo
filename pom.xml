@@ -24,7 +24,6 @@
 
   <modules>
     <module>nuxeo-functional-tests</module>
-    <module>nuxeo-dam-functional-tests</module>
     <module>nuxeo-startup-wizard</module>
     <module>nuxeo-launcher</module>
     <module>nuxeo-distribution-resources</module>

@@ -62,7 +62,6 @@
     <zip destfile="${outdir}/nxr-${nuxeo.distribution.version}.zip"
          basedir="${outdir}/nxr" />
     <artifact:attach file="${outdir}/nxr-${nuxeo.distribution.version}.zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}"
                      classifier="nxr"
                      type="zip" />
 
@@ -107,17 +106,6 @@
   &lt;copy file=&quot;${package.root}/install/test-artifacts-dam.properties&quot;${line.separator}
     todir=&quot;${env.server.home}/sdk&quot; overwrite=&quot;true&quot; /&gt;" />
 
-    <var name="install.templates" value="" />
-    <if>
-      <available file="${outdir}/marketplace/install/templates" />
-      <then>
-        <var name="install.templates"
-             value="${line.separator}
-  &lt;copy dir=&quot;${package.root}/install/templates&quot; todir=&quot;${env.templates}&quot; overwrite=&quot;true&quot; /&gt;${line.separator}
-  &lt;config addtemplate=&quot;dam&quot; /&gt;${line.separator}" />
-      </then>
-    </if>
-
     <copy file="src/main/resources/install.xml"
           todir="${outdir}/marketplace"
           overwrite="true">
@@ -125,14 +113,12 @@
         <filter token="BUNDLES" value="${install.bundles}" />
         <filter token="LIBS" value="${install.libs}" />
         <filter token="PROPERTIES" value="${install.properties}" />
-        <filter token="TEMPLATES" value="${install.templates}" />
       </filterset>
     </copy>
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${nuxeo.distribution.version}.zip"
          basedir="${outdir}/marketplace" />
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${nuxeo.distribution.version}.zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}"
                      type="zip" />
   </target>
 </project>

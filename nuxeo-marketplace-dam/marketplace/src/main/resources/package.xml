@@ -54,7 +54,7 @@
       </li>
     </ul>
   </description>
-  <home-page>http://doc.nuxeo.com/x/KQMz</home-page>
+  <home-page>http://doc.nuxeo.com/x/nAMz</home-page>
   <vendor>Nuxeo</vendor>
   <installer restart="true" />
   <uninstaller restart="true" />
