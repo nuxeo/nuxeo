@@ -23,16 +23,40 @@ import java.util.Map;
  * @since 5.9.6
  */
 public interface AggregateQuery {
+    /**
+     * The aggregate identifier.
+     */
     String getId();
 
+    /**
+     * Type of aggregation.
+     */
     String getType();
 
+    /**
+     * Nuxeo field to aggregate.
+     */
     String getField();
 
+    /**
+     * Properties of the aggregate.
+     */
     Map<String, String> getProperties();
 
+    /**
+     * Range definition for aggregate of type range.
+     */
     List<AggregateRangeDefinition> getRanges();
 
+    /**
+     * Date Range definition for aggregate of type date range.
+     */
+    List<AggregateRangeDateDefinition> getDateRanges();
+
+    /**
+     * The selection filter that is going to be applied to the main query as a
+     * post filter.
+     */
     List<String> getSelection();
 
     void setSelection(List<String> selection);

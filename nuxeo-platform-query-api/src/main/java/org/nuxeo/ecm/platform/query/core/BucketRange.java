@@ -34,8 +34,16 @@ public final class BucketRange implements Bucket {
             throw new IllegalArgumentException("key is null");
         };
         this.key = key;
-        this.from = from.doubleValue();
-        this.to = to.doubleValue();
+        if (from != null) {
+            this.from = from.doubleValue();
+        } else {
+            this.from = null;
+        }
+        if (to != null) {
+            this.to = to.doubleValue();
+        } else {
+            this.to = null;
+        }
         this.docCount = docCount;
     }
 

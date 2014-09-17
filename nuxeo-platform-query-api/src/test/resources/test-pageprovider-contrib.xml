@@ -132,13 +132,16 @@
             <range key="big" from="4096"/>
           </ranges>
         </aggregate>
-        <aggregate id="modified_agg" type="date_range" parameter="dc:modified">
-          <field schema="search" name="modified_agg"/>
-          <ranges>
-            <range key="small" to="1024"/>
-            <range key="medium" from="1024" to="4096"/>
-            <range key="big" from="4096"/>
-          </ranges>
+        <aggregate id="created_agg" type="date_range" parameter="dc:created">
+          <field schema="search" name="created_agg"/>
+          <properties>
+            <property name="format">"MM-yyy</property>
+          </properties>
+          <dateRanges>
+            <dateRange key="long_time_ago" toDate="NOW-10M/M"/>
+            <dateRange key="some_time_ago" fromDate="NOW-10M/M" toDate="NOW-1M/M"/>
+            <dateRange key="last_month" fromDate="NOW-1M/M"/>
+          </dateRanges>
         </aggregate>
       </aggregates>
     </genericPageProvider>

@@ -26,6 +26,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
+import org.nuxeo.ecm.platform.query.api.AggregateRangeDateDefinition;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 
@@ -52,6 +53,9 @@ public class AggregateDescriptor implements AggregateDefinition {
 
     @XNodeList(value = "ranges/range", type = ArrayList.class, componentType = AggregateRangeDescriptor.class)
     protected List<AggregateRangeDescriptor> aggregateRanges;
+
+    @XNodeList(value = "dateRanges/dateRange", type = ArrayList.class, componentType = AggregateRangeDateDescriptor.class)
+    protected List<AggregateRangeDateDescriptor> aggregateDateRanges;
 
     @Override
     public String getId() {
@@ -95,6 +99,18 @@ public class AggregateDescriptor implements AggregateDefinition {
     }
 
     @Override
+    public List<AggregateRangeDateDefinition> getDateRanges() {
+        @SuppressWarnings("unchecked")
+        List<AggregateRangeDateDefinition> ret = (List<AggregateRangeDateDefinition>) (List<?>) aggregateDateRanges;
+        return ret;
+    }
+
+    @Override
+    public void setDateRanges(List<AggregateRangeDateDefinition> ranges) {
+        aggregateDateRanges = (List<AggregateRangeDateDescriptor>) (List<?>) ranges;
+    }
+
+    @Override
     public String getDocumentField() {
         return parameter;
     }
@@ -131,6 +147,10 @@ public class AggregateDescriptor implements AggregateDefinition {
         if (aggregateRanges != null) {
             clone.aggregateRanges = new ArrayList<AggregateRangeDescriptor>(aggregateRanges.size());
             clone.aggregateRanges.addAll(aggregateRanges);
+        }
+        if (aggregateDateRanges != null) {
+            clone.aggregateDateRanges = new ArrayList<AggregateRangeDateDescriptor>(aggregateDateRanges.size());
+            clone.aggregateDateRanges.addAll(aggregateDateRanges);
         }
         return clone;
     }

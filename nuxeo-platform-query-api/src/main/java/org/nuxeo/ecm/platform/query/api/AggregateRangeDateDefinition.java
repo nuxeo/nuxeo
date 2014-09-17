@@ -20,19 +20,15 @@ package org.nuxeo.ecm.platform.query.api;
 /**
  * @since 5.9.6
  */
-public interface AggregateRangeDefinition {
+public interface AggregateRangeDateDefinition extends AggregateRangeDefinition {
 
-    String getKey();
+    String getFromAsString();
 
-    Double getFrom();
+    String getToAsString();
 
-    Double getTo();
+    void setFrom(String from);
 
-    void setKey(String key);
+    void setTo(String to);
 
-    void setFrom(Double from);
-
-    void setTo(Double to);
-
-    AggregateRangeDefinition clone();
+    AggregateRangeDateDefinition clone();
 }

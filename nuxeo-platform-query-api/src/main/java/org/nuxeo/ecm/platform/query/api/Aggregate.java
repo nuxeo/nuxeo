@@ -22,11 +22,24 @@ import java.util.List;
  * @since 5.9.6
  */
 public interface Aggregate<B extends Bucket> {
+    /**
+     * The aggregate identifier.
+     */
     String getId();
 
+    /**
+     * The aggregate type.
+     */
     String getType();
 
+    /**
+     * The aggregate query.
+     */
+    AggregateQuery getQuery();
+
+    /**
+     * The aggregate results.
+     */
     List<B> getBuckets();
 
-    AggregateQuery getQuery();
 }

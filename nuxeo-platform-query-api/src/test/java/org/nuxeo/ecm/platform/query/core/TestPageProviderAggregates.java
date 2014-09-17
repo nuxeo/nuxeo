@@ -80,7 +80,7 @@ public class TestPageProviderAggregates extends SQLRepositoryTestCase {
         List<AggregateDefinition> aggs = ppd.getAggregates();
         assertNotNull(aggs);
         assertEquals(0, aggs.size());
-        assertEquals(Collections.<AggregateDefinition>emptyList(), aggs);
+        assertEquals(Collections.<AggregateDefinition> emptyList(), aggs);
     }
 
     @Test
@@ -94,6 +94,7 @@ public class TestPageProviderAggregates extends SQLRepositoryTestCase {
         AggregateDefinition coverage_agg = aggs.get(1);
         AggregateDefinition subject_agg = aggs.get(2);
         AggregateDefinition size_agg = aggs.get(3);
+        AggregateDefinition created_agg = aggs.get(4);
 
         assertEquals("source_agg", source_agg.getId());
         assertEquals("terms", source_agg.getType());
@@ -108,12 +109,25 @@ public class TestPageProviderAggregates extends SQLRepositoryTestCase {
         assertEquals(2, source_agg.getProperties().size());
         assertEquals(0, subject_agg.getProperties().size());
         assertEquals(0, source_agg.getRanges().size());
-
+        // range
         assertEquals("size_agg", size_agg.getId());
         assertEquals(3, size_agg.getRanges().size());
-        assertEquals("AggregateRangeDescriptor(small, null, 1024.0)", size_agg.getRanges().get(0).toString());
-        assertEquals("AggregateRangeDescriptor(medium, 1024.0, 4096.0)", size_agg.getRanges().get(1).toString());
-        assertEquals("AggregateRangeDescriptor(big, 4096.0, null)", size_agg.getRanges().get(2).toString());
+        assertEquals("AggregateRangeDescriptor(small, null, 1024.0)", size_agg
+                .getRanges().get(0).toString());
+        assertEquals("AggregateRangeDescriptor(medium, 1024.0, 4096.0)",
+                size_agg.getRanges().get(1).toString());
+        assertEquals("AggregateRangeDescriptor(big, 4096.0, null)", size_agg
+                .getRanges().get(2).toString());
+        // date range
+        assertEquals("created_agg", created_agg.getId());
+        assertEquals(0, created_agg.getRanges().size());
+        assertEquals(3, created_agg.getDateRanges().size());
+        assertEquals(
+                "AggregateRangeDateDescriptor(long_time_ago, null, NOW-10M/M)",
+                created_agg.getDateRanges().get(0).toString());
+        assertEquals(
+                "AggregateRangeDateDescriptor(last_month, NOW-1M/M, null)",
+                created_agg.getDateRanges().get(2).toString());
     }
 
     @Test
@@ -135,13 +149,15 @@ public class TestPageProviderAggregates extends SQLRepositoryTestCase {
         assertEquals(5, qaggs.size());
 
         AggregateQuery source_agg = qaggs.get(0);
-        assertEquals("AggregateQueryImpl(source_agg, terms, dc:source, [for search, you know])",
+        assertEquals(
+                "AggregateQueryImpl(source_agg, terms, dc:source, [for search, you know])",
                 source_agg.toString());
 
         AggregateQuery coverage_agg = qaggs.get(1);
         assertNotNull(coverage_agg.getSelection());
         assertEquals(0, coverage_agg.getSelection().size());
-        assertEquals("AggregateQueryImpl(coverage_agg, histogram, dc:coverage, [])",
+        assertEquals(
+                "AggregateQueryImpl(coverage_agg, histogram, dc:coverage, [])",
                 coverage_agg.toString());
     }
 

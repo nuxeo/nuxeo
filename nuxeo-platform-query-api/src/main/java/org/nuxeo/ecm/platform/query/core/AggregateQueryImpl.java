@@ -24,6 +24,7 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.AggregateQuery;
+import org.nuxeo.ecm.platform.query.api.AggregateRangeDateDefinition;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 
@@ -66,6 +67,11 @@ public class AggregateQueryImpl implements AggregateQuery {
     @Override
     public List<AggregateRangeDefinition> getRanges() {
         return definition.getRanges();
+    }
+
+    @Override
+    public List<AggregateRangeDateDefinition> getDateRanges() {
+        return definition.getDateRanges();
     }
 
     @Override

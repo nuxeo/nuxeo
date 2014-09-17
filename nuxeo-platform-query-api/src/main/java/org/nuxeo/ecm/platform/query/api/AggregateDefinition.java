@@ -41,6 +41,10 @@ public interface AggregateDefinition {
 
     void setRanges(List<AggregateRangeDefinition> ranges);
 
+    List<AggregateRangeDateDefinition> getDateRanges();
+
+    void setDateRanges(List<AggregateRangeDateDefinition> ranges);
+
     /**
      * Get the document aggregator field
      */

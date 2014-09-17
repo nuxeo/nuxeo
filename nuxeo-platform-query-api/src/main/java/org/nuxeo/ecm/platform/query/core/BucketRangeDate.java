@@ -25,49 +25,55 @@ import org.nuxeo.ecm.platform.query.api.Bucket;
  */
 public class BucketRangeDate implements Bucket {
 
-    private final String key;
-    private final long docCount;
-    // DateTime are immutables
-    private final DateTime from;
-    private final DateTime to;
+    private final BucketRange range;
+    // joda DateTime are immutables
+    private final DateTime fromDate;
+    private final DateTime toDate;
 
     public BucketRangeDate(String key, DateTime from, DateTime to, long docCount) {
         if (key == null) {
             throw new IllegalArgumentException("key is null");
         };
-        this.key = key;
-        this.from = from;
-        this.to = to;
-        this.docCount = docCount;
+        //fromDate.
+        range = new BucketRange(key, from != null ? from.getMillis() : null, to != null ? to.getMillis() : null, docCount);
+        this.fromDate = from;
+        this.toDate = to;
     }
 
     @Override
     public String getKey() {
-        return key;
+        return range.getKey();
     }
 
     @Override
     public long getDocCount() {
-        return docCount;
+        return range.getDocCount();
     }
 
+    public Double getFrom() {
+        return range.getFrom();
+    }
     /**
      * @return null if there are no minimal limit
      */
-    public DateTime getFrom() {
-        return from;
+    public DateTime getFromAsDate() {
+        return fromDate;
+    }
+
+    public Double getTo() {
+        return range.getTo();
     }
 
     /**
      * @return null if there are no maximal limit
      */
-    public DateTime getTo() {
-        return to;
+    public DateTime getToAsDate() {
+        return toDate;
     }
 
     @Override
     public String toString() {
-            return String.format("BucketRangeDate(%s, %d, %s, %s)", key, docCount, from,
-                    to);
+            return String.format("BucketRangeDate(%s, %d, %s, %s)", getKey(), getDocCount(), fromDate,
+                    toDate);
     }
 }
