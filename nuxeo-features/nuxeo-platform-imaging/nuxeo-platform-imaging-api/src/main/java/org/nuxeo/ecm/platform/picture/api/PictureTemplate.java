@@ -19,6 +19,8 @@ package org.nuxeo.ecm.platform.picture.api;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * Object to store the definition of a picture template, to be used when
@@ -27,22 +29,43 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
  */
+@XObject("pictureTemplate")
 public class PictureTemplate {
 
-    protected final String title;
+    @XNode("@title")
+    protected String title;
 
-    protected final String description;
+    @XNode("@description")
+    protected String description;
 
-    protected final String tag;
+    @XNode("@enabled")
+    protected boolean enabled;
 
-    protected final int maxSize;
+    @XNode("@chainId")
+    protected String chainId;
+
+    protected String tag;
+
+    protected int maxSize;
 
     public PictureTemplate(String title, String description, String tag,
             int maxSize) {
+        this(title, description, tag, maxSize, null, true);
+    }
+
+    public PictureTemplate(String title, String description, String tag,
+            int maxSize, String chainId) {
+        this(title, description, tag, maxSize, chainId, true);
+    }
+
+    public PictureTemplate(String title, String description, String tag,
+            int maxSize, String chainId, boolean enabled) {
         this.title = title;
         this.description = description;
         this.tag = tag;
         this.maxSize = maxSize;
+        this.chainId = chainId;
+        this.enabled = enabled;
     }
 
     public String getTitle() {
@@ -69,6 +92,44 @@ public class PictureTemplate {
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public String getChainId() {
+        return chainId;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setChainId(String chainId) {
+        this.chainId = chainId;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
+    public void setMaxSize(int maxSize) {
+        this.maxSize = maxSize;
+    }
+
+    @Override
+    public PictureTemplate clone() {
+        return new PictureTemplate(title, description, tag, maxSize, chainId,
+                enabled);
     }
 
     @Override
