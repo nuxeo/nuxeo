@@ -50,6 +50,8 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
 
     protected abstract String getDirectoryName();
 
+    protected abstract String getKeySeparator();
+
     protected abstract String getFilter();
 
     protected abstract boolean isDisplayObsoleteEntries();
@@ -171,7 +173,17 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
             return null;
         }
         try {
-            DocumentModel docEntry = session.getEntry(entryId);
+            String subEntryId = entryId;
+            String keySeparator = getKeySeparator();
+            if (!StringUtils.isBlank(keySeparator)) {
+                String[] split = entryId.split(keySeparator);
+                subEntryId = split[split.length - 1];
+            }
+            DocumentModel docEntry = session.getEntry(subEntryId);
+            if (docEntry == null) {
+                return new DirectorySelectItem[] { new DirectorySelectItem(
+                        subEntryId, subEntryId, 0L, false, false) };
+            }
             return createSelectItemsFrom(docEntry);
         } catch (DirectoryException e) {
         }

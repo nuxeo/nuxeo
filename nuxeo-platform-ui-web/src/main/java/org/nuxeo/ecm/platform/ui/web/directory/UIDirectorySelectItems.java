@@ -48,7 +48,9 @@ public class UIDirectorySelectItems extends UISelectItems {
     }
 
     enum DirPropertyKeys {
-        directoryName, itemOrdering, allValues, displayAll, displayObsoleteEntries, filter, localize, dbl10n;
+        directoryName, keySeparator, itemOrdering, allValues,
+        //
+        displayAll, displayObsoleteEntries, filter, localize, dbl10n;
     }
 
     // setters & getters
@@ -59,6 +61,14 @@ public class UIDirectorySelectItems extends UISelectItems {
 
     public void setItemOrdering(Long itemOrdering) {
         getStateHelper().put(DirPropertyKeys.itemOrdering, itemOrdering);
+    }
+
+    public String getKeySeparator() {
+        return (String) getStateHelper().eval(DirPropertyKeys.keySeparator);
+    }
+
+    public void setKeySeparator(String keySeparator) {
+        getStateHelper().put(DirPropertyKeys.keySeparator, keySeparator);
     }
 
     public String getDirectoryName() {
@@ -170,6 +180,11 @@ public class UIDirectorySelectItems extends UISelectItems {
             }
 
             @Override
+            protected String getKeySeparator() {
+                return UIDirectorySelectItems.this.getKeySeparator();
+            }
+
+            @Override
             protected String getFilter() {
                 return UIDirectorySelectItems.this.getFilter();
             }
@@ -194,9 +209,6 @@ public class UIDirectorySelectItems extends UISelectItems {
         if (!isItemRendered()) {
             return null;
         }
-        Object value = getItemValue();
-        Object labelObject = getItemLabel();
-        String label = labelObject != null ? labelObject.toString() : null;
         DocumentModel docEntry = null;
         FacesContext ctx = FacesContext.getCurrentInstance();
         Object entry = ComponentTagUtils.resolveElExpression(ctx,
@@ -205,7 +217,17 @@ public class UIDirectorySelectItems extends UISelectItems {
         if (entry instanceof DocumentModel) {
             docEntry = (DocumentModel) entry;
             schema = docEntry.getSchemas()[0];
+        } else {
+            return null;
         }
+        // entry id might have been resolved thanks to item value, so let's
+        // use directly the doc entry id for option value
+        String value = docEntry.getId();
+        if (value == null) {
+            return null;
+        }
+        Object labelObject = getItemLabel();
+        String label = labelObject != null ? labelObject.toString() : null;
         // lookup label property, hardcode the "label_" prefix for now
         if (label == null && docEntry != null) {
             // fallback on directory default label
@@ -249,7 +271,7 @@ public class UIDirectorySelectItems extends UISelectItems {
         }
         // make sure label is never blank
         if (StringUtils.isBlank(label)) {
-            label = String.valueOf(value);
+            label = value;
         }
         String labelPrefix = getItemLabelPrefix();
         if (!StringUtils.isBlank(labelPrefix)) {
