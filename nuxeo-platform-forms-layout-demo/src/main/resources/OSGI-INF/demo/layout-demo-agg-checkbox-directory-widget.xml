@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.forms.layoutDemo.selectManyCheckboxDirectoryAggregateWidget.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="selectManyCheckboxDirectoryAggregate">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>widget</widget>
+        </row>
+      </rows>
+      <widget name="widget" type="selectManyCheckboxDirectoryAggregate">
+        <labels>
+          <label mode="any">Aggregates</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>lds:stringList</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="directoryName">layout_demo_crew</property>
+          <property name="selectOptions">
+            #{layoutDemoAggregates['dir_terms'].buckets}
+          </property>
+        </properties>
+      </widget>
+    </layout>
+
+  </extension>
+
+</component>

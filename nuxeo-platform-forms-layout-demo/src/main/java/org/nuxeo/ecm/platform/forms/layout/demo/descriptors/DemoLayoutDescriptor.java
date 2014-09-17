@@ -38,6 +38,9 @@ public class DemoLayoutDescriptor implements DemoLayout {
     @XNode("@isListing")
     protected boolean listing = false;
 
+    @XNode("@hideViewMode")
+    protected boolean hideViewMode = false;
+
     public String getName() {
         return name;
     }
@@ -48,6 +51,11 @@ public class DemoLayoutDescriptor implements DemoLayout {
 
     public boolean isListing() {
         return listing;
+    }
+
+    @Override
+    public boolean isHideViewMode() {
+        return hideViewMode;
     }
 
 }

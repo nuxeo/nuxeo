@@ -47,8 +47,16 @@ import org.nuxeo.ecm.platform.actions.jsf.JSFActionContext;
 import org.nuxeo.ecm.platform.forms.layout.demo.service.DemoWidgetType;
 import org.nuxeo.ecm.platform.forms.layout.demo.service.LayoutDemoManager;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
+import org.nuxeo.ecm.platform.query.api.Aggregate;
+import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
+import org.nuxeo.ecm.platform.query.api.AggregateQuery;
+import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.ecm.platform.query.api.PageSelection;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
+import org.nuxeo.ecm.platform.query.core.AggregateDescriptor;
+import org.nuxeo.ecm.platform.query.core.AggregateImpl;
+import org.nuxeo.ecm.platform.query.core.AggregateQueryImpl;
+import org.nuxeo.ecm.platform.query.core.BucketTerm;
 
 /**
  * Seam component providing information contextual to a session on the
@@ -85,6 +93,8 @@ public class LayoutDemoContext implements Serializable {
 
     protected List<Action> layoutDemoCustomActions;
 
+    protected Map<String, Aggregate> layoutDemoAggregates;
+
     @Create
     public void openCoreSession() throws Exception {
         demoCoreSession = CoreInstance.openCoreSessionSystem("layoutDemo");
@@ -111,6 +121,14 @@ public class LayoutDemoContext implements Serializable {
     @Factory(value = "customWidgetTypes", scope = SESSION)
     public List<DemoWidgetType> getCustomWidgetTypes() {
         return layoutDemoManager.getWidgetTypes("custom");
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    @Factory(value = "aggregateWidgetTypes", scope = SESSION)
+    public List<DemoWidgetType> getAggregateWidgetTypes() {
+        return layoutDemoManager.getWidgetTypes("aggregate");
     }
 
     @Factory(value = "actionWidgetTypes", scope = SESSION)
@@ -183,7 +201,8 @@ public class LayoutDemoContext implements Serializable {
                     new String[] { "cartman", "marsh" });
             doc.setPropertyValue("lds:select_coverage_field", "africa/Botswana");
             doc.setPropertyValue("lds:select_subjects_multi_fields",
-                    new String[] { "art/art history","art/culture","sciences/logic" });
+                    new String[] { "art/art history", "art/culture",
+                            "sciences/logic" });
             doc.setPropertyValue("lds:select_user_field", "Administrator");
             doc.setPropertyValue("lds:select_users_multi_fields",
                     new String[] { "Administrator" });
@@ -233,7 +252,8 @@ public class LayoutDemoContext implements Serializable {
                     new String[] { "cartman" });
             doc.setPropertyValue("select_coverage_field", "africa/Botswana");
             doc.setPropertyValue("lds:select_subjects_multi_fields",
-                    new String[] { "art/art history","art/culture","sciences/logic" });
+                    new String[] { "art/art history", "art/culture",
+                            "sciences/logic" });
             doc.setPropertyValue("lds:dateField", Calendar.getInstance());
             doc.setPropertyValue("lds:intField", new Integer(667));
             doc.setPropertyValue("lds:booleanField", Boolean.TRUE);
@@ -318,4 +338,47 @@ public class LayoutDemoContext implements Serializable {
         return layoutDemoCustomActions;
     }
 
+    /**
+     * @since 5.9.6
+     */
+    @Factory(value = "layoutDemoAggregates", scope = EVENT)
+    public Map<String, Aggregate> getLayoutDemoAggregates()
+            throws ClientException, Exception {
+        if (layoutDemoAggregates == null) {
+            layoutDemoAggregates = new HashMap<>();
+
+            AggregateDefinition mockDef = new AggregateDescriptor();
+            mockDef.setId("mock");
+            AggregateQuery mockQuery = new AggregateQueryImpl(mockDef, null);
+
+            List<Bucket> stringTerms = new ArrayList<>();
+            stringTerms.add(new BucketTerm("eric", 10));
+            stringTerms.add(new BucketTerm("stan", 5));
+            stringTerms.add(new BucketTerm("kyle", 2));
+            layoutDemoAggregates.put("string_terms", new AggregateImpl(
+                    mockQuery, stringTerms));
+
+            List<Bucket> dirTerms = new ArrayList<>();
+            dirTerms.add(new BucketTerm("cartman", 10));
+            dirTerms.add(new BucketTerm("marsh", 5));
+            dirTerms.add(new BucketTerm("broflovski", 2));
+            layoutDemoAggregates.put("dir_terms", new AggregateImpl(mockQuery,
+                    dirTerms));
+
+            List<Bucket> dirTermsl10n = new ArrayList<>();
+            dirTermsl10n.add(new BucketTerm("oceania", 10));
+            dirTermsl10n.add(new BucketTerm("antarctica", 5));
+            dirTermsl10n.add(new BucketTerm("europe", 2));
+            layoutDemoAggregates.put("dir_terms_translated", new AggregateImpl(
+                    mockQuery, dirTermsl10n));
+
+            List<Bucket> dirTermsl10nHier = new ArrayList<>();
+            dirTermsl10nHier.add(new BucketTerm("oceania/Australia", 10));
+            dirTermsl10nHier.add(new BucketTerm("antartica", 5));
+            dirTermsl10nHier.add(new BucketTerm("europe/France", 2));
+            layoutDemoAggregates.put("dir_terms_l10n", new AggregateImpl(
+                    mockQuery, dirTermsl10nHier));
+        }
+        return layoutDemoAggregates;
+    }
 }

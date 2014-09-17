@@ -22,20 +22,24 @@ Needed parameters:
           <th>
             #{messages['label.layoutDemo.widgetDemo.editMode']}
           </th>
-          <th>
-            #{messages['label.layoutDemo.widgetDemo.viewMode']}
-          </th>
+          <c:if test="#{not demoLayout.hideViewMode}">
+            <th>
+              #{messages['label.layoutDemo.widgetDemo.viewMode']}
+            </th>
+          </c:if>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td colspan="2">
-            <span class="processMessage completeInfo">
-              Fill the form and click on 'Submit' to display the widget
-              rendering in view mode.
-            </span>
-          </td>
-        </tr>
+        <c:if test="#{not demoLayout.hideViewMode}">
+          <tr>
+            <td colspan="2">
+              <span class="processMessage completeInfo">
+                Fill the form and click on 'Submit' to display the widget
+                rendering in view mode.
+              </span>
+            </td>
+          </tr>
+        </c:if>
         <tr>
           <td width="50%" valign="top">
             <ui:decorate template="/widgets/incl/form_template.xhtml">
@@ -80,24 +84,26 @@ Needed parameters:
               </ui:define>
             </ui:decorate>
           </td>
-          <td width="50%" valign="top">
-            <ui:decorate template="/widgets/incl/form_template.xhtml">
-              <ui:param name="addForm" value="true" />
-              <ui:param name="formId" value="#{demoLayout.name}_view_form" />
-              <ui:param name="useAjaxForm" value="#{not useMultipartForm}" />
-              <ui:define name="form_template_content">
-                <nxl:layout value="#{layoutDemoDocument}" mode="view"
-                  name="#{demoLayout.name}" />
-              </ui:define>
-            </ui:decorate>
-          </td>
+          <c:if test="#{not demoLayout.hideViewMode}">
+            <td width="50%" valign="top">
+              <ui:decorate template="/widgets/incl/form_template.xhtml">
+                <ui:param name="addForm" value="true" />
+                <ui:param name="formId" value="#{demoLayout.name}_view_form" />
+                <ui:param name="useAjaxForm" value="#{not useMultipartForm}" />
+                <ui:define name="form_template_content">
+                  <nxl:layout value="#{layoutDemoDocument}" mode="view"
+                    name="#{demoLayout.name}" />
+                </ui:define>
+              </ui:decorate>
+            </td>
+          </c:if>
         </tr>
       </tbody>
     </table>
   </a4j:region>
 
 </c:if>
-  
+
 <c:if test="#{demoLayout.listing}">
 
   <c:if test="#{currentWidgetType.category != 'listing'}">

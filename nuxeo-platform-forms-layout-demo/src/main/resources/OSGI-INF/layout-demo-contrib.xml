@@ -676,6 +676,78 @@
       <widgetTypeCategory>jsfAction</widgetTypeCategory>
     </widgetType>
 
+    <widgetType name="selectManyCheckboxAggregate">
+      <label>Multiple aggregate checkbox</label>
+      <viewId>selectManyCheckboxAggregateWidget</viewId>
+      <category>aggregate</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:stringList</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="selectManyCheckboxAggregate" hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-checkbox-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="selectManyListboxAggregate">
+      <label>Multiple aggregate listbox</label>
+      <viewId>selectManyListboxAggregateWidget</viewId>
+      <category>aggregate</category>
+      <preview enabled="true" hideViewMode="true">
+        <fields>
+          <field>lds:stringList</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="selectManyListboxAggregate" hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-listbox-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="selectManyCheckboxDirectoryAggregate">
+      <label>Multiple directory aggregate checkbox</label>
+      <viewId>selectManyCheckboxDirectoryAggregateWidget</viewId>
+      <category>aggregate</category>
+      <preview enabled="true" hideViewMode="true">
+        <fields>
+          <field>lds:selectMultiVocabularyField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="selectManyCheckboxDirectoryAggregate" hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-checkbox-directory-widget.xml" />
+        <layout name="selectManyCheckboxDirectoryAggregateLocalized"
+          hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-checkbox-directory-translated-widget.xml" />
+        <layout name="selectManyCheckboxDirectoryAggregateL10N"
+          hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-checkbox-directory-dbl10n-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="selectManyListboxDirectoryAggregate">
+      <label>Multiple directory aggregate listbox</label>
+      <viewId>selectManyListboxDirectoryAggregateWidget</viewId>
+      <category>aggregate</category>
+      <preview enabled="true" hideViewMode="true">
+        <fields>
+          <field>lds:selectMultiVocabularyField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="selectManyListboxDirectoryAggregate" hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-listbox-directory-widget.xml" />
+        <layout name="selectManyListboxDirectoryAggregateLocalized"
+          hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-listbox-directory-localized-widget.xml" />
+        <layout name="selectManyListboxDirectoryAggregateL10N"
+          hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-listbox-directory-dbl10n-widget.xml" />
+      </layouts>
+    </widgetType>
+
   </extension>
 
 </component>

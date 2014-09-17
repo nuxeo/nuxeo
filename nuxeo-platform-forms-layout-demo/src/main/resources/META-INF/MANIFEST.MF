@@ -60,4 +60,12 @@ Nuxeo-Component: OSGI-INF/layout-demo-framework.xml,
  OSGI-INF/demo/layout-demo-listing-lifecycle-widget.xml,
  OSGI-INF/demo/layout-demo-listing-lock-icon-widget.xml,
  OSGI-INF/demo/layout-demo-listing-title-link-widget.xml,
- OSGI-INF/demo/layout-demo-listing-version-widget.xml
+ OSGI-INF/demo/layout-demo-listing-version-widget.xml,
+ OSGI-INF/demo/layout-demo-agg-listbox-widget.xml,
+ OSGI-INF/demo/layout-demo-agg-checkbox-widget.xml,
+ OSGI-INF/demo/layout-demo-agg-listbox-directory-widget.xml,
+ OSGI-INF/demo/layout-demo-agg-listbox-directory-localized-widget.xml,
+ OSGI-INF/demo/layout-demo-agg-listbox-directory-dbl10n-widget.xml,
+ OSGI-INF/demo/layout-demo-agg-checkbox-directory-widget.xml,
+ OSGI-INF/demo/layout-demo-agg-checkbox-directory-localized-widget.xml,
+ OSGI-INF/demo/layout-demo-agg-checkbox-directory-dbl10n-widget.xml

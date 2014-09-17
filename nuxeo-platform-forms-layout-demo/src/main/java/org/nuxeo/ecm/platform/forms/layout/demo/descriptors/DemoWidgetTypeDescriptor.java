@@ -60,7 +60,10 @@ public class DemoWidgetTypeDescriptor implements Serializable {
     protected String widgetTypeCategory;
 
     @XNode("preview@enabled")
-    protected Boolean previewEnabled = Boolean.FALSE;
+    protected boolean previewEnabled = false;
+
+    @XNode("preview@hideViewMode")
+    protected boolean previewHideViewMode = false;
 
     @XNodeList(value = "preview/fields/field", type = ArrayList.class, componentType = String.class)
     protected List<String> fields;
@@ -101,8 +104,12 @@ public class DemoWidgetTypeDescriptor implements Serializable {
         return widgetTypeCategory;
     }
 
-    public Boolean getPreviewEnabled() {
+    public boolean isPreviewEnabled() {
         return previewEnabled;
+    }
+
+    public boolean isPreviewHideViewMode() {
+        return previewHideViewMode;
     }
 
     public List<String> getFields() {

@@ -40,7 +40,12 @@ public interface DemoWidgetType extends Serializable {
      */
     String getWidgetTypeCategory();
 
-    Boolean getPreviewEnabled();
+    boolean isPreviewEnabled();
+
+    /**
+     * @since 5.9.6
+     */
+    boolean isPreviewHideViewMode();
 
     List<String> getFields();
 

@@ -284,6 +284,34 @@
       <redirect />
     </navigation-case>
 
+    <navigation-case>
+      <from-outcome>selectManyCheckboxAggregateWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/selectManyCheckboxAggregate.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>selectManyCheckboxDirectoryAggregateWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/selectManyCheckboxDirectoryAggregate.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>selectManyListboxAggregateWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/selectManyListboxAggregate.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>selectManyListboxDirectoryAggregateWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/selectManyListboxDirectoryAggregate.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
 
   </extension>
 

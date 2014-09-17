@@ -15,11 +15,13 @@
   <div class="tabsBar subtabsBar">
 
     <ul>
-      <li class="#{nxu:test(empty layoutDemoCurrentSubTabId, 'selected', '')}">
-        <a href="#{baseURL}#{currentWidgetType.url}/preview">
-          #{messages['label.layoutDemo.widgetDemo.viewMode']}
-        </a>
-      </li>
+      <c:if test="#{not currentWidgetType.previewHideViewMode}">
+        <li class="#{nxu:test(empty layoutDemoCurrentSubTabId, 'selected', '')}">
+          <a href="#{baseURL}#{currentWidgetType.url}/preview">
+            #{messages['label.layoutDemo.widgetDemo.viewMode']}
+          </a>
+        </li>
+      </c:if>
       <li class="#{nxu:test(layoutDemoCurrentSubTabId == 'edit_mode', 'selected', '')}">
         <a href="#{baseURL}#{currentWidgetType.url}/preview/edit_mode">
           #{messages['label.layoutDemo.widgetDemo.editMode']}
@@ -30,7 +32,7 @@
   <div style="clear:both"></div>
   <div class="tabsContent">
 
-    <c:if test="#{empty layoutDemoCurrentSubTabId}">
+    <c:if test="#{empty layoutDemoCurrentSubTabId and not currentWidgetType.previewHideViewMode}">
 
       <ui:decorate template="/layoutDemo/widget_preview_template.xhtml">
         <ui:param name="widgetPreviewMode" value="view" />
@@ -39,7 +41,7 @@
 
     </c:if>
 
-    <c:if test="#{layoutDemoCurrentSubTabId == 'edit_mode'}">
+    <c:if test="#{(empty layoutDemoCurrentSubTabId and currentWidgetType.previewHideViewMode) or layoutDemoCurrentSubTabId == 'edit_mode'}">
 
       <ui:decorate template="/layoutDemo/widget_preview_template.xhtml">
         <ui:param name="widgetPreviewMode" value="edit" />

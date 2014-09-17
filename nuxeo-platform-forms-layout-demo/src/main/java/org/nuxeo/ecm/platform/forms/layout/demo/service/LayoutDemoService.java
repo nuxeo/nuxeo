@@ -82,8 +82,9 @@ public class LayoutDemoService extends DefaultComponent implements
         // widget type and use it in the demo
         DemoWidgetType widgetType = new DemoWidgetTypeImpl(
                 desc.getWidgetTypeName(), desc.getLabel(), viewId, category,
-                wtCat, desc.getPreviewEnabled(), desc.getFields(),
-                desc.getDefaultProperties(), desc.getDemoLayouts());
+                wtCat, desc.isPreviewEnabled(), desc.isPreviewHideViewMode(),
+                desc.getFields(), desc.getDefaultProperties(),
+                desc.getDemoLayouts());
         widgetTypeRegistry.put(name, widgetType);
         if (category != null) {
             List<String> byCat = widgetTypesByCategory.get(category);

@@ -31,4 +31,9 @@ public interface DemoLayout extends Serializable {
 
     boolean isListing();
 
+    /**
+     * @since 5.9.6
+     */
+    boolean isHideViewMode();
+
 }

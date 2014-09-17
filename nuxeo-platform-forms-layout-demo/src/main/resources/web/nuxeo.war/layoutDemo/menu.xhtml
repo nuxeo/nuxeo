@@ -29,6 +29,14 @@
   </ui:include>
 
   <ui:include src="menu_template.xhtml">
+    <ui:param name="category" value="aggregate" />
+    <ui:param name="categoryTitle" value="#{messages['label.layoutDemo.aggregateWidgets']}" />
+    <ui:param name="currentWidgetType" value="#{currentWidgetType}" />
+    <ui:param name="widgetTypes" value="#{aggregateWidgetTypes}" />
+    <ui:param name="openByDefault" value="false" />
+  </ui:include>
+
+  <ui:include src="menu_template.xhtml">
     <ui:param name="category" value="action" />
     <ui:param name="categoryTitle" value="#{messages['label.layoutDemo.actionWidgets']}" />
     <ui:param name="currentWidgetType" value="#{currentWidgetType}" />
