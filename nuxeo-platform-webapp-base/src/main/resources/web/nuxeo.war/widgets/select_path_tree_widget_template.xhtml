@@ -28,13 +28,14 @@
       var config = {
         'width'              : '50%',
         'height'             : '75%',
-        'autoScale'          : false,
+        'autoScale'          : true,
         'autoDimensions'     : false,
         'transitionIn'       : 'none',
         'transitionOut'      : 'none',
         'type'               : 'inline',
         'enableEscapeButton' : true,
-        'centerOnScroll'     : true
+        'centerOnScroll'     : true,
+        'padding'            : 0
       };
       jQuery("##{widget.id}_openPopup").fancybox(config);
 
@@ -97,6 +98,7 @@
       <h3>
         <h:outputText value="#{messages['label.search.popup.title']}"/>
       </h3>
+      <div class="content">
       <rich:tree preserveModel="none"
         ajaxChildActivationEncodeBehavior="none"
         ajaxNodeSelectionEncodeBehavior="none"
@@ -131,6 +133,7 @@
           </rich:treeNode>
         </rich:treeModelRecursiveAdaptor>
       </rich:tree>
+      </div>
     </div>
   </div>
 
