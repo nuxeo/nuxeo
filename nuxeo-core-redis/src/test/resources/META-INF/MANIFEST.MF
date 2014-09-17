@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Core Redis Testing
+Bundle-SymbolicName: org.nuxeo.ecm.core.redis.tests;singleton:=true
+Bundle-Vendor: Nuxeo
