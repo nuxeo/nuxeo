@@ -714,6 +714,11 @@
       <!-- Digital Asset Management -->
       <dependency>
         <groupId>org.nuxeo.dam</groupId>
+        <artifactId>nuxeo-dam</artifactId>
+        <version>${nuxeo.dam.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.dam</groupId>
         <artifactId>nuxeo-dam-jsf</artifactId>
         <version>${nuxeo.dam.version}</version>
       </dependency>
