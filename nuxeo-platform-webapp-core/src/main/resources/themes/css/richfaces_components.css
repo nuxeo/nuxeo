@@ -40,14 +40,25 @@ a.treeLink:hover,
 .rf-trn-lbl {
   padding: 0 0 0 1px }
 
+.rf-trn-lbl div {
+  display: inline-block }
+
 .rf-trn-ico {
   height: 13px;
   width: 13px }
 
+.rf-trn-hnd,
+.rf-trn-hnd-ldn-fct {
+  display: inline-block;
+  height: 16px;
+  width: 16px }
+
 .rf-trn-hnd-exp,
 .rf-trn-hnd-colps {
   background: #fff url("${basePath}/icons/arrow_unfolded.gif") no-repeat left center;
-  height: 1.7em }
+  display: inline-block;
+  height: 16px;
+  width: 16px }
 
 .rf-trn-hnd-colps {
   background: #fff url("${basePath}/icons/arrow_folded.gif") no-repeat left center; }
