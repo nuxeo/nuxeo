@@ -45,6 +45,8 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
 
     private static final Log log = LogFactory.getLog(DirectorySelectItemsFactory.class);
 
+    protected abstract String retrieveSelectEntryId();
+
     protected abstract DirectorySelectItem createSelectItem();
 
     protected abstract String getDirectoryName();
@@ -55,9 +57,6 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
 
     @SuppressWarnings({ "unchecked", "rawtypes", "boxing" })
     public DirectorySelectItem[] createSelectItems(Object value) {
-        if (value instanceof DirectorySelectItem[]) {
-            return (DirectorySelectItem[]) value;
-        }
         Object varValue = saveRequestMapVarValue();
         try {
             // build select items
@@ -107,6 +106,25 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
                         try {
                             entry = directorySession.getEntry(entryId);
                             DirectorySelectItem[] res = createSelectItemsFrom(entry);
+                            if (res != null) {
+                                items.addAll(Arrays.asList(res));
+                            }
+                        } catch (DirectoryException e) {
+                        }
+                    }
+                } else if (value instanceof Object[]) {
+                    Object[] entries = (Object[]) value;
+                    DocumentModel docEntry = null;
+                    for (Object entry : entries) {
+                        // first resolve entry id to be able to lookup
+                        // corresponding doc entry
+                        String entryId = retrieveEntryIdFrom(entry);
+                        if (StringUtils.isBlank(entryId)) {
+                            continue;
+                        }
+                        try {
+                            docEntry = directorySession.getEntry(entryId);
+                            DirectorySelectItem[] res = createSelectItemsFrom(docEntry);
                             if (res != null) {
                                 items.addAll(Arrays.asList(res));
                             }
@@ -171,6 +189,13 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
         } finally {
             restoreRequestMapVarValue(varValue);
         }
+    }
+
+    protected String retrieveEntryIdFrom(Object item) {
+        putIteratorToRequestParam(item);
+        String id = retrieveSelectEntryId();
+        removeIteratorFromRequestParam();
+        return id;
     }
 
     protected DirectorySelectItem[] createSelectItemsFrom(Object item) {

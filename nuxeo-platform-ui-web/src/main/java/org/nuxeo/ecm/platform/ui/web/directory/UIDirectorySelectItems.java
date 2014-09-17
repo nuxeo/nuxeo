@@ -44,86 +44,90 @@ public class UIDirectorySelectItems extends UISelectItems {
     private static final Log log = LogFactory.getLog(UIDirectorySelectItems.class);
 
     enum PropertyKeys {
+        value
+    }
+
+    enum DirPropertyKeys {
         directoryName, itemOrdering, allValues, displayAll, displayObsoleteEntries, filter, localize, dbl10n;
     }
 
     // setters & getters
 
     public Long getItemOrdering() {
-        return (Long) getStateHelper().eval(PropertyKeys.itemOrdering);
+        return (Long) getStateHelper().eval(DirPropertyKeys.itemOrdering);
     }
 
     public void setItemOrdering(Long itemOrdering) {
-        getStateHelper().put(PropertyKeys.itemOrdering, itemOrdering);
+        getStateHelper().put(DirPropertyKeys.itemOrdering, itemOrdering);
     }
 
     public String getDirectoryName() {
-        return (String) getStateHelper().eval(PropertyKeys.directoryName);
+        return (String) getStateHelper().eval(DirPropertyKeys.directoryName);
     }
 
     public void setDirectoryName(String directoryName) {
-        getStateHelper().put(PropertyKeys.directoryName, directoryName);
+        getStateHelper().put(DirPropertyKeys.directoryName, directoryName);
     }
 
     public SelectItem[] getAllValues() {
-        return (SelectItem[]) getStateHelper().eval(PropertyKeys.allValues);
+        return (SelectItem[]) getStateHelper().eval(DirPropertyKeys.allValues);
     }
 
     public void setAllValues(SelectItem[] allValues) {
-        getStateHelper().put(PropertyKeys.allValues, allValues);
+        getStateHelper().put(DirPropertyKeys.allValues, allValues);
     }
 
     @SuppressWarnings("boxing")
     public boolean isDisplayAll() {
-        return (Boolean) getStateHelper().eval(PropertyKeys.displayAll,
+        return (Boolean) getStateHelper().eval(DirPropertyKeys.displayAll,
                 Boolean.TRUE);
     }
 
     @SuppressWarnings("boxing")
     public void setDisplayAll(boolean displayAll) {
-        getStateHelper().put(PropertyKeys.displayAll, displayAll);
+        getStateHelper().put(DirPropertyKeys.displayAll, displayAll);
     }
 
     @SuppressWarnings("boxing")
     public boolean isDisplayObsoleteEntries() {
         return (Boolean) getStateHelper().eval(
-                PropertyKeys.displayObsoleteEntries, Boolean.FALSE);
+                DirPropertyKeys.displayObsoleteEntries, Boolean.FALSE);
     }
 
     @SuppressWarnings("boxing")
     public void setDisplayObsoleteEntries(boolean displayObsoleteEntries) {
-        getStateHelper().put(PropertyKeys.displayObsoleteEntries,
+        getStateHelper().put(DirPropertyKeys.displayObsoleteEntries,
                 displayObsoleteEntries);
     }
 
     public String getFilter() {
-        return (String) getStateHelper().eval(PropertyKeys.filter);
+        return (String) getStateHelper().eval(DirPropertyKeys.filter);
     }
 
     public void setFilter(String filter) {
-        getStateHelper().put(PropertyKeys.filter, filter);
+        getStateHelper().put(DirPropertyKeys.filter, filter);
     }
 
     @SuppressWarnings("boxing")
     public boolean isLocalize() {
-        return (Boolean) getStateHelper().eval(PropertyKeys.localize,
+        return (Boolean) getStateHelper().eval(DirPropertyKeys.localize,
                 Boolean.FALSE);
     }
 
     @SuppressWarnings("boxing")
     public void setLocalize(boolean localize) {
-        getStateHelper().put(PropertyKeys.localize, localize);
+        getStateHelper().put(DirPropertyKeys.localize, localize);
     }
 
     @SuppressWarnings("boxing")
     public boolean isdbl10n() {
-        return (Boolean) getStateHelper().eval(PropertyKeys.dbl10n,
+        return (Boolean) getStateHelper().eval(DirPropertyKeys.dbl10n,
                 Boolean.FALSE);
     }
 
     @SuppressWarnings("boxing")
     public void setdbl10n(boolean dbl10n) {
-        getStateHelper().put(PropertyKeys.dbl10n, dbl10n);
+        getStateHelper().put(DirPropertyKeys.dbl10n, dbl10n);
     }
 
     @Override
@@ -138,6 +142,11 @@ public class UIDirectorySelectItems extends UISelectItems {
             @Override
             protected DirectorySelectItem createSelectItem() {
                 return UIDirectorySelectItems.this.createSelectItem();
+            }
+
+            @Override
+            protected String retrieveSelectEntryId() {
+                return UIDirectorySelectItems.this.retrieveSelectEntryId();
             }
 
             @Override
@@ -171,9 +180,13 @@ public class UIDirectorySelectItems extends UISelectItems {
             setAllValues(f.createAllSelectItems());
             return getAllValues();
         } else {
-            Object value = super.getValue();
+            Object value = getStateHelper().eval(PropertyKeys.value);
             return f.createSelectItems(value);
         }
+    }
+
+    protected String retrieveSelectEntryId() {
+        return (String) getItemValue();
     }
 
     @Override
