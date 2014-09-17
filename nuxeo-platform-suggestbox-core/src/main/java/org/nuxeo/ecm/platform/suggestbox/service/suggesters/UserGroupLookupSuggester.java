@@ -24,7 +24,6 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.suggestbox.service.GroupSuggestion;
-import org.nuxeo.ecm.platform.suggestbox.service.SearchDocumentsSuggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggester;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionContext;
@@ -92,6 +91,7 @@ public class UserGroupLookupSuggester implements Suggester {
                         userIconURL));
 
                 // suggest to search documents related to the user profile
+                /* TODO Reactivate when the new search tab will be done
                 for (String searchField : searchFields) {
                     String i18nLabel = i18n.translate(searchLabelPrefix
                             + searchField.replaceAll(":", "_"), userLabel);
@@ -102,7 +102,7 @@ public class UserGroupLookupSuggester implements Suggester {
                             searchField,
                             userDoc.getId());
                     searchSuggestions.add(suggestion);
-                }
+                }*/
                 count++;
                 if (count >= userSuggestionsLimit) {
                     break;
