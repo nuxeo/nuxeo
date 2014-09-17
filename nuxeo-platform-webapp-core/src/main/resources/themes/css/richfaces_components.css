@@ -206,3 +206,8 @@ a.documentTypeLink {
   width: 250px;
   overflow: hidden;
   text-overflow: ellipsis }
+
+/* Fix display in date range filters */
+.inputDate div,
+.inputDate .rf-cal {
+  display: inline-block }
