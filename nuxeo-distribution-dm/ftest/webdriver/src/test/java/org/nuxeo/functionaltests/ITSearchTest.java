@@ -57,6 +57,8 @@ public class ITSearchTest extends
 
     private static final String XPATH_SUGGESTBOX = "//*[@id='s2id_nxw_suggest_search_box_form:nxw_suggest_search_box_select2']";
 
+    private static final String VALUE_WITH_SPECIALS_CHAR = "h\u00e9h\u00e9";
+
     /**
      * Init the data for the tests.
      *
@@ -156,5 +158,17 @@ public class ITSearchTest extends
         listEntries.get(1).click();
         UserViewTabSubPage userPage = asPage(UserViewTabSubPage.class);
         userPage.checkUserName(USER1_NAME);
+    }
+
+    @Test
+    public void requestEncodingTest() throws Exception {
+        login();
+        Select2WidgetElement searchElement = new Select2WidgetElement(
+                driver,
+                driver.findElement(By.xpath(XPATH_SUGGESTBOX)),
+                false);
+        List<WebElement> listEntries = searchElement.typeAndGetResult(VALUE_WITH_SPECIALS_CHAR);
+        assertTrue(listEntries.size() == 0);
+        // TODO to complete when the suggestbox will be finalized
     }
 }
