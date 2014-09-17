@@ -32,7 +32,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
-import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
 import org.nuxeo.ecm.platform.ui.web.component.file.UIInputFile;
 import org.nuxeo.ecm.platform.ui.web.component.file.UIOutputFile;
@@ -76,12 +75,10 @@ public class FileWidgetTypeHandler extends AbstractWidgetTypeHandler {
             attributes = FaceletHandlerHelper.addTagAttribute(attributes,
                     filenameAttr);
         }
-        FaceletHandler leaf = null;
-        if (subHandlers != null) {
-            leaf = new CompositeFaceletHandler(subHandlers);
-        } else {
-            leaf = new LeafFaceletHandler();
-        }
+        // file components do not support client behaviors => do not add input
+        // slot
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget,
+                subHandlers, helper, false);
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ComponentHandler input = helper.getHtmlComponentHandler(
                     widgetTagConfigId, attributes, leaf,

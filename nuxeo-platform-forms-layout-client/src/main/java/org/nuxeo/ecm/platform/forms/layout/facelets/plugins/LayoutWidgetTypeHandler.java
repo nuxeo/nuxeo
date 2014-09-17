@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import javax.faces.view.facelets.CompositeFaceletHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
@@ -32,7 +31,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LayoutTagHandler;
-import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
 import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 
@@ -73,12 +71,8 @@ public class LayoutWidgetTypeHandler extends AbstractWidgetTypeHandler {
         attributes = FaceletHandlerHelper.addTagAttribute(attributes,
                 helper.createAttribute("mode", modeValue));
 
-        FaceletHandler leaf = null;
-        if (subHandlers != null) {
-            leaf = new CompositeFaceletHandler(subHandlers);
-        } else {
-            leaf = new LeafFaceletHandler();
-        }
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget,
+                subHandlers, helper, false);
         String widgetTagConfigId = widget.getTagConfigId();
         TagConfig layoutTagConfig = TagConfigFactory.createTagConfig(tagConfig,
                 widgetTagConfigId, attributes, leaf);

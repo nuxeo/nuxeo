@@ -31,7 +31,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
-import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
 
 /**
  * Secret widget
@@ -52,12 +51,8 @@ public class SecretWidgetTypeHandler extends AbstractWidgetTypeHandler {
         String widgetName = widget.getName();
         String widgetTagConfigId = widget.getTagConfigId();
         TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
-        FaceletHandler leaf = null;
-        if (subHandlers != null) {
-            leaf = new CompositeFaceletHandler(subHandlers);
-        } else {
-            leaf = new LeafFaceletHandler();
-        }
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget,
+                subHandlers, helper);
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ComponentHandler input = helper.getHtmlComponentHandler(
                     widgetTagConfigId, attributes, leaf,

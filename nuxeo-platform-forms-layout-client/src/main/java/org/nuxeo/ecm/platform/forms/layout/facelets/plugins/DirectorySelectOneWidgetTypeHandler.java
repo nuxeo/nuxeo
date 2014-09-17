@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
 import javax.faces.component.html.HtmlSelectOneListbox;
 import javax.faces.view.facelets.ComponentHandler;
-import javax.faces.view.facelets.CompositeFaceletHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
@@ -32,7 +31,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
-import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
 import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryEntryOutputComponent;
 
@@ -62,13 +60,9 @@ public class DirectorySelectOneWidgetTypeHandler extends
                     getEditComponentType());
         }
 
-        FaceletHandler leaf = null;
-        if (subHandlers != null) {
-            leaf = new CompositeFaceletHandler(subHandlers);
-        } else {
-            leaf = new LeafFaceletHandler();
-        }
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget,
+                subHandlers, helper);
         String widgetId = widget.getId();
         String widgetTagConfigId = widget.getTagConfigId();
         TagAttributes attributes;

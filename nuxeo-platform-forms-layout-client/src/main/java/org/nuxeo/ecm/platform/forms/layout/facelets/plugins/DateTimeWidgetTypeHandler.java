@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
-import java.util.Arrays;
-
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.view.facelets.ComponentConfig;
@@ -74,7 +72,8 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
         } else {
             attributes = helper.getTagAttributes(widgetId, widget);
         }
-        FaceletHandler leaf = null;
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget,
+                subHandlers, helper);
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ValidatorConfig validatorConfig = TagConfigFactory.createValidatorConfig(
                     tagConfig,
@@ -84,17 +83,12 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
                     org.nuxeo.ecm.platform.ui.web.component.date.DateTimeValidator.VALIDATOR_ID);
             ValidatorHandler validateHandler = new ValidatorHandler(
                     validatorConfig);
-
-            if (subHandlers != null) {
-                leaf = new CompositeFaceletHandler(addNewSubHandler(
-                        subHandlers, validateHandler));
-            } else {
-                leaf = validateHandler;
-            }
-
+            FaceletHandler nextHandler = new CompositeFaceletHandler(
+                    new FaceletHandler[] { validateHandler, leaf });
             ComponentConfig config = TagConfigFactory.createComponentConfig(
-                    tagConfig, widget.getTagConfigId(), attributes, leaf,
-                    UICalendar.COMPONENT_TYPE, "org.richfaces.CalendarRenderer");
+                    tagConfig, widget.getTagConfigId(), attributes,
+                    nextHandler, UICalendar.COMPONENT_TYPE,
+                    "org.richfaces.CalendarRenderer");
             ComponentHandler input = new InputDateTimeTagHandler(config);
             String styleClass = "inputDate";
             if (widget.getProperty("styleClass") != null) {
@@ -118,16 +112,10 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
                     new LeafFaceletHandler(),
                     javax.faces.convert.DateTimeConverter.CONVERTER_ID);
             ConverterHandler convert = new ConvertDateTimeHandler(convertConfig);
-
-            if (subHandlers != null) {
-                leaf = new CompositeFaceletHandler(addNewSubHandler(
-                        subHandlers, convert));
-            } else {
-                leaf = convert;
-            }
-
+            FaceletHandler nextHandler = new CompositeFaceletHandler(
+                    new FaceletHandler[] { convert, leaf });
             ComponentHandler output = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, convert,
+                    widgetTagConfigId, attributes, nextHandler,
                     HtmlOutputText.COMPONENT_TYPE, null);
             if (BuiltinWidgetModes.PDF.equals(mode)) {
                 // add a surrounding p:html tag handler
@@ -138,23 +126,6 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
                 return output;
             }
         }
-    }
-
-    /**
-     * Create an array of FaceletHandler which contains all the elements of
-     * originalSubHandlers plus newSubHandler
-     *
-     * @param originalSubHandlers
-     * @param newSubHandler
-     * @return the new array
-     * @since 5.7.2
-     */
-    private FaceletHandler[] addNewSubHandler(
-            FaceletHandler[] originalSubHandlers, FaceletHandler newSubHandler) {
-        FaceletHandler[] newSubHandlers = Arrays.copyOf(originalSubHandlers,
-                originalSubHandlers.length + 1);
-        newSubHandlers[newSubHandlers.length - 1] = newSubHandler;
-        return newSubHandlers;
     }
 
 }

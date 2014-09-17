@@ -40,7 +40,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
-import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
 import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
 
@@ -64,12 +63,8 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
         String widgetId = widget.getId();
         String widgetName = widget.getName();
         String widgetTagConfigId = widget.getTagConfigId();
-        FaceletHandler leaf = null;
-        if (subHandlers != null) {
-            leaf = new CompositeFaceletHandler(subHandlers);
-        } else {
-            leaf = new LeafFaceletHandler();
-        }
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget,
+                subHandlers, helper);
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
             // Make text fields automatically switch to right-to-left if

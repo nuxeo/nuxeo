@@ -21,13 +21,22 @@ package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
 import java.util.Map;
 
+import javax.faces.view.facelets.CompositeFaceletHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagConfig;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
+import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
+import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
+import org.nuxeo.ecm.platform.forms.layout.facelets.RenderVariables;
 import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeHandler;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
+
+import com.sun.faces.facelets.tag.ui.InsertHandler;
 
 /**
  * Abstract widget type handler.
@@ -66,6 +75,64 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
 
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
+    }
+
+    /**
+     * Returns sub handlers as computed from tag information.
+     * <p>
+     * Adds an sub insert handler slot named
+     * {@link RenderVariables.widgetTemplatingZones#inside_input_widget} when
+     * widget is in edit mode.
+     *
+     * @since 5.9.6
+     */
+    protected FaceletHandler getNextHandler(FaceletContext ctx,
+            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers,
+            FaceletHandlerHelper helper) {
+        return getNextHandler(ctx, tagConfig, widget, subHandlers, helper,
+                BuiltinWidgetModes.EDIT.equals(widget.getMode()));
+    }
+
+    /**
+     * Returns sub handlers as computed from tag information
+     *
+     * @since 5.9.6
+     */
+    protected FaceletHandler getNextHandler(FaceletContext ctx,
+            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers,
+            FaceletHandlerHelper helper, boolean addInputSlot) {
+        FaceletHandler leaf;
+        FaceletHandler[] handlers = new FaceletHandler[] {};
+        if (subHandlers != null && subHandlers.length > 0) {
+            handlers = (FaceletHandler[]) ArrayUtils.addAll(subHandlers,
+                    handlers);
+        }
+        if (addInputSlot) {
+            FaceletHandler slot = getInputSlotHandler(ctx, tagConfig, widget,
+                    subHandlers, helper);
+            if (slot != null) {
+                handlers = (FaceletHandler[]) ArrayUtils.add(handlers, slot);
+            }
+        }
+        if (handlers.length == 0) {
+            leaf = new LeafFaceletHandler();
+        } else {
+            leaf = new CompositeFaceletHandler(handlers);
+        }
+        return leaf;
+    }
+
+    protected FaceletHandler getInputSlotHandler(FaceletContext ctx,
+            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers,
+            FaceletHandlerHelper helper) {
+        TagConfig config = TagConfigFactory.createTagConfig(
+                tagConfig,
+                tagConfig.getTagId(),
+                FaceletHandlerHelper.getTagAttributes(helper.createAttribute(
+                        "name",
+                        RenderVariables.widgetTemplatingZones.inside_input_widget.name())),
+                new LeafFaceletHandler());
+        return new InsertHandler(config);
     }
 
 }

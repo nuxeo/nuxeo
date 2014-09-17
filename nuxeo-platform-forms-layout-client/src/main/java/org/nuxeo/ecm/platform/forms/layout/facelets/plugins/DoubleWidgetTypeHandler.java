@@ -33,7 +33,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
-import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
 import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 
@@ -65,12 +64,8 @@ public class DoubleWidgetTypeHandler extends AbstractWidgetTypeHandler {
         } else {
             attributes = helper.getTagAttributes(widgetId, widget);
         }
-        FaceletHandler leaf = null;
-        if (subHandlers != null) {
-            leaf = new CompositeFaceletHandler(subHandlers);
-        } else {
-            leaf = new LeafFaceletHandler();
-        }
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget,
+                subHandlers, helper);
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(
                     tagConfig, widget.getTagConfigId(), new TagAttributesImpl(

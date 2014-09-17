@@ -36,6 +36,7 @@
           required="#{widgetProperty_required}" var="currentValue">
           <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
             value="#{select2Actions.resolveSingleDirectoryEntry(currentValue, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}" />
+          <ui:insert name="inside_input_widget" />
         </nxu:valueHolder>
 
         <c:if test="#{not empty widgetProperty_ajaxReRender}">

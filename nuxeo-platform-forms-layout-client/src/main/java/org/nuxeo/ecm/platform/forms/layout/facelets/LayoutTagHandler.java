@@ -52,7 +52,7 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.facelets.el.VariableMapperWrapper;
-import com.sun.faces.facelets.tag.ui.IncludeHandler;
+import com.sun.faces.facelets.tag.ui.DecorateHandler;
 
 /**
  * Layout tag handler.
@@ -392,13 +392,13 @@ public class LayoutTagHandler extends TagHandler {
             handler.apply(ctx, parent);
         } else {
             if (!StringUtils.isBlank(templateValue)) {
-                TagAttribute srcAttr = helper.createAttribute("src",
+                TagAttribute srcAttr = helper.createAttribute("template",
                         templateValue);
                 TagConfig config = TagConfigFactory.createTagConfig(
                         this.config, layoutTagConfigId,
                         FaceletHandlerHelper.getTagAttributes(srcAttr),
                         nextHandler);
-                FaceletHandler includeHandler = new IncludeHandler(config);
+                FaceletHandler includeHandler = new DecorateHandler(config);
                 FaceletHandler handler = helper.getAliasTagHandler(
                         layoutTagConfigId, vars, blockedPatterns,
                         includeHandler);
@@ -418,7 +418,8 @@ public class LayoutTagHandler extends TagHandler {
         Map<String, ValueExpression> vars = new HashMap<String, ValueExpression>();
         ValueExpression valueExpr = value.getValueExpression(ctx, Object.class);
         vars.put(RenderVariables.globalVariables.value.name(), valueExpr);
-        //vars.put(RenderVariables.globalVariables.document.name(), valueExpr);
+        // vars.put(RenderVariables.globalVariables.document.name(),
+        // valueExpr);
         vars.put(RenderVariables.globalVariables.layoutValue.name(), valueExpr);
         ExpressionFactory eFactory = ctx.getExpressionFactory();
         ValueExpression modeVe = eFactory.createValueExpression(modeValue,

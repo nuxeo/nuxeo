@@ -32,6 +32,7 @@ import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
@@ -262,12 +263,15 @@ public abstract class AbstractSelectWidgetTypeHandler extends
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             FaceletHandler optionsHandler = getOptionsFaceletHandler(ctx,
                     helper, widget);
-            FaceletHandler nextHandler = optionsHandler;
+            FaceletHandler[] nextHandlers = new FaceletHandler[] {};
+            nextHandlers = (FaceletHandler[]) ArrayUtils.add(nextHandlers,
+                    optionsHandler);
             if (subHandlers != null) {
-                nextHandler = new CompositeFaceletHandler(new FaceletHandler[] {
-                        optionsHandler,
-                        new CompositeFaceletHandler(subHandlers) });
+                nextHandlers = (FaceletHandler[]) ArrayUtils.addAll(
+                        nextHandlers, subHandlers);
             }
+            FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget,
+                    nextHandlers, helper, true);
             // maybe add convert handler for easier integration of select2
             // widgets handling multiple values
             if (HtmlSelectManyListbox.COMPONENT_TYPE.equals(componentType)
@@ -279,8 +283,7 @@ public abstract class AbstractSelectWidgetTypeHandler extends
                                 ArrayList.class.getName()));
             }
             ComponentHandler input = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, nextHandler, componentType,
-                    null);
+                    widgetTagConfigId, attributes, leaf, componentType, null);
             String msgId = helper.generateMessageId(widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(
                     widgetTagConfigId, msgId, widgetId, null);

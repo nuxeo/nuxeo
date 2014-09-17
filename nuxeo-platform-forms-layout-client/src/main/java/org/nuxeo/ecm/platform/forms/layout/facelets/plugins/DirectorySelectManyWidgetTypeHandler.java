@@ -41,7 +41,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
-import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
 import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
 import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
@@ -73,14 +72,9 @@ public class DirectorySelectManyWidgetTypeHandler extends
                     getEditComponentType());
         }
 
-        FaceletHandler leaf = new LeafFaceletHandler();
-        FaceletHandler nextHandler = null;
-        if (subHandlers != null) {
-            nextHandler = new CompositeFaceletHandler(subHandlers);
-        } else {
-            nextHandler = leaf;
-        }
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget,
+                subHandlers, helper);
         String widgetName = widget.getName();
         String widgetTagConfigId = widget.getTagConfigId();
 
@@ -130,7 +124,7 @@ public class DirectorySelectManyWidgetTypeHandler extends
         }
         TagAttributes dirEntryAttrs = FaceletHandlerHelper.getTagAttributes(attrs);
         ComponentHandler dirEntry = helper.getHtmlComponentHandler(
-                widgetTagConfigId, dirEntryAttrs, nextHandler,
+                widgetTagConfigId, dirEntryAttrs, leaf,
                 DirectoryEntryOutputComponent.COMPONENT_TYPE, null);
 
         if (BuiltinWidgetModes.isLikePlainMode(mode)) {

@@ -64,4 +64,13 @@ public class RenderVariables {
         fieldOrValue,
     }
 
+    /**
+     * @since 5.9.6
+     */
+    public enum widgetTemplatingZones {
+        // @since 5.9.6, templating zone for inputs, useful for ajax
+        // interactions propagated from template (typically a f:ajax element)
+        inside_input_widget,
+    }
+
 }
