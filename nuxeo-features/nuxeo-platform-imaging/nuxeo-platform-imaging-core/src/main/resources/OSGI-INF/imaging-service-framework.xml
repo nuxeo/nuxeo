@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.platform.picture.ImagingComponent" version="1.0">
+<component name="org.nuxeo.ecm.platform.picture.ImagingComponent"
+  version="1.0">
   <documentation>
-  The imaging component is providing API for image manipulations
-  @author Max Stepanov
+    The imaging component is providing API for image manipulations
+    @author Max Stepanov
   </documentation>
 
-  <implementation class="org.nuxeo.ecm.platform.picture.ImagingComponent"/>
+  <implementation class="org.nuxeo.ecm.platform.picture.ImagingComponent" />
 
   <service>
     <provide interface="org.nuxeo.ecm.platform.picture.api.ImagingService" />
@@ -13,10 +14,14 @@
 
   <extension-point name="configuration">
     <documentation>
-    Extension point to contribute configuration information that will be used by the ImagingService
+      Extension point to contribute configuration information that will be used by the
+      ImagingService
     </documentation>
-    <object
-      class="org.nuxeo.ecm.platform.picture.api.ImagingConfigurationDescriptor" />
+    <object class="org.nuxeo.ecm.platform.picture.api.ImagingConfigurationDescriptor" />
+  </extension-point>
+
+  <extension-point name="pictureTemplates">
+    <object class="org.nuxeo.ecm.platform.picture.api.PictureTemplate" />
   </extension-point>
 </component>
 

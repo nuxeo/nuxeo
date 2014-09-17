@@ -5,16 +5,36 @@
     Defines configurations for imaging service
   </documentation>
 
+  <!-- Remove ? -->
   <extension target="org.nuxeo.ecm.platform.picture.ImagingComponent"
     point="configuration">
 
-  <configuration>
-    <parameters>
-      <!-- global configuration variables -->
-      <parameter name="conversionFormat">jpg</parameter>
-    </parameters>
-  </configuration>
-
+    <configuration>
+      <parameters>
+        <!-- global configuration variables -->
+        <parameter name="conversionFormat">jpg</parameter>
+      </parameters>
+    </configuration>
   </extension>
 
+
+  <extension target="org.nuxeo.ecm.platform.picture.ImagingComponent"
+    point="pictureTemplates">
+
+    <pictureTemplate title="Original" enabled="true"
+      description="Original size" chainId="originalPictureResizeConverter" />
+
+    <pictureTemplate title="OriginalJpeg" enabled="true"
+      description="Original size" chainId="originalJpegPictureResizeConverter" />
+
+    <pictureTemplate title="Medium" enabled="true" description="Medium size"
+      maxSize="550" chainId="defaultPictureResizeConverter" />
+
+    <pictureTemplate title="Small" enabled="true" description="Small size"
+      maxSize="280" chainId="defaultPictureResizeConverter" />
+
+    <pictureTemplate title="Thumbnail" enabled="true"
+      description="Thumbnal size" maxSize="100" chainId="defaultPictureResizeConverter" />
+
+  </extension>
 </component>

@@ -67,7 +67,11 @@ public class ImagingComponent extends DefaultComponent implements
 
     public static final String CONFIGURATION_PARAMETERS_EP = "configuration";
 
+    public static final String PICTURE_TEMPLATES_EP = "pictureTemplates";
+
     protected Map<String, String> configurationParameters = new HashMap<String, String>();
+
+    protected PictureTemplateRegistry pictureTemplateRegistry;
 
     private LibrarySelector librarySelector;
 
@@ -208,6 +212,8 @@ public class ImagingComponent extends DefaultComponent implements
         if (CONFIGURATION_PARAMETERS_EP.equals(extensionPoint)) {
             ImagingConfigurationDescriptor desc = (ImagingConfigurationDescriptor) contribution;
             configurationParameters.putAll(desc.getParameters());
+        } else if (PICTURE_TEMPLATES_EP.equals(extensionPoint)) {
+            pictureTemplateRegistry.addContribution((PictureTemplate) contribution);
         }
     }
 
@@ -219,6 +225,8 @@ public class ImagingComponent extends DefaultComponent implements
             for (String configuration : desc.getParameters().keySet()) {
                 configurationParameters.remove(configuration);
             }
+        } else if (PICTURE_TEMPLATES_EP.equals(extensionPoint)) {
+            pictureTemplateRegistry.removeContribution((PictureTemplate) contribution);
         }
     }
 
