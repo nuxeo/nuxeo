@@ -46,6 +46,9 @@ public class UserViewTabSubPage extends UsersGroupsBasePage {
     @FindBy(linkText = "Change password")
     WebElement changePasswordLink;
 
+    @FindBy(xpath = "/html/body/table[2]/tbody/tr/td/div/div/div/div[2]/div/div[4]//h1")
+    WebElement currentUserName;
+
     public UserViewTabSubPage(WebDriver driver) {
         super(driver);
     }
@@ -73,4 +76,17 @@ public class UserViewTabSubPage extends UsersGroupsBasePage {
         return asPage(UsersTabSubPage.class);
     }
 
+    /**
+     * @since 5.9.6
+     */
+    public void checkUserName(String expectedName) {
+        assertEquals(expectedName, getCurrentUserName().getText());
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public WebElement getCurrentUserName() {
+        return currentUserName;
+    }
 }
