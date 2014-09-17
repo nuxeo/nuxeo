@@ -115,6 +115,11 @@ public class EasyShare extends ModuleRoot {
 
     }
 
+    public String getFileName(DocumentModel doc) throws ClientException {
+        Blob blob = doc.getAdapter(BlobHolder.class).getBlob();
+        return blob.getFilename();
+    }
+
     @GET
     @Path("{folderId}/{fileId}/{fileName}")
     public Response getFileStream(@PathParam("fileId")
