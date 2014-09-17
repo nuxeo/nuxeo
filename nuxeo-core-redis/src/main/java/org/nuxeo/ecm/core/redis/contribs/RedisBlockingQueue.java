@@ -14,7 +14,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.work.redis;
+package org.nuxeo.ecm.core.redis.contribs;
 
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;

@@ -14,7 +14,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.work.redis;
+package org.nuxeo.ecm.core.redis.contribs;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -32,8 +32,8 @@ import java.util.concurrent.BlockingQueue;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.redis.RedisAdmin;
 import org.nuxeo.ecm.core.redis.RedisCallable;
-import org.nuxeo.ecm.core.redis.RedisConfiguration;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
 import org.nuxeo.ecm.core.work.WorkManagerImpl;
 import org.nuxeo.ecm.core.work.WorkQueueDescriptorRegistry;
@@ -53,12 +53,6 @@ import redis.clients.jedis.Jedis;
 public class RedisWorkQueuing implements WorkQueuing {
 
     private static final Log log = LogFactory.getLog(RedisWorkQueuing.class);
-
-    /**
-     * Prefix for keys, added after the globally configured prefix of the
-     * {@link RedisService}.
-     */
-    public static final String PREFIX = "work:";
 
     protected static final String UTF_8 = "UTF-8";
 
@@ -117,7 +111,7 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     protected RedisExecutor redisExecutor;
 
-    protected String redisPrefix;
+    protected String redisNamespace;
 
     public RedisWorkQueuing(WorkManagerImpl mgr,
             WorkQueueDescriptorRegistry workQueueDescriptors) {
@@ -127,7 +121,7 @@ public class RedisWorkQueuing implements WorkQueuing {
     @Override
     public void init() {
         redisExecutor = Framework.getLocalService(RedisExecutor.class);
-        redisPrefix = Framework.getLocalService(RedisConfiguration.class).getPrefix();
+        redisNamespace = Framework.getService(RedisAdmin.class).namespace("work");
         try {
             for (String queueId : getSuspendedQueueIds()) {
                 int n = scheduleSuspendedWork(queueId);
@@ -367,7 +361,7 @@ public class RedisWorkQueuing implements WorkQueuing {
      * ******************** Redis Interface ********************
      */
 
-    protected static String string(byte[] bytes) {
+    protected String string(byte[] bytes) {
         try {
             return new String(bytes, UTF_8);
         } catch (IOException e) {
@@ -375,7 +369,7 @@ public class RedisWorkQueuing implements WorkQueuing {
         }
     }
 
-    protected static byte[] bytes(String string) {
+    protected byte[] bytes(String string) {
         try {
             return string.getBytes(UTF_8);
         } catch (IOException e) {
@@ -385,11 +379,11 @@ public class RedisWorkQueuing implements WorkQueuing {
     }
 
     protected byte[] keyBytes(String prefix, String queueId) {
-        return bytes(redisPrefix + prefix + queueId);
+        return keyBytes(prefix + queueId);
     }
 
     protected byte[] keyBytes(String prefix) {
-        return bytes(redisPrefix + prefix);
+        return bytes(redisNamespace+prefix);
     }
 
     protected byte[] suspendedKey(String queueId) {

@@ -15,7 +15,7 @@
  *     Maxime Hilaire
  */
 
-package org.nuxeo.ecm.core.redis;
+package org.nuxeo.ecm.core.redis.contribs;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,6 +29,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.cache.AbstractCache;
 import org.nuxeo.ecm.core.cache.CacheDescriptor;
+import org.nuxeo.ecm.core.redis.RedisAdmin;
+import org.nuxeo.ecm.core.redis.RedisCallable;
+import org.nuxeo.ecm.core.redis.RedisExecutor;
 import org.nuxeo.runtime.api.Framework;
 
 import redis.clients.jedis.Jedis;
@@ -38,31 +41,25 @@ import redis.clients.jedis.Jedis;
  *
  * @since 5.9.6
  */
-public class RedisCacheImpl extends AbstractCache {
+public class RedisCache extends AbstractCache {
 
     protected static final String UTF_8 = "UTF-8";
 
-    protected static final Log log = LogFactory.getLog(RedisCacheImpl.class);
+    protected static final Log log = LogFactory.getLog(RedisCache.class);
 
     protected final RedisExecutor executor;
 
-    protected final String prefix;
+    protected final String namespace;
 
-    /**
-     * Prefix for keys, added after the globally configured prefix of the
-     * {@link RedisService}.
-     */
-    public static final String PREFIX = "cache:";
 
-    public RedisCacheImpl(CacheDescriptor desc) {
+    public RedisCache(CacheDescriptor desc) {
         super(desc);
         executor = Framework.getService(RedisExecutor.class);
-        prefix = Framework.getService(RedisConfiguration.class).getPrefix()
-                + PREFIX + name + ":";
+        namespace = Framework.getService(RedisAdmin.class).namespace("cache",name);
     }
 
     protected String formatKey(String key) {
-        return prefix.concat(key);
+        return namespace.concat(key);
     }
 
     protected Serializable deserializeValue(byte[] workBytes)

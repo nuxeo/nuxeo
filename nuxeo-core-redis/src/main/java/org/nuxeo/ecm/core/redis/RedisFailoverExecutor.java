@@ -10,38 +10,53 @@ package org.nuxeo.ecm.core.redis;
 
 import java.io.IOException;
 
+import org.nuxeo.ecm.core.redis.retry.ExponentialBackofDelay;
+import org.nuxeo.ecm.core.redis.retry.Retry;
+import org.nuxeo.ecm.core.redis.retry.Retry.ContinueException;
+import org.nuxeo.ecm.core.redis.retry.Retry.FailException;
+
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisConnectionException;
-import redis.clients.jedis.exceptions.JedisException;
+import redis.clients.util.Pool;
 
 public class RedisFailoverExecutor implements RedisExecutor {
 
-    protected final long timeout;
+    protected final int timeout;
 
     protected final RedisExecutor executor;
 
-    public RedisFailoverExecutor(long timeout, RedisExecutor base) {
+    public RedisFailoverExecutor(int timeout, RedisExecutor base) {
         this.timeout = timeout;
         executor = base;
     }
 
     @Override
-    public <T> T execute(RedisCallable<T> callable) throws IOException,
-            JedisException {
-        long end = System.currentTimeMillis() + timeout;
-        do {
-            try {
-                return executor.execute(callable);
-            } catch (JedisConnectionException cause) {
-                if (end >= System.currentTimeMillis()) {
-                    throw cause;
+    public <T> T execute(final RedisCallable<T> callable) throws IOException,
+            JedisConnectionException {
+        try {
+            return new Retry().retry(new Retry.Block<T>() {
+
+                @Override
+                public T retry() throws ContinueException, FailException {
+                    try {
+                        return executor.execute(callable);
+                    } catch (JedisConnectionException cause) {
+                        throw new Retry.ContinueException(cause);
+                    } catch (IOException cause) {
+                        throw new Retry.FailException(cause);
+                    }
                 }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-        } while (true);
+
+            }, new ExponentialBackofDelay(1, timeout));
+        } catch (FailException cause) {
+            throw new JedisConnectionException("Cannot reconnect to jedis ..",
+                    cause);
+        }
+    }
+
+    @Override
+    public Pool<Jedis> getPool() {
+        return executor.getPool();
     }
 
 }

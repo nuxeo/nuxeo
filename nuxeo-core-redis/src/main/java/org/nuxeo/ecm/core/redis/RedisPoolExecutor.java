@@ -17,7 +17,7 @@ import redis.clients.util.Pool;
 
 public class RedisPoolExecutor implements RedisExecutor {
 
-    protected final Pool<Jedis> pool;
+    protected Pool<Jedis> pool;
 
     public RedisPoolExecutor(Pool<Jedis> pool) {
         this.pool = pool;
@@ -47,6 +47,11 @@ public class RedisPoolExecutor implements RedisExecutor {
             }
         }
 
+    }
+
+    @Override
+    public Pool<Jedis> getPool() {
+        return pool;
     }
 
 }

@@ -25,7 +25,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.Protocol;
-import redis.clients.util.Pool;
 
 /**
  * Descriptor for a Redis configuration.
@@ -46,11 +45,6 @@ public class RedisServerDescriptor extends RedisPoolDescriptor {
         } else {
             hosts[0].name = name;
         }
-    }
-
-    @XNode("password")
-    public void setPassword(String value) {
-        password = StringUtils.defaultIfBlank(value, null);
     }
 
     @XNode("port")
@@ -88,7 +82,7 @@ public class RedisServerDescriptor extends RedisPoolDescriptor {
     }
 
     @Override
-    public Pool<Jedis> newPool() {
+    public RedisExecutor newExecutor() {
         if (hosts.length == 0) {
             throw new RuntimeException("Missing Redis host");
         }
@@ -96,9 +90,9 @@ public class RedisServerDescriptor extends RedisPoolDescriptor {
             throw new RuntimeException("Only one host supported");
         }
         RedisHostDescriptor host = selectHost();
-        return new JedisPool(new JedisPoolConfig(), host.name, host.port,
+        return new RedisPoolExecutor(new JedisPool(new JedisPoolConfig(), host.name, host.port,
                 timeout, StringUtils.defaultIfBlank(password, null),
-                database);
+                database));
 
     }
 }

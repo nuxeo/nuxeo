@@ -20,6 +20,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.net.URISyntaxException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -29,6 +33,7 @@ import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.common.xmap.DOMSerializer;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.cache.CacheFeature;
+import org.nuxeo.ecm.core.redis.embedded.RedisEmbeddedGuessConnectionError;
 import org.nuxeo.ecm.core.redis.embedded.RedisEmbeddedPool;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
@@ -56,6 +61,8 @@ public class RedisFeature extends SimpleFeature {
      *
      * @since 5.9.6
      */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ ElementType.TYPE, ElementType.METHOD })
     public @interface Config {
         Mode mode() default Mode.embedded;
 
@@ -66,6 +73,8 @@ public class RedisFeature extends SimpleFeature {
         String prefix() default "nuxeo:test:";
 
         long failoverTimeout() default -1;
+
+        Class<? extends RedisEmbeddedGuessConnectionError> guessError() default RedisEmbeddedGuessConnectionError.NoError.class;
     }
 
     public enum Mode {
@@ -95,10 +104,10 @@ public class RedisFeature extends SimpleFeature {
         return desc;
     }
 
-    public static void clearRedis(RedisConfiguration redisService)
+    public static void clear()
             throws IOException {
-        Framework.getService(RedisAdmin.class).clear(
-                redisService.getPrefix().concat("*"));
+        final RedisAdmin admin = Framework.getService(RedisAdmin.class);
+        admin.clear("*");
     }
 
     public static boolean setup(RuntimeHarness harness) throws Exception {
@@ -122,13 +131,18 @@ public class RedisFeature extends SimpleFeature {
         harness.deployTestContrib("org.nuxeo.ecm.core.redis",
                 RedisFeature.class.getResource("/redis-contribs.xml"));
 
-        RuntimeContext context = Framework.getRuntime().getContext();
-        context.deploy(toDescriptor(config));
 
         if (Mode.embedded.equals(config.mode())) {
-            RedisExecutorComponent.INSTANCE.handleNewPool(new RedisEmbeddedPool());
+            RedisComponent component = (RedisComponent) Framework.getRuntime().getComponent(RedisComponent.class.getPackage().getName());
+            RedisExecutor executor = new RedisPoolExecutor(new RedisEmbeddedPool());
+            executor = new RedisFailoverExecutor(10, executor);
+            component.handleNewExecutor(executor);
+        } else {
+            RuntimeContext context = Framework.getRuntime().getContext();
+            context.deploy(toDescriptor(config));
         }
 
+        clear();
         return true;
     }
 
@@ -177,23 +191,10 @@ public class RedisFeature extends SimpleFeature {
         InlineURLFactory.install();
     }
 
+
     @Override
     public void start(FeaturesRunner runner) throws Exception {
         setupMe(runner.getFeature(RuntimeFeature.class).getHarness());
-    }
-
-    public void setFailover() {
-        switch (config.mode()) {
-        case disabled:
-            break;
-        case sentinel:
-        case server:
-            throw new IllegalStateException("Cannot run failover test in mode "
-                    + config.mode());
-        case embedded:
-            ;
-        }
-
     }
 
 }

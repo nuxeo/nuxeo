@@ -25,49 +25,58 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.model.SimpleContributionRegistry;
 import org.osgi.framework.Bundle;
 
 import redis.clients.jedis.Jedis;
-import redis.clients.util.Pool;
 
 /**
  * Implementation of the Redis Service holding the configured Jedis pool.
  *
  * @since 5.8
  */
-public class RedisExecutorComponent extends DefaultComponent implements
-        RedisConfiguration, RedisAdmin {
-
-    protected static RedisExecutorComponent INSTANCE;
-
-    protected SingletonContributionRegistry<RedisExecutorDescriptor> registry = new SingletonContributionRegistry<>();
+public class RedisComponent extends DefaultComponent implements RedisAdmin {
 
     protected volatile RedisExecutor executor = RedisExecutor.NOOP;
 
+    protected RedisPoolDescriptor config;
+
+    protected SimpleContributionRegistry<RedisPoolDescriptor> registry =
+
+    new SimpleContributionRegistry<RedisPoolDescriptor>() {
+
+        @Override
+        public String getContributionId(RedisPoolDescriptor contrib) {
+            return "main";
+        }
+
+        @Override
+        public void contributionUpdated(String id, RedisPoolDescriptor contrib,
+                RedisPoolDescriptor newOrigContrib) {
+            config = contrib;
+        }
+
+        @Override
+        public void contributionRemoved(String id,
+                RedisPoolDescriptor origContrib) {
+            config = null;
+        }
+    };
+
     protected String delsha;
-
-    @Override
-    public void activate(ComponentContext context) throws Exception {
-        super.activate(context);
-        INSTANCE = this;
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) throws Exception {
-        INSTANCE = null;
-        super.deactivate(context);
-    }
 
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if (contribution instanceof RedisExecutorDescriptor) {
-            registry.addContribution((RedisExecutorDescriptor) contribution);
+        if (contribution instanceof RedisPoolDescriptor) {
+            registry.addContribution((RedisPoolDescriptor) contribution);
         } else {
             super.registerContribution(contribution, extensionPoint,
                     contributor);
@@ -75,38 +84,33 @@ public class RedisExecutorComponent extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
-        if (contribution instanceof RedisPoolDescriptor) {
-            registry.removeContribution((RedisExecutorDescriptor) contribution);
-        } else {
-            super.unregisterContribution(contribution, extensionPoint,
-                    contributor);
+    public void applicationStarted(ComponentContext context) throws Exception {
+        if (config == null || config.disabled) {
+            return;
         }
+        Framework.addListener(new RuntimeServiceListener() {
+
+            @Override
+            public void handleEvent(RuntimeServiceEvent event) {
+                if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP) {
+                    return;
+                }
+                Framework.removeListener(this);
+                executor = null;
+                executor.getPool().destroy();
+            }
+        });
+        handleNewExecutor(config.newExecutor());
     }
 
-    protected void handleNewPool(Pool<Jedis> pool) {
-        executor = new RedisPoolExecutor(pool);
-        if (registry.main.timeout > 0) {
-            executor = new RedisFailoverExecutor(registry.main.timeout,
-                    executor);
-        }
+    public void handleNewExecutor(RedisExecutor executor) {
+        this.executor = executor;
         try {
             delsha = load("org.nuxeo.ecm.core.redis", "del-keys");
         } catch (IOException cause) {
             executor = null;
             throw new NuxeoException("Cannot activate redis executor", cause);
         }
-    }
-
-    protected void handlePoolDestroyed(Pool<Jedis> pool) {
-        executor = RedisExecutor.NOOP;
-    }
-
-    @Override
-    public String getPrefix() {
-        return registry.main.prefix;
     }
 
     @Override
@@ -146,6 +150,15 @@ public class RedisExecutorComponent extends DefaultComponent implements
             return adapter.cast(executor);
         }
         return super.getAdapter(adapter);
+    }
+
+    @Override
+    public String namespace(String... names) {
+        StringBuilder builder = new StringBuilder("nuxeo:");
+        for (String name:names) {
+            builder.append(name).append(":");
+        }
+        return builder.toString();
     }
 
 }

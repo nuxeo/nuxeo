@@ -31,12 +31,4 @@ import org.nuxeo.runtime.test.runner.Features;
 @SuiteClasses(CacheComplianceFixture.class)
 public class TestRedisCacheService {
 
-    //
-    //
-    // @Test
-    // public void testGetCache() {
-    // redisCache = cacheService.getCache(DEFAULT_TEST_CACHE_NAME);
-    // Assert.assertNotNull(redisCache);
-    // }
-
 }

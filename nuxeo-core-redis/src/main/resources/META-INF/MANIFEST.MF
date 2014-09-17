@@ -1,5 +1,4 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.core.redis
-Nuxeo-Component: OSGI-INF/redis-executor.xml, 
- OSGI-INF/redis-pool.xml
+Nuxeo-Component: OSGI-INF/redis-executor.xml

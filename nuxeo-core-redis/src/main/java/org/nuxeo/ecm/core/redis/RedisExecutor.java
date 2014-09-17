@@ -10,8 +10,15 @@ package org.nuxeo.ecm.core.redis;
 
 import java.io.IOException;
 
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisException;
+import redis.clients.util.Pool;
 
+/**
+ * Execute the jedis statement
+ *
+ * @since 5.9.6
+ */
 public interface RedisExecutor {
 
     public static final RedisExecutor NOOP = new RedisExecutor() {
@@ -22,11 +29,14 @@ public interface RedisExecutor {
             throw new UnsupportedOperationException("No redis executor available");
         }
 
+        @Override
+        public Pool<Jedis> getPool() {
+          throw new UnsupportedOperationException("No pool available");
+        }
+
     };
-    /**
-     * Invoke the jedis statement
-     *
-     * @since 5.9.6
-     */
+
     <T> T execute(RedisCallable<T> call) throws IOException, JedisException;
+
+    Pool<Jedis> getPool();
 }

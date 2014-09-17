@@ -6,19 +6,31 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
-package org.nuxeo.ecm.core.redis.embedded;
+package org.nuxeo.ecm.core.redis;
 
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import java.io.IOException;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.util.Pool;
+public interface RedisAdmin {
 
-public class RedisEmbeddedPool extends Pool<Jedis> {
-    public RedisEmbeddedPool() {
-        super(new GenericObjectPoolConfig(), new RedisEmbeddedFactory());
-    }
+    String namespace(String... names);
 
-    public void setError(RedisEmbeddedGuessConnectionError error) {
-        ((RedisEmbeddedFactory)internalPool.getFactory()).error = error;
-    }
+    /**
+     * Load script in redis
+     *
+     * @throws IOException
+     *
+     * @since 5.9.6
+     */
+    String load(String bundle, String name) throws IOException;
+
+
+    /**
+     * Clear keys in redis
+     *
+     * @throws IOException
+     *
+     * @since 5.9.6
+     */
+    public Long clear(String prefix) throws IOException;
+
 }
