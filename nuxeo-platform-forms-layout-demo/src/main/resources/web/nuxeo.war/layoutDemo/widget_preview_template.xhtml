@@ -34,19 +34,30 @@
     <tr>
       <td width="40%" valign="top">
         <a4j:region id="layoutDemoPreviewRegion">
-          <h:form id="layoutDemoPreviewForm"
-            ajaxSubmit="true">
+          <h:form id="layoutDemoPreviewForm">
             <nxl:layout name="layout_demo_widget_common_settings"
-              mode="edit" value="#{widgetPreviewLayoutDef}" />
+              mode="edit" value="#{widgetPreviewLayoutDef}">
+              <ui:define name="inside_input_widget">
+                <f:ajax render="layoutDemoPreviewFrame" execute="@form" />
+              </ui:define>
+            </nxl:layout>
             <c:forEach var="layoutDef"
               items="#{currentWidgetTypeDef.configuration.getPropertyLayouts(widgetPreviewMode, 'any')}">
               <nxl:layout definition="#{layoutDef}"
                 mode="edit_demo_preview"
                 value="#{widgetPreviewLayoutDef.properties}"
-                template="/layouts/layout_default_template.xhtml" />
+                template="/layouts/layout_default_template.xhtml">
+                <ui:define name="inside_input_widget">
+                  <f:ajax render="layoutDemoPreviewFrame" execute="@form" />
+                </ui:define>
+              </nxl:layout>
             </c:forEach>
             <nxl:layout name="layout_demo_widget_custom_properties"
-              mode="edit" value="#{widgetPreviewLayoutDef}" />
+              mode="edit" value="#{widgetPreviewLayoutDef}">
+              <ui:define name="inside_input_widget">
+                <f:ajax render="layoutDemoPreviewFrame" execute="@form" />
+              </ui:define>
+            </nxl:layout>
             <p class="buttonsGadget">
               <a4j:commandButton
                 value="#{messages['label.layoutDemo.widgetDemo.submit']}"

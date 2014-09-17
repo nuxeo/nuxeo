@@ -38,58 +38,58 @@ Needed parameters:
         </tr>
         <tr>
           <td width="50%" valign="top">
-            <c:if test="#{useMultipartForm}">
-              <h:form id="#{demoLayout.name}_edit_form"
-                enctype="multipart/form-data">
+            <ui:decorate template="/widgets/incl/form_template.xhtml">
+              <ui:param name="addForm" value="true" />
+              <ui:param name="formId" value="#{demoLayout.name}_edit_form" />
+              <ui:param name="useAjaxForm" value="#{not useMultipartForm}" />
+              <ui:define name="form_template_content">
                 <nxl:layout value="#{layoutDemoDocument}"
                   mode="edit"
-                  name="#{demoLayout.name}" />
-                <p class="buttonsGadget">
-                  <h:commandButton
-                    value="#{messages['label.layoutDemo.widgetDemo.submit']}"
-                    styleClass="button"
-                    id="#{demoLayout.name}_edit_form_submitButton" />
-                </p>
-              </h:form>
-            </c:if>
-            <c:if test="#{not useMultipartForm}">
-              <h:form id="#{demoLayout.name}_edit_form"
-                onsubmit="removeAllTinyMCEEditors(); return true;">
-                <nxl:layout value="#{layoutDemoDocument}"
-                  mode="edit"
-                  name="#{demoLayout.name}" />
-                <p class="buttonsGadget">
-                  <h:commandButton
-                    value="#{messages['label.layoutDemo.widgetDemo.submit']}"
-                    styleClass="button"
-                    id="#{demoLayout.name}_edit_form_submitButton">
-                    <f:ajax render="#{demoLayout.name}_view_form #{demoLayout.name}_edit_form" execute="@form" />
-                  </h:commandButton>
-                  <a4j:status>
-                    <f:facet name="start">
-                      <h:graphicImage value="/img/standart_waiter.gif" />
-                    </f:facet>
-                  </a4j:status>
-                </p>
-              </h:form>
-            </c:if>
+                  name="#{demoLayout.name}">
+                  <ui:define name="inside_input_widget">
+                    <c:if test="#{not useMultipartForm}">
+                      <f:ajax execute="@form"
+                        render="#{demoLayout.name}_view_form #{demoLayout.name}_edit_form" />
+                    </c:if>
+                  </ui:define>
+                </nxl:layout>
+                <c:if test="#{useMultipartForm}">
+                  <p class="buttonsGadget">
+                    <h:commandButton
+                      value="#{messages['label.layoutDemo.widgetDemo.submit']}"
+                      styleClass="button"
+                      id="#{demoLayout.name}_edit_form_submitButton" />
+                  </p>
+                </c:if>
+                <c:if test="#{not useMultipartForm}">
+                  <p class="buttonsGadget">
+                    <h:commandButton
+                      value="#{messages['label.layoutDemo.widgetDemo.submit']}"
+                      styleClass="button"
+                      id="#{demoLayout.name}_edit_form_submitButton">
+                      <f:ajax execute="@form"
+                        render="#{demoLayout.name}_view_form #{demoLayout.name}_edit_form" />
+                    </h:commandButton>
+                    <a4j:status>
+                      <f:facet name="start">
+                        <h:graphicImage value="/img/standart_waiter.gif" />
+                      </f:facet>
+                    </a4j:status>
+                  </p>
+                </c:if>
+              </ui:define>
+            </ui:decorate>
           </td>
           <td width="50%" valign="top">
-            <c:if test="#{useMultipartForm}">
-              <h:form id="#{demoLayout.name}_view_form"
-                enctype="multipart/form-data">
+            <ui:decorate template="/widgets/incl/form_template.xhtml">
+              <ui:param name="addForm" value="true" />
+              <ui:param name="formId" value="#{demoLayout.name}_view_form" />
+              <ui:param name="useAjaxForm" value="#{not useMultipartForm}" />
+              <ui:define name="form_template_content">
                 <nxl:layout value="#{layoutDemoDocument}" mode="view"
                   name="#{demoLayout.name}" />
-              </h:form>
-            </c:if>
-            <c:if test="#{not useMultipartForm}">
-              <h:form id="#{demoLayout.name}_view_form"
-                ajaxSubmit="true"
-                onsubmit="removeAllTinyMCEEditors(); return true;">
-                <nxl:layout value="#{layoutDemoDocument}" mode="view"
-                  name="#{demoLayout.name}" />
-              </h:form>
-            </c:if>
+              </ui:define>
+            </ui:decorate>
           </td>
         </tr>
       </tbody>
@@ -116,9 +116,11 @@ Needed parameters:
       <tbody>
         <tr>
           <td width="100px" valign="top">
-            <c:if test="#{useMultipartForm}">
-              <h:form id="#{demoLayout.name}_view_form"
-                enctype="multipart/form-data" width="100px">
+            <ui:decorate template="/widgets/incl/form_template.xhtml">
+              <ui:param name="addForm" value="true" />
+              <ui:param name="formId" value="#{demoLayout.name}_view_form" />
+              <ui:param name="useAjaxForm" value="#{not useMultipartForm}" />
+              <ui:define name="form_template_content">
                 <table class="dataOutput">
                   <c:forEach var="row" items="#{layoutDemoDocuments.entries}"
                     varStatus="layoutListingStatus">
@@ -128,23 +130,8 @@ Needed parameters:
                       value="#{row}" mode="view" />
                   </c:forEach>
                 </table>
-              </h:form>
-            </c:if>
-            <c:if test="#{not useMultipartForm}">
-              <h:form id="#{demoLayout.name}_view_form"
-                ajaxSubmit="true"
-                onsubmit="removeAllTinyMCEEditors(); return true;">
-                <table class="dataOutput">
-                  <c:forEach var="row" items="#{layoutDemoDocuments.entries}"
-                    varStatus="layoutListingStatus">
-                    <c:set var="showListingHeader" 
-                      value="#{layoutListingStatus.index == 0}" />
-                    <nxl:layout name="#{demoLayout.name}"
-                      value="#{row}" mode="view" />
-                  </c:forEach>
-                </table>
-              </h:form>
-            </c:if>
+              </ui:define>
+            </ui:decorate>
           </td>
         </tr>
       </tbody>
