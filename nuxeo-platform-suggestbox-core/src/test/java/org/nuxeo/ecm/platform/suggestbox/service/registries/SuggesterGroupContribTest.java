@@ -16,13 +16,15 @@
  */
 package org.nuxeo.ecm.platform.suggestbox.service.registries;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.runner.RunWith;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionService;
@@ -47,6 +49,7 @@ public class SuggesterGroupContribTest {
      * Tests the 'searchbox' suggesterGroup contribution.
      */
     @Test
+    // TODO change the test when the redirection to the new search tab will be handled
     public void testSuggesterGroupContrib() throws ClientException {
 
         // check service implementation
@@ -67,13 +70,13 @@ public class SuggesterGroupContribTest {
         // check 'searchbox' suggesterGroup's suggesters
         List<SuggesterGroupItemDescriptor> suggesters = sgd.getSuggesters();
         List<SuggesterGroupItemDescriptor> expectedSuggesters = new ArrayList<SuggesterGroupItemDescriptor>();
-        expectedSuggesters.add(new SuggesterGroupItemDescriptor(
-                "searchByKeywords"));
+        /*expectedSuggesters.add(new SuggesterGroupItemDescriptor(
+                "searchByKeywords"));*/
         expectedSuggesters.add(new SuggesterGroupItemDescriptor(
                 "documentLookupByTitle"));
         expectedSuggesters.add(new SuggesterGroupItemDescriptor(
                 "searchByUsersAndGroups"));
-        expectedSuggesters.add(new SuggesterGroupItemDescriptor("searchByDate"));
+        /*expectedSuggesters.add(new SuggesterGroupItemDescriptor("searchByDate"));*/
         assertEquals(expectedSuggesters, suggesters);
 
     }

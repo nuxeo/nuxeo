@@ -87,6 +87,7 @@ public class SuggesterGroupMergeTest {
      * attributes => should be appended at the end of the suggesters list.
      */
     @Test
+    // TODO change the test when the redirection to the new search tab will be handled
     public void testSuggesterGroupMerge() throws ClientException {
 
         // check service implementation
@@ -108,15 +109,15 @@ public class SuggesterGroupMergeTest {
         List<SuggesterGroupItemDescriptor> expectedSuggesters = new ArrayList<SuggesterGroupItemDescriptor>();
         expectedSuggesters.add(new SuggesterGroupItemDescriptor(
                 "myNewSuggesterBegin"));
-        expectedSuggesters.add(new SuggesterGroupItemDescriptor(
-                "searchByKeywords"));
+        /*expectedSuggesters.add(new SuggesterGroupItemDescriptor(
+                "searchByKeywords"));*/
         expectedSuggesters.add(new SuggesterGroupItemDescriptor(
                 "myNewSuggesterBeforeUsers"));
         expectedSuggesters.add(new SuggesterGroupItemDescriptor(
                 "searchByUsersAndGroups"));
         expectedSuggesters.add(new SuggesterGroupItemDescriptor(
                 "myNewSuggesterAfterUsers"));
-        expectedSuggesters.add(new SuggesterGroupItemDescriptor("searchByDate"));
+        //expectedSuggesters.add(new SuggesterGroupItemDescriptor("searchByDate"));
         expectedSuggesters.add(new SuggesterGroupItemDescriptor(
                 "myNewSuggesterEnd"));
         expectedSuggesters.add(new SuggesterGroupItemDescriptor(

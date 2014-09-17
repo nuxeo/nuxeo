@@ -171,6 +171,7 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
     }
 
     @Test
+    // TODO change the test when the redirection to the new search tab will be handled
     public void testDefaultSuggestionConfigurationWithKeyword()
             throws SuggestionException {
         if (!DatabaseHelper.DATABASE.supportsMultipleFulltextIndexes()) {
@@ -187,22 +188,23 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         List<Suggestion> suggestions = suggestionService.suggest("superuni",
                 context);
         assertNotNull(suggestions);
-        assertEquals(2, suggestions.size());
+        assertEquals(1, suggestions.size());
 
-        Suggestion sugg0 = suggestions.get(0);
+        /*Suggestion sugg0 = suggestions.get(0);
         assertEquals("searchDocuments", sugg0.getType());
         assertEquals("Search documents with keywords: 'superuni'",
                 sugg0.getLabel());
         assertEquals("/img/facetedSearch.png", sugg0.getIconURL());
-
-        Suggestion sugg1 = suggestions.get(1);
-        assertEquals("document", sugg1.getType());
+        */
+        Suggestion sugg0 = suggestions.get(0);
+        assertEquals("document", sugg0.getType());
         assertEquals("First document with a superuniqueword in the title",
-                sugg1.getLabel());
-        assertEquals("/icons/file.gif", sugg1.getIconURL());
+                sugg0.getLabel());
+        assertEquals("/icons/file.gif", sugg0.getIconURL());
     }
 
     @Test
+    // TODO change the test when the redirection to the new search tab will be handled
     public void testDefaultSuggestionConfigurationWithDate()
             throws SuggestionException {
         if (!DatabaseHelper.DATABASE.supportsMultipleFulltextIndexes()) {
@@ -219,9 +221,9 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         List<Suggestion> suggestions = suggestionService.suggest("2009",
                 context);
         assertNotNull(suggestions);
-        assertEquals(5, suggestions.size());
+        assertEquals(0, suggestions.size());
 
-        Suggestion sugg0 = suggestions.get(0);
+        /*Suggestion sugg0 = suggestions.get(0);
         assertEquals("searchDocuments", sugg0.getType());
         assertEquals("Search documents with keywords: '2009'", sugg0.getLabel());
         assertEquals("/img/facetedSearch.png", sugg0.getIconURL());
@@ -258,7 +260,7 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         sugg1 = suggestions.get(1);
         assertEquals("document", sugg1.getType());
         assertEquals("The 2012 document about Bob Marley", sugg1.getLabel());
-        assertEquals("/icons/file.gif", sugg1.getIconURL());
+        assertEquals("/icons/file.gif", sugg1.getIconURL());*/
     }
 
     @Test
@@ -298,6 +300,7 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
     }
 
     @Test
+    // TODO change the test when the redirection to the new search tab will be handled
     public void testDefaultSuggestionConfigurationWithUsersAndGroups()
             throws SuggestionException {
         if (!DatabaseHelper.DATABASE.supportsMultipleFulltextIndexes()) {
@@ -314,50 +317,50 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         List<Suggestion> suggestions = suggestionService.suggest("marl",
                 context);
         assertNotNull(suggestions);
-        assertEquals(4, suggestions.size());
+        assertEquals(2, suggestions.size());
 
-        Suggestion sugg0 = suggestions.get(0);
+        /*Suggestion sugg0 = suggestions.get(0);
         assertEquals("searchDocuments", sugg0.getType());
         assertEquals("Search documents with keywords: 'marl'", sugg0.getLabel());
-        assertEquals("/img/facetedSearch.png", sugg0.getIconURL());
+        assertEquals("/img/facetedSearch.png", sugg0.getIconURL());*/
 
-        Suggestion sugg1 = suggestions.get(1);
+        Suggestion sugg1 = suggestions.get(0);
         assertEquals("document", sugg1.getType());
         assertEquals("The 2012 document about Bob Marley", sugg1.getLabel());
         assertEquals("/icons/file.gif", sugg1.getIconURL());
 
-        Suggestion sugg2 = suggestions.get(2);
+        Suggestion sugg2 = suggestions.get(1);
         assertEquals("user", sugg2.getType());
         assertEquals("Bob Marley", sugg2.getLabel());
         assertEquals("/icons/user.png", sugg2.getIconURL());
 
-        Suggestion sugg3 = suggestions.get(3);
+        /*Suggestion sugg3 = suggestions.get(3);
         assertEquals("searchDocuments", sugg3.getType());
         assertEquals("Search documents by Bob Marley", sugg3.getLabel());
-        assertEquals("/img/facetedSearch.png", sugg3.getIconURL());
+        assertEquals("/img/facetedSearch.png", sugg3.getIconURL());*/
 
         // Check that user suggestion for entries without firstname and lastname
         // return the user id
         // perform some test lookups to check the deployment of extension points
         suggestions = suggestionService.suggest("nonam", context);
         assertNotNull(suggestions);
-        assertEquals(3, suggestions.size());
+        assertEquals(1, suggestions.size());
 
-        sugg0 = suggestions.get(0);
+        /*sugg0 = suggestions.get(0);
         assertEquals("searchDocuments", sugg0.getType());
         assertEquals("Search documents with keywords: 'nonam'",
                 sugg0.getLabel());
-        assertEquals("/img/facetedSearch.png", sugg0.getIconURL());
+        assertEquals("/img/facetedSearch.png", sugg0.getIconURL());*/
 
-        sugg1 = suggestions.get(1);
+        sugg1 = suggestions.get(0);
         assertEquals("user", sugg1.getType());
         assertEquals("noname", sugg1.getLabel());
         assertEquals("/icons/user.png", sugg1.getIconURL());
 
-        sugg2 = suggestions.get(2);
+        /*sugg2 = suggestions.get(2);
         assertEquals("searchDocuments", sugg2.getType());
         assertEquals("Search documents by noname", sugg2.getLabel());
-        assertEquals("/img/facetedSearch.png", sugg2.getIconURL());
+        assertEquals("/img/facetedSearch.png", sugg2.getIconURL());*/
     }
 
     protected Map<String, String> getTestMessages() {
