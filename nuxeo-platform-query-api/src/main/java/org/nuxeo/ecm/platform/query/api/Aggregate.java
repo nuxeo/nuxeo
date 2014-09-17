@@ -21,12 +21,12 @@ import java.util.List;
 /**
  * @since 5.9.6
  */
-public interface Aggregate {
+public interface Aggregate<B extends Bucket> {
     String getId();
 
     String getType();
 
-    List<? extends Bucket> getBuckets();
+    List<B> getBuckets();
 
     AggregateQuery getQuery();
 }

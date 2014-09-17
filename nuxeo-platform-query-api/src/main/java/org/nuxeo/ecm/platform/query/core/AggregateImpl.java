@@ -26,13 +26,13 @@ import org.nuxeo.ecm.platform.query.api.Bucket;
 /**
  * @since 5.9.6
  */
-public class AggregateImpl implements Aggregate {
+public class AggregateImpl<B extends Bucket> implements Aggregate<B> {
 
     protected final AggregateQuery query;
 
-    protected final List<? extends Bucket> buckets;
+    protected final List<B> buckets;
 
-    public AggregateImpl(AggregateQuery query, List<? extends Bucket> buckets) {
+    public AggregateImpl(AggregateQuery query, List<B> buckets) {
         if (query == null) {
             throw new IllegalArgumentException("query is null");
         }
@@ -54,7 +54,7 @@ public class AggregateImpl implements Aggregate {
     }
 
     @Override
-    public List<? extends Bucket> getBuckets() {
+    public List<B> getBuckets() {
         return buckets;
     }
 
