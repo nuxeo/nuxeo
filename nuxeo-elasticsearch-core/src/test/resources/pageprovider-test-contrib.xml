@@ -213,7 +213,7 @@
         <aggregate id="created" type="date_range" parameter="dc:created">
           <field schema="advanced_search" name="created_agg"/>
           <properties>
-            <property name="format">"MM-yyy</property>
+            <property name="format">MM-yyy</property>
           </properties>
           <dateRanges>
             <dateRange key="long_time_ago" toDate="now-10M/M"/>
@@ -221,6 +221,28 @@
                        toDate="now-1M/M"/>
             <dateRange key="last_month" fromDate="now-1M/M"/>
           </dateRanges>
+        </aggregate>
+        <aggregate id="size_histo" type="histogram" parameter="common:size">
+          <field schema="advanced_search" name="size_histo_agg"/>
+          <properties>
+            <property name="interval">1024</property>
+            <property name="extendedBoundsMin">0</property>
+            <property name="extendedBoundsMax">1234567</property>
+            <property name="order">key asc</property>
+          </properties>
+        </aggregate>
+        <aggregate id="created_histo" type="date_histogram" parameter="dc:created">
+          <field schema="advanced_search" name="created_histo_agg"/>
+          <properties>
+            <property name="interval">2w</property>
+            <property name="format">dd-MM-yyy</property>
+            <property name="extendedBoundsMin">now-1m</property>
+            <property name="extendedBoundsMax">now</property>
+            <property name="timeZone">-02:00</property>
+            <property name="postZone">-02:30</property>
+            <property name="preZone">-00:42</property>
+            <!-- property name="order">count desc</property-->
+          </properties>
         </aggregate>
       </aggregates>
     </genericPageProvider>

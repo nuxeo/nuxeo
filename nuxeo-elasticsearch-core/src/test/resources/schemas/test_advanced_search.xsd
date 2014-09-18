@@ -56,4 +56,6 @@
   <xs:element name="subjects_agg" type="nxs:stringList"/>
   <xs:element name="size_agg" type="nxs:stringList"/>
   <xs:element name="created_agg" type="nxs:stringList"/>
+  <xs:element name="size_histo_agg" type="nxs:stringList"/>
+  <xs:element name="created_histo_agg" type="nxs:stringList"/>
 </xs:schema>

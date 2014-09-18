@@ -18,8 +18,27 @@ package org.nuxeo.elasticsearch.query;
 
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_RANGE;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_EXCLUDE_PROP;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_EXTENDED_BOUND_MAX_PROP;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_EXTENDED_BOUND_MIN_PROP;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_INCLUDE_PROP;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_INTERVAL_PROP;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_MIN_DOC_COUNT_PROP;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_COUNT_ASC;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_COUNT_DESC;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_KEY_ASC;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_KEY_DESC;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_PROP;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_TERM_ASC;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_TERM_DESC;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_POST_ZONE_PROP;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_PRE_ZONE_PROP;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_SIZE_PROP;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TIME_ZONE_PROP;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_DATE_HISTOGRAM;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_DATE_RANGE;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_HISTOGRAM;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_RANGE;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_SIGNIFICANT_TERMS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_TERMS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.FETCH_DOC_FROM_ES_PROPERTY;
@@ -31,7 +50,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
-
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.AndFilterBuilder;
@@ -45,6 +63,10 @@ import org.elasticsearch.index.query.RangeFilterBuilder;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.filter.FilterAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogram;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramBuilder;
+import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
+import org.elasticsearch.search.aggregations.bucket.histogram.HistogramBuilder;
 import org.elasticsearch.search.aggregations.bucket.range.RangeBuilder;
 import org.elasticsearch.search.aggregations.bucket.range.date.DateRangeBuilder;
 import org.elasticsearch.search.aggregations.bucket.significant.SignificantTermsBuilder;
@@ -60,7 +82,6 @@ import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.query.api.AggregateQuery;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDateDefinition;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDefinition;
-import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.fetcher.EsFetcher;
 import org.nuxeo.elasticsearch.fetcher.Fetcher;
 import org.nuxeo.elasticsearch.fetcher.VcsFetcher;
@@ -75,15 +96,15 @@ public class NxQueryBuilder {
 
     private static final int DEFAULT_LIMIT = 10;
     private int limit = DEFAULT_LIMIT;
+    private static final String AGG_FILTER_SUFFIX = "_filter";
     private final CoreSession session;
-    private int offset = 0;
     private final List<SortInfo> sortInfos = new ArrayList<SortInfo>();
+    private final List<AggregateQuery> aggregates = new ArrayList<AggregateQuery>();
+    private final List<String> repositories = new ArrayList<String>();
+    private int offset = 0;
     private String nxql;
     private org.elasticsearch.index.query.QueryBuilder esQueryBuilder;
     private boolean fetchFromElasticsearch = false;
-    private final List<AggregateQuery> aggregates = new ArrayList<AggregateQuery>();
-    private static final String AGG_FILTER_SUFFIX = "_filter";
-    private final List<String> repositories = new ArrayList<String>();
     private boolean searchOnAllRepo = false;
 
     public NxQueryBuilder(CoreSession coreSession) {
@@ -279,8 +300,7 @@ public class NxQueryBuilder {
         return ret;
     }
 
-    private BaseFilterBuilder getFilterForSelection(
-            AggregateQuery aggQuery) {
+    private BaseFilterBuilder getFilterForSelection(AggregateQuery aggQuery) {
         if (aggQuery.getSelection().isEmpty()) {
             return null;
         }
@@ -325,6 +345,10 @@ public class NxQueryBuilder {
             }
             ret = orDateFilter;
             break;
+        case AGG_TYPE_DATE_HISTOGRAM:
+        case AGG_TYPE_HISTOGRAM:
+            // Selection not supported
+            break;
         }
         return ret;
     }
@@ -347,11 +371,17 @@ public class NxQueryBuilder {
             case AGG_TYPE_SIGNIFICANT_TERMS:
                 fagg.subAggregation(getSignificantTermsBuilder(aggQuery));
                 break;
-            case AGG_TYPE_RANGE :
+            case AGG_TYPE_RANGE:
                 fagg.subAggregation(getRangeBuilder(aggQuery));
                 break;
-            case AGG_TYPE_DATE_RANGE :
+            case AGG_TYPE_DATE_RANGE:
                 fagg.subAggregation(getRangeDateBuilder(aggQuery));
+                break;
+            case AGG_TYPE_HISTOGRAM:
+                fagg.subAggregation(getHistogramBuilder(aggQuery));
+                break;
+            case AGG_TYPE_DATE_HISTOGRAM:
+                fagg.subAggregation(getHistogramDateBuilder(aggQuery));
                 break;
             default:
                 fagg.subAggregation(getRangeBuilder(aggQuery));
@@ -368,32 +398,30 @@ public class NxQueryBuilder {
         TermsBuilder ret = AggregationBuilders.terms(aggQuery.getId()).field(
                 aggQuery.getField());
         Map<String, String> props = aggQuery.getProperties();
-        if (props.containsKey(ElasticSearchConstants.AGG_SIZE_PROP)) {
-            ret.size(Integer.parseInt(props.get(
-                    ElasticSearchConstants.AGG_SIZE_PROP)));
+        if (props.containsKey(AGG_SIZE_PROP)) {
+            ret.size(Integer.parseInt(props.get(AGG_SIZE_PROP)));
         }
-        if (props.containsKey(ElasticSearchConstants.AGG_MIN_DOC_COUNT_PROP)) {
-            ret.minDocCount(Long.parseLong(props.get(
-                    ElasticSearchConstants.AGG_MIN_DOC_COUNT_PROP)));
+        if (props.containsKey(AGG_MIN_DOC_COUNT_PROP)) {
+            ret.minDocCount(Long.parseLong(props.get(AGG_MIN_DOC_COUNT_PROP)));
         }
-        if (props.containsKey(ElasticSearchConstants.AGG_EXCLUDE_PROP)) {
-            ret.exclude(props.get(ElasticSearchConstants.AGG_EXCLUDE_PROP));
+        if (props.containsKey(AGG_EXCLUDE_PROP)) {
+            ret.exclude(props.get(AGG_EXCLUDE_PROP));
         }
-        if (props.containsKey(ElasticSearchConstants.AGG_INCLUDE_PROP)) {
-            ret.include(props.get(ElasticSearchConstants.AGG_INCLUDE_PROP));
+        if (props.containsKey(AGG_INCLUDE_PROP)) {
+            ret.include(props.get(AGG_INCLUDE_PROP));
         }
-        if (props.containsKey(ElasticSearchConstants.AGG_ORDER_PROP)) {
-            switch (props.get(ElasticSearchConstants.AGG_ORDER_PROP).toLowerCase()) {
-            case ElasticSearchConstants.AGG_ORDER_COUNT_DESC:
+        if (props.containsKey(AGG_ORDER_PROP)) {
+            switch (props.get(AGG_ORDER_PROP).toLowerCase()) {
+            case AGG_ORDER_COUNT_DESC:
                 ret.order(Terms.Order.count(false));
                 break;
-            case ElasticSearchConstants.AGG_ORDER_COUNT_ASC:
+            case AGG_ORDER_COUNT_ASC:
                 ret.order(Terms.Order.count(true));
                 break;
-            case ElasticSearchConstants.AGG_ORDER_TERM_DESC:
+            case AGG_ORDER_TERM_DESC:
                 ret.order(Terms.Order.term(false));
                 break;
-            case ElasticSearchConstants.AGG_ORDER_TERM_ASC:
+            case AGG_ORDER_TERM_ASC:
                 ret.order(Terms.Order.term(true));
                 break;
             }
@@ -406,13 +434,11 @@ public class NxQueryBuilder {
         SignificantTermsBuilder ret = AggregationBuilders.significantTerms(
                 aggQuery.getId()).field(aggQuery.getField());
         Map<String, String> props = aggQuery.getProperties();
-        if (props.containsKey(ElasticSearchConstants.AGG_SIZE_PROP)) {
-            ret.size(Integer.parseInt(props.get(
-                    ElasticSearchConstants.AGG_SIZE_PROP)));
+        if (props.containsKey(AGG_SIZE_PROP)) {
+            ret.size(Integer.parseInt(props.get(AGG_SIZE_PROP)));
         }
-        if (props.containsKey(ElasticSearchConstants.AGG_MIN_DOC_COUNT_PROP)) {
-            ret.minDocCount(Integer.parseInt(props.get(
-                    ElasticSearchConstants.AGG_MIN_DOC_COUNT_PROP)));
+        if (props.containsKey(AGG_MIN_DOC_COUNT_PROP)) {
+            ret.minDocCount(Integer.parseInt(props.get(AGG_MIN_DOC_COUNT_PROP)));
         }
         return ret;
     }
@@ -420,10 +446,10 @@ public class NxQueryBuilder {
     protected RangeBuilder getRangeBuilder(AggregateQuery aggQuery) {
         RangeBuilder ret = AggregationBuilders.range(aggQuery.getId()).field(
                 aggQuery.getField());
-        for(AggregateRangeDefinition range: aggQuery.getRanges()) {
+        for (AggregateRangeDefinition range : aggQuery.getRanges()) {
             if (range.getFrom() != null) {
                 if (range.getTo() != null) {
-                    ret.addRange(range.getKey(),  range.getFrom(), range.getTo());
+                    ret.addRange(range.getKey(), range.getFrom(), range.getTo());
                 } else {
                     ret.addUnboundedFrom(range.getKey(), range.getFrom());
                 }
@@ -435,18 +461,100 @@ public class NxQueryBuilder {
     }
 
     protected DateRangeBuilder getRangeDateBuilder(AggregateQuery aggQuery) {
-        DateRangeBuilder ret = AggregationBuilders.dateRange(aggQuery.getId()).field(
-                aggQuery.getField());
-        for(AggregateRangeDateDefinition range: aggQuery.getDateRanges()) {
+        DateRangeBuilder ret = AggregationBuilders.dateRange(aggQuery.getId())
+                .field(aggQuery.getField());
+        for (AggregateRangeDateDefinition range : aggQuery.getDateRanges()) {
             if (range.getFromAsString() != null) {
                 if (range.getToAsString() != null) {
-                    ret.addRange(range.getKey(),  range.getFromAsString(), range.getToAsString());
+                    ret.addRange(range.getKey(), range.getFromAsString(),
+                            range.getToAsString());
                 } else {
-                    ret.addUnboundedFrom(range.getKey(), range.getFromAsString());
+                    ret.addUnboundedFrom(range.getKey(),
+                            range.getFromAsString());
                 }
             } else if (range.getToAsString() != null) {
                 ret.addUnboundedTo(range.getKey(), range.getToAsString());
             }
+        }
+        return ret;
+    }
+
+    protected HistogramBuilder getHistogramBuilder(AggregateQuery aggQuery) {
+        HistogramBuilder ret = AggregationBuilders.histogram(aggQuery.getId())
+                .field(aggQuery.getField());
+        Map<String, String> props = aggQuery.getProperties();
+        if (props.containsKey(AGG_INTERVAL_PROP)) {
+            ret.interval(Integer.parseInt(props.get(AGG_INTERVAL_PROP)));
+        }
+        if (props.containsKey(AGG_MIN_DOC_COUNT_PROP)) {
+            ret.minDocCount(Long.parseLong(props.get(AGG_MIN_DOC_COUNT_PROP)));
+        }
+        if (props.containsKey(AGG_ORDER_PROP)) {
+            switch (props.get(AGG_ORDER_PROP).toLowerCase()) {
+            case AGG_ORDER_COUNT_DESC:
+                ret.order(Histogram.Order.COUNT_DESC);
+                break;
+            case AGG_ORDER_COUNT_ASC:
+                ret.order(Histogram.Order.COUNT_ASC);
+                break;
+            case AGG_ORDER_KEY_DESC:
+                ret.order(Histogram.Order.KEY_DESC);
+                break;
+            case AGG_ORDER_KEY_ASC:
+                ret.order(Histogram.Order.KEY_ASC);
+                break;
+            }
+        }
+        if (props.containsKey(AGG_EXTENDED_BOUND_MAX_PROP)
+                && props.containsKey(AGG_EXTENDED_BOUND_MIN_PROP)) {
+            ret.extendedBounds(
+                    Long.parseLong(props.get(AGG_EXTENDED_BOUND_MIN_PROP)),
+                    Long.parseLong(props.get(AGG_EXTENDED_BOUND_MAX_PROP)));
+        }
+        return ret;
+    }
+
+    protected DateHistogramBuilder getHistogramDateBuilder(
+            AggregateQuery aggQuery) {
+        DateHistogramBuilder ret = AggregationBuilders.dateHistogram(
+                aggQuery.getId()).field(aggQuery.getField());
+        Map<String, String> props = aggQuery.getProperties();
+        if (props.containsKey(AGG_INTERVAL_PROP)) {
+            ret.interval(new DateHistogram.Interval(props
+                    .get(AGG_INTERVAL_PROP)));
+        }
+        if (props.containsKey(AGG_MIN_DOC_COUNT_PROP)) {
+            ret.minDocCount(Long.parseLong(props.get(AGG_MIN_DOC_COUNT_PROP)));
+        }
+        if (props.containsKey(AGG_ORDER_PROP)) {
+            switch (props.get(AGG_ORDER_PROP).toLowerCase()) {
+            case AGG_ORDER_COUNT_DESC:
+                ret.order(Histogram.Order.COUNT_DESC);
+                break;
+            case AGG_ORDER_COUNT_ASC:
+                ret.order(Histogram.Order.COUNT_ASC);
+                break;
+            case AGG_ORDER_KEY_DESC:
+                ret.order(Histogram.Order.KEY_DESC);
+                break;
+            case AGG_ORDER_KEY_ASC:
+                ret.order(Histogram.Order.KEY_ASC);
+                break;
+            }
+        }
+        if (props.containsKey(AGG_EXTENDED_BOUND_MAX_PROP)
+                && props.containsKey(AGG_EXTENDED_BOUND_MIN_PROP)) {
+            ret.extendedBounds(props.get(AGG_EXTENDED_BOUND_MIN_PROP),
+                    props.get(AGG_EXTENDED_BOUND_MAX_PROP));
+        }
+        if (props.containsKey(AGG_TIME_ZONE_PROP)) {
+            ret.preZone(props.get(AGG_TIME_ZONE_PROP));
+        }
+        if (props.containsKey(AGG_PRE_ZONE_PROP)) {
+            ret.preZone(props.get(AGG_PRE_ZONE_PROP));
+        }
+        if (props.containsKey(AGG_POST_ZONE_PROP)) {
+            ret.postZone(props.get(AGG_POST_ZONE_PROP));
         }
         return ret;
     }
@@ -511,14 +619,14 @@ public class NxQueryBuilder {
     }
 
     /**
-     * Return the list of repositories to search, or an empty list
-     * to search on all available repositories;
+     * Return the list of repositories to search, or an empty list to search on
+     * all available repositories;
      *
      * @since 5.9.6
      */
     public List<String> getSearchRepositories() {
         if (searchOnAllRepo) {
-            return Collections.<String>emptyList();
+            return Collections.<String> emptyList();
         }
         return repositories;
     }
