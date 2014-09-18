@@ -8,15 +8,25 @@ author: lkemen@nuxeo.com
 
 /* =TabsContent */
 .tabsContent {
-  margin: 0;
-  padding: 2em 0 }
+  background: none #fff;
+  margin: 1px 1px 0;
+  padding: 2em 1.5em}
 
 .mainNoTabs {
   background-color: #fff;
   border-radius: 3px;
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
-  min-height: 30em;
   padding: 2em }
+
+.mainNoTabs h3 {
+  border-bottom: 1px solid #eee;
+  margin: -0.5em -1.5rem 1.5rem;
+  padding: 0 1.5em 1em }
+
+.mainNoTabs .buttonsGadget {
+  border-top: 1px solid #eee;
+  margin: 2em -2em -2em;
+  padding: 1em 2em .5em }
 
 .contentViewTitle {
   border-bottom: 1px solid;
@@ -67,7 +77,7 @@ author: lkemen@nuxeo.com
 .metadata_block {
   background: none "neutral.lighter (__FLAVOR__ background)";
   border-radius: 3px;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 1px rgba(0,0,0,0.15),-1px 0 0 rgba(0,0,0,0.02),1px 0 0 rgba(0,0,0,0.02),0 1px 0 rgba(0,0,0,0.10);
   padding: 1rem;}
 
 .content_block .summaryTitle,
@@ -118,7 +128,7 @@ author: lkemen@nuxeo.com
   background-color: "neutral.lighter (__FLAVOR__ background)";
   border-radius: 3px;
   border: none;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 1px rgba(0,0,0,0.15),-1px 0 0 rgba(0,0,0,0.02),1px 0 0 rgba(0,0,0,0.02),0 1px 0 rgba(0,0,0,0.10);
   font-size: 115%;
   text-align: justify }
 
