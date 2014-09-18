@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2009-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,12 +16,18 @@
  */
 package org.nuxeo.ecm.directory.ui;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.runner.RunWith;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
@@ -32,49 +38,44 @@ import org.nuxeo.ecm.directory.api.ui.DirectoryUI;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUIDeleteConstraint;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUIManager;
 import org.nuxeo.ecm.directory.api.ui.HierarchicalDirectoryUIDeleteConstraint;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
+
+import com.google.inject.Inject;
 
 /**
  * @author Anahide Tchertchian
  *
  */
-public class TestDirectoryUIManager extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core",
+        // deploy directory service + sql factory
+        "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
+        "org.nuxeo.ecm.directory.types.contrib",
+        // deploy directory ui service
+        "org.nuxeo.ecm.directory.web" })
+// deploy test dirs + ui config
+@LocalDeploy("org.nuxeo.ecm.directory.web.tests:OSGI-INF/test-directory-ui-sql-contrib.xml")
+public class TestDirectoryUIManager {
 
+    @Inject
     DirectoryService dirService;
 
+    @Inject
     DirectoryUIManager service;
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
         DatabaseHelper.DATABASE.setUp();
-
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core");
-
-        // deploy directory service + sql factory
-        deployBundle("org.nuxeo.ecm.directory");
-        deployBundle("org.nuxeo.ecm.directory.sql");
-        deployBundle("org.nuxeo.ecm.directory.types.contrib");
-
-        // deploy directory ui service
-        deployBundle("org.nuxeo.ecm.directory.web");
-        // deploy test dirs + ui config
-        deployContrib("org.nuxeo.ecm.directory.web.tests",
-                "OSGI-INF/test-directory-ui-sql-contrib.xml");
-
-        service = Framework.getService(DirectoryUIManager.class);
-        assertNotNull(service);
-
-        dirService = Framework.getService(DirectoryService.class);
-        assertNotNull(dirService);
     }
 
     @After
     public void tearDown() throws Exception {
         DatabaseHelper.DATABASE.tearDown();
-        super.tearDown();
     }
 
     @Test
