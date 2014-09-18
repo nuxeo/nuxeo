@@ -34,11 +34,16 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.ecm.core.storage.sql.ColumnSpec;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
@@ -49,8 +54,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableImpl;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.runtime.api.Framework;
-
-import au.com.bytecode.opencsv.CSVReader;
 
 public class SQLHelper {
 
@@ -274,26 +277,9 @@ public class SQLHelper {
         }
     }
 
-    private static String formatColumnValues(String[] columnValues) {
-        StringBuilder buffer = new StringBuilder();
-        buffer.append('[');
-        if (columnValues != null) {
-            int i = 0;
-            List<String> values = new ArrayList<String>();
-            for (String columnValue : columnValues) {
-                values.add(i + ": " + columnValue);
-                i++;
-            }
-            buffer.append(StringUtils.join(values.iterator(), ", "));
-        }
-        buffer.append(']');
-        return buffer.toString();
-    }
-
     private void loadData() throws DirectoryException {
         log.debug("loading data file: " + dataFileName);
-        CSVReader csvReader = null;
-        String[] columnValues = null;
+        CSVParser csvParser = null;
         PreparedStatement ps = null;
         try {
             InputStream is = getClass().getClassLoader().getResourceAsStream(
@@ -307,13 +293,13 @@ public class SQLHelper {
                 }
             }
 
-            csvReader = new CSVReader(new InputStreamReader(is,
-                    SQL_SCRIPT_CHARSET), characterSeparator);
-
-            String[] columnNames = csvReader.readNext();
-            List<Column> columns = new ArrayList<Column>();
+            csvParser = new CSVParser(new InputStreamReader(is,
+                    SQL_SCRIPT_CHARSET), CSVFormat.DEFAULT.withDelimiter(
+                    characterSeparator).withHeader());
+            Map<String, Integer> header = csvParser.getHeaderMap();
+            List<Column> columns = new ArrayList<>();
             Insert insert = new Insert(table);
-            for (String columnName : columnNames) {
+            for (String columnName : header.keySet()) {
                 String trimmedColumnName = columnName.trim();
                 Column column = table.getColumn(trimmedColumnName);
                 if (column == null) {
@@ -323,30 +309,25 @@ public class SQLHelper {
                 columns.add(table.getColumn(trimmedColumnName));
                 insert.addColumn(column);
             }
+
             String insertSql = insert.getStatement();
             log.debug("insert statement: " + insertSql);
-
             ps = connection.prepareStatement(insertSql);
-
-            while ((columnValues = csvReader.readNext()) != null) {
-                if (columnValues.length == 0
-                        || (columnValues.length == 1 && "".equals(columnValues[0]))) {
+            for (CSVRecord record : csvParser) {
+                if (record.size() == 0 || record.size() == 1
+                        && StringUtils.isBlank(record.get(0))) {
                     // NXP-2538: allow columns with only one value but skip
                     // empty lines
                     continue;
                 }
-                if (columnValues.length != columnNames.length) {
-                    log.error("invalid column count while reading csv file: "
-                            + dataFileName + ", values: "
-                            + formatColumnValues(columnValues));
+                if (!record.isConsistent()) {
+                    log.error("invalid column count while reading CSV file: "
+                            + dataFileName + ", values: " + record);
                     continue;
                 }
-
                 if (logger.isLogEnabled()) {
-                    List<Serializable> values = new ArrayList<Serializable>(
-                            columnNames.length);
-                    for (int i = 0; i < columnNames.length; i++) {
-                        String value = columnValues[i];
+                    List<Serializable> values = new ArrayList<>(header.size());
+                    for (String value : record) {
                         if (SQL_NULL_MARKER.equals(value)) {
                             value = null;
                         }
@@ -355,67 +336,45 @@ public class SQLHelper {
                     logger.logSQL(insertSql, values);
                 }
 
-                for (int i = 0; i < columnNames.length; i++) {
+                for (int i = 0; i < header.size(); i++) {
                     Column column = columns.get(i);
-                    String value = columnValues[i];
-                    // int columnLength = column.getLength();
-                    // if (value != null && value.length() > columnLength) {
-                    // log.warn(String.format(
-                    // "Possible invalid value (length > %s): %s",
-                    // columnLength, value));
-                    // }
+                    String value = record.get(i);
                     Serializable v;
-                    if (SQL_NULL_MARKER.equals(value)) {
-                        v = null;
-                    } else if (column.getType().spec == ColumnSpec.STRING) {
-                        v = value;
-                    } else if (column.getType().spec == ColumnSpec.BOOLEAN) {
-                        v = Boolean.valueOf(value);
-                    } else if (column.getType().spec == ColumnSpec.LONG) {
-                        try {
+                    try {
+                        if (SQL_NULL_MARKER.equals(value)) {
+                            v = null;
+                        } else if (column.getType().spec == ColumnSpec.STRING) {
+                            v = value;
+                        } else if (column.getType().spec == ColumnSpec.BOOLEAN) {
+                            v = Boolean.valueOf(value);
+                        } else if (column.getType().spec == ColumnSpec.LONG) {
                             v = Long.valueOf(value);
-                        } catch (NumberFormatException e) {
-                            throw new DirectoryException(
-                                    String.format(
-                                            "failed to set column '%s' on table '%s', values: %s",
-                                            column.getPhysicalName(),
-                                            table.getPhysicalName(),
-                                            formatColumnValues(columnValues)),
-                                    e);
-                        }
-                    } else if (column.getType().spec == ColumnSpec.TIMESTAMP) {
-                        try {
+                        } else if (column.getType().spec == ColumnSpec.TIMESTAMP) {
                             Calendar cal = new GregorianCalendar();
                             cal.setTime(Timestamp.valueOf(value));
                             v = cal;
-                        } catch (IllegalArgumentException e) {
-                            throw new DirectoryException(
-                                    String.format(
-                                            "failed to set column '%s' on table '%s', values: %s",
-                                            column.getPhysicalName(),
-                                            table.getPhysicalName(),
-                                            formatColumnValues(columnValues)),
-                                    e);
-                        }
-                    } else if (column.getType().spec == ColumnSpec.DOUBLE) {
-                        try {
+                        } else if (column.getType().spec == ColumnSpec.DOUBLE) {
                             v = Double.valueOf(value);
-                        } catch (NumberFormatException e) {
+                        } else {
                             throw new DirectoryException(
-                                    String.format(
-                                            "failed to set column '%s' on table '%s', values: %s",
-                                            column.getPhysicalName(),
-                                            table.getPhysicalName(),
-                                            formatColumnValues(columnValues)),
-                                    e);
+                                    "unrecognized column type: "
+                                            + column.getType() + ", values: "
+                                            + record);
                         }
-                    } else {
+                        column.setToPreparedStatement(ps, i + 1, v);
+                    } catch (IllegalArgumentException e) {
                         throw new DirectoryException(
-                                "unrecognized column type: " + column.getType()
-                                        + ", values: "
-                                        + formatColumnValues(columnValues));
+                                String.format(
+                                        "failed to set column '%s' on table '%s', values: %s",
+                                        column.getPhysicalName(),
+                                        table.getPhysicalName(), record), e);
+                    } catch (SQLException e) {
+                        throw new DirectoryException(
+                                String.format(
+                                        "Table '%s' initialization failed: %s, values: %s",
+                                        table.getPhysicalName(),
+                                        e.getMessage(), record), e);
                     }
-                    column.setToPreparedStatement(ps, i + 1, v);
                 }
                 ps.execute();
             }
@@ -424,22 +383,26 @@ public class SQLHelper {
                     + dataFileName, e);
         } catch (SQLException e) {
             throw new DirectoryException(String.format(
-                    "Table '%s' initialization failed: %s, values: %s",
-                    table.getPhysicalName(), e.getMessage(),
-                    formatColumnValues(columnValues)), e);
+                    "Table '%s' initialization failed: %s",
+                    table.getPhysicalName(), e.getMessage()), e);
         } finally {
+            DirectoryException e = new DirectoryException();
             try {
-                if (csvReader != null) {
-                    csvReader.close();
+                if (csvParser != null) {
+                    csvParser.close();
                 }
+            } catch (IOException ioe) {
+                e.addSuppressed(ioe);
+            }
+            try {
                 if (ps != null) {
                     ps.close();
                 }
-            } catch (IOException e) {
-                throw new DirectoryException("Error closing data file: "
-                        + dataFileName, e);
             } catch (SQLException sqle) {
-                throw new DirectoryException(sqle);
+                e.addSuppressed(sqle);
+            }
+            if (e.getSuppressed().length > 0) {
+                throw e;
             }
         }
     }
