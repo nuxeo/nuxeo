@@ -147,13 +147,14 @@ input.dropzone-bar-btn {
 	padding: .5em }
 
 .dropzoneTarget .simpleBox {
-  margin: .5em .2em .5em .5em }
+  margin: .2em }
 
 .droppedItem,
 .droppedItemInProgress {
   color: "default (__FLAVOR__ color)";
   display: inline-block;
   font-weight: bold;
+  font-size: .85em;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
