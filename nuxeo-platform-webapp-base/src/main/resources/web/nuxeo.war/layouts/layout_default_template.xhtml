@@ -82,11 +82,15 @@
   </nxu:set>
 
 <a4j:outputPanel ajaxRendered="true">
+<nxu:set var="position"
+  value="#{nxu:test(empty layoutProperty_tooltipPosition, 'bottom center', layoutProperty_tooltipPosition)}"
+  cache="true">
 <script>
   jQuery(document).ready(function() {
-    jQuery(".widgetHelpLabel").tooltip({relative: true, position: 'bottom center'});
+    jQuery(".widgetHelpLabel").tooltip({relative: true, position: '#{position}'});
   });
 </script>
+</nxu:set>
 </a4j:outputPanel>
 
 </f:subview>
