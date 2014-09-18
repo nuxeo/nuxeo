@@ -1468,22 +1468,18 @@
         <artifactId>ejb</artifactId>
         <version>${javax.ejb.version}</version>
       </dependency>
-      <!--
-        NXP-10566: comment out dupplicate EL API and implementation, use
-        tomcat deps instead
-      -->
-      <!--
-        <dependency>
-        <groupId>javax.el</groupId>
-        <artifactId>el-api</artifactId>
-        <version>unknown</version>
-        </dependency>
-        <dependency>
-        <groupId>javax.el</groupId>
-        <artifactId>el-ri</artifactId>
-        <version>unknown</version>
-        </dependency>
-      -->
+      <!-- NXP-10566: comment out dupplicate EL API and implementation, use
+        Tomcat deps instead -->
+      <!-- <dependency> -->
+      <!-- <groupId>javax.el</groupId> -->
+      <!-- <artifactId>el-api</artifactId> -->
+      <!-- <version>unknown</version> -->
+      <!-- </dependency> -->
+      <!-- <dependency> -->
+      <!-- <groupId>javax.el</groupId> -->
+      <!-- <artifactId>el-ri</artifactId> -->
+      <!-- <version>unknown</version> -->
+      <!-- </dependency> -->
       <dependency>
         <groupId>com.sun.faces</groupId>
         <artifactId>jsf-api</artifactId>
@@ -1579,10 +1575,8 @@
         <artifactId>commons-digester</artifactId>
         <version>2.1</version>
       </dependency>
-      <!--
-        NXP-10566: would comment out this dupplicate EL implementation,
-        but it's needed by some tomahack tag kept for compat...
-      -->
+      <!-- NXP-10566: would comment out this dupplicate EL implementation, but
+        it's needed by some Tomahawk tag kept for compat... -->
       <dependency>
         <groupId>commons-el</groupId>
         <artifactId>commons-el</artifactId>
@@ -2106,9 +2100,8 @@
         <artifactId>jboss-seam-debug</artifactId>
         <version>${seam.version}</version>
       </dependency>
-      <!--
-        NXP-10566: EL implementation chosen, set as the default
-        implementation in tomcat by nuxeo-platform-el in file at
+      <!-- NXP-10566: EL implementation chosen, set as the default
+        implementation in Tomcat by nuxeo-platform-el in file at
         META-INF/services/javax.el.ExpressionFactory
       -->
       <dependency>
@@ -3353,24 +3346,21 @@
         <artifactId>json</artifactId>
         <version>20070829</version>
       </dependency>
-      <!--
-        NXP-10566: juel-api is mentioned here for reference but is exluded by
-        the distribution: java.el:el-api should be used instead as the
-        reference EL API module for now.
+      <!-- NXP-10566: juel-api is mentioned here for reference but is exluded
+        by the distribution: org.apache.tomcat:tomcat-el-api should be used
+        instead as the reference EL API module for now.
         juel-impl is mentioned because it's required at runtime by shindig
         gadgets modules, we're using a patched version to remove the file at
         META-INF/services/javax.el.ExpressionFactory that's making juel
-        the default implementation in tomcat (we set the chosen one in
+        the default implementation in Tomcat (we set the chosen one in
         module nuxeo-platform-el instead).
       -->
-      <!--
-        <dependency>
-        <groupId>de.odysseus.juel</groupId>
-        <artifactId>juel-api</artifactId>
-        <version>2.1.2</version>
-        <scope>test</scope>
-        </dependency>
-      -->
+      <!-- <dependency> -->
+      <!-- <groupId>de.odysseus.juel</groupId> -->
+      <!-- <artifactId>juel-api</artifactId> -->
+      <!-- <version>2.1.2</version> -->
+      <!-- <scope>test</scope> -->
+      <!-- </dependency> -->
       <dependency>
         <groupId>de.odysseus.juel</groupId>
         <artifactId>juel-impl</artifactId>
