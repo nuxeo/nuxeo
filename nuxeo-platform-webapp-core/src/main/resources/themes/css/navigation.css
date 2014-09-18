@@ -119,13 +119,13 @@ author: lkemen@nuxeo.com
 /* Vertical tabs in home and admin Center */
 .verticalTabsColumn {
   height: 100%;
-  min-height: 500px;
+  min-height: 650px;
   padding: 0 }
 
 .verticalTabsContent {
   padding: 2em;
-  min-height: 500px;
-  background-color: #fff;
+  min-height: 650px;
+  background-color: #f9f9f9;
   box-shadow: -1px 0 4px rgba(0,0,0,0.4); }
 
 .tabsBar.vertical {
@@ -193,7 +193,12 @@ author: lkemen@nuxeo.com
 #pageNavigationControls input[type="image"] {
   border: 1px solid #eee !important;
   border-radius: 2px;
+  border-left: none !important;
+  margin: 0;
   padding: 0.3em; }
+
+.pageNavigationControls input[type="image"]:nth-child(3n+1) {
+  border-left: 1px solid #eee !important }
 
 .pageNavigationControls input:hover,
 #pageNavigationControls input:hover {
