@@ -139,6 +139,10 @@
       <layouts>
         <layout name="selectOneDirectoryWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-widget.xml" />
+        <layout name="selectOneDirectoryLocalizedWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-localized-widget.xml" />
+        <layout name="selectOneDirectoryL10NWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-l10n-widget.xml" />
         <layout name="selectOneDirectoryWidgetListingLayout" isListing="true"
           src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-listing-widget.xml" />
       </layouts>
@@ -160,6 +164,10 @@
       <layouts>
         <layout name="selectOneRadioDirectoryWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-widget.xml" />
+        <layout name="selectOneRadioDirectoryLocalizedWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-localized-widget.xml" />
+        <layout name="selectOneRadioDirectoryL10NWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-l10n-widget.xml" />
       </layouts>
     </widgetType>
 
@@ -179,6 +187,10 @@
       <layouts>
         <layout name="selectManyDirectoryWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-selectManyDirectory-widget.xml" />
+        <layout name="selectManyDirectoryLocalizedWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectManyDirectory-localized-widget.xml" />
+        <layout name="selectManyDirectoryL10NWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectManyDirectory-l10n-widget.xml" />
         <layout name="selectManyDirectoryWidgetListingLayout" isListing="true"
           src="sources/OSGI-INF/demo/layout-demo-selectManyDirectory-listing-widget.xml" />
       </layouts>
@@ -200,6 +212,10 @@
       <layouts>
         <layout name="selectManyCheckboxDirectoryWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-selectManyCheckboxDirectory-widget.xml" />
+        <layout name="selectManyCheckboxDirectoryLocalizedWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectManyCheckboxDirectory-localized-widget.xml" />
+        <layout name="selectManyCheckboxDirectoryL10NWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectManyCheckboxDirectory-l10n-widget.xml" />
       </layouts>
     </widgetType>
 
@@ -680,7 +696,7 @@
       <label>Multiple aggregate checkbox</label>
       <viewId>selectManyCheckboxAggregateWidget</viewId>
       <category>aggregate</category>
-      <preview enabled="true">
+      <preview enabled="true" hideViewMode="true">
         <fields>
           <field>lds:stringList</field>
         </fields>

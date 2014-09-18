@@ -199,6 +199,12 @@ public class LayoutDemoContext implements Serializable {
             doc.setPropertyValue("lds:selectVocabularyField", "cartman");
             doc.setPropertyValue("lds:selectMultiVocabularyField",
                     new String[] { "cartman", "marsh" });
+            doc.setPropertyValue("lds:selectVocabularyLocalizedField", "europe");
+            doc.setPropertyValue("lds:selectMultiVocabularyLocalizedField",
+                    new String[] { "europe" });
+            doc.setPropertyValue("lds:selectVocabularyL10NField", "europe");
+            doc.setPropertyValue("lds:selectMultiVocabularyL10NField",
+                    new String[] { "europe", "africa" });
             doc.setPropertyValue("lds:select_coverage_field", "africa/Botswana");
             doc.setPropertyValue("lds:select_subjects_multi_fields",
                     new String[] { "art/art history", "art/culture",
@@ -374,7 +380,7 @@ public class LayoutDemoContext implements Serializable {
 
             List<Bucket> dirTermsl10nHier = new ArrayList<>();
             dirTermsl10nHier.add(new BucketTerm("oceania/Australia", 10));
-            dirTermsl10nHier.add(new BucketTerm("antartica", 5));
+            dirTermsl10nHier.add(new BucketTerm("antarctica", 5));
             dirTermsl10nHier.add(new BucketTerm("europe/France", 2));
             layoutDemoAggregates.put("dir_terms_l10n", new AggregateImpl(
                     mockQuery, dirTermsl10nHier));

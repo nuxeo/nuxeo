@@ -25,7 +25,7 @@
         </fields>
         <properties widgetMode="edit">
           <property name="directoryName">l10ncoverage</property>
-          <property name="localized">true</property>
+          <property name="localize">true</property>
           <property name="dbl10n">true</property>
           <property name="selectOptions">
             #{layoutDemoAggregates['dir_terms_l10n'].buckets}

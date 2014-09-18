@@ -25,6 +25,7 @@
         </fields>
         <properties widgetMode="edit">
           <property name="directoryName">continent</property>
+          <property name="localize">true</property>
           <property name="selectOptions">
             #{layoutDemoAggregates['dir_terms_translated'].buckets}
           </property>

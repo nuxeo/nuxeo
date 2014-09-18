@@ -107,7 +107,9 @@ Needed parameters:
 <c:if test="#{demoLayout.listing}">
 
   <c:if test="#{currentWidgetType.category != 'listing'}">
-    #{messages['label.layoutDemo.widgetDemo.alsoUsedInListings']}
+    <span class="processMessage completeInfo">
+      #{messages['label.layoutDemo.widgetDemo.alsoUsedInListings']}
+    </span>
   </c:if>
 
   <a4j:region id="#{demoLayout.name}_region">

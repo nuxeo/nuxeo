@@ -1,14 +1,13 @@
 <?xml version="1.0"?>
 
 <xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/layoutDemo"
-  xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/layoutDemo">
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/schemas/layoutDemo">
 
   <xs:include schemaLocation="core-types.xsd" />
 
   <xs:element name="textField" type="xs:string" />
 
-   <xs:element name="anotherTextField" type="xs:string" />
+  <xs:element name="anotherTextField" type="xs:string" />
 
   <xs:element name="textareaField" type="xs:string" />
 
@@ -17,6 +16,8 @@
   <xs:element name="secretField" type="xs:string" />
 
   <xs:element name="selectVocabularyField" type="xs:string" />
+  <xs:element name="selectVocabularyLocalizedField" type="xs:string" />
+  <xs:element name="selectVocabularyL10NField" type="xs:string" />
 
   <xs:element name="select_coverage_field" type="xs:string" />
 
@@ -40,6 +41,8 @@
 
   <xs:element name="stringArrayField" type="nxs:stringArrayType" />
   <xs:element name="selectMultiVocabularyField" type="nxs:stringArrayType" />
+  <xs:element name="selectMultiVocabularyLocalizedField" type="nxs:stringArrayType" />
+  <xs:element name="selectMultiVocabularyL10NField" type="nxs:stringArrayType" />
   <xs:simpleType name="stringArrayType">
     <xs:list itemType="xs:string" />
   </xs:simpleType>
@@ -91,8 +94,8 @@
   <xs:element name="listOfLists" type="nxs:listOfListsType" />
   <xs:complexType name="listOfListsType">
     <xs:sequence>
-      <xs:element name="item" type="nxs:listOfListsItemType" minOccurs="0"
-        maxOccurs="unbounded" />
+      <xs:element name="item" type="nxs:listOfListsItemType"
+        minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 

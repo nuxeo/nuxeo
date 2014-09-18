@@ -1,34 +1,35 @@
 <?xml version="1.0"?>
 
 <component
-  name="org.nuxeo.ecm.platform.forms.layoutDemo.selectManyListboxDirectoryAggregateLocalizedWidget.contrib">
+  name="org.nuxeo.ecm.platform.forms.layoutDemo.selectOneDirectoryLocalizedWidget.contrib">
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
 
-    <layout name="selectManyListboxDirectoryAggregateLocalized">
+    <layout name="selectOneDirectoryLocalizedWidgetLayout">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml</template>
       </templates>
       <rows>
         <row>
-          <widget>widget</widget>
+          <widget>selectOneDirectoryWidget</widget>
         </row>
       </rows>
-      <widget name="widget" type="selectManyListboxDirectoryAggregate">
+      <widget name="selectOneDirectoryWidget" type="selectOneDirectory">
         <labels>
-          <label mode="any">Aggregates</label>
+          <label mode="any">selectOneDirectory widget</label>
         </labels>
         <translated>false</translated>
         <fields>
-          <field>lds:stringList</field>
+          <field>lds:selectVocabularyLocalizedField</field>
         </fields>
-        <properties widgetMode="edit">
+        <properties mode="any">
           <property name="directoryName">continent</property>
           <property name="localize">true</property>
-          <property name="selectOptions">
-            #{layoutDemoAggregates['dir_terms_translated'].buckets}
-          </property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
         </properties>
         <controls mode="any">
           <!-- enable ajax submit on change/click/select on demo application -->
@@ -36,7 +37,6 @@
         </controls>
       </widget>
     </layout>
-
   </extension>
 
 </component>

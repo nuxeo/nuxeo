@@ -22,7 +22,9 @@ import static org.jboss.seam.ScopeType.SESSION;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
@@ -158,11 +160,26 @@ public class LayoutDemoActions implements Serializable {
 
     protected PreviewLayoutDefinition createPreviewLayoutDefinition(
             DemoWidgetType widgetType) {
-        PreviewLayoutDefinition def = new PreviewLayoutDefinition(
-                widgetType.getName(), widgetType.getFields(),
-                widgetType.getDefaultProperties());
-
         String type = widgetType.getName();
+
+        Map<String, Serializable> props = new HashMap<>();
+        if (widgetType.getDefaultProperties() != null) {
+            props.putAll(widgetType.getDefaultProperties());
+        }
+        if (type != null && type.contains("Aggregate")) {
+            // fill up aggregates mapping as default properties
+            if (type.contains("Aggregate")) {
+                props.put("selectOptions",
+                        "#{layoutDemoAggregates['dir_terms'].buckets}");
+            } else {
+                props.put("selectOptions",
+                        "#{layoutDemoAggregates['string_terms'].buckets}");
+            }
+            props.put("directoryName", "layout_demo_crew");
+        }
+        PreviewLayoutDefinition def = new PreviewLayoutDefinition(
+                widgetType.getName(), widgetType.getFields(), props);
+
         LayoutStore lm = Framework.getLocalService(LayoutStore.class);
         WidgetTypeDefinition wtDef = lm.getWidgetTypeDefinition(
                 widgetType.getWidgetTypeCategory(), type);

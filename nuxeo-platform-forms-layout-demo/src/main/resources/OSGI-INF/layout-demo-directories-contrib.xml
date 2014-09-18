@@ -16,6 +16,18 @@
       <createTablePolicy>always</createTablePolicy>
     </directory>
 
+    <directory name="l10ncoverage_small">
+      <schema>l10nxvocabulary</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>l</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/l10ncoverage_small.csv</dataFile>
+      <createTablePolicy>always</createTablePolicy>
+    </directory>
+
   </extension>
 
 </component>
