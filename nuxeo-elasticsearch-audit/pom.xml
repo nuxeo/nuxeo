@@ -36,6 +36,11 @@
       <groupId>org.nuxeo.elasticsearch</groupId>
       <artifactId>nuxeo-elasticsearch-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.elasticsearch</groupId>
+      <artifactId>nuxeo-elasticsearch-seqgen</artifactId>
+      <version>5.9.6-SNAPSHOT</version>
+    </dependency>
 
     <dependency>
       <groupId>org.elasticsearch</groupId>

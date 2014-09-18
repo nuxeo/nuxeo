@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.elasticsearch.audit.contrib">
 
+  <require>org.nuxeo.elasticsearch.SequenceGeneratorComponent</require>
+  
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
     point="elasticSearchIndex">
 

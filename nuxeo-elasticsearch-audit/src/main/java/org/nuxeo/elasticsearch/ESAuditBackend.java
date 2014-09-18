@@ -46,6 +46,7 @@ import org.nuxeo.ecm.platform.audit.service.BaseLogEntryProvider;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.io.AuditEntryJSONReader;
 import org.nuxeo.elasticsearch.io.AuditEntryJSONWriter;
+import org.nuxeo.elasticsearch.seqgen.SequenceGenerator;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -60,6 +61,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements
     public static final String IDX_NAME = "audit";
     
     public static final String IDX_TYPE = "entry";
+        
+    public static final String SEQ_NAME = "audit";
     
     protected Client esClient = null;
 
@@ -130,9 +133,12 @@ public class ESAuditBackend extends AbstractAuditBackend implements
         BulkRequestBuilder bulkRequest = getClient().prepareBulk();            
         JsonFactory factory = new JsonFactory();
         
+        SequenceGenerator sg = Framework.getService(SequenceGenerator.class);
+        
         try {
             
             for (LogEntry entry : entries) {                
+                entry.setId(sg.getNextId(SEQ_NAME));
                 XContentBuilder builder = jsonBuilder();
                 JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());            
                 AuditEntryJSONWriter.asJSON(jsonGen, entry);            
