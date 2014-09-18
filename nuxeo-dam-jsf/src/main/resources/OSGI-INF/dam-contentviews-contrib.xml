@@ -499,6 +499,9 @@
           /layouts/layout_default_template.xhtml
         </template>
       </templates>
+      <properties mode="any">
+        <property name="tooltipPosition">bottom right</property>
+      </properties>
       <rows>
         <row>
           <widget>dam_text_search</widget>
