@@ -34,8 +34,10 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
@@ -60,9 +62,11 @@ public class AnnotationsActions implements Serializable {
 
     private static final Log log = LogFactory.getLog(AnnotationsActions.class);
 
+    public static final String TEXT_ANNOTATIONS_KEY = "nuxeo.text.annotations";
+
     @In(create = true)
     protected transient Principal currentUser;
-    
+
     public long getAnnotationsCount(DocumentModel doc) {
         DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
         AnnotationsService annotationsService = Framework.getLocalService(AnnotationsService.class);
@@ -70,12 +74,10 @@ public class AnnotationsActions implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
         String documentUrl = documentViewCodecManager.getUrlFromDocumentView(
-                "docpath", docView, true,
-                VirtualHostHelper.getBaseURL(request));
+                "docpath", docView, true, VirtualHostHelper.getBaseURL(request));
         try {
             List<Annotation> annotations = annotationsService.queryAnnotations(
-                    new URI(documentUrl), null,
-                    (NuxeoPrincipal) currentUser);
+                    new URI(documentUrl), null, (NuxeoPrincipal) currentUser);
             return annotations.size();
         } catch (AnnotationException e) {
             log.error("Unable to get annotations graph", e);
@@ -84,6 +86,17 @@ public class AnnotationsActions implements Serializable {
             log.error("Unable to get annotations for: " + documentUrl, e);
             return 0;
         }
+    }
+
+    public boolean isAnnotationsEnabled(DocumentModel doc) {
+        BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
+        Blob blob = blobHolder.getBlob();
+        if (blob == null || blob.getMimeType() == null) {
+            return false;
+        }
+
+        return Framework.isBooleanPropertyTrue(TEXT_ANNOTATIONS_KEY)
+                || blob.getMimeType().startsWith("image");
     }
 
 }

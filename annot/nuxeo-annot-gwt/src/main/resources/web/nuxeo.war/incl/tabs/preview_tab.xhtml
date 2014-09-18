@@ -1,8 +1,33 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:ui="http://java.sun.com/jsf/facelets">
- 
-  <ui:decorate template="/incl/preview.xhtml">
-    <ui:param name="previewDoc" value="#{currentDocument}" />
-  </ui:decorate>
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <nxu:set var="annotationsEnabled"
+    value="#{annotationsActions.isAnnotationsEnabled(currentDocument)}"
+    cache="true">
+
+    <h:panelGroup rendered="#{annotationsEnabled}">
+      <ui:decorate template="/incl/preview.xhtml">
+        <ui:param name="previewDoc" value="#{currentDocument}" />
+      </ui:decorate>
+    </h:panelGroup>
+
+    <h:panelGroup rendered="#{!annotationsEnabled}">
+      <iframe src="#{previewActions.previewURL}" frameborder="1" height="600px" width="100%" scrolling="auto" id="preview-frame">
+      </iframe>
+
+      <script type="text/javascript">
+        jQuery(document).ready(function() {
+          var fancyBox = jQuery('#fancybox-content', window.parent.document);
+          if (fancyBox.length > 0 &amp;&amp; fancyBox.height() > 0) {
+            // we know we are in a fancybox
+            jQuery('#preview-frame').height(fancyBox.height() - 20);
+          }
+        });
+      </script>
+    </h:panelGroup>
+
+  </nxu:set>
 
 </div>
