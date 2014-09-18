@@ -58,6 +58,8 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
 
     protected abstract String retrieveSelectEntryId();
 
+    protected abstract Object retrieveItemLabel();
+
     protected abstract String retrieveLabelFromEntry(
             DocumentModel directoryEntry);
 
@@ -184,7 +186,7 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
             VariableManager.putVariableToRequestParam(varEntry, entry);
             String label = retrieveLabelFromEntry(entry);
             Long ordering = retrieveOrderingFromEntry(entry);
-             selectItem = createSelectItem(label, ordering);
+            selectItem = createSelectItem(label, ordering);
             removeIteratorFromRequestParam();
             VariableManager.removeVariableFromRequestParam(var);
             VariableManager.removeVariableFromRequestParam(varEntry);
@@ -192,13 +194,13 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
                 return selectItem;
             } else if (itemValue instanceof DirectorySelectItem) {
                 // maybe lookup was not necessary
-                return  (DirectorySelectItem) itemValue;
+                return (DirectorySelectItem) itemValue;
             }
             return selectItem;
         } catch (PropertyNotFoundException e) {
             if (itemValue instanceof DirectorySelectItem) {
                 // maybe lookup was not necessary
-                return  (DirectorySelectItem) itemValue;
+                return (DirectorySelectItem) itemValue;
             } else {
                 throw e;
             }
@@ -225,8 +227,17 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
         try {
             DocumentModel docEntry = session.getEntry(entryId);
             if (docEntry == null) {
-                return new DirectorySelectItem(entryId, entryId, 0L, false,
-                        false);
+                putIteratorToRequestParam(entry);
+                Object labelObject = retrieveItemLabel();
+                String label = labelObject == null ? null
+                        : String.valueOf(labelObject);
+                if (StringUtils.isBlank(label)) {
+                    label = entryId;
+                }
+                DirectorySelectItem item = createSelectItem(label,
+                        Long.valueOf(0L));
+                removeIteratorFromRequestParam();
+                return item;
             }
             return createSelectItemForEntry(entry, docEntry);
         } catch (DirectoryException e) {

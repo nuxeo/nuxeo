@@ -170,6 +170,11 @@ public class UIDirectorySelectItems extends UISelectItems {
             }
 
             @Override
+            protected Object retrieveItemLabel() {
+                return UIDirectorySelectItems.this.getItemLabel();
+            }
+
+            @Override
             protected String retrieveLabelFromEntry(DocumentModel directoryEntry) {
                 return UIDirectorySelectItems.this.retrieveLabelFromEntry(directoryEntry);
             }
