@@ -113,7 +113,7 @@ input[placeholder] {
   margin: 0 }
 
 .contentViewQuickFilterForm input.button {
-  border-radius: 0 3px 3px 0;
+  border-radius: 0 1px 1px 0;
   margin: 0;
   padding: .3em .7em .37em }
 
