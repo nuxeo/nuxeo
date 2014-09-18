@@ -644,9 +644,9 @@ public class UIInputFile extends UIInput implements NamingContainer {
         String radioClientId = getClientId(context)
                 + NamingContainer.SEPARATOR_CHAR + CHOICE_FACET_NAME;
         writer.startElement("table", this);
+        writer.writeAttribute("class", "dataInput", null);
         writer.startElement("tbody", this);
         writer.writeAttribute("class", getAttributes().get("styleClass"), null);
-        writer.writeAttribute("border", "0", null);
         for (InputFileChoice radioChoice : choices) {
             String id = radioClientId + radioChoice.name();
             writer.startElement("tr", this);
