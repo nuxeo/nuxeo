@@ -69,11 +69,15 @@ public class ImagingComponent extends DefaultComponent implements
 
     public static final String PICTURE_TEMPLATES_EP = "pictureTemplates";
 
-    protected Map<String, String> configurationParameters = new HashMap<String, String>();
+    protected Map<String, String> configurationParameters = new HashMap<>();
 
-    protected PictureTemplateRegistry pictureTemplateRegistry;
+    private PictureTemplateRegistry pictureTemplateRegistry = new PictureTemplateRegistry();
 
     private LibrarySelector librarySelector;
+
+    public PictureTemplateRegistry getPictureTemplateRegistry() {
+        return pictureTemplateRegistry;
+    }
 
     @Override
     public Blob crop(Blob blob, int x, int y, int width, int height) {

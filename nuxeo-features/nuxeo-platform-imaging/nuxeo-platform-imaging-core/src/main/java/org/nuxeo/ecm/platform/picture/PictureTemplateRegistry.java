@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.picture;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,53 +39,69 @@ public class PictureTemplateRegistry extends
         return pictureTemplate.clone();
     }
 
+    public PictureTemplate getById(String id) {
+        return pictureTemplates.get(id);
+    }
+
+    public Collection<PictureTemplate> getPictureTemplates() {
+        return pictureTemplates.values();
+    }
+
     @Override
     public void contributionRemoved(String id, PictureTemplate pictureTemplate) {
         pictureTemplates.remove(id);
     }
 
     @Override
-    public void contributionUpdated(String id,
-            PictureTemplate oldPictureTemplate,
-            PictureTemplate newPictureTemplate) {
-
+    public void contributionUpdated(String id, PictureTemplate pictureTemplate,
+            PictureTemplate oldPictureTemplate) {
         if (pictureTemplates.containsKey(id)) {
-            pictureTemplates.remove(id);
+            contributionRemoved(id, pictureTemplate);
         }
 
-        if (oldPictureTemplate.isEnabled()) {
-            pictureTemplates.put(id, oldPictureTemplate);
+        if (pictureTemplate.isEnabled()) {
+            pictureTemplates.put(id, pictureTemplate);
         }
     }
 
     @Override
     public String getContributionId(PictureTemplate pictureTemplate) {
-        return pictureTemplate.getTitle();
+        String title = pictureTemplate.getTitle();
+        if (StringUtils.isEmpty(title)) {
+            throw new IllegalStateException(
+                    "The 'title' property of a pictureTemplate mustn't be null or empty ("
+                            + pictureTemplate + ")");
+        }
+
+        return title;
     }
 
     @Override
-    public void merge(PictureTemplate oldPictureTemplate,
-            PictureTemplate newPictureTemplate) {
+    public void merge(PictureTemplate pictureTemplate,
+            PictureTemplate oldPictureTemplate) {
 
-        oldPictureTemplate.setEnabled(newPictureTemplate.isEnabled());
+        Boolean enabled = pictureTemplate.isEnabled();
+        if (enabled != null) {
+            oldPictureTemplate.setEnabled(enabled);
+        }
 
-        String chainId = newPictureTemplate.getChainId();
+        String chainId = pictureTemplate.getChainId();
         if (!StringUtils.isEmpty(chainId)) {
             oldPictureTemplate.setChainId(chainId);
         }
 
-        String tag = newPictureTemplate.getTag();
+        String tag = pictureTemplate.getTag();
         if (!StringUtils.isEmpty(tag)) {
             oldPictureTemplate.setTag(tag);
         }
 
-        String description = newPictureTemplate.getDescription();
+        String description = pictureTemplate.getDescription();
         if (!StringUtils.isEmpty(description)) {
-            oldPictureTemplate.setTag(description);
+            oldPictureTemplate.setDescription(description);
         }
 
-        int maxSize = newPictureTemplate.getMaxSize();
-        if (maxSize >= 0) {
+        Integer maxSize = pictureTemplate.getMaxSize();
+        if (maxSize != null) {
             oldPictureTemplate.setMaxSize(maxSize);
         }
     }

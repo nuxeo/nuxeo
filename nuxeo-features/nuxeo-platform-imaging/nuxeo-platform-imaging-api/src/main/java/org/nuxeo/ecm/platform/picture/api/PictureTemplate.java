@@ -46,26 +46,34 @@ public class PictureTemplate {
 
     protected String tag;
 
-    protected int maxSize;
+    @XNode("@maxSize")
+    protected Integer maxSize;
+
+    public PictureTemplate() {
+        super();
+    }
 
     public PictureTemplate(String title, String description, String tag,
-            int maxSize) {
+            Integer maxSize) {
         this(title, description, tag, maxSize, null, true);
     }
 
     public PictureTemplate(String title, String description, String tag,
-            int maxSize, String chainId) {
-        this(title, description, tag, maxSize, chainId, true);
-    }
-
-    public PictureTemplate(String title, String description, String tag,
-            int maxSize, String chainId, boolean enabled) {
+            Integer maxSize, String chainId, Boolean enabled) {
         this.title = title;
         this.description = description;
         this.tag = tag;
         this.maxSize = maxSize;
         this.chainId = chainId;
         this.enabled = enabled;
+    }
+
+    public String getChainId() {
+        return chainId;
+    }
+
+    public void setMaxSize(Integer maxSize) {
+        this.maxSize = maxSize;
     }
 
     public String getTitle() {
@@ -80,7 +88,7 @@ public class PictureTemplate {
         return tag;
     }
 
-    public int getMaxSize() {
+    public Integer getMaxSize() {
         return maxSize;
     }
 
@@ -96,10 +104,6 @@ public class PictureTemplate {
 
     public boolean isEnabled() {
         return enabled;
-    }
-
-    public String getChainId() {
-        return chainId;
     }
 
     public void setTitle(String title) {
@@ -135,7 +139,7 @@ public class PictureTemplate {
     @Override
     public String toString() {
         return String.format(
-                "PictureTemplate [title=%s, description=%s, tag=%s, maxSize=%d]",
-                title, description, tag, maxSize);
+                "PictureTemplate [title=%s, description=%s, tag=%s, maxSize=%d, chainId=%s, enabled=%s]",
+                title, description, tag, maxSize, chainId, enabled);
     }
 }
