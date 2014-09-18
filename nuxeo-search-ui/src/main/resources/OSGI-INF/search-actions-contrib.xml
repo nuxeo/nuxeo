@@ -143,6 +143,12 @@
       </rule>
     </filter>
 
+    <filter id="isSearchEnabled">
+      <rule grant="true">
+        <condition>#{userServicesContext.searchEnabled}</condition>
+      </rule>
+    </filter>
+
     <filter id="nxqlSearchSelected">
       <rule grant="true">
         <condition>#{searchUIActions.isNxqlSearchSelected()}</condition>
