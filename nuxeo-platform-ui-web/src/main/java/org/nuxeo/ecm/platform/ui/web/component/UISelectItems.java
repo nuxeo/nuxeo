@@ -15,9 +15,13 @@
  */
 package org.nuxeo.ecm.platform.ui.web.component;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.platform.ui.web.directory.SelectItemComparator;
 
 /**
  * EasySelectItems from
@@ -34,8 +38,8 @@ public class UISelectItems extends javax.faces.component.UISelectItems
 
     public static final String COMPONENT_TYPE = UISelectItems.class.getName();
 
-    enum PropertyKeys {
-        var, itemLabel, itemLabelPrefix, itemLabelPrefixSeparator,
+    protected enum PropertyKeys {
+        value, var, itemLabel, itemLabelPrefix, itemLabelPrefixSeparator,
         //
         itemLabelSuffix, itemLabelSuffixSeparator, itemValue,
         //
@@ -175,21 +179,10 @@ public class UISelectItems extends javax.faces.component.UISelectItems
     @Override
     public Object getValue() {
         Object value = super.getValue();
-        return new SelectItemsFactory() {
-
+        List<SelectItem> items = new SelectItemsFactory() {
             @Override
             protected String getVar() {
                 return UISelectItems.this.getVar();
-            }
-
-            @Override
-            protected String getOrdering() {
-                return UISelectItems.this.getOrdering();
-            }
-
-            @Override
-            protected boolean isCaseSensitive() {
-                return UISelectItems.this.isCaseSensitive();
             }
 
             @Override
@@ -198,6 +191,16 @@ public class UISelectItems extends javax.faces.component.UISelectItems
             }
 
         }.createSelectItems(value);
+
+        String ordering = getOrdering();
+        boolean caseSensitive = isCaseSensitive();
+        if (!StringUtils.isBlank(ordering)) {
+            Collections.sort(
+                    items,
+                    new SelectItemComparator(ordering,
+                            Boolean.valueOf(caseSensitive)));
+        }
+        return items.toArray(new SelectItem[0]);
     }
 
     protected SelectItem createSelectItem() {

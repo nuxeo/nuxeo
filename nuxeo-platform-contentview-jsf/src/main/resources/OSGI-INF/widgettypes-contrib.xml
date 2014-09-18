@@ -37,6 +37,15 @@
                 <row>
                   <widget category="widgetTypeConf">select_selectOptions</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">select_layout</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
               </rows>
             </layout>
           </layouts>
@@ -79,6 +88,12 @@
                 <row>
                   <widget category="widgetTypeConf">select_selectOptions</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
               </rows>
             </layout>
           </layouts>
@@ -115,12 +130,57 @@
             <property name="layout">pageDirection</property>
             <property name="notDisplayDefaultOption">true</property>
           </defaultValues>
+          <layouts mode="any">
+            <layout
+              name="selectManyCheckboxDirectoryAggregate_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">directoryName</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directoryNameDemoPreview</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
           <layouts mode="edit">
             <layout
               name="selectManyCheckboxDirectoryAggregate_widget_type_properties_edit">
               <rows>
                 <row>
                   <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_layout</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_dbl10n</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">
+                    directory_notDisplayDefaultOption
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_ordering</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_layout</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
                 </row>
               </rows>
             </layout>
@@ -157,12 +217,51 @@
             <property name="itemCount">(#{item.docCount})</property>
             <property name="notDisplayDefaultOption">true</property>
           </defaultValues>
+          <layouts mode="any">
+            <layout
+              name="selectManyListboxDirectoryAggregate_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">directoryName</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directoryNameDemoPreview</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
           <layouts mode="edit">
             <layout
               name="selectManyListboxDirectoryAggregate_widget_type_properties_edit">
               <rows>
                 <row>
                   <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_dbl10n</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">
+                    directory_notDisplayDefaultOption
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_ordering</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
                 </row>
               </rows>
             </layout>

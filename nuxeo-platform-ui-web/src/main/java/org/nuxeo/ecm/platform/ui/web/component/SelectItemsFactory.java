@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.ui.web.component;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,7 +29,6 @@ import javax.faces.model.SelectItemGroup;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.ui.web.directory.SelectItemComparator;
 
 /**
  * Helper for select items management
@@ -41,12 +39,12 @@ public abstract class SelectItemsFactory extends SelectItemFactory {
 
     private static final Log log = LogFactory.getLog(SelectItemsFactory.class);
 
-    protected abstract String getOrdering();
+    protected abstract String getVar();
 
-    protected abstract boolean isCaseSensitive();
+    protected abstract SelectItem createSelectItem();
 
-    @SuppressWarnings({ "unchecked", "rawtypes", "boxing" })
-    public SelectItem[] createSelectItems(Object value) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public List<SelectItem> createSelectItems(Object value) {
         Object varValue = saveRequestMapVarValue();
         try {
             List items = new ArrayList();
@@ -55,9 +53,7 @@ public abstract class SelectItemsFactory extends SelectItemFactory {
                 value = ldm.getWrappedData();
             }
 
-            if (value instanceof SelectItem[]) {
-                return (SelectItem[]) value;
-            } else if (value instanceof Object[]) {
+            if (value instanceof Object[]) {
                 Object[] array = (Object[]) value;
                 for (Object currentItem : array) {
                     SelectItem[] res = createSelectItemsFrom(currentItem);
@@ -86,14 +82,7 @@ public abstract class SelectItemsFactory extends SelectItemFactory {
                 log.warn("Could not map values to select items, value is not supported: "
                         + value);
             }
-
-            String ordering = getOrdering();
-            Boolean caseSensitive = isCaseSensitive();
-            if (ordering != null && !"".equals(ordering)) {
-                Collections.sort(items, new SelectItemComparator(ordering,
-                        caseSensitive));
-            }
-            return (SelectItem[]) items.toArray(new SelectItem[0]);
+            return items;
         } finally {
             restoreRequestMapVarValue(varValue);
         }
@@ -108,6 +97,9 @@ public abstract class SelectItemsFactory extends SelectItemFactory {
             removeIteratorFromRequestParam();
             if (selectItem != null) {
                 return new SelectItem[] { selectItem };
+            } else if (item instanceof SelectItem) {
+                // no transformation performed
+                return new SelectItem[] { (SelectItem) item };
             }
         }
         return null;
@@ -115,7 +107,7 @@ public abstract class SelectItemsFactory extends SelectItemFactory {
 
     @Override
     public SelectItem createSelectItem(Object value) {
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("Use createSelectItems instead");
     }
 
 }

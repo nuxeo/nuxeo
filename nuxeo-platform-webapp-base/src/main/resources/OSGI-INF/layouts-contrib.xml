@@ -72,17 +72,14 @@
         <category>widgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">Activate dbl10n</label>
+        <label mode="any">Activate database localization</label>
       </labels>
       <helpLabels>
         <label mode="any">
-          Check this option means that the labels are
-          localized
-          with translations provided in the directory itself
-          (i.e. in fields).
-          Otherwise labels are translated as usual
-          picking values in
-          messages*.properties files.
+          Activate retrieval of localized labels in the
+          vocabulary database, when translations are held by the directory
+          itself, in fields with a label_[lang] pattern, and defaulting to
+          label_en. Available since 5.9.6.
         </label>
       </helpLabels>
       <fields>

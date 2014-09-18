@@ -682,8 +682,39 @@
       <labels>
         <label mode="any">Localize</label>
       </labels>
+      <helpLabels>
+        <label mode="any">
+          Activate localization of vocabulary labels. Labels are
+          translated as usual picking values in messages*.properties files.
+          Database localizatioàn should also be activated if localized labels
+          are provided by the vocabulary itself.
+        </label>
+      </helpLabels>
       <fields>
         <field>localize</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit_demo_preview">hidden</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="directory_dbl10n" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Activate database localization</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Activate retrieval of localized labels in the
+          vocabulary database, when translations are held by the directory
+          itself, in fields with a label_[lang] pattern, and defaulting to
+          label_en. Available since 5.9.6.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>dbl10n</field>
       </fields>
       <widgetModes>
         <mode value="edit_demo_preview">hidden</mode>
@@ -699,6 +730,18 @@
       </labels>
       <fields>
         <field>displayIdAndLabel</field>
+      </fields>
+    </widget>
+
+    <widget name="directory_style" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Style</label>
+      </labels>
+      <fields>
+        <field>style</field>
       </fields>
     </widget>
 
@@ -723,6 +766,18 @@
       </labels>
       <fields>
         <field>cssStyleClass</field>
+      </fields>
+    </widget>
+
+    <widget name="directory_styleClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Style class</label>
+      </labels>
+      <fields>
+        <field>styleClass</field>
       </fields>
     </widget>
 
@@ -1033,6 +1088,9 @@
       <fields>
         <field>selectOptions</field>
       </fields>
+      <widgetModes>
+        <mode value="edit_demo_preview">hidden</mode>
+      </widgetModes>
     </widget>
 
     <widget name="select_var" type="text">
@@ -2195,10 +2253,10 @@
             <layout name="selectManyCheckbox_widget_type_properties_edit">
               <rows>
                 <row>
-                  <widget category="widgetTypeConf">select_layout</widget>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                  <widget category="widgetTypeConf">select_layout</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select_var</widget>
@@ -2321,7 +2379,7 @@
             This widget displays radio buttons in edit mode for given category.
           </p>
         </description>
-        <demo id="selectOneDirectoryWidget" previewEnabled="true" />
+        <demo id="selectOneRadioDirectoryWidget" previewEnabled="true" />
         <categories>
           <category>document</category>
         </categories>
@@ -2513,7 +2571,7 @@
             tag for errors, and the directory entries labels in other modes.
           </p>
         </description>
-        <demo id="selectManyDirectoryWidget" previewEnabled="true" />
+        <demo id="selectManyCheckboxDirectoryWidget" previewEnabled="true" />
         <categories>
           <category>document</category>
         </categories>

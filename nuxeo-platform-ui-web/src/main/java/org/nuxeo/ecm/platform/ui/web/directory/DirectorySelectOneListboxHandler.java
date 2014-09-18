@@ -60,7 +60,9 @@ public class DirectorySelectOneListboxHandler extends MetaTagHandler {
     }
 
     protected enum OptionPropertyKeys {
-        directoryName, localize, displayIdAndLabel, ordering, caseSensistive, displayObsoleteEntries, notDisplayDefaultOption, filter;
+        directoryName, localize, displayIdAndLabel, ordering, caseSensistive,
+        //
+        displayObsoleteEntries, notDisplayDefaultOption, filter;
     }
 
     static List<String> optionProps = new ArrayList<>();

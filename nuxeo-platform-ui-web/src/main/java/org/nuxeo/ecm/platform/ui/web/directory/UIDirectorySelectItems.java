@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.directory;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 import javax.faces.context.FacesContext;
@@ -28,7 +30,6 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.component.UISelectItems;
-import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 /**
  * Component that deals with a list of select items from a directory.
@@ -39,11 +40,7 @@ public class UIDirectorySelectItems extends UISelectItems {
 
     public static final String COMPONENT_TYPE = UIDirectorySelectItems.class.getName();
 
-    enum PropertyKeys {
-        value
-    }
-
-    enum DirPropertyKeys {
+    protected enum DirPropertyKeys {
         directoryName, keySeparator, itemOrdering, allValues,
         //
         displayAll, displayObsoleteEntries, filter, localize, dbl10n;
@@ -146,28 +143,10 @@ public class UIDirectorySelectItems extends UISelectItems {
             }
 
             @Override
-            protected DirectorySelectItem createSelectItem() {
-                return UIDirectorySelectItems.this.createSelectItem();
-            }
-
-            @Override
-            protected String retrieveSelectEntryId() {
-                return UIDirectorySelectItems.this.retrieveSelectEntryId();
-            }
-
-            @Override
-            protected String getOrdering() {
-                return UIDirectorySelectItems.this.getOrdering();
-            }
-
-            @Override
-            protected boolean isCaseSensitive() {
-                return UIDirectorySelectItems.this.isCaseSensitive();
-            }
-
-            @Override
-            protected boolean isDisplayObsoleteEntries() {
-                return UIDirectorySelectItems.this.isDisplayObsoleteEntries();
+            protected DirectorySelectItem createSelectItem(String label,
+                    Long ordering) {
+                return UIDirectorySelectItems.this.createSelectItem(label,
+                        ordering);
             }
 
             @Override
@@ -176,8 +155,8 @@ public class UIDirectorySelectItems extends UISelectItems {
             }
 
             @Override
-            protected String getKeySeparator() {
-                return UIDirectorySelectItems.this.getKeySeparator();
+            protected boolean isDisplayObsoleteEntries() {
+                return UIDirectorySelectItems.this.isDisplayObsoleteEntries();
             }
 
             @Override
@@ -185,79 +164,54 @@ public class UIDirectorySelectItems extends UISelectItems {
                 return UIDirectorySelectItems.this.getFilter();
             }
 
+            @Override
+            protected String retrieveSelectEntryId() {
+                return UIDirectorySelectItems.this.retrieveSelectEntryId();
+            }
+
+            @Override
+            protected String retrieveLabelFromEntry(DocumentModel directoryEntry) {
+                return UIDirectorySelectItems.this.retrieveLabelFromEntry(directoryEntry);
+            }
+
+            @Override
+            protected Long retrieveOrderingFromEntry(
+                    DocumentModel directoryEntry) {
+                return UIDirectorySelectItems.this.retrieveOrderingFromEntry(directoryEntry);
+            }
+
         };
 
+        List<DirectorySelectItem> items;
         if (isDisplayAll()) {
-            setAllValues(f.createAllSelectItems());
-            return getAllValues();
+            items = f.createAllDirectorySelectItems();
         } else {
             Object value = getStateHelper().eval(PropertyKeys.value);
-            return f.createSelectItems(value);
+            items = f.createDirectorySelectItems(value);
         }
+
+        String ordering = getOrdering();
+        boolean caseSensitive = isCaseSensitive();
+        if (!StringUtils.isBlank(ordering)) {
+            Collections.sort(
+                    items,
+                    new SelectItemComparator(ordering,
+                            Boolean.valueOf(caseSensitive)));
+        }
+        DirectorySelectItem[] res = items.toArray(new DirectorySelectItem[0]);
+        if (isDisplayAll()) {
+            setAllValues(res);
+        }
+        return res;
+
     }
 
-    protected String retrieveSelectEntryId() {
-        return (String) getItemValue();
-    }
-
-    @Override
-    protected DirectorySelectItem createSelectItem() {
+    protected DirectorySelectItem createSelectItem(String label, Long ordering) {
         if (!isItemRendered()) {
             return null;
         }
-        DocumentModel docEntry = null;
-        FacesContext ctx = FacesContext.getCurrentInstance();
-        Object entry = ComponentTagUtils.resolveElExpression(ctx,
-                String.format("#{%s}", getVar()));
-        String schema = null;
-        if (entry instanceof DocumentModel) {
-            docEntry = (DocumentModel) entry;
-            schema = docEntry.getSchemas()[0];
-        } else {
-            return null;
-        }
-        // entry id might have been resolved thanks to item value, so let's
-        // use directly the doc entry id for option value
-        String value = docEntry.getId();
-        if (value == null) {
-            return null;
-        }
-
-        // compute ordering
-        Long ordering = getItemOrdering();
-        if (ordering == null && docEntry != null) {
-            try {
-                // fallback on default ordering key
-                ordering = (Long) docEntry.getProperties(schema).get("ordering");
-            } catch (ClassCastException e) {
-                // nevermind
-            }
-        }
-
-        // compute label
-        Object labelObject = getItemLabel();
-        String label = labelObject != null ? labelObject.toString() : null;
-        Locale locale = ctx.getViewRoot().getLocale();
-        if (StringUtils.isBlank(label)) {
-            if (isLocalize() && isdbl10n()) {
-                // lookup label property, hardcode the "label_" prefix for
-                // now
-                // resolve property key
-                String defaultPattern = "label_en";
-                String pattern = "label_" + locale.getCountry();
-                if (docEntry.getProperties(schema).containsKey(pattern)) {
-                    label = (String) docEntry.getProperties(schema).get(pattern);
-                } else {
-                    label = (String) docEntry.getProperties(schema).get(
-                            defaultPattern);
-                }
-            } else {
-                label = (String) docEntry.getProperties(schema).get("label");
-                if (isLocalize()) {
-                    label = translate(ctx, locale, label);
-                }
-            }
-        }
+        Object valueObject = getItemValue();
+        String value = valueObject == null ? null : valueObject.toString();
         if (isDisplayIdAndLabel() && label != null) {
             label = value + getDisplayIdAndLabelSeparator() + label;
         }
@@ -275,6 +229,70 @@ public class UIDirectorySelectItems extends UISelectItems {
         }
         return new DirectorySelectItem(value, label, ordering == null ? 0L
                 : ordering.longValue(), isItemDisabled(), isItemEscaped());
+    }
+
+    protected String retrieveSelectEntryId() {
+        // assume option id and vocabulary entry id will match
+        Object itemValue = getItemValue();
+        String id = itemValue != null ? itemValue.toString() : null;
+        String keySeparator = getKeySeparator();
+        if (!StringUtils.isBlank(keySeparator)) {
+            String[] split = id.split(keySeparator);
+            return split[split.length - 1];
+        }
+        return id;
+    }
+
+    protected String retrieveLabelFromEntry(DocumentModel docEntry) {
+        if (docEntry == null) {
+            return null;
+        }
+        String schema = docEntry.getSchemas()[0];
+        // compute label
+        Object labelObject = getItemLabel();
+        String label = labelObject != null ? labelObject.toString() : null;
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        Locale locale = ctx.getViewRoot().getLocale();
+        if (StringUtils.isBlank(label)) {
+            if (isLocalize() && isdbl10n()) {
+                // lookup label property, hardcode the "label_" prefix for
+                // now
+                String defaultPattern = "label_en";
+                String pattern = "label_" + locale.getCountry();
+                if (docEntry.getProperties(schema).containsKey(pattern)) {
+                    label = (String) docEntry.getProperties(schema).get(pattern);
+                } else {
+                    label = (String) docEntry.getProperties(schema).get(
+                            defaultPattern);
+                }
+            } else {
+                label = (String) docEntry.getProperties(schema).get("label");
+                if (isLocalize()) {
+                    label = translate(ctx, locale, label);
+                }
+            }
+        } else if (isLocalize()) {
+            label = translate(ctx, locale, label);
+        }
+        return label;
+    }
+
+    protected Long retrieveOrderingFromEntry(DocumentModel docEntry) {
+        Long ordering = getItemOrdering();
+        if (ordering != null) {
+            return ordering;
+        }
+        // fallback on default ordering key
+        if (docEntry == null) {
+            return null;
+        }
+        String schema = docEntry.getSchemas()[0];
+        try {
+            ordering = (Long) docEntry.getProperties(schema).get("ordering");
+        } catch (ClassCastException e) {
+            // nevermind
+        }
+        return ordering;
     }
 
     protected String translate(FacesContext context, Locale locale, String label) {
