@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.directory.ldap.storage.cache">
 
-  <extension target="org.nuxeo.ecm.core.cache.CacheServiceImpl" point="caches">
+  <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
 
     <cache name="ldap-entry-cache" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
       <option name="maxSize">100</option>
