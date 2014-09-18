@@ -122,11 +122,18 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   display: block;
   padding: 0 2em 1.5em 0.1em }
 
+.action_bar .widgetPanel,
 .contextActions .actionsWidgetPanel {
   padding: 0 }
 
 .contextActions .actionLink.button  {
-  margin: 0 .3em 0 0;
+  margin: 0;
+  border-left: medium none;
+  line-height: normal }
+
+.contextActions .actionLink.button  {
+  margin: 0;
+  border-left: none;
   line-height: normal }
 
 .widgetPanel .widgetPanel,
@@ -262,6 +269,15 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   font-weight: bold;
   margin: 0 0 .2em .2em;
   padding: .2em .5em }
+
+.compactLayout .searchFilterActions .widgetPanel .button,
+.compactLayout .searchFilterActions .widgetPanel a.button,
+.compactLayout .searchFilterActions .widgetPanel input.button {
+  float: left;
+  font-weight: bold;
+  margin: 0;
+  padding: .4em .2em .6em;
+  width: 50% }
 
 .compactLayout .searchFilterActions {
   border-color: "neutral.light (__FLAVOR__ border)";
