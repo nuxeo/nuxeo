@@ -44,11 +44,9 @@ public class TestCachedSQLDirectory extends TestSQLDirectory {
 
         deployBundle("org.nuxeo.ecm.core.cache");
 
-        if (!RedisFeature.getMode().equals(RedisFeature.Mode.disabled)) {
-            RedisFeature.setup(this);
-            deployTestContrib("org.nuxeo.ecm.directory.sql.tests",
-                    REDIS_CACHE_CONFIG);
-
+        if (RedisFeature.setup(this)) {
+                deployTestContrib("org.nuxeo.ecm.directory.sql.tests",
+                        REDIS_CACHE_CONFIG);
         } else {
             deployTestContrib("org.nuxeo.ecm.directory.sql.tests",
                     CACHE_CONTRIB);

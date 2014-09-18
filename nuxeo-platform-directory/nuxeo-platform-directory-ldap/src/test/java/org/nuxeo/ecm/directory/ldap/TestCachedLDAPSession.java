@@ -48,8 +48,7 @@ public class TestCachedLDAPSession extends TestLDAPSession {
 
         deployBundle("org.nuxeo.ecm.core.cache");
 
-        if (!RedisFeature.getMode().equals(RedisFeature.Mode.disabled)) {
-            RedisFeature.setup(this);
+        if (RedisFeature.setup(this)) {
             deployTestContrib(TEST_BUNDLE, REDIS_CACHE_CONFIG);
 
         } else {

@@ -36,8 +36,7 @@ public abstract class UserManagerMultiTenantTestCase extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
 
-        if (!RedisFeature.getMode().equals(RedisFeature.Mode.disabled)) {
-            RedisFeature.setup(this);
+        if (!RedisFeature.setup(this)) {
             deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
                     "test-usermanagerimpl/usermanager-redis-cache-config.xml");
 
