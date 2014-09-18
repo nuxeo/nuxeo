@@ -51,8 +51,8 @@
       <artifactId>hsqldb</artifactId>
     </dependency>
     <dependency>
-      <groupId>net.sf.opencsv</groupId>
-      <artifactId>opencsv</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-csv</artifactId>
     </dependency>
     <dependency>
       <groupId>org.freemarker</groupId>
