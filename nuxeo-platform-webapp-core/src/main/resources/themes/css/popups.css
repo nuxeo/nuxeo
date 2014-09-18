@@ -44,6 +44,9 @@ author: lkemen@nuxeo.com
 #fancybox-content .popUpDescription {
   padding: 0 0 1em }
 
+#fancybox-content .dataInput {
+  max-width: none }
+
 /* Override default size from the page */
 .nxPopUp.nxMainContainer {
   height: auto;
