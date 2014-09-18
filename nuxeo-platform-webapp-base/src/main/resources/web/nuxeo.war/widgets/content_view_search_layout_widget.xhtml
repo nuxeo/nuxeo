@@ -4,6 +4,7 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 <div id="#{widget.id}"
   class="#{widgetProperty_styleClass}">
@@ -16,7 +17,15 @@
 
       <c:if test="#{contentView != null}">
         <nxl:layout name="#{contentView.searchLayout.name}" mode="search"
-          value="#{contentView.searchDocumentModel}" />
+          value="#{contentView.searchDocumentModel}" >
+          <ui:define name="inside_input_widget">
+            <c:if test="#{widgetControl_supportInsideInputWidgetEffects}">
+              <f:ajax execute="@form" listener="#{contentViewActions.refreshAndRewind(contentView.name)}"
+                render="@all" >
+              </f:ajax>
+            </c:if>
+          </ui:define>
+        </nxl:layout>
       </c:if>
 
   </nxu:set>
