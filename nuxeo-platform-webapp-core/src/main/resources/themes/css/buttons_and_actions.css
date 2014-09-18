@@ -20,7 +20,7 @@ input.button,
 .action_bar a {
   box-shadow: 0 -2px 3px #f3f3f3 inset;
   background: none "button (__FLAVOR__ background)";
-  border-radius: 3px;
+  border-radius: 1px;
   border: 1px solid;
   border-color: "button (__FLAVOR__ border)";
   color: "link.action (__FLAVOR__ color)";
@@ -196,14 +196,13 @@ input.tinyButton {
   background-color: #fff;
   border: 1px solid;
   border-color: "neutral.light (__FLAVOR__ border)";
-  border-radius: 3px;
-  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+  border-radius: 1px;
   display:none;
   list-style: none;
   padding: 0;
   position: absolute;
-  right: 0;
-  top: 30px;
+  right: -1px;
+  top: 28px;
   width: 250px;
   z-index: 1001 }
 
@@ -233,6 +232,11 @@ input.tinyButton {
 
 .actionSubList .smallIcon {
   margin: 0 .8em -0.2em 0 }
+
+.horizontalAction ~ .actionList li {
+  border-left: 0 none;
+  line-height: 1.75em;
+  margin: 0 }
 
 /* =Kept for social collab custom actions */
 .headerTitleAndTools h1 {
@@ -271,7 +275,7 @@ input.tinyButton {
   background-color: #fff;
   border: 1px solid;
   border-color: "neutral.light (__FLAVOR__ border)";
-  border-radius: 3px;
+  border-radius: 1px;
   box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
   display:none;
   list-style: none;
@@ -325,6 +329,9 @@ input.tinyButton {
 .globalActions > span, .globalActions .horizontalAction {
   float: left }
 
+.globalActions .horizontalAction:first-child {
+  border-left: 1px solid #c9c9c9 }
+
 .contextActions {
   padding: .4em 0 .5em }
 
@@ -333,6 +340,29 @@ input.tinyButton {
 
 .contextActions .widgetPanel {
   margin: 0 }
+
+/* Actions in left column */
+.column .action_bar {
+  float:none;
+  margin: 0 0 1em }
+
+.column .widgetPanel .horizontalAction .button,
+.column .widgetPanel .horizontalAction:only-child,
+.column .widgetPanel .horizontalAction:only-child form {
+  display: block }
+
+.column .importButton {
+  background: url('${basePath}/icons/import.png') no-repeat scroll 29% center / 25px 25px #00adff;
+  border: none;
+  box-shadow: none;
+  color: #fff;
+  padding: 1em;
+  text-transform: uppercase;
+  width: 100% }
+
+.column .importButton:hover {
+  border: none;
+  box-shadow: 0 -3px 0 rgba(0,0,0,0.2) inset }
 
 /* Link on forms */
 .actionLink {
