@@ -45,6 +45,7 @@
         <property name="category">
           SUBVIEW_UPPER_LIST, SUBVIEW_UPPER_LIST_HREF
         </property>
+        <property name="actionsDisplay">buttons</property>
         <property name="overallDisplay">horizontal_block</property>
         <property name="maxActionsNumber">5</property>
         <property name="styleClass">action_bar</property>
