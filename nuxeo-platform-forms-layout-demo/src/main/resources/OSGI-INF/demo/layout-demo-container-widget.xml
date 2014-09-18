@@ -49,6 +49,10 @@
                 #{nxu:basicDateAndTimeFormatter()}
               </property>
             </properties>
+            <controls mode="any">
+              <!-- enable ajax submit on change/click/select on demo application -->
+              <control name="supportInsideInputWidgetEffects">true</control>
+            </controls>
           </widget>
           <widget name="intWidget" type="int">
             <fields>

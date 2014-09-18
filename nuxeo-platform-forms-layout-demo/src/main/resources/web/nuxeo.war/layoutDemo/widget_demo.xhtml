@@ -51,7 +51,7 @@ Needed parameters:
                   mode="edit"
                   name="#{demoLayout.name}">
                   <ui:define name="inside_input_widget">
-                    <c:if test="#{not useMultipartForm}">
+                    <c:if test="#{not useMultipartForm and widgetControl_supportInsideInputWidgetEffects}">
                       <f:ajax execute="@form"
                         render="#{demoLayout.name}_view_form #{demoLayout.name}_edit_form" />
                     </c:if>

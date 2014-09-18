@@ -30,6 +30,10 @@
           <property name="required">true</property>
           <property name="styleClass">dataInputText</property>
         </properties>
+        <controls mode="any">
+          <!-- enable ajax submit on change/click/select on demo application -->
+          <control name="supportInsideInputWidgetEffects">true</control>
+        </controls>
       </widget>
     </layout>
   </extension>

@@ -31,6 +31,10 @@
           <property name="hideHelpLabel">true</property>
           <property name="placeholder">Choose a user/group</property>
         </properties>
+        <controls mode="any">
+          <!-- enable ajax submit on change/click/select on demo application -->
+          <control name="supportInsideInputWidgetEffects">true</control>
+        </controls>
       </widget>
     </layout>
 
