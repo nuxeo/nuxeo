@@ -166,32 +166,6 @@
       <redirect />
     </navigation-case>
 
-    <!-- search -->
-
-    <navigation-case>
-      <from-outcome>search_form</from-outcome>
-      <to-view-id>/search/search_form.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>search_results_nxql</from-outcome>
-      <to-view-id>/search/search_results_nxql.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>search_results_advanced</from-outcome>
-      <to-view-id>/search/search_results_advanced.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>search_results_simple</from-outcome>
-      <to-view-id>/search/search_results_simple.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
     <!-- miscellaneous -->
 
     <navigation-case>

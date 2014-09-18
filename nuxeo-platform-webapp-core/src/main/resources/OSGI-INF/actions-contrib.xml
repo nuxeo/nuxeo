@@ -1051,12 +1051,6 @@
       </rule>
     </filter>
 
-    <filter id="isSearchEnabled">
-      <rule grant="true">
-        <condition>#{userServicesContext.searchEnabled}</condition>
-      </rule>
-    </filter>
-
     <!-- LiveEdit filter -->
     <filter id="is_le_create_msword">
       <rule grant="true">
