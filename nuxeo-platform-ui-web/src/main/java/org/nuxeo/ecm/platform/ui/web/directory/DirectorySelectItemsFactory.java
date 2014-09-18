@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.el.PropertyNotFoundException;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 
@@ -176,16 +177,31 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
         String var = getVar();
         String varEntry = var + "Entry";
         Object varEntryExisting = VariableManager.saveRequestMapVarValue(varEntry);
+
+        DirectorySelectItem selectItem = null;
         try {
             VariableManager.putVariableToRequestParam(var, itemValue);
             VariableManager.putVariableToRequestParam(varEntry, entry);
             String label = retrieveLabelFromEntry(entry);
             Long ordering = retrieveOrderingFromEntry(entry);
-            DirectorySelectItem selectItem = createSelectItem(label, ordering);
+             selectItem = createSelectItem(label, ordering);
             removeIteratorFromRequestParam();
             VariableManager.removeVariableFromRequestParam(var);
             VariableManager.removeVariableFromRequestParam(varEntry);
+            if (selectItem != null) {
+                return selectItem;
+            } else if (itemValue instanceof DirectorySelectItem) {
+                // maybe lookup was not necessary
+                return  (DirectorySelectItem) itemValue;
+            }
             return selectItem;
+        } catch (PropertyNotFoundException e) {
+            if (itemValue instanceof DirectorySelectItem) {
+                // maybe lookup was not necessary
+                return  (DirectorySelectItem) itemValue;
+            } else {
+                throw e;
+            }
         } finally {
             VariableManager.restoreRequestMapVarValue(varEntry,
                     varEntryExisting);

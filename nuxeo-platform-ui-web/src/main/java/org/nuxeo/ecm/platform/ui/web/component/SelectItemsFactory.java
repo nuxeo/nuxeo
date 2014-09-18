@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.el.PropertyNotFoundException;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
@@ -92,9 +93,18 @@ public abstract class SelectItemsFactory extends SelectItemFactory {
         if (item instanceof SelectItemGroup) {
             return ((SelectItemGroup) item).getSelectItems();
         } else {
-            putIteratorToRequestParam(item);
-            SelectItem selectItem = createSelectItem();
-            removeIteratorFromRequestParam();
+            SelectItem selectItem = null;
+            try {
+                putIteratorToRequestParam(item);
+                selectItem = createSelectItem();
+                removeIteratorFromRequestParam();
+            } catch (PropertyNotFoundException e) {
+                if (item instanceof SelectItem) {
+                    // maybe lookup was not necessary
+                } else {
+                    throw e;
+                }
+            }
             if (selectItem != null) {
                 return new SelectItem[] { selectItem };
             } else if (item instanceof SelectItem) {
