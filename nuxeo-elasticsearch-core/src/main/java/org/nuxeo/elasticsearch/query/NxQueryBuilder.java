@@ -18,29 +18,6 @@ package org.nuxeo.elasticsearch.query;
 
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_EXCLUDE_PROP;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_EXTENDED_BOUND_MAX_PROP;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_EXTENDED_BOUND_MIN_PROP;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_INCLUDE_PROP;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_INTERVAL_PROP;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_MIN_DOC_COUNT_PROP;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_COUNT_ASC;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_COUNT_DESC;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_KEY_ASC;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_KEY_DESC;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_PROP;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_TERM_ASC;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_TERM_DESC;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_POST_ZONE_PROP;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_PRE_ZONE_PROP;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_SIZE_PROP;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TIME_ZONE_PROP;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_DATE_HISTOGRAM;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_DATE_RANGE;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_HISTOGRAM;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_RANGE;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_SIGNIFICANT_TERMS;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_TERMS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.FETCH_DOC_FROM_ES_PROPERTY;
 
 import java.security.Principal;
@@ -49,29 +26,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.AndFilterBuilder;
-import org.elasticsearch.index.query.BaseFilterBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.OrFilterBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.RangeFilterBuilder;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.filter.FilterAggregationBuilder;
-import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogram;
-import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramBuilder;
-import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
-import org.elasticsearch.search.aggregations.bucket.histogram.HistogramBuilder;
-import org.elasticsearch.search.aggregations.bucket.range.RangeBuilder;
-import org.elasticsearch.search.aggregations.bucket.range.date.DateRangeBuilder;
-import org.elasticsearch.search.aggregations.bucket.significant.SignificantTermsBuilder;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
@@ -79,9 +42,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.security.SecurityService;
-import org.nuxeo.ecm.platform.query.api.AggregateQuery;
-import org.nuxeo.ecm.platform.query.api.AggregateRangeDateDefinition;
-import org.nuxeo.ecm.platform.query.api.AggregateRangeDefinition;
+import org.nuxeo.ecm.platform.query.api.Aggregate;
+import org.nuxeo.elasticsearch.aggregate.BaseEsAggregate;
 import org.nuxeo.elasticsearch.fetcher.EsFetcher;
 import org.nuxeo.elasticsearch.fetcher.Fetcher;
 import org.nuxeo.elasticsearch.fetcher.VcsFetcher;
@@ -99,8 +61,8 @@ public class NxQueryBuilder {
     private static final String AGG_FILTER_SUFFIX = "_filter";
     private final CoreSession session;
     private final List<SortInfo> sortInfos = new ArrayList<SortInfo>();
-    private final List<AggregateQuery> aggregates = new ArrayList<AggregateQuery>();
     private final List<String> repositories = new ArrayList<String>();
+    private List<BaseEsAggregate> aggregates = new ArrayList<BaseEsAggregate>();
     private int offset = 0;
     private String nxql;
     private org.elasticsearch.index.query.QueryBuilder esQueryBuilder;
@@ -114,8 +76,8 @@ public class NxQueryBuilder {
                 FETCH_DOC_FROM_ES_PROPERTY, "false"));
     }
 
-    public static String getAggregateFilderId(AggregateQuery aggQuery) {
-        return aggQuery.getId() + AGG_FILTER_SUFFIX;
+    public static String getAggregateFilterId(Aggregate agg) {
+        return agg.getId() + AGG_FILTER_SUFFIX;
     }
 
     /**
@@ -194,12 +156,12 @@ public class NxQueryBuilder {
         return this;
     }
 
-    public NxQueryBuilder addAggregate(AggregateQuery aggregate) {
+    public NxQueryBuilder addAggregate(BaseEsAggregate aggregate) {
         aggregates.add(aggregate);
         return this;
     }
 
-    public NxQueryBuilder addAggregates(List<AggregateQuery> aggregates) {
+    public NxQueryBuilder addAggregates(List<BaseEsAggregate> aggregates) {
         if (aggregates != null && !aggregates.isEmpty()) {
             this.aggregates.addAll(aggregates);
         }
@@ -267,14 +229,12 @@ public class NxQueryBuilder {
     protected FilterBuilder getAggregateFilter() {
         boolean hasFilter = false;
         AndFilterBuilder ret = FilterBuilders.andFilter();
-        for (AggregateQuery aggQuery : aggregates) {
-            if (!aggQuery.getSelection().isEmpty()) {
-                BaseFilterBuilder filter = getFilterForSelection(aggQuery);
-                if (filter != null) {
-                    ret.add(filter);
-                    hasFilter = true;
-                }
-            }
+        for (BaseEsAggregate agg : aggregates) {
+            FilterBuilder filter = agg.getEsFilter();
+            if (filter != null) {
+                ret.add(filter);
+                  hasFilter = true;
+              }
         }
         if (!hasFilter) {
             return null;
@@ -285,9 +245,9 @@ public class NxQueryBuilder {
     protected FilterBuilder getAggregateFilterExceptFor(String id) {
         boolean hasFilter = false;
         AndFilterBuilder ret = FilterBuilders.andFilter();
-        for (AggregateQuery aggQuery : aggregates) {
-            if (!aggQuery.getId().equals(id)) {
-                BaseFilterBuilder filter = getFilterForSelection(aggQuery);
+        for (BaseEsAggregate agg : aggregates) {
+            if (!agg.getId().equals(id)) {
+                FilterBuilder filter = agg.getEsFilter();
                 if (filter != null) {
                     ret.add(filter);
                     hasFilter = true;
@@ -300,264 +260,23 @@ public class NxQueryBuilder {
         return ret;
     }
 
-    private BaseFilterBuilder getFilterForSelection(AggregateQuery aggQuery) {
-        if (aggQuery.getSelection().isEmpty()) {
-            return null;
-        }
-        BaseFilterBuilder ret = null;
-        switch (aggQuery.getType()) {
-        case AGG_TYPE_TERMS:
-        case AGG_TYPE_SIGNIFICANT_TERMS:
-            ret = FilterBuilders.termsFilter(aggQuery.getField(),
-                    aggQuery.getSelection());
-            break;
-        case AGG_TYPE_RANGE:
-            OrFilterBuilder orFilter = FilterBuilders.orFilter();
-            for (AggregateRangeDefinition range : aggQuery.getRanges()) {
-                if (aggQuery.getSelection().contains(range.getKey())) {
-                    RangeFilterBuilder rangeFilter = FilterBuilders
-                            .rangeFilter(aggQuery.getField());
-                    if (range.getFrom() != null) {
-                        rangeFilter.gte(range.getFrom());
-                    }
-                    if (range.getTo() != null) {
-                        rangeFilter.lt(range.getTo());
-                    }
-                    orFilter.add(rangeFilter);
-                }
-            }
-            ret = orFilter;
-            break;
-        case AGG_TYPE_DATE_RANGE:
-            OrFilterBuilder orDateFilter = FilterBuilders.orFilter();
-            for (AggregateRangeDateDefinition range : aggQuery.getDateRanges()) {
-                if (aggQuery.getSelection().contains(range.getKey())) {
-                    RangeFilterBuilder rangeFilter = FilterBuilders
-                            .rangeFilter(aggQuery.getField());
-                    if (range.getFromAsString() != null) {
-                        rangeFilter.gte(range.getFromAsString());
-                    }
-                    if (range.getToAsString() != null) {
-                        rangeFilter.lt(range.getToAsString());
-                    }
-                    orDateFilter.add(rangeFilter);
-                }
-            }
-            ret = orDateFilter;
-            break;
-        case AGG_TYPE_DATE_HISTOGRAM:
-        case AGG_TYPE_HISTOGRAM:
-            // Selection not supported
-            break;
-        }
-        return ret;
-    }
-
-    public List<AggregateQuery> getAggregatesQuery() {
+    public List<BaseEsAggregate> getAggregates() {
         return aggregates;
     }
 
-    public List<AbstractAggregationBuilder> getAggregates() {
-        List<AbstractAggregationBuilder> ret = new ArrayList<AbstractAggregationBuilder>(
-                aggregates.size());
-        for (AggregateQuery aggQuery : aggregates) {
+    public List<FilterAggregationBuilder> getEsAggregates() {
+        List<FilterAggregationBuilder> ret = new ArrayList<>(aggregates.size());
+        for (BaseEsAggregate agg : aggregates) {
             FilterAggregationBuilder fagg = new FilterAggregationBuilder(
-                    getAggregateFilderId(aggQuery));
-            fagg.filter(getAggregateFilterExceptFor(aggQuery.getId()));
-            switch (aggQuery.getType()) {
-            case AGG_TYPE_TERMS:
-                fagg.subAggregation(getTermsBuilder(aggQuery));
-                break;
-            case AGG_TYPE_SIGNIFICANT_TERMS:
-                fagg.subAggregation(getSignificantTermsBuilder(aggQuery));
-                break;
-            case AGG_TYPE_RANGE:
-                fagg.subAggregation(getRangeBuilder(aggQuery));
-                break;
-            case AGG_TYPE_DATE_RANGE:
-                fagg.subAggregation(getRangeDateBuilder(aggQuery));
-                break;
-            case AGG_TYPE_HISTOGRAM:
-                fagg.subAggregation(getHistogramBuilder(aggQuery));
-                break;
-            case AGG_TYPE_DATE_HISTOGRAM:
-                fagg.subAggregation(getHistogramDateBuilder(aggQuery));
-                break;
-            default:
-                fagg.subAggregation(getRangeBuilder(aggQuery));
-                throw new NotImplementedException(String.format(
-                        "%s aggregation type is unknown for agg: %s",
-                        aggQuery.getType(), aggQuery));
-            }
+                    getAggregateFilterId(agg));
+            fagg.filter(getAggregateFilterExceptFor(agg.getId()));
+            fagg.subAggregation(agg.getEsAggregate());
             ret.add(fagg);
         }
         return ret;
     }
 
-    protected TermsBuilder getTermsBuilder(AggregateQuery aggQuery) {
-        TermsBuilder ret = AggregationBuilders.terms(aggQuery.getId()).field(
-                aggQuery.getField());
-        Map<String, String> props = aggQuery.getProperties();
-        if (props.containsKey(AGG_SIZE_PROP)) {
-            ret.size(Integer.parseInt(props.get(AGG_SIZE_PROP)));
-        }
-        if (props.containsKey(AGG_MIN_DOC_COUNT_PROP)) {
-            ret.minDocCount(Long.parseLong(props.get(AGG_MIN_DOC_COUNT_PROP)));
-        }
-        if (props.containsKey(AGG_EXCLUDE_PROP)) {
-            ret.exclude(props.get(AGG_EXCLUDE_PROP));
-        }
-        if (props.containsKey(AGG_INCLUDE_PROP)) {
-            ret.include(props.get(AGG_INCLUDE_PROP));
-        }
-        if (props.containsKey(AGG_ORDER_PROP)) {
-            switch (props.get(AGG_ORDER_PROP).toLowerCase()) {
-            case AGG_ORDER_COUNT_DESC:
-                ret.order(Terms.Order.count(false));
-                break;
-            case AGG_ORDER_COUNT_ASC:
-                ret.order(Terms.Order.count(true));
-                break;
-            case AGG_ORDER_TERM_DESC:
-                ret.order(Terms.Order.term(false));
-                break;
-            case AGG_ORDER_TERM_ASC:
-                ret.order(Terms.Order.term(true));
-                break;
-            }
-        }
-        return ret;
-    }
 
-    protected SignificantTermsBuilder getSignificantTermsBuilder(
-            AggregateQuery aggQuery) {
-        SignificantTermsBuilder ret = AggregationBuilders.significantTerms(
-                aggQuery.getId()).field(aggQuery.getField());
-        Map<String, String> props = aggQuery.getProperties();
-        if (props.containsKey(AGG_SIZE_PROP)) {
-            ret.size(Integer.parseInt(props.get(AGG_SIZE_PROP)));
-        }
-        if (props.containsKey(AGG_MIN_DOC_COUNT_PROP)) {
-            ret.minDocCount(Integer.parseInt(props.get(AGG_MIN_DOC_COUNT_PROP)));
-        }
-        return ret;
-    }
-
-    protected RangeBuilder getRangeBuilder(AggregateQuery aggQuery) {
-        RangeBuilder ret = AggregationBuilders.range(aggQuery.getId()).field(
-                aggQuery.getField());
-        for (AggregateRangeDefinition range : aggQuery.getRanges()) {
-            if (range.getFrom() != null) {
-                if (range.getTo() != null) {
-                    ret.addRange(range.getKey(), range.getFrom(), range.getTo());
-                } else {
-                    ret.addUnboundedFrom(range.getKey(), range.getFrom());
-                }
-            } else if (range.getTo() != null) {
-                ret.addUnboundedTo(range.getKey(), range.getTo());
-            }
-        }
-        return ret;
-    }
-
-    protected DateRangeBuilder getRangeDateBuilder(AggregateQuery aggQuery) {
-        DateRangeBuilder ret = AggregationBuilders.dateRange(aggQuery.getId())
-                .field(aggQuery.getField());
-        for (AggregateRangeDateDefinition range : aggQuery.getDateRanges()) {
-            if (range.getFromAsString() != null) {
-                if (range.getToAsString() != null) {
-                    ret.addRange(range.getKey(), range.getFromAsString(),
-                            range.getToAsString());
-                } else {
-                    ret.addUnboundedFrom(range.getKey(),
-                            range.getFromAsString());
-                }
-            } else if (range.getToAsString() != null) {
-                ret.addUnboundedTo(range.getKey(), range.getToAsString());
-            }
-        }
-        return ret;
-    }
-
-    protected HistogramBuilder getHistogramBuilder(AggregateQuery aggQuery) {
-        HistogramBuilder ret = AggregationBuilders.histogram(aggQuery.getId())
-                .field(aggQuery.getField());
-        Map<String, String> props = aggQuery.getProperties();
-        if (props.containsKey(AGG_INTERVAL_PROP)) {
-            ret.interval(Integer.parseInt(props.get(AGG_INTERVAL_PROP)));
-        }
-        if (props.containsKey(AGG_MIN_DOC_COUNT_PROP)) {
-            ret.minDocCount(Long.parseLong(props.get(AGG_MIN_DOC_COUNT_PROP)));
-        }
-        if (props.containsKey(AGG_ORDER_PROP)) {
-            switch (props.get(AGG_ORDER_PROP).toLowerCase()) {
-            case AGG_ORDER_COUNT_DESC:
-                ret.order(Histogram.Order.COUNT_DESC);
-                break;
-            case AGG_ORDER_COUNT_ASC:
-                ret.order(Histogram.Order.COUNT_ASC);
-                break;
-            case AGG_ORDER_KEY_DESC:
-                ret.order(Histogram.Order.KEY_DESC);
-                break;
-            case AGG_ORDER_KEY_ASC:
-                ret.order(Histogram.Order.KEY_ASC);
-                break;
-            }
-        }
-        if (props.containsKey(AGG_EXTENDED_BOUND_MAX_PROP)
-                && props.containsKey(AGG_EXTENDED_BOUND_MIN_PROP)) {
-            ret.extendedBounds(
-                    Long.parseLong(props.get(AGG_EXTENDED_BOUND_MIN_PROP)),
-                    Long.parseLong(props.get(AGG_EXTENDED_BOUND_MAX_PROP)));
-        }
-        return ret;
-    }
-
-    protected DateHistogramBuilder getHistogramDateBuilder(
-            AggregateQuery aggQuery) {
-        DateHistogramBuilder ret = AggregationBuilders.dateHistogram(
-                aggQuery.getId()).field(aggQuery.getField());
-        Map<String, String> props = aggQuery.getProperties();
-        if (props.containsKey(AGG_INTERVAL_PROP)) {
-            ret.interval(new DateHistogram.Interval(props
-                    .get(AGG_INTERVAL_PROP)));
-        }
-        if (props.containsKey(AGG_MIN_DOC_COUNT_PROP)) {
-            ret.minDocCount(Long.parseLong(props.get(AGG_MIN_DOC_COUNT_PROP)));
-        }
-        if (props.containsKey(AGG_ORDER_PROP)) {
-            switch (props.get(AGG_ORDER_PROP).toLowerCase()) {
-            case AGG_ORDER_COUNT_DESC:
-                ret.order(Histogram.Order.COUNT_DESC);
-                break;
-            case AGG_ORDER_COUNT_ASC:
-                ret.order(Histogram.Order.COUNT_ASC);
-                break;
-            case AGG_ORDER_KEY_DESC:
-                ret.order(Histogram.Order.KEY_DESC);
-                break;
-            case AGG_ORDER_KEY_ASC:
-                ret.order(Histogram.Order.KEY_ASC);
-                break;
-            }
-        }
-        if (props.containsKey(AGG_EXTENDED_BOUND_MAX_PROP)
-                && props.containsKey(AGG_EXTENDED_BOUND_MIN_PROP)) {
-            ret.extendedBounds(props.get(AGG_EXTENDED_BOUND_MIN_PROP),
-                    props.get(AGG_EXTENDED_BOUND_MAX_PROP));
-        }
-        if (props.containsKey(AGG_TIME_ZONE_PROP)) {
-            ret.preZone(props.get(AGG_TIME_ZONE_PROP));
-        }
-        if (props.containsKey(AGG_PRE_ZONE_PROP)) {
-            ret.preZone(props.get(AGG_PRE_ZONE_PROP));
-        }
-        if (props.containsKey(AGG_POST_ZONE_PROP)) {
-            ret.postZone(props.get(AGG_POST_ZONE_PROP));
-        }
-        return ret;
-    }
 
     public void updateRequest(SearchRequestBuilder request) {
         // Set limits
@@ -569,7 +288,7 @@ public class NxQueryBuilder {
             request.addSort(sortBuilder);
         }
         // Add Aggregate
-        for (AbstractAggregationBuilder aggregate : getAggregates()) {
+        for (AbstractAggregationBuilder aggregate : getEsAggregates()) {
             request.addAggregation(aggregate);
         }
         // Add Aggregate post filter

@@ -40,11 +40,15 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.core.AggregateDescriptor;
-import org.nuxeo.ecm.platform.query.core.AggregateQueryImpl;
 import org.nuxeo.ecm.platform.query.core.AggregateRangeDateDescriptor;
 import org.nuxeo.ecm.platform.query.core.AggregateRangeDescriptor;
 import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
 import org.nuxeo.ecm.platform.query.core.FieldDescriptor;
+import org.nuxeo.elasticsearch.aggregate.AggregateFactory;
+import org.nuxeo.elasticsearch.aggregate.DateRangeAggregate;
+import org.nuxeo.elasticsearch.aggregate.RangeAggregate;
+import org.nuxeo.elasticsearch.aggregate.SignificantTermAggregate;
+import org.nuxeo.elasticsearch.aggregate.TermAggregate;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
@@ -121,7 +125,7 @@ public class TestAggregates {
 
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document").addAggregate(
-                new AggregateQueryImpl(aggDef, null));
+                new TermAggregate(aggDef, null));
 
         SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
                 .setTypes(TYPE_NAME);
@@ -170,7 +174,7 @@ public class TestAggregates {
 
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document").addAggregate(
-                new AggregateQueryImpl(aggDef, null));
+                new SignificantTermAggregate(aggDef, null));
 
         SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
                 .setTypes(TYPE_NAME);
@@ -217,7 +221,7 @@ public class TestAggregates {
 
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document").addAggregate(
-                new AggregateQueryImpl(aggDef, null));
+                new RangeAggregate(aggDef, null));
 
         SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
                 .setTypes(TYPE_NAME);
@@ -274,7 +278,7 @@ public class TestAggregates {
 
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document").addAggregate(
-                new AggregateQueryImpl(aggDef, null));
+                new DateRangeAggregate(aggDef, null));
 
         SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
                 .setTypes(TYPE_NAME);
@@ -341,8 +345,8 @@ public class TestAggregates {
         // model.setProperty("advanced_search", "nature_agg", natures);
         NxQueryBuilder qb = new NxQueryBuilder(session)
                 .nxql("SELECT * FROM Document")
-                .addAggregate(new AggregateQueryImpl(aggDef1, model))
-                .addAggregate(new AggregateQueryImpl(aggDef2, model));
+                .addAggregate(AggregateFactory.create(aggDef1, model))
+                .addAggregate(AggregateFactory.create(aggDef2, model));
 
         SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
                 .setTypes(TYPE_NAME);
@@ -423,16 +427,16 @@ public class TestAggregates {
         PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
                 null, null, (long) 0, props);
 
-        Assert.assertEquals(5,  pp.getAggregates().size());
+        Assert.assertEquals(7,  pp.getAggregates().size());
         Assert.assertEquals(
-                "AggregateImpl(source, terms, [BucketTerm(Source0, 1), BucketTerm(Source1, 1), BucketTerm(Source2, 1), BucketTerm(Source3, 1), BucketTerm(Source4, 1)])",
+                "Aggregate(source, terms, dc:source, [Source1, Source2], [BucketTerm(Source0, 1), BucketTerm(Source1, 1), BucketTerm(Source2, 1), BucketTerm(Source3, 1), BucketTerm(Source4, 1)])",
                 pp.getAggregates().get("source").toString());
         Assert.assertEquals(
-                "AggregateImpl(coverage, terms, [BucketTerm(Coverage1, 1), BucketTerm(Coverage2, 1)])",
+                "Aggregate(coverage, terms, dc:coverage, [], [BucketTerm(Coverage1, 1), BucketTerm(Coverage2, 1)])",
                 pp.getAggregates().get("coverage").toString());
-        Assert.assertEquals("AggregateImpl(nature, terms, [BucketTerm(Nature0, 1), BucketTerm(Nature1, 1)])",
+        Assert.assertEquals("Aggregate(nature, terms, dc:nature, [], [BucketTerm(Nature0, 1), BucketTerm(Nature1, 1)])",
                 pp.getAggregates().get("nature").toString());
-        Assert.assertEquals("AggregateImpl(size, range, [BucketRange(small, 1, -Infinity, 2048,00), BucketRange(medium, 1, 2048,00, 6144,00), BucketRange(big, 0, 6144,00, Infinity)])",
+        Assert.assertEquals("Aggregate(size, range, common:size, [], [BucketRange(small, 1, -Infinity, 2048,00), BucketRange(medium, 1, 2048,00, 6144,00), BucketRange(big, 0, 6144,00, Infinity)])",
                 pp.getAggregates().get("size").toString());
 
     }
@@ -461,15 +465,15 @@ public class TestAggregates {
         PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
                 null, null, (long) 0, props);
 
-        Assert.assertEquals(5,  pp.getAggregates().size());
-        Assert.assertEquals("AggregateImpl(source, terms, [BucketTerm(Source2, 1), BucketTerm(Source3, 1), BucketTerm(Source4, 1), BucketTerm(Source5, 1), BucketTerm(Source6, 1)])",
+        Assert.assertEquals(7,  pp.getAggregates().size());
+        Assert.assertEquals("Aggregate(source, terms, dc:source, [], [BucketTerm(Source2, 1), BucketTerm(Source3, 1), BucketTerm(Source4, 1), BucketTerm(Source5, 1), BucketTerm(Source6, 1)])",
                 pp.getAggregates().get("source").toString());
         Assert.assertEquals(
-                "AggregateImpl(coverage, terms, [BucketTerm(Coverage0, 3), BucketTerm(Coverage2, 3), BucketTerm(Coverage1, 2)])",
+                "Aggregate(coverage, terms, dc:coverage, [], [BucketTerm(Coverage0, 3), BucketTerm(Coverage2, 3), BucketTerm(Coverage1, 2)])",
                 pp.getAggregates().get("coverage").toString());
-        Assert.assertEquals("AggregateImpl(nature, terms, [BucketTerm(Nature0, 4), BucketTerm(Nature1, 4)])",
+        Assert.assertEquals("Aggregate(nature, terms, dc:nature, [], [BucketTerm(Nature0, 4), BucketTerm(Nature1, 4)])",
                 pp.getAggregates().get("nature").toString());
-        Assert.assertEquals("AggregateImpl(size, range, [BucketRange(small, 2, -Infinity, 2048,00), BucketRange(medium, 4, 2048,00, 6144,00), BucketRange(big, 4, 6144,00, Infinity)])",
+        Assert.assertEquals("Aggregate(size, range, common:size, [big, medium], [BucketRange(small, 2, -Infinity, 2048,00), BucketRange(medium, 4, 2048,00, 6144,00), BucketRange(big, 4, 6144,00, Infinity)])",
                 pp.getAggregates().get("size").toString());
 
     }
@@ -498,11 +502,11 @@ public class TestAggregates {
         PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
                 null, null, (long) 0, props);
 
-        Assert.assertEquals(5,  pp.getAggregates().size());
+        Assert.assertEquals(7,  pp.getAggregates().size());
         Assert.assertEquals(
-                "AggregateImpl(coverage, terms, [BucketTerm(Coverage0, 3), BucketTerm(Coverage1, 2), BucketTerm(Coverage2, 2)])",
+                "Aggregate(coverage, terms, dc:coverage, [], [BucketTerm(Coverage0, 3), BucketTerm(Coverage1, 2), BucketTerm(Coverage2, 2)])",
                 pp.getAggregates().get("coverage").toString());
-        Assert.assertEquals("AggregateImpl(nature, terms, [BucketTerm(Nature0, 4), BucketTerm(Nature1, 3)])",
+        Assert.assertEquals("Aggregate(nature, terms, dc:nature, [], [BucketTerm(Nature0, 4), BucketTerm(Nature1, 3)])",
                 pp.getAggregates().get("nature").toString());
         List<BucketRangeDate> buckets = pp.getAggregates().get("created").getBuckets();
         Assert.assertEquals(3, buckets.size());

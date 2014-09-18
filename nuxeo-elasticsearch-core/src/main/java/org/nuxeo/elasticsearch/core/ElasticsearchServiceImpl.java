@@ -18,13 +18,8 @@
 
 package org.nuxeo.elasticsearch.core;
 
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_RANGE;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_DATE_RANGE;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_SIGNIFICANT_TERMS;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_TERMS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -34,25 +29,17 @@ import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.filter.InternalFilter;
-import org.elasticsearch.search.aggregations.bucket.range.date.DateRange;
-import org.joda.time.DateTime;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
-import org.nuxeo.ecm.platform.query.api.AggregateQuery;
-import org.nuxeo.ecm.platform.query.api.Bucket;
-import org.nuxeo.ecm.platform.query.core.AggregateImpl;
-import org.nuxeo.ecm.platform.query.core.BucketRange;
-import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
-import org.nuxeo.ecm.platform.query.core.BucketTerm;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
+import org.nuxeo.elasticsearch.aggregate.BaseEsAggregate;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.api.EsResult;
 import org.nuxeo.elasticsearch.fetcher.Fetcher;
@@ -63,7 +50,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
-import org.elasticsearch.search.aggregations.bucket.range.Range;
 
 /**
  * @since 5.9.6
@@ -74,9 +60,9 @@ public class ElasticsearchServiceImpl implements ElasticSearchService {
     // Metrics
     protected final MetricRegistry registry = SharedMetricRegistries
             .getOrCreate(MetricsService.class.getName());
-    private final ElasticSearchAdminImpl esa;
     protected final Timer searchTimer;
     protected final Timer fetchTimer;
+    private final ElasticSearchAdminImpl esa;
 
     public ElasticsearchServiceImpl(ElasticSearchAdminImpl esa) {
         this.esa = esa;
@@ -144,11 +130,9 @@ public class ElasticsearchServiceImpl implements ElasticSearchService {
 
     protected List<Aggregate> getAggregates(NxQueryBuilder queryBuilder,
             SearchResponse response) {
-        List<Aggregate> ret = new ArrayList<Aggregate>(queryBuilder
-                .getAggregatesQuery().size());
-        for (AggregateQuery agg : queryBuilder.getAggregatesQuery()) {
+        for (BaseEsAggregate agg : queryBuilder.getAggregates()) {
             InternalFilter filter = response.getAggregations().get(
-                    NxQueryBuilder.getAggregateFilderId(agg));
+                    NxQueryBuilder.getAggregateFilterId(agg));
             if (filter == null) {
                 continue;
             }
@@ -159,51 +143,9 @@ public class ElasticsearchServiceImpl implements ElasticSearchService {
             }
             Collection<? extends MultiBucketsAggregation.Bucket> buckets = terms
                     .getBuckets();
-            switch (agg.getType()) {
-            case AGG_TYPE_SIGNIFICANT_TERMS:
-            case AGG_TYPE_TERMS:
-                List<BucketTerm> nxBuckets = new ArrayList<BucketTerm>(buckets.size());
-                for (MultiBucketsAggregation.Bucket bucket : buckets) {
-                    nxBuckets.add(new BucketTerm(bucket.getKey(), bucket
-                            .getDocCount()));
-                }
-                ret.add(new AggregateImpl<BucketTerm>(agg, nxBuckets));
-                break;
-            case AGG_TYPE_RANGE:
-                List<BucketRange> nxRangeBuckets = new ArrayList<BucketRange>(buckets.size());
-                for (MultiBucketsAggregation.Bucket bucket : buckets) {
-                    Range.Bucket rangeBucket = (Range.Bucket) bucket;
-                    nxRangeBuckets.add(new BucketRange(bucket.getKey(), rangeBucket.getFrom(),
-                            rangeBucket.getTo(), rangeBucket.getDocCount()));
-                }
-                ret.add(new AggregateImpl<BucketRange>(agg, nxRangeBuckets));
-                break;
-            case AGG_TYPE_DATE_RANGE:
-                List<BucketRangeDate> nxDateRangeBuckets = new ArrayList<BucketRangeDate>(buckets.size());
-                for (MultiBucketsAggregation.Bucket bucket : buckets) {
-                    DateRange.Bucket rangeBucket = (DateRange.Bucket) bucket;
-                    nxDateRangeBuckets.add(new BucketRangeDate(bucket.getKey(),
-                            getDateTime(rangeBucket.getFromAsDate()),
-                            getDateTime(rangeBucket.getToAsDate()),
-                            rangeBucket.getDocCount()));
-                }
-                ret.add(new AggregateImpl<BucketRangeDate>(agg, nxDateRangeBuckets));
-                break;
-
-            default:
-                // not implemented
-            }
-
+            agg.extractEsBuckets(buckets);
         }
-        return ret;
-    }
-
-    private DateTime getDateTime(
-            org.elasticsearch.common.joda.time.DateTime date) {
-        if (date == null) {
-            return null;
-        }
-        return new DateTime(date.getMillis());
+        return (List<Aggregate>) (List<?>) queryBuilder.getAggregates();
     }
 
     protected SearchResponse search(NxQueryBuilder query) {

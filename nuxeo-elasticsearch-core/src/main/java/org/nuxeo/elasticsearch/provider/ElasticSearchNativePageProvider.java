@@ -18,6 +18,7 @@
 package org.nuxeo.elasticsearch.provider;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,10 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
+import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
+import org.nuxeo.elasticsearch.aggregate.AggregateFactory;
+import org.nuxeo.elasticsearch.aggregate.BaseEsAggregate;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.api.EsResult;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
@@ -83,7 +87,7 @@ public class ElasticSearchNativePageProvider extends
             NxQueryBuilder nxQuery = new NxQueryBuilder(getCoreSession())
                     .esQuery(query).offset((int) getCurrentPageOffset())
                     .limit((int) getMinMaxPageSize()).addSort(sortArray)
-                    .addAggregates(getAggregatesQuery());
+                    .addAggregates(buildAggregates());
             if (searchOnAllRepositories()) {
                 nxQuery.searchOnAllRepositories();
             }
@@ -99,6 +103,15 @@ public class ElasticSearchNativePageProvider extends
             throw new ClientRuntimeException(e);
         }
         return currentPageDocuments;
+    }
+
+    private List<BaseEsAggregate> buildAggregates() {
+        ArrayList<BaseEsAggregate> ret = new ArrayList<BaseEsAggregate>(
+                getAggregateDefinitions().size());
+        for (AggregateDefinition def : getAggregateDefinitions()) {
+            ret.add(AggregateFactory.create(def, getSearchDocumentModel()));
+        }
+        return ret;
     }
 
     @Override
