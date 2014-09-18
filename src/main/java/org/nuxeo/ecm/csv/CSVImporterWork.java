@@ -22,10 +22,12 @@ import static org.nuxeo.ecm.csv.CSVImportLog.Status.ERROR;
 import static org.nuxeo.ecm.csv.Constants.CSV_NAME_COL;
 import static org.nuxeo.ecm.csv.Constants.CSV_TYPE_COL;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -37,6 +39,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -83,11 +88,11 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
-import au.com.bytecode.opencsv.CSVReader;
-
 /**
  * Work task to import form a CSV file. Because the file is read from the local
  * filesystem, this must be executed in a local queue.
+ *
+ * Since NXP-15252 the CSV reader manages "records", not "lines".
  *
  * @since 5.7
  */
@@ -196,18 +201,13 @@ public class CSVImporterWork extends AbstractWork {
     public void work() throws Exception {
         setStatus("Importing");
         initSession();
-        CSVReader csvReader = null;
-        try {
-            csvReader = new CSVReader(new FileReader(csvFile));
-            doImport(csvReader);
+        try (Reader in = new BufferedReader(new FileReader(csvFile));
+                CSVParser parser = CSVFormat.DEFAULT.withHeader().parse(in)) {
+            doImport(parser);
         } catch (IOException e) {
             logError(0, "Error while doing the import: %s",
                     LABEL_CSV_IMPORTER_ERROR_DURING_IMPORT, e.getMessage());
             log.debug(e, e);
-        } finally {
-            if (csvReader != null) {
-                csvReader.close();
-            }
         }
         if (options.sendEmail()) {
             setStatus("Sending email");
@@ -216,27 +216,16 @@ public class CSVImporterWork extends AbstractWork {
         setStatus(null);
     }
 
-    protected void doImport(CSVReader csvReader) throws IOException {
+    protected void doImport(CSVParser parser) {
         log.info(String.format("Importing CSV file: %s", csvFileName));
-
-        String[] header = csvReader.readNext();
+        Map<String, Integer> header = parser.getHeaderMap();
         if (header == null) {
             logError(0, "No header line, empty file?",
                     LABEL_CSV_IMPORTER_EMPTY_FILE);
             return;
         }
-
-        // find the index for the required name and type values
-        int nameIndex = -1;
-        int typeIndex = -1;
-        for (int col = 0; col < header.length; col++) {
-            if (CSV_NAME_COL.equals(header[col])) {
-                nameIndex = col;
-            } else if (CSV_TYPE_COL.equals(header[col])) {
-                typeIndex = col;
-            }
-        }
-        if (nameIndex == -1 || typeIndex == -1) {
+        if (!header.containsKey(CSV_NAME_COL)
+                || !header.containsKey(CSV_TYPE_COL)) {
             logError(0, "Missing 'name' or 'type' column",
                     LABEL_CSV_IMPORTER_MISSING_NAME_OR_TYPE_COLUMN);
             return;
@@ -245,23 +234,16 @@ public class CSVImporterWork extends AbstractWork {
         try {
             int batchSize = options.getBatchSize();
             long docsCreatedCount = 0;
-            long lineNumber = 0;
-            for (;;) {
-                lineNumber++;
-                String[] line = csvReader.readNext();
-                if (line == null) {
-                    break; // no more line
-                }
-
-                if (line.length == 0) {
-                    // empty line
-                    importLogs.add(new CSVImportLog(lineNumber, Status.SKIPPED,
-                            "Empty line", "label.csv.importer.emptyLine"));
+            for (CSVRecord record : parser) {
+                if (record.size() == 0) {
+                    // empty record
+                    importLogs.add(new CSVImportLog(record.getRecordNumber(),
+                            Status.SKIPPED, "Empty record",
+                            LABEL_CSV_IMPORTER_EMPTY_LINE));
                     continue;
                 }
                 try {
-                    if (importLine(line, lineNumber, nameIndex, typeIndex,
-                            header)) {
+                    if (importRecord(record, header)) {
                         docsCreatedCount++;
                         if (docsCreatedCount % batchSize == 0) {
                             commitOrRollbackTransaction();
@@ -271,7 +253,8 @@ public class CSVImporterWork extends AbstractWork {
                 } catch (ClientException e) {
                     // try next line
                     Throwable unwrappedException = unwrapException(e);
-                    logError(lineNumber, "Error while importing line: %s",
+                    logError(parser.getRecordNumber(),
+                            "Error while importing line: %s",
                             LABEL_CSV_IMPORTER_ERROR_IMPORTING_LINE,
                             unwrappedException.getMessage());
                     log.debug(unwrappedException, unwrappedException);
@@ -282,7 +265,7 @@ public class CSVImporterWork extends AbstractWork {
                 session.save();
             } catch (ClientException e) {
                 Throwable ue = unwrapException(e);
-                logError(lineNumber, "Unable to save: %s",
+                logError(parser.getRecordNumber(), "Unable to save: %s",
                         LABEL_CSV_IMPORTER_UNABLE_TO_SAVE, ue.getMessage());
                 log.debug(ue, ue);
             }
@@ -296,48 +279,53 @@ public class CSVImporterWork extends AbstractWork {
     /**
      * Import a line from the CSV file.
      *
+     * @param record
+     * @param header
      * @return {@code true} if a document has been created or updated,
      *         {@code false} otherwise.
+     *
+     * @since 5.9.6
      */
-    protected boolean importLine(String[] line, final long lineNumber,
-            int nameIndex, int typeIndex, String[] headerValues)
-            throws ClientException {
-        final String name = line[nameIndex];
-        final String type = line[typeIndex];
+    protected boolean importRecord(CSVRecord record, Map<String, Integer> header) {
+        final String name = record.get(CSV_NAME_COL);
+        final String type = record.get(CSV_TYPE_COL);
         if (StringUtils.isBlank(name)) {
-            logError(lineNumber, "Missing 'name' value",
+            log.debug("record.isSet=" + record.isSet(CSV_NAME_COL));
+            logError(record.getRecordNumber(), "Missing 'name' value",
                     LABEL_CSV_IMPORTER_MISSING_NAME_VALUE);
             return false;
         }
         if (StringUtils.isBlank(type)) {
-            logError(lineNumber, "Missing 'type' value",
+            log.debug("record.isSet=" + record.isSet(CSV_TYPE_COL));
+            logError(record.getRecordNumber(), "Missing 'type' value",
                     LABEL_CSV_IMPORTER_MISSING_TYPE_VALUE);
             return false;
         }
         DocumentType docType = Framework.getLocalService(SchemaManager.class).getDocumentType(
                 type);
         if (docType == null) {
-            logError(lineNumber, "The type '%s' does not exist",
+            logError(record.getRecordNumber(), "The type '%s' does not exist",
                     LABEL_CSV_IMPORTER_NOT_EXISTING_TYPE, type);
             return false;
         }
-
-        Map<String, Serializable> values = computePropertiesMap(lineNumber,
-                docType, headerValues, line);
+        Map<String, Serializable> values = computePropertiesMap(record,
+                docType, header);
         if (values == null) {
             // skip this line
             return false;
         }
-
-        return createOrUpdateDocument(lineNumber, name, type, values);
+        return createOrUpdateDocument(record.getRecordNumber(), name, type,
+                values);
     }
 
-    protected Map<String, Serializable> computePropertiesMap(long lineNumber,
-            DocumentType docType, String[] headerValues, String[] line) {
+    /**
+     * @since 5.9.6
+     */
+    protected Map<String, Serializable> computePropertiesMap(CSVRecord record,
+            DocumentType docType, Map<String, Integer> header) {
         Map<String, Serializable> values = new HashMap<>();
-        for (int col = 0; col < headerValues.length; col++) {
-            String headerValue = headerValues[col];
-            String lineValue = line[col];
+        for (String headerValue : header.keySet()) {
+            String lineValue = record.get(headerValue);
             lineValue = lineValue.trim();
             String fieldName = headerValue;
             if (!CSV_NAME_COL.equals(headerValue)
@@ -348,7 +336,8 @@ public class CSVImporterWork extends AbstractWork {
                 if (docType.hasField(fieldName)
                         && !StringUtils.isBlank(lineValue)) {
                     Serializable convertedValue = convertValue(docType,
-                            fieldName, headerValue, lineValue, lineNumber);
+                            fieldName, headerValue, lineValue,
+                            record.getRecordNumber());
                     if (convertedValue == null) {
                         return null;
                     }

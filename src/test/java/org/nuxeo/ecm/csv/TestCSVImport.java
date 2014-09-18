@@ -98,10 +98,10 @@ public class TestCSVImport {
         List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
         assertEquals(2, importLogs.size());
         CSVImportLog importLog = importLogs.get(0);
-        assertEquals(1, importLog.getLine());
+        assertEquals(2, importLog.getLine());
         assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());
         importLog = importLogs.get(1);
-        assertEquals(2, importLog.getLine());
+        assertEquals(3, importLog.getLine());
         assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());
 
         assertTrue(session.exists(new PathRef("/myfile")));
@@ -153,11 +153,11 @@ public class TestCSVImport {
         List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
         assertEquals(2, importLogs.size());
         CSVImportLog importLog = importLogs.get(0);
-        assertEquals(1, importLog.getLine());
+        assertEquals(2, importLog.getLine());
         assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());
         assertEquals("Document created", importLog.getMessage());
         importLog = importLogs.get(1);
-        assertEquals(2, importLog.getLine());
+        assertEquals(3, importLog.getLine());
         assertEquals(CSVImportLog.Status.SKIPPED, importLog.getStatus());
         assertEquals("Document already exists", importLog.getMessage());
 
@@ -187,26 +187,26 @@ public class TestCSVImport {
         assertEquals(5, importLogs.size());
 
         CSVImportLog importLog = importLogs.get(0);
-        assertEquals(1, importLog.getLine());
+        assertEquals(2, importLog.getLine());
         assertEquals(CSVImportLog.Status.ERROR, importLog.getStatus());
         assertEquals(
                 "Unable to convert field 'dc:issued' with value '10012010'",
                 importLog.getMessage());
         importLog = importLogs.get(1);
-        assertEquals(2, importLog.getLine());
+        assertEquals(3, importLog.getLine());
         assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());
         assertEquals("Document created", importLog.getMessage());
         importLog = importLogs.get(2);
-        assertEquals(3, importLog.getLine());
+        assertEquals(4, importLog.getLine());
         assertEquals(CSVImportLog.Status.ERROR, importLog.getStatus());
         assertEquals("The type 'NotExistingType' does not exist",
                 importLog.getMessage());
         importLog = importLogs.get(3);
-        assertEquals(4, importLog.getLine());
+        assertEquals(5, importLog.getLine());
         assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());
         assertEquals("Document created", importLog.getMessage());
         importLog = importLogs.get(4);
-        assertEquals(5, importLog.getLine());
+        assertEquals(6, importLog.getLine());
         assertEquals(CSVImportLog.Status.ERROR, importLog.getStatus());
         assertEquals("'Domain' type is not allowed in 'Root'",
                 importLog.getMessage());
