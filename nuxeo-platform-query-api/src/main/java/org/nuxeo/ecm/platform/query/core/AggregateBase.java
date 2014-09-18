@@ -22,23 +22,25 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
-import org.nuxeo.ecm.platform.query.api.AggregateQuery;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDateDefinition;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDefinition;
+import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 
 /**
  * @since 5.9.6
  */
-public class AggregateQueryImpl implements AggregateQuery {
+public class AggregateBase<B extends Bucket> implements Aggregate<B> {
 
     protected final AggregateDefinition definition;
     protected final DocumentModel searchDocument;
     protected List<String> selection;
+    protected List<B> buckets;
 
-    public AggregateQueryImpl(AggregateDefinition definition,
-            DocumentModel searchDocument) {
+    public AggregateBase(AggregateDefinition definition,
+                         DocumentModel searchDocument) {
         assert (definition != null);
         this.definition = definition;
         this.searchDocument = searchDocument;
@@ -98,9 +100,24 @@ public class AggregateQueryImpl implements AggregateQuery {
     }
 
     @Override
+    public List<B> getBuckets() {
+        return buckets;
+    }
+
+    @Override
+    public void setBuckets(List<B> buckets) {
+        this.buckets = buckets;
+    }
+
+    public DocumentModel getSearchDocument() {
+        return searchDocument;
+    }
+
+    @Override
     public String toString() {
-        return String.format("AggregateQueryImpl(%s, %s, %s, %s)", getId(),
+        return String.format("Aggregate(%s, %s, %s, %s, %s)", getId(),
                 getType(), getField(),
-                Arrays.toString(getSelection().toArray()));
+                (getSelection() != null) ? Arrays.toString(getSelection().toArray()): null,
+                (buckets != null) ? Arrays.toString(buckets.toArray()): null);
     }
 }

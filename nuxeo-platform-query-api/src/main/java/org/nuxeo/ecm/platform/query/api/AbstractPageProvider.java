@@ -31,7 +31,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.platform.query.core.AggregateQueryImpl;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
@@ -97,8 +96,6 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     protected PageProviderDefinition definition;
 
     protected PageProviderChangedListener pageProviderChangedListener;
-
-    protected  List<AggregateQueryImpl> aggregateQuery;
 
     /**
      * Returns the list of current page items.
@@ -449,7 +446,6 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     public void refresh() {
         setResultsCount(UNKNOWN_SIZE);
         setCurrentHigherNonEmptyPageIndex(-1);
-        aggregateQuery = null;
         currentSelectPage = null;
         errorMessage = null;
         error = null;
@@ -876,21 +872,8 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     @Override
-    public List<AggregateQuery> getAggregatesQuery() {
-        if (aggregateQuery == null) {
-            List<AggregateDefinition> aggDefinitions = definition.getAggregates();
-            if (aggDefinitions.isEmpty()) {
-                aggregateQuery = Collections.<AggregateQueryImpl>emptyList();
-            } else {
-                aggregateQuery = new ArrayList<AggregateQueryImpl>(aggDefinitions.size());
-                for(AggregateDefinition def: aggDefinitions){
-                    aggregateQuery.add(new AggregateQueryImpl(def, searchDocumentModel));
-                }
-            }
-        }
-        @SuppressWarnings("unchecked")
-        List<AggregateQuery> ret = (List<AggregateQuery>) (List<?>) aggregateQuery;
-        return ret;
+    public List<AggregateDefinition> getAggregateDefinitions() {
+        return definition.getAggregates();
     }
 
     @Override

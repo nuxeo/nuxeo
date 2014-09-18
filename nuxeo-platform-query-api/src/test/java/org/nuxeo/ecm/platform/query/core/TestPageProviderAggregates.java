@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
-import org.nuxeo.ecm.platform.query.api.AggregateQuery;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -131,7 +130,7 @@ public class TestPageProviderAggregates extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testAggregateQuery() throws Exception {
+    public void testAggregateSelection() throws Exception {
         PageProviderDefinition ppd = pps
                 .getPageProviderDefinition("TEST_AGGREGATES");
         HashMap<String, Serializable> props = new HashMap<String, Serializable>();
@@ -139,26 +138,25 @@ public class TestPageProviderAggregates extends SQLRepositoryTestCase {
                 (AbstractSession) session);
         DocumentModel searchDoc = new DocumentModelImpl("/", "doc",
                 "AdvancedSearch");
-        String[] query = { "for search", "you know" };
+        String[] query = {"for search", "you know"};
         searchDoc.setPropertyValue("search:source_agg", query);
         PageProvider<?> pp = pps.getPageProvider("TEST_AGGREGATES", ppd,
                 searchDoc, null, Long.valueOf(1), Long.valueOf(0), null);
         assertNotNull(pp);
 
-        List<AggregateQuery> qaggs = pp.getAggregatesQuery();
-        assertEquals(5, qaggs.size());
-
-        AggregateQuery source_agg = qaggs.get(0);
-        assertEquals(
-                "AggregateQueryImpl(source_agg, terms, dc:source, [for search, you know])",
-                source_agg.toString());
-
-        AggregateQuery coverage_agg = qaggs.get(1);
-        assertNotNull(coverage_agg.getSelection());
-        assertEquals(0, coverage_agg.getSelection().size());
-        assertEquals(
-                "AggregateQueryImpl(coverage_agg, histogram, dc:coverage, [])",
-                coverage_agg.toString());
+        List<AggregateDefinition> aggDefs = pp.getAggregateDefinitions();
+        assertEquals(5, aggDefs.size());
+        for (AggregateDefinition def : aggDefs) {
+            AggregateBase agg = new AggregateBase(def, pp.getSearchDocumentModel());
+            switch (agg.getId()) {
+                case "source_agg":
+                    assertEquals("Aggregate(source_agg, terms, dc:source, [for search, you know], null)",
+                            agg.toString());
+                    break;
+                case "coverage_agg":
+                    assertEquals("Aggregate(coverage_agg, histogram, dc:coverage, [], null)",
+                            agg.toString());
+            }
+        }
     }
-
 }

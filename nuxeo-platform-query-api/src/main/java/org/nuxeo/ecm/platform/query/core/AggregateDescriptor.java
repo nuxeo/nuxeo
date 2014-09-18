@@ -94,6 +94,7 @@ public class AggregateDescriptor implements AggregateDefinition {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void setRanges(List<AggregateRangeDefinition> ranges) {
         aggregateRanges = (List<AggregateRangeDescriptor>) (List<?>) ranges;
     }
@@ -106,6 +107,7 @@ public class AggregateDescriptor implements AggregateDefinition {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void setDateRanges(List<AggregateRangeDateDefinition> ranges) {
         aggregateDateRanges = (List<AggregateRangeDateDescriptor>) (List<?>) ranges;
     }

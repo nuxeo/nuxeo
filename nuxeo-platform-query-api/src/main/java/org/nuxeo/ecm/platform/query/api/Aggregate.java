@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.query.api;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @since 5.9.6
@@ -28,18 +29,42 @@ public interface Aggregate<B extends Bucket> {
     String getId();
 
     /**
-     * The aggregate type.
+     * Type of aggregation.
      */
     String getType();
 
     /**
-     * The aggregate query.
+     * Nuxeo field to aggregate.
      */
-    AggregateQuery getQuery();
+    String getField();
+
+    /**
+     * Properties of the aggregate.
+     */
+    Map<String, String> getProperties();
+
+    /**
+     * Range definition for aggregate of type range.
+     */
+    List<AggregateRangeDefinition> getRanges();
+
+    /**
+     * Date Range definition for aggregate of type date range.
+     */
+    List<AggregateRangeDateDefinition> getDateRanges();
+
+    /**
+     * The selection filter that is going to be applied to the main query as a
+     * post filter.
+     */
+    List<String> getSelection();
+
+    void setSelection(List<String> selection);
 
     /**
      * The aggregate results.
      */
     List<B> getBuckets();
 
+    void setBuckets(List<B> buckets);
 }
