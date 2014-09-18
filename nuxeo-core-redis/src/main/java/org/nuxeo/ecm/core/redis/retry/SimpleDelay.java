@@ -25,7 +25,7 @@ public class SimpleDelay implements Retry.Policy {
     @Override
     public void pause() {
         long computed = computeDelay();
-        LogFactory.getLog(SimpleDelay.class).trace("pausing for " + computed + " ms");
+        LogFactory.getLog(SimpleDelay.class).warn("pausing for " + computed + " ms");
         try {
             Thread.sleep(computed);
         } catch (InterruptedException e) {
