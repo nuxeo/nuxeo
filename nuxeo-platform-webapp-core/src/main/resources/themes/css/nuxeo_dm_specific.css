@@ -24,7 +24,7 @@ author: lkemen@nuxeo.com
 .nxMainContainer .tabsContent {
   background: none #fff;
   margin: 1px 1px 0;
-  padding: 1em 1.5em 2em }
+  padding: 2em 1.5em }
 
 .tabsContent .tabsContent {
   padding: 1em 0 }
@@ -58,10 +58,10 @@ author: lkemen@nuxeo.com
 
 /* =Clipboard & Worklist */
 .userClipboard {
-  background-color: #fff;
-  margin: 0 0 2em }
+  margin: 0 0 1.5em }
 
 .userClipboardContent {
+  background-color: #fff;
   margin: 0;
   padding: 0 1em 1em;
   word-wrap: break-word }
