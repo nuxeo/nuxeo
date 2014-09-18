@@ -344,7 +344,7 @@ input.tinyButton {
 /* Actions in left column */
 .column .action_bar {
   float:none;
-  margin: 0 0 1em }
+  margin: 0 0 1.5em }
 
 .column .widgetPanel .horizontalAction .button,
 .column .widgetPanel .horizontalAction:only-child,
