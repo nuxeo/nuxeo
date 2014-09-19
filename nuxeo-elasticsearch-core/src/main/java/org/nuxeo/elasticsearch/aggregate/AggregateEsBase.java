@@ -29,10 +29,10 @@ import org.nuxeo.ecm.platform.query.core.AggregateBase;
 /**
  * @since 5.9.6
  */
-public abstract class BaseEsAggregate<B extends Bucket> extends
+public abstract class AggregateEsBase<B extends Bucket> extends
         AggregateBase<B> {
 
-    public BaseEsAggregate(AggregateDefinition definition,
+    public AggregateEsBase(AggregateDefinition definition,
             DocumentModel searchDocument) {
         super(definition, searchDocument);
     }

@@ -213,11 +213,11 @@ public class TestAggregates {
         aggDef.setId("source");
         aggDef.setDocumentField("common:size");
         aggDef.setSearchField(new FieldDescriptor("advanced_search", "size_agg"));
-        List<AggregateRangeDescriptor> ranges = new ArrayList<AggregateRangeDescriptor>();
+        List<AggregateRangeDefinition> ranges = new ArrayList<>();
         ranges.add(new AggregateRangeDescriptor("small", null, 2048.0));
         ranges.add(new AggregateRangeDescriptor("medium", 2048.0, 6144.0));
         ranges.add(new AggregateRangeDescriptor("big", 6144.0, null));
-        aggDef.setRanges((List<AggregateRangeDefinition>) (List<?>) ranges);
+        aggDef.setRanges(ranges);
 
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document").addAggregate(
@@ -270,14 +270,14 @@ public class TestAggregates {
         aggDef.setDocumentField("dc:created");
         aggDef.setSearchField(new FieldDescriptor("advanced_search",
                 "created_agg"));
-        List<AggregateRangeDateDescriptor> ranges = new ArrayList<AggregateRangeDateDescriptor>();
+        List<AggregateRangeDateDefinition> ranges = new ArrayList<AggregateRangeDateDefinition>();
         ranges.add(new AggregateRangeDateDescriptor("10monthAgo", null,
                 "now-10M/M"));
         ranges.add(new AggregateRangeDateDescriptor("1monthAgo", "now-10M/M",
                 "now-1M/M"));
         ranges.add(new AggregateRangeDateDescriptor("thisMonth", "now-1M/M",
                 null));
-        aggDef.setDateRanges((List<AggregateRangeDateDefinition>) (List<?>) ranges);
+        aggDef.setDateRanges(ranges);
 
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document").addAggregate(
@@ -509,6 +509,7 @@ public class TestAggregates {
         Assert.assertEquals(
                 "Aggregate(nature, terms, dc:nature, [], [BucketTerm(Nature1, 4), BucketTerm(Nature0, 3)])",
                 pp.getAggregates().get("nature").toString());
+        @SuppressWarnings("unchecked")
         List<BucketRangeDate> buckets = pp.getAggregates().get("created")
                 .getBuckets();
         Assert.assertEquals(3, buckets.size());

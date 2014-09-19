@@ -36,7 +36,7 @@ import org.nuxeo.ecm.platform.query.core.BucketTerm;
 /**
  * @since 5.9.6
  */
-public class SignificantTermAggregate extends BaseEsAggregate<BucketTerm> {
+public class SignificantTermAggregate extends AggregateEsBase<BucketTerm> {
 
     public SignificantTermAggregate(AggregateDefinition definition,
             DocumentModel searchDocument) {

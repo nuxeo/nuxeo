@@ -43,7 +43,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
-import org.nuxeo.elasticsearch.aggregate.BaseEsAggregate;
+import org.nuxeo.elasticsearch.aggregate.AggregateEsBase;
 import org.nuxeo.elasticsearch.fetcher.EsFetcher;
 import org.nuxeo.elasticsearch.fetcher.Fetcher;
 import org.nuxeo.elasticsearch.fetcher.VcsFetcher;
@@ -62,7 +62,7 @@ public class NxQueryBuilder {
     private final CoreSession session;
     private final List<SortInfo> sortInfos = new ArrayList<SortInfo>();
     private final List<String> repositories = new ArrayList<String>();
-    private final List<BaseEsAggregate> aggregates = new ArrayList<BaseEsAggregate>();
+    private final List<AggregateEsBase> aggregates = new ArrayList<AggregateEsBase>();
     private int offset = 0;
     private String nxql;
     private org.elasticsearch.index.query.QueryBuilder esQueryBuilder;
@@ -156,12 +156,12 @@ public class NxQueryBuilder {
         return this;
     }
 
-    public NxQueryBuilder addAggregate(BaseEsAggregate aggregate) {
+    public NxQueryBuilder addAggregate(AggregateEsBase aggregate) {
         aggregates.add(aggregate);
         return this;
     }
 
-    public NxQueryBuilder addAggregates(List<BaseEsAggregate> aggregates) {
+    public NxQueryBuilder addAggregates(List<AggregateEsBase> aggregates) {
         if (aggregates != null && !aggregates.isEmpty()) {
             this.aggregates.addAll(aggregates);
         }
@@ -229,7 +229,7 @@ public class NxQueryBuilder {
     protected FilterBuilder getAggregateFilter() {
         boolean hasFilter = false;
         AndFilterBuilder ret = FilterBuilders.andFilter();
-        for (BaseEsAggregate agg : aggregates) {
+        for (AggregateEsBase agg : aggregates) {
             FilterBuilder filter = agg.getEsFilter();
             if (filter != null) {
                 ret.add(filter);
@@ -245,7 +245,7 @@ public class NxQueryBuilder {
     protected FilterBuilder getAggregateFilterExceptFor(String id) {
         boolean hasFilter = false;
         AndFilterBuilder ret = FilterBuilders.andFilter();
-        for (BaseEsAggregate agg : aggregates) {
+        for (AggregateEsBase agg : aggregates) {
             if (!agg.getId().equals(id)) {
                 FilterBuilder filter = agg.getEsFilter();
                 if (filter != null) {
@@ -260,13 +260,13 @@ public class NxQueryBuilder {
         return ret;
     }
 
-    public List<BaseEsAggregate> getAggregates() {
+    public List<AggregateEsBase> getAggregates() {
         return aggregates;
     }
 
     public List<FilterAggregationBuilder> getEsAggregates() {
         List<FilterAggregationBuilder> ret = new ArrayList<>(aggregates.size());
-        for (BaseEsAggregate agg : aggregates) {
+        for (AggregateEsBase agg : aggregates) {
             FilterAggregationBuilder fagg = new FilterAggregationBuilder(
                     getAggregateFilterId(agg));
             fagg.filter(getAggregateFilterExceptFor(agg.getId()));

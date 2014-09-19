@@ -34,7 +34,7 @@ public class AggregateFactory {
     private AggregateFactory() {
     }
 
-    public static BaseEsAggregate create(AggregateDefinition def,
+    public static AggregateEsBase create(AggregateDefinition def,
             DocumentModel searchDocumentModel) {
         switch (def.getType()) {
         case AGG_TYPE_TERMS:

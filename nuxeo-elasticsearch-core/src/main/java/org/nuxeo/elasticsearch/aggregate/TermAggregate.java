@@ -44,7 +44,7 @@ import org.nuxeo.ecm.platform.query.core.BucketTerm;
 /**
  * @since 5.9.6
  */
-public class TermAggregate extends BaseEsAggregate<BucketTerm> {
+public class TermAggregate extends AggregateEsBase<BucketTerm> {
 
     public TermAggregate(AggregateDefinition definition,
             DocumentModel searchDocument) {

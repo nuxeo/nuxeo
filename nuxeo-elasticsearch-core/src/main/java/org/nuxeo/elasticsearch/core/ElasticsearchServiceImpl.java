@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
-import org.nuxeo.elasticsearch.aggregate.BaseEsAggregate;
+import org.nuxeo.elasticsearch.aggregate.AggregateEsBase;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.api.EsResult;
 import org.nuxeo.elasticsearch.fetcher.Fetcher;
@@ -129,7 +129,7 @@ public class ElasticsearchServiceImpl implements ElasticSearchService {
 
     protected List<Aggregate> getAggregates(NxQueryBuilder queryBuilder,
             SearchResponse response) {
-        for (BaseEsAggregate agg : queryBuilder.getAggregates()) {
+        for (AggregateEsBase agg : queryBuilder.getAggregates()) {
             InternalFilter filter = response.getAggregations().get(
                     NxQueryBuilder.getAggregateFilterId(agg));
             if (filter == null) {

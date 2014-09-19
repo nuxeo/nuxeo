@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.query.core.BucketRange;
 /**
  * @since 5.9.6
  */
-public class RangeAggregate extends BaseEsAggregate<BucketRange> {
+public class RangeAggregate extends AggregateEsBase<BucketRange> {
 
     public RangeAggregate(AggregateDefinition definition,
             DocumentModel searchDocument) {

@@ -42,7 +42,7 @@ import org.nuxeo.ecm.platform.query.core.BucketTerm;
 /**
  * @since 5.9.6
  */
-public class HistogramAggregate extends BaseEsAggregate<BucketTerm> {
+public class HistogramAggregate extends AggregateEsBase<BucketTerm> {
 
     public HistogramAggregate(AggregateDefinition definition,
             DocumentModel searchDocument) {

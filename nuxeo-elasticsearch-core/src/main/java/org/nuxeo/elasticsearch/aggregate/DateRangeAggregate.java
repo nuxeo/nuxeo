@@ -39,7 +39,7 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_FORMAT_PROP;
 /**
  * @since 5.9.6
  */
-public class DateRangeAggregate extends BaseEsAggregate<BucketRangeDate> {
+public class DateRangeAggregate extends AggregateEsBase<BucketRangeDate> {
 
     public DateRangeAggregate(AggregateDefinition definition,
             DocumentModel searchDocument) {
