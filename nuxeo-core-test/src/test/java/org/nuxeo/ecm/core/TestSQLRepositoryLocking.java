@@ -13,6 +13,7 @@ package org.nuxeo.ecm.core;
 
 import java.util.concurrent.CountDownLatch;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,6 +46,7 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
         return true;
     }
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -54,6 +56,11 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
             TransactionHelper.commitOrRollbackTransaction();
             openSession();
         }
+    }
+
+    @After
+    public void waitForWorkers() {
+        super.waitForAsyncCompletion();
     }
 
     protected void nextTX() throws Exception {
