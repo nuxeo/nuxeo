@@ -143,22 +143,33 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
                         "interval property must be defined for " + toString());
             }
             interval = convertToTimeValueString(interval);
-            intervalMillis = (int) TimeValue.parseTimeValue(interval, null).getMillis();
+            intervalMillis = (int) TimeValue.parseTimeValue(interval, null)
+                    .getMillis();
         }
         return intervalMillis;
     }
 
     private String convertToTimeValueString(String interval) {
-        String ret = interval.replace("second", "1s");
-        ret = ret.replace("minute", "1m");
-        ret = ret.replace("hour", "1h");
-        ret = ret.replace("day", "1d");
-        ret = ret.replace("week", "1w");
-        ret = ret.replace("year", "365d");
-        // may be wrong here ...
-        ret = ret.replace("month", "30d");
-        ret = ret.replace("quarter", "91d");
-        return ret;
+        switch (interval.toLowerCase()) {
+        case "second":
+            return "1s";
+        case "minute":
+            return "1m";
+        case "hour":
+            return "1h";
+        case "day":
+            return "1d";
+        case "week":
+            return "7d";
+        case "year":
+            return "365d";
+            // may be wrong here ...
+        case "month":
+            return "30d";
+        case "quarter":
+            return "91d";
+        }
+        return interval;
     }
 
 }
