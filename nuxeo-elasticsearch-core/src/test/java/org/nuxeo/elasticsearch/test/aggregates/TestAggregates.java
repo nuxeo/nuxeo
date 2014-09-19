@@ -27,6 +27,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.SystemUtils;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,10 +48,6 @@ import org.nuxeo.ecm.platform.query.core.AggregateRangeDescriptor;
 import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
 import org.nuxeo.ecm.platform.query.core.FieldDescriptor;
 import org.nuxeo.elasticsearch.aggregate.AggregateFactory;
-import org.nuxeo.elasticsearch.aggregate.DateRangeAggregate;
-import org.nuxeo.elasticsearch.aggregate.RangeAggregate;
-import org.nuxeo.elasticsearch.aggregate.SignificantTermAggregate;
-import org.nuxeo.elasticsearch.aggregate.TermAggregate;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
@@ -123,10 +121,9 @@ public class TestAggregates {
         aggDef.setProperty("exclude", "foo*");
         aggDef.setProperty("include", "bar*");
         aggDef.setProperty("order", "count asc");
-
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document").addAggregate(
-                new TermAggregate(aggDef, null));
+                AggregateFactory.create(aggDef, null));
 
         SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
                 .setTypes(TYPE_NAME);
@@ -175,7 +172,7 @@ public class TestAggregates {
 
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document").addAggregate(
-                new SignificantTermAggregate(aggDef, null));
+                AggregateFactory.create(aggDef, null));
 
         SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
                 .setTypes(TYPE_NAME);
@@ -218,10 +215,9 @@ public class TestAggregates {
         ranges.add(new AggregateRangeDescriptor("medium", 2048.0, 6144.0));
         ranges.add(new AggregateRangeDescriptor("big", 6144.0, null));
         aggDef.setRanges(ranges);
-
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document").addAggregate(
-                new RangeAggregate(aggDef, null));
+                AggregateFactory.create(aggDef, null));
 
         SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
                 .setTypes(TYPE_NAME);
@@ -278,10 +274,9 @@ public class TestAggregates {
         ranges.add(new AggregateRangeDateDescriptor("thisMonth", "now-1M/M",
                 null));
         aggDef.setDateRanges(ranges);
-
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document").addAggregate(
-                new DateRangeAggregate(aggDef, null));
+                AggregateFactory.create(aggDef, null));
 
         SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
                 .setTypes(TYPE_NAME);
@@ -312,7 +307,98 @@ public class TestAggregates {
     }
 
     @Test
-    public void testAggregateQuery() throws Exception {
+    public void testAggregateHistogramQuery() throws Exception {
+        AggregateDefinition aggDef = new AggregateDescriptor();
+        aggDef.setType("histogram");
+        aggDef.setId("size");
+        aggDef.setDocumentField("common:size");
+        aggDef.setSearchField(new FieldDescriptor("advanced_search", "size_agg"));
+        aggDef.setProperty("interval", "1024");
+        aggDef.setProperty("extendedBoundsMin", "0");
+        aggDef.setProperty("extendedBoundsMax", "10240");
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document").addAggregate(
+                AggregateFactory.create(aggDef, null));
+        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME);
+        qb.updateRequest(request);
+        assertEqualsEvenUnderWindows("{\n" //
+                + "  \"from\" : 0,\n" //
+                + "  \"size\" : 10,\n" //
+                + "  \"query\" : {\n" //
+                + "    \"match_all\" : { }\n" //
+                + "  },\n" //
+                + "  \"aggregations\" : {\n" //
+                + "    \"size_filter\" : {\n" //
+                + "      \"filter\" : {\n" //
+                + "        \"match_all\" : { }\n" //
+                + "      },\n" //
+                + "      \"aggregations\" : {\n" //
+                + "        \"size\" : {\n" //
+                + "          \"histogram\" : {\n" //
+                + "            \"field\" : \"common:size\",\n" //
+                + "            \"interval\" : 1024,\n" //
+                + "            \"extended_bounds\" : {\n" //
+                + "              \"min\" : 0,\n" //
+                + "              \"max\" : 10240\n" //
+                + "            }\n" //
+                + "          }\n" //
+                + "        }\n" //
+                + "      }\n" //
+                + "    }\n" //
+                + "  }\n" //
+                + "}", //
+                request.toString());
+    }
+
+    @Test
+    public void testAggregateDateHistogramQuery() throws Exception {
+        AggregateDefinition aggDef = new AggregateDescriptor();
+        aggDef.setType("date_histogram");
+        aggDef.setId("created");
+        aggDef.setDocumentField("dc:created");
+        aggDef.setSearchField(new FieldDescriptor("advanced_search",
+                "created_agg"));
+        aggDef.setProperty("interval", "month");
+        aggDef.setProperty("order", "count desc");
+        aggDef.setProperty("minDocCounts", "5");
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document").addAggregate(
+                AggregateFactory.create(aggDef, null));
+        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME);
+        qb.updateRequest(request);
+
+        assertEqualsEvenUnderWindows("{\n" //
+                + "  \"from\" : 0,\n" //
+                + "  \"size\" : 10,\n" //
+                + "  \"query\" : {\n" //
+                + "    \"match_all\" : { }\n" //
+                + "  },\n" //
+                + "  \"aggregations\" : {\n" //
+                + "    \"created_filter\" : {\n" //
+                + "      \"filter\" : {\n" //
+                + "        \"match_all\" : { }\n" //
+                + "      },\n" //
+                + "      \"aggregations\" : {\n" //
+                + "        \"created\" : {\n" //
+                + "          \"date_histogram\" : {\n" //
+                + "            \"field\" : \"dc:created\",\n" //
+                + "            \"interval\" : \"month\",\n" //
+                + "            \"order\" : {\n" //
+                + "              \"_count\" : \"desc\"\n" //
+                + "            }\n" //
+                + "          }\n" //
+                + "        }\n" //
+                + "      }\n" //
+                + "    }\n" //
+                + "  }\n" //
+                + "}", //
+                request.toString());
+    }
+
+    @Test
+    public void testAggregateMultiAggregatesQuery() throws Exception {
 
         AggregateDefinition aggDef1 = new AggregateDescriptor();
         aggDef1.setType("terms");
@@ -436,15 +522,19 @@ public class TestAggregates {
         Assert.assertEquals(
                 "Aggregate(size_histo, histogram, common:size, [], [BucketRange(1024, 1, 1024,00, 2048,00), BucketRange(2048, 1, 2048,00, 3072,00)])",
                 pp.getAggregates().get("size_histo").toString());
-        Assert.assertEquals(3, pp.getAggregates().get("created").getBuckets().size());
-        Assert.assertEquals(2, pp.getAggregates().get("created_histo").getBuckets().size());
+        Assert.assertEquals(3, pp.getAggregates().get("created").getBuckets()
+                .size());
+        Assert.assertEquals(2, pp.getAggregates().get("created_histo")
+                .getBuckets().size());
         // output depends on current date
-        // Assert.assertEquals("Aggregate(created, date_range, dc:created, [], [BucketRangeDate(long_time_ago, 0, null, 2014-07-11T14:26:32.590+02:00), BucketRangeDate(some_time_ago, 0, 2014-07-11T14:26:32.590+02:00, 2014-08-29T14:26:32.590+02:00), BucketRangeDate(last_month, 2, 2014-08-29T14:26:32.590+02:00, null)])", pp.getAggregates().get("created").toString());
-        // Assert.assertEquals("Aggregate(created_histo, date_histogram, dc:created, [], [BucketRangeDate(31-08-2014, 1, 2014-08-31T23:30:00.000+02:00, 2014-09-07T23:30:00.000+02:00), BucketRangeDate(07-09-2014, 1, 2014-09-07T23:30:00.000+02:00, 2014-09-14T23:30:00.000+02:00)])", pp.getAggregates().get("created_histo").toString());
+        // Assert.assertEquals("Aggregate(created, date_range, dc:created, [], [BucketRangeDate(long_time_ago, 0, null, 2014-07-11T14:26:32.590+02:00), BucketRangeDate(some_time_ago, 0, 2014-07-11T14:26:32.590+02:00, 2014-08-29T14:26:32.590+02:00), BucketRangeDate(last_month, 2, 2014-08-29T14:26:32.590+02:00, null)])",
+        // pp.getAggregates().get("created").toString());
+        // Assert.assertEquals("Aggregate(created_histo, date_histogram, dc:created, [], [BucketRangeDate(31-08-2014, 1, 2014-08-31T23:30:00.000+02:00, 2014-09-07T23:30:00.000+02:00), BucketRangeDate(07-09-2014, 1, 2014-09-07T23:30:00.000+02:00, 2014-09-14T23:30:00.000+02:00)])",
+        // pp.getAggregates().get("created_histo").toString());
     }
 
     @Test
-    public void testPageProviderRange() throws Exception {
+    public void testPageProviderWithRangeSelection() throws Exception {
         buildDocs();
 
         PageProviderService pps = Framework
@@ -485,7 +575,7 @@ public class TestAggregates {
     }
 
     @Test
-    public void testPageProviderDateRange() throws Exception {
+    public void testPageProviderWithDateRangeSelection() throws Exception {
         buildDocs();
 
         PageProviderService pps = Framework
@@ -525,6 +615,74 @@ public class TestAggregates {
         Assert.assertEquals(7, buckets.get(1).getDocCount());
         Assert.assertEquals("last_month", buckets.get(2).getKey());
         Assert.assertEquals(3, buckets.get(2).getDocCount());
+    }
+
+    @Test
+    public void testPageProviderWithHistogramSelection() throws Exception {
+        buildDocs();
+
+        PageProviderService pps = Framework
+                .getService(PageProviderService.class);
+        Assert.assertNotNull(pps);
+
+        PageProviderDefinition ppdef = pps
+                .getPageProviderDefinition("aggregates_1");
+        Assert.assertNotNull(ppdef);
+        DocumentModel model = new DocumentModelImpl("/", "doc",
+                "AdvancedSearch");
+        String[] sizes = { "1024", "4096" };
+        model.setProperty("advanced_search", "size_histo_agg", sizes);
+
+        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY,
+                (Serializable) session);
+
+        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
+                null, null, (long) 0, props);
+
+        Assert.assertEquals(7, pp.getAggregates().size());
+        Assert.assertEquals(2, pp.getResultsCount());
+        Assert.assertEquals(
+                "Aggregate(size_histo, histogram, common:size, [1024, 4096], [BucketRange(0, 1, 0,00, 1024,00), BucketRange(1024, 1, 1024,00, 2048,00), BucketRange(2048, 1, 2048,00, 3072,00), BucketRange(3072, 1, 3072,00, 4096,00), BucketRange(4096, 1, 4096,00, 5120,00), BucketRange(5120, 1, 5120,00, 6144,00), BucketRange(6144, 1, 6144,00, 7168,00), BucketRange(7168, 1, 7168,00, 8192,00), BucketRange(8192, 1, 8192,00, 9216,00), BucketRange(9216, 1, 9216,00, 10240,00)])",
+                pp.getAggregates().get("size_histo").toString());
+        Assert.assertEquals(
+                "Aggregate(source, terms, dc:source, [], [BucketTerm(Source1, 1), BucketTerm(Source4, 1)])",
+                pp.getAggregates().get("source").toString());
+    }
+
+    @Test
+    public void testPageProviderWithDateHistogramSelection() throws Exception {
+        buildDocs();
+
+        PageProviderService pps = Framework
+                .getService(PageProviderService.class);
+        Assert.assertNotNull(pps);
+
+        PageProviderDefinition ppdef = pps
+                .getPageProviderDefinition("aggregates_1");
+        Assert.assertNotNull(ppdef);
+        DocumentModel model = new DocumentModelImpl("/", "doc",
+                "AdvancedSearch");
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("dd-MM-yyy");
+        String[] created = {
+                fmt.print(new DateTime().minusWeeks(3).getMillis()),
+                fmt.print(new DateTime().minusWeeks(6).getMillis()) };
+        model.setProperty("advanced_search", "created_histo_agg", created);
+        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY,
+                (Serializable) session);
+
+        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
+                null, null, (long) 0, props);
+
+        Assert.assertEquals(7, pp.getAggregates().size());
+        Assert.assertEquals(2, pp.getResultsCount());
+        Assert.assertEquals(
+                "Aggregate(size_histo, histogram, common:size, [], [BucketRange(3072, 1, 3072,00, 4096,00), BucketRange(6144, 1, 6144,00, 7168,00)])",
+                pp.getAggregates().get("size_histo").toString());
+        Assert.assertEquals(
+                "Aggregate(source, terms, dc:source, [], [BucketTerm(Source3, 1), BucketTerm(Source6, 1)])",
+                pp.getAggregates().get("source").toString());
     }
 
     protected void assertEqualsEvenUnderWindows(String expected, String actual) {

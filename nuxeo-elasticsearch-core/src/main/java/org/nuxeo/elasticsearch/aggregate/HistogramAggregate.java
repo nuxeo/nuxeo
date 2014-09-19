@@ -31,7 +31,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.OrFilterBuilder;
+import org.elasticsearch.index.query.RangeFilterBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
@@ -87,9 +89,20 @@ public class HistogramAggregate extends AggregateEsBase<BucketRange> {
     }
 
     @Override
-    public FilterBuilder getEsFilter() {
-        // Not implemented
-        return null;
+    public OrFilterBuilder getEsFilter() {
+        if (getSelection().isEmpty()) {
+            return null;
+        }
+        OrFilterBuilder ret = FilterBuilders.orFilter();
+        for (String sel : getSelection()) {
+            RangeFilterBuilder rangeFilter = FilterBuilders
+                    .rangeFilter(getField());
+            long from = Long.parseLong(sel);
+            long to = from + getInterval();
+            rangeFilter.gte(from).lt(to);
+            ret.add(rangeFilter);
+        }
+        return ret;
     }
 
     @Override

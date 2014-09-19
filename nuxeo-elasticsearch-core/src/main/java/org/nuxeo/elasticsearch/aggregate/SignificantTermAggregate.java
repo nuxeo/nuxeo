@@ -63,7 +63,6 @@ public class SignificantTermAggregate extends AggregateEsBase<BucketTerm> {
             return null;
         }
         return FilterBuilders.termsFilter(getField(), getSelection());
-
     }
 
     @Override

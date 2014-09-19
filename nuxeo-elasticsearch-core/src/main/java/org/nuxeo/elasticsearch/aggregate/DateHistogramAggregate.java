@@ -37,12 +37,17 @@ import java.util.Map;
 
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.OrFilterBuilder;
+import org.elasticsearch.index.query.RangeFilterBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogram;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramBuilder;
 import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
@@ -109,8 +114,32 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
 
     @Override
     public FilterBuilder getEsFilter() {
-        // Not implemented
-        return null;
+        if (getSelection().isEmpty()) {
+            return null;
+        }
+        OrFilterBuilder ret = FilterBuilders.orFilter();
+        for (String sel : getSelection()) {
+            RangeFilterBuilder rangeFilter = FilterBuilders
+                    .rangeFilter(getField());
+            long from = convertStringToDate(sel);
+            long to = from + getIntervalInMillis();
+            rangeFilter.gte(from).lt(to);
+            ret.add(rangeFilter);
+        }
+        return ret;
+    }
+
+    private long convertStringToDate(String date) {
+        Map<String, String> props = getProperties();
+        DateTimeFormatter fmt;
+        if (props.containsKey(AGG_FORMAT_PROP)) {
+            fmt = DateTimeFormat.forPattern(props.get(AGG_FORMAT_PROP));
+        } else {
+            throw new IllegalArgumentException(
+                    "format property must be defined for " + toString());
+        }
+        // TODO should take in account all the locale zone stuff ...
+        return fmt.parseDateTime(date).getMillis();
     }
 
     @Override
