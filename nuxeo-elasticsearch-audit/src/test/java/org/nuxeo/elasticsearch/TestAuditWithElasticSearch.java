@@ -20,7 +20,11 @@ package org.nuxeo.elasticsearch;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.Assert;
 
@@ -29,8 +33,13 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.platform.audit.api.AuditAdmin;
+import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
+import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
+import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
@@ -107,7 +116,8 @@ public class TestAuditWithElasticSearch {
 
         Assert.assertEquals(2, trail.size());
         
-        Assert.assertEquals(1, trail.get(0).getId());
+        
+        Long startId = trail.get(0).getId();
         Assert.assertEquals("documentCreated", trail.get(0).getEventId());
         Assert.assertEquals("eventDocumentCategory", trail.get(0).getCategory());
         Assert.assertEquals(
@@ -115,13 +125,83 @@ public class TestAuditWithElasticSearch {
                 trail.get(0).getExtendedInfos().get("title").getValue(
                         String.class));
         
-        Assert.assertEquals(2, trail.get(1).getId());
+        Assert.assertEquals(startId+1, trail.get(1).getId());
         Assert.assertEquals("documentModified", trail.get(1).getEventId());
         Assert.assertEquals("eventDocumentCategory", trail.get(1).getCategory());
         Assert.assertEquals(
                 "A modified File",
                 trail.get(1).getExtendedInfos().get("title").getValue(
-                        String.class));
+                        String.class));        
     }
 
+    
+    protected Map<String, ExtendedInfo> createExtendedInfos() {
+        Map<String, ExtendedInfo> infos = new HashMap<String, ExtendedInfo>();
+        ExtendedInfo info = ExtendedInfoImpl.createExtendedInfo(new Long(1));
+        infos.put("id", info);
+        return infos;
+    }
+    protected LogEntry doCreateEntry(String docId, String eventId, String category) {
+        LogEntry createdEntry = new LogEntryImpl();
+        createdEntry.setEventId(eventId);
+        createdEntry.setCategory(category);
+        createdEntry.setDocUUID(docId);
+        createdEntry.setEventDate(new Date());
+        createdEntry.setDocPath("/" + docId);
+        createdEntry.setRepositoryId("test");
+        createdEntry.setExtendedInfos(createExtendedInfos());
+        
+        return createdEntry;
+    }
+
+    @Test
+    public void shouldSupportMultiCriteriaQueries() throws Exception {
+        
+        List<LogEntry> entries = new ArrayList<>();
+        
+        AuditLogger logger = Framework.getLocalService(AuditLogger.class);
+        Assert.assertNotNull(logger);
+
+        for (int i = 0; i < 9; i++) {
+            entries.add(doCreateEntry("d"+i%5, "evt" + i, "cat" + i%2));            
+        }
+        logger.addLogEntries(entries);
+        flushAndSync();
+        
+        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        
+        // simple Query
+        String[] evts = {"evt1","evt2"};        
+        List<LogEntry> res = reader.queryLogs(evts, null);
+        Assert.assertNotNull(res);
+        Assert.assertEquals(2, res.size());
+
+        evts = new String[] {"evt1",};        
+        res = reader.queryLogs(evts, null);
+        Assert.assertEquals(1, res.size());
+        
+        evts = new String[] {"evt",};        
+        res = reader.queryLogs(evts, null);
+        Assert.assertEquals(0, res.size());        
+       
+        // multi  Query
+        evts = new String[] {"evt1","evt2"};
+        String[] cats = {"cat1"};
+        res =  reader.queryLogsByPage(evts, (Date) null, cats, null, 0, 5);
+        Assert.assertEquals(1, res.size());
+        
+        evts = new String[] {"evt1","evt2"};
+        cats = new String[] {"cat1", "cat0"};
+        res =  reader.queryLogsByPage(evts, (Date) null, cats, null, 0, 5);
+        Assert.assertEquals(2, res.size());
+
+        // test page size
+        res =  reader.queryLogsByPage((String[]) null, (Date) null, (String[])null, null, 0, 5);
+        Assert.assertEquals(5, res.size());
+        
+        res =  reader.queryLogsByPage((String[]) null, (Date) null, (String[])null, null, 1, 5);
+        Assert.assertEquals(4, res.size());
+                
+    }
+    
 }
