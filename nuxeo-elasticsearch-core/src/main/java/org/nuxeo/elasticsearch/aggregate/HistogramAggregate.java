@@ -26,6 +26,7 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_KEY_ASC;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_KEY_DESC;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_PROP;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -37,12 +38,14 @@ import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
 import org.elasticsearch.search.aggregations.bucket.histogram.HistogramBuilder;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
-import org.nuxeo.ecm.platform.query.core.BucketTerm;
+import org.nuxeo.ecm.platform.query.core.BucketRange;
 
 /**
  * @since 5.9.6
  */
-public class HistogramAggregate extends AggregateEsBase<BucketTerm> {
+public class HistogramAggregate extends AggregateEsBase<BucketRange> {
+
+    private Integer interval;
 
     public HistogramAggregate(AggregateDefinition definition,
             DocumentModel searchDocument) {
@@ -54,9 +57,7 @@ public class HistogramAggregate extends AggregateEsBase<BucketTerm> {
         HistogramBuilder ret = AggregationBuilders.histogram(getId()).field(
                 getField());
         Map<String, String> props = getProperties();
-        if (props.containsKey(AGG_INTERVAL_PROP)) {
-            ret.interval(Integer.parseInt(props.get(AGG_INTERVAL_PROP)));
-        }
+        ret.interval(getInterval());
         if (props.containsKey(AGG_MIN_DOC_COUNT_PROP)) {
             ret.minDocCount(Long.parseLong(props.get(AGG_MIN_DOC_COUNT_PROP)));
         }
@@ -85,13 +86,35 @@ public class HistogramAggregate extends AggregateEsBase<BucketTerm> {
         return ret;
     }
 
-    @Override public FilterBuilder getEsFilter() {
+    @Override
+    public FilterBuilder getEsFilter() {
         // Not implemented
         return null;
     }
 
-    @Override public void extractEsBuckets(
+    @Override
+    public void parseEsBuckets(
             Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
-        // TODO impl
+        List<BucketRange> nxBuckets = new ArrayList<BucketRange>(buckets.size());
+        for (MultiBucketsAggregation.Bucket bucket : buckets) {
+            Histogram.Bucket histoBucket = (Histogram.Bucket) bucket;
+            nxBuckets.add(new BucketRange(bucket.getKey(), histoBucket
+                    .getKeyAsNumber(), histoBucket.getKeyAsNumber().intValue()
+                    + getInterval(), histoBucket.getDocCount()));
+        }
+        this.buckets = nxBuckets;
+    }
+
+    public int getInterval() {
+        if (interval == null) {
+            Map<String, String> props = getProperties();
+            if (props.containsKey(AGG_INTERVAL_PROP)) {
+                interval = Integer.parseInt(props.get(AGG_INTERVAL_PROP));
+            } else {
+                throw new IllegalArgumentException(
+                        "interval property must be defined for " + toString());
+            }
+        }
+        return interval;
     }
 }

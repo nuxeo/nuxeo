@@ -30,24 +30,29 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_POST_ZONE_PROP;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_PRE_ZONE_PROP;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TIME_ZONE_PROP;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogram;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramBuilder;
 import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
+import org.joda.time.DateTime;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
-import org.nuxeo.ecm.platform.query.core.BucketTerm;
+import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
 
 /**
  * @since 5.9.6
  */
-public class DateHistogramAggregate extends AggregateEsBase<BucketTerm> {
+public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
+
+    Integer intervalMillis;
 
     public DateHistogramAggregate(AggregateDefinition definition,
             DocumentModel searchDocument) {
@@ -102,14 +107,58 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketTerm> {
         return ret;
     }
 
-    @Override public FilterBuilder getEsFilter() {
+    @Override
+    public FilterBuilder getEsFilter() {
         // Not implemented
         return null;
     }
 
-    @Override public void extractEsBuckets(
+    @Override
+    public void parseEsBuckets(
             Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
-        // TODO
+        List<BucketRangeDate> nxBuckets = new ArrayList<BucketRangeDate>(
+                buckets.size());
+        for (MultiBucketsAggregation.Bucket bucket : buckets) {
+            DateHistogram.Bucket dateHistoBucket = (DateHistogram.Bucket) bucket;
+            DateTime from = getDateTime(dateHistoBucket.getKeyAsDate());
+            DateTime to = addInterval(from);
+            nxBuckets.add(new BucketRangeDate(bucket.getKey(), from, to,
+                    dateHistoBucket.getDocCount()));
+        }
+        this.buckets = nxBuckets;
+    }
+
+    private DateTime addInterval(DateTime from) {
+        return new DateTime(from.getMillis() + getIntervalInMillis());
+    }
+
+    public int getIntervalInMillis() {
+        if (intervalMillis == null) {
+            String interval;
+            Map<String, String> props = getProperties();
+            if (props.containsKey(AGG_INTERVAL_PROP)) {
+                interval = props.get(AGG_INTERVAL_PROP);
+            } else {
+                throw new IllegalArgumentException(
+                        "interval property must be defined for " + toString());
+            }
+            interval = convertToTimeValueString(interval);
+            intervalMillis = (int) TimeValue.parseTimeValue(interval, null).getMillis();
+        }
+        return intervalMillis;
+    }
+
+    private String convertToTimeValueString(String interval) {
+        String ret = interval.replace("second", "1s");
+        ret = ret.replace("minute", "1m");
+        ret = ret.replace("hour", "1h");
+        ret = ret.replace("day", "1d");
+        ret = ret.replace("week", "1w");
+        ret = ret.replace("year", "365d");
+        // may be wrong here ...
+        ret = ret.replace("month", "30d");
+        ret = ret.replace("quarter", "91d");
+        return ret;
     }
 
 }

@@ -81,14 +81,16 @@ public class RangeAggregate extends AggregateEsBase<BucketRange> {
         return ret;
     }
 
-    @Override public void extractEsBuckets(
+    @Override
+    public void parseEsBuckets(
             Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
         List<BucketRange> nxBuckets = new ArrayList<BucketRange>(buckets.size());
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
             Range.Bucket rangeBucket = (Range.Bucket) bucket;
-            nxBuckets.add(
-                    new BucketRange(bucket.getKey(), rangeBucket.getFrom(),
-                            rangeBucket.getTo(), rangeBucket.getDocCount()));
+            nxBuckets
+                    .add(new BucketRange(bucket.getKey(),
+                            rangeBucket.getFrom(), rangeBucket.getTo(),
+                            rangeBucket.getDocCount()));
         }
         this.buckets = nxBuckets;
     }

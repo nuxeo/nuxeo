@@ -94,12 +94,13 @@ public class TermAggregate extends AggregateEsBase<BucketTerm> {
         return FilterBuilders.termsFilter(getField(), getSelection());
     }
 
-    @Override public void extractEsBuckets(
+    @Override
+    public void parseEsBuckets(
             Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
         List<BucketTerm> nxBuckets = new ArrayList<BucketTerm>(buckets.size());
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
-            nxBuckets.add(new BucketTerm(bucket.getKey(), bucket
-                    .getDocCount()));
+            nxBuckets
+                    .add(new BucketTerm(bucket.getKey(), bucket.getDocCount()));
         }
         this.buckets = nxBuckets;
     }

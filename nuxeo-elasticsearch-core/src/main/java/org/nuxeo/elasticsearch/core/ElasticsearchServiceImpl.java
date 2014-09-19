@@ -142,7 +142,7 @@ public class ElasticsearchServiceImpl implements ElasticSearchService {
             if (mba == null) {
                 continue;
             }
-            agg.extractEsBuckets(mba.getBuckets());
+            agg.parseEsBuckets(mba.getBuckets());
         }
         @SuppressWarnings("unchecked")
         List<Aggregate> ret = (List<Aggregate>) (List<?>) queryBuilder

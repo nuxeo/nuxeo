@@ -16,11 +16,13 @@
  */
 package org.nuxeo.elasticsearch.aggregate;
 
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_FORMAT_PROP;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import java.util.Map;
+
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.OrFilterBuilder;
 import org.elasticsearch.index.query.RangeFilterBuilder;
@@ -33,8 +35,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDateDefinition;
 import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
-
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_FORMAT_PROP;
 
 /**
  * @since 5.9.6
@@ -92,25 +92,19 @@ public class DateRangeAggregate extends AggregateEsBase<BucketRangeDate> {
         return ret;
     }
 
-    @Override public void extractEsBuckets(
+    @Override
+    public void parseEsBuckets(
             Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
-        List<BucketRangeDate> nxBuckets = new ArrayList<BucketRangeDate>(buckets.size());
+        List<BucketRangeDate> nxBuckets = new ArrayList<BucketRangeDate>(
+                buckets.size());
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
             DateRange.Bucket rangeBucket = (DateRange.Bucket) bucket;
             nxBuckets.add(new BucketRangeDate(bucket.getKey(),
                     getDateTime(rangeBucket.getFromAsDate()),
-                    getDateTime(rangeBucket.getToAsDate()),
-                    rangeBucket.getDocCount()));
+                    getDateTime(rangeBucket.getToAsDate()), rangeBucket
+                            .getDocCount()));
         }
         this.buckets = nxBuckets;
-    }
-
-    private DateTime getDateTime(
-            org.elasticsearch.common.joda.time.DateTime date) {
-        if (date == null) {
-            return null;
-        }
-        return new DateTime(date.getMillis());
     }
 
 }

@@ -433,7 +433,14 @@ public class TestAggregates {
         Assert.assertEquals(
                 "Aggregate(size, range, common:size, [], [BucketRange(small, 1, -Infinity, 2048,00), BucketRange(medium, 1, 2048,00, 6144,00), BucketRange(big, 0, 6144,00, Infinity)])",
                 pp.getAggregates().get("size").toString());
-
+        Assert.assertEquals(
+                "Aggregate(size_histo, histogram, common:size, [], [BucketRange(1024, 1, 1024,00, 2048,00), BucketRange(2048, 1, 2048,00, 3072,00)])",
+                pp.getAggregates().get("size_histo").toString());
+        Assert.assertEquals(3, pp.getAggregates().get("created").getBuckets().size());
+        Assert.assertEquals(2, pp.getAggregates().get("created_histo").getBuckets().size());
+        // output depends on current date
+        // Assert.assertEquals("Aggregate(created, date_range, dc:created, [], [BucketRangeDate(long_time_ago, 0, null, 2014-07-11T14:26:32.590+02:00), BucketRangeDate(some_time_ago, 0, 2014-07-11T14:26:32.590+02:00, 2014-08-29T14:26:32.590+02:00), BucketRangeDate(last_month, 2, 2014-08-29T14:26:32.590+02:00, null)])", pp.getAggregates().get("created").toString());
+        // Assert.assertEquals("Aggregate(created_histo, date_histogram, dc:created, [], [BucketRangeDate(31-08-2014, 1, 2014-08-31T23:30:00.000+02:00, 2014-09-07T23:30:00.000+02:00), BucketRangeDate(07-09-2014, 1, 2014-09-07T23:30:00.000+02:00, 2014-09-14T23:30:00.000+02:00)])", pp.getAggregates().get("created_histo").toString());
     }
 
     @Test

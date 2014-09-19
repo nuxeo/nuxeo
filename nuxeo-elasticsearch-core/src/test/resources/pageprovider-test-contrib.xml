@@ -234,7 +234,7 @@
         <aggregate id="created_histo" type="date_histogram" parameter="dc:created">
           <field schema="advanced_search" name="created_histo_agg"/>
           <properties>
-            <property name="interval">2w</property>
+            <property name="interval">week</property>
             <property name="format">dd-MM-yyy</property>
             <property name="extendedBoundsMin">now-1m</property>
             <property name="extendedBoundsMax">now</property>
