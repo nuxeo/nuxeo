@@ -23,19 +23,22 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.csv.QuoteMode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.theme.formats.styles.Style;
-
-import au.com.bytecode.opencsv.CSVWriter;
-import au.com.bytecode.opencsv.CSVReader;
 
 import com.phloc.css.CCSS;
 import com.phloc.css.ECSSVersion;
@@ -62,8 +65,13 @@ public final class Utils {
 
     public static String listToCsv(List<String> list) {
         StringWriter sw = new StringWriter();
-        CSVWriter writer = new CSVWriter(sw, ',');
-        writer.writeNext(list.toArray(new String[0]));
+        try (CSVPrinter writer = new CSVPrinter(sw,
+                CSVFormat.DEFAULT.withDelimiter(',').withQuoteMode(
+                        QuoteMode.ALL))) {
+            writer.printRecord(list);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
         return sw.toString();
     }
 
@@ -72,8 +80,20 @@ public final class Utils {
             return new ArrayList<>();
         }
         StringReader sr = new StringReader(str);
-        CSVReader reader = new CSVReader(sr, ',');
-        return Arrays.asList(reader.readNext());
+        try (CSVParser reader = new CSVParser(sr,
+                CSVFormat.DEFAULT.withDelimiter(','))) {
+            Iterator<CSVRecord> iterator = reader.iterator();
+            if (!iterator.hasNext()) {
+                return new ArrayList<>();
+            } else {
+                CSVRecord nextRecord = iterator.next();
+                List<String> result = new ArrayList<>(nextRecord.size());
+                for (String value : nextRecord) {
+                    result.add(value);
+                }
+                return result;
+            }
+        }
     }
 
     public static boolean contains(final String[] array, final String value) {

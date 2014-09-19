@@ -23,11 +23,12 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.CSVWriter;
 
 public class PaletteParser {
 
@@ -125,18 +126,17 @@ public class PaletteParser {
 
     public static String renderPaletteAsCsv(byte[] bytes, String fileName) {
         StringWriter sw = new StringWriter();
-        CSVWriter writer = new CSVWriter(sw, '\t');
-        try {
+        try (CSVPrinter writer = new CSVPrinter(sw,
+                CSVFormat.DEFAULT.withDelimiter('\t'))) {
             for (Map.Entry<String, String> entry : parse(bytes, fileName).entrySet()) {
-                String[] s = new String[2];
-                s[0] = entry.getKey();
-                s[1] = entry.getValue();
-                writer.writeNext(s);
+                writer.printRecord(entry.getKey(), entry.getValue());
             }
         } catch (PaletteIdentifyException e) {
             log.warn("Could not identify palette type: " + fileName);
         } catch (PaletteParseException e) {
             log.warn("Could not parse palette: " + fileName);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
         }
         return sw.toString();
     }
@@ -146,12 +146,11 @@ public class PaletteParser {
         if (text == null) {
             return properties;
         }
-        StringReader sr = new StringReader(text);
-        CSVReader reader = new CSVReader(sr, '\t');
-        String[] nextLine;
-        try {
-            while ((nextLine = reader.readNext()) != null) {
-                properties.put(nextLine[0], nextLine[1]);
+        try (StringReader sr = new StringReader(text);
+                CSVParser reader = new CSVParser(sr,
+                        CSVFormat.DEFAULT.withDelimiter('\t'))) {
+            for (CSVRecord record : reader) {
+                properties.put(record.get(0), record.get(1));
             }
         } catch (IOException e) {
             log.error(e, e);

@@ -21,14 +21,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.io.Charsets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.Registrable;
 import org.nuxeo.theme.types.TypeFamily;
-
-import au.com.bytecode.opencsv.CSVReader;
 
 public final class VocabularyManager implements Registrable {
 
@@ -71,32 +73,25 @@ public final class VocabularyManager implements Registrable {
                 return null;
             }
             final List<VocabularyItem> items = new ArrayList<>();
-            CSVReader reader = null;
-            InputStream is = null;
-            try {
-                is = getClass().getClassLoader().getResourceAsStream(path);
+            try (InputStream is = getClass().getClassLoader().getResourceAsStream(
+                    path)) {
                 if (is == null) {
                     log.error("Vocabulary file not found: " + path);
                     return null;
                 }
-                reader = new CSVReader(new InputStreamReader(is, "UTF-8"));
-                String[] line;
-                while ((line = reader.readNext()) != null) {
-                    final String value = line[0];
-                    String label = value;
-                    if (line.length >= 2) {
-                        label = line[1];
+                try (CSVParser reader = new CSVParser(new InputStreamReader(is,
+                        Charsets.UTF_8), CSVFormat.DEFAULT)) {
+                    for (CSVRecord record : reader) {
+                        final String value = record.get(0);
+                        String label = value;
+                        if (record.size() >= 2) {
+                            label = record.get(1);
+                        }
+                        items.add(new VocabularyItem(value, label));
                     }
-                    items.add(new VocabularyItem(value, label));
                 }
             } catch (IOException e) {
                 log.error("Could not read vocabulary file: " + path, e);
-            } finally {
-                try {
-                    is.close();
-                    reader.close();
-                } catch (Exception e) {
-                }
             }
             return items;
         }

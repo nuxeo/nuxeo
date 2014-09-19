@@ -42,6 +42,7 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.plexus.util.dag.CycleDetectedException;
 import org.codehaus.plexus.util.dag.DAG;
 import org.codehaus.plexus.util.dag.TopologicalSorter;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.event.Event;
@@ -799,6 +800,7 @@ public final class ThemeManager implements Registrable {
                         FieldIO.dumpFieldsToProperties(element));
             } catch (Exception e) {
                 log.warn("Could not copy the fields of: " + element);
+                log.debug(e.getMessage(), e);
             }
 
             // duplicate formats or create a relation

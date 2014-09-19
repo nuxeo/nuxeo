@@ -13,6 +13,8 @@
 
 package org.nuxeo.theme.test.themes;
 
+import static org.nuxeo.runtime.test.Assert.assertFilesContentEquals;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,7 +22,6 @@ import java.util.List;
 import java.util.Properties;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -160,8 +161,8 @@ public class TestThemeSerializer {
         themeDef.setSrc("test-default.xml");
         themeDef.setLastLoaded(new Date());
         Manager.getTypeRegistry().register(themeDef);
-        assertTrue(FileUtils.areFilesContentEquals(Utils.readResourceAsString("themeSerializerOutput.xml"),
-                new ThemeSerializer().serializeToXml("test-default.xml", 4)));
+        assertFilesContentEquals(
+                Utils.readResourceAsString("themeSerializerOutput.xml"),
+                new ThemeSerializer().serializeToXml("test-default.xml", 4));
     }
-
 }
