@@ -79,8 +79,8 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
                 || commandLineExecutorService.isValidParameter(file.getName());
         if (file == null || !validFilename) {
             String extension = ".jpg";
-            if (file!=null) {
-                extension = "."+FileUtils.getFileExtension(file.getName());
+            if (file != null) {
+                extension = "." + FileUtils.getFileExtension(file.getName());
             }
             file = File.createTempFile("nuxeoImage", extension);
             Framework.trackFile(file, this);

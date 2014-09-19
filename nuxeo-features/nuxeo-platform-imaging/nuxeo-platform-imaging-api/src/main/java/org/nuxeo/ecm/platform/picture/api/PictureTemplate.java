@@ -30,10 +30,13 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.7
  */
 @XObject("pictureTemplate")
-public class PictureTemplate {
+public class PictureTemplate implements Comparable<PictureTemplate> {
 
     @XNode("@title")
     protected String title;
+
+    @XNode("@order")
+    protected int order;
 
     @XNode("@description")
     protected String description;
@@ -55,17 +58,23 @@ public class PictureTemplate {
 
     public PictureTemplate(String title, String description, String tag,
             Integer maxSize) {
-        this(title, description, tag, maxSize, null, true);
+        this(title, description, tag, maxSize, -1, null, true);
     }
 
     public PictureTemplate(String title, String description, String tag,
-            Integer maxSize, String chainId, Boolean enabled) {
+            Integer maxSize, int order, String chainId, Boolean enabled) {
         this.title = title;
         this.description = description;
         this.tag = tag;
+        this.order = order;
         this.maxSize = maxSize;
         this.chainId = chainId;
         this.enabled = enabled;
+    }
+
+    @Override
+    public int compareTo(PictureTemplate other) {
+        return Integer.compare(order, other.order);
     }
 
     public String getChainId() {
@@ -130,16 +139,24 @@ public class PictureTemplate {
         this.maxSize = maxSize;
     }
 
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
     @Override
     public PictureTemplate clone() {
-        return new PictureTemplate(title, description, tag, maxSize, chainId,
-                enabled);
+        return new PictureTemplate(title, description, tag, maxSize, order,
+                chainId, enabled);
     }
 
     @Override
     public String toString() {
         return String.format(
-                "PictureTemplate [title=%s, description=%s, tag=%s, maxSize=%d, chainId=%s, enabled=%s]",
-                title, description, tag, maxSize, chainId, enabled);
+                "PictureTemplate [title=%s, description=%s, tag=%s, maxSize=%d, order=%d, chainId=%s, enabled=%s]",
+                title, description, tag, maxSize, order, chainId, enabled);
     }
 }

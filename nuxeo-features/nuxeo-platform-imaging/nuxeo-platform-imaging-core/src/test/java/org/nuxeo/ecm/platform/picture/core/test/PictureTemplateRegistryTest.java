@@ -16,16 +16,14 @@
  */
 package org.nuxeo.ecm.platform.picture.core.test;
 
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
 
 import junit.framework.Assert;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -36,24 +34,28 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
+ * Test the {@link PictureTemplateRegistry} class
  *
- *
- * @since TODO
+ * @since 5.9.6
  */
 @Deploy("org.nuxeo.ecm.platform.picture.core")
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class })
 public class PictureTemplateRegistryTest {
 
+    private static final String PICTURE_TEMPLATES_OVERRIDE_MORE_COMPONENT_LOCATION = "OSGI-INF/imaging-picture-templates-override-more.xml";
+
     private static final String PICTURE_TEMPLATES_OVERRIDE_COMPONENT_LOCATION = "OSGI-INF/imaging-picture-templates-override.xml";
 
-    private final Log log = LogFactory.getLog(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject
-    private FeaturesRunner runner;
+    RuntimeHarness runtimeHarness;
 
     @Test
     public void iHaveTheImagingComponentRegistered() {
@@ -62,18 +64,35 @@ public class PictureTemplateRegistryTest {
 
     @Test
     public void iHaveTheDefaultPictureTemplatesRegistered() {
-        Set<String> requiredPictureTemplates = getDefaultPictureTemplateTitles();
+        checkDefaultPictureTemplatesPresence();
+    }
 
-        for (PictureTemplate pictureTemplate : getPictureTemplates()) {
-            Assert.assertTrue(requiredPictureTemplates.contains(pictureTemplate.getTitle()));
+    private void checkDefaultPictureTemplatesPresence() {
+        PictureTemplateRegistry pictureTemplateRegistry = getPictureTemplateRegistry();
+        Set<String> requiredPictureTemplates = pictureTemplateRegistry.getDefaultPictureTemplates();
+        int count = 0;
+
+        for (PictureTemplate pictureTemplate : pictureTemplateRegistry.getPictureTemplates()) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Check picture template '{}'",
+                        pictureTemplate.getTitle());
+            }
+
+            if (requiredPictureTemplates.contains(pictureTemplate.getTitle())) {
+                count++;
+            }
         }
+
+        Assert.assertEquals(requiredPictureTemplates.size(), count);
     }
 
     @Test
     public void iCanMergePictureTemplates() throws Exception {
-        deployPictureTemplatesOverrideComponent();
-        PictureTemplateRegistry registry = getPictureTemplateRegistry();
+        deploy(PICTURE_TEMPLATES_OVERRIDE_COMPONENT_LOCATION);
 
+        checkDefaultPictureTemplatesPresence();
+
+        PictureTemplateRegistry registry = getPictureTemplateRegistry();
         for (PictureTemplate pictureTemplate : registry.getPictureTemplates()) {
             if (pictureTemplate.getTitle().equals("Small")) {
                 Assert.assertEquals(50, (int) pictureTemplate.getMaxSize());
@@ -87,52 +106,59 @@ public class PictureTemplateRegistryTest {
             }
         }
 
-        /*
-         * This templates shouldn't be registered
-         */
-        Assert.assertNull(registry.getById("Original"));
-        Assert.assertNull(registry.getById("OriginalJpeg"));
+        undeploy(PICTURE_TEMPLATES_OVERRIDE_COMPONENT_LOCATION);
     }
 
-    /**
-     * Deploy the picture templates override component located at the
-     * {@link PictureTemplateRegistryTest#PICTURE_TEMPLATES_OVERRIDE_COMPONENT_LOCATION}
-     * location
-     *
-     * @throws Exception
-     */
-    private void deployPictureTemplatesOverrideComponent() throws Exception {
-        runner.getFeature(RuntimeFeature.class).getHarness().deployTestContrib(
-                "org.nuxeo.ecm.platform.picture.core",
-                PICTURE_TEMPLATES_OVERRIDE_COMPONENT_LOCATION);
+    @Test
+    public void iCanMergeMorePictureTemplates() throws Exception {
+        deploy(PICTURE_TEMPLATES_OVERRIDE_MORE_COMPONENT_LOCATION);
+
+        checkDefaultPictureTemplatesPresence();
+
+        int count = 0;
+        List<String> newPictureTemplates = Arrays.asList("ThumbnailMini",
+                "ThumbnailWide", "Tiny", "Wide");
+
+        PictureTemplateRegistry registry = getPictureTemplateRegistry();
+        for (PictureTemplate pictureTemplate : registry.getPictureTemplates()) {
+            if (newPictureTemplates.contains(pictureTemplate.getTitle())) {
+                count++;
+            }
+        }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Picture template expected: {}",
+                    newPictureTemplates.size());
+            logger.debug("Picture template got: {}", count);
+        }
+
+        // Assert picture templates presence
+        Assert.assertEquals(count, newPictureTemplates.size());
+
+        // Assert maxSize values
+
+        Assert.assertEquals(96,
+                (int) registry.getById("ThumbnailMini").getMaxSize());
+        Assert.assertEquals(320,
+                (int) registry.getById("ThumbnailWide").getMaxSize());
+        Assert.assertEquals(48, (int) registry.getById("Tiny").getMaxSize());
+        Assert.assertEquals(2048, (int) registry.getById("Wide").getMaxSize());
+
+        undeploy(PICTURE_TEMPLATES_OVERRIDE_MORE_COMPONENT_LOCATION);
     }
 
-    private Collection<PictureTemplate> getPictureTemplates() {
-        return getPictureTemplateRegistry().getPictureTemplates();
+    private void deploy(String component) throws Exception {
+        runtimeHarness.deployContrib("org.nuxeo.ecm.platform.picture.core",
+                component);
+    }
+
+    private void undeploy(String component) throws Exception {
+        runtimeHarness.undeployContrib("org.nuxeo.ecm.platform.picture.core",
+                component);
     }
 
     private PictureTemplateRegistry getPictureTemplateRegistry() {
         return getImagingComponent().getPictureTemplateRegistry();
-    }
-
-    /**
-     * Should matches to the pictureTemplates titles in the component files
-     * pointed by the constant
-     * {@link PictureTemplateRegistryTest#PICTURE_TEMPLATES_OVERRIDE_COMPONENT_LOCATION}
-     *
-     * @return
-     *
-     * @since TODO
-     */
-    private Set<String> getDefaultPictureTemplateTitles() {
-        Set<String> requiredPictureTemplates = new HashSet<String>(5);
-        requiredPictureTemplates.add("Original");
-        requiredPictureTemplates.add("OriginalJpeg");
-        requiredPictureTemplates.add("Medium");
-        requiredPictureTemplates.add("Small");
-        requiredPictureTemplates.add("Thumbnail");
-
-        return requiredPictureTemplates;
     }
 
     private ImagingComponent getImagingComponent() {

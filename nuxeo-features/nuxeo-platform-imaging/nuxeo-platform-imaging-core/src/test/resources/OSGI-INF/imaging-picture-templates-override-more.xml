@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.picture.ImagingComponent.test.more.config">
+  <documentation>
+    Override pictureTemplates extension point
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.picture.ImagingComponent"
+    point="pictureTemplates">
+
+    <pictureTemplate title="ThumbnailMini" enabled="true" maxSize="96" />
+    <pictureTemplate title="ThumbnailWide" enabled="true" maxSize="320" />
+    <pictureTemplate title="Tiny" enabled="true" maxSize="48" />
+    <pictureTemplate title="Wide" enabled="true" maxSize="2048" />
+
+    <pictureTemplate title="Thumbnail" enabled="false" maxSize="160" />
+    <pictureTemplate title="Original" enabled="false" maxSize="800" />
+    <pictureTemplate title="OriginalJpeg" enabled="false"
+      maxSize="0" />
+  </extension>
+</component>
