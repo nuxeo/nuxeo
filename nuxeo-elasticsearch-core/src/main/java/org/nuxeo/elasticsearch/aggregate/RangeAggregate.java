@@ -93,8 +93,4 @@ public class RangeAggregate extends AggregateEsBase<BucketRange> {
         this.buckets = nxBuckets;
     }
 
-    @Override
-    public List<BucketRange> getBuckets() {
-        return super.getBuckets();
-    }
 }

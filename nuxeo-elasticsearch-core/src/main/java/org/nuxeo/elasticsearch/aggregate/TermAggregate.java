@@ -52,11 +52,6 @@ public class TermAggregate extends AggregateEsBase<BucketTerm> {
     }
 
     @Override
-    public List<BucketTerm> getBuckets() {
-        return super.getBuckets();
-    }
-
-    @Override
     public TermsBuilder getEsAggregate() {
         TermsBuilder ret = AggregationBuilders.terms(getId()).field(getField());
         Map<String, String> props = getProperties();

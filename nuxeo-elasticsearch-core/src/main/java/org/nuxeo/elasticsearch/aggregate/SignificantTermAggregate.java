@@ -58,11 +58,6 @@ public class SignificantTermAggregate extends AggregateEsBase<BucketTerm> {
     }
 
     @Override
-    public List<BucketTerm> getBuckets() {
-        return super.getBuckets();
-    }
-
-    @Override
     public TermsFilterBuilder getEsFilter() {
         if (getSelection().isEmpty()) {
             return null;

@@ -113,8 +113,4 @@ public class DateRangeAggregate extends AggregateEsBase<BucketRangeDate> {
         return new DateTime(date.getMillis());
     }
 
-    @Override
-    public List<BucketRangeDate> getBuckets() {
-        return super.getBuckets();
-    }
 }

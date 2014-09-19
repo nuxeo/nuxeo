@@ -55,11 +55,6 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketTerm> {
     }
 
     @Override
-    public List<BucketTerm> getBuckets() {
-        return super.getBuckets();
-    }
-
-    @Override
     public DateHistogramBuilder getEsAggregate() {
         DateHistogramBuilder ret = AggregationBuilders.dateHistogram(getId())
                 .field(getField());

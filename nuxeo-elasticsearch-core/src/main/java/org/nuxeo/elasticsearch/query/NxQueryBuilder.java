@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
+import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.elasticsearch.aggregate.AggregateEsBase;
 import org.nuxeo.elasticsearch.fetcher.EsFetcher;
 import org.nuxeo.elasticsearch.fetcher.Fetcher;
@@ -62,7 +63,7 @@ public class NxQueryBuilder {
     private final CoreSession session;
     private final List<SortInfo> sortInfos = new ArrayList<SortInfo>();
     private final List<String> repositories = new ArrayList<String>();
-    private final List<AggregateEsBase> aggregates = new ArrayList<AggregateEsBase>();
+    private final List<AggregateEsBase<? extends Bucket>> aggregates = new ArrayList<AggregateEsBase<? extends Bucket>>();
     private int offset = 0;
     private String nxql;
     private org.elasticsearch.index.query.QueryBuilder esQueryBuilder;
@@ -156,12 +157,12 @@ public class NxQueryBuilder {
         return this;
     }
 
-    public NxQueryBuilder addAggregate(AggregateEsBase aggregate) {
+    public NxQueryBuilder addAggregate(AggregateEsBase<? extends Bucket> aggregate) {
         aggregates.add(aggregate);
         return this;
     }
 
-    public NxQueryBuilder addAggregates(List<AggregateEsBase> aggregates) {
+    public NxQueryBuilder addAggregates(List<AggregateEsBase<? extends Bucket>> aggregates) {
         if (aggregates != null && !aggregates.isEmpty()) {
             this.aggregates.addAll(aggregates);
         }
@@ -260,7 +261,7 @@ public class NxQueryBuilder {
         return ret;
     }
 
-    public List<AggregateEsBase> getAggregates() {
+    public List<AggregateEsBase<? extends Bucket>> getAggregates() {
         return aggregates;
     }
 

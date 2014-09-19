@@ -50,11 +50,6 @@ public class HistogramAggregate extends AggregateEsBase<BucketTerm> {
     }
 
     @Override
-    public List<BucketTerm> getBuckets() {
-        return super.getBuckets();
-    }
-
-    @Override
     public HistogramBuilder getEsAggregate() {
         HistogramBuilder ret = AggregationBuilders.histogram(getId()).field(
                 getField());

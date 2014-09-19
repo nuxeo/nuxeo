@@ -25,6 +25,7 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_TERMS;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
+import org.nuxeo.ecm.platform.query.api.Bucket;
 
 /**
  * @since 5.9.6
@@ -34,7 +35,7 @@ public class AggregateFactory {
     private AggregateFactory() {
     }
 
-    public static AggregateEsBase create(AggregateDefinition def,
+    public static AggregateEsBase<? extends Bucket> create(AggregateDefinition def,
             DocumentModel searchDocumentModel) {
         switch (def.getType()) {
         case AGG_TYPE_TERMS:

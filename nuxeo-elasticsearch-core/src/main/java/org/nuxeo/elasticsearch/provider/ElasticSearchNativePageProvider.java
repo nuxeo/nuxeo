@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
+import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.elasticsearch.aggregate.AggregateEsBase;
 import org.nuxeo.elasticsearch.aggregate.AggregateFactory;
@@ -105,8 +106,8 @@ public class ElasticSearchNativePageProvider extends
         return currentPageDocuments;
     }
 
-    private List<AggregateEsBase> buildAggregates() {
-        ArrayList<AggregateEsBase> ret = new ArrayList<AggregateEsBase>(
+    private List<AggregateEsBase<? extends Bucket>> buildAggregates() {
+        ArrayList<AggregateEsBase<? extends Bucket>> ret = new ArrayList<AggregateEsBase<? extends Bucket>>(
                 getAggregateDefinitions().size());
         for (AggregateDefinition def : getAggregateDefinitions()) {
             ret.add(AggregateFactory.create(def, getSearchDocumentModel()));
