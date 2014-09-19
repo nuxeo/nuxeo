@@ -62,10 +62,6 @@
     <page view-id="/create_document.faces.xhtml">
       Create new document in #{currentDocument.name}
     </page>
-
-    <page view-id="/search/search_form.xhtml">
-      breadcrumb=command.advancedSearch
-    </page>
   </extension>
 
   <extension target="components#PAGEFLOW">
