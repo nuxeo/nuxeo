@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.filemanager.service.extension;
@@ -37,6 +36,7 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
@@ -89,6 +89,7 @@ public class CSVZipImporter extends AbstractFileImporter {
         }
     }
 
+    @Override
     public DocumentModel create(CoreSession documentManager, Blob content,
             String path, boolean overwrite, String filename,
             TypeManager typeService) throws ClientException, IOException {
@@ -118,7 +119,7 @@ public class CSVZipImporter extends AbstractFileImporter {
         for (int idx = 1; idx < lines.size(); idx++) {
             String type = null;
             String id = null;
-            Map<String, String> stringValues = new HashMap<String, String>();
+            Map<String, String> stringValues = new HashMap<>();
 
             for (int col = 0; col < header.length; col++) {
                 String headerValue = header[col];
@@ -160,7 +161,7 @@ public class CSVZipImporter extends AbstractFileImporter {
             }
 
             // update doc properties
-            DocumentType docType = targetDoc.getDocumentType();
+            DocumentType targetDocType = targetDoc.getDocumentType();
             for (String fname : stringValues.keySet()) {
 
                 String stringValue = stringValues.get(fname);
@@ -170,21 +171,21 @@ public class CSVZipImporter extends AbstractFileImporter {
                 String fieldName = null;
 
                 if (fname.contains(":")) {
-                    if (docType.hasField(fname)) {
-                        field = docType.getField(fname);
+                    if (targetDocType.hasField(fname)) {
+                        field = targetDocType.getField(fname);
                         usePrefix = true;
                     }
                 } else if (fname.contains(".")) {
                     String[] parts = fname.split("\\.");
                     schemaName = parts[0];
                     fieldName = parts[1];
-                    if (docType.hasSchema(schemaName)) {
-                        field = docType.getField(fieldName);
+                    if (targetDocType.hasSchema(schemaName)) {
+                        field = targetDocType.getField(fieldName);
                         usePrefix = false;
                     }
                 } else {
-                    if (docType.hasField(fname)) {
-                        field = docType.getField(fname);
+                    if (targetDocType.hasField(fname)) {
+                        field = targetDocType.getField(fname);
                         usePrefix = false;
                         schemaName = field.getDeclaringType().getSchemaName();
                     }

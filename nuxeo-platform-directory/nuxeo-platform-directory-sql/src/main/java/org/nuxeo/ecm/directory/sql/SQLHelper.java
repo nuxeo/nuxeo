@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,6 +14,7 @@
  * Contributors:
  *     George Lefter
  *     Florent Guillaume
+ *     Julien Carsique
  */
 package org.nuxeo.ecm.directory.sql;
 
@@ -192,7 +193,7 @@ public class SQLHelper {
 
     public Set<Column> getMissingColumns(Boolean breakAtFirstMissing) {
         try {
-            Set<Column> missingColumns = new HashSet<Column>();
+            Set<Column> missingColumns = new HashSet<>();
 
             // Test whether there are new fields added in the schema that are
             // not present in the table schema. If so it is advised to
@@ -224,7 +225,7 @@ public class SQLHelper {
 
     private Set<String> getPhysicalColumns() throws SQLException {
         ResultSet rs = null;
-        Set<String> columnNames = new HashSet<String>();
+        Set<String> columnNames = new HashSet<>();
         try {
             // fetch the database columns definitions
             DatabaseMetaData metadata = connection.getMetaData();
