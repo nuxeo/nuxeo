@@ -50,8 +50,6 @@ import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
@@ -64,9 +62,6 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     private static final Log log = LogFactory
             .getLog(ElasticSearchIndexingImpl.class);
 
-    // Metrics
-    private final MetricRegistry registry = SharedMetricRegistries
-            .getOrCreate(MetricsService.class.getName());
     private final ElasticSearchAdminImpl esa;
     private final Timer deleteTimer;
     private final Timer indexTimer;
@@ -74,6 +69,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
 
     public ElasticSearchIndexingImpl(ElasticSearchAdminImpl esa) {
         this.esa = esa;
+        MetricRegistry registry = SharedMetricRegistries
+                .getOrCreate(MetricsService.class.getName());
         indexTimer = registry.timer(MetricRegistry.name("nuxeo",
                 "elasticsearch", "service", "index"));
         deleteTimer = registry.timer(MetricRegistry.name("nuxeo",
@@ -292,12 +289,12 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     @Override
     public void scheduleIndexing(IndexingCommand cmd) throws ClientException {
         // impl of scheduling is left to the ESService
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
     public boolean isAlreadyScheduled(IndexingCommand cmd) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException("Not implemented");
     }
 
 }

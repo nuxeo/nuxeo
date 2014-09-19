@@ -62,7 +62,7 @@ public class NxQueryBuilder {
     private final CoreSession session;
     private final List<SortInfo> sortInfos = new ArrayList<SortInfo>();
     private final List<String> repositories = new ArrayList<String>();
-    private List<BaseEsAggregate> aggregates = new ArrayList<BaseEsAggregate>();
+    private final List<BaseEsAggregate> aggregates = new ArrayList<BaseEsAggregate>();
     private int offset = 0;
     private String nxql;
     private org.elasticsearch.index.query.QueryBuilder esQueryBuilder;
@@ -233,8 +233,8 @@ public class NxQueryBuilder {
             FilterBuilder filter = agg.getEsFilter();
             if (filter != null) {
                 ret.add(filter);
-                  hasFilter = true;
-              }
+                hasFilter = true;
+            }
         }
         if (!hasFilter) {
             return null;
@@ -275,8 +275,6 @@ public class NxQueryBuilder {
         }
         return ret;
     }
-
-
 
     public void updateRequest(SearchRequestBuilder request) {
         // Set limits

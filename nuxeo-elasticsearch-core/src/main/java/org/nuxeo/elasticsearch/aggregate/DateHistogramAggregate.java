@@ -18,6 +18,7 @@ package org.nuxeo.elasticsearch.aggregate;
 
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_EXTENDED_BOUND_MAX_PROP;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_EXTENDED_BOUND_MIN_PROP;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_FORMAT_PROP;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_INTERVAL_PROP;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_MIN_DOC_COUNT_PROP;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_COUNT_ASC;
@@ -99,6 +100,9 @@ public class DateHistogramAggregate extends BaseEsAggregate<BucketTerm> {
         }
         if (props.containsKey(AGG_POST_ZONE_PROP)) {
             ret.postZone(props.get(AGG_POST_ZONE_PROP));
+        }
+        if (props.containsKey(AGG_FORMAT_PROP)) {
+            ret.format(props.get(AGG_FORMAT_PROP));
         }
         return ret;
     }

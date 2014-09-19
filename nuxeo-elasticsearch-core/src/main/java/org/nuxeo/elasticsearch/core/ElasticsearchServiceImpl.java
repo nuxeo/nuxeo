@@ -20,7 +20,6 @@ package org.nuxeo.elasticsearch.core;
 
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -136,16 +135,17 @@ public class ElasticsearchServiceImpl implements ElasticSearchService {
             if (filter == null) {
                 continue;
             }
-            MultiBucketsAggregation terms = filter.getAggregations().get(
+            MultiBucketsAggregation mba = filter.getAggregations().get(
                     agg.getId());
-            if (terms == null) {
+            if (mba == null) {
                 continue;
             }
-            Collection<? extends MultiBucketsAggregation.Bucket> buckets = terms
-                    .getBuckets();
-            agg.extractEsBuckets(buckets);
+            agg.extractEsBuckets(mba.getBuckets());
         }
-        return (List<Aggregate>) (List<?>) queryBuilder.getAggregates();
+        @SuppressWarnings("unchecked")
+        List<Aggregate> ret = (List<Aggregate>) (List<?>) queryBuilder
+                .getAggregates();
+        return ret;
     }
 
     protected SearchResponse search(NxQueryBuilder query) {

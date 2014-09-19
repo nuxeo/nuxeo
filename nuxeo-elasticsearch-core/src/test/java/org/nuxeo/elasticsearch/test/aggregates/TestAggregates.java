@@ -4,7 +4,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,6 +16,7 @@
  */
 
 package org.nuxeo.elasticsearch.test.aggregates;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -94,9 +95,9 @@ public class TestAggregates {
             doc.setPropertyValue("dc:source", "Source" + i);
             doc.setPropertyValue("dc:nature", "Nature" + i % 2);
             doc.setPropertyValue("dc:coverage", "Coverage" + i % 3);
-            doc.setPropertyValue("common:size", 1024*i);
-            doc.setPropertyValue("dc:created", new Date(new DateTime().minusWeeks(
-                    i).getMillis()));
+            doc.setPropertyValue("common:size", 1024 * i);
+            doc.setPropertyValue("dc:created", new Date(new DateTime()
+                    .minusWeeks(i).getMillis()));
             doc = session.createDocument(doc);
         }
         TransactionHelper.commitOrRollbackTransaction();
@@ -132,33 +133,33 @@ public class TestAggregates {
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows("{\n" //
-                        + "  \"from\" : 0,\n" //
-                        + "  \"size\" : 10,\n" //
-                        + "  \"query\" : {\n" //
-                        + "    \"match_all\" : { }\n" //
-                        + "  },\n" //
-                        + "  \"aggregations\" : {\n" //
-                        + "    \"source_filter\" : {\n" //
-                        + "      \"filter\" : {\n" //
-                        + "        \"match_all\" : { }\n" //
-                        + "      },\n" //
-                        + "      \"aggregations\" : {\n" //
-                        + "        \"source\" : {\n" //
-                        + "          \"terms\" : {\n" //
-                        + "            \"field\" : \"dc:source\",\n" //
-                        + "            \"size\" : 10,\n" //
-                        + "            \"min_doc_count\" : 10,\n" //
-                        + "            \"order\" : {\n" //
-                        + "              \"_count\" : \"asc\"\n" //
-                        + "            },\n" //
-                        + "            \"include\" : \"bar*\",\n" //
-                        + "            \"exclude\" : \"foo*\"\n" //
-                        + "          }\n" //
-                        + "        }\n" //
-                        + "      }\n" //
-                        + "    }\n" //
-                        + "  }\n" //
-                        + "}", //
+                + "  \"from\" : 0,\n" //
+                + "  \"size\" : 10,\n" //
+                + "  \"query\" : {\n" //
+                + "    \"match_all\" : { }\n" //
+                + "  },\n" //
+                + "  \"aggregations\" : {\n" //
+                + "    \"source_filter\" : {\n" //
+                + "      \"filter\" : {\n" //
+                + "        \"match_all\" : { }\n" //
+                + "      },\n" //
+                + "      \"aggregations\" : {\n" //
+                + "        \"source\" : {\n" //
+                + "          \"terms\" : {\n" //
+                + "            \"field\" : \"dc:source\",\n" //
+                + "            \"size\" : 10,\n" //
+                + "            \"min_doc_count\" : 10,\n" //
+                + "            \"order\" : {\n" //
+                + "              \"_count\" : \"asc\"\n" //
+                + "            },\n" //
+                + "            \"include\" : \"bar*\",\n" //
+                + "            \"exclude\" : \"foo*\"\n" //
+                + "          }\n" //
+                + "        }\n" //
+                + "      }\n" //
+                + "    }\n" //
+                + "  }\n" //
+                + "}", //
                 request.toString());
     }
 
@@ -211,8 +212,7 @@ public class TestAggregates {
         aggDef.setType("range");
         aggDef.setId("source");
         aggDef.setDocumentField("common:size");
-        aggDef.setSearchField(new FieldDescriptor("advanced_search",
-                "size_agg"));
+        aggDef.setSearchField(new FieldDescriptor("advanced_search", "size_agg"));
         List<AggregateRangeDescriptor> ranges = new ArrayList<AggregateRangeDescriptor>();
         ranges.add(new AggregateRangeDescriptor("small", null, 2048.0));
         ranges.add(new AggregateRangeDescriptor("medium", 2048.0, 6144.0));
@@ -228,37 +228,37 @@ public class TestAggregates {
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows("{\n" //
-                        + "  \"from\" : 0,\n" //
-                        + "  \"size\" : 10,\n" //
-                        + "  \"query\" : {\n" //
-                        + "    \"match_all\" : { }\n" //
-                        + "  },\n" //
-                        + "  \"aggregations\" : {\n" //
-                        + "    \"source_filter\" : {\n" //
-                        + "      \"filter\" : {\n" //
-                        + "        \"match_all\" : { }\n" //
-                        + "      },\n" //
-                        + "      \"aggregations\" : {\n" //
-                        + "        \"source\" : {\n" //
-                        + "          \"range\" : {\n" //
-                        + "            \"field\" : \"common:size\",\n" //
-                        + "            \"ranges\" : [ {\n" //
-                        + "              \"key\" : \"small\",\n" //
-                        + "              \"to\" : 2048.0\n" //
-                        + "            }, {\n" //
-                        + "              \"key\" : \"medium\",\n" //
-                        + "              \"from\" : 2048.0,\n" //
-                        + "              \"to\" : 6144.0\n" //
-                        + "            }, {\n" //
-                        + "              \"key\" : \"big\",\n" //
-                        + "              \"from\" : 6144.0\n" //
-                        + "            } ]\n" //
-                        + "          }\n" //
-                        + "        }\n" //
-                        + "      }\n" //
-                        + "    }\n" //
-                        + "  }\n" //
-                        + "}", //
+                + "  \"from\" : 0,\n" //
+                + "  \"size\" : 10,\n" //
+                + "  \"query\" : {\n" //
+                + "    \"match_all\" : { }\n" //
+                + "  },\n" //
+                + "  \"aggregations\" : {\n" //
+                + "    \"source_filter\" : {\n" //
+                + "      \"filter\" : {\n" //
+                + "        \"match_all\" : { }\n" //
+                + "      },\n" //
+                + "      \"aggregations\" : {\n" //
+                + "        \"source\" : {\n" //
+                + "          \"range\" : {\n" //
+                + "            \"field\" : \"common:size\",\n" //
+                + "            \"ranges\" : [ {\n" //
+                + "              \"key\" : \"small\",\n" //
+                + "              \"to\" : 2048.0\n" //
+                + "            }, {\n" //
+                + "              \"key\" : \"medium\",\n" //
+                + "              \"from\" : 2048.0,\n" //
+                + "              \"to\" : 6144.0\n" //
+                + "            }, {\n" //
+                + "              \"key\" : \"big\",\n" //
+                + "              \"from\" : 6144.0\n" //
+                + "            } ]\n" //
+                + "          }\n" //
+                + "        }\n" //
+                + "      }\n" //
+                + "    }\n" //
+                + "  }\n" //
+                + "}", //
                 request.toString());
     }
 
@@ -271,9 +271,12 @@ public class TestAggregates {
         aggDef.setSearchField(new FieldDescriptor("advanced_search",
                 "created_agg"));
         List<AggregateRangeDateDescriptor> ranges = new ArrayList<AggregateRangeDateDescriptor>();
-        ranges.add(new AggregateRangeDateDescriptor("10monthAgo", null, "now-10M/M"));
-        ranges.add(new AggregateRangeDateDescriptor("1monthAgo", "now-10M/M", "now-1M/M"));
-        ranges.add(new AggregateRangeDateDescriptor("thisMonth", "now-1M/M", null));
+        ranges.add(new AggregateRangeDateDescriptor("10monthAgo", null,
+                "now-10M/M"));
+        ranges.add(new AggregateRangeDateDescriptor("1monthAgo", "now-10M/M",
+                "now-1M/M"));
+        ranges.add(new AggregateRangeDateDescriptor("thisMonth", "now-1M/M",
+                null));
         aggDef.setDateRanges((List<AggregateRangeDateDefinition>) (List<?>) ranges);
 
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
@@ -284,38 +287,27 @@ public class TestAggregates {
                 .setTypes(TYPE_NAME);
         qb.updateRequest(request);
 
-        assertEqualsEvenUnderWindows("{\n"
-                        + "  \"from\" : 0,\n"
-                        + "  \"size\" : 10,\n"
-                        + "  \"query\" : {\n"
-                        + "    \"match_all\" : { }\n"
-                        + "  },\n"
-                        + "  \"aggregations\" : {\n"
-                        + "    \"created_filter\" : {\n"
-                        + "      \"filter\" : {\n"
-                        + "        \"match_all\" : { }\n"
-                        + "      },\n"
-                        + "      \"aggregations\" : {\n"
-                        + "        \"created\" : {\n"
-                        + "          \"date_range\" : {\n"
-                        + "            \"field\" : \"dc:created\",\n"
-                        + "            \"ranges\" : [ {\n"
-                        + "              \"key\" : \"10monthAgo\",\n"
-                        + "              \"to\" : \"now-10M/M\"\n"
-                        + "            }, {\n"
-                        + "              \"key\" : \"1monthAgo\",\n"
-                        + "              \"from\" : \"now-10M/M\",\n"
-                        + "              \"to\" : \"now-1M/M\"\n"
-                        + "            }, {\n"
-                        + "              \"key\" : \"thisMonth\",\n"
-                        + "              \"from\" : \"now-1M/M\"\n"
-                        + "            } ]\n"
-                        + "          }\n"
-                        + "        }\n"
-                        + "      }\n"
-                        + "    }\n"
-                        + "  }\n"
-                        + "}", //
+        assertEqualsEvenUnderWindows("{\n" + "  \"from\" : 0,\n"
+                + "  \"size\" : 10,\n" + "  \"query\" : {\n"
+                + "    \"match_all\" : { }\n" + "  },\n"
+                + "  \"aggregations\" : {\n" + "    \"created_filter\" : {\n"
+                + "      \"filter\" : {\n" + "        \"match_all\" : { }\n"
+                + "      },\n" + "      \"aggregations\" : {\n"
+                + "        \"created\" : {\n"
+                + "          \"date_range\" : {\n"
+                + "            \"field\" : \"dc:created\",\n"
+                + "            \"ranges\" : [ {\n"
+                + "              \"key\" : \"10monthAgo\",\n"
+                + "              \"to\" : \"now-10M/M\"\n"
+                + "            }, {\n"
+                + "              \"key\" : \"1monthAgo\",\n"
+                + "              \"from\" : \"now-10M/M\",\n"
+                + "              \"to\" : \"now-1M/M\"\n"
+                + "            }, {\n"
+                + "              \"key\" : \"thisMonth\",\n"
+                + "              \"from\" : \"now-1M/M\"\n"
+                + "            } ]\n" + "          }\n" + "        }\n"
+                + "      }\n" + "    }\n" + "  }\n" + "}", //
                 request.toString());
     }
 
@@ -353,53 +345,53 @@ public class TestAggregates {
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows("{\n" + "  \"from\" : 0,\n" //
-                        + "  \"size\" : 10,\n" //
-                        + "  \"query\" : {\n" //
-                        + "    \"match_all\" : { }\n" //
-                        + "  },\n" //
-                        + "  \"post_filter\" : {\n" //
-                        + "    \"and\" : {\n" //
-                        + "      \"filters\" : [ {\n" //
-                        + "        \"terms\" : {\n" //
-                        + "          \"dc:source\" : [ \"foo\", \"bar\" ]\n" //
-                        + "        }\n" //
-                        + "      } ]\n" //
-                        + "    }\n" //
-                        + "  },\n" //
-                        + "  \"aggregations\" : {\n" //
-                        + "    \"source_filter\" : {\n" //
-                        + "      \"filter\" : {\n" //
-                        + "        \"match_all\" : { }\n" //
-                        + "      },\n" //
-                        + "      \"aggregations\" : {\n" //
-                        + "        \"source\" : {\n" //
-                        + "          \"terms\" : {\n" //
-                        + "            \"field\" : \"dc:source\"\n" //
-                        + "          }\n" //
-                        + "        }\n" //
-                        + "      }\n" //
-                        + "    },\n" //
-                        + "    \"nature_filter\" : {\n" //
-                        + "      \"filter\" : {\n" //
-                        + "        \"and\" : {\n" //
-                        + "          \"filters\" : [ {\n" //
-                        + "            \"terms\" : {\n" //
-                        + "              \"dc:source\" : [ \"foo\", \"bar\" ]\n" //
-                        + "            }\n" //
-                        + "          } ]\n" //
-                        + "        }\n" //
-                        + "      },\n" //
-                        + "      \"aggregations\" : {\n" //
-                        + "        \"nature\" : {\n" //
-                        + "          \"terms\" : {\n" //
-                        + "            \"field\" : \"dc:nature\",\n" //
-                        + "            \"size\" : 10\n" //
-                        + "          }\n" //
-                        + "        }\n" //
-                        + "      }\n" //
-                        + "    }\n" //
-                        + "  }\n" //
-                        + "}", //
+                + "  \"size\" : 10,\n" //
+                + "  \"query\" : {\n" //
+                + "    \"match_all\" : { }\n" //
+                + "  },\n" //
+                + "  \"post_filter\" : {\n" //
+                + "    \"and\" : {\n" //
+                + "      \"filters\" : [ {\n" //
+                + "        \"terms\" : {\n" //
+                + "          \"dc:source\" : [ \"foo\", \"bar\" ]\n" //
+                + "        }\n" //
+                + "      } ]\n" //
+                + "    }\n" //
+                + "  },\n" //
+                + "  \"aggregations\" : {\n" //
+                + "    \"source_filter\" : {\n" //
+                + "      \"filter\" : {\n" //
+                + "        \"match_all\" : { }\n" //
+                + "      },\n" //
+                + "      \"aggregations\" : {\n" //
+                + "        \"source\" : {\n" //
+                + "          \"terms\" : {\n" //
+                + "            \"field\" : \"dc:source\"\n" //
+                + "          }\n" //
+                + "        }\n" //
+                + "      }\n" //
+                + "    },\n" //
+                + "    \"nature_filter\" : {\n" //
+                + "      \"filter\" : {\n" //
+                + "        \"and\" : {\n" //
+                + "          \"filters\" : [ {\n" //
+                + "            \"terms\" : {\n" //
+                + "              \"dc:source\" : [ \"foo\", \"bar\" ]\n" //
+                + "            }\n" //
+                + "          } ]\n" //
+                + "        }\n" //
+                + "      },\n" //
+                + "      \"aggregations\" : {\n" //
+                + "        \"nature\" : {\n" //
+                + "          \"terms\" : {\n" //
+                + "            \"field\" : \"dc:nature\",\n" //
+                + "            \"size\" : 10\n" //
+                + "          }\n" //
+                + "        }\n" //
+                + "      }\n" //
+                + "    }\n" //
+                + "  }\n" //
+                + "}", //
                 request.toString());
     }
 
@@ -427,16 +419,19 @@ public class TestAggregates {
         PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
                 null, null, (long) 0, props);
 
-        Assert.assertEquals(7,  pp.getAggregates().size());
+        Assert.assertEquals(7, pp.getAggregates().size());
+        Assert.assertEquals(2, pp.getResultsCount());
         Assert.assertEquals(
                 "Aggregate(source, terms, dc:source, [Source1, Source2], [BucketTerm(Source0, 1), BucketTerm(Source1, 1), BucketTerm(Source2, 1), BucketTerm(Source3, 1), BucketTerm(Source4, 1)])",
                 pp.getAggregates().get("source").toString());
         Assert.assertEquals(
                 "Aggregate(coverage, terms, dc:coverage, [], [BucketTerm(Coverage1, 1), BucketTerm(Coverage2, 1)])",
                 pp.getAggregates().get("coverage").toString());
-        Assert.assertEquals("Aggregate(nature, terms, dc:nature, [], [BucketTerm(Nature0, 1), BucketTerm(Nature1, 1)])",
+        Assert.assertEquals(
+                "Aggregate(nature, terms, dc:nature, [], [BucketTerm(Nature0, 1), BucketTerm(Nature1, 1)])",
                 pp.getAggregates().get("nature").toString());
-        Assert.assertEquals("Aggregate(size, range, common:size, [], [BucketRange(small, 1, -Infinity, 2048,00), BucketRange(medium, 1, 2048,00, 6144,00), BucketRange(big, 0, 6144,00, Infinity)])",
+        Assert.assertEquals(
+                "Aggregate(size, range, common:size, [], [BucketRange(small, 1, -Infinity, 2048,00), BucketRange(medium, 1, 2048,00, 6144,00), BucketRange(big, 0, 6144,00, Infinity)])",
                 pp.getAggregates().get("size").toString());
 
     }
@@ -465,15 +460,19 @@ public class TestAggregates {
         PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
                 null, null, (long) 0, props);
 
-        Assert.assertEquals(7,  pp.getAggregates().size());
-        Assert.assertEquals("Aggregate(source, terms, dc:source, [], [BucketTerm(Source2, 1), BucketTerm(Source3, 1), BucketTerm(Source4, 1), BucketTerm(Source5, 1), BucketTerm(Source6, 1)])",
+        Assert.assertEquals(7, pp.getAggregates().size());
+        Assert.assertEquals(8, pp.getResultsCount());
+        Assert.assertEquals(
+                "Aggregate(source, terms, dc:source, [], [BucketTerm(Source2, 1), BucketTerm(Source3, 1), BucketTerm(Source4, 1), BucketTerm(Source5, 1), BucketTerm(Source6, 1)])",
                 pp.getAggregates().get("source").toString());
         Assert.assertEquals(
                 "Aggregate(coverage, terms, dc:coverage, [], [BucketTerm(Coverage0, 3), BucketTerm(Coverage2, 3), BucketTerm(Coverage1, 2)])",
                 pp.getAggregates().get("coverage").toString());
-        Assert.assertEquals("Aggregate(nature, terms, dc:nature, [], [BucketTerm(Nature0, 4), BucketTerm(Nature1, 4)])",
+        Assert.assertEquals(
+                "Aggregate(nature, terms, dc:nature, [], [BucketTerm(Nature0, 4), BucketTerm(Nature1, 4)])",
                 pp.getAggregates().get("nature").toString());
-        Assert.assertEquals("Aggregate(size, range, common:size, [big, medium], [BucketRange(small, 2, -Infinity, 2048,00), BucketRange(medium, 4, 2048,00, 6144,00), BucketRange(big, 4, 6144,00, Infinity)])",
+        Assert.assertEquals(
+                "Aggregate(size, range, common:size, [big, medium], [BucketRange(small, 2, -Infinity, 2048,00), BucketRange(medium, 4, 2048,00, 6144,00), BucketRange(big, 4, 6144,00, Infinity)])",
                 pp.getAggregates().get("size").toString());
 
     }
@@ -492,7 +491,7 @@ public class TestAggregates {
 
         DocumentModel model = new DocumentModelImpl("/", "doc",
                 "AdvancedSearch");
-        String[] created = { "long_time_ago", "last_month"};
+        String[] created = { "long_time_ago", "some_time_ago" };
         model.setProperty("advanced_search", "created_agg", created);
 
         HashMap<String, Serializable> props = new HashMap<String, Serializable>();
@@ -502,19 +501,22 @@ public class TestAggregates {
         PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
                 null, null, (long) 0, props);
 
-        Assert.assertEquals(7,  pp.getAggregates().size());
+        Assert.assertEquals(7, pp.getAggregates().size());
+        Assert.assertEquals(7, pp.getResultsCount());
         Assert.assertEquals(
                 "Aggregate(coverage, terms, dc:coverage, [], [BucketTerm(Coverage0, 3), BucketTerm(Coverage1, 2), BucketTerm(Coverage2, 2)])",
                 pp.getAggregates().get("coverage").toString());
-        Assert.assertEquals("Aggregate(nature, terms, dc:nature, [], [BucketTerm(Nature0, 4), BucketTerm(Nature1, 3)])",
+        Assert.assertEquals(
+                "Aggregate(nature, terms, dc:nature, [], [BucketTerm(Nature1, 4), BucketTerm(Nature0, 3)])",
                 pp.getAggregates().get("nature").toString());
-        List<BucketRangeDate> buckets = pp.getAggregates().get("created").getBuckets();
+        List<BucketRangeDate> buckets = pp.getAggregates().get("created")
+                .getBuckets();
         Assert.assertEquals(3, buckets.size());
         Assert.assertEquals("long_time_ago", buckets.get(0).getKey());
         Assert.assertEquals(0, buckets.get(0).getDocCount());
-        Assert.assertEquals(3, buckets.get(1).getDocCount());
+        Assert.assertEquals(7, buckets.get(1).getDocCount());
         Assert.assertEquals("last_month", buckets.get(2).getKey());
-        Assert.assertEquals(7, buckets.get(2).getDocCount());
+        Assert.assertEquals(3, buckets.get(2).getDocCount());
     }
 
     protected void assertEqualsEvenUnderWindows(String expected, String actual) {

@@ -4,7 +4,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -53,8 +53,6 @@ import org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
 import org.nuxeo.runtime.api.Framework;
-
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * @since 5.9.6
@@ -368,12 +366,14 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     @Override
     public int getPendingDocs() {
-        throw new NotImplementedException();
+        // impl of scheduling is left to the ESService
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
     public int getPendingCommands() {
-        throw new NotImplementedException();
+        // impl of scheduling is left to the ESService
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
@@ -388,7 +388,8 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     @Override
     public boolean isIndexingInProgress() {
-        throw new NotImplementedException();
+        // impl of scheduling is left to the ESService
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     /**

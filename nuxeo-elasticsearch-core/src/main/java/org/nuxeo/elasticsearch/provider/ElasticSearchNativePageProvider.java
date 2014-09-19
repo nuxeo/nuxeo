@@ -120,7 +120,7 @@ public class ElasticSearchNativePageProvider extends
     }
 
     protected QueryBuilder makeQueryBuilder() {
-        QueryBuilder ret = null;
+        QueryBuilder ret;
         try {
             PageProviderDefinition def = getDefinition();
             if (def.getWhereClause() == null) {

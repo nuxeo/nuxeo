@@ -17,6 +17,7 @@
 package org.nuxeo.elasticsearch.aggregate;
 
 import java.util.Collection;
+
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
