@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS <http://nuxeo.com> and others
+ * (C) Copyright 2006-2014 Nuxeo SA <http://nuxeo.com> and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     Jean-Marc Orliaguet, Chalmers
  *
- * $Id$
  */
 
 package org.nuxeo.theme.test.themes;
@@ -20,12 +19,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.runner.RunWith;
 
-import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.Utils;
 import org.nuxeo.theme.elements.Element;
@@ -47,19 +49,13 @@ import org.nuxeo.theme.themes.ThemeIOException;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.themes.ThemeSerializer;
 
-public class TestThemeSerializer extends NXRuntimeTestCase {
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core",
-                "OSGI-INF/nxthemes-core-contrib.xml");
-        deployContrib("org.nuxeo.theme.core.tests", "fragment-config.xml");
-        deployContrib("org.nuxeo.theme.core.tests", "view-config.xml");
-    }
-
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy({ "org.nuxeo.theme.core:OSGI-INF/nxthemes-core-service.xml",
+        "org.nuxeo.theme.core:OSGI-INF/nxthemes-core-contrib.xml" })
+@LocalDeploy({ "org.nuxeo.theme.core.tests:fragment-config.xml",
+        "org.nuxeo.theme.core.tests:view-config.xml" })
+public class TestThemeSerializer {
     @Test
     public void testSerializeTheme() throws ThemeException, NodeException,
             ThemeIOException, IOException {
@@ -73,7 +69,7 @@ public class TestThemeSerializer extends NXRuntimeTestCase {
         DummyFragment fragment1 = (DummyFragment) FragmentFactory.create("dummy fragment");
         fragment1.setField1("value 1");
         fragment1.setField2("value 2");
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         list.add("a");
         list.add("b");
         list.add("one, two, three");

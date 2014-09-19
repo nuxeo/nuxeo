@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS <http://nuxeo.com> and others
+ * (C) Copyright 2006-2014 Nuxeo SA <http://nuxeo.com> and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     Jean-Marc Orliaguet, Chalmers
  *
- * $Id$
  */
 
 package org.nuxeo.theme.vocabularies;
@@ -24,6 +23,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.Registrable;
 import org.nuxeo.theme.types.TypeFamily;
@@ -34,7 +34,7 @@ public final class VocabularyManager implements Registrable {
 
     private static final Log log = LogFactory.getLog(VocabularyManager.class);
 
-    private final Map<String, Vocabulary> vocabularies = new HashMap<String, Vocabulary>();
+    private final Map<String, Vocabulary> vocabularies = new HashMap<>();
 
     public List<VocabularyItem> getItems(String name) {
         VocabularyType vocabularyType = (VocabularyType) Manager.getTypeRegistry().lookup(
@@ -70,7 +70,7 @@ public final class VocabularyManager implements Registrable {
                 log.error("Only .csv vocabularies are supported: " + path);
                 return null;
             }
-            final List<VocabularyItem> items = new ArrayList<VocabularyItem>();
+            final List<VocabularyItem> items = new ArrayList<>();
             CSVReader reader = null;
             InputStream is = null;
             try {
@@ -122,8 +122,9 @@ public final class VocabularyManager implements Registrable {
         return vocabulary;
     }
 
+    @Override
     public void clear() {
-        // TODO Auto-generated method stub
+        // FIXME: should call vocabularies.clear() ?
     }
 
 }

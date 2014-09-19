@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS <http://nuxeo.com> and others
+ * (C) Copyright 2006-2014 Nuxeo SA <http://nuxeo.com> and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     Jean-Marc Orliaguet, Chalmers
  *
- * $Id$
  */
 
 package org.nuxeo.theme;
@@ -70,7 +69,7 @@ public final class Utils {
 
     public static List<String> csvToList(String str) throws IOException {
         if ("".equals(str) || str == null) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
         StringReader sr = new StringReader(str);
         CSVReader reader = new CSVReader(sr, ',');
@@ -168,8 +167,7 @@ public final class Utils {
                 urlc = url.openConnection();
                 os = urlc.getOutputStream();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                log.error(e);
+                log.error(e.getMessage(), e);
             }
 
             if (os != null) {
@@ -177,12 +175,12 @@ public final class Utils {
                     os.write(text.getBytes());
                     os.flush();
                 } catch (IOException e) {
-                    log.error(e);
+                    log.error(e.getMessage(), e);
                 } finally {
                     try {
                         os.close();
                     } catch (IOException e) {
-                        log.error(e);
+                        log.error(e.getMessage(), e);
                     } finally {
                         os = null;
                     }
@@ -217,7 +215,7 @@ public final class Utils {
     }
 
     /**
-     * Parses and loads css resources into given style element. If boolean merge
+     * Parses and loads CSS resources into given style element. If boolean merge
      * is set to true, keep existing properties already defined in style.
      *
      * @since 5.5

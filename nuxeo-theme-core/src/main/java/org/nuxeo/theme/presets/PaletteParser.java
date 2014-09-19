@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS <http://nuxeo.com> and others
+ * (C) Copyright 2006-2014 Nuxeo SA <http://nuxeo.com> and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     Jean-Marc Orliaguet, Chalmers
  *
- * $Id$
  */
 
 package org.nuxeo.theme.presets;
@@ -35,7 +34,7 @@ public class PaletteParser {
     private static final Log log = LogFactory.getLog(PaletteParser.class);
 
     public static Map<String, String> parse(URL url) {
-        Map<String, String> entries = new HashMap<String, String>();
+        Map<String, String> entries = new HashMap<>();
         InputStream in = null;
         try {
             in = url.openStream();
@@ -143,7 +142,7 @@ public class PaletteParser {
     }
 
     public static Map<String, String> parseCsv(String text) {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         if (text == null) {
             return properties;
         }
