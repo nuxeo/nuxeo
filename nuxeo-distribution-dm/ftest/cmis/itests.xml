@@ -14,24 +14,29 @@
   <import file="${out.dir}/nuxeo-ftest.xml" />
 
   <target name="run-cmis-tests">
-    <exec executable="python"
-          output="${out.dir}/cmis.log"
-          resultproperty="exitCode"
-          failonerror="false">
-      <arg value="runtests.py" />
-      <env key="VERBOSITY" value="2" />
-    </exec>
+    <for list="AtomPub,Browser" param="cmisBinding">
+      <sequential>
+        <exec executable="python"
+              output="${out.dir}/cmis_@{cmisBinding}.log"
+              resultproperty="exitCode"
+              failonerror="false">
+          <arg value="runtests.py" />
+          <env key="VERBOSITY" value="2" />
+          <env key="CMIS_BINDING" value="@{cmisBinding}" />
+        </exec>
 
-    <if>
-      <not>
-        <equals arg1="${exitCode}" arg2="0" />
-      </not>
-      <then>
-        <loadfile property="cmis.log" srcFile="${out.dir}/cmis.log" />
-        <echo level="error" message="${cmis.log}" />
-        <fail status="${exitCode}" message="CMIS tests failed - see cmis.log" />
-      </then>
-    </if>
+        <if>
+          <not>
+            <equals arg1="${exitCode}" arg2="0" />
+          </not>
+          <then>
+            <loadfile property="cmis.log" srcFile="${out.dir}/cmis_@{cmisBinding}.log" />
+            <echo level="error" message="${cmis.log}" />
+            <fail status="${exitCode}" message="CMIS @{cmisBinding} tests failed - see cmis_@{cmisBinding}.log" />
+          </then>
+        </if>
+      </sequential>
+    </for>
   </target>
 
 </project>
