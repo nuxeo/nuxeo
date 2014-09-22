@@ -24,46 +24,39 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
-@Features({ DocumentUpdatePropertiesWithMultiline.InitFeature.class,
+@Features({ DocumentUpdatePropertiesWithMultilineTest.InitFeature.class,
         TransactionalFeature.class, CoreFeature.class })
 @Deploy("org.nuxeo.ecm.automation.core")
-// For version label info
-@LocalDeploy("org.nuxeo.ecm.automation.core:test-operations.xml")
-// @RepositoryConfig(cleanup=Granularity.METHOD)
-public class DocumentUpdatePropertiesWithMultiline {
+public class DocumentUpdatePropertiesWithMultilineTest {
 
     public static class InitFeature extends SimpleFeature {
 
-        private static String multilineMode;
-
         @Override
         public void initialize(FeaturesRunner runner) {
-            multilineMode = System.getProperty("nuxeo.automation.properties.multiline.escape");
-            System.setProperty("nuxeo.automation.properties.multiline.escape",
-                    "true");
-        }
+            Framework.addListener(new RuntimeServiceListener() {
 
-        @Override
-        public void stop(FeaturesRunner runner) throws Exception {
-            if (multilineMode == null) {
-                System.getProperties().remove(
-                        "nuxeo.automation.properties.multiline.escape");
-            } else {
-                System.setProperty(
-                        "nuxeo.automation.properties.multiline.escape",
-                        multilineMode);
-            }
+                @Override
+                public void handleEvent(RuntimeServiceEvent event) {
+                    if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_START) {
+                        return;
+                    }
+                    Framework.removeListener(this);
+                    event.runtime.getProperties().setProperty(
+                            Properties.PROPERTIES_MULTILINE_ESCAPE, "true");
+                }
+            });
         }
-
     }
 
     protected DocumentModel src;
@@ -95,10 +88,10 @@ public class DocumentUpdatePropertiesWithMultiline {
     }
 
     /**
-     * Create | GetParent | Update Parent | Save | Pop | Lock.
+     * Test if a multiline description is correctly updated.
      */
     @Test
-    public void testChain3() throws Exception {
+    public void testUpdateWithMultilineDescription() throws Exception {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
