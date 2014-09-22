@@ -6,6 +6,24 @@ html, body {
   height: 100%;
   margin: 0; }
 
+#queryArea {
+  padding: 1em }
+
+#queryArea #query {
+  border: 1px solid #c6c6c6;
+  border-radius: 2px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.07) inset;
+  box-sizing: border-box;
+  display: inline-block;
+  font-family: "Lucida Grande",Arial,Helvetica,Geneva,sans-serif;
+  font-size: 1em;
+  margin-bottom: .5em;
+  padding: .4em;
+  width: 30em }
+
+#queryArea .button {
+  vertical-align: top }
+
 #grid {
   padding: 0 0 2.5em;
   width: 100% }
@@ -23,6 +41,7 @@ html, body {
   z-index: 105 }
 
 input.button,
+#queryArea .button,
 .buttonsGadget button {
   background: none repeat scroll 0 0 #fff;
   border: 1px solid #c9c9c9;
