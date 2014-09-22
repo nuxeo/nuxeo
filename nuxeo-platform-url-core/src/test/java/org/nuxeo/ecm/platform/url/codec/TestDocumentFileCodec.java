@@ -101,6 +101,25 @@ public class TestDocumentFileCodec {
         assertEquals("mydoc.odt", params.get(DocumentFileCodec.FILENAME_KEY));
     }
 
+    @Test
+    public void testGetDocumentViewFromUrlWithJsessionid() {
+        DocumentFileCodec codec = new DocumentFileCodec();
+        String url = "nxfile/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/file:content/mydoc.odt;jsessionid=38DE2293806643550EB569D8EB827219.nuxeo";
+        DocumentView docView = codec.getDocumentViewFromUrl(url);
+
+        DocumentLocation docLoc = docView.getDocumentLocation();
+        assertEquals("demo", docLoc.getServerName());
+        assertEquals(new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"),
+                docLoc.getDocRef());
+        assertNull(docView.getViewId());
+        assertNull(docView.getSubURI());
+
+        Map<String, String> params = docView.getParameters();
+        assertEquals("file:content",
+                params.get(DocumentFileCodec.FILE_PROPERTY_PATH_KEY));
+        assertEquals("mydoc.odt", params.get(DocumentFileCodec.FILENAME_KEY));
+    }
+
     // same with spaces in file name
     @Test
     public void testGetDocumentViewFromUrlDecoding() {
