@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,6 +50,10 @@ public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
     protected static final String DEFAULT_REALMNAME = "NUXEO";
 
     protected static final long DEFAULT_NONCE_VALIDITY_SECONDS = 1000;
+
+    protected static final String EQUAL_SEPARATOR = "=";
+
+    protected static final String QUOTE = "\"";
 
     /*
      * match the first portion up until an equals sign
@@ -159,13 +162,12 @@ public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
             if (iterator.hasNext()) {
                 CSVRecord record = iterator.next();
                 for (String itemPairStr : record) {
-                    Matcher match = PAIR_ITEM_PATTERN.matcher(itemPairStr);
-                    if (match.find()) {
-                        String key = match.group(1);
-                        String value = match.group(3);
-                        map.put(key.trim(), value.trim());
+                    itemPairStr = StringUtils.remove(itemPairStr, QUOTE);
+                    String[] parts = itemPairStr.split(EQUAL_SEPARATOR, 2);
+                    if (parts == null) {
+                        continue;
                     } else {
-                        log.warn("Could not parse item pair " + itemPairStr);
+                        map.put(parts[0].trim(), parts[1].trim());
                     }
                 }
             }
