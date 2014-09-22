@@ -148,6 +148,11 @@ input.tinyButton {
   padding: 0 0 0 .1em;
   vertical-align: top }
 
+.contentViewUpperAction .widgetPanel,
+.contentViewUpperAction .actionsWidgetPanel {
+  display: inline-block;
+  padding: 0 }
+
 .contentViewUpperAction a {
   color: "gray.light (__FLAVOR__ color)";
   font-size: .85em }
