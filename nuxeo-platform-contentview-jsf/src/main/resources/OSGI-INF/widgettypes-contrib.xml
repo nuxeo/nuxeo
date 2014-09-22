@@ -30,6 +30,7 @@
             <property name="itemCount">(#{item.docCount})</property>
             <property name="layout">pageDirection</property>
             <property name="notDisplayDefaultOption">true</property>
+            <property name="moreLessLimit">6</property>
           </defaultValues>
           <layouts mode="edit">
             <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
@@ -81,6 +82,7 @@
             <property name="itemValue">#{item.key}</property>
             <property name="itemCount">(#{item.docCount})</property>
             <property name="notDisplayDefaultOption">true</property>
+            <property name="enableSelect2">true</property>
           </defaultValues>
           <layouts mode="edit">
             <layout name="selectManyListboxAggregate_widget_type_properties_edit">
@@ -129,6 +131,7 @@
             <property name="itemCount">(#{item.docCount})</property>
             <property name="layout">pageDirection</property>
             <property name="notDisplayDefaultOption">true</property>
+            <property name="moreLessLimit">6</property>
           </defaultValues>
           <layouts mode="any">
             <layout
@@ -216,6 +219,7 @@
             <property name="itemValue">#{item.key}</property>
             <property name="itemCount">(#{item.docCount})</property>
             <property name="notDisplayDefaultOption">true</property>
+            <property name="enableSelect2">true</property>
           </defaultValues>
           <layouts mode="any">
             <layout
@@ -323,6 +327,116 @@
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyCheckboxDirectoryAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyCheckboxUserAggregate">
+      <configuration>
+        <sinceVersion>5.9.6</sinceVersion>
+        <title>Select Many Checkbox User Aggregate</title>
+        <description></description>
+        <categories>
+          <category>aggregates</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="layout">pageDirection</property>
+            <property name="notDisplayDefaultOption">true</property>
+            <property name="itemLabel">#{nxu:userDisplayName(itemEntry.user.username, itemEntry.user.firstName, itemEntry.user.lastName)}</property>
+            <property name="directoryName">userDirectory</property>
+            <property name="moreLessLimit">6</property>
+          </defaultValues>
+          <layouts mode="edit">
+            <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_layout</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyCheckboxDirectoryAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyListboxUserAggregate">
+      <configuration>
+        <sinceVersion>5.9.6</sinceVersion>
+        <title>Select Many Listbox User Aggregate</title>
+        <description></description>
+        <categories>
+          <category>aggregates</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="layout">pageDirection</property>
+            <property name="notDisplayDefaultOption">true</property>
+            <property name="itemLabel">#{nxu:userDisplayName(itemEntry.user.username, itemEntry.user.firstName, itemEntry.user.lastName)}</property>
+            <property name="directoryName">userDirectory</property>
+            <property name="style">width:100%</property>
+            <property name="enableSelect2">true</property>
+            <property name="placeholder">#{messages['label.vocabulary.selectValue']}</property>
+          </defaultValues>
+          <layouts mode="edit">
+            <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_layout</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyListboxDirectoryAggregateWidgetTypeHandler
       </handler-class>
     </widgetType>
 
