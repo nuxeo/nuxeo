@@ -20,6 +20,7 @@ package org.nuxeo.ecm.ui.web.auth.digest;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -28,12 +29,15 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import au.com.bytecode.opencsv.CSVReader;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 
@@ -149,34 +153,24 @@ public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
 
     public static Map<String, String> splitParameters(String auth) {
         Map<String, String> map = new HashMap<>();
-        CSVReader reader = null;
-        try {
-            reader = new CSVReader(new StringReader(auth));
-            String[] array = null;
-            try {
-                array = reader.readNext();
-            } catch (IOException e) {
-                log.error(e.getMessage(), e);
-                return map;
-            }
-            for (String itemPairStr : array) {
-                Matcher match = PAIR_ITEM_PATTERN.matcher(itemPairStr);
-                if (match.find()) {
-                    String key = match.group(1);
-                    String value = match.group(3);
-                    map.put(key.trim(), value.trim());
-                } else {
-                    log.warn("Could not parse item pair " + itemPairStr);
+        try (CSVParser reader = new CSVParser(new StringReader(auth),
+                CSVFormat.DEFAULT)) {
+            Iterator<CSVRecord> iterator = reader.iterator();
+            if (iterator.hasNext()) {
+                CSVRecord record = iterator.next();
+                for (String itemPairStr : record) {
+                    Matcher match = PAIR_ITEM_PATTERN.matcher(itemPairStr);
+                    if (match.find()) {
+                        String key = match.group(1);
+                        String value = match.group(3);
+                        map.put(key.trim(), value.trim());
+                    } else {
+                        log.warn("Could not parse item pair " + itemPairStr);
+                    }
                 }
             }
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException ioe) {
-                    log.error("Could not close reader", ioe);
-                }
-            }
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
         }
         return map;
     }
