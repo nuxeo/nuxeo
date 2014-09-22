@@ -1393,6 +1393,11 @@
         <artifactId>nuxeo-rest-api-test</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-search-ui</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
 
       <!-- Third parties -->
       <dependency>
