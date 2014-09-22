@@ -123,7 +123,7 @@ public class Properties extends HashMap<String, String> {
                 continue;
             }
             if (prevLine != null) {
-                line = prevLine + line;
+                line = prevLine + "\n" + line;
             }
             prevLine = null;
             setPropertyLine(map, line);
