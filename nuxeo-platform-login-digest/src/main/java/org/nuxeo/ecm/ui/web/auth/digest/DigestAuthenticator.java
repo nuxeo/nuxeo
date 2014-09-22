@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -120,7 +120,6 @@ public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
          * I have used this property to transfer response parameters to
          * DigestLoginPlugin But loginParameters rewritten in
          * NuxeoAuthenticationFilter common implementation
-         *
          * @TODO: Fix this or find new way to transfer properties to LoginPlugin
          */
         userIdent.setLoginParameters(headerMap);
@@ -149,7 +148,7 @@ public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
     }
 
     public static Map<String, String> splitParameters(String auth) {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         CSVReader reader = null;
         try {
             reader = new CSVReader(new StringReader(auth));

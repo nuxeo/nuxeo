@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -48,9 +49,12 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({"org.nuxeo.ecm.platform.content.template", "org.nuxeo.ecm.platform.dublincore", "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.platform.login.shibboleth"})
-@LocalDeploy(
-        "org.nuxeo.ecm.platform.login.shibboleth:OSGI-INF/test-sql-directory.xml")
+@Deploy({ "org.nuxeo.ecm.platform.content.template",
+        "org.nuxeo.ecm.platform.dublincore", "org.nuxeo.ecm.directory.api",
+        "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.directory",
+        "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.platform.usermanager",
+        "org.nuxeo.ecm.platform.login.shibboleth" })
+@LocalDeploy("org.nuxeo.ecm.platform.login.shibboleth:OSGI-INF/test-sql-directory.xml")
 public class TestShibbolethGroupHelper {
 
     protected static final String CORRECT_EL = "empty currentUser";
@@ -102,7 +106,7 @@ public class TestShibbolethGroupHelper {
         assertEquals("testRef", group.getId());
 
         DocumentModel shibbGroup = createShibbGroup("refShib");
-        List<String> ref = new ArrayList<String>();
+        List<String> ref = new ArrayList<>();
         assertEquals("refShib", shibbGroup.getId());
         ref.add(shibbGroup.getId());
 
@@ -111,12 +115,10 @@ public class TestShibbolethGroupHelper {
         userManager.updateGroup(group);
         session.save();
 
-        Directory dir = directoryService.getDirectory(
-                userManager.getGroupDirectoryName());
+        Directory dir = directoryService.getDirectory(userManager.getGroupDirectoryName());
         assertNotNull(dir.getReference(userManager.getGroupSubGroupsField()));
 
-        SQLSession ses = (SQLSession) directoryService.open(
-                userManager.getGroupDirectoryName());
+        SQLSession ses = (SQLSession) directoryService.open(userManager.getGroupDirectoryName());
         DocumentModel tmp = ses.getEntry("testRef");
         @SuppressWarnings("unchecked")
         List<String> subs = (List<String>) tmp.getProperty(
@@ -125,8 +127,7 @@ public class TestShibbolethGroupHelper {
         assertNotNull(subs);
         assertEquals(1, subs.size());
 
-        Reference dirRef = dir.getReference(
-                userManager.getGroupSubGroupsField());
+        Reference dirRef = dir.getReference(userManager.getGroupSubGroupsField());
 
         assertTrue(dirRef.getTargetIdsForSource("testRef").size() > 0);
         assertTrue(dirRef.getSourceIdsForTarget("refShib").size() > 0);
@@ -149,8 +150,8 @@ public class TestShibbolethGroupHelper {
         group3.setPropertyValue("group:groupname", "trueGroup3");
         group3 = userManager.createGroup(group3);
 
-        List<String> subGroup = new ArrayList<String>();
-        List<String> subGroup2 = new ArrayList<String>();
+        List<String> subGroup = new ArrayList<>();
+        List<String> subGroup2 = new ArrayList<>();
 
         DocumentModel shibGroup = createShibbGroup("members");
         subGroup.add(shibGroup.getId());
