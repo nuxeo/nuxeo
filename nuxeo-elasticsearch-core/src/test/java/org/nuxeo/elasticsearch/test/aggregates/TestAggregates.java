@@ -517,10 +517,10 @@ public class TestAggregates {
                 "Aggregate(nature, terms, dc:nature, [], [BucketTerm(Nature0, 1), BucketTerm(Nature1, 1)])",
                 pp.getAggregates().get("nature").toString());
         Assert.assertEquals(
-                "Aggregate(size, range, common:size, [], [BucketRange(small, 1, -Infinity, 2048,00), BucketRange(medium, 1, 2048,00, 6144,00), BucketRange(big, 0, 6144,00, Infinity)])",
+                "Aggregate(size, range, common:size, [], [BucketRange(small, 1, -Infinity, 2048.00), BucketRange(medium, 1, 2048.00, 6144.00), BucketRange(big, 0, 6144.00, Infinity)])",
                 pp.getAggregates().get("size").toString());
         Assert.assertEquals(
-                "Aggregate(size_histo, histogram, common:size, [], [BucketRange(1024, 1, 1024,00, 2048,00), BucketRange(2048, 1, 2048,00, 3072,00)])",
+                "Aggregate(size_histo, histogram, common:size, [], [BucketRange(1024, 1, 1024.00, 2048.00), BucketRange(2048, 1, 2048.00, 3072.00)])",
                 pp.getAggregates().get("size_histo").toString());
         Assert.assertEquals(3, pp.getAggregates().get("created").getBuckets()
                 .size());
@@ -569,7 +569,7 @@ public class TestAggregates {
                 "Aggregate(nature, terms, dc:nature, [], [BucketTerm(Nature0, 4), BucketTerm(Nature1, 4)])",
                 pp.getAggregates().get("nature").toString());
         Assert.assertEquals(
-                "Aggregate(size, range, common:size, [big, medium], [BucketRange(small, 2, -Infinity, 2048,00), BucketRange(medium, 4, 2048,00, 6144,00), BucketRange(big, 4, 6144,00, Infinity)])",
+                "Aggregate(size, range, common:size, [big, medium], [BucketRange(small, 2, -Infinity, 2048.00), BucketRange(medium, 4, 2048.00, 6144.00), BucketRange(big, 4, 6144.00, Infinity)])",
                 pp.getAggregates().get("size").toString());
 
     }
@@ -643,7 +643,7 @@ public class TestAggregates {
         Assert.assertEquals(7, pp.getAggregates().size());
         Assert.assertEquals(2, pp.getResultsCount());
         Assert.assertEquals(
-                "Aggregate(size_histo, histogram, common:size, [1024, 4096], [BucketRange(0, 1, 0,00, 1024,00), BucketRange(1024, 1, 1024,00, 2048,00), BucketRange(2048, 1, 2048,00, 3072,00), BucketRange(3072, 1, 3072,00, 4096,00), BucketRange(4096, 1, 4096,00, 5120,00), BucketRange(5120, 1, 5120,00, 6144,00), BucketRange(6144, 1, 6144,00, 7168,00), BucketRange(7168, 1, 7168,00, 8192,00), BucketRange(8192, 1, 8192,00, 9216,00), BucketRange(9216, 1, 9216,00, 10240,00)])",
+                "Aggregate(size_histo, histogram, common:size, [1024, 4096], [BucketRange(0, 1, 0.00, 1024.00), BucketRange(1024, 1, 1024.00, 2048.00), BucketRange(2048, 1, 2048.00, 3072.00), BucketRange(3072, 1, 3072.00, 4096.00), BucketRange(4096, 1, 4096.00, 5120.00), BucketRange(5120, 1, 5120.00, 6144.00), BucketRange(6144, 1, 6144.00, 7168.00), BucketRange(7168, 1, 7168.00, 8192.00), BucketRange(8192, 1, 8192.00, 9216.00), BucketRange(9216, 1, 9216.00, 10240.00)])",
                 pp.getAggregates().get("size_histo").toString());
         Assert.assertEquals(
                 "Aggregate(source, terms, dc:source, [], [BucketTerm(Source1, 1), BucketTerm(Source4, 1)])",
@@ -678,7 +678,7 @@ public class TestAggregates {
         Assert.assertEquals(7, pp.getAggregates().size());
         Assert.assertEquals(2, pp.getResultsCount());
         Assert.assertEquals(
-                "Aggregate(size_histo, histogram, common:size, [], [BucketRange(3072, 1, 3072,00, 4096,00), BucketRange(6144, 1, 6144,00, 7168,00)])",
+                "Aggregate(size_histo, histogram, common:size, [], [BucketRange(3072, 1, 3072.00, 4096.00), BucketRange(6144, 1, 6144.00, 7168.00)])",
                 pp.getAggregates().get("size_histo").toString());
         Assert.assertEquals(
                 "Aggregate(source, terms, dc:source, [], [BucketTerm(Source3, 1), BucketTerm(Source6, 1)])",
