@@ -49,13 +49,12 @@ import org.nuxeo.ecm.platform.forms.layout.demo.service.LayoutDemoManager;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
-import org.nuxeo.ecm.platform.query.api.AggregateQuery;
 import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.ecm.platform.query.api.PageSelection;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
+import org.nuxeo.ecm.platform.query.core.AggregateBase;
 import org.nuxeo.ecm.platform.query.core.AggregateDescriptor;
-import org.nuxeo.ecm.platform.query.core.AggregateImpl;
-import org.nuxeo.ecm.platform.query.core.AggregateQueryImpl;
+
 import org.nuxeo.ecm.platform.query.core.BucketTerm;
 
 /**
@@ -355,35 +354,35 @@ public class LayoutDemoContext implements Serializable {
 
             AggregateDefinition mockDef = new AggregateDescriptor();
             mockDef.setId("mock");
-            AggregateQuery mockQuery = new AggregateQueryImpl(mockDef, null);
+            Aggregate mockQuery = new AggregateBase(mockDef, null);
 
             List<Bucket> stringTerms = new ArrayList<>();
             stringTerms.add(new BucketTerm("eric", 10));
             stringTerms.add(new BucketTerm("stan", 5));
             stringTerms.add(new BucketTerm("kyle", 2));
-            layoutDemoAggregates.put("string_terms", new AggregateImpl(
-                    mockQuery, stringTerms));
+            mockQuery.setBuckets(stringTerms);
+            layoutDemoAggregates.put("string_terms", mockQuery);
 
             List<Bucket> dirTerms = new ArrayList<>();
             dirTerms.add(new BucketTerm("cartman", 10));
             dirTerms.add(new BucketTerm("marsh", 5));
             dirTerms.add(new BucketTerm("broflovski", 2));
-            layoutDemoAggregates.put("dir_terms", new AggregateImpl(mockQuery,
-                    dirTerms));
+            mockQuery.setBuckets(dirTerms);
+            layoutDemoAggregates.put("dir_terms", mockQuery);
 
             List<Bucket> dirTermsl10n = new ArrayList<>();
             dirTermsl10n.add(new BucketTerm("oceania", 10));
             dirTermsl10n.add(new BucketTerm("antarctica", 5));
             dirTermsl10n.add(new BucketTerm("europe", 2));
-            layoutDemoAggregates.put("dir_terms_translated", new AggregateImpl(
-                    mockQuery, dirTermsl10n));
+            mockQuery.setBuckets(dirTermsl10n);
+            layoutDemoAggregates.put("dir_terms_translated", mockQuery);
 
             List<Bucket> dirTermsl10nHier = new ArrayList<>();
             dirTermsl10nHier.add(new BucketTerm("oceania/Australia", 10));
             dirTermsl10nHier.add(new BucketTerm("antarctica", 5));
             dirTermsl10nHier.add(new BucketTerm("europe/France", 2));
-            layoutDemoAggregates.put("dir_terms_l10n", new AggregateImpl(
-                    mockQuery, dirTermsl10nHier));
+            mockQuery.setBuckets(dirTermsl10nHier);
+            layoutDemoAggregates.put("dir_terms_l10n", mockQuery);
         }
         return layoutDemoAggregates;
     }
