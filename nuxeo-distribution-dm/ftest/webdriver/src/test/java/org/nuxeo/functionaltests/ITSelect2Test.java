@@ -49,7 +49,7 @@ public class ITSelect2Test extends AbstractTest {
 
     public final static String COVERAGE = "France";
 
-    public static final String S2_COVERAGE_FIELD_XPATH = "//*[@id='s2id_document_edit:nxl_dublincore:nxw_coverage_select2']/a/span";
+    public static final String S2_COVERAGE_FIELD_XPATH = "//*[@id='s2id_document_edit:nxl_dublincore:nxw_coverage_1_select2']/a/span";
 
     /**
      * Delete created user and data.
@@ -121,13 +121,13 @@ public class ITSelect2Test extends AbstractTest {
 
         Select2WidgetElement subjectsWidget = new Select2WidgetElement(
                 driver,
-                driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_select2']")),
+                driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_1_select2']")),
                 true);
         subjectsWidget.selectValues(SUBJECTS);
 
         Select2WidgetElement coverageWidget = new Select2WidgetElement(
                 driver,
-                driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_coverage_select2']")),
+                driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_coverage_1_select2']")),
                 false);
         coverageWidget.selectValue(COVERAGE);
 
@@ -140,11 +140,11 @@ public class ITSelect2Test extends AbstractTest {
         assertNotNull(text);
         assertTrue(text.endsWith(COVERAGE));
 
-        List<WebElement> savedSubjects = driver.findElements(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_select2']/ul/li/div"));
+        List<WebElement> savedSubjects = driver.findElements(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_1_select2']/ul/li/div"));
         assertEquals(savedSubjects.size(), SUBJECTS.length);
 
         // Remove the second subject
-        WebElement deleteSecondSubjectAction = driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_select2']/ul/li[2]/a"));
+        WebElement deleteSecondSubjectAction = driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_1_select2']/ul/li[2]/a"));
         deleteSecondSubjectAction.click();
 
         // We need to do this because select2 take a little while to write in
@@ -156,7 +156,7 @@ public class ITSelect2Test extends AbstractTest {
         editTabSubPage = filePage.getEditTab();
 
         // Make sure we have one subject removed
-        savedSubjects = driver.findElements(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_select2']/ul/li/div"));
+        savedSubjects = driver.findElements(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_1_select2']/ul/li/div"));
         assertEquals(savedSubjects.size(), SUBJECTS.length - 1);
 
         logout();

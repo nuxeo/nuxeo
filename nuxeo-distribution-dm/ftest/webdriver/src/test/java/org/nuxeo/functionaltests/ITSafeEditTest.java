@@ -352,7 +352,7 @@ public class ITSafeEditTest extends AbstractTest {
 
         Select2WidgetElement coverageWidget = new Select2WidgetElement(
                 driver,
-                driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_coverage_select2']")));
+                driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_coverage_1_select2']")));
         coverageWidget.selectValue(COVERAGE);
 
         waitForSavedNotification();
