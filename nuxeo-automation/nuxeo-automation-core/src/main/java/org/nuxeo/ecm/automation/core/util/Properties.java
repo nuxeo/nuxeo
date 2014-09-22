@@ -38,7 +38,7 @@ public class Properties extends HashMap<String, String> {
 
     private static final long serialVersionUID = 1L;
 
-    protected static final String PROPERTIES_MULTILINE_ESCAPE = "nuxeo" +
+    public static final String PROPERTIES_MULTILINE_ESCAPE = "nuxeo" +
             ".automation.properties.multiline.escape";
 
     protected static final String multiLineEscape = Objects.firstNonNull

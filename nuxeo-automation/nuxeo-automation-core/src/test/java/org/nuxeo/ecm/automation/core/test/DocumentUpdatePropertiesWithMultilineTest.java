@@ -30,7 +30,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 import com.google.inject.Inject;
@@ -54,8 +53,7 @@ public class DocumentUpdatePropertiesWithMultilineTest {
                     }
                     Framework.removeListener(this);
                     event.runtime.getProperties().setProperty(
-                            "nuxeo.automation.properties.multiline.escape",
-                            "true");
+                            Properties.PROPERTIES_MULTILINE_ESCAPE, "true");
                 }
             });
         }
