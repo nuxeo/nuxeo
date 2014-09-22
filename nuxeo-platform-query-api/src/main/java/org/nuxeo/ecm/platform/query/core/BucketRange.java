@@ -18,6 +18,8 @@ package org.nuxeo.ecm.platform.query.core;
 
 import org.nuxeo.ecm.platform.query.api.Bucket;
 
+import java.util.Locale;
+
 /**
  * Immutable bucket for range.
  * @since 5.9.6
@@ -73,7 +75,7 @@ public final class BucketRange implements Bucket {
 
     @Override
     public String toString() {
-        return String.format("BucketRange(%s, %d, %.2f, %.2f)", key, docCount, from,
+        return String.format(Locale.ENGLISH, "BucketRange(%s, %d, %.2f, %.2f)", key, docCount, from,
                         to);
     }
 }
