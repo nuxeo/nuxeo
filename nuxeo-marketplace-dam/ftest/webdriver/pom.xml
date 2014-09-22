@@ -37,11 +37,6 @@
       <artifactId>nuxeo-functional-tests</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.dam</groupId>
-      <artifactId>nuxeo-dam-functional-tests</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
