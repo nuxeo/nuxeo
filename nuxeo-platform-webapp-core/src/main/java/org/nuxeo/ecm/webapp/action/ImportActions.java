@@ -178,7 +178,7 @@ public class ImportActions implements Serializable {
     }
 
     /*
-     * ----- Asset bulk import -----
+     * ----- Document bulk import -----
      */
 
     public String generateBatchId() {
@@ -197,7 +197,7 @@ public class ImportActions implements Serializable {
         return false;
     }
 
-    public String importAssets() throws ClientException {
+    public String importDocuments() throws ClientException {
         Map<String, Serializable> importOptionProperties = selectedImportOption.getProperties();
         String chainOrOperationId = null;
         if (importOptionProperties.containsKey("chainId")) {
@@ -221,12 +221,14 @@ public class ImportActions implements Serializable {
 
         try {
             if (dndConfigHelper.useHtml5DragAndDrop()) {
-                importAssetsThroughBatchManager(chainOrOperationId,
+                importDocumentsThroughBatchManager(chainOrOperationId,
                         contextParams);
             } else {
-                importAssetsThroughUploadItems(chainOrOperationId,
+                importDocumentsThroughUploadItems(chainOrOperationId,
                         contextParams);
             }
+
+            //
 
             if (selectedImportFolderId != null) {
                 return navigationContext.navigateToRef(new IdRef(
@@ -239,14 +241,14 @@ public class ImportActions implements Serializable {
         }
     }
 
-    protected void importAssetsThroughBatchManager(String chainOrOperationId,
+    protected void importDocumentsThroughBatchManager(String chainOrOperationId,
             Map<String, Object> contextParams) throws ClientException {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
         bm.executeAndClean(currentBatchId, chainOrOperationId, documentManager,
                 contextParams, null);
     }
 
-    protected void importAssetsThroughUploadItems(String chainOrOperationId,
+    protected void importDocumentsThroughUploadItems(String chainOrOperationId,
             Map<String, Object> contextParams) throws ClientException {
         if (uploadedFiles == null) {
             return;

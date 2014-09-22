@@ -2,7 +2,7 @@ var nuxeo = nuxeo || {};
 
 nuxeo.documentsImport = (function(m) {
 
-  m.createDocumentsImportAssetHandler = function(batchId) {
+  m.createDocumentsImportDocumentHandler = function(batchId) {
     var handler = function DropZoneUIHandler(idx, dropZoneId, options, targetSelectedCB, cancelCB) {
       this.idx = idx;
       this.dropZoneId = dropZoneId;

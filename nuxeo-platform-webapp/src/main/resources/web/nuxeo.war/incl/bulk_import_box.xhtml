@@ -106,7 +106,7 @@
               uploadTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.upload.timeout","30000")},
               execTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.exec.timeout","30000")},
               extendedModeTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.extendedmode.timeout","2000")},
-              handler : nuxeo.documentsImport.createDocumentsImportAssetHandler("#{importActions.generateBatchId()}")
+              handler : nuxeo.documentsImport.createDocumentsImportDocumentHandler("#{importActions.generateBatchId()}")
             });
           }
         </script>
@@ -123,7 +123,7 @@
             value="#{nxu:test(importButtonDisabled, 'disabled', '')}">
 
             <nxh:commandButton value="#{messages['command.import']}"
-              action="#{importActions.importAssets()}"
+              action="#{importActions.importDocuments()}"
               styleClass="button jsDocumentsImportButton #{disabledButtonStyleClass}"
               data-selectedimportfolder="#{!empty importActions.selectedImportFolderId}"/>
             <nxh:commandButton value="#{messages['command.cancel']}"
