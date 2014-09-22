@@ -49,6 +49,7 @@
     <module>nuxeo-platform-oauth</module>
     <module>nuxeo-platform-collections</module>
     <module>rest-api</module>
+    <module>nuxeo-search-ui</module>
   </modules>
 
   <dependencies>
