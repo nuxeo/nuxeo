@@ -1,6 +1,6 @@
 /**
  * Select2 <Language> translation.
- * 
+ *
  * Author: bigmihail <bigmihail@bigmir.net>
  */
 (function ($) {

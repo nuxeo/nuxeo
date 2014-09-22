@@ -14,9 +14,10 @@
     <script>
       var currentUserLang = "#{localeSelector.language}";
     </script>
-    <script src="#{contextPath}/scripts/select2/select2.js" />
-    <script src="#{contextPath}/scripts/select2/select2_locale_#{localeSelector.language}.js" />
-    <script src="#{contextPath}/scripts/select2/nuxeo-select2.js" />
+
+    <h:outputScript library="org.nuxeo.select2" name="select2.js" target="head" />
+    <h:outputScript library="org.nuxeo.select2" name="select2_locale_#{localeSelector.language}.js" target="head" />
+    <h:outputScript library="org.nuxeo.select2" name="nuxeo-select2.js" target="head" />
 
     <script>
       jQuery(document).ready(function() {

@@ -15,4 +15,3 @@
         formatSearching: function () { return "Søker..."; }
     });
 })(jQuery);
-

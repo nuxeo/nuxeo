@@ -1,6 +1,6 @@
 /**
  * Select2 <Language> translation.
- * 
+ *
  * Author: Swen Mun <longfinfunnel@gmail.com>
  */
 (function ($) {

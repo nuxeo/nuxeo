@@ -1,6 +1,6 @@
 /**
  * Select2 Arabic translation.
- * 
+ *
  * Author: Your Name <amedhat3@gmail.com>
  */
 (function ($) {
