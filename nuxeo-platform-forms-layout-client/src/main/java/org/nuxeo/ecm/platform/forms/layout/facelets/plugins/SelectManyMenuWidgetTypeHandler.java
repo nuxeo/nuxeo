@@ -37,7 +37,7 @@ public class SelectManyMenuWidgetTypeHandler extends
             TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
             throws WidgetException {
         return getFaceletHandler(ctx, tagConfig, widget, subHandlers,
-                HtmlSelectManyMenu.COMPONENT_TYPE);
+                HtmlSelectManyMenu.COMPONENT_TYPE, null);
     }
 
 }

@@ -37,7 +37,7 @@ public class SelectManyListboxDirectoryAggregateWidgetTypeHandler extends
             TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
             throws WidgetException {
         return getFaceletHandler(ctx, tagConfig, widget, subHandlers,
-                HtmlSelectManyListbox.COMPONENT_TYPE);
+                HtmlSelectManyListbox.COMPONENT_TYPE, "org.nuxeo.NxListboxRenderer");
     }
 
 }

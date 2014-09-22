@@ -235,6 +235,12 @@ public abstract class AbstractSelectWidgetTypeHandler extends
     protected FaceletHandler getFaceletHandler(FaceletContext ctx,
             TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers,
             String componentType) throws WidgetException {
+        return getFaceletHandler(ctx, tagConfig, widget, subHandlers, componentType, null);
+    }
+
+    protected FaceletHandler getFaceletHandler(FaceletContext ctx,
+            TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers,
+            String componentType, String rendererType) throws WidgetException {
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
         String mode = widget.getMode();
         String widgetId = widget.getId();
@@ -283,7 +289,7 @@ public abstract class AbstractSelectWidgetTypeHandler extends
                                 ArrayList.class.getName()));
             }
             ComponentHandler input = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, leaf, componentType, null);
+                    widgetTagConfigId, attributes, leaf, componentType, rendererType);
             String msgId = helper.generateMessageId(widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(
                     widgetTagConfigId, msgId, widgetId, null);

@@ -37,7 +37,7 @@ public class SelectManyCheckboxDirectoryAggregateWidgetTypeHandler extends
             TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
             throws WidgetException {
         return getFaceletHandler(ctx, tagConfig, widget, subHandlers,
-                HtmlSelectManyCheckbox.COMPONENT_TYPE);
+                HtmlSelectManyCheckbox.COMPONENT_TYPE, "org.nuxeo.NxSelectManyCheckboxList");
     }
 
 }

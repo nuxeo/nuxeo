@@ -669,6 +669,25 @@
         </renderer-class>
       </renderer>
     </render-kit>
+    <render-kit>
+      <renderer>
+        <component-family>javax.faces.SelectMany</component-family>
+        <renderer-type>org.nuxeo.NxSelectManyCheckboxList</renderer-type>
+        <renderer-class>
+          org.nuxeo.ecm.platform.ui.web.renderer.NxSelectManyCheckboxListRenderer
+        </renderer-class>
+      </renderer>
+    </render-kit>
+    <render-kit>
+      <renderer>
+        <component-family>javax.faces.SelectMany</component-family>
+        <renderer-type>org.nuxeo.NxListboxRenderer</renderer-type>
+        <renderer-class>
+          org.nuxeo.ecm.platform.ui.web.renderer.NxListboxRenderer
+        </renderer-class>
+      </renderer>
+    </render-kit>
+
     <renderer>
       <component-family>javax.faces.Messages</component-family>
       <renderer-type>javax.faces.NXMessages</renderer-type>
