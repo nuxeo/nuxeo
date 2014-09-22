@@ -1,3 +1,91 @@
+/* Nuxeo styles */
+html, body {
+  box-sizing: border-box;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  height: 100%;
+  margin: 0; }
+
 #grid {
-  width: 100%;
-}
+  padding: 0 0 2.5em;
+  width: 100% }
+
+.buttonsGadget {
+  background-color: #f8f9fb;
+  border-top: 1px solid #e7e7e7;
+  font-size: 1em;
+  margin: 0;
+  padding: 1em 1.8em 0;
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  right: 0;
+  z-index: 105 }
+
+input.button,
+.buttonsGadget button {
+  background: none repeat scroll 0 0 #fff;
+  border: 1px solid #c9c9c9;
+  border-radius: 3px;
+  box-shadow: 0 -2px 3px #f3f3f3 inset;
+  color: #000;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 0.95em;
+  font-weight: bold;
+  margin: 0 0.9em 0.9em 0;
+  padding: 0.3em 0.7em 0.4em;
+  text-decoration: none;
+  white-space: nowrap }
+
+/* Override HandsonTable styles*/
+.handsontable {
+  font-size: .9em }
+
+.handsontable .handsontable table {
+  box-shadow: none }
+
+.handsontable th {
+  background-color: #f4f4f4;
+  color: #0b447f;
+  font-weight: bold;
+  text-align: left }
+
+.handsontable th:hover {
+  cursor: pointer }
+
+.ht_clone_top.handsontable .htCore th {
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) }
+
+.ht_clone_left.handsontable .htCore th {
+  box-shadow: 1px 0 1px rgba(0, 0, 0, 0.1) }
+
+.ht_clone_corner.handsontable .htCore th {
+  box-shadow: none }
+
+.handsontable th,
+.handsontable td {
+  border-color: #e7e7e7 }
+
+.handsontable td {
+  font-size: .9em }
+
+.handsontable tr:first-child th,
+.handsontable tr:first-child td {
+  border-top: none }
+
+.handsontable th:first-child,
+.handsontable td:first-child,
+.handsontable .htNoFrame + th,
+.handsontable .htNoFrame + td {
+  border-left: none }
+
+.handsontable thead tr:last-child th {
+  border-bottom: 1px solid #ccc }
+
+.handsontableInput {
+  box-shadow: none;
+  border-style: none;
+  color: #3077e5;
+  margin: 2px; }
+

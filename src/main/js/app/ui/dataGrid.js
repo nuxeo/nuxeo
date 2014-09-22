@@ -161,7 +161,7 @@ class DataGrid {
     var doc = this.getDataAtRow(row);
     if (doc && this._dirty[doc.uid] && hasProp(this._dirty[doc.uid], prop)) {
       $(td).css({
-        background: 'yellow'
+        background: '#e2f1ff'
       });
     }
   }
