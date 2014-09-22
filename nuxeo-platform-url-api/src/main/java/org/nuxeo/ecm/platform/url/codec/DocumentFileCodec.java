@@ -134,6 +134,10 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
                     } catch (UnsupportedEncodingException e) {
                         filename = StringUtils.toAscii(filename);
                     }
+                    int jsessionidIndex = filename.indexOf(";jsessionid");
+                    if (jsessionidIndex != -1) {
+                        filename = filename.substring(0, jsessionidIndex);
+                    }
                     params.put(FILENAME_KEY, filename);
                 }
 
