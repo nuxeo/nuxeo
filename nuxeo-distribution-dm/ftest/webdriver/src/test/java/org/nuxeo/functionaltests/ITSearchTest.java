@@ -135,7 +135,7 @@ public class ITSearchTest extends
         Select2WidgetElement searchElement = new Select2WidgetElement(
                 driver,
                 driver.findElement(By.xpath(XPATH_SUGGESTBOX)),
-                false);
+                true);
         List<WebElement> listEntries = searchElement.typeAndGetResult("Tes");
         assertTrue(listEntries.size() > 0);
         searchElement.clearSuggestInput();
@@ -152,7 +152,7 @@ public class ITSearchTest extends
         searchElement = new Select2WidgetElement(
                 driver,
                 driver.findElement(By.xpath(XPATH_SUGGESTBOX)),
-                false);
+                true);
         listEntries = searchElement.typeAndGetResult(USER1_NAME);
         assertTrue(listEntries.size() == 2);
         listEntries.get(1).click();
@@ -166,7 +166,7 @@ public class ITSearchTest extends
         Select2WidgetElement searchElement = new Select2WidgetElement(
                 driver,
                 driver.findElement(By.xpath(XPATH_SUGGESTBOX)),
-                false);
+                true);
         List<WebElement> listEntries = searchElement.typeAndGetResult(VALUE_WITH_SPECIALS_CHAR);
         assertTrue(listEntries.size() == 0);
         // TODO to complete when the suggestbox will be finalized

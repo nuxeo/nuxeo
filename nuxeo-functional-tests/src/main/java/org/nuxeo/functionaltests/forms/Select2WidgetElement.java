@@ -186,7 +186,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
 
         WebElement suggestInput = null;
         if (mutliple) {
-            suggestInput = driver.findElement(By.xpath("//ul/li[@class='select2-search-field']/input"));
+            suggestInput = element.findElement(By.xpath("ul/li[@class='select2-search-field']/input"));
         } else {
             suggestInput = driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH));
         }
@@ -258,7 +258,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
 
         WebElement suggestInput = null;
         if (mutliple) {
-            suggestInput = driver.findElement(By.xpath("//ul/li[@class='select2-search-field']/input"));
+            suggestInput = element.findElement(By.xpath("//ul/li[@class='select2-search-field']/input"));
         } else {
             suggestInput = driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH));
         }
