@@ -13,7 +13,7 @@
       <h:outputLink value="#{actionLink}"
         target="#{action.properties.target}" onclick="#{onclick}"
         immediate="#{action.immediate}" disabled="#{!action.available}"
-        styleClass="#{useButton ? 'button' : 'actionLink'} #{actionStyleClass} #{action.properties.styleClass}"
+        styleClass="#{actionStyleClass} #{action.properties.styleClass}"
         accesskey="#{action.accessKey}">
         <ui:include src="/incl/action/action_icon_label_template.xhtml" />
         <ui:insert name="inside_action" />

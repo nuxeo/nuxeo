@@ -34,7 +34,7 @@
 
       <c:if test="#{not widgetProperty_useButton}">
         <h:commandLink id="#{fancyboxIdPrefix}link"
-          styleClass="actionLink #{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
+          styleClass="#{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
           disabled="#{!action.available}"
           accesskey="#{action.accessKey}">
           <f:attribute name="selectedValue" value="#{action.id}" />
@@ -51,7 +51,7 @@
         <h:commandButton id="#{fancyboxIdPrefix}link"
           onclick="#{onclick}"
           value="#{messages[action.label]}"
-          styleClass="button #{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
+          styleClass="#{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
           disabled="#{!action.available}"
           accesskey="#{action.accessKey}">
           <f:attribute name="selectedValue" value="#{action.id}" />
@@ -86,7 +86,7 @@
                 ignoreDupResponses="true" requestDelay="100"
                 onclick="#{onclick};#{fancyboxJs}"
                 disabled="#{!action.available}"
-                styleClass="actionLink #{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
+                styleClass="#{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
                 accesskey="#{action.accessKey}">
                 <ui:include src="/incl/action/action_icon_label_template.xhtml">
                   <ui:param name="hideIcon" value="#{widgetProperty_hideIcon}" />
@@ -103,7 +103,7 @@
                 onclick="#{onclick};#{fancyboxJs}"
                 value="#{messages[action.label]}"
                 disabled="#{!action.available}"
-                styleClass="button #{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
+                styleClass="#{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
                 accesskey="#{action.accessKey}">
                 <ui:insert name="inside_action" />
               </a4j:commandButton>

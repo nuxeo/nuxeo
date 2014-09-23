@@ -28,7 +28,7 @@
       immediate="#{action.immediate}"
       value="#{messages[action.label]}"
       disabled="#{!action.available}"
-      styleClass="button #{actionStyleClass} #{action.properties.styleClass}"
+      styleClass="#{actionStyleClass} #{action.properties.styleClass}"
       accesskey="#{action.accessKey}">
       <ui:include src="/incl/action/action_icon_label_template.xhtml">
         <ui:param name="hideLabel" value="true" />
@@ -43,7 +43,7 @@
       onclick="#{onclick}"
       value="#{messages[action.label]}"
       disabled="#{!action.available}"
-      styleClass="button #{actionStyleClass} #{action.properties.styleClass}"
+      styleClass="#{actionStyleClass} #{action.properties.styleClass}"
       accesskey="#{action.accessKey}">
       <ui:include src="/incl/action/action_icon_label_template.xhtml">
         <ui:param name="hideLabel" value="true" />
@@ -69,7 +69,7 @@
       immediate="#{action.immediate}"
       target="#{action.properties.target}"
       disabled="#{!action.available}"
-      styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}"
+      styleClass="#{actionStyleClass} #{action.properties.styleClass}"
       accesskey="#{action.accessKey}">
       <ui:include src="/incl/action/action_icon_label_template.xhtml" />
       <ui:insert name="inside_action" />
@@ -81,7 +81,7 @@
       id="#{widget.id}"
       onclick="#{onclick}"
       disabled="#{!action.available}"
-      styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}"
+      styleClass="#{actionStyleClass} #{action.properties.styleClass}"
       accesskey="#{action.accessKey}">
       <ui:include src="/incl/action/action_icon_label_template.xhtml" />
       <ui:insert name="before_action_trigger" />
