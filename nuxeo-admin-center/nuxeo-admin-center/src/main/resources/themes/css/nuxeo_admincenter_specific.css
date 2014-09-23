@@ -124,7 +124,7 @@ h5 { color: #848484; font-weight: bold; font-size: 1.1em; margin: 1em 0 .4em }
 
 /* Fix style inheritance for gadgets */
 body, table td, select { font-family: "default (__FLAVOR__ font)" }
-.adminViewContent p.directoryBack {  padding: .2em .2em .2em 2em }
+p.directoryBack {  padding: .2em .2em .2em 2em }
 
 /* Remove padding space from tabContent when the actionBar div or the
    marketplace message are displayed in the Update Center main tab */
