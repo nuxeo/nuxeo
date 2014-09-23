@@ -60,7 +60,7 @@
     <widgetType name="selectManyListboxAggregate">
       <configuration>
         <sinceVersion>5.9.6</sinceVersion>
-        <title>Select Many Listbox Aggregate</title>
+        <title>Select2 Aggregate Widget</title>
         <description></description>
         <categories>
           <category>aggregates</category>
@@ -82,7 +82,7 @@
             <property name="itemValue">#{item.key}</property>
             <property name="itemCount">(#{item.docCount})</property>
             <property name="notDisplayDefaultOption">true</property>
-            <property name="enableSelect2">true</property>
+            <property name="width">100%</property>
           </defaultValues>
           <layouts mode="edit">
             <layout name="selectManyListboxAggregate_widget_type_properties_edit">
@@ -95,6 +95,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
                 </row>
               </rows>
             </layout>
@@ -198,7 +201,7 @@
     <widgetType name="selectManyListboxDirectoryAggregate">
       <configuration>
         <sinceVersion>5.9.6</sinceVersion>
-        <title>Select Many Listbox Directory Aggregate</title>
+        <title>Select2 Directory Aggregate Widget</title>
         <description></description>
         <categories>
           <category>aggregates</category>
@@ -219,7 +222,7 @@
             <property name="itemValue">#{item.key}</property>
             <property name="itemCount">(#{item.docCount})</property>
             <property name="notDisplayDefaultOption">true</property>
-            <property name="enableSelect2">true</property>
+            <property name="width">100%</property>
           </defaultValues>
           <layouts mode="any">
             <layout
@@ -266,6 +269,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
                 </row>
               </rows>
             </layout>
@@ -374,6 +380,9 @@
                 <row>
                   <widget category="widgetTypeConf">directory_styleClass</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
               </rows>
             </layout>
           </layouts>
@@ -387,7 +396,7 @@
     <widgetType name="selectManyListboxUserAggregate">
       <configuration>
         <sinceVersion>5.9.6</sinceVersion>
-        <title>Select Many Listbox User Aggregate</title>
+        <title>Select2 User Aggregate Widget</title>
         <description></description>
         <categories>
           <category>aggregates</category>
@@ -411,8 +420,7 @@
             <property name="notDisplayDefaultOption">true</property>
             <property name="itemLabel">#{nxu:userDisplayName(itemEntry.user.username, itemEntry.user.firstName, itemEntry.user.lastName)}</property>
             <property name="directoryName">userDirectory</property>
-            <property name="style">width:100%</property>
-            <property name="enableSelect2">true</property>
+            <property name="width">100%</property>
             <property name="placeholder">#{messages['label.vocabulary.selectValue']}</property>
           </defaultValues>
           <layouts mode="edit">

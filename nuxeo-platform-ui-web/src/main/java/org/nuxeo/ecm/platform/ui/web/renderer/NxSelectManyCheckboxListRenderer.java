@@ -24,6 +24,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+
 import com.sun.faces.renderkit.html_basic.SelectManyCheckboxListRenderer;
 
 /**
@@ -52,26 +54,26 @@ public class NxSelectManyCheckboxListRenderer extends
             writer.writeAttribute("href", "#", null);
             writer.writeAttribute(
                     "onclick",
-                    "nuxeo.utils.hideOrDisplayNthTableRows('"
+                    "nuxeo.utils.moreLessTableRows('"
                             + component.getClientId() + "', true, "
                             + moreLessLimitInt + ");return false;", null);
             writer.writeAttribute("class", "nx-less-more-ctrl nx-more", null);
-            writer.write("More");
+            writer.write(ComponentUtils.translate(context, "label.vocabulary.more"));
             writer.endElement("a");
 
             writer.startElement("a", component);
             writer.writeAttribute("href", "#", null);
             writer.writeAttribute(
                     "onclick",
-                    "nuxeo.utils.hideOrDisplayNthTableRows('"
+                    "nuxeo.utils.moreLessTableRows('"
                             + component.getClientId() + "', false, "
                             + moreLessLimitInt + ");return false;", null);
             writer.writeAttribute("class", "nx-less-more-ctrl nx-less", null);
-            writer.write("Less");
+            writer.write(ComponentUtils.translate(context, "label.vocabulary.less"));
             writer.endElement("a");
 
             writer.startElement("script", component);
-            writer.write("jQuery(document).ready(function(){nuxeo.utils.hideOrDisplayNthTableRows('"
+            writer.write("jQuery(document).ready(function(){nuxeo.utils.moreLessTableRows('"
                     + component.getClientId()
                     + "', false, "
                     + moreLessLimitInt

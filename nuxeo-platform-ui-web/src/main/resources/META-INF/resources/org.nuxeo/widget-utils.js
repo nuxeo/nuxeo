@@ -19,7 +19,7 @@ var nuxeo = nuxeo || {};
 
 nuxeo.utils = (function(m) {
 
-  m.hideOrDisplayNthTableRows = function(eltId, displayAll, displayLimit) {
+  m.moreLessTableRows = function(eltId, displayAll, displayLimit) {
     var itemTable = jQuery("[id$='" + eltId + "']");
     var items = jQuery("[id$='" + eltId + "'] tr");
     var moreLink = itemTable.parent().find(".nx-more");
