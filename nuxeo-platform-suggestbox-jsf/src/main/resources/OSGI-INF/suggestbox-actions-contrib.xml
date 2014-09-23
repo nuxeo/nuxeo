@@ -27,6 +27,7 @@
         <property name="selectionFormatter">nxSelectedSuggestBoxFormatter</property>
         <property name="suggestionFormatter">nxSuggestedSuggestBoxFormatter</property>
         <property name="onAddEntryHandler">nxSuggestionEntryHandler</property>
+        <property name="autocomplete">true</property>
         <property name="width">200px</property>
       </properties>
     </action>
