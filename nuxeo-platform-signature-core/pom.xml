@@ -62,8 +62,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>net.sf.opencsv</groupId>
-      <artifactId>opencsv</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-csv</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
