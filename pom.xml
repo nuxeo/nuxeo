@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -6,12 +7,10 @@
     <artifactId>nuxeo-addons-parent</artifactId>
     <version>5.9.6-SNAPSHOT</version>
   </parent>
-
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-shibboleth-groups-web</artifactId>
   <name>Nuxeo Platform Shibboleth Groups Web</name>
   <description>Nuxeo Platform Shibboleth Groups Web</description>
-
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -48,7 +47,18 @@
       <artifactId>nuxeo-platform-webapp-base</artifactId>
       <groupId>org.nuxeo.ecm.platform</groupId>
     </dependency>
-
+    <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-usermanager-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
@@ -128,20 +138,14 @@
       <artifactId>nuxeo-platform-userworkspace-types</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
-      <groupId>hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-csv</artifactId>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -174,5 +178,4 @@
     <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-platform-shibboleth-groups-web.git</developerConnection>
     <url>https://github.com/nuxeo/nuxeo-platform-shibboleth-groups-web</url>
   </scm>
-
 </project>
