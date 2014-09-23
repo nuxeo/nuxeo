@@ -17,7 +17,7 @@ select {
 .widget .content {
   width: 100% }
 
-.adminViewContent p.directoryBack {
+p.directoryBack {
   padding: .2em .2em .2em 2em }
 
 .description_block span {
