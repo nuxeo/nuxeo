@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -91,6 +92,7 @@ public class DocumentUpdatePropertiesWithMultilineTest {
      * Test if a multiline description is correctly updated
      */
     @Test
+    @Ignore
     public void testUpdateWithMultilineDescription() throws Exception {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
