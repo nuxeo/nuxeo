@@ -213,6 +213,14 @@
               });
             </script>
 
+            <ui:insert name="content_view_column_selection">
+              <h:form>
+                <nxl:layout name="#{contentView.currentResultLayout.name}"
+                  mode="edit_columns" value="#{contentView.currentResultLayoutColumns}" />
+                <h:commandButton value="Go" />
+              </h:form>
+            </ui:insert>
+
             <ui:decorate template="/incl/documents_layout_table.xhtml">
               <ui:param name="providerId" value="#{contentViewId}" />
               <ui:param name="documents" value="#{provider.currentSelectPage}" />
