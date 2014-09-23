@@ -31,6 +31,7 @@ author: lkemen@nuxeo.com
 
 #fancybox-content .content {
   padding: 2em 2em 2.5em;
+  min-height: 15em;
   overflow: auto }
 
 #fancybox-content .buttonsGadget {
