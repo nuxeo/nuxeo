@@ -76,6 +76,10 @@
       <selectionList>CURRENT_SELECTION</selectionList>
       <actions category="CURRENT_SELECTION_LIST" />
 
+      <resultColumns>
+        #{searchDocumentModel.cvd.selectedLayoutColumns}
+      </resultColumns>
+
       <flags>
         <flag>SEARCH</flag>
       </flags>
@@ -127,6 +131,10 @@
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
           showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
       </resultLayouts>
+
+      <resultColumns>
+        #{searchDocumentModel.cvd.selectedLayoutColumns}
+      </resultColumns>
 
       <selectionList>CURRENT_SELECTION</selectionList>
       <actions category="CURRENT_SELECTION_LIST" />
