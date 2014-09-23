@@ -4,6 +4,9 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:c="http://java.sun.com/jstl/core">
 
+  <nxu:set var="currentWorkflowTabAction"
+        value="#{webActions.getCurrentTabAction('WORKFLOW_DASHBOARD')}"
+        cache="true">
   <nxu:set var="currentWorkflowSubTabAction"
     value="#{webActions.getCurrentSubTabAction(currentWorkflowTabAction.id)}"
     cache="true">
@@ -48,6 +51,7 @@
 
     </c:if>
 
+  </nxu:set>
   </nxu:set>
   </nxu:set>
   </nxu:set>

@@ -23,27 +23,8 @@
 
   <ui:define name="body">
     <div>
-
       <ui:include src="/incl/message_banner.xhtml" />
-
-      <nxu:set var="currentWorkflowTabAction"
-        value="#{webActions.getCurrentTabAction('WORKFLOW_DASHBOARD')}"
-        cache="true">
-
-        <ui:include src="/incl/workflow_dashboard_action_tabs.xhtml" />
-        <div style="clear: both"></div>
-
-        <div class="tabsContent">
-          <c:if test="#{not empty currentWorkflowTabAction.link}">
-            <ui:include src="#{currentWorkflowTabAction.link}" />
-          </c:if>
-          <c:if test="#{empty currentWorkflowTabAction.link}">
-            No tab available for category 'WORKFLOW_DASHBOARD'
-          </c:if>
-        </div>
-
-      </nxu:set>
-
+      <nxl:widget name="workflowTabs" mode="view" value="#{currentDocument}" />
     </div>
   </ui:define>
 </nxthemes:composition>

@@ -26,7 +26,8 @@
     </action>
 
     <action id="routing_tasks" link="/incl/tabs/workflow_dashboard_tab.xhtml"
-      label="action.view.workflow.tasks" order="10" enabled="false">
+      label="action.view.workflow.tasks" order="10" enabled="false"
+      type="rest_document_link">
       <category>WORKFLOW_DASHBOARD</category>
     </action>
 

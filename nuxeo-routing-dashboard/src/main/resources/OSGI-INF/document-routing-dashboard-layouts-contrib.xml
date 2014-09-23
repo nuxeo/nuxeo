@@ -229,6 +229,19 @@
       </properties>
     </widget>
     <!-- Listing widgets -->
+
+    <widget name="workflowTabs" type="tabs">
+      <properties mode="view">
+        <property name="actionsDisplay">links</property>
+        <property name="addForm">true</property>
+        <property name="useAjaxForm">false</property>
+        <property name="category">WORKFLOW_DASHBOARD</property>
+        <property name="actions">#{webActions.getActionsList('WORKFLOW_DASHBOARD')}</property>
+        <property name="currentTabAction">#{webActions.getCurrentTabAction('WORKFLOW_DASHBOARD')}</property>
+        <property name="overallDisplay">horizontal_block</property>
+      </properties>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
