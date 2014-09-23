@@ -233,6 +233,7 @@
       containerCssClass : params.containerCssClass,
       dropdownCssClass : params.dropdownCssClass,
       minimumInputLength : params.minChars,
+      autocomplete : params.autocomplete,
       query : function(query) {
 
         var serverCall = function() {
