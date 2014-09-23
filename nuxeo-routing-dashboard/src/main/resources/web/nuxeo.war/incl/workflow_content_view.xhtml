@@ -94,10 +94,10 @@
                 <c:if test="#{(clickedActionId == action.id and action.type == 'process_task') or nxu:hasMessages(fancyboxFormId)}">
                   <script>
                     openFancyBox('##{action.id}_fancybox_box', {
-                      'autoDimensions': false,
+                      'autoDimensions': true,
                       'autoScale': true,
                       'width': 'auto',
-                      'height': '320',
+                      'height': 'auto',
                       'transitionIn': 'none',
                       'transitionOut': 'none',
                       'enableEscapeButton': true,
@@ -114,12 +114,14 @@
                         render="#{elementsToReRender}"
                         ignoreDupResponses="true"
                         requestDelay="100"
-                        styleClass="action_bar"
                         oncomplete="jQuery.fancybox.close();">
                         <c:if test="#{not empty action.properties.layout}">
+                          <h3>Process</h3>
+                          <div class="content">
                           <nxl:layout name="#{action.properties.layout}"
                             mode="edit"
                             value="#{action.properties.formVariables}"/>
+                          </div>
                         </c:if>
                         <p class="buttonsGadget">
                           <c:forEach var="task_action" items="#{actions}">
