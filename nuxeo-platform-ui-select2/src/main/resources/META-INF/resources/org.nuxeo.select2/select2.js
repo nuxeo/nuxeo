@@ -22,6 +22,7 @@ the specific language governing permissions and limitations under the Apache Lic
  * Nuxeo WARN: This script has been patched for:
  *   - https://jira.nuxeo.com/browse/NXP-13149
  *   - https://jira.nuxeo.com/browse/NXP-13715
+ *   - https://jira.nuxeo.com/browse/NXP-15313
  *
  * Please re-apply any patch when upgrading this script.
  */
@@ -1317,8 +1318,11 @@ the specific language governing permissions and limitations under the Apache Lic
             this.container.removeClass("select2-dropdown-open");
             this.results.empty();
 
+            // NXP-15313
+            if (!this.opts.autocomplete) {
+              this.clearSearch();
+            }
 
-            this.clearSearch();
             this.search.removeClass("select2-active");
             this.opts.element.trigger($.Event("select2-close"));
         },
@@ -1545,10 +1549,12 @@ the specific language governing permissions and limitations under the Apache Lic
             }
 
             if (search.val().length < opts.minimumInputLength) {
-                if (checkFormatter(opts.formatInputTooShort, "formatInputTooShort")) {
-                    render("<li class='select2-no-results'>" + opts.formatInputTooShort(search.val(), opts.minimumInputLength) + "</li>");
-                } else {
-                    render("");
+                if (!this.opts.autocomplete) {
+                    if (checkFormatter(opts.formatInputTooShort, "formatInputTooShort")) {
+                       render("<li class='select2-no-results'>" + opts.formatInputTooShort(search.val(), opts.minimumInputLength) + "</li>");
+                    } else {
+                      render("");
+                    }
                 }
                 if (initial && this.showSearch) this.showSearch(true);
                 return;
@@ -2714,6 +2720,12 @@ the specific language governing permissions and limitations under the Apache Lic
         },
 
         addSelectedChoice: function (data) {
+            // NXP-15313
+            if (this.opts.autocomplete || false) {
+              this.selection.find(".select2-search-field input").val(data.label);
+              return;
+            }
+
             var enableChoice = !data.locked,
                 enabledItem = $(
                     "<li class='select2-search-choice'>" +
@@ -3032,6 +3044,9 @@ the specific language governing permissions and limitations under the Apache Lic
             valueMethods = ["val", "opened", "isFocused", "container", "data"],
             methodsMap = { search: "externalSearch" };
 
+        // NXP-15313
+        var autocomplete;
+
         this.each(function () {
             if (args.length === 0 || typeof(args[0]) === "object") {
                 opts = args.length === 0 ? {} : $.extend({}, args[0]);
@@ -3040,7 +3055,13 @@ the specific language governing permissions and limitations under the Apache Lic
                 if (opts.element.get(0).tagName.toLowerCase() === "select") {
                     multiple = opts.element.prop("multiple");
                 } else {
-                    multiple = opts.multiple || false;
+                    // NXP-15313
+                    autocomplete = opts.autocomplete || false;
+                    multiple = opts.multiple || false || autocomplete;
+                    if (autocomplete) {
+                      opts.maximumSelectionSize = 1;
+                    }
+
                     if ("tags" in opts) {opts.multiple = multiple = true;}
                 }
 
