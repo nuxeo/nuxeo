@@ -15,9 +15,9 @@
   </c:if>
 
   <c:if test="#{routingTaskActions.currentTask !=null}">
-    <table class="adminViewContent">
+    <table class="fullWidth">
       <tr>
-        <td class="adminContentColumn">
+        <td>
           <nxl:layout value="#{routingTaskActions.currentTask}" mode="view"
             name="routing_task_resolution_layout" />
         </td>
