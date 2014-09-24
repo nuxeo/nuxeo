@@ -26,10 +26,10 @@
            </script>
 
 
-            <span class="buttonsGadget">
-            <A href="#" onclick="return showNewParameterPanel(event)" class="button">
-            <h:outputText value="#{messages['label.template.parameter.add']}"/></A>
-            <table border="0" style="display:none">
+            <span>
+            <a href="#" onclick="return showNewParameterPanel(event)" class="button">
+            <h:outputText value="#{messages['label.template.parameter.add']}"/></a>
+            <table class="dataTableNoBorder" style="display:none">
             <tr>
             <td class="labelColumn">
                <h:outputText value="#{messages['label.template.parameter.name']}" />
@@ -50,11 +50,9 @@
                     <f:selectItem itemLabel="Include" itemValue="content"/>
                 </h:selectOneMenu>
             </td>
-            <td class="fieldColumn">
-                <span class="buttonsGadget">
-                    <h:commandButton type="submit" styleClass="button" value="#{messages['command.add']}"
-                        action="#{bean.addTemplateInput}" id="button_add" />
-                </span>
+            <td class="fieldColumn textAlignR">
+              <h:commandButton type="submit" styleClass="button" value="#{messages['command.add']}" 
+                action="#{bean.addTemplateInput}" id="button_add" />
             </td>
             </tr>
             </table>

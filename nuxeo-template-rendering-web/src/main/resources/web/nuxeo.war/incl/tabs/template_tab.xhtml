@@ -22,7 +22,6 @@
   </div>
 
   <div class="foldableBox">
-
     <c:if test="#{!templateActions.showParamEditor}">
       <h3 class="folded">
         <a class="foldableHeaderLink" href="#nogo" onclick="initContentWidgets();return toggleBox(this)">
@@ -38,9 +37,9 @@
    </c:if>
    <c:if test="#{templateActions.showParamEditor}">
      <h3 class="folded">
-            <a class="foldableHeaderLink" href="#nogo" onclick="return toggleBox(this)">
-              <h:outputText value="#{messages['label.template.params.title']}"/>
-            </a>
+       <a class="foldableHeaderLink" href="#nogo" onclick="return toggleBox(this)">
+         <h:outputText value="#{messages['label.template.params.title']}"/>
+       </a>
      </h3>
      <div class="boxBody">
         <ui:include src="/incl/tabs/templates/params_editor.xhtml">
@@ -49,10 +48,7 @@
         </ui:include>
      </div>
    </c:if>
-
-
   </div>
-
 
   <h:panelGroup id="templateUsageListingPanel">
     <div class="foldableBox">
@@ -69,7 +65,7 @@
           </h3>
         </c:if>
         <c:if test="#{!templateActions.showUsageListing}">
-          <h3 class="unfolded">
+          <h3 class="folded">
             <a4j:commandLink
               action="#{templateActions.setShowUsageListing(true)}"
               immediate="true" render="templateUsageListingPanel"
