@@ -48,6 +48,8 @@ public class ElasticSearchConstants {
     public static final String AGG_TYPE_DATE_HISTOGRAM = "date_histogram";
 
     public static final String ID_FIELD = "_id";
+    public static final String FULLTEXT_FIELD = "_all";
+
     /**
      * Elasticsearch type name used to index Nuxeo documents
      */

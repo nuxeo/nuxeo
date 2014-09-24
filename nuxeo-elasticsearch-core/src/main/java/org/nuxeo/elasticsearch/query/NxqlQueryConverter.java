@@ -18,6 +18,8 @@
 
 package org.nuxeo.elasticsearch.query;
 
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.FULLTEXT_FIELD;
+
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -287,7 +289,7 @@ public class NxqlQueryConverter {
                 field = field.substring(1) + ".fulltext";
             } else {
                 // map ecm:fulltext_someindex to default
-                field = "_all";
+                field = FULLTEXT_FIELD;
             }
             query = QueryBuilders.simpleQueryString((String) value)
                     .field(field)

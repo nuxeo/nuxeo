@@ -16,6 +16,8 @@
  */
 package org.nuxeo.elasticsearch.aggregate;
 
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.FULLTEXT_FIELD;
+
 import java.util.Collection;
 
 import org.elasticsearch.index.query.FilterBuilder;
@@ -23,6 +25,7 @@ import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.joda.time.DateTime;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.ecm.platform.query.core.AggregateBase;
@@ -53,6 +56,15 @@ public abstract class AggregateEsBase<B extends Bucket> extends
      */
     public abstract void parseEsBuckets(
             Collection<? extends MultiBucketsAggregation.Bucket> buckets);
+
+    @Override
+    public String getField() {
+        String ret = super.getField();
+        if (NXQL.ECM_FULLTEXT.equals(ret)) {
+            ret = FULLTEXT_FIELD;
+        }
+        return ret;
+    }
 
     /**
      * Convert embedded Elasticsearch DateTime to joda DateTime

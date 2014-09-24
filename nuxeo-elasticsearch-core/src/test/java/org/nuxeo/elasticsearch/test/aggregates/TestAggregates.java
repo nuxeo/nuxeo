@@ -161,6 +161,44 @@ public class TestAggregates {
     }
 
     @Test
+    public void testAggregateTermsFulltextQuery() throws Exception {
+        AggregateDefinition aggDef = new AggregateDescriptor();
+        aggDef.setType("terms");
+        aggDef.setId("fulltext");
+        aggDef.setDocumentField("ecm:fulltext");
+        aggDef.setSearchField(new FieldDescriptor("advanced_search",
+                "fulltext_agg"));
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document").addAggregate(
+                AggregateFactory.create(aggDef, null));
+        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME);
+        qb.updateRequest(request);
+        assertEqualsEvenUnderWindows("{\n" //
+                + "  \"from\" : 0,\n" //
+                + "  \"size\" : 10,\n" //
+                + "  \"query\" : {\n" //
+                + "    \"match_all\" : { }\n" //
+                + "  },\n" //
+                + "  \"aggregations\" : {\n" //
+                + "    \"fulltext_filter\" : {\n" //
+                + "      \"filter\" : {\n" //
+                + "        \"match_all\" : { }\n" //
+                + "      },\n" //
+                + "      \"aggregations\" : {\n" //
+                + "        \"fulltext\" : {\n" //
+                + "          \"terms\" : {\n" //
+                + "            \"field\" : \"_all\"\n" //
+                + "          }\n" //
+                + "        }\n" //
+                + "      }\n" //
+                + "    }\n" //
+                + "  }\n" //
+                + "}", //
+                request.toString());
+    }
+
+    @Test
     public void testAggregateSignificantTermsQuery() throws Exception {
         AggregateDefinition aggDef = new AggregateDescriptor();
         aggDef.setType("significant_terms");
