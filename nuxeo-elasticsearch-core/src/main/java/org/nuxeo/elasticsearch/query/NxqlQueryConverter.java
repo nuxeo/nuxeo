@@ -28,14 +28,14 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.SimpleQueryStringBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -66,98 +66,11 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NxqlQueryConverter {
     private static final Log log = LogFactory.getLog(NxqlQueryConverter.class);
+    private static final String SELECT_ALL = "SELECT * FROM Document";
+    private static final String SELECT_ALL_WHERE = "SELECT * FROM Document WHERE ";
 
     private NxqlQueryConverter() {
     }
-
-    /**
-     * Class to hold both a query and a filter
-     *
-     */
-    public static class QueryAndFilter {
-
-        public final QueryBuilder query;
-        public final FilterBuilder filter;
-
-        public QueryAndFilter(QueryBuilder query, FilterBuilder filter) {
-            this.query = query;
-            this.filter = filter;
-        }
-    }
-
-    public static class ExpressionBuilder {
-
-        public final String operator;
-        public QueryBuilder query;
-
-        public ExpressionBuilder(final String op) {
-            this.operator = op;
-            this.query = null;
-        }
-
-        public void add(final QueryAndFilter qf) {
-            if (qf != null) {
-                add(qf.query, qf.filter);
-            }
-        }
-
-        public void add(QueryBuilder q) {
-            add(q, null);
-        }
-
-        public void add(final QueryBuilder q, final FilterBuilder f) {
-            if (q == null && f == null) {
-                return;
-            }
-            QueryBuilder inputQuery = q;
-            if (inputQuery == null) {
-                inputQuery = QueryBuilders.constantScoreQuery(f);
-            }
-            if (operator == null) {
-                // first level expression
-                query = inputQuery;
-            } else {
-                // boolean query
-                if (query == null) {
-                    query = QueryBuilders.boolQuery();
-                }
-                BoolQueryBuilder boolQuery = (BoolQueryBuilder) query;
-                if ("AND".equals(operator)) {
-                    boolQuery.must(inputQuery);
-                } else if ("OR".equals(operator)) {
-                    boolQuery.should(inputQuery);
-                } else if ("NOT".equals(operator)) {
-                    boolQuery.mustNot(inputQuery);
-                }
-            }
-        }
-
-        public void merge(ExpressionBuilder expr) {
-            if ((expr.operator != null) && expr.operator.equals(operator)
-                    && (query == null)) {
-                query = expr.query;
-            } else {
-                add(new QueryAndFilter(expr.query, null));
-            }
-        }
-
-        public QueryBuilder get() {
-            if (query == null) {
-                return QueryBuilders.matchAllQuery();
-            }
-            return query;
-        }
-
-        @Override
-        public String toString() {
-            return query.toString();
-        }
-
-    }
-
-    private static final String SELECT_ALL = "SELECT * FROM Document";
-
-    private static final String SELECT_ALL_WHERE = "SELECT * FROM Document WHERE ";
 
     public static QueryBuilder toESQueryBuilder(final String nxql) {
         final LinkedList<ExpressionBuilder> builders = new LinkedList<ExpressionBuilder>();
@@ -192,7 +105,8 @@ public class NxqlQueryConverter {
             @Override
             public void visitFromClause(FromClause node) {
                 FromList elements = node.elements;
-                SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+                SchemaManager schemaManager = Framework
+                        .getLocalService(SchemaManager.class);
 
                 for (int i = 0; i < elements.size(); i++) {
                     String type = elements.get(i);
@@ -201,7 +115,8 @@ public class NxqlQueryConverter {
                         fromList.clear();
                         return;
                     }
-                    Set<String> types = schemaManager.getDocumentTypeNamesExtending(type);
+                    Set<String> types = schemaManager
+                            .getDocumentTypeNamesExtending(type);
                     if (types != null) {
                         fromList.addAll(types);
                     }
@@ -370,5 +285,90 @@ public class NxqlQueryConverter {
         });
 
         return sortInfos;
+    }
+
+    /**
+     * Class to hold both a query and a filter
+     *
+     */
+    public static class QueryAndFilter {
+
+        public final QueryBuilder query;
+        public final FilterBuilder filter;
+
+        public QueryAndFilter(QueryBuilder query, FilterBuilder filter) {
+            this.query = query;
+            this.filter = filter;
+        }
+    }
+
+    public static class ExpressionBuilder {
+
+        public final String operator;
+        public QueryBuilder query;
+
+        public ExpressionBuilder(final String op) {
+            this.operator = op;
+            this.query = null;
+        }
+
+        public void add(final QueryAndFilter qf) {
+            if (qf != null) {
+                add(qf.query, qf.filter);
+            }
+        }
+
+        public void add(QueryBuilder q) {
+            add(q, null);
+        }
+
+        public void add(final QueryBuilder q, final FilterBuilder f) {
+            if (q == null && f == null) {
+                return;
+            }
+            QueryBuilder inputQuery = q;
+            if (inputQuery == null) {
+                inputQuery = QueryBuilders.constantScoreQuery(f);
+            }
+            if (operator == null) {
+                // first level expression
+                query = inputQuery;
+            } else {
+                // boolean query
+                if (query == null) {
+                    query = QueryBuilders.boolQuery();
+                }
+                BoolQueryBuilder boolQuery = (BoolQueryBuilder) query;
+                if ("AND".equals(operator)) {
+                    boolQuery.must(inputQuery);
+                } else if ("OR".equals(operator)) {
+                    boolQuery.should(inputQuery);
+                } else if ("NOT".equals(operator)) {
+                    boolQuery.mustNot(inputQuery);
+                }
+            }
+        }
+
+        public void merge(ExpressionBuilder expr) {
+            if ((expr.operator != null) && expr.operator.equals(operator)
+                    && (query == null)) {
+                query = expr.query;
+            } else {
+                add(new QueryAndFilter(expr.query, null));
+            }
+        }
+
+        public QueryBuilder get() {
+            if (query == null) {
+                return QueryBuilders.matchAllQuery();
+            }
+            return query;
+        }
+
+        @Override
+        public String toString() {
+            return query.toString();
+        }
+
     }
 }
