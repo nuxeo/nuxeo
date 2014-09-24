@@ -52,8 +52,8 @@ import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.NodeFactory;
 import org.nuxeo.ecm.platform.relations.api.impl.QueryResultImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
-import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
+import org.nuxeo.runtime.datasource.DataSourceHelper;
 
 import com.hp.hpl.jena.datatypes.BaseDatatype;
 import com.hp.hpl.jena.db.DBConnection;
