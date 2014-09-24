@@ -40,29 +40,36 @@ public class NxListboxRenderer extends ListboxRenderer {
 
     public static final String RENDERER_TYPE = "org.nuxeo.NxListboxRenderer";
 
+    public static final String DISABLE_SELECT2_PROPERTY = "disableSelect2";
+
     @Override
     public void encodeEnd(FacesContext context, UIComponent component)
             throws IOException {
 
         super.encodeEnd(context, component);
 
-        ResponseWriter writer = context.getResponseWriter();
-        writer.startElement("script", component);
-        Map<String, String> params = new HashMap<String, String>();
-        final String placeholder = (String) component.getAttributes().get(
-                "placeholder");
-        final String width = (String) component.getAttributes().get("width");
-        if (placeholder != null) {
-            params.put("placeholder", placeholder);
+        final boolean disableSelect2 = Boolean.parseBoolean((String) component.getAttributes().get(
+                "disableSelect2"));
+
+        if (!disableSelect2) {
+            ResponseWriter writer = context.getResponseWriter();
+            writer.startElement("script", component);
+            Map<String, String> params = new HashMap<String, String>();
+            final String placeholder = (String) component.getAttributes().get(
+                    "placeholder");
+            final String width = (String) component.getAttributes().get("width");
+            if (placeholder != null) {
+                params.put("placeholder", placeholder);
+            }
+            if (width != null) {
+                params.put("width", width);
+            }
+            writer.write("jQuery(document).ready(function(){nuxeo.utils.select2ifyjSelect('"
+                    + component.getClientId()
+                    + "', "
+                    + new ObjectMapper().writeValueAsString(params) + ")});");
+            writer.endElement("script");
         }
-        if (width != null) {
-            params.put("width", width);
-        }
-        writer.write("jQuery(document).ready(function(){nuxeo.utils.select2ifyjSelect('"
-                + component.getClientId()
-                + "', "
-                + new ObjectMapper().writeValueAsString(params) + ")});");
-        writer.endElement("script");
     }
 
 }
