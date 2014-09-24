@@ -213,13 +213,15 @@
               });
             </script>
 
-            <ui:insert name="content_view_column_selection">
-              <h:form>
-                <nxl:layout name="#{contentView.currentResultLayout.name}"
-                  mode="edit_columns" value="#{contentView.currentResultLayoutColumns}" />
-                <h:commandButton value="Go" />
-              </h:form>
-            </ui:insert>
+            <nxl:widgetType name="documentActionsWithForms"
+              widgetName="cvTopActions"
+              mode="view"
+              styleClass="contentViewUpperAction"
+              label=""
+              actionsDisplay="label"
+              overallDisplay="horizontal_block"
+              widgetProperty_category="CONTENT_VIEW_TOP_ACTIONS"
+              maxActionsNumber="5" />
 
             <ui:decorate template="/incl/documents_layout_table.xhtml">
               <ui:param name="providerId" value="#{contentViewId}" />
