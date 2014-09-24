@@ -120,7 +120,7 @@
       <filter-id>restoreVersionDisplay</filter-id>
     </action>
 
-    <action id="editResultLayoutColumns" order="10" label="label.edit.result.layout.column" type="fancybox">
+    <action id="editResultLayoutColumns" order="10" label="label.contentview.edit.column" type="fancybox">
       <category>CONTENT_VIEW_TOP_ACTIONS</category>
       <properties>
         <property name="include">/incl/content_view_edit_column.xhtml</property>
