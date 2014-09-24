@@ -14,8 +14,8 @@ authors: ataillefer@nuxeo.com, lkemen@nuxeo.com
 .docDiffResult .foldableBox .boxBody { padding: .5em }
 .docDiffResult .dataInput { max-width: none; width: 100% }
 .docDiffResult .dataInput td { padding: .4em .3em }
-.docDiffResult .dataInput td.labelColumn { width: 18%; padding-right: 2em; text-align: left }
-.docDiffResult .dataInput td.fieldColumn { width: 33% }
+.docDiffResult .dataInput td.labelColumn { width: 15%; padding-right: 2em; text-align: left }
+.docDiffResult .dataInput td.fieldColumn { width: 36% }
 .docDiffResult .dataInput td.contentDiffColumn { vertical-align: top }
 .docDiffResult .contentDiffColumn .action_bar { float: right; margin: 0 }
 
@@ -24,7 +24,7 @@ authors: ataillefer@nuxeo.com, lkemen@nuxeo.com
 .docDiffResult .dataInput .diffDisplayTable th { background-color: #eeeff0; padding: .1em .5em; font-weight: bold }
 .docDiffResult .dataInput .diffDisplayTable td.subItemCell { width: 48% }
 .docDiffResult .dataInput td.contentDiffColumn .diffDisplayTable td { text-align: center }
-.docDiffResult .note_content_block { border: none; margin: 0; padding: 0 1em 0 0 }
+.docDiffResult .note_content_block { margin: 0; padding: .5em }
 
 .docDiffResult .redBackgroundColor { display: block; min-height: 18px; min-width: 40px; padding: 0 .9em; background-color: #fdc6c6 }
 .docDiffResult .greenBackgroundColor { display: block; min-height: 18px; min-width: 40px; padding: 0 .9em; background-color: #cfc }
