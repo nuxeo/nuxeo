@@ -25,8 +25,6 @@ import javax.faces.convert.ConverterException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sun.faces.renderkit.Attribute;
-import com.sun.faces.renderkit.AttributeManager;
 import com.sun.faces.renderkit.html_basic.CheckboxRenderer;
 import com.sun.faces.util.RequestStateManager;
 
@@ -38,8 +36,6 @@ import com.sun.faces.util.RequestStateManager;
 public class NXCheckboxRenderer extends CheckboxRenderer {
 
     private static final Log log = LogFactory.getLog(NXCheckboxRenderer.class);
-
-    private static final Attribute[] ATTRIBUTES = AttributeManager.getAttributes(AttributeManager.Key.SELECTBOOLEANCHECKBOX);
 
     public static final String RENDERER_TYPE = "javax.faces.NXCheckbox";
 
