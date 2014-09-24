@@ -88,7 +88,7 @@ public class BaseTest {
     }
 
     @Inject
-    CoreSession session;
+    public CoreSession session;
 
     protected ClientResponse getResponse(RequestType requestType, String path) {
         return getResponse(requestType, path, null, null, null, null);

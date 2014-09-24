@@ -36,6 +36,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-test</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-test</artifactId>
       <scope>compile</scope>
@@ -106,11 +112,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-tag-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.elasticsearch</groupId>
-      <artifactId>nuxeo-elasticsearch-core</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
