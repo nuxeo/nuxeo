@@ -39,6 +39,8 @@ public class NxSelectManyCheckboxListRenderer extends
 
     final String MORE_LESS_LIMIT_PROPERTY = "moreLessLimit";
 
+    public static final String RENDERER_TYPE = "org.nuxeo.NxSelectManyCheckboxList";
+
     @Override
     public void encodeEnd(FacesContext context, UIComponent component)
             throws IOException {

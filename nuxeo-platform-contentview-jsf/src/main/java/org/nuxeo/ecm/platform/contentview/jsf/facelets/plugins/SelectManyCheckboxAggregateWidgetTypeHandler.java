@@ -23,6 +23,7 @@ import javax.faces.view.facelets.TagConfig;
 
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
+import org.nuxeo.ecm.platform.ui.web.renderer.NxSelectManyCheckboxListRenderer;
 
 /**
  * @since 5.9.6
@@ -37,7 +38,7 @@ public class SelectManyCheckboxAggregateWidgetTypeHandler extends
             TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
             throws WidgetException {
         return getFaceletHandler(ctx, tagConfig, widget, subHandlers,
-                HtmlSelectManyCheckbox.COMPONENT_TYPE, "org.nuxeo.NxSelectManyCheckboxList");
+                HtmlSelectManyCheckbox.COMPONENT_TYPE, NxSelectManyCheckboxListRenderer.RENDERER_TYPE);
     }
 
 }

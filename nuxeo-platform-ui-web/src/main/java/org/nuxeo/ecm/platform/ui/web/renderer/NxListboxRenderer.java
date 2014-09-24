@@ -38,7 +38,7 @@ import com.sun.faces.renderkit.html_basic.ListboxRenderer;
         @ResourceDependency(library = "org.nuxeo.select2", name = "select2.js") })
 public class NxListboxRenderer extends ListboxRenderer {
 
-    final String DISABLE_SELECT2_PROPERTY = "disableSelect2";
+    public static final String RENDERER_TYPE = "org.nuxeo.NxListboxRenderer";
 
     @Override
     public void encodeEnd(FacesContext context, UIComponent component)
