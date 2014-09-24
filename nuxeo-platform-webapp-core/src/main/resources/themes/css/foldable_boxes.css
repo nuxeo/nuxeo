@@ -153,6 +153,7 @@ author: lkemen@nuxeo.com
   border-color: "neutral.lighter (__FLAVOR__ border)";
   margin: 0 0 1em;
   overflow: hidden;
+  padding: .8em 0;
   text-overflow: ellipsis;
   white-space: nowrap }
 
@@ -160,7 +161,7 @@ author: lkemen@nuxeo.com
   border: none;
   display: inline-block;
   margin: 0;
-  padding: .5em 0 }
+  padding: .3em 0 }
 
 .bubbleBox .bubbleHeader input.button {
   float: right;

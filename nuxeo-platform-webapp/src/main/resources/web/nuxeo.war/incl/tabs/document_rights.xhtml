@@ -8,8 +8,10 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-  <h3><h:outputText
-    value="#{messages['label.security.parentDocumentsRights']}"/></h3>
+  <div class="bubbleBox">
+    <h3 class="bubbleHeader">
+      <h:outputText value="#{messages['label.security.parentDocumentsRights']}"/>
+    </h3>
 
   <h:form>
     <h:dataTable var="user" class="dataTableLine" rowClasses="dataRowEven,dataRowOdd"
@@ -68,25 +70,33 @@
     </h:dataTable>
   </h:form>
 
-  <p><h:form id="block_inherit">
-    <h:selectBooleanCheckbox class="checkBox" value="#{securityActions.blockRightInheritance}"
-      immediate="true" onclick="getElementById('block_inherit:submitBlock').click();"/>
-    <h:outputText value="#{messages['label.security.block.inehritance']}"/>
-    <h:commandButton id="submitBlock" value="Block inheritance"
-      action="#{securityActions.blockRightInheritance()}"
-      styleClass="visibilityH"/>
-  </h:form></p>
+  <p>
+    <h:form id="block_inherit">
+      <h:selectBooleanCheckbox class="checkBox" value="#{securityActions.blockRightInheritance}"
+        immediate="true" onclick="getElementById('block_inherit:submitBlock').click();"/>
+      <h:outputText value="#{messages['label.security.block.inehritance']}"/>
+      <h:commandButton id="submitBlock" value="Block inheritance"
+        action="#{securityActions.blockRightInheritance()}"
+        styleClass="visibilityH"/>
+    </h:form>
+  </p>
 
-  <p><h:outputText rendered="${empty securityActions.parentDocumentsUsers}"
-    value="#{messages['label.security.noParentDocumentsRights']}"/></p>
+  <p class="emptyResult">
+    <h:outputText rendered="${empty securityActions.parentDocumentsUsers}"
+      value="#{messages['label.security.noParentDocumentsRights']}"/>
+  </p>
+  </div>
 
-  <h3><h:outputText value="#{messages['label.security.localRights']} "/>
+  <div class="bubbleBox">
+  <h3 class="bubbleHeader">
+    <h:outputText value="#{messages['label.security.localRights']} "/>
     <h:graphicImage value="/icons/warning.gif" title="#{messages['label.security.saveNeeded']}"
       rendered="#{securityActions.securityData.needSave}"/>
   </h3>
 
   <a4j:outputPanel id="panel_local_rights">
     <h:form id="rights_content">
+      <h:panelGroup rendered="#{not empty securityActions.currentDocumentUsers}">
       <table class="dataTableLine" id="dataTable_local_rights">
         <thead>
         <tr>
@@ -156,12 +166,15 @@
         </c:forEach>
         </tbody>
       </table>
+      </h:panelGroup>
 
-      <p><h:outputText
+      <p class="emptyResult"><h:outputText
         rendered="${empty securityActions.currentDocumentUsers}"
-        value="#{messages['label.security.noLocalRights']}"/> <h:commandButton
+        value="#{messages['label.security.noLocalRights']}"/>
+      </p>
+      <h:commandButton
         id="security_button_remove"
-        value="#{messages['command.security.delPerm']}" class="button"
+        value="#{messages['command.security.delPerm']}" class="button floatL"
         rendered="${not empty securityActions.currentDocumentUsers}"
         action="#{securityActions.removePermissions}"
         disabled="#{!securityActions.canRemoveSecurityRules}"/> <h:panelGroup
@@ -180,7 +193,7 @@
           }
           -->
         </script>
-      </h:panelGroup></p>
+      </h:panelGroup>
     </h:form>
   </a4j:outputPanel>
 
@@ -192,8 +205,13 @@
       rendered="#{securityActions.securityData.needSave}"
       id="document_rights_validate_button"/>
   </h:form>
+  <div class="clear"></div>
+  </div>
 
-  <h3><h:outputText value="#{messages['label.security.addNewRule']}"/></h3>
+  <div class="bubbleBox">
+  <h3 class="bubbleHeader">
+    <h:outputText value="#{messages['label.security.addNewRule']}"/>
+  </h3>
 
   <a4j:region renderRegionOnly="true">
     <h:form id="add_rights_form">
@@ -202,14 +220,12 @@
           jQuery('#add_rights_form').focusFirst();
         });
       </script>
-      <table class="dataTable">
+      <table class="dataInput">
         <tbody>
         <tr>
           <td>
             <nxl:layout name="user_group_suggestion" mode="edit"
               value="#{securityActions.selectedEntries}"/>
-          </td>
-          <td>
             <ui:include src="/incl/document_rights_action.xhtml"/>
           </td>
         </tr>
@@ -217,5 +233,6 @@
       </table>
     </h:form>
   </a4j:region>
+  </div>
 
 </ui:composition>
