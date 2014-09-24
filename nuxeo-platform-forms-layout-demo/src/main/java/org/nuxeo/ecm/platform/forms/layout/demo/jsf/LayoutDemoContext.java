@@ -354,35 +354,39 @@ public class LayoutDemoContext implements Serializable {
 
             AggregateDefinition mockDef = new AggregateDescriptor();
             mockDef.setId("mock");
-            Aggregate mockQuery = new AggregateBase(mockDef, null);
 
-            List<Bucket> stringTerms = new ArrayList<>();
-            stringTerms.add(new BucketTerm("eric", 10));
-            stringTerms.add(new BucketTerm("stan", 5));
-            stringTerms.add(new BucketTerm("kyle", 2));
-            mockQuery.setBuckets(stringTerms);
-            layoutDemoAggregates.put("string_terms", mockQuery);
 
-            List<Bucket> dirTerms = new ArrayList<>();
-            dirTerms.add(new BucketTerm("cartman", 10));
-            dirTerms.add(new BucketTerm("marsh", 5));
-            dirTerms.add(new BucketTerm("broflovski", 2));
-            mockQuery.setBuckets(dirTerms);
-            layoutDemoAggregates.put("dir_terms", mockQuery);
+            List<Bucket> buckets = new ArrayList<>();
+            buckets.add(new BucketTerm("eric", 10));
+            buckets.add(new BucketTerm("stan", 5));
+            buckets.add(new BucketTerm("kyle", 2));
+            Aggregate stringTerms = new AggregateBase(mockDef, null);
+            stringTerms.setBuckets(buckets);
+            layoutDemoAggregates.put("string_terms", stringTerms);
 
-            List<Bucket> dirTermsl10n = new ArrayList<>();
-            dirTermsl10n.add(new BucketTerm("oceania", 10));
-            dirTermsl10n.add(new BucketTerm("antarctica", 5));
-            dirTermsl10n.add(new BucketTerm("europe", 2));
-            mockQuery.setBuckets(dirTermsl10n);
-            layoutDemoAggregates.put("dir_terms_translated", mockQuery);
+            buckets = new ArrayList<>();
+            buckets.add(new BucketTerm("cartman", 10));
+            buckets.add(new BucketTerm("marsh", 5));
+            buckets.add(new BucketTerm("broflovski", 2));
+            Aggregate dirTerms = new AggregateBase(mockDef, null);
+            dirTerms.setBuckets(buckets);
+            layoutDemoAggregates.put("dir_terms", dirTerms);
 
-            List<Bucket> dirTermsl10nHier = new ArrayList<>();
-            dirTermsl10nHier.add(new BucketTerm("oceania/Australia", 10));
-            dirTermsl10nHier.add(new BucketTerm("antarctica", 5));
-            dirTermsl10nHier.add(new BucketTerm("europe/France", 2));
-            mockQuery.setBuckets(dirTermsl10nHier);
-            layoutDemoAggregates.put("dir_terms_l10n", mockQuery);
+            buckets = new ArrayList<>();
+            buckets.add(new BucketTerm("oceania", 10));
+            buckets.add(new BucketTerm("antarctica", 5));
+            buckets.add(new BucketTerm("europe", 2));
+            Aggregate dirTermsL10n = new AggregateBase(mockDef, null);
+            dirTermsL10n.setBuckets(buckets);
+            layoutDemoAggregates.put("dir_terms_translated", dirTermsL10n);
+
+            buckets = new ArrayList<>();
+            buckets.add(new BucketTerm("oceania/Australia", 10));
+            buckets.add(new BucketTerm("antarctica", 5));
+            buckets.add(new BucketTerm("europe/France", 2));
+            Aggregate dirTermsL10nHier = new AggregateBase(mockDef, null);
+            dirTermsL10nHier.setBuckets(buckets);
+            layoutDemoAggregates.put("dir_terms_l10n", dirTermsL10nHier);
         }
         return layoutDemoAggregates;
     }
