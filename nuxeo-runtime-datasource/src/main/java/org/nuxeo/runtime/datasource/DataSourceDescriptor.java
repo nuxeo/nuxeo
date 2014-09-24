@@ -36,7 +36,6 @@ import org.apache.tomcat.jdbc.naming.GenericNamingResourcesFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;

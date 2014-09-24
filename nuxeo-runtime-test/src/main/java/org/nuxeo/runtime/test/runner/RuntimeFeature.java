@@ -28,13 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URLStreamHandlerFactoryInstaller;
-import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.osgi.framework.Bundle;
@@ -277,13 +273,6 @@ public class RuntimeFeature extends SimpleFeature {
     protected <T> void bind0(Binder binder, Class<T> type,
             ServiceProvider<T> provider) {
         binder.bind(type).toProvider(provider).in(provider.getScope());
-    }
-
-    public static void bindDatasource(String key, DataSource ds)
-            throws Exception {
-        InitialContext initialCtx = new InitialContext();
-        JndiHelper.rebind(initialCtx,
-                DataSourceHelper.getDataSourceJNDIName(key), ds);
     }
 
 }

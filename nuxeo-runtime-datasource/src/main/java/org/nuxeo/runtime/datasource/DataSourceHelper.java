@@ -11,7 +11,7 @@
  *
  */
 
-package org.nuxeo.runtime.api;
+package org.nuxeo.runtime.datasource;
 
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -29,6 +29,8 @@ import javax.sql.XADataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.InitialContextAccessor;
 
 /**
  * Helper class to look up {@link DataSource}s without having to deal with
@@ -158,5 +160,16 @@ public class DataSourceHelper {
             }
         }
         return datasourcesByName;
+    }
+
+    /**
+     * @param repositoryName
+     * @return
+     *
+     * @since TODO
+     */
+    public static String getDataSourceRepositoryJNDIName(
+            String repositoryName) {
+        return getDataSourceJNDIName(ConnectionHelper.getPseudoDataSourceNameForRepository(repositoryName));
     }
 }

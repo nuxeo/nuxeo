@@ -11,10 +11,12 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.runtime.api;
+package org.nuxeo.runtime.datasource;
 
 import org.junit.After;
 import org.junit.Test;
+import org.nuxeo.runtime.datasource.DataSourceHelper;
+
 import static org.junit.Assert.*;
 
 public class DataSourceHelperTest {
