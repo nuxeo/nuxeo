@@ -5215,6 +5215,9 @@
           <property name="hideHelpLabel">true</property>
           <property name="placeholder">label.security.search</property>
         </properties>
+        <properties widgetMode="view">
+          <property name="prefixed">true</property>
+        </properties>
         <widgetModes>
           <mode value="create">edit</mode>
         </widgetModes>
