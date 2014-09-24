@@ -50,8 +50,12 @@ author: lkemen@nuxeo.com
 /* Override default size from the page */
 .nxPopUp.nxMainContainer {
   height: auto;
-  min-height: inherit;
-  width: 99% }
+  margin: 0;
+  min-height: inherit }
+
+.nxPopUp.nxMainContainer .content {
+  background: none;
+  padding: 1em }
 
 #fancybox-content #permalinkAction_box input {
   display: block;
