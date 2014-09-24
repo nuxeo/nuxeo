@@ -28,6 +28,8 @@
         <property name="suggestionFormatter">nxSuggestedSuggestBoxFormatter</property>
         <property name="onAddEntryHandler">nxSuggestionEntryHandler</property>
         <property name="autocomplete">true</property>
+        <property name="dropdownCssClass">nx-header-s2-dd</property>
+        <property name="containerCssClass">nx-header-s2-ct</property>
         <property name="width">200px</property>
       </properties>
     </action>
