@@ -47,9 +47,9 @@ import org.nuxeo.ecm.directory.DirectoryServiceImpl;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.RuntimeService;
-import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
+import org.nuxeo.runtime.datasource.DataSourceHelper;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class SQLDirectory extends AbstractDirectory {
