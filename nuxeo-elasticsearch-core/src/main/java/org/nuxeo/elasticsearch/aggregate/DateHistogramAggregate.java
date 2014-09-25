@@ -57,7 +57,7 @@ import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
  */
 public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
 
-    Integer intervalMillis;
+    Long intervalMillis;
 
     public DateHistogramAggregate(AggregateDefinition definition,
             DocumentModel searchDocument) {
@@ -161,7 +161,7 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
         return new DateTime(from.getMillis() + getIntervalInMillis());
     }
 
-    public int getIntervalInMillis() {
+    public long getIntervalInMillis() {
         if (intervalMillis == null) {
             String interval;
             Map<String, String> props = getProperties();
@@ -172,7 +172,7 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
                         "interval property must be defined for " + toString());
             }
             interval = convertToTimeValueString(interval);
-            intervalMillis = (int) TimeValue.parseTimeValue(interval, null)
+            intervalMillis = (long) TimeValue.parseTimeValue(interval, null)
                     .getMillis();
         }
         return intervalMillis;
