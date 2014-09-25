@@ -245,8 +245,15 @@ public class LayoutTagHandler extends TagHandler {
                         selectedRowsValue = (List<String>) selectedRows.getObject(
                                 ctx, List.class);
                     } else if (selectedColumns != null) {
-                        selectedRowsValue = (List<String>) selectedColumns.getObject(
+                        List<String> selectedColumnsList = (List<String>) selectedColumns.getObject(
                                 ctx, List.class);
+                        // Handle empty selected columns list as null to display
+                        // all columns.
+                        if (selectedColumnsList != null
+                                && selectedColumnsList.isEmpty()) {
+                            selectedColumnsList = null;
+                        }
+                        selectedRowsValue = selectedColumnsList;
                     }
                 }
                 if (selectAllByDefault != null) {
