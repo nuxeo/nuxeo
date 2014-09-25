@@ -40,7 +40,6 @@ a.button {
 a.button:hover,
 input.button:hover,
 .action_bar a:hover {
-  border: 1px solid;
   border-color: "button.hover (__FLAVOR__ border)";
   box-shadow: 0 -2px 0 #ddd inset; }
 
@@ -86,7 +85,7 @@ input.tinyButton {
 .dropdown:hover {
   background: url("${basePath}/icons/dropdown.png") no-repeat scroll right center;
   background-color: "button (__FLAVOR__ background)";
-  padding: .25em 1.5em .2em .8em !important }
+  padding: .4em 1.5em .4em .8em !important }
 
 /* =Action Bar */
 .action_bar {
@@ -238,6 +237,15 @@ input.tinyButton {
   line-height: 1.75em;
   margin: 0 }
 
+.contextActions .button  {
+  margin: 0;
+  padding: .5em .6em;
+  border-left: medium none;
+  line-height: normal }
+
+.globalActions .horizontalAction:first-child {
+  border-left: 1px solid "neutral.light (__FLAVOR__ border)" }
+
 /* =Kept for social collab custom actions */
 .headerTitleAndTools h1 {
   display: inline }
@@ -329,17 +337,11 @@ input.tinyButton {
 .globalActions > span, .globalActions .horizontalAction {
   float: left }
 
-.globalActions .horizontalAction:first-child {
-  border-left: 1px solid #c9c9c9 }
-
 .contextActions {
   padding: .4em 0 .5em }
 
 .contextActions div img {
   padding: -0.3em 0 0 }
-
-.contextActions .widgetPanel {
-  margin: 0 }
 
 /* Actions in left column */
 .column .action_bar {
