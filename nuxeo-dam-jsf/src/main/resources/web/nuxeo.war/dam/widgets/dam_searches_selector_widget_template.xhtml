@@ -8,9 +8,9 @@
     <h:selectOneMenu
       value="#{damSearchActions.currentSelectedSavedSearchId}"
       id="#{widget.id}" styleClass="langSelect">
-      <a4j:ajax event="change"
+      <f:ajax execute="@this"
         listener="#{damSearchActions.refreshAndRewind()}"
-        render="#{widgetProperty_ajaxReRender}" />
+        render="#{nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender)}" />
       <f:selectItems value="#{damSearchActions.allSavedSearchesSelectItems}" />
     </h:selectOneMenu>
   </a4j:region>
