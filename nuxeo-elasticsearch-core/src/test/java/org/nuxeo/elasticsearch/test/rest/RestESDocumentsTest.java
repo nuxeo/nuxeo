@@ -20,6 +20,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentListWriter;
@@ -60,6 +61,8 @@ import static org.junit.Assert.assertTrue;
 @LocalDeploy({"org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml",
         "org.nuxeo.ecm.platform.restapi.test:elasticsearch-test-contrib.xml"})
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
+// TODO: NXP-15353 temp skip
+@Ignore
 public class RestESDocumentsTest extends BaseTest {
 
     @Test
