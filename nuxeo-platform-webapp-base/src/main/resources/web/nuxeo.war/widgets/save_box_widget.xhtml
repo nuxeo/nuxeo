@@ -9,11 +9,11 @@
 <div id="#{widget.id}"
   class="#{widgetProperty_styleClass}">
 
-  <nxu:set var="ajaxReRender"
+  <nxu:set var="widgetPanelId"
     value="#{widget.id}_panel"
     cache="true">
 
-  <a4j:outputPanel id="#{ajaxReRender}"
+  <a4j:outputPanel id="#{widgetPanelId}"
    layout="block">
 
   <c:if test="#{!empty widget.label and widget.handlingLabels}">
@@ -37,15 +37,21 @@
   <nxu:set var="action"
     value="#{webActions.getAction(widgetProperty_actionId, not widgetProperty_disableFiltered)}"
     cache="true">
+  <nxu:set var="localElementToRender"
+    value="#{nxu:componentAbsoluteId(component, widgetPanelId)}">
+  <nxu:set var="elementsToRender"
+    value="#{nxu:joinRender(ajaxReRender, nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender))}">
     <nxl:widgetType name="action"
       mode="#{widget.mode}"
       widgetName="#{widget.name}_action"
       label=""
-      ajaxReRender="#{nxu:joinRender(ajaxReRender, widgetProperty_ajaxReRender)}"
+      ajaxReRender="#{nxu:joinRender(elementsToRender, localElementToRender)}"
       action="#{action}"
       addForm="false"
       actionsDisplay="buttons"
       useAjaxForm="true" />
+  </nxu:set>
+  </nxu:set>
   </nxu:set>
   </a4j:outputPanel>
   </nxu:set>
