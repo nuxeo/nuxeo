@@ -829,8 +829,34 @@ public final class Functions {
         return res;
     }
 
+    /**
+     * Returns the target component absolute id given an anchor in the tree and
+     * a local id.
+     * <p>
+     * If given targetId parameter contains spaces, consider several ids should
+     * be resolved and split them.
+     *
+     * @since 5.9.6
+     * @param anchor the component anchor, used a localization for the target
+     *            component in the tree.
+     * @param targetId the component to look for locally so as to return its
+     *            absolute client id.
+     */
     public static String componentAbsoluteId(UIComponent anchor, String targetId) {
-        return ComponentRenderUtils.getComponentAbsoluteId(anchor, targetId);
+        // handle case where several target ids could be given as input
+        if (targetId == null) {
+            return null;
+        }
+        if (targetId.contains(" ")) {
+            String res = "";
+            List<String> items = new ArrayList<>();
+            for (String t : targetId.split(" ")) {
+                res = joinRender(res,
+                        ComponentRenderUtils.getComponentAbsoluteId(anchor, t));
+            }
+            return res;
+        } else {
+            return ComponentRenderUtils.getComponentAbsoluteId(anchor, targetId);
+        }
     }
-
 }
