@@ -13,12 +13,8 @@
       <nxu:set var="thumbnailUrl"
         value="#{nxd:fileUrl('downloadThumbnail', field, 'blobholder:0', blobHolderGenerator.getBlobHolder(field).blob.filename)}"
         cache="true">
-        <nxh:graphicImage
-                  value="#{thumbnailUrl}" />
-              <a
-                href="#{contextPath}/api/v1/id/#{field.id}"
-                class="image-popup" >
-              </a>
+        <nxh:graphicImage value="#{thumbnailUrl}" />
+        <a href="#{contextPath}/api/v1/id/#{field.id}" class="image-popup" />
       </nxu:set>
     </div>
 
@@ -30,8 +26,7 @@
       <nxu:set var="thumbnailUrl"
         value="#{nxd:fileUrl('downloadThumbnail', field, 'blobholder:0', blobHolderGenerator.getBlobHolder(field).blob.filename)}"
         cache="true">
-        <nxh:graphicImage value="#{thumbnailUrl}"
-          rendered="#{not empty thumbnailUrl}" />
+        <nxh:graphicImage value="#{thumbnailUrl}" />
       </nxu:set>
     </div>
     </nxp:html>
