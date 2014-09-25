@@ -32,7 +32,12 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 public class RenderVariables {
 
     public enum globalVariables {
-        value, document, layoutValue, mode, layoutMode
+        value,
+        // deprecate document: not exposed anymore
+        @Deprecated
+        document,
+        //
+        layoutValue, mode, layoutMode
     }
 
     public enum layoutVariables {
