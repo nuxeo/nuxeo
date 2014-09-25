@@ -41,6 +41,9 @@ public class ComponentRenderUtils {
 
     public static String getComponentAbsoluteId(UIComponent base,
             String targetId) {
+        if (targetId == null || targetId.startsWith(":")) {
+            return targetId;
+        }
         String id = targetId;
         UIComponent target = findComponentFor(base, id);
         if (target != null) {
@@ -81,7 +84,7 @@ public class ComponentRenderUtils {
             String id) {
         UIComponent target = null;
         for (Iterator<UIComponent> iter = root.getFacetsAndChildren(); iter.hasNext();) {
-            UIComponent child = (UIComponent) iter.next();
+            UIComponent child = iter.next();
             if (child instanceof NamingContainer) {
                 try {
                     target = child.findComponent(id);

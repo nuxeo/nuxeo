@@ -849,10 +849,11 @@ public final class Functions {
         }
         if (targetId.contains(" ")) {
             String res = "";
-            List<String> items = new ArrayList<>();
             for (String t : targetId.split(" ")) {
-                res = joinRender(res,
-                        ComponentRenderUtils.getComponentAbsoluteId(anchor, t));
+                res = joinRender(
+                        res,
+                        ComponentRenderUtils.getComponentAbsoluteId(anchor,
+                                t.trim()));
             }
             return res;
         } else {
