@@ -633,7 +633,7 @@
     <!-- footer links -->
 
     <action id="footer_contact_us"
-      link="http://www.nuxeo.com/en/about/contact?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+      link="//www.nuxeo.com/about/contact?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
       label="label.footer.contactUs" order="10" type="bare_link">
       <category>FOOTER</category>
       <properties>
@@ -642,7 +642,7 @@
     </action>
 
     <action id="footer_blogs"
-      link="http://blogs.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+      link="//blogs.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
       label="label.footer.blogs" order="20" type="bare_link">
       <category>FOOTER</category>
       <properties>
@@ -651,7 +651,7 @@
     </action>
 
     <action id="footer_community"
-      link="http://community.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+      link="//community.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
       label="label.footer.community" order="30" type="bare_link">
       <category>FOOTER</category>
       <properties>
@@ -660,7 +660,7 @@
     </action>
 
     <action id="footer_answers"
-      link="http://answers.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+      link="//answers.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
       label="label.footer.answers" order="40" type="bare_link">
       <category>FOOTER</category>
       <properties>
@@ -669,7 +669,7 @@
     </action>
 
     <action id="footer_documentation"
-      link="http://doc.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+      link="//doc.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
       label="label.footer.documentation" order="50" type="bare_link">
       <category>FOOTER</category>
       <properties>
@@ -678,7 +678,7 @@
     </action>
 
     <action id="footer_twitter"
-      link="http://twitter.com/nuxeo/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+      link="//twitter.com/nuxeo/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
       label="Twitter" order="60" type="bare_link">
       <category>FOOTER</category>
       <properties>
@@ -689,7 +689,7 @@
     </action>
 
     <action id="footer_linkedin"
-      link="http://www.linkedin.com/groupRegistration?gid=43314&amp;utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+      link="//www.linkedin.com/groupRegistration?gid=43314&amp;utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
       label="LinkedIn" order="70" type="bare_link">
       <category>FOOTER</category>
       <properties>

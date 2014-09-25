@@ -321,19 +321,19 @@ body {
           <ul>
             <li>
               <a onclick="window.open(this.href); return false;"
-                href="http://www.nuxeo.com/en/subscription/connect?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
+                href="//www.nuxeo.com/en/subscription/connect?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
                 <fmt:message bundle="${messages}" key="label.login.getSupport" />
               </a>
             </li>
             <li>
               <a onclick="window.open(this.href); return false;"
-                href="http://answers.nuxeo.com/?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
+                href="//answers.nuxeo.com/?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
                 <fmt:message bundle="${messages}" key="label.footer.answers" />
               </a>
             </li>
             <li>
               <a onclick="window.open(this.href); return false;"
-                href="http://doc.nuxeo.com/display/MAIN/Nuxeo+Documentation+Center+Home?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
+                href="//doc.nuxeo.com/display/MAIN/Nuxeo+Documentation+Center+Home?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
                 <fmt:message bundle="${messages}" key="label.login.documentation" />
               </a>
             </li>
