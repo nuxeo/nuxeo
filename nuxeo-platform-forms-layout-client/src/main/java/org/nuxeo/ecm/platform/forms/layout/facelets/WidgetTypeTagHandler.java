@@ -283,7 +283,8 @@ public class WidgetTypeTagHandler extends TagHandler {
                 String.format("%s_%s",
                         RenderVariables.widgetVariables.widget.name(),
                         Integer.valueOf(widget.getLevel())), widgetVe);
-        // TODO: expose widget controls too?
+        // TODO NXP-13280: expose widget controls too when they can be
+        // retrieved from tag attributes
         try {
             // set unique id on widget and sub widgets before exposing them to
             // the context
