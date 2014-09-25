@@ -77,7 +77,7 @@
       <actions category="CURRENT_SELECTION_LIST" />
 
       <resultColumns>
-        #{searchDocumentModel.cvd.selectedLayoutColumns}
+        #{searchDocument.cvd.selectedLayoutColumns}
       </resultColumns>
 
       <flags>
@@ -133,7 +133,7 @@
       </resultLayouts>
 
       <resultColumns>
-        #{searchDocumentModel.cvd.selectedLayoutColumns}
+        #{searchDocument.cvd.selectedLayoutColumns}
       </resultColumns>
 
       <selectionList>CURRENT_SELECTION</selectionList>
