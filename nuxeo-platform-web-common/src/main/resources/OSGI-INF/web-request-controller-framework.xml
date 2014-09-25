@@ -8,7 +8,7 @@
     configuration.
     @author Thierry Delprat (td@nuxeo.com)
   </documentation>
-
+  
   <service>
     <provide
       interface="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager" />

@@ -129,6 +129,20 @@
     </filter-mapping>
   </extension>
 
+  <extension target="web#FIRST-FILTER">
+    <filter>
+      <display-name>Nuxeo Thread Tracker Filter</display-name>
+      <filter-name>NuxeoThreadTracker</filter-name>
+      <filter-class>
+        org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoThreadTrackerFilter
+      </filter-class>
+    </filter>
+    <filter-mapping>
+      <filter-name>NuxeoThreadTracker</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+  </extension>
+  
   <extension target="web#FILTER">
     <filter>
       <display-name>Nuxeo Simple Cache Filter</display-name>
