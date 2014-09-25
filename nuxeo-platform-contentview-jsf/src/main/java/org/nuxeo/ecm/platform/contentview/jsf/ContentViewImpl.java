@@ -87,6 +87,8 @@ public class ContentViewImpl implements ContentView,
 
     protected ContentViewLayout currentResultLayout;
 
+    protected List<String> defaultResultLayoutColumns;
+
     protected List<String> currentResultLayoutColumns;
 
     protected String cacheKey;
@@ -213,6 +215,7 @@ public class ContentViewImpl implements ContentView,
 
     public void setCurrentResultLayout(ContentViewLayout layout) {
         currentResultLayout = layout;
+        setCurrentResultLayoutColumns(null);
     }
 
     public void setCurrentResultLayout(String resultLayoutName) {
@@ -489,7 +492,8 @@ public class ContentViewImpl implements ContentView,
                         + "result is not a List: %s", resultColumnsBinding,
                         value));
             }
-            return (List) value;
+            return value == null || ((List) value).isEmpty() ? null
+                    : (List) value;
         } finally {
             removeSearchDocumentFromELContext(context, previousSearchDocValue);
         }
