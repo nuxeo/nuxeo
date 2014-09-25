@@ -30,7 +30,7 @@
             <a4j:ajax event="click"
               listener="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, documents.selected)}"
               onbeforesubmit="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
-              render="#{layout.id}_selectAll_panel, #{formId}_buttons:ajax_selection_buttons" />
+              render="#{layout.id}_selectAll_panel #{formId}_buttons:ajax_selection_buttons" />
           </h:selectBooleanCheckbox>
         </nxu:set>
       </a4j:outputPanel>
