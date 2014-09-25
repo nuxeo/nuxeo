@@ -57,7 +57,7 @@
 
     <!-- Home Searches tab actions -->
 
-    <action id="AllSavedSearches" link="search/incl/all_saved_searches.xhtml"
+    <action id="AllSavedSearches" link="/search/incl/all_saved_searches.xhtml"
       type="home_rest_document_link" label="label.home.all.searches" order="-10">
       <category>SavedSearches_sub_tab</category>
       <filter-id>not_anonymous</filter-id>
