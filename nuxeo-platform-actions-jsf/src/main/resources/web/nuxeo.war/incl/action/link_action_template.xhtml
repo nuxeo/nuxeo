@@ -9,12 +9,6 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
-<nxu:set var="actionReRender"
-  value="#{action.properties.ajaxReRender}"
-  resolveTwice="true" cache="true">
-<nxu:set var="elementsToReRender"
-  value="#{nxu:joinRender(ajaxReRender, actionReRender)}"
-  cache="true">
 <nxu:set var="onclick"
   value="#{nxu:test(not empty action.properties.confirmMessage, actionConfirmMessageJs, '')}#{action.confirm};#{action.properties.onclick};"
   cache="true">
@@ -53,7 +47,7 @@
         value="#{action.getLink()}" />
       <ui:insert name="after_action_trigger" />
       <f:ajax execute="#{action.immediate ? '@this' : '@form'}"
-        render="#{elementsToReRender}" />
+        render="#{ajaxReRender}" />
     </h:commandButton>
 
   </c:if>
@@ -89,14 +83,12 @@
         value="#{action.getLink()}" />
       <ui:insert name="after_action_trigger" />
       <f:ajax execute="#{action.immediate ? '@this' : '@form'}"
-        render="#{elementsToReRender}" />
+        render="#{ajaxReRender}" />
     </h:commandLink>
   </c:if>
 
 </c:if>
 
-</nxu:set>
-</nxu:set>
 </nxu:set>
 
 </c:if>

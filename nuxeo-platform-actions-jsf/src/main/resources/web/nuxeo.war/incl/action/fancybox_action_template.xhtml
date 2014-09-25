@@ -9,16 +9,13 @@
   xmlns:h="http://java.sun.com/jsf/html">
 
 <nxu:set var="fancyboxIdPrefix" value="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}_">
-<nxu:set var="actionReRender"
-  value="#{action.properties.ajaxReRender}"
-  resolveTwice="true" cache="true">
 <nxu:set var="fancyReRenderId"
   value="#{fancyboxIdPrefix}ajax_panel"
   cache="true">
 <nxu:set var="fancyReRender"
   value="#{nxu:componentAbsoluteId(component, fancyReRenderId)}">
 <nxu:set var="elementsToReRender"
-  value="#{nxu:joinRender(fancyReRender, nxu:joinRender(ajaxReRender, actionReRender))}">
+  value="#{nxu:joinRender(ajaxReRender, fancyReRender)}">
 <nxu:set var="iframe"
   value="#{action.properties.iframe}"
   resolveTwice="true" cache="true">
@@ -203,7 +200,6 @@
 
 </c:if>
 
-</nxu:set>
 </nxu:set>
 </nxu:set>
 </nxu:set>

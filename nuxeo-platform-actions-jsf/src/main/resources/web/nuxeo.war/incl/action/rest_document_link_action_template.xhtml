@@ -37,37 +37,27 @@
 
 <c:if test="#{useAjaxForm}">
 
-  <nxu:set var="actionReRender"
-    value="#{action.properties.ajaxReRender}"
-    resolveTwice="true" cache="true">
-  <nxu:set var="elementsToReRender"
-    value="#{nxu:joinRender(ajaxReRender, actionReRender)}"
-    cache="true">
+  <nxd:restDocumentLink
+    document="#{fieldOrValue}"
+    view="#{nxu:test(empty action.properties.view, widgetProperty_view, action.properties.view)}"
+    pattern="#{nxu:test(empty action.properties.pattern, widgetProperty_pattern, action.properties.pattern)}"
+    tabs="#{tabIds}"
+    addTabInfo="false"
+    accesskey="#{action.accessKey}"
+    id="#{widget.id}_restLink"
+    resolveOnly="true"
+    var="docUrl">
+    <h:commandLink
+      id="#{widget.id}"
+      action="#{webActions.setCurrentTabIds(tabIds)}"
+      onclick="history.pushState(null, '#{tabIds}', '#{nxu:javaScriptEscape(docUrl)}');#{onclick}"
+      accessKey="#{action.accessKey}">
+      <f:ajax execute="@this" render="#{ajaxReRender}" />
+      <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+      <ui:insert name="inside_action" />
+    </h:commandLink>
 
-    <nxd:restDocumentLink
-      document="#{fieldOrValue}"
-      view="#{nxu:test(empty action.properties.view, widgetProperty_view, action.properties.view)}"
-      pattern="#{nxu:test(empty action.properties.pattern, widgetProperty_pattern, action.properties.pattern)}"
-      tabs="#{tabIds}"
-      addTabInfo="false"
-      accesskey="#{action.accessKey}"
-      id="#{widget.id}_restLink"
-      resolveOnly="true"
-      var="docUrl">
-      <h:commandLink
-        id="#{widget.id}"
-        action="#{webActions.setCurrentTabIds(tabIds)}"
-        onclick="history.pushState(null, '#{tabIds}', '#{nxu:javaScriptEscape(docUrl)}');#{onclick}"
-        accessKey="#{action.accessKey}">
-        <f:ajax execute="@this" render="#{elementsToReRender}" />
-        <ui:include src="/incl/action/action_icon_label_template.xhtml" />
-        <ui:insert name="inside_action" />
-      </h:commandLink>
-
-    </nxd:restDocumentLink>
-
-  </nxu:set>
-  </nxu:set>
+  </nxd:restDocumentLink>
 
 </c:if>
 
