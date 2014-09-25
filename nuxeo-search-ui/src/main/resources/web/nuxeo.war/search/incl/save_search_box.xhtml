@@ -27,7 +27,7 @@
         action="#{searchUIActions.saveSearch()}"
         styleClass="button">
         <f:ajax execute="@form" onevent="jQuery.fancybox.close"
-          render="searchPanelLeft" />
+          render="#{nxu:componentAbsoluteId(component, 'searchPanelLeft')}" />
       </h:commandButton>
       <h:commandButton value="#{messages['command.cancel']}"
         action="#{searchUIActions.cancelSaveSearch()}"
