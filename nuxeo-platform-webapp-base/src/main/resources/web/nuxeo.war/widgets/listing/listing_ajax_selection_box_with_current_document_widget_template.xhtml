@@ -8,5 +8,5 @@
   <f:ajax id="#{widget.id}_ajax_onclick" event="click"
     execute="@this"
     listener="#{documentListingActions.checkCurrentDocAndProcessSelectRow(field_1, contentView.name, contentView.selectionListName, field_0, currentDocument.ref)}"
-    render="#{formId}_buttons:ajax_selection_buttons" />
+    render="#{nxu:componentAbsoluteId(component, 'ajax_selection_buttons')}" />
 </h:selectBooleanCheckbox>
