@@ -16,19 +16,20 @@
  */
 package org.nuxeo.ecm.platform.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import javax.naming.InitialContext;
 
-import org.junit.runner.RunWith;
-import org.junit.Test;
 import org.junit.Ignore;
-import static org.junit.Assert.*;
-
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.server.DataSource;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.runtime.api.DataSourceHelper;
+import org.nuxeo.runtime.datasource.DataSourceHelper;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
