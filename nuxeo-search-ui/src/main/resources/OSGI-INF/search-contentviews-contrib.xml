@@ -506,11 +506,13 @@
           <properties widgetMode="any">
             <property name="selectOptions">#{aggregates['common_size_agg'].buckets}</property>
           </properties>
-          <!-- selectOptions>
+          <selectOptions>
+            <option itemLabel="#{messages['label.aggregate.size.tiny']}" itemValue="tiny"  />
             <option itemLabel="#{messages['label.aggregate.size.small']}" itemValue="small"  />
             <option itemLabel="#{messages['label.aggregate.size.medium']}" itemValue="medium" />
             <option itemLabel="#{messages['label.aggregate.size.big']}" itemValue="big" />
-          </selectOptions-->
+            <option itemLabel="#{messages['label.aggregate.size.huge']}" itemValue="huge"  />
+          </selectOptions>
           <controls mode="any">
             <control name="supportInsideInputWidgetEffects">true</control>
           </controls>
