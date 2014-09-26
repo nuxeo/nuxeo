@@ -805,7 +805,6 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         fork1 = session.saveDocument(fork1);
 
         DocumentModel fork2 = createNode(routeDoc, "fork2", session);
-        fork2.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(fork2, transition("trans3", "task1"),
                 transition("trans4", "task2"));
         fork2 = session.saveDocument(fork2);
@@ -1730,7 +1729,6 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node1 = session.saveDocument(node1);
 
         DocumentModel node12 = createNode(routeDoc, "node12", session);
-        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(
                 node1,
                 transition("trans12", "node2",
@@ -1741,7 +1739,6 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node12 = session.saveDocument(node12);
 
         DocumentModel node22 = createNode(routeDoc, "node22", session);
-        node22.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(
                 node1,
                 transition("trans22", "node2",
