@@ -187,6 +187,13 @@
       </fields>
     </widget>
 
+    <widget name="infoViewAudioPlayer" type="audio_player">
+      <fields>
+        <field>#{value}</field>
+        <field>file:content</field>
+      </fields>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -204,6 +211,14 @@
       <filter-id>notHasAudio</filter-id>
     </action>
 
+    <action id="infoViewAudioPlayer" type="widget" order="100">
+      <category>INFO_VIEW_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">infoViewAudioPlayer</property>
+      </properties>
+      <filter-id>hasAudio</filter-id>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -211,13 +226,19 @@
 
     <filter id="hasAudio">
       <rule grant="true">
-        <schema>audio</schema>
+        <facet>Audio</facet>
       </rule>
     </filter>
 
     <filter id="notHasAudio">
       <rule grant="false">
-        <schema>audio</schema>
+        <facet>Audio</facet>
+      </rule>
+    </filter>
+
+    <filter id="denyInfoViewPreview" append="true">
+      <rule grant="false">
+        <facet>Audio</facet>
       </rule>
     </filter>
 
