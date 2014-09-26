@@ -20,6 +20,8 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_FORMAT_PROP;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +32,6 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.range.date.DateRange;
 import org.elasticsearch.search.aggregations.bucket.range.date.DateRangeBuilder;
-import org.joda.time.DateTime;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDateDefinition;
@@ -104,7 +105,19 @@ public class DateRangeAggregate extends AggregateEsBase<BucketRangeDate> {
                     getDateTime(rangeBucket.getToAsDate()), rangeBucket
                             .getDocCount()));
         }
+        Collections.sort(nxBuckets, new BucketRangeDateComparator());
         this.buckets = nxBuckets;
+    }
+
+    protected class BucketRangeDateComparator implements
+            Comparator<BucketRangeDate> {
+        @Override
+        public int compare(BucketRangeDate arg0, BucketRangeDate arg1) {
+            return definition.getAggregateDateRangeDefinitionOrderMap().get(
+                    arg0.getKey()).compareTo(
+                    definition.getAggregateDateRangeDefinitionOrderMap().get(
+                            arg1.getKey()));
+        }
     }
 
 }

@@ -18,6 +18,8 @@ package org.nuxeo.elasticsearch.aggregate;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.elasticsearch.index.query.FilterBuilders;
@@ -92,7 +94,19 @@ public class RangeAggregate extends AggregateEsBase<BucketRange> {
                             rangeBucket.getFrom(), rangeBucket.getTo(),
                             rangeBucket.getDocCount()));
         }
+        Collections.sort(nxBuckets, new BucketRangeComparator());
         this.buckets = nxBuckets;
+    }
+
+    protected class BucketRangeComparator implements
+            Comparator<BucketRange> {
+        @Override
+        public int compare(BucketRange arg0, BucketRange arg1) {
+            return definition.getAggregateRangeDefinitionOrderMap().get(
+                    arg0.getKey()).compareTo(
+                    definition.getAggregateRangeDefinitionOrderMap().get(
+                            arg1.getKey()));
+        }
     }
 
 }
