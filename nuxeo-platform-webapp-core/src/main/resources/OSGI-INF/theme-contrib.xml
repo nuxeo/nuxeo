@@ -509,6 +509,10 @@
         <theme>galaxy/popup</theme>
       </view>
 
+      <view id="/info_view.xhtml">
+        <theme>galaxy/popup</theme>
+      </view>
+
     </application>
   </extension>
 

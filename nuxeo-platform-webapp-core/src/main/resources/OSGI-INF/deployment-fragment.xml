@@ -162,6 +162,12 @@
       <redirect />
     </navigation-case>
 
+    <navigation-case>
+      <from-outcome>info_view</from-outcome>
+      <to-view-id>/info_view.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
     <!-- miscellaneous -->
 
     <navigation-case>

@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webapp.nfo.view">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="infoViewPanelLeft" type="documentActions">
+      <properties widgetMode="view">
+        <property name="category">INFO_VIEW_PANEL_LEFT</property>
+      </properties>
+      <controls mode="any">
+        <control name="requireSurroundingForm">false</control>
+      </controls>
+    </widget>
+
+    <widget name="infoViewPanelRight" type="documentActions">
+      <properties widgetMode="view">
+        <property name="category">INFO_VIEW_PANEL_RIGHT</property>
+      </properties>
+      <controls mode="any">
+        <control name="requireSurroundingForm">false</control>
+      </controls>
+    </widget>
+
+    <widget name="infoViewPreview" type="documentPreview">
+      <properties widgetMode="view">
+        <property name="width">100%</property>
+        <property name="height">600px</property>
+      </properties>
+    </widget>
+
+    <widget name="infoViewInfoLayout" type="documentLayout">
+      <properties widgetMode="view">
+        <property name="mode">view</property>
+        <property name="documentMode">info</property>
+        <property name="defaultLayout">defaultInfoLayout@view</property>
+      </properties>
+    </widget>
+
+    <widget name="infoViewActions" type="documentActions">
+      <properties widgetMode="view">
+        <property name="category">INFO_VIEW_ACTIONS</property>
+      </properties>
+      <controls mode="any">
+        <control name="requireSurroundingForm">false</control>
+      </controls>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="infoViewPreview" type="widget" order="100">
+      <category>INFO_VIEW_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">infoViewPreview</property>
+      </properties>
+      <filter-id>denyInfoViewPreview</filter-id>
+    </action>
+
+    <action id="infoViewInfoLayout" type="widget" order="100">
+      <category>INFO_VIEW_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">infoViewInfoLayout</property>
+      </properties>
+    </action>
+
+    <action id="infoViewActions" type="widget" order="200">
+      <category>INFO_VIEW_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">infoViewActions</property>
+      </properties>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="gridInfoViewLayout">
+      <templates>
+        <template mode="any">
+          /layouts/layout_grid_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_gridStyleClass_0">gridStyle8</property>
+            <property name="nxl_gridStyleClass_1">gridStyle4 compactLayout</property>
+          </properties>
+          <widget>infoViewPanelLeft</widget>
+          <widget>infoViewPanelRight</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="defaultInfoLayout@view">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>title</widget>
+        </row>
+        <row>
+          <widget>subjects</widget>
+        </row>
+        <row>
+          <widget>coverage</widget>
+        </row>
+        <row>
+          <widget>source</widget>
+        </row>
+        <row>
+          <widget>comments</widget>
+        </row>
+      </rows>
+      <widget name="title" type="title">
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+        </controls>
+      </widget>
+      <widget name="comments" type="summary_current_document_comments">
+      </widget>
+    </layout>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="denyInfoViewPreview" append="true">
+    </filter>
+
+  </extension>
+
+</component>

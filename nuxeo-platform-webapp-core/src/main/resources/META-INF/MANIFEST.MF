@@ -21,7 +21,8 @@ Nuxeo-Component: OSGI-INF/theme-contrib.xml,
   OSGI-INF/directory-ui-contrib.xml,
   OSGI-INF/chains-contrib.xml,
   OSGI-INF/pageproviders-webapp-contrib.xml,
-  OSGI-INF/import-actions-contrib.xml
+  OSGI-INF/import-actions-contrib.xml,
+  OSGI-INF/info-view-layouts-contrib.xml
 Require-Bundle: org.nuxeo.ecm.platform.types.api,
  org.nuxeo.ecm.platform.versioning.api,
  org.nuxeo.ecm.platform.ui,
