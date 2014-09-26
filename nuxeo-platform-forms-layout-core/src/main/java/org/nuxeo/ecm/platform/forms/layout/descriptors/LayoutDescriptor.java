@@ -47,6 +47,12 @@ public class LayoutDescriptor {
     @XNode("@name")
     String name;
 
+    /**
+     * @since 5.9.6
+     */
+    @XNode("@type")
+    String type;
+
     @XNodeMap(value = "templates/template", key = "@mode", type = HashMap.class, componentType = String.class)
     Map<String, String> templates = new HashMap<String, String>();
 

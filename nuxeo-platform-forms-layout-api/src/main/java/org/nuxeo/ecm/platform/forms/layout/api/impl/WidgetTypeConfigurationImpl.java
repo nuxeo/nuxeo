@@ -67,6 +67,8 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
 
     protected Map<String, Map<String, Serializable>> defaultPropertyValues;
 
+    protected Map<String, Map<String, Serializable>> defaultControlValues;
+
     protected Map<String, List<LayoutDefinition>> fieldLayouts;
 
     @SuppressWarnings({ "unchecked" })
@@ -403,6 +405,40 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
     public void setDefaultPropertyValues(
             Map<String, Map<String, Serializable>> values) {
         this.defaultPropertyValues = values;
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public Map<String, Map<String, Serializable>> getDefaultControlValues() {
+        return defaultControlValues;
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public Map<String, Serializable> getDefaultControlValues(String mode) {
+        if (defaultControlValues != null) {
+            Map<String, Serializable> res = new HashMap<String, Serializable>();
+            Map<String, Serializable> anyProps = defaultControlValues.get(BuiltinModes.ANY);
+            if (anyProps != null) {
+                res.putAll(anyProps);
+            }
+            Map<String, Serializable> modeProps = defaultControlValues.get(mode);
+            if (modeProps != null) {
+                res.putAll(modeProps);
+            }
+            return res;
+        }
+        return null;
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public void setDefaultControlValues(
+            Map<String, Map<String, Serializable>> values) {
+        this.defaultControlValues = values;
     }
 
     @Override

@@ -148,6 +148,16 @@ public interface WidgetTypeConfiguration extends Serializable {
     Map<String, Serializable> getDefaultPropertyValues(String mode);
 
     /**
+     * @since 5.9.6
+     */
+    Map<String, Map<String, Serializable>> getDefaultControlValues();
+
+    /**
+     * @since 5.9.6
+     */
+    Map<String, Serializable> getDefaultControlValues(String mode);
+
+    /**
      * Returns the list of supported controls, e.g. controls that are checked
      * on sub-widgets definitions.
      *

@@ -290,6 +290,13 @@ public class WidgetImpl implements Widget {
         controls.put(name, value);
     }
 
+    /**
+     * @since 5.9.6
+     */
+    public void setControls(Map<String, Serializable> controls) {
+        this.controls = controls;
+    }
+
     public boolean isRequired() {
         return required;
     }

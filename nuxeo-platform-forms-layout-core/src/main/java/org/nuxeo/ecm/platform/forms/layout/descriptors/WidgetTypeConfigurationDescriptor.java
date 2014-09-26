@@ -84,7 +84,8 @@ public class WidgetTypeConfigurationDescriptor {
     boolean handlingLabels = false;
 
     /**
-     * List of supported controls (controls checkd on subwidgets configuration).
+     * List of supported controls (controls checked on subwidgets
+     * configuration).
      *
      * @since 5.9.1
      */
@@ -128,6 +129,12 @@ public class WidgetTypeConfigurationDescriptor {
      */
     @XNodeMap(value = "properties/defaultValues", key = "@mode", type = HashMap.class, componentType = PropertiesDescriptor.class)
     Map<String, PropertiesDescriptor> defaultPropertyValues;
+
+    /**
+     * @since 5.7.3
+     */
+    @XNodeMap(value = "controls/defaultValues", key = "@mode", type = HashMap.class, componentType = ControlsDescriptor.class)
+    Map<String, ControlsDescriptor> defaultControlValues;
 
     Map<String, Serializable> properties;
 
@@ -294,6 +301,17 @@ public class WidgetTypeConfigurationDescriptor {
         return null;
     }
 
+    public Map<String, Map<String, Serializable>> getDefaultControlValues() {
+        if (defaultControlValues != null) {
+            Map<String, Map<String, Serializable>> res = new HashMap<String, Map<String, Serializable>>();
+            for (Map.Entry<String, ControlsDescriptor> entry : defaultControlValues.entrySet()) {
+                res.put(entry.getKey(), entry.getValue().getControls());
+            }
+            return res;
+        }
+        return null;
+    }
+
     public String getSinceVersion() {
         return sinceVersion;
     }
@@ -330,6 +348,7 @@ public class WidgetTypeConfigurationDescriptor {
         res.setCategories(getCategories());
         res.setPropertyLayouts(getPropertyLayouts());
         res.setDefaultPropertyValues(getDefaultPropertyValues());
+        res.setDefaultControlValues(getDefaultControlValues());
         res.setFieldLayouts(getFieldLayouts());
         res.setSupportedControls(getSupportedControls());
         return res;
