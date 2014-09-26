@@ -19,9 +19,14 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -72,7 +77,7 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
         try {
             computeNodes();
             computeTransitions();
-            // TODO compute loop transitions on the graph
+            computeLoopTransitions();
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -106,6 +111,79 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
             for (Transition t : tt) {
                 GraphNode target = getNode(t.target);
                 target.initAddInputTransition(t);
+            }
+        }
+    }
+
+    /**
+     * Finds which transitions are re-looping (feedback arc set).
+     */
+    protected void computeLoopTransitions() {
+        /*
+         * Depth-first search. In the todo stack, each element records a list
+         * of the siblings left to visit at that depth. After visiting the last
+         * sibling, we go back to the parent and at this point mark it as
+         * visited in post-traversal order.
+         */
+        List<String> postOrder = new LinkedList<String>();
+        Deque<Deque<String>> stack = new LinkedList<Deque<String>>();
+        Deque<String> first = new LinkedList<String>();
+        first.add(getStartNode().getId());
+        stack.push(first);
+        Set<String> done = new HashSet<String>();
+        for (;;) {
+            // find next sibling
+            String nodeId = stack.peek().peek();
+            if (nodeId == null) {
+                // last sibling done
+                // go back up one level and mark post-traversal order
+                stack.pop(); // pop empty children
+                if (stack.isEmpty()) {
+                    // we are done
+                    break;
+                }
+                nodeId = stack.peek().pop(); // pop parent
+                postOrder.add(nodeId); // mark post-traversal order
+            } else if (done.add(nodeId)) {
+                // traverse the next sibling
+                Deque<String> children = new LinkedList<String>();
+                for (Transition t : getNode(nodeId).getOutputTransitions()) {
+                    children.add(t.target);
+                }
+                // add children to stack and recurse
+                stack.push(children);
+            } else {
+                // already traversed
+                stack.peek().pop(); // skip it
+            }
+        }
+
+        // reverse the post-order to find the topological ordering
+        Collections.reverse(postOrder);
+        Map<String, Integer> ordering = new HashMap<String, Integer>();
+        int i = 1;
+        for (String nodeId : postOrder) {
+            ordering.put(nodeId, Integer.valueOf(i++));
+        }
+
+        // walk the graph and all transitions again
+        // and mark as looping the transitions pointing to a node
+        // with a smaller order that the source
+        done.clear();
+        Deque<String> todo = new LinkedList<String>();
+        todo.add(getStartNode().getId());
+        while (!todo.isEmpty()) {
+            String nodeId = todo.pop();
+            if (done.add(nodeId)) {
+                int source = ordering.get(nodeId).intValue();
+                for (Transition t : getNode(nodeId).getOutputTransitions()) {
+                    todo.push(t.target);
+                    // compare orders to detected feeback arcs
+                    int target = ordering.get(t.target).intValue();
+                    if (target <= source) {
+                        t.loop = true;
+                    }
+                }
             }
         }
     }

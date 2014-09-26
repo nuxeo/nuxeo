@@ -758,6 +758,103 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    public void testTwoForkMergeWithLoopTransition() throws Exception {
+        DocumentModel fork1 = createNode(routeDoc, "fork1", session);
+        fork1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(fork1, transition("trans1", "fork2"),
+                transition("trans2", "task3"));
+        fork1 = session.saveDocument(fork1);
+
+        DocumentModel fork2 = createNode(routeDoc, "fork2", session);
+        fork2.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(fork2, transition("trans3", "task1"),
+                transition("trans4", "task2"));
+        fork2 = session.saveDocument(fork2);
+
+        DocumentModel task1 = createNode(routeDoc, "task1", session);
+        task1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        setTransitions(task1, transition("trans5", "merge1"));
+        task1 = session.saveDocument(task1);
+
+        DocumentModel task2 = createNode(routeDoc, "task2", session);
+        task2.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        setTransitions(task2, transition("trans6", "merge1"));
+        task2 = session.saveDocument(task2);
+
+        DocumentModel task3 = createNode(routeDoc, "task3", session);
+        task3.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        setTransitions(task3, transition("trans7", "merge2"));
+        task3 = session.saveDocument(task3);
+
+        DocumentModel merge1 = createNode(routeDoc, "merge1", session);
+        merge1.setPropertyValue(GraphNode.PROP_MERGE, "all");
+        setTransitions(merge1, transition("transloop", "merge2"));
+        merge1 = session.saveDocument(merge1);
+
+        DocumentModel merge2 = createNode(routeDoc, "merge2", session);
+        merge2.setPropertyValue(GraphNode.PROP_MERGE, "all");
+        setTransitions(merge2, transition("transloop", "fork1", "false"),
+                transition("trans8", "stop"));
+        merge2 = session.saveDocument(merge2);
+
+        DocumentModel stop = createNode(routeDoc, "stop", session);
+        stop.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        stop = session.saveDocument(stop);
+
+        DocumentRoute route = instantiateAndRun(session);
+        GraphRoute graph = (GraphRoute) route;
+
+        // check that we found only one loop transition
+        assertFalse(graph.getNode("fork1").getOutputTransitions().get(0).loop);
+        assertFalse(graph.getNode("fork1").getOutputTransitions().get(1).loop);
+        assertFalse(graph.getNode("fork2").getOutputTransitions().get(0).loop);
+        assertFalse(graph.getNode("fork2").getOutputTransitions().get(1).loop);
+        assertFalse(graph.getNode("task1").getOutputTransitions().get(0).loop);
+        assertFalse(graph.getNode("task2").getOutputTransitions().get(0).loop);
+        assertFalse(graph.getNode("task3").getOutputTransitions().get(0).loop);
+        assertFalse(graph.getNode("merge1").getOutputTransitions().get(0).loop);
+        assertTrue(graph.getNode("merge2").getOutputTransitions().get(0).loop);
+        assertFalse(graph.getNode("merge2").getOutputTransitions().get(1).loop);
+
+        assertEquals(State.SUSPENDED, graph.getNode("task1").getState());
+        assertEquals(State.SUSPENDED, graph.getNode("task2").getState());
+        assertEquals(State.SUSPENDED, graph.getNode("task3").getState());
+
+        routing.resumeInstance(route.getDocument().getId(), "task1", null,
+                null, session);
+
+        // refresh state
+        graph = (GraphRoute) session.getDocument(route.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
+        assertEquals(State.READY, graph.getNode("task1").getState());
+        assertEquals(State.SUSPENDED, graph.getNode("task2").getState());
+        assertEquals(State.SUSPENDED, graph.getNode("task3").getState());
+
+        routing.resumeInstance(route.getDocument().getId(), "task2", null,
+                null, session);
+
+        // refresh state
+        graph = (GraphRoute) session.getDocument(route.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
+        assertEquals(State.READY, graph.getNode("task1").getState());
+        assertEquals(State.READY, graph.getNode("task2").getState());
+        assertEquals(State.SUSPENDED, graph.getNode("task3").getState());
+
+        routing.resumeInstance(route.getDocument().getId(), "task3", null,
+                null, session);
+
+        // refresh state
+        graph = (GraphRoute) session.getDocument(route.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
+        assertEquals(State.READY, graph.getNode("task1").getState());
+        assertEquals(State.READY, graph.getNode("task2").getState());
+        assertEquals(State.READY, graph.getNode("task3").getState());
+
+        assertTrue(((DocumentRoute) graph).isDone());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
     @Ignore
     // see NXP-10538
     public void testForkWithLoopFromParallelToFork() throws Exception {
