@@ -294,7 +294,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
         // find parents of undeleted docs (for notification);
         Set<DocumentRef> parentRefs = new HashSet<DocumentRef>();
         for (DocumentRef docRef : undeleted) {
-            parentRefs.add(session.getParentDocument(docRef).getRef());
+            parentRefs.add(session.getParentDocumentRef(docRef));
         }
         // launch async action on folderish to undelete all children recursively
         for (DocumentModel doc : docs) {
@@ -349,12 +349,24 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
     protected void undeleteAncestors(CoreSession session, DocumentRef docRef,
             Set<DocumentRef> undeleted) throws ClientException {
         for (DocumentRef ancestorRef : session.getParentDocumentRefs(docRef)) {
-            if (session.getAllowedStateTransitions(ancestorRef).contains(
-                    LifeCycleConstants.UNDELETE_TRANSITION)) {
-                DocumentModel ancestor = session.getDocument(ancestorRef);
-                undeleteDocument(session, ancestor);
-                undeleted.add(ancestorRef);
+            // getting allowed state transitions and following a transition need
+            // ReadLifeCycle and WriteLifeCycle
+            if (session.hasPermission(ancestorRef,
+                    SecurityConstants.READ_LIFE_CYCLE)
+                    && session.hasPermission(ancestorRef,
+                            SecurityConstants.WRITE_LIFE_CYCLE)) {
+                if (session.getAllowedStateTransitions(ancestorRef).contains(
+                        LifeCycleConstants.UNDELETE_TRANSITION)) {
+                    DocumentModel ancestor = session.getDocument(ancestorRef);
+                    undeleteDocument(session, ancestor);
+                    undeleted.add(ancestorRef);
+                } else {
+                    break;
+                }
             } else {
+                // stop if lifecycle properties can't be read on an ancestor
+                log.debug("Stopping to restore ancestors because "
+                        + ancestorRef.toString() + " is not readable");
                 break;
             }
         }
