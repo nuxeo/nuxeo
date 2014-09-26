@@ -376,6 +376,9 @@
         <field>file:filename</field>
       </fields>
     </widget>
+
+    <widget name="infoViewVideoPlayer" type="video_player" />
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -417,6 +420,14 @@
       <filter-id>hasVideo</filter-id>
     </action>
 
+    <action id="infoViewVideoPlayer" type="widget" order="100">
+      <category>INFO_VIEW_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">infoViewVideoPlayer</property>
+      </properties>
+      <filter-id>hasVideo</filter-id>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -424,13 +435,19 @@
 
     <filter id="hasVideo">
       <rule grant="true">
-        <schema>video</schema>
+        <facet>Video</facet>
       </rule>
     </filter>
 
     <filter id="notHasVideo">
       <rule grant="false">
-        <schema>video</schema>
+        <facet>Video</facet>
+      </rule>
+    </filter>
+
+    <filter id="denyInfoViewPreview" append="true">
+      <rule grant="false">
+        <facet>Video</facet>
       </rule>
     </filter>
 
