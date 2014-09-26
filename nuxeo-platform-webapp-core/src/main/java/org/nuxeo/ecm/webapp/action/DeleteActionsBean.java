@@ -55,6 +55,7 @@ import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.trash.TrashInfo;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.actions.Action;
@@ -293,10 +294,13 @@ public class DeleteActionsBean extends InputController implements
             Events.instance().raiseEvent(DOCUMENT_CHILDREN_CHANGED);
         } else {
             for (DocumentRef parentRef : parentRefs) {
-                DocumentModel parent = documentManager.getDocument(parentRef);
-                if (parent != null) {
-                    Events.instance().raiseEvent(DOCUMENT_CHILDREN_CHANGED,
-                            parent);
+                if (documentManager.hasPermission(parentRef,
+                        SecurityConstants.READ)) {
+                    DocumentModel parent = documentManager.getDocument(parentRef);
+                    if (parent != null) {
+                        Events.instance().raiseEvent(DOCUMENT_CHILDREN_CHANGED,
+                                parent);
+                    }
                 }
             }
         }
