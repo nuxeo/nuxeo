@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.query.core;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +42,10 @@ public class AggregateDescriptor implements AggregateDefinition {
 
     @XNode(value = "properties")
     protected PropertiesDescriptor aggregateProperties = new PropertiesDescriptor();
+
+    protected Map<String, Integer> aggregateDateRangeDefinitionOrderMap;
+
+    private Map<String, Integer> aggregateRangeDefinitionOrderMap;
 
     @XNodeList(value = "ranges/range", type = ArrayList.class, componentType = AggregateRangeDescriptor.class)
     protected List<AggregateRangeDescriptor> aggregateRanges;
@@ -81,6 +86,32 @@ public class AggregateDescriptor implements AggregateDefinition {
             clone.aggregateDateRanges.addAll(aggregateDateRanges);
         }
         return clone;
+    }
+
+    @Override
+    public Map<String, Integer> getAggregateDateRangeDefinitionOrderMap() {
+        if (aggregateDateRangeDefinitionOrderMap == null) {
+            aggregateDateRangeDefinitionOrderMap = new HashMap<String, Integer>(
+                    getDateRanges().size());
+            for (int i = 0; i < getDateRanges().size(); i++) {
+                aggregateDateRangeDefinitionOrderMap.put(
+                        getDateRanges().get(i).getKey(), i);
+            }
+        }
+        return aggregateDateRangeDefinitionOrderMap;
+    }
+
+    @Override
+    public Map<String, Integer> getAggregateRangeDefinitionOrderMap() {
+        if (aggregateRangeDefinitionOrderMap == null) {
+            aggregateRangeDefinitionOrderMap = new HashMap<String, Integer>(
+                    getRanges().size());
+            for (int i = 0; i < getRanges().size(); i++) {
+                aggregateRangeDefinitionOrderMap.put(
+                        getRanges().get(i).getKey(), i);
+            }
+        }
+        return aggregateRangeDefinitionOrderMap;
     }
 
     @Override
@@ -125,6 +156,7 @@ public class AggregateDescriptor implements AggregateDefinition {
     @SuppressWarnings("unchecked")
     public void setDateRanges(List<AggregateRangeDateDefinition> ranges) {
         aggregateDateRanges = (List<AggregateRangeDateDescriptor>) (List<?>) ranges;
+        this.aggregateDateRangeDefinitionOrderMap = null;
     }
 
     @Override
@@ -146,6 +178,7 @@ public class AggregateDescriptor implements AggregateDefinition {
     @SuppressWarnings("unchecked")
     public void setRanges(List<AggregateRangeDefinition> ranges) {
         aggregateRanges = (List<AggregateRangeDescriptor>) (List<?>) ranges;
+        this.aggregateRangeDefinitionOrderMap = null;
     }
 
     @Override

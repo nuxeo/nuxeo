@@ -62,4 +62,16 @@ public interface AggregateDefinition {
 
     AggregateDefinition clone();
 
+    /**
+     * @return a map associating the key of the date range to its position in
+     *         the definition.
+     */
+    Map<String, Integer> getAggregateDateRangeDefinitionOrderMap();
+
+    /**
+     * @return a map associating the key of the range to its position in the
+     *         definition.
+     */
+    Map<String, Integer> getAggregateRangeDefinitionOrderMap();
+
 }
