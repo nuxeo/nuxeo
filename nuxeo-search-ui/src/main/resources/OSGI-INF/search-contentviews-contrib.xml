@@ -273,10 +273,63 @@
             <field>defaults:dc_created_min</field>
             <field>defaults:dc_created_max</field>
           </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'hidden' : 'edit'}</mode>
+          </widgetModes>
           <properties widgetMode="edit">
             <property name="styleClass">dataInputTextDate</property>
             <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
           </properties>
+        </widget>
+        <widget name="dc_created_agg" type="selectManyCheckboxDateHistogramAggregate">
+          <labels>
+            <label mode="any">label.aggregate.created.in</label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>defaults:dc_created_agg</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
+          </widgetModes>
+          <properties widgetMode="any">
+            <property name="selectOptions">#{aggregates['dc_created_agg'].buckets}</property>
+          </properties>
+          <!-- selectOptions>
+            <option itemLabel="#{messages['label.aggregate.size.tiny']}" itemValue="tiny"  />
+            <option itemLabel="#{messages['label.aggregate.size.small']}" itemValue="small"  />
+            <option itemLabel="#{messages['label.aggregate.size.medium']}" itemValue="medium" />
+            <option itemLabel="#{messages['label.aggregate.size.big']}" itemValue="big" />
+            <option itemLabel="#{messages['label.aggregate.size.huge']}" itemValue="huge" />
+          </selectOptions-->
+          <controls mode="any">
+            <control name="supportInsideInputWidgetEffects">true</control>
+          </controls>
+        </widget>
+        <widget name="dc_modified_agg" type="selectManyCheckboxDateRangeAggregate">
+          <labels>
+            <label mode="any">label.aggregate.modified</label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>defaults:dc_modified_agg</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
+          </widgetModes>
+          <properties widgetMode="any">
+            <property name="selectOptions">#{aggregates['dc_modified_agg'].buckets}</property>
+          </properties>
+          <!-- selectOptions>
+            <option itemLabel="#{messages['label.aggregate.modified.last24H']}" itemValue="last24H"  />
+            <option itemLabel="#{messages['label.aggregate.modified.lastWeek']}" itemValue="lastWeek"  />
+            <option itemLabel="#{messages['label.aggregate.modified.lastMonth']}" itemValue="lastMonth" />
+            <option itemLabel="#{messages['label.aggregate.modified.lastYear']}" itemValue="lastYear" />
+            <option itemLabel="#{messages['label.aggregate.modified.priorToLastYear']}" itemValue="priorToLastYear" />
+          </selectOptions-->
+          <controls mode="any">
+            <control name="supportInsideInputWidgetEffects">true</control>
+          </controls>
         </widget>
       </subWidgets>
     </widget>
@@ -295,11 +348,31 @@
           <fields>
             <field>defaults:dc_creator</field>
           </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'hidden' : 'edit'}</mode>
+          </widgetModes>
           <properties widgetMode="edit">
             <property name="searchType">USER_TYPE</property>
             <property name="minChars">3</property>
             <property name="hideHelpLabel">true</property>
           </properties>
+        </widget>
+        <widget name="dc_creator_agg" type="selectManyListboxUserAggregate">
+          <labels>
+            <label mode="any">label.dublincore.creator</label>
+          </labels>
+          <fields>
+            <field>defaults:dc_creator_agg</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
+          </widgetModes>
+          <properties widgetMode="edit">
+            <property name="selectOptions">#{aggregates['dc_creator_agg'].buckets}</property>
+          </properties>
+          <controls mode="any">
+            <control name="supportInsideInputWidgetEffects">true</control>
+          </controls>
         </widget>
       </subWidgets>
     </widget>
@@ -345,6 +418,9 @@
           <fields>
             <field>defaults:dc_subjects</field>
           </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'hidden' : 'edit'}</mode>
+          </widgetModes>
           <properties widgetMode="any">
             <property name="directoryName">l10nsubjects</property>
             <property name="dbl10n">true</property>
@@ -362,6 +438,9 @@
           <fields>
             <field>defaults:dc_coverage</field>
           </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'hidden' : 'edit'}</mode>
+          </widgetModes>
           <properties widgetMode="any">
             <property name="directoryName">l10ncoverage</property>
             <property name="dbl10n">true</property>
@@ -370,6 +449,71 @@
             <property name="filterParent">true</property>
             <property name="canSelectParent">true</property>
           </properties>
+        </widget>
+        <widget name="dc_subjects_agg" type="selectManyCheckboxDirectoryAggregate">
+          <labels>
+            <label mode="any">label.dublincore.subject</label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>defaults:dc_subjects_agg</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
+          </widgetModes>
+          <properties widgetMode="any">
+            <property name="directoryName">l10nsubjects</property>
+            <property name="selectOptions">#{aggregates['dc_subjects_agg'].buckets}</property>
+            <property name="dbl10n">true</property>
+            <property name="localize">true</property>
+          </properties>
+          <controls mode="any">
+            <control name="supportInsideInputWidgetEffects">true</control>
+          </controls>
+        </widget>
+        <widget name="dc_coverage_agg" type="selectManyCheckboxDirectoryAggregate">
+          <labels>
+            <label mode="any">label.dublincore.coverage</label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>defaults:dc_coverage_agg</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
+          </widgetModes>
+          <properties widgetMode="any">
+            <property name="directoryName">l10ncoverage</property>
+            <property name="selectOptions">#{aggregates['dc_coverage_agg'].buckets}</property>
+            <property name="dbl10n">true</property>
+            <property name="localize">true</property>
+          </properties>
+          <controls mode="any">
+            <control name="supportInsideInputWidgetEffects">true</control>
+          </controls>
+        </widget>
+        <widget name="common_size_agg" type="selectManyCheckboxRangeAggregate">
+          <labels>
+            <label mode="any">label.common.size</label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>defaults:common_size_agg</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
+          </widgetModes>
+          <properties widgetMode="any">
+            <property name="selectOptions">#{aggregates['common_size_agg'].buckets}</property>
+          </properties>
+          <!-- selectOptions>
+            <option itemLabel="#{messages['label.aggregate.size.small']}" itemValue="small"  />
+            <option itemLabel="#{messages['label.aggregate.size.medium']}" itemValue="medium" />
+            <option itemLabel="#{messages['label.aggregate.size.big']}" itemValue="big" />
+          </selectOptions-->
+          <controls mode="any">
+            <control name="supportInsideInputWidgetEffects">true</control>
+          </controls>
         </widget>
       </subWidgets>
     </widget>
