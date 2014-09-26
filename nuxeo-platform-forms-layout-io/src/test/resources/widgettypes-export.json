@@ -223,6 +223,7 @@
           }
         ]
       }]
-    }}
+    }},
+    "defaultControlValues": {"any": {"handlingLabels": "false"}}
   }
 }}

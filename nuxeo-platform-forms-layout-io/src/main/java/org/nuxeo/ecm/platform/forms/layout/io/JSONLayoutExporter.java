@@ -283,6 +283,13 @@ public class JSONLayoutExporter {
         if (!props.isEmpty()) {
             json.element("properties", props);
         }
+
+        Map<String, Map<String, Serializable>> defaultControlValues = conf.getDefaultControlValues();
+        if (defaultControlValues != null && !defaultControlValues.isEmpty()) {
+            json.element("defaultControlValues",
+                    exportPropsByModeToJson(defaultControlValues));
+        }
+
         return json;
     }
 
@@ -382,7 +389,6 @@ public class JSONLayoutExporter {
 
         JSONObject props = conf.optJSONObject("properties");
         Map<String, List<LayoutDefinition>> confLayouts = new HashMap<String, List<LayoutDefinition>>();
-        Map<String, Map<String, Serializable>> confDefaultProps = new HashMap<String, Map<String, Serializable>>();
         if (props != null && !props.isNullObject()) {
             JSONObject layouts = props.optJSONObject("layouts");
             if (layouts != null && !layouts.isNullObject()) {
@@ -405,6 +411,10 @@ public class JSONLayoutExporter {
         JSONObject defaultPropertyValues = conf.optJSONObject("defaultPropertyValues");
         Map<String, Map<String, Serializable>> confDefaultProps = importPropsByMode(defaultPropertyValues);
         res.setDefaultPropertyValues(confDefaultProps);
+
+        JSONObject defaultControlValues = conf.optJSONObject("defaultControlValues");
+        Map<String, Map<String, Serializable>> confDefaultControls = importPropsByMode(defaultControlValues);
+        res.setDefaultControlValues(confDefaultControls);
 
         return res;
     }

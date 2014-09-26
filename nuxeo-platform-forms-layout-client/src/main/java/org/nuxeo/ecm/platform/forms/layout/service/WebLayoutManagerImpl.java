@@ -350,8 +350,9 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
 
         String wType = wDef.getType();
         String wTypeCat = wDef.getTypeCategory();
-        // fill default property values from the widget definition
+        // fill default property and control values from the widget definition
         Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> controls = new HashMap<String, Serializable>();
         WidgetTypeDefinition def = getLayoutStore().getWidgetTypeDefinition(
                 getStoreCategory(wTypeCat), wType);
 
@@ -362,9 +363,14 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             if (defaultProps != null && !defaultProps.isEmpty()) {
                 props.putAll(defaultProps);
             }
+            Map<String, Serializable> defaultControls = conf.getDefaultControlValues(wMode);
+            if (defaultControls != null && !defaultControls.isEmpty()) {
+                controls.putAll(defaultControls);
+            }
         }
 
         props.putAll(wDef.getProperties(layoutMode, wMode));
+        controls.putAll(wDef.getControls(layoutMode, wMode));
 
         WidgetImpl widget = new WidgetImpl(layoutName, wDef.getName(), wMode,
                 wType, valueName, wDef.getFieldDefinitions(),
@@ -374,12 +380,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 wDef.getSelectOptions(),
                 LayoutFunctions.computeWidgetDefinitionId(wDef),
                 wDef.getRenderingInfos(layoutMode));
-        Map<String, Serializable> controls = wDef.getControls(layoutMode, wMode);
-        if (controls != null) {
-            for (Map.Entry<String, Serializable> control : controls.entrySet()) {
-                widget.setControl(control.getKey(), control.getValue());
-            }
-        }
+        widget.setControls(controls);
         widget.setTypeCategory(getStoreCategory(wTypeCat));
         return widget;
     }
@@ -602,8 +603,9 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
 
         String wType = wDef.getType();
         String wTypeCat = wDef.getTypeCategory();
-        // fill default property values from the widget definition
+        // fill default property and control values from the widget definition
         Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> controls = new HashMap<String, Serializable>();
         WidgetTypeDefinition def = getLayoutStore().getWidgetTypeDefinition(
                 getStoreCategory(wTypeCat), wType);
 
@@ -614,6 +616,10 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             Map<String, Serializable> defaultProps = conf.getDefaultPropertyValues(mode);
             if (defaultProps != null && !defaultProps.isEmpty()) {
                 props.putAll(defaultProps);
+            }
+            Map<String, Serializable> defaultControls = conf.getDefaultControlValues(mode);
+            if (defaultControls != null && !defaultControls.isEmpty()) {
+                controls.putAll(defaultControls);
             }
         }
         Map<String, Serializable> modeProps = wDef.getProperties(mode, mode);
@@ -633,11 +639,16 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 }
             }
         }
+        Map<String, Serializable> modeControls = wDef.getControls(mode, mode);
+        if (modeControls != null) {
+            controls.putAll(modeControls);
+        }
         WidgetImpl widget = new WidgetImpl("layout", wDef.getName(), mode,
                 wType, valueName, wDef.getFieldDefinitions(),
                 wDef.getLabel(mode), wDef.getHelpLabel(mode),
                 wDef.isTranslated(), props, required, subWidgets, 0, null,
                 LayoutFunctions.computeWidgetDefinitionId(wDef));
+        widget.setControls(controls);
         widget.setTypeCategory(wTypeCat);
         return widget;
     }

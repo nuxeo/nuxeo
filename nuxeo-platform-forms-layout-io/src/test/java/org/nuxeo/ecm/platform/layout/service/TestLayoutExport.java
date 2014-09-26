@@ -53,6 +53,7 @@ import org.nuxeo.ecm.platform.forms.layout.io.JSONLayoutExporter;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
  * @author Anahide Tchertchian
@@ -74,6 +75,14 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
+    @SuppressWarnings("deprecation")
+    protected void checkEquals(InputStream expected, InputStream actual)
+            throws Exception {
+        String expectedString = FileUtils.read(expected).replaceAll("\r?\n", "");
+        String actualString = FileUtils.read(actual).replaceAll("\r?\n", "");
+        JSONAssert.assertEquals(expectedString, actualString, true);
+    }
+
     @Test
     public void testWidgetTypeExport() throws Exception {
         WidgetTypeDefinition wTypeDef = service.getWidgetTypeDefinition(
@@ -88,9 +97,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         InputStream expected = new FileInputStream(
                 FileUtils.getResourcePathFromContext("widgettype-export.json"));
 
-        String expectedString = FileUtils.read(expected).replaceAll("\r?\n", "");
-        String writtenString = FileUtils.read(written).replaceAll("\r?\n", "");
-        assertEquals(expectedString, writtenString);
+        checkEquals(expected, written);
     }
 
     @Test
@@ -109,9 +116,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         InputStream expected = new FileInputStream(
                 FileUtils.getResourcePathFromContext("widgettypes-export.json"));
 
-        String expectedString = FileUtils.read(expected).replaceAll("\r?\n", "");
-        String writtenString = FileUtils.read(written).replaceAll("\r?\n", "");
-        assertEquals(expectedString, writtenString);
+        checkEquals(expected, written);
     }
 
     @Test

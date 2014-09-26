@@ -93,6 +93,11 @@
           <category>foo</category>
           <category>bar</category>
         </categories>
+        <controls>
+          <defaultValues mode="any">
+            <control name="handlingLabels">false</control>
+          </defaultValues>
+        </controls>
         <properties>
           <defaultValues mode="any">
             <property name="rendered">true</property>
