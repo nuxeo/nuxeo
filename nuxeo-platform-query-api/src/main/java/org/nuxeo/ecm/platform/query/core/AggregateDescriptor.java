@@ -36,17 +36,8 @@ import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 @XObject(value = "aggregate")
 public class AggregateDescriptor implements AggregateDefinition {
 
-    @XNode("@id")
-    protected String id;
-
-    @XNode("@type")
-    protected String type;
-
-    @XNode("@parameter")
-    protected String parameter;
-
-    @XNode("field")
-    protected FieldDescriptor field;
+    @XNodeList(value = "dateRanges/dateRange", type = ArrayList.class, componentType = AggregateRangeDateDescriptor.class)
+    protected List<AggregateRangeDateDescriptor> aggregateDateRanges;
 
     @XNode(value = "properties")
     protected PropertiesDescriptor aggregateProperties = new PropertiesDescriptor();
@@ -54,31 +45,59 @@ public class AggregateDescriptor implements AggregateDefinition {
     @XNodeList(value = "ranges/range", type = ArrayList.class, componentType = AggregateRangeDescriptor.class)
     protected List<AggregateRangeDescriptor> aggregateRanges;
 
-    @XNodeList(value = "dateRanges/dateRange", type = ArrayList.class, componentType = AggregateRangeDateDescriptor.class)
-    protected List<AggregateRangeDateDescriptor> aggregateDateRanges;
+    @XNode("field")
+    protected FieldDescriptor field;
+
+    @XNode("@id")
+    protected String id;
+
+    @XNode("@parameter")
+    protected String parameter;
+
+    @XNode("@type")
+    protected String type;
+
+    @Override
+    public AggregateDescriptor clone() {
+        AggregateDescriptor clone = new AggregateDescriptor();
+        clone.id = id;
+        clone.parameter = parameter;
+        clone.type = type;
+        if (field != null) {
+            clone.field = field.clone();
+        }
+        if (aggregateProperties != null) {
+            clone.aggregateProperties = new PropertiesDescriptor();
+            clone.aggregateProperties.properties.putAll(aggregateProperties.properties);
+        }
+        if (aggregateRanges != null) {
+            clone.aggregateRanges = new ArrayList<AggregateRangeDescriptor>(
+                    aggregateRanges.size());
+            clone.aggregateRanges.addAll(aggregateRanges);
+        }
+        if (aggregateDateRanges != null) {
+            clone.aggregateDateRanges = new ArrayList<AggregateRangeDateDescriptor>(
+                    aggregateDateRanges.size());
+            clone.aggregateDateRanges.addAll(aggregateDateRanges);
+        }
+        return clone;
+    }
+
+    @Override
+    public List<AggregateRangeDateDefinition> getDateRanges() {
+        @SuppressWarnings("unchecked")
+        List<AggregateRangeDateDefinition> ret = (List<AggregateRangeDateDefinition>) (List<?>) aggregateDateRanges;
+        return ret;
+    }
+
+    @Override
+    public String getDocumentField() {
+        return parameter;
+    }
 
     @Override
     public String getId() {
         return id;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    @Override
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    @Override
-    public void setProperty(String name, String value) {
-        aggregateProperties.properties.put(name, value);
     }
 
     @Override
@@ -94,16 +113,12 @@ public class AggregateDescriptor implements AggregateDefinition {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void setRanges(List<AggregateRangeDefinition> ranges) {
-        aggregateRanges = (List<AggregateRangeDescriptor>) (List<?>) ranges;
+    public PredicateFieldDefinition getSearchField() {
+        return field;
     }
 
-    @Override
-    public List<AggregateRangeDateDefinition> getDateRanges() {
-        @SuppressWarnings("unchecked")
-        List<AggregateRangeDateDefinition> ret = (List<AggregateRangeDateDefinition>) (List<?>) aggregateDateRanges;
-        return ret;
+    public String getType() {
+        return type;
     }
 
     @Override
@@ -113,18 +128,24 @@ public class AggregateDescriptor implements AggregateDefinition {
     }
 
     @Override
-    public String getDocumentField() {
-        return parameter;
-    }
-
-    @Override
     public void setDocumentField(String parameter) {
         this.parameter = parameter;
     }
 
     @Override
-    public PredicateFieldDefinition getSearchField() {
-        return field;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public void setProperty(String name, String value) {
+        aggregateProperties.properties.put(name, value);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void setRanges(List<AggregateRangeDefinition> ranges) {
+        aggregateRanges = (List<AggregateRangeDescriptor>) (List<?>) ranges;
     }
 
     @Override
@@ -133,27 +154,8 @@ public class AggregateDescriptor implements AggregateDefinition {
     }
 
     @Override
-    public AggregateDescriptor clone() {
-        AggregateDescriptor clone = new AggregateDescriptor();
-        clone.id = id;
-        clone.parameter = parameter;
-        clone.type = type;
-        if (field != null) {
-            clone.field = field.clone();
-        }
-        if (aggregateProperties != null) {
-            clone.aggregateProperties = new PropertiesDescriptor();
-            clone.aggregateProperties.properties
-                    .putAll(aggregateProperties.properties);
-        }
-        if (aggregateRanges != null) {
-            clone.aggregateRanges = new ArrayList<AggregateRangeDescriptor>(aggregateRanges.size());
-            clone.aggregateRanges.addAll(aggregateRanges);
-        }
-        if (aggregateDateRanges != null) {
-            clone.aggregateDateRanges = new ArrayList<AggregateRangeDateDescriptor>(aggregateDateRanges.size());
-            clone.aggregateDateRanges.addAll(aggregateDateRanges);
-        }
-        return clone;
+    public void setType(String type) {
+        this.type = type;
     }
+
 }
