@@ -80,18 +80,33 @@ import org.w3c.dom.Node;
 @XObject("datasource")
 public class DataSourceDescriptor {
 
-    protected String name;
+    /*
+     * It is not possible to expand the variables in the setters because in
+     * tests, values are not available in context. A clean up needs to be done
+     * to have the values during startup.
+     */
 
     @XNode("@name")
-    public void setName(String value) {
-        name = value;
+    protected String name;
+
+    public String getName() {
+        return Framework.expandVars(name);
     }
 
     @XNode("@xaDataSource")
     protected String xaDataSource;
 
+
+    public String getXaDataSource() {
+        return Framework.expandVars(xaDataSource);
+    }
+
     @XNode("@driverClassName")
     protected String driverClasssName;
+
+    public String getDriverClasssName() {
+        return Framework.expandVars(driverClasssName);
+    }
 
     @XNode("")
     public Element element;
@@ -103,45 +118,67 @@ public class DataSourceDescriptor {
 
     protected Reference xaReference;
 
-    public static class PoolFactory implements ObjectFactory {
+    public static class PoolFactory
+            implements ObjectFactory {
 
         @Override
-        public Object getObjectInstance(Object obj, Name name, Context nameCtx,
-                Hashtable<?, ?> env) throws Exception {
-            return Framework.getLocalService(PooledDataSourceRegistry.class).getOrCreatePool(
-                    obj, name, nameCtx, env);
+        public Object getObjectInstance(
+                Object obj, Name name,
+                Context nameCtx,
+                Hashtable<?, ?> env)
+                throws Exception {
+            return Framework.getLocalService(
+                    PooledDataSourceRegistry.class).getOrCreatePool(
+                    obj, name, nameCtx,
+                    env);
         }
 
     }
 
-    public void bindSelf(Context initialContext) throws NamingException {
+    public void bindSelf(
+            Context initialContext)
+            throws NamingException {
         if (xaDataSource != null) {
-            String xaName = DataSourceHelper.getDataSourceJNDIName(name+"-xa");
-            poolReference = new Reference(XADataSource.class.getName(),
-                    PoolFactory.class.getName(), null);
-            poolReference.add(new StringRefAddr("dataSourceJNDI", xaName));
-            xaReference = new Reference(xaDataSource,
-                    GenericNamingResourcesFactory.class.getName(), null);
+            String xaName = DataSourceHelper.getDataSourceJNDIName(getName()
+                    + "-xa");
+            poolReference = new Reference(
+                    XADataSource.class.getName(),
+                    PoolFactory.class.getName(),
+                    null);
+            poolReference.add(new StringRefAddr(
+                    "dataSourceJNDI",
+                    xaName));
+            xaReference = new Reference(
+                    Framework.expandVars(xaDataSource),
+                    GenericNamingResourcesFactory.class.getName(),
+                    null);
             for (Entry<String, String> e : properties.entrySet()) {
                 String key = e.getKey();
                 String value = Framework.expandVars(e.getValue());
-                StringRefAddr addr = new StringRefAddr(key, value);
+                StringRefAddr addr = new StringRefAddr(
+                        key, value);
                 xaReference.add(addr);
             }
-            initialContext.bind(DataSourceHelper.getDataSourceJNDIName(xaName),
+            initialContext.bind(
+                    DataSourceHelper.getDataSourceJNDIName(xaName),
                     xaReference);
         } else if (driverClasssName != null) {
-            poolReference = new Reference(DataSource.class.getName(),
-                    PoolFactory.class.getName(), null);
+            poolReference = new Reference(
+                    DataSource.class.getName(),
+                    PoolFactory.class.getName(),
+                    null);
         } else {
-            throw new RuntimeException("Datasource " + name
-                    + " should have xaDataSource or driverClassName attribute");
+            throw new RuntimeException(
+                    "Datasource "
+                            + getName()
+                            + " should have xaDataSource or driverClassName attribute");
         }
 
         for (Entry<String, String> e : properties.entrySet()) {
             String key = e.getKey();
             String value = Framework.expandVars(e.getValue());
-            StringRefAddr addr = new StringRefAddr(key, value);
+            StringRefAddr addr = new StringRefAddr(
+                    key, value);
             poolReference.add(addr);
         }
 
@@ -150,32 +187,38 @@ public class DataSourceDescriptor {
             Node attr = attrs.item(i);
             String attrName = attr.getNodeName();
             String value = Framework.expandVars(attr.getNodeValue());
-            StringRefAddr addr = new StringRefAddr(attrName, value);
+            StringRefAddr addr = new StringRefAddr(
+                    attrName, value);
             poolReference.add(addr);
         }
 
-        initialContext.bind(DataSourceHelper.getDataSourceJNDIName(name), poolReference);
+        initialContext.bind(
+                DataSourceHelper.getDataSourceJNDIName(getName()),
+                poolReference);
     }
 
-    public void unbindSelf(InitialContext initialContext)
+    public void unbindSelf(
+            InitialContext initialContext)
             throws NamingException {
         try {
             final PooledDataSourceRegistry registry = Framework.getLocalService(PooledDataSourceRegistry.class);
             if (registry != null) {
-                registry.clearPool(name);
+                registry.clearPool(getName());
             }
         } catch (Exception cause) {
             NamingException error = new NamingException(
-                    "Cannot clear pooled datasource " + name);
+                    "Cannot clear pooled datasource "
+                            + getName());
             error.initCause(cause);
             throw error;
         } finally {
             try {
                 if (xaReference != null) {
-                    initialContext.unbind(DataSourceHelper.getDataSourceJNDIName(name+"-xa"));
+                    initialContext.unbind(DataSourceHelper.getDataSourceJNDIName(getName()
+                            + "-xa"));
                 }
             } finally {
-                initialContext.unbind(DataSourceHelper.getDataSourceJNDIName(name));
+                initialContext.unbind(DataSourceHelper.getDataSourceJNDIName(getName()));
             }
         }
     }

@@ -126,7 +126,7 @@ public class DataSourceComponent extends DefaultComponent {
         }
         links.clear();
         for (DataSourceDescriptor desc : datasources.values()) {
-            log.warn(desc.name + " datasource still referenced");
+            log.warn(desc.getName() + " datasource still referenced");
             unbindDataSource(desc);
         }
         datasources.clear();
@@ -134,24 +134,24 @@ public class DataSourceComponent extends DefaultComponent {
     }
 
     protected void addDataSource(DataSourceDescriptor contrib) throws NamingException {
-        datasources.put(contrib.name, contrib);
+        datasources.put(contrib.getName(), contrib);
         bindDataSource(contrib);
     }
 
     protected void removeDataSource(DataSourceDescriptor contrib) throws NamingException {
         unbindDataSource(contrib);
-        datasources.remove(contrib.name);
+        datasources.remove(contrib.getName());
     }
 
     protected void bindDataSource(DataSourceDescriptor descr) {
         if (namingContext == null) {
             return;
         }
-        log.info("Registering datasource: " + descr.name);
+        log.info("Registering datasource: " + descr.getName());
         try {
             descr.bindSelf(namingContext);
         } catch (NamingException e) {
-            log.error("Cannot bind datasource '" + descr.name + "' in JNDI", e);
+            log.error("Cannot bind datasource '" + descr.getName() + "' in JNDI", e);
         }
     }
 
