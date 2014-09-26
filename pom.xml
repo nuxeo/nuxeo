@@ -66,7 +66,7 @@
 
   <issueManagement>
     <system>jira</system>
-    <url>http://jira.nuxeo.org/browse/NXP</url>
+    <url>http://jira.nuxeo.com/browse/NXP</url>
   </issueManagement>
 
   <ciManagement>
@@ -4859,7 +4859,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>sonar-maven-plugin</artifactId>
-          <version>2.2</version>
+          <version>2.4</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.sonar-plugins</groupId>
@@ -5639,7 +5639,7 @@
   <scm>
     <connection>scm:git:git://github.com/nuxeo/nuxeo.git</connection>
     <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo.git</developerConnection>
-    <url>https://github.com/nuxeo/nuxeo</url>
+    <url>http://nuxeo.github.io</url>
   </scm>
 
   <repositories>
