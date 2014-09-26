@@ -659,6 +659,10 @@ public class ClipboardActionsBean extends InputController implements
         }
 
         DocumentModel pasteTarget = getParent(navigationContext.getCurrentDocument());
+        if (pasteTarget == null) {
+            // parent may be unreachable (right inheritance blocked)
+            return false;
+        }
         if (!documentManager.hasPermission(pasteTarget.getRef(),
                 SecurityConstants.ADD_CHILDREN)) {
             return false;
