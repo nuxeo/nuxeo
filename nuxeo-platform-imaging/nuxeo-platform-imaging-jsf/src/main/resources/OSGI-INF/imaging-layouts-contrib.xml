@@ -118,6 +118,8 @@
 
     <widget name="summary_picture_view" type="picture_view" />
 
+    <widget name="infoViewPictureView" type="picture_view" />
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -135,6 +137,14 @@
       <filter-id>notHasPicture</filter-id>
     </action>
 
+    <action id="infoViewPictureView" type="widget" order="100">
+      <category>INFO_VIEW_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">infoViewPictureView</property>
+      </properties>
+      <filter-id>hasPicture</filter-id>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -148,6 +158,12 @@
 
     <filter id="hasPicture">
       <rule grant="true">
+        <facet>Picture</facet>
+      </rule>
+    </filter>
+
+    <filter id="denyInfoViewPreview" append="true">
+      <rule grant="false">
         <facet>Picture</facet>
       </rule>
     </filter>
