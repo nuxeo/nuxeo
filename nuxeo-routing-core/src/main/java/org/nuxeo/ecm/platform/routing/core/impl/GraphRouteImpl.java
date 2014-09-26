@@ -75,19 +75,20 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
 
     protected void compute() {
         try {
-            computeNodes();
+            String startNodeId = computeNodes();
             computeTransitions();
-            computeLoopTransitions();
+            computeLoopTransitions(startNodeId);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
 
-    protected void computeNodes() throws ClientException {
+    protected String computeNodes() throws ClientException {
         CoreSession session = document.getCoreSession();
         DocumentModelList children = session.getChildren(document.getRef());
         nodes = new ArrayList<GraphNode>(children.size());
         nodesById = new HashMap<String, GraphNode>();
+        String startNodeId = null;
         for (DocumentModel doc : children) {
             // TODO use adapters
             if (doc.getType().equals("RouteNode")) {
@@ -98,8 +99,17 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
                             "Duplicate nodes with id: " + id);
                 }
                 nodes.add(node);
+                if (node.isStart()) {
+                    if (startNodeId != null) {
+                        throw new DocumentRouteException(
+                                "Duplicate start nodes: " + startNodeId
+                                        + " and " + id);
+                    }
+                    startNodeId = id;
+                }
             }
         }
+        return startNodeId;
     }
 
     /**
@@ -118,7 +128,12 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
     /**
      * Finds which transitions are re-looping (feedback arc set).
      */
-    protected void computeLoopTransitions() {
+    protected void computeLoopTransitions(String startNodeId)
+            throws DocumentRouteException {
+        if (startNodeId == null) {
+            // incomplete graph
+            return;
+        }
         /*
          * Depth-first search. In the todo stack, each element records a list
          * of the siblings left to visit at that depth. After visiting the last
@@ -128,7 +143,7 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
         List<String> postOrder = new LinkedList<String>();
         Deque<Deque<String>> stack = new LinkedList<Deque<String>>();
         Deque<String> first = new LinkedList<String>();
-        first.add(getStartNode().getId());
+        first.add(startNodeId);
         stack.push(first);
         Set<String> done = new HashSet<String>();
         for (;;) {
@@ -171,7 +186,7 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
         // with a smaller order that the source
         done.clear();
         Deque<String> todo = new LinkedList<String>();
-        todo.add(getStartNode().getId());
+        todo.add(startNodeId);
         while (!todo.isEmpty()) {
             String nodeId = todo.pop();
             if (done.add(nodeId)) {
