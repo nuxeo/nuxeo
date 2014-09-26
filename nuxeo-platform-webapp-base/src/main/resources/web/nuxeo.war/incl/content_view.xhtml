@@ -80,6 +80,9 @@
 <nxu:set var="contentView"
   value="#{contentViewActions.getContentViewWithProvider(contentViewName, contentViewDocument, finalSortInfos, finalDefaultPageSize, -1, -1)}"
   cache="true">
+<nxu:set var="aggregates"
+  value="#{contentView.pageProvider.hasAggregateSupport() ? contentView.pageProvider.aggregates : null}"
+  cache="true">
 <nxu:set var="selectedResultLayoutColumns"
   value="#{nxu:test(selectedResultLayoutColumns == null, contentView.currentResultLayoutColumns, selectedResultLayoutColumns)}"
   cache="true">
@@ -303,6 +306,7 @@
 </nxu:set>
 </c:if>
 
+</nxu:set>
 </nxu:set>
 </nxu:set>
 </nxu:set>
