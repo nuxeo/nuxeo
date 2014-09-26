@@ -1,0 +1,32 @@
+<c:if xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  test="true">
+
+  <nxu:set var="mode"
+    value="#{widget.properties['mode']}"
+    resolveTwice="true" cache="true">
+  <nxu:set var="documentMode"
+    value="#{widget.properties['documentMode']}"
+    resolveTwice="true" cache="true">
+  <nxu:set var="defaultLayout"
+    value="#{widget.properties['defaultLayout']}"
+    resolveTwice="true" cache="true">
+  <nxu:set var="includeAnyMode"
+    value="#{widget.properties['includeAnyMode']}"
+    resolveTwice="true" cache="true">
+
+    <nxl:documentLayout mode="#{mode}"
+      documentMode="#{documentMode}"
+      value="#{fieldOrValue}"
+      template="#{widgetProperty_template}"
+      defaultLayout="#{defaultLayout}"
+      includeAnyMode="#{includeAnyMode}" />
+
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+
+</c:if>

@@ -1958,6 +1958,67 @@
       </property>
     </widgetType>
 
+    <widgetType name="title">
+      <configuration>
+        <sinceVersion>5.9.6</sinceVersion>
+        <title>Title</title>
+        <description>
+          This widgets displays the document title. If the
+          document is a version, the major and minor are displayed in
+          parenthesis.
+
+          One field is required:
+          <ul>
+            <li>an empty field to map the document</li>
+          </ul>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>standalone</category>
+        </categories>
+        <properties>
+          <layouts mode="any">
+            <layout name="title_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">localize</widget>
+                </row>
+              </rows>
+              <widget name="localize" type="checkbox">
+                <categories>
+                  <category>widgetTypeConf</category>
+                </categories>
+                <labels>
+                  <label mode="any">Localize</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Available since 5.7.1. Flag indicating that
+                    the title is localized.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>localize</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/title_widget.xhtml
+      </property>
+    </widgetType>
+
     <widgetType name="title_and_permlink">
       <configuration>
         <sinceVersion>5.4.2</sinceVersion>
@@ -3412,6 +3473,146 @@
       </handler-class>
       <property name="template">
         /widgets/toggleable_document_layout_with_forms_widget.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="documentLayout">
+      <configuration>
+        <sinceVersion>5.9.6</sinceVersion>
+        <title>Document Layouts</title>
+        <description>
+          This widget displays the document layouts of a document
+          for the given mode.
+        </description>
+        <categories>
+          <category>configuration_not_ready</category>
+          <!--
+            <category>tab_designer</category>
+          -->
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <containingForm>false</containingForm>
+        <handlingLabels>true</handlingLabels>
+        <supportedModes>
+          <mode>view</mode>
+          <mode>edit</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="documentLayoutView_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>mode</widget>
+                </row>
+                <row>
+                  <widget>documentMode</widget>
+                </row>
+                <row>
+                  <widget>template</widget>
+                </row>
+                <row>
+                  <widget>defaultLayout</widget>
+                </row>
+                <row>
+                  <widget>includeAnyMode</widget>
+                </row>
+              </rows>
+              <widget name="mode" type="text">
+                <labels>
+                  <label mode="any">Mode</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The layout mode to use.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>mode</field>
+                </fields>
+              </widget>
+              <widget name="documentMode" type="text">
+                <labels>
+                  <label mode="any">Document mode</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The document mode to use.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>documentMode</field>
+                </fields>
+              </widget>
+              <widget name="template" type="selectOneResource">
+                <labels>
+                  <label mode="any">Template</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The layout template to use instead of the
+                    one already set
+                    on the layout(s) definition(s).
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>template</field>
+                </fields>
+                <properties mode="any">
+                  <property name="resourceName">layout_templates</property>
+                </properties>
+              </widget>
+              <widget name="defaultLayout" type="selectOneResource">
+                <labels>
+                  <label mode="any">Default layout</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The default layout to use if no layout are defined
+                    for the given document mode.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>defaultLayout</field>
+                </fields>
+                <properties mode="any">
+                  <property name="resourceName">layouts</property>
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="includeAnyMode" type="text">
+                <labels>
+                  <label mode="any">Can toggle mode</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The boolean property to resolve when
+                    deciding whether the toggle button should be displayed or
+                    not. Defaults to an EL expression checking permission
+                    'Write' on the document. Examples: false,
+                    #{nxd:hasPermission(value, 'Write') and
+                    currentUser.isMemberOf('togglers_groups')}.
+                    Default
+                    expression used:
+                    #{webActions.checkFilter('canToggleLayoutToEditMode')}
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>includeAnyMode</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/document_layout_widget.xhtml
       </property>
     </widgetType>
 
