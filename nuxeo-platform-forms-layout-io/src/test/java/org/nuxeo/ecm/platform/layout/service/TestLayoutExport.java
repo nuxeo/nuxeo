@@ -223,6 +223,12 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertEquals(1, anyRowWidgets.length);
         assertEquals("required_property", anyRowWidgets[0]);
 
+        if (!isCompat) {
+            Map<String, Map<String, Serializable>> defaultProps = conf.getDefaultPropertyValues();
+            assertNotNull(defaultProps);
+            assertEquals(1, defaultProps.size());
+        }
+
         Map<String, List<LayoutDefinition>> fieldLayouts = conf.getFieldLayouts();
         assertNotNull(fieldLayouts);
         assertEquals(1, fieldLayouts.size());

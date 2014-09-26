@@ -63,7 +63,7 @@
       "foo",
       "bar"
     ],
-    "defaultValues": {"any": {"rendered": "true"}},
+    "defaultPropertyValues": {"any": {"rendered": "true"}},
     "properties": {"layouts":     {
       "any": [      {
         "rows": [{"widgets": [        {
