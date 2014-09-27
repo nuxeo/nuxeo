@@ -281,6 +281,12 @@
         <row>
           <widget>database_ajax_decorator</widget>
         </row>
+        <row>
+          <widget>chooseDirectoryType</widget>
+        </row>
+        <row>
+          <widget>ldap_ajax_decorator</widget>
+        </row>
       </rows>
       <widget name="url" type="text">
         <labels>
@@ -418,6 +424,41 @@
           <widget name="database" type="layout">
             <properties mode="any">
               <property name="name">admin_setup_database</property>
+            </properties>
+          </widget>
+        </subWidgets>
+      </widget>
+      <widget name="chooseDirectoryType" type="template">
+        <labels>
+          <label mode="any">label.setup.directory.type</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>#{setupWizardAction.directoryType}</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /incl/sysinfo/widgets/directory_chooser_widget_template.xhtml
+          </property>
+          <property name="reRender">ldap_ajaxPanel</property>
+          <property name="ajaxSingle">true</property>
+        </properties>
+      </widget>
+      <widget name="ldap_ajax_decorator" type="template">
+        <handlingLabels>true</handlingLabels>
+        <properties mode="any">
+          <property name="template">
+            /incl/sysinfo/widgets/database_ajax_panel.xhtml
+          </property>
+          <property name="ajaxPanelId">ldap_ajaxPanel</property>
+          <property name="rendered">
+            #{setupWizardAction.directoryType != 'default'}
+          </property>
+        </properties>
+        <subWidgets>
+          <widget name="directories" type="layout">
+            <properties mode="any">
+              <property name="name">admin_setup_directories</property>
             </properties>
           </widget>
         </subWidgets>
@@ -578,6 +619,572 @@
         <properties mode="any">
           <property name="template">
             /incl/sysinfo/widgets/database_check_parameters_template.xhtml
+          </property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="admin_setup_directories">
+      <templates>
+        <template mode="any">/incl/sysinfo/setup_layout_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="label">label.setup.table.title.directories</property>
+      </properties>
+      <rows>
+        <row>
+          <widget>ldapStorage</widget>
+          <widget>multiStorage</widget>
+        </row>
+        <row>
+          <widget>ldapUrl</widget>
+          <!-- <widget>checkNetwork</widget> -->
+        </row>
+        <row>
+          <widget>ldapBindDn</widget>
+        </row>
+        <row>
+          <widget>ldapBindPassword</widget>
+          <widget>checkAuth</widget>
+        </row>
+        <row>
+          <widget>userLdapSearchBaseDn</widget>
+        </row>
+        <row>
+          <widget>userLdapSearchClass</widget>
+        </row>
+        <row>
+          <widget>userLdapSearchFilter</widget>
+        </row>
+        <row>
+          <widget>userLdapSearchScope</widget>
+        </row>
+        <row>
+          <widget>userLdapReadonly</widget>
+        </row>
+        <row>
+          <widget>mappingUserRdn</widget>
+        </row>
+        <row>
+          <widget>mappingUsername</widget>
+        </row>
+        <row>
+          <widget>mappingPassword</widget>
+        </row>
+        <row>
+          <widget>mappingFirstname</widget>
+        </row>
+        <row>
+          <widget>mappingLastname</widget>
+        </row>
+        <row>
+          <widget>mappingEmail</widget>
+        </row>
+        <row>
+          <widget>mappingCompany</widget>
+        </row>
+        <row>
+          <widget>groupLdapSearchBaseDn</widget>
+        </row>
+        <row>
+          <widget>groupLdapSearchFilter</widget>
+        </row>
+        <row>
+          <widget>groupLdapSearchScope</widget>
+        </row>
+        <row>
+          <widget>groupLdapReadonly</widget>
+        </row>
+        <row>
+          <widget>mappingGroupRdn</widget>
+        </row>
+        <row>
+          <widget>mappingGroupname</widget>
+        </row>
+        <row>
+          <widget>mappingGrouplabel</widget>
+        </row>
+        <row>
+          <widget>mappingStaticMembers</widget>
+        </row>
+        <row>
+          <widget>mappingDynamicMembers</widget>
+        </row>
+        <row>
+          <widget>defaultAdministrator</widget>
+        </row>
+        <row>
+          <widget>defaultMembersGroup</widget>
+        </row>
+        <row>
+          <widget>anonymousUser</widget>
+        </row>
+        <row>
+          <widget>emergencyUser</widget>
+        </row>
+        <row>
+          <widget>emergencyUsername</widget>
+        </row>
+        <row>
+          <widget>emergencyPassword</widget>
+        </row>
+        <row>
+          <widget>emergencyFirstname</widget>
+        </row>
+        <row>
+          <widget>emergencyLastname</widget>
+        </row>
+      </rows>
+      <widget name="ldapStorage" type="selectOneMenu">
+        <labels>
+          <label mode="any">label.setup.nuxeo.users.storage</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.user.group.storage']</field>
+        </fields>
+        <selectOptions>
+          <option itemLabel="Default" itemValue="default" />
+          <option itemLabel="Only LDAP users" itemValue="userLdapOnly" />
+        </selectOptions>
+        <properties widgetMode="any">
+          <property name="size">0</property>
+          <property name="rendered">
+            #{setupWizardAction.directoryType == 'ldap'}
+          </property>
+        </properties>
+      </widget>
+      <widget name="multiStorage" type="selectOneMenu">
+        <labels>
+          <label mode="any">label.setup.nuxeo.users.storage</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.user.group.storage']</field>
+        </fields>
+        <selectOptions>
+          <option itemLabel="Multidirectory for users and groups" itemValue="multiUserGroup" />
+          <option itemLabel="Multidirectory for users and SQL groups" itemValue="multiUserSqlGroup" />
+          <option itemLabel="LDAP users and multidirectory for groups" itemValue="ldapUserMultiGroup" />
+        </selectOptions>
+        <properties widgetMode="any">
+          <property name="size">0</property>
+          <property name="rendered">
+            #{setupWizardAction.directoryType == 'multi'}
+          </property>
+        </properties>
+      </widget>
+      <widget name="ldapUrl" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.url</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.url']</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="ldapBindDn" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.binddn</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.binddn']</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="ldapBindPassword" type="secret">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.bindpassword</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.bindpassword']</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="redisplay">true</property>
+        </properties>
+      </widget>
+      <widget name="ldapRetries" type="int">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.retries</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.retries']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">5</property>
+          <property name="maxlength">2</property>
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="userLdapSearchBaseDn" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.user.searchbasedn</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.user.searchBaseDn']</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="userLdapSearchClass" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.user.searchclass</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.user.searchClass']</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="userLdapSearchFilter" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.user.searchfilter</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.user.searchFilter']</field>
+        </fields>
+      </widget>
+      <widget name="userLdapSearchScope" type="selectOneListbox">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.user.searchscope</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.user.searchScope']</field>
+        </fields>
+        <selectOptions>
+          <option itemLabel="onelevel" itemValue="onelevel" />
+          <option itemLabel="subtree" itemValue="subtree" />
+        </selectOptions>
+        <properties widgetMode="any">
+          <property name="size">0</property>
+        </properties>
+      </widget>
+      <widget name="userLdapReadonly" type="checkbox">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.user.readonly</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.user.readonly']</field>
+        </fields>
+      </widget>
+      <widget name="mappingUserRdn" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.mapping.user.rdn</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.user.mapping.rdn']</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="mappingUsername" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.mapping.user.name</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.user.mapping.username']</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="mappingPassword" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.mapping.user.password</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.user.mapping.password']</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="mappingFirstname" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.mapping.user.firstname</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.user.mapping.firstname']</field>
+        </fields>
+      </widget>
+      <widget name="mappingLastname" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.mapping.user.lastname</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.user.mapping.lastname']</field>
+        </fields>
+      </widget>
+      <widget name="mappingEmail" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.mapping.user.email</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.user.mapping.email']</field>
+        </fields>
+      </widget>
+      <widget name="mappingCompany" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.mapping.user.company</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.user.mapping.company']</field>
+        </fields>
+      </widget>
+      <widget name="groupLdapSearchBaseDn" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.group.searchbasedn</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.group.searchBaseDn']</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="groupLdapSearchFilter" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.group.searchfilter</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.group.searchFilter']</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="groupLdapSearchScope" type="selectOneListbox">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.group.searchscope</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.group.searchScope']</field>
+        </fields>
+        <selectOptions>
+          <option itemLabel="onelevel" itemValue="onelevel" />
+          <option itemLabel="subtree" itemValue="subtree" />
+        </selectOptions>
+        <properties widgetMode="any">
+          <property name="size">0</property>
+        </properties>
+      </widget>
+      <widget name="groupLdapReadonly" type="checkbox">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.group.readonly</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.group.readonly']</field>
+        </fields>
+      </widget>
+      <widget name="mappingGroupRdn" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.mapping.group.rdn</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.group.mapping.rdn']</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="mappingGroupname" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.mapping.group.name</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.group.mapping.name']</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="mappingGrouplabel" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.mapping.group.label</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.group.mapping.label']</field>
+        </fields>
+      </widget>
+      <widget name="mappingStaticMembers" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.mapping.group.members.static</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.group.mapping.members.staticAttributeId']</field>
+        </fields>
+      </widget>
+      <widget name="mappingDynamicMembers" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.mapping.group.members.dynamic</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.group.mapping.members.dynamicAttributeId']</field>
+        </fields>
+      </widget>
+      <widget name="defaultAdministrator" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.default.admin</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.defaultAdministratorId']</field>
+        </fields>
+      </widget>
+      <widget name="defaultMembersGroup" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.default.membersGroup</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.ldap.defaultMembersGroup']</field>
+        </fields>
+      </widget>
+      <widget name="anonymousUser" type="checkbox">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.anonymous.enable</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.user.anonymous.enable']</field>
+        </fields>
+      </widget>
+      <widget name="emergencyUser" type="template">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.default.emergency.enable</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.user.emergency.enable']</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /incl/sysinfo/widgets/ajax_checkbox_widget_template.xhtml
+          </property>
+          <property name="reRender">ldap_ajaxPanel</property>
+          <property name="ajaxSingle">true</property>
+        </properties>
+      </widget>
+      <widget name="emergencyUsername" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.default.emergency.username</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.user.emergency.username']</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+        <properties widgetMode="any">
+          <property name="rendered">
+            #{value['nuxeo.user.emergency.enable']}
+          </property>
+        </properties>
+      </widget>
+      <widget name="emergencyPassword" type="secret">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.default.emergency.password</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.user.emergency.password']</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="redisplay">true</property>
+        </properties>
+        <properties widgetMode="any">
+          <property name="rendered">
+            #{value['nuxeo.user.emergency.enable']}
+          </property>
+        </properties>
+      </widget>
+      <widget name="emergencyFirstname" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.default.emergency.firstname</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.user.emergency.firstname']</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="rendered">
+            #{value['nuxeo.user.emergency.enable']}
+          </property>
+        </properties>
+      </widget>
+      <widget name="emergencyLastname" type="text">
+        <labels>
+          <label mode="any">label.setup.nuxeo.ldap.default.emergency.lastname</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['nuxeo.user.emergency.lastname']</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="rendered">
+            #{value['nuxeo.user.emergency.enable']}
+          </property>
+        </properties>
+      </widget>
+      <widget name="checkNetwork" type="template">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <widgetModes>
+          <mode value="edit">#{setupWizardAction.directoryType != 'default' ? 'edit' : 'hidden'}</mode>
+        </widgetModes>
+        <properties mode="any">
+          <property name="template">
+            /incl/sysinfo/widgets/directory_check_network_parameters_template.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="checkAuth" type="template">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <widgetModes>
+          <mode value="edit">#{setupWizardAction.directoryType != 'default' ? 'edit' : 'hidden'}</mode>
+        </widgetModes>
+        <properties mode="any">
+          <property name="template">
+            /incl/sysinfo/widgets/directory_check_auth_parameters_template.xhtml
           </property>
         </properties>
       </widget>

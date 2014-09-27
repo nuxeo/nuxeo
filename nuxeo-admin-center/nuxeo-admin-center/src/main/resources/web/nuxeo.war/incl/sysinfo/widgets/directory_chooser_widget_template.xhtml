@@ -1,0 +1,42 @@
+<span xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  id="#{widget.id}">
+<c:if test="#{widget.mode != 'edit'}">#{field}</c:if>
+<c:if test="#{widget.mode == 'edit'}">
+
+  <a4j:region id="#{widget.id}_region">
+
+    <h:selectOneMenu id="#{widget.id}" value="#{field}"
+      styleClass="#{widgetProperty_styleClass}"
+      required="#{widgetProperty_required}">
+
+      <a4j:support event="onchange"
+        reRender="#{widgetProperty_reRender}"
+        immediate="#{widgetProperty_immediate}"
+        ajaxSingle="#{widgetProperty_ajaxSingle}"
+        actionListener="#{setupWizardAction.directoryChange}" />
+
+      <f:selectItem itemValue="default"
+        itemLabel="#{messages['label.setup.nuxeo.directory.default']}" />
+      <f:selectItem itemValue="ldap"
+        itemLabel="#{messages['label.setup.nuxeo.directory.ldap']}" />
+      <f:selectItem itemValue="multi"
+        itemLabel="#{messages['label.setup.nuxeo.directory.multi']}" />
+
+    </h:selectOneMenu>
+
+    <a4j:status>
+      <f:facet name="start">
+        <h:graphicImage value="/img/standart_waiter.gif" />
+      </f:facet>
+    </a4j:status>
+
+    <h:message styleClass="errorMessage" for="#{widget.id}"
+      id="#{widget.id}_message" />
+
+  </a4j:region>
+
+</c:if>
+</span>

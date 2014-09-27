@@ -1,0 +1,19 @@
+<span xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <c:if test="#{widget.mode == 'edit'}">
+    <h:inputHidden value="needed" id="#{widget.id}"
+      validator="#{setupWizardAction.checkLdapAuthenticationParameters}">
+      <f:attribute name="ldapUrl" value="#{layout.widgetMap['ldapUrl'].id}" />
+      <f:attribute name="ldapBindDn" value="#{layout.widgetMap['ldapBindDn'].id}" />
+      <f:attribute name="ldapBindPwd" value="#{layout.widgetMap['ldapBindPassword'].id}" />
+    </h:inputHidden>
+    <a4j:commandButton value="#{messages['button.setup.ldap.check.auth']}"
+      reRender="nxw_ldap_ajax_decorator_subPanel" bypassUpdates="true" styleClass="button" />
+    <h:message for="#{widget.id}" styleClass="processMessage completeInfo" errorClass="processMessage completeError" />
+  </c:if>
+
+</span>

@@ -41,6 +41,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.validator.ValidatorException;
+import javax.naming.AuthenticationException;
+import javax.naming.NamingException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -97,7 +99,28 @@ public class SetupWizardActionBean implements Serializable {
             "mail.transport.password", "mail.from", "mail.user",
             "mail.transport.usetls", "nuxeo.http.proxy.host",
             "nuxeo.http.proxy.port", "nuxeo.http.proxy.login",
-            "nuxeo.http.proxy.password", "org.nuxeo.dev" };
+            "nuxeo.http.proxy.password", "org.nuxeo.dev",
+            "nuxeo.directory.type", "nuxeo.user.group.storage",
+            "nuxeo.ldap.url", "nuxeo.ldap.binddn", "nuxeo.ldap.bindpassword",
+            "nuxeo.ldap.retries", "nuxeo.ldap.user.searchBaseDn",
+            "nuxeo.ldap.user.searchClass", "nuxeo.ldap.user.searchFilter",
+            "nuxeo.ldap.user.searchScope", "nuxeo.ldap.user.readonly",
+            "nuxeo.ldap.user.mapping.rdn", "nuxeo.ldap.user.mapping.username",
+            "nuxeo.ldap.user.mapping.password",
+            "nuxeo.ldap.user.mapping.firstname",
+            "nuxeo.ldap.user.mapping.lastname",
+            "nuxeo.ldap.user.mapping.email", "nuxeo.ldap.user.mapping.company",
+            "nuxeo.ldap.group.searchBaseDn", "nuxeo.ldap.group.searchFilter",
+            "nuxeo.ldap.group.searchScope", "nuxeo.ldap.group.readonly",
+            "nuxeo.ldap.group.mapping.rdn", "nuxeo.ldap.group.mapping.name",
+            "nuxeo.ldap.group.mapping.label",
+            "nuxeo.ldap.group.mapping.members.staticAttributeId",
+            "nuxeo.ldap.group.mapping.members.dynamicAttributeId",
+            "nuxeo.ldap.defaultAdministratorId",
+            "nuxeo.ldap.defaultMembersGroup", "nuxeo.user.anonymous.enable",
+            "nuxeo.user.emergency.enable", "nuxeo.user.emergency.username",
+            "nuxeo.user.emergency.password", "nuxeo.user.emergency.firstname",
+            "nuxeo.user.emergency.lastname" };
 
     protected Map<String, String> parameters;
 
@@ -109,13 +132,27 @@ public class SetupWizardActionBean implements Serializable {
 
     protected static final String PROXY_AUTHENTICATED = "authenticated";
 
+    protected static final String DIRECTORY_DEFAULT = "default";
+
+    protected static final String DIRECTORY_LDAP = "ldap";
+
+    protected static final String DIRECTORY_MULTI = "multi";
+
     private static final String ERROR_DB_DRIVER = "error.db.driver.notfound";
 
     private static final String ERROR_DB_CONNECTION = "error.db.connection";
 
+    private static final String ERROR_LDAP_CONNECTION = "error.ldap.connection";
+
+    private static final String ERROR_LDAP_AUTHENTICATION = "error.ldap.authentication";
+
     private static final String ERROR_DB_FS = "error.db.fs";
 
     protected String proxyType = PROXY_NONE;
+
+    protected String directoryType = DIRECTORY_DEFAULT;
+
+    protected String directoryStorage = DIRECTORY_DEFAULT;
 
     protected boolean needsRestart = false;
 
@@ -129,6 +166,8 @@ public class SetupWizardActionBean implements Serializable {
 
     @In(create = true)
     protected Map<String, String> messages;
+
+    private Boolean needGroupConfiguration;
 
     @Factory(value = "setupRequiresRestart", scope = ScopeType.EVENT)
     public boolean isNeedsRestart() {
@@ -194,6 +233,13 @@ public class SetupWizardActionBean implements Serializable {
             if (parameters.get("nuxeo.http.proxy.login") != null) {
                 proxyType = PROXY_AUTHENTICATED;
             }
+        }
+
+        if (parameters.get("nuxeo.directory.type") != null) {
+            directoryType = parameters.get("nuxeo.directory.type");
+        }
+        if (parameters.get("nuxeo.user.group.storage") != null) {
+            directoryStorage = parameters.get("nuxeo.user.group.storage");
         }
     }
 
@@ -385,5 +431,142 @@ public class SetupWizardActionBean implements Serializable {
     public void setProxyType(String proxyType) {
         this.proxyType = proxyType;
     }
+
+    public String getDirectoryType() {
+        return directoryType;
+    }
+
+    public String getDirectoryStorage() {
+        return directoryStorage;
+    }
+
+    public boolean getNeedGroupConfiguration() {
+        if (needGroupConfiguration == null) {
+            String storageType = parameters.get("nuxeo.user.group.storage");
+            if ("userLdapOnly".equals(storageType) || "".equals(storageType)) {
+                needGroupConfiguration = Boolean.FALSE;
+            } else {
+                needGroupConfiguration = Boolean.TRUE;
+            }
+        }
+        return needGroupConfiguration.booleanValue();
+    }
+
+    public void setDirectoryType(String directoryType) {
+        this.directoryType = directoryType;
+    }
+
+    public void directoryChange(ActionEvent event) {
+        UIComponent select = event.getComponent().getParent();
+        if (select instanceof ValueHolder) {
+            directoryType = (String) ((ValueHolder) select).getValue();
+        } else {
+            log.error("Bad component returned " + select);
+            throw new AbortProcessingException("Bad component returned "
+                    + select);
+        }
+        if ("ldap".equals(directoryType)) {
+            directoryStorage = "default";
+        } else {
+            directoryStorage = "multiUserGroup";
+        }
+        needGroupConfiguration = null;
+        Contexts.getEventContext().remove("setupParams");
+        FacesContext context = FacesContext.getCurrentInstance();
+        context.renderResponse();
+    }
+
+    public void checkLdapNetworkParameters(FacesContext context,
+            UIComponent component, Object value) {
+        Map<String, Object> attributes = component.getAttributes();
+        String ldapUrlId = (String) attributes.get("directoryLdapUrl");
+
+        if (ldapUrlId == null) {
+            log.error("Cannot validate LDAP parameters: missing inputIds");
+            return;
+        }
+
+        UIInput ldapUrlComp = (UIInput) component.findComponent(ldapUrlId);
+        if (ldapUrlComp == null) {
+            log.error("Cannot validate LDAP inputs: not found");
+            return;
+        }
+
+        String ldapUrl = (String) ldapUrlComp.getLocalValue();
+
+        String errorLabel = null;
+        Exception error = null;
+        try {
+            setupConfigGenerator.checkLdapConnection(ldapUrl, null, null, false);
+        } catch (NamingException e) {
+            errorLabel = ERROR_LDAP_CONNECTION;
+            error = e;
+        }
+        if (error != null) {
+            log.error(error, error);
+            FacesMessage message = new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
+                            context, errorLabel), null);
+            throw new ValidatorException(message);
+        }
+
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                ComponentUtils.translate(context, "error.ldap.network.none"), null);
+        message.setSeverity(FacesMessage.SEVERITY_INFO);
+        context.addMessage(component.getClientId(context), message);
+    }
+
+    public void checkLdapAuthenticationParameters(FacesContext context,
+            UIComponent component, Object value) {
+
+        Map<String, Object> attributes = component.getAttributes();
+        String ldapUrlId = (String) attributes.get("ldapUrl");
+        String ldapBinddnId = (String) attributes.get("ldapBindDn");
+        String ldapBindpwdId = (String) attributes.get("ldapBindPwd");
+
+        if (ldapUrlId == null || ldapBinddnId == null
+                || ldapBindpwdId == null) {
+            log.error("Cannot validate LDAP parameters: missing inputIds");
+            return;
+        }
+
+        UIInput ldapUrlComp = (UIInput) component.findComponent(ldapUrlId);
+        UIInput ldapBinddnComp = (UIInput) component.findComponent(ldapBinddnId);
+        UIInput ldapBindpwdComp = (UIInput) component.findComponent(ldapBindpwdId);
+        if (ldapUrlComp == null || ldapBinddnComp == null || ldapBindpwdComp == null) {
+            log.error("Cannot validate LDAP inputs: not found");
+            return;
+        }
+
+        String ldapUrl = (String) ldapUrlComp.getLocalValue();
+        String ldapBindDn = (String) ldapBinddnComp.getLocalValue();
+        String ldapBindPwd = (String) ldapBindpwdComp.getLocalValue();
+
+        String errorLabel = null;
+        Exception error = null;
+        try {
+            setupConfigGenerator.checkLdapConnection(ldapUrl, ldapBindDn, ldapBindPwd, true);
+        } catch (NamingException e) {
+            if (e instanceof AuthenticationException) {
+                errorLabel = ERROR_LDAP_AUTHENTICATION;
+            } else {
+                errorLabel = ERROR_LDAP_CONNECTION;
+            }
+            error = e;
+        }
+        if (error != null) {
+            log.error(error, error);
+            FacesMessage message = new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
+                            context, errorLabel), null);
+            throw new ValidatorException(message);
+        }
+
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                ComponentUtils.translate(context, "error.ldap.auth.none"), null);
+        message.setSeverity(FacesMessage.SEVERITY_INFO);
+        context.addMessage(component.getClientId(context), message);
+    }
+
 
 }

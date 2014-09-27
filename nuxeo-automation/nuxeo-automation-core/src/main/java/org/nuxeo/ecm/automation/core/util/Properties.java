@@ -42,7 +42,7 @@ public class Properties extends HashMap<String, String> {
             ".automation.properties.multiline.escape";
 
     protected static final String multiLineEscape = Objects.firstNonNull
-            (Framework.getProperty(PROPERTIES_MULTILINE_ESCAPE), "false");
+            (Framework.getProperty(PROPERTIES_MULTILINE_ESCAPE), "true");
 
     public Properties() {
     }

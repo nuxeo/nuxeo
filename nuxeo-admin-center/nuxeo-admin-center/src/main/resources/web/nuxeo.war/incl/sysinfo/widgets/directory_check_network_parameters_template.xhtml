@@ -1,0 +1,17 @@
+<span xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <c:if test="#{widget.mode == 'edit'}">
+    <h:inputHidden value="network" id="#{widget.id}"
+      validator="#{setupWizardAction.checkLdapNetworkParameters}">
+      <f:attribute name="directoryLdapUrl" value="#{layout.widgetMap['ldapUrl'].id}" />
+    </h:inputHidden>
+    <a4j:commandButton value="#{messages['button.setup.ldap.check.network']}"
+      bypassUpdates="true" styleClass="button" />
+    <h:message for="#{widget.id}" styleClass="processMessage completeInfo" errorClass="errorMessage" />
+  </c:if>
+
+</span>
