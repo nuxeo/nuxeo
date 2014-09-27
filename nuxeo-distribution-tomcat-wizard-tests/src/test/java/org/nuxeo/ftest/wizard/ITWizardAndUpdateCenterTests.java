@@ -141,8 +141,23 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         assertEquals("Database Settings", dbPage.getTitle());
 
         // **********************
+        // Directory settings
+        WizardPage userPage = dbPage.next();
+        assertNotNull(userPage);
+        assertFalse(userPage.hasError());
+        assertEquals("Users & Groups Settings", userPage.getTitle());
+        userPage.selectOptionWithReload("nuxeo.directory.type", "ldap");
+        userPage.fillInput("nuxeo.ldap.url", "ldap://ldap.testathon.net:3890");
+        userPage = userPage.navById(WizardPage.class, "checkNetwork");
+        assertTrue(userPage.hasError());
+        userPage.clearInput("nuxeo.ldap.url");
+        userPage.fillInput("nuxeo.ldap.url", "ldap://ldap.testathon.net:389");
+        userPage = userPage.navById(WizardPage.class, "checkNetwork");
+        assertFalse(userPage.hasError());
+
+        // **********************
         // SMTP Settings
-        WizardPage smtpPage = dbPage.next();
+        WizardPage smtpPage = userPage.next();
         assertNotNull(smtpPage);
         assertEquals("SMTP Settings", smtpPage.getTitle());
         // check port validation

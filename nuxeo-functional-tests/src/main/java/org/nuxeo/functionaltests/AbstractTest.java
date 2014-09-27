@@ -312,6 +312,7 @@ public abstract class AbstractTest {
             // Does not work, but leave code for when it does
             // Workaround: use 127.0.0.2
             proxy.setNoProxy("");
+            // setProxyPreferences method does not exist with selenium version 2.43.0
             profile.setProxyPreferences(proxy);
             // FIXME Should be dc.setCapability(CapabilityType.PROXY, proxy);
         }

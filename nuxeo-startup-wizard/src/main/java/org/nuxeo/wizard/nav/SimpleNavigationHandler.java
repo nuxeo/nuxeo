@@ -42,6 +42,7 @@ public class SimpleNavigationHandler {
             "General|generalSettings.jsp|1|0",
             "Proxy|proxySettings.jsp|1|0",
             "DB|dbSettings.jsp|1|0",
+            "User|userSettings.jsp|1|0",
             "Smtp|smtpSettings.jsp|1|0",
             "Connect|connectForm.jsp|1|0",
             "ConnectCallback|connectCallback.jsp|0|1",

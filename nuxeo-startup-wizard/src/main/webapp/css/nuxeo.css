@@ -254,6 +254,19 @@ textarea {
   color: #d00;
 }
 
+.infoBlock {
+	background-color: #f7f8f9;
+	border-left: 1px solid blue;
+	color: #1275a9;
+	display: block;
+	margin: 1em 0;
+	padding: .5em 1em;
+}
+
+.infoItem {
+    color: #0000BB;
+}
+
 /* Tables & Forms */
 .labelCell {
   font-family: "Ademi", Arial, sans-serif;

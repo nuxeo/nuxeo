@@ -28,9 +28,19 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.AuthenticationException;
+import javax.naming.NameNotFoundException;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
+import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -321,13 +331,197 @@ public class RouterServlet extends HttpServlet {
 
     }
 
+    public void handleUserPOST(Page currentPage, HttpServletRequest req,
+            HttpServletResponse resp) throws ServletException, IOException {
+
+        Context ctx = Context.instance(req);
+        ParamCollector collector = ctx.getCollector();
+
+        String refreshParam = req.getParameter("refresh");
+        String directoryType = collector.getConfigurationParam("nuxeo.directory.type");
+
+        if ("true".equals(refreshParam)) {
+            // String templateName =
+            // collector.getConfigurationParam(ConfigurationGenerator.PARAM_TEMPLATE_USERNAME);
+            // collector.changeUserTemplate(templateName);
+            currentPage.dispatchToJSP(req, resp);
+            return;
+        }
+
+        if ("checkNetwork".equals(refreshParam)
+                || "checkAuth".equals(refreshParam)
+                || "checkUserLdapParam".equals(refreshParam)
+                || "checkGroupLdapParam".equals(refreshParam)) {
+            try {
+                if ("checkNetwork".equals(refreshParam)) {
+                    bindLdapConnection(collector, false);
+                    ctx.trackInfo("nuxeo.ldap.url", "info.host.found");
+                } else if ("checkAuth".equals(refreshParam)) {
+                    bindLdapConnection(collector, true);
+                    ctx.trackInfo("nuxeo.ldap.auth", "info.auth.success");
+                } else {
+                    DirContext dirContext = new InitialDirContext(
+                            getContextEnv(collector, true));
+                    String searchScope;
+                    String searchBaseDn;
+                    String searchClass;
+                    String searchFilter;
+                    if ("checkUserLdapParam".equals(refreshParam)) {
+                        searchBaseDn = collector.getConfigurationParam("nuxeo.ldap.user.searchBaseDn");
+                        searchScope = collector.getConfigurationParam("nuxeo.ldap.user.searchScope");
+                        searchClass = collector.getConfigurationParam("nuxeo.ldap.user.searchClass");
+                        searchFilter = collector.getConfigurationParam("nuxeo.ldap.user.searchFilter");
+                    } else {
+                        searchBaseDn = collector.getConfigurationParam("nuxeo.ldap.group.searchBaseDn");
+                        searchScope = collector.getConfigurationParam("nuxeo.ldap.group.searchScope");
+                        searchFilter = collector.getConfigurationParam("nuxeo.ldap.group.searchFilter");
+                        searchClass = "";
+                    }
+
+                    SearchControls scts = new SearchControls();
+                    if ("onelevel".equals(searchScope)) {
+                        scts.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+                    } else {
+                        scts.setSearchScope(SearchControls.SUBTREE_SCOPE);
+                    }
+                    String filter = String.format("(&(%s)(objectClass=%s))",
+                            searchFilter.isEmpty() ? "objectClass=*"
+                                    : searchFilter, searchClass.isEmpty() ? "*"
+                                    : searchClass);
+                    NamingEnumeration<SearchResult> results;
+                    try {
+                        results = dirContext.search(searchBaseDn, filter, scts);
+                        if (!results.hasMore()) {
+                            ctx.trackError("nuxeo.ldap.search",
+                                    "error.ldap.noresult");
+                        } else {
+                            SearchResult result = results.next();
+                            if (searchBaseDn.equalsIgnoreCase(result.getNameInNamespace())
+                                    && results.hasMore()) {
+                                // try not to display the root of the search
+                                // base DN
+                                result = results.next();
+                            }
+                            ctx.trackInfo("dn", result.getNameInNamespace());
+                            Attributes attributes = result.getAttributes();
+                            NamingEnumeration<String> ids = attributes.getIDs();
+                            String id;
+                            StringBuilder sb;
+                            while (ids.hasMore()) {
+                                id = ids.next();
+                                NamingEnumeration<?> values = attributes.get(id).getAll();
+                                sb = new StringBuilder();
+                                while (values.hasMore()) {
+                                    sb.append(values.next()).append(" , ");
+                                }
+                                ctx.trackInfo(id,
+                                        sb.substring(0, sb.length() - 3));
+                            }
+                        }
+                    } catch (NameNotFoundException e) {
+                        ctx.trackError("nuxeo.ldap.search",
+                                "error.ldap.searchBaseDn");
+                        log.warn(e);
+                    }
+                    dirContext.close();
+                }
+            } catch (AuthenticationException e) {
+                ctx.trackError("nuxeo.ldap.auth", "error.auth.failed");
+                log.warn(e);
+            } catch (NamingException e) {
+                ctx.trackError("nuxeo.ldap.url", "error.host.not.found");
+                log.warn(e);
+            }
+        }
+
+        // Form submit
+        if (!"default".equals(directoryType) && refreshParam.isEmpty()) {
+            // first check bind to LDAP server
+            try {
+                bindLdapConnection(collector, true);
+            } catch (NamingException e) {
+                ctx.trackError("nuxeo.ldap.auth", "error.ldap.bind.failed");
+                log.warn(e);
+            }
+
+            // then check mandatory fields
+            if (collector.getConfigurationParam("nuxeo.ldap.user.searchBaseDn").isEmpty()) {
+                ctx.trackError("nuxeo.ldap.user.searchBaseDn",
+                        "error.user.searchBaseDn.required");
+            }
+            if (collector.getConfigurationParam("nuxeo.ldap.user.mapping.rdn").isEmpty()) {
+                ctx.trackError("nuxeo.ldap.user.mapping.rdn",
+                        "error.user.rdn.required");
+            }
+            if (collector.getConfigurationParam(
+                    "nuxeo.ldap.user.mapping.username").isEmpty()) {
+                ctx.trackError("nuxeo.ldap.user.mapping.username",
+                        "error.user.username.required");
+            }
+            if (collector.getConfigurationParam(
+                    "nuxeo.ldap.user.mapping.password").isEmpty()) {
+                ctx.trackError("nuxeo.ldap.user.mapping.password",
+                        "error.user.password.required");
+            }
+            String userGroupStorage = collector.getConfigurationParam("nuxeo.user.group.storage");
+            if (!"userLdapOnly".equals(userGroupStorage)
+                    && !"multiUserSqlGroup".equals(userGroupStorage)) {
+                if (collector.getConfigurationParam(
+                        "nuxeo.ldap.group.searchBaseDn").isEmpty()) {
+                    ctx.trackError("nuxeo.ldap.group.searchBaseDn",
+                            "error.group.searchBaseDn.required");
+                }
+                if (collector.getConfigurationParam(
+                        "nuxeo.ldap.group.mapping.rdn").isEmpty()) {
+                    ctx.trackError("nuxeo.ldap.group.mapping.rdn",
+                            "error.group.rdn.required");
+                }
+            }
+            if ("true".equals(collector.getConfigurationParam("nuxeo.user.emergency.enable"))) {
+                if (collector.getConfigurationParam(
+                        "nuxeo.user.emergency.username").isEmpty()) {
+                    ctx.trackError("nuxeo.user.emergency.username",
+                            "error.emergency.username.required");
+                }
+                if (collector.getConfigurationParam(
+                        "nuxeo.user.emergency.password").isEmpty()) {
+                    ctx.trackError("nuxeo.user.emergency.password",
+                            "error.emergency.password.required");
+                }
+            }
+        }
+
+        if (ctx.hasErrors() || ctx.hasInfos()) {
+            currentPage.dispatchToJSP(req, resp);
+        } else {
+            currentPage.next().dispatchToJSP(req, resp, true);
+        }
+    }
+
+    private Hashtable<Object, Object> getContextEnv(ParamCollector collector,
+            boolean checkAuth) {
+        String ldapUrl = collector.getConfigurationParam("nuxeo.ldap.url");
+        String ldapBindDn = collector.getConfigurationParam("nuxeo.ldap.binddn");
+        String ldapBindPassword = collector.getConfigurationParam("nuxeo.ldap.bindpassword");
+        ConfigurationGenerator cg = collector.getConfigurationGenerator();
+        return cg.getContextEnv(ldapUrl, ldapBindDn, ldapBindPassword,
+                checkAuth);
+    }
+
+    private void bindLdapConnection(ParamCollector collector,
+            boolean authenticate) throws NamingException {
+        ConfigurationGenerator cg = collector.getConfigurationGenerator();
+        cg.checkLdapConnection(getContextEnv(collector, authenticate));
+    }
+
     public void handleSmtpPOST(Page currentPage, HttpServletRequest req,
             HttpServletResponse resp) throws ServletException, IOException {
 
         Context ctx = Context.instance(req);
         ParamCollector collector = ctx.getCollector();
 
-        if (collector.getConfigurationParam("mail.transport.auth").equals("true")) {
+        if (collector.getConfigurationParam("mail.transport.auth").equals(
+                "true")) {
             if (collector.getConfigurationParam("mail.transport.user").isEmpty()) {
                 ctx.trackError("mail.transport.user",
                         "error.mail.transport.user.required");
