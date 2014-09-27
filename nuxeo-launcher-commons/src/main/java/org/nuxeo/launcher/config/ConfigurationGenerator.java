@@ -43,6 +43,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -51,13 +52,16 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.UUID;
 
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.NullEnumeration;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.launcher.commons.DatabaseDriverException;
 import org.nuxeo.launcher.commons.text.TextTemplate;
@@ -1784,5 +1788,54 @@ public class ConfigurationGenerator {
      */
     public File getDumpedConfig() {
         return new File(getConfigDir(), CONFIGURATION_PROPERTIES);
+    }
+
+    /**
+     * Build a {@link Hashtable} which contains environment properties to
+     * instantiate a {@link InitialDirContext}
+     *
+     * @since 5.9.6
+     */
+    public Hashtable<Object, Object> getContextEnv(String ldapUrl,
+            String bindDn, String bindPassword, boolean checkAuthentication) {
+        Hashtable<Object, Object> env = new Hashtable<Object, Object>();
+        env.put(javax.naming.Context.INITIAL_CONTEXT_FACTORY,
+                "com.sun.jndi.ldap.LdapCtxFactory");
+        env.put("com.sun.jndi.ldap.connect.timeout", "10000");
+        env.put(javax.naming.Context.PROVIDER_URL, ldapUrl);
+        if (checkAuthentication) {
+            env.put(javax.naming.Context.SECURITY_AUTHENTICATION, "simple");
+            env.put(javax.naming.Context.SECURITY_PRINCIPAL, bindDn);
+            env.put(javax.naming.Context.SECURITY_CREDENTIALS, bindPassword);
+        }
+        return env;
+    }
+
+    /**
+     * Check if the LDAP parameters are correct to bind to a LDAP server. if
+     * authenticate argument is true, it will also check if the authentication
+     * against the LDAP server succeeds
+     *
+     * @param ldapUrl
+     * @param ldapBindDn
+     * @param ldapBindPwd
+     * @param authenticate Indicates if authentication against LDAP should be
+     *            checked.
+     * @since 5.9.6
+     */
+    public void checkLdapConnection(String ldapUrl, String ldapBindDn,
+            String ldapBindPwd, boolean authenticate) throws NamingException {
+        checkLdapConnection(getContextEnv(ldapUrl, ldapBindDn, ldapBindPwd,
+                authenticate));
+    }
+
+    /**
+     * @oaram env Environment properties to build a {@link InitialDirContext}
+     * @since 5.9.6
+     */
+    public void checkLdapConnection(Hashtable<Object, Object> env)
+            throws NamingException {
+        DirContext dirContext = new InitialDirContext(env);
+        dirContext.close();
     }
 }
