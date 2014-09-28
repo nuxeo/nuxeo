@@ -11,7 +11,7 @@ org.nuxeo.ecm.platform.liveedit.autoversioning=none
 zip.entry.encoding=ascii
 
 # default|ldap|multi
-nuxeo.directory.type=ldap
+nuxeo.directory.type=default
 # (default|userLdapOnly) || (multiUserGroup|multiUserSqlGroup|ldapUserMultiGroup)
 nuxeo.user.group.storage=default
 nuxeo.ldap.url=
