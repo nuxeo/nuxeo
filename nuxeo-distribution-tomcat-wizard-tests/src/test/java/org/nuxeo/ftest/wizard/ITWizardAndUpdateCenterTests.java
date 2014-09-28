@@ -154,6 +154,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         userPage.fillInput("nuxeo.ldap.url", "ldap://ldap.testathon.net:389");
         userPage = userPage.navById(WizardPage.class, "checkNetwork");
         assertFalse(userPage.hasError());
+        userPage.selectOptionWithReload("nuxeo.directory.type", "default");
 
         // **********************
         // SMTP Settings
