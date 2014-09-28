@@ -1,0 +1,44 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout" id="#{widget.id}">
+
+  <c:if test="#{widget.mode == 'view'}">
+    <h:outputText value="#{field}" />
+  </c:if>
+
+  <a4j:region id="#{widget.id}_region">
+  <c:if test="#{widget.mode == 'edit'}">
+    <h:selectOneMenu value="#{field}" id="#{widget.id}"
+      required="#{widget.required}">
+      <f:selectItem itemValue="default" itemLabel="Default"
+        itemDisabled="#{setupWizardAction.directoryType == 'multi'}"/>
+      <f:selectItem itemValue="userLdapOnly" itemLabel="Only LDAP users"
+        itemDisabled="#{setupWizardAction.directoryType == 'multi'}"/>
+      <f:selectItem itemValue="multiUserGroup" itemLabel="Multidirectory for users and groups" 
+        itemDisabled="#{setupWizardAction.directoryType == 'ldap'}"/>
+      <f:selectItem itemValue="multiUserSqlGroup" itemLabel="Multidirectory for users and SQL groups"
+        itemDisabled="#{setupWizardAction.directoryType == 'ldap'}"/>
+      <f:selectItem itemValue="ldapUserMultiGroup" itemLabel="LDAP users and multidirectory for groups"
+        itemDisabled="#{setupWizardAction.directoryType == 'ldap'}"/>
+          <a4j:ajax event="change"
+        render="#{widgetProperty_reRender}"
+        immediate="#{widgetProperty_immediate}"
+        execute="#{widgetProperty_ajaxSingle ? '@this' : '@form'}"
+        listener="#{setupWizardAction.ldapStorageChange}" />
+    </h:selectOneMenu>
+
+    <a4j:status>
+      <f:facet name="start">
+        <h:graphicImage value="/img/standart_waiter.gif" />
+      </f:facet>
+    </a4j:status>
+    <h:message for="#{widget.id}" id="#{widget.id}_message"/>
+    
+  </c:if>
+  </a4j:region>
+
+</f:subview>

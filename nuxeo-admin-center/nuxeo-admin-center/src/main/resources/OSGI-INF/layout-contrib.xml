@@ -461,6 +461,16 @@
               <property name="name">admin_setup_directories</property>
             </properties>
           </widget>
+          <widget name="directories_group" type="layout">
+            <properties mode="any">
+              <property name="name">admin_setup_directories_group</property>
+            </properties>
+          </widget>
+          <widget name="directories_extra" type="layout">
+            <properties mode="any">
+              <property name="name">admin_setup_directories_extra</property>
+            </properties>
+          </widget>
         </subWidgets>
       </widget>
 
@@ -635,7 +645,6 @@
       <rows>
         <row>
           <widget>ldapStorage</widget>
-          <widget>multiStorage</widget>
         </row>
         <row>
           <widget>ldapUrl</widget>
@@ -684,59 +693,8 @@
         <row>
           <widget>mappingCompany</widget>
         </row>
-        <row>
-          <widget>groupLdapSearchBaseDn</widget>
-        </row>
-        <row>
-          <widget>groupLdapSearchFilter</widget>
-        </row>
-        <row>
-          <widget>groupLdapSearchScope</widget>
-        </row>
-        <row>
-          <widget>groupLdapReadonly</widget>
-        </row>
-        <row>
-          <widget>mappingGroupRdn</widget>
-        </row>
-        <row>
-          <widget>mappingGroupname</widget>
-        </row>
-        <row>
-          <widget>mappingGrouplabel</widget>
-        </row>
-        <row>
-          <widget>mappingStaticMembers</widget>
-        </row>
-        <row>
-          <widget>mappingDynamicMembers</widget>
-        </row>
-        <row>
-          <widget>defaultAdministrator</widget>
-        </row>
-        <row>
-          <widget>defaultMembersGroup</widget>
-        </row>
-        <row>
-          <widget>anonymousUser</widget>
-        </row>
-        <row>
-          <widget>emergencyUser</widget>
-        </row>
-        <row>
-          <widget>emergencyUsername</widget>
-        </row>
-        <row>
-          <widget>emergencyPassword</widget>
-        </row>
-        <row>
-          <widget>emergencyFirstname</widget>
-        </row>
-        <row>
-          <widget>emergencyLastname</widget>
-        </row>
       </rows>
-      <widget name="ldapStorage" type="selectOneMenu">
+      <widget name="ldapStorage" type="template">
         <labels>
           <label mode="any">label.setup.nuxeo.users.storage</label>
         </labels>
@@ -744,18 +702,15 @@
         <fields>
           <field>['nuxeo.user.group.storage']</field>
         </fields>
-        <selectOptions>
-          <option itemLabel="Default" itemValue="default" />
-          <option itemLabel="Only LDAP users" itemValue="userLdapOnly" />
-        </selectOptions>
-        <properties widgetMode="any">
-          <property name="size">0</property>
-          <property name="rendered">
-            #{setupWizardAction.directoryType == 'ldap'}
+        <properties mode="any">
+          <property name="template">
+            /incl/sysinfo/widgets/ldap_storage_widget_template.xhtml
           </property>
+          <property name="reRender">ldap_group_ajaxPanel</property>
+          <property name="ajaxSingle">true</property>
         </properties>
       </widget>
-      <widget name="multiStorage" type="selectOneMenu">
+      <widget name="multiStorage" type="selectOneListbox">
         <labels>
           <label mode="any">label.setup.nuxeo.users.storage</label>
         </labels>
@@ -769,7 +724,6 @@
           <option itemLabel="LDAP users and multidirectory for groups" itemValue="ldapUserMultiGroup" />
         </selectOptions>
         <properties widgetMode="any">
-          <property name="size">0</property>
           <property name="rendered">
             #{setupWizardAction.directoryType == 'multi'}
           </property>
@@ -872,7 +826,7 @@
           <option itemLabel="subtree" itemValue="subtree" />
         </selectOptions>
         <properties widgetMode="any">
-          <property name="size">0</property>
+          <property name="size">1</property>
         </properties>
       </widget>
       <widget name="userLdapReadonly" type="checkbox">
@@ -956,6 +910,74 @@
           <field>['nuxeo.ldap.user.mapping.company']</field>
         </fields>
       </widget>
+      <widget name="checkNetwork" type="template">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <widgetModes>
+          <mode value="edit">#{setupWizardAction.directoryType != 'default' ? 'edit' : 'hidden'}</mode>
+        </widgetModes>
+        <properties mode="any">
+          <property name="template">
+            /incl/sysinfo/widgets/directory_check_network_parameters_template.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="checkAuth" type="template">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <widgetModes>
+          <mode value="edit">#{setupWizardAction.directoryType != 'default' ? 'edit' : 'hidden'}</mode>
+        </widgetModes>
+        <properties mode="any">
+          <property name="template">
+            /incl/sysinfo/widgets/directory_check_auth_parameters_template.xhtml
+          </property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="admin_setup_directories_group">
+      <templates>
+        <template mode="any">/incl/sysinfo/setup_layout_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="ajaxPanelId">ldap_group_ajaxPanel</property>
+        <property name="rendered">
+          #{setupWizardAction.needGroupConfiguration}
+        </property>
+      </properties>
+      <rows>
+        <row>
+          <widget>groupLdapSearchBaseDn</widget>
+        </row>
+        <row>
+          <widget>groupLdapSearchFilter</widget>
+        </row>
+        <row>
+          <widget>groupLdapSearchScope</widget>
+        </row>
+        <row>
+          <widget>groupLdapReadonly</widget>
+        </row>
+        <row>
+          <widget>mappingGroupRdn</widget>
+        </row>
+        <row>
+          <widget>mappingGroupname</widget>
+        </row>
+        <row>
+          <widget>mappingGrouplabel</widget>
+        </row>
+        <row>
+          <widget>mappingStaticMembers</widget>
+        </row>
+        <row>
+          <widget>mappingDynamicMembers</widget>
+        </row>
+      </rows>
       <widget name="groupLdapSearchBaseDn" type="text">
         <labels>
           <label mode="any">label.setup.nuxeo.ldap.group.searchbasedn</label>
@@ -993,7 +1015,7 @@
           <option itemLabel="subtree" itemValue="subtree" />
         </selectOptions>
         <properties widgetMode="any">
-          <property name="size">0</property>
+          <property name="size">1</property>
         </properties>
       </widget>
       <widget name="groupLdapReadonly" type="checkbox">
@@ -1056,6 +1078,42 @@
           <field>['nuxeo.ldap.group.mapping.members.dynamicAttributeId']</field>
         </fields>
       </widget>
+    </layout>
+
+    <layout name="admin_setup_directories_extra">
+      <templates>
+        <template mode="any">/incl/sysinfo/setup_layout_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="label"></property>
+      </properties>
+      <rows>
+        <row>
+          <widget>defaultAdministrator</widget>
+        </row>
+        <row>
+          <widget>defaultMembersGroup</widget>
+        </row>
+        <row>
+          <widget>anonymousUser</widget>
+        </row>
+        <row>
+          <widget>emergencyUser</widget>
+        </row>
+        <row>
+          <widget>emergencyUsername</widget>
+        </row>
+        <row>
+          <widget>emergencyPassword</widget>
+        </row>
+        <row>
+          <widget>emergencyFirstname</widget>
+        </row>
+        <row>
+          <widget>emergencyLastname</widget>
+        </row>
+      </rows>
       <widget name="defaultAdministrator" type="text">
         <labels>
           <label mode="any">label.setup.nuxeo.ldap.default.admin</label>
@@ -1159,32 +1217,6 @@
         <properties widgetMode="any">
           <property name="rendered">
             #{value['nuxeo.user.emergency.enable']}
-          </property>
-        </properties>
-      </widget>
-      <widget name="checkNetwork" type="template">
-        <labels>
-          <label mode="any"></label>
-        </labels>
-        <widgetModes>
-          <mode value="edit">#{setupWizardAction.directoryType != 'default' ? 'edit' : 'hidden'}</mode>
-        </widgetModes>
-        <properties mode="any">
-          <property name="template">
-            /incl/sysinfo/widgets/directory_check_network_parameters_template.xhtml
-          </property>
-        </properties>
-      </widget>
-      <widget name="checkAuth" type="template">
-        <labels>
-          <label mode="any"></label>
-        </labels>
-        <widgetModes>
-          <mode value="edit">#{setupWizardAction.directoryType != 'default' ? 'edit' : 'hidden'}</mode>
-        </widgetModes>
-        <properties mode="any">
-          <property name="template">
-            /incl/sysinfo/widgets/directory_check_auth_parameters_template.xhtml
           </property>
         </properties>
       </widget>

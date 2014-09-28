@@ -1,7 +1,7 @@
 <span xmlns:f="http://java.sun.com/jsf/core"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:a4j="http://richfaces.org/a4j"
   id="#{widget.id}">
 <c:if test="#{widget.mode != 'edit'}">#{field}</c:if>
 <c:if test="#{widget.mode == 'edit'}">
@@ -12,11 +12,11 @@
       styleClass="#{widgetProperty_styleClass}"
       required="#{widgetProperty_required}">
 
-      <a4j:support event="onchange"
-        reRender="#{widgetProperty_reRender}"
+      <a4j:ajax event="change"
+        render="#{widgetProperty_reRender}"
         immediate="#{widgetProperty_immediate}"
-        ajaxSingle="#{widgetProperty_ajaxSingle}"
-        actionListener="#{setupWizardAction.directoryChange}" />
+        execute="#{widgetProperty_ajaxSingle ? '@this' : '@form'}"
+        listener="#{setupWizardAction.directoryChange}" />
 
       <f:selectItem itemValue="default"
         itemLabel="#{messages['label.setup.nuxeo.directory.default']}" />

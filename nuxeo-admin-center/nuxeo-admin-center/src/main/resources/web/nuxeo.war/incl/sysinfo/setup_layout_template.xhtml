@@ -11,6 +11,11 @@
   layout="block"
   id="#{nxu:test(empty layout.properties.ajaxPanelId, layout.id, layout.properties.ajaxPanelId)}">
 
+<nxu:set var="renderedLayoutProp"
+  value="#{layout.properties.rendered}"
+  resolveTwice="true">
+   <f:subview rendered="#{nxu:test(empty layout.properties.rendered, true, false) or renderedLayoutProp}">
+
 <c:if test="#{not empty layout.rows}">
 
 <c:set var="isEditMode" value="#{nxl:isBoundToEditMode(layout.mode)}" />
@@ -74,4 +79,8 @@
   </tbody>
 </table>
 </c:if>
+
+  </f:subview>
+</nxu:set>
+
 </a4j:outputPanel>

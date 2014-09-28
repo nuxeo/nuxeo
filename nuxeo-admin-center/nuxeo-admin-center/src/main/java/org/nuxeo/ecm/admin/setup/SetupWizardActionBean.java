@@ -40,6 +40,7 @@ import javax.faces.component.ValueHolder;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.validator.ValidatorException;
 import javax.naming.AuthenticationException;
 import javax.naming.NamingException;
@@ -152,8 +153,6 @@ public class SetupWizardActionBean implements Serializable {
 
     protected String directoryType = DIRECTORY_DEFAULT;
 
-    protected String directoryStorage = DIRECTORY_DEFAULT;
-
     protected boolean needsRestart = false;
 
     @In(create = true)
@@ -237,9 +236,6 @@ public class SetupWizardActionBean implements Serializable {
 
         if (parameters.get("nuxeo.directory.type") != null) {
             directoryType = parameters.get("nuxeo.directory.type");
-        }
-        if (parameters.get("nuxeo.user.group.storage") != null) {
-            directoryStorage = parameters.get("nuxeo.user.group.storage");
         }
     }
 
@@ -389,9 +385,9 @@ public class SetupWizardActionBean implements Serializable {
         context.addMessage(component.getClientId(context), message);
     }
 
-    public void templateChange(ActionEvent event) {
+    public void templateChange(AjaxBehaviorEvent event) {
         String dbTemplate;
-        UIComponent select = event.getComponent().getParent();
+        UIComponent select = event.getComponent();
         if (select instanceof ValueHolder) {
             dbTemplate = (String) ((ValueHolder) select).getValue();
         } else {
@@ -407,8 +403,8 @@ public class SetupWizardActionBean implements Serializable {
         context.renderResponse();
     }
 
-    public void proxyChange(ActionEvent event) {
-        UIComponent select = event.getComponent().getParent();
+    public void proxyChange(AjaxBehaviorEvent event) {
+        UIComponent select = event.getComponent();
         if (select instanceof ValueHolder) {
             proxyType = (String) ((ValueHolder) select).getValue();
         } else {
@@ -436,14 +432,19 @@ public class SetupWizardActionBean implements Serializable {
         return directoryType;
     }
 
-    public String getDirectoryStorage() {
-        return directoryStorage;
+    public String setDirectoryStorage(String directoryStorage) {
+        return parameters.put("nuxeo.user.group.storage", directoryStorage);
+    }
+
+    public void ldapStorageChange() {
+        needGroupConfiguration = null;
     }
 
     public boolean getNeedGroupConfiguration() {
         if (needGroupConfiguration == null) {
             String storageType = parameters.get("nuxeo.user.group.storage");
-            if ("userLdapOnly".equals(storageType) || "".equals(storageType)) {
+            if ("userLdapOnly".equals(storageType)
+                    || "multiUserSqlGroup".equals(storageType)) {
                 needGroupConfiguration = Boolean.FALSE;
             } else {
                 needGroupConfiguration = Boolean.TRUE;
@@ -456,8 +457,8 @@ public class SetupWizardActionBean implements Serializable {
         this.directoryType = directoryType;
     }
 
-    public void directoryChange(ActionEvent event) {
-        UIComponent select = event.getComponent().getParent();
+    public void directoryChange(AjaxBehaviorEvent event) {
+        UIComponent select = event.getComponent();
         if (select instanceof ValueHolder) {
             directoryType = (String) ((ValueHolder) select).getValue();
         } else {
@@ -465,10 +466,10 @@ public class SetupWizardActionBean implements Serializable {
             throw new AbortProcessingException("Bad component returned "
                     + select);
         }
-        if ("ldap".equals(directoryType)) {
-            directoryStorage = "default";
+        if ("multi".equals(directoryType)) {
+            setDirectoryStorage("multiUserGroup");
         } else {
-            directoryStorage = "multiUserGroup";
+            setDirectoryStorage("default");
         }
         needGroupConfiguration = null;
         Contexts.getEventContext().remove("setupParams");
