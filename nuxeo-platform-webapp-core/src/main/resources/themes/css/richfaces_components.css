@@ -63,6 +63,10 @@ a.treeLink:hover,
 .rf-trn-hnd-colps {
   background: #fff url("${basePath}/icons/arrow_folded.gif") no-repeat left center; }
 
+.nx-no-trn-ico .rf-trn-ico {
+  display: none;
+}
+
 .rf-trn {
   background: transparent url("${basePath}/img/tree_line.png") repeat-y 0 0 }
 
