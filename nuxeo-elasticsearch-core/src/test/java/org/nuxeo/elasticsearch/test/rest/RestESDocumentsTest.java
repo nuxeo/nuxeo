@@ -75,7 +75,7 @@ public class RestESDocumentsTest extends BaseTest {
         // Then I get the document as Json will all the properties
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        System.err.println(node.toString());
+        // System.err.println(node.toString());
         assertEquals("Note 0", node.get("note:note").getTextValue());
     }
 
