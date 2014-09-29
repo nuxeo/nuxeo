@@ -43,6 +43,8 @@ public class WebLayoutApplication extends Application {
         Set<Object> result = new HashSet<Object>();
         result.add(new WidgetTypeDefinitionsJsonWriter());
         result.add(new WidgetTypeDefinitionJsonWriter());
+        result.add(new LayoutTypeDefinitionsJsonWriter());
+        result.add(new LayoutTypeDefinitionJsonWriter());
         return result;
     }
 

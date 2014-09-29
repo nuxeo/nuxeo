@@ -89,12 +89,41 @@ pre {
 
 <body>
 
-  <h1>Nuxeo Layout Documentation</h1>
-
-    <h2> <A href="${baseURL}layout-types"> View Layout types definitions (${nbLayoutTypes}) </A></h2>
-    <h2> <A href="${baseURL}layouts"> View Layout definitions (${nbLayouts}) </A></h2>
-    <h2> <A href="${baseURL}widget-types"> View Widget type definitions (${nbWidgetTypes}) </A></h2>
-    <h2> <A href="${baseURL}widget-types?widgetTypeCategory=jsfAction"> View Action Widget type definitions (${nbActionWidgetTypes}) </A></h2>
+  <table width="100%" class="main_table">
+    <tr>
+      <td colspan="2" align="right">
+        <a href="${baseURL}../">Top</a> - <a href="${baseURL}?">Index</a>
+      </td>
+    </tr>
+    <tr valign="top">
+      <td width="30%">
+        <div class="tree">
+          <div class="category">Registered Layout Types</div>
+          <#list layoutTypes as layoutType>
+            <div class="item">
+              <a href="${baseURL}?layoutType=${layoutType.name}">
+                ${layoutType.name}
+              </a>
+            </div>
+          </#list>
+        </div>
+        <div class="export_link">
+          <a href="${baseURL}layoutTypes?all=true&layoutTypeCategory=${layoutTypeCategory}">All JSON definitions</a>
+        </div>
+      </td>
+      <td>
+        <div class="content">
+          <#if layoutType?has_content>
+            <h1>${layoutType.name}</h1>
+            <h2>Links</h2>
+            <div>
+              <a href="${baseURL}layoutType/${layoutType.name}?layoutTypeCategory=${layoutTypeCategory}">JSON definition</a>
+            </div>
+          </#if>
+        </div>
+      </td>
+    </tr>
+  </table>
 
 </body>
 
