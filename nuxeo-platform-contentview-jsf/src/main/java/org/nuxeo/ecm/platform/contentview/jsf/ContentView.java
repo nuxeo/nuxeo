@@ -271,6 +271,12 @@ public interface ContentView extends Serializable {
     void resetPageProvider();
 
     /**
+     * Resets the selected layout and expected result column to let the binding
+     * do his work. Sets null to both attribute.
+     */
+    void resetSelectedLayoutAndColumns();
+
+    /**
      * Refreshes the current page provider if not null, see
      * {@link PageProvider#refresh()}.
      * <p>

@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.contentview.jsf;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,7 @@ import java.util.Map;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.core.Events;
@@ -37,12 +40,14 @@ import org.nuxeo.ecm.platform.query.api.PageProviderChangedListener;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
 
+import com.google.common.base.Function;
+
 /**
  * Default implementation for the content view object.
  * <p>
- * Provides simple getters for attributes defined in the XMap descriptor,
- * except cache key which is computed from currrent {@link FacesContext}
- * instance if cache key is an EL expression.
+ * Provides simple getters for attributes defined in the XMap descriptor, except
+ * cache key which is computed from currrent {@link FacesContext} instance if
+ * cache key is an EL expression.
  * <p>
  * The page provider is initialized calling
  * {@link ContentViewService#getPageProvider}.
@@ -87,8 +92,6 @@ public class ContentViewImpl implements ContentView,
 
     protected ContentViewLayout currentResultLayout;
 
-    protected List<String> defaultResultLayoutColumns;
-
     protected List<String> currentResultLayoutColumns;
 
     protected String cacheKey;
@@ -119,6 +122,8 @@ public class ContentViewImpl implements ContentView,
 
     protected String resultColumnsBinding;
 
+    protected String resultLayoutBinding;
+
     protected String pageSizeBinding;
 
     protected String sortInfosBinding;
@@ -131,7 +136,8 @@ public class ContentViewImpl implements ContentView,
             List<String> resetEventNames, boolean useGlobalPageSize,
             String[] queryParameters, String searchDocumentModelBinding,
             String searchDocumentModelType, String resultColumnsBinding,
-            String sortInfosBinding, String pageSizeBinding, boolean showTitle,
+            String resultLayoutBinding, String sortInfosBinding,
+            String pageSizeBinding, boolean showTitle,
             boolean showPageSizeSelector, boolean showRefreshCommand,
             boolean showFilterForm, String emptySentence,
             boolean translateEmptySentence) {
@@ -158,6 +164,7 @@ public class ContentViewImpl implements ContentView,
         this.searchDocumentModelBinding = searchDocumentModelBinding;
         this.searchDocumentModelType = searchDocumentModelType;
         this.resultColumnsBinding = resultColumnsBinding;
+        this.resultLayoutBinding = resultLayoutBinding;
         this.pageSizeBinding = pageSizeBinding;
         this.sortInfosBinding = sortInfosBinding;
         this.showTitle = showTitle;
@@ -205,17 +212,60 @@ public class ContentViewImpl implements ContentView,
     }
 
     public ContentViewLayout getCurrentResultLayout() {
-        if (currentResultLayout == null) {
-            if (resultLayouts != null && !resultLayouts.isEmpty()) {
-                currentResultLayout = resultLayouts.get(0);
-            }
+        if (currentResultLayout != null) {
+            return currentResultLayout;
+        }
+
+        if (resultLayouts != null && !resultLayouts.isEmpty()) {
+            resolveWithSearchDocument(new Function<FacesContext, Void>() {
+                @Override
+                public Void apply(FacesContext ctx) {
+                    Object value = ComponentTagUtils.resolveElExpression(ctx,
+                            resultLayoutBinding);
+
+                    if (value != null && value instanceof String) {
+                        setCurrentResultLayout((String) value);
+                    } else {
+                        currentResultLayout = resultLayouts.get(0);
+                    }
+
+                    return null;
+                }
+            });
         }
         return currentResultLayout;
     }
 
     public void setCurrentResultLayout(ContentViewLayout layout) {
         currentResultLayout = layout;
-        setCurrentResultLayoutColumns(null);
+        currentResultLayoutColumns = null;
+
+        if (isBlank(resultLayoutBinding)) {
+            return;
+        }
+
+        resolveWithSearchDocument(new Function<FacesContext, Void>() {
+            @Override
+            public Void apply(FacesContext ctx) {
+                ComponentTagUtils.setValueElExpression(ctx, resultLayoutBinding, currentResultLayout.getName());
+                return null;
+            }
+        });
+    }
+
+    protected void resolveWithSearchDocument(Function<FacesContext, Void> func) {
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        if (getSearchDocumentModel() == null) {
+            throw new ClientException("ContentView " + getName()
+                    + " is missing a search document.");
+        }
+
+        Object previousSearchDocValue = addSearchDocumentToELContext(ctx);
+        try {
+            func.apply(ctx);
+        } finally {
+            removeSearchDocumentFromELContext(ctx, previousSearchDocValue);
+        }
     }
 
     public void setCurrentResultLayout(String resultLayoutName) {
@@ -481,27 +531,50 @@ public class ContentViewImpl implements ContentView,
         if (currentResultLayoutColumns != null) {
             return currentResultLayoutColumns;
         }
+
         // else resolve bindings
-        FacesContext context = FacesContext.getCurrentInstance();
-        Object previousSearchDocValue = addSearchDocumentToELContext(context);
-        try {
-            Object value = ComponentTagUtils.resolveElExpression(context,
-                    resultColumnsBinding);
-            if (value != null && !(value instanceof List)) {
-                log.error(String.format("Error processing expression '%s', "
-                        + "result is not a List: %s", resultColumnsBinding,
-                        value));
+        resolveWithSearchDocument(new Function<FacesContext, Void>() {
+            @Override
+            public Void apply(FacesContext ctx) {
+                Object value = ComponentTagUtils.resolveElExpression(ctx,
+                        resultColumnsBinding);
+                if (value != null && !(value instanceof List)) {
+                    log.error(String.format(
+                            "Error processing expression '%s', "
+                                    + "result is not a List: %s",
+                            resultColumnsBinding, value));
+                }
+                currentResultLayoutColumns = value == null
+                        || ((List) value).isEmpty() ? null : (List) value;
+
+                return null;
             }
-            return value == null || ((List) value).isEmpty() ? null
-                    : (List) value;
-        } finally {
-            removeSearchDocumentFromELContext(context, previousSearchDocValue);
-        }
+        });
+
+        return currentResultLayoutColumns;
     }
 
     @Override
-    public void setCurrentResultLayoutColumns(List<String> resultColumns) {
+    public void setCurrentResultLayoutColumns(final List<String> resultColumns) {
         currentResultLayoutColumns = resultColumns;
+
+        if (isBlank(resultColumnsBinding)) {
+            return;
+        }
+
+        resolveWithSearchDocument(new Function<FacesContext, Void>() {
+            @Override
+            public Void apply(FacesContext ctx) {
+                ComponentTagUtils.setValueElExpression(ctx, resultColumnsBinding, resultColumns);
+                return null;
+            }
+        });
+    }
+
+    @Override
+    public void resetSelectedLayoutAndColumns() {
+        currentResultLayoutColumns = null;
+        currentResultLayout = null;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

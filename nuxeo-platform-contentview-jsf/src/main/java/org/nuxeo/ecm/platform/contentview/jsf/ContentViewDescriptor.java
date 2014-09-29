@@ -89,6 +89,9 @@ public class ContentViewDescriptor {
     @XNode("resultColumns")
     String resultColumns;
 
+    @XNode("resultLayout")
+    String resultLayout;
+
     @XNodeList(value = "flags/flag", type = ArrayList.class, componentType = String.class)
     List<String> flags;
 
@@ -199,6 +202,10 @@ public class ContentViewDescriptor {
         return resultColumns;
     }
 
+    public String getResultLayoutBinding() {
+        return resultLayout;
+    }
+
     public List<String> getFlags() {
         return flags;
     }
@@ -303,6 +310,7 @@ public class ContentViewDescriptor {
             }
         }
         clone.resultColumns = getResultColumnsBinding();
+        clone.resultLayout = getResultLayoutBinding();
         List<String> flags = getFlags();
         if (flags != null) {
             clone.flags = new ArrayList<String>();

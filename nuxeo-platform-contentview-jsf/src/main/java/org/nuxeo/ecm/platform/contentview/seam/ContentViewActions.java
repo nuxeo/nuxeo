@@ -86,6 +86,7 @@ public class ContentViewActions implements Serializable {
      */
     public void setCurrentContentView(ContentView cv) {
         currentContentView = cv;
+        currentContentView.resetSelectedLayoutAndColumns();
     }
 
     /**

@@ -149,7 +149,8 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                 useGlobalPageSize.booleanValue(),
                 allQueryParams.toArray(new String[] {}), searchDocBinding,
                 searchDocumentType, desc.getResultColumnsBinding(),
-                sortInfosBinding, pageSizeBinding, showTitle.booleanValue(),
+                desc.getResultLayoutBinding(), sortInfosBinding,
+                pageSizeBinding, showTitle.booleanValue(),
                 showPageSizeSelector.booleanValue(),
                 showRefreshPage.booleanValue(), showFilterForm.booleanValue(),
                 desc.getEmptySentence(), translateEmptySentence.booleanValue());
