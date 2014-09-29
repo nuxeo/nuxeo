@@ -12,6 +12,7 @@
     </td>
     <td class="fieldColumn">
       <h:selectOneMenu value="#{permissionActionListManager.selectedGrant}"
+       disabled="#{!permissionActionListManager.allowNegativeACE}"
        id="rights_grant_select">
       <f:selectItems
       value="#{permissionActionListManager.permissionActionItems}" />
