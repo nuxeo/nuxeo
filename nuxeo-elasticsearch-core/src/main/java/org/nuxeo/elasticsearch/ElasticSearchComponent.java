@@ -92,25 +92,48 @@ public class ElasticSearchComponent extends DefaultComponent implements
             throws Exception {
         switch (extensionPoint) {
         case EP_LOCAL:
-            localConfig = (ElasticSearchLocalConfig) contribution;
-            remoteConfig = null;
-            log.info("Registering local embedded configuration: " + localConfig
-                    + ", loaded from " + contributor.getName());
+            ElasticSearchLocalConfig localContrib = (ElasticSearchLocalConfig) contribution;
+            if (localContrib.isEnabled()) {
+                localConfig = localContrib;
+                remoteConfig = null;
+                log.info("Registering local embedded configuration: "
+                        + localConfig + ", loaded from "
+                        + contributor.getName());
+            } else if (localConfig != null) {
+                log.info("Disabling previous local embedded configuration, deactivated by "
+                        + contributor.getName());
+                localConfig = null;
+            }
             break;
         case EP_REMOTE:
-            remoteConfig = (ElasticSearchRemoteConfig) contribution;
-            localConfig = null;
-            log.info("Registering remote configuration: " + remoteConfig
-                    + ", loaded from " + contributor.getName());
+            ElasticSearchRemoteConfig remoteContribution = (ElasticSearchRemoteConfig) contribution;
+            if (remoteContribution.isEnabled()) {
+                remoteConfig = remoteContribution;
+                localConfig = null;
+                log.info("Registering remote configuration: " + remoteConfig
+                        + ", loaded from " + contributor.getName());
+            } else if (remoteConfig != null) {
+                log.info("Disabling previous remote configuration, deactivated by "
+                        + contributor.getName());
+                remoteConfig = null;
+            }
             break;
         case EP_INDEX:
             ElasticSearchIndexConfig idx = (ElasticSearchIndexConfig) contribution;
-            ElasticSearchIndexConfig previous = indexConfig.put(idx.getName(),
-                    idx);
-            idx.merge(previous);
-            log.info("Registering index configuration: " + idx
-                    + ", loaded from " + contributor.getName());
+            ElasticSearchIndexConfig previous = indexConfig.get(idx.getName());
+            if (idx.isEnabled()) {
+                idx.merge(previous);
+                indexConfig.put(idx.getName(), idx);
+                log.info("Registering index configuration: " + idx
+                        + ", loaded from " + contributor.getName());
+            } else if (previous != null) {
+                log.info("Disabling index configuration: " + previous
+                        + ", deactivated by " + contributor.getName());
+                indexConfig.remove(idx.getName());
+            }
             break;
+         default:
+             throw new IllegalStateException("Invalid EP: " + extensionPoint);
         }
 
     }
@@ -266,8 +289,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
     }
 
-    void schedulePostCommitIndexing(IndexingCommand cmd)
-            throws ClientException {
+    void schedulePostCommitIndexing(IndexingCommand cmd) throws ClientException {
         try {
             EventProducer evtProducer = Framework
                     .getLocalService(EventProducer.class);

@@ -31,6 +31,9 @@ public class ElasticSearchRemoteConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @XNode("@enabled")
+    protected boolean isEnabled = true;
+
     @XNode("@clusterName")
     protected String clusterName;
 
@@ -94,8 +97,21 @@ public class ElasticSearchRemoteConfig implements Serializable {
         return numberOfReplicas;
     }
 
-    @Override public String toString() {
-        return String.format("remoteConfig(%s, [%s], %s, %s)", getClusterName(),
-                addressList, getNumberOfReplicas(), getNumberOfShards());
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
+    }
+
+    @Override
+    public String toString() {
+        if (isEnabled()) {
+            return String.format("EsRemoteConfig(%s, [%s], %s, %s)",
+                    getClusterName(), addressList, getNumberOfReplicas(),
+                    getNumberOfShards());
+        }
+        return "EsRemoteConfig disabled";
     }
 }

@@ -33,9 +33,15 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.BINARYTEXT_FIELD;
 @XObject(value = "elasticSearchIndex")
 public class ElasticSearchIndexConfig {
 
+    @XNode("@enabled")
+    protected boolean isEnabled = true;
+
     @Override public String toString() {
-        return String.format("IndexConfig(%s, %s, %s)",
-                getName(), getRepositoryName(), getType());
+        if (isEnabled()) {
+            return String.format("EsIndexConfig(%s, %s, %s)",
+                    getName(), getRepositoryName(), getType());
+        }
+        return "EsIndexConfig disabled";
     }
 
     @XNode("@name")
@@ -206,6 +212,14 @@ public class ElasticSearchIndexConfig {
 
     public String getRepositoryName() {
         return repositoryName;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
     }
 
     /**

@@ -33,6 +33,9 @@ public class ElasticSearchLocalConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @XNode("@enabled")
+    protected boolean isEnabled = true;
+
     @XNode("@clusterName")
     protected String clusterName;
 
@@ -50,7 +53,8 @@ public class ElasticSearchLocalConfig implements Serializable {
 
     public String getDataPath() {
         if (dataPath == null) {
-            File dir = new File(Framework.getRuntime().getHome(), "data/elasticsearch");
+            File dir = new File(Framework.getRuntime().getHome(),
+                    "data/elasticsearch");
             dataPath = dir.getPath();
         }
         return dataPath;
@@ -87,21 +91,34 @@ public class ElasticSearchLocalConfig implements Serializable {
         return clusterName;
     }
 
-    public String getNodeName() {
-        return nodeName;
-    }
-
     public void setClusterName(String clusterName) {
         this.clusterName = clusterName;
+    }
+
+    public String getNodeName() {
+        return nodeName;
     }
 
     public void setNodeName(String nodeName) {
         this.nodeName = nodeName;
     }
 
-    @Override public String toString() {
-        return String.format("localConfig(%s, %s, %s, %s)", getClusterName(),
-                getDataPath(), httpEnabled(), getIndexStorageType());
+    public boolean isEnabled() {
+        return isEnabled;
+    }
 
+    public void setEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
+    }
+
+    @Override
+    public String toString() {
+        if (isEnabled()) {
+            return String
+                    .format("EsLocalConfig(%s, %s, %s, %s)", getClusterName(),
+                            getDataPath(), httpEnabled(),
+                            getIndexStorageType());
+        }
+        return "EsLocalConfig disabled";
     }
 }

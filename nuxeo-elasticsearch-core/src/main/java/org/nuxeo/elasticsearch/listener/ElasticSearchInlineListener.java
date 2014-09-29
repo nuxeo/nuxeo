@@ -115,7 +115,10 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker
         Boolean block = (Boolean) docCtx.getProperty(EventConstants.DISABLE_AUTO_INDEXING);
         if (block != null && block) {
             // ignore the event - we are blocked by the caller
-            log.debug("Skip indexing for doc " + docCtx.getSourceDocument());
+            if (log.isDebugEnabled()) {
+                log.debug(
+                        "Skip indexing for doc " + docCtx.getSourceDocument());
+            }
             return;
         }
 
