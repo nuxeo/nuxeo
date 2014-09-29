@@ -43,6 +43,7 @@
   <component name="org.jboss.seam.web.authenticationFilter" disabled="true" />
   <component name="org.jboss.seam.web.identityFilter" disabled="true" />
   <component name="org.jboss.seam.web.loggingFilter" disabled="true" />
+  <component name="org.jboss.seam.web.multipartFilter" disabled="true" />
 
   <!-- configure custom implementations for Seam Excel library -->
   <component name="org.jboss.seam.excel.excelFactory">
