@@ -23,12 +23,18 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.MethodRule;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
-
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.Statement;
 import org.nuxeo.runtime.test.Failures;
 
 /**
@@ -39,13 +45,40 @@ import org.nuxeo.runtime.test.Failures;
  */
 public class RandomBugTest {
 
-    private static final String FAILURE_MESSAGE = "FAILURE";
+    protected static final String FAILURE_MESSAGE = "FAILURE";
 
     protected static boolean fail = true;
+
+    protected static boolean isRunningInners;
+
+    protected static class IgnoreInner implements MethodRule {
+
+        @Override
+        public Statement apply(Statement base, FrameworkMethod method,
+                Object target) {
+            Assume.assumeTrue(isRunningInners);
+            return base;
+        }
+
+    }
+
+    @BeforeClass
+    public static void setInner() {
+        isRunningInners = true;
+    }
+
+    @AfterClass
+    public static void resetInner() {
+        isRunningInners = false;
+    }
 
     @RunWith(FeaturesRunner.class)
     @Features({ RuntimeFeature.class })
     public static class BeforeWithIgnoredTest {
+
+        @Rule
+        public static final IgnoreInner ignoreInner = new IgnoreInner();
+
         @Before
         public void setup() {
             fail(FAILURE_MESSAGE);
@@ -70,6 +103,10 @@ public class RandomBugTest {
     @RunWith(FeaturesRunner.class)
     @Features({ RuntimeFeature.class })
     public static class AfterWithIgnoredTest {
+
+        @Rule
+        public static final IgnoreInner ignoreInner = new IgnoreInner();
+
         @Test
         @RandomBug.Repeat(issue = FAILURE_MESSAGE)
         public void test() throws Exception {
@@ -93,6 +130,10 @@ public class RandomBugTest {
     @RunWith(FeaturesRunner.class)
     @Features({ RuntimeFeature.class })
     public static class RandomlyFailingTest {
+
+        @Rule
+        public static final IgnoreInner ignoreInner = new IgnoreInner();
+
         @Test
         @RandomBug.Repeat(issue = "testSucceedThenFail")
         public void testSucceedThenFail() throws Exception {
@@ -142,13 +183,13 @@ public class RandomBugTest {
         }
     }
 
-    private void runClassAndVerifyNoFailures(Class<?> klass,
+    protected void runClassAndVerifyNoFailures(Class<?> klass,
             String testFailureDescription) {
         Result result = JUnitCore.runClasses(klass);
         analyseResult(result, testFailureDescription);
     }
 
-    private void analyseResult(Result result, String testFailureDescription) {
+    protected void analyseResult(Result result, String testFailureDescription) {
         if (!result.wasSuccessful()) {
             new Failures(result).fail(FAILURE_MESSAGE, testFailureDescription);
         }

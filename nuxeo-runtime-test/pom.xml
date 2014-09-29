@@ -22,8 +22,6 @@
           <excludes>
             <exclude>**/ContributionTest*.java</exclude>
             <exclude>**/MyTestComponent.java</exclude>
-            <!-- Exclude inner classes -->
-            <exclude>**/*$*</exclude>
           </excludes>
         </configuration>
       </plugin>
