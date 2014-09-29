@@ -20,6 +20,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
+import org.nuxeo.runtime.trackers.concurrent.ThreadEvent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -39,60 +40,62 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class WorkHolder implements Runnable {
 
-    private final Work work;
+	private final Work work;
 
-    public WorkHolder(Work work) {
-        this.work = work;
-    }
+	public WorkHolder(Work work) {
+		this.work = work;
+	}
 
-    public static Work getWork(Runnable r) {
-        return ((WorkHolder) r).work;
-    }
+	public static Work getWork(Runnable r) {
+		return ((WorkHolder) r).work;
+	}
 
-    @Override
-    public void run() {
-        if (work.isSuspending()) {
-            // don't run anything if we're being started while a suspend
-            // has been requested
-            work.suspended();
-            return;
-        }
-        TransactionHelper.startTransaction();
-        WorkSchedulePath.handleEnter(work);
-        boolean ok = false;
-        Exception exc = null;
-        try {
-            work.setStartTime();
-            work.work();
-            ok = true;
-        } catch (Exception e) { // InterruptedException managed below
-            exc = e;
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
-            } else {
-                throw new RuntimeException(e);
-            }
-        } finally {
-            WorkSchedulePath.handleReturn();
-            try {
-                work.cleanUp(ok, exc);
-            } finally {
-                try {
-                    if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-                        if (!ok) {
-                            TransactionHelper.setTransactionRollbackOnly();
-                        }
-                        TransactionHelper.commitOrRollbackTransaction();
-                    }
-                } finally {
-                    if (exc instanceof InterruptedException) {
-                        // restore interrupted status for the thread pool
-                        // worker
-                        Thread.currentThread().interrupt();
-                    }
-                }
-            }
-        }
-    }
+	@Override
+	public void run() {
+		if (work.isSuspending()) {
+			// don't run anything if we're being started while a suspend
+			// has been requested
+			work.suspended();
+			return;
+		}
+		ThreadEvent.onEnter(this, false).send();
+		TransactionHelper.startTransaction();
+		WorkSchedulePath.handleEnter(work);
+		boolean ok = false;
+		Exception exc = null;
+		try {
+			work.setStartTime();
+			work.work();
+			ok = true;
+		} catch (Exception e) { // InterruptedException managed below
+			exc = e;
+			if (e instanceof RuntimeException) {
+				throw (RuntimeException) e;
+			} else {
+				throw new RuntimeException(e);
+			}
+		} finally {
+			WorkSchedulePath.handleReturn();
+			try {
+				work.cleanUp(ok, exc);
+			} finally {
+				try {
+					if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+						if (!ok) {
+							TransactionHelper.setTransactionRollbackOnly();
+						}
+						TransactionHelper.commitOrRollbackTransaction();
+					}
+				} finally {
+					ThreadEvent.onLeave(this).send();
+					if (exc instanceof InterruptedException) {
+						// restore interrupted status for the thread pool
+						// worker
+						Thread.currentThread().interrupt();
+					}
+				}
+			}
+		}
+	}
 
 }

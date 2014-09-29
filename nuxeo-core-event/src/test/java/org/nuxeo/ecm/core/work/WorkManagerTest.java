@@ -26,23 +26,54 @@ import static org.nuxeo.ecm.core.work.api.Work.State.COMPLETED;
 import static org.nuxeo.ecm.core.work.api.Work.State.RUNNING;
 import static org.nuxeo.ecm.core.work.api.Work.State.SCHEDULED;
 
+import java.io.File;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.work.api.Work.Progress;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.FileEventsTrackingFeature;
+import org.nuxeo.runtime.trackers.files.FileEvent;
 
+@RunWith(FeaturesRunner.class)
+@Features(FileEventsTrackingFeature.class)
 public class WorkManagerTest extends NXRuntimeTestCase {
+
+    protected static class CreateFile extends AbstractWork implements Serializable {
+        private final File file;
+
+        private static final long serialVersionUID = 1L;
+
+        protected CreateFile(File file) {
+            this.file = file;
+        }
+
+        @Override
+        public String getTitle() {
+            return "pfouh";
+        }
+
+        @Override
+        public void work() throws Exception {
+            FileEvent.onFile(this, file, this).send();
+        }
+    }
 
     protected static final String CATEGORY = "SleepWork";
 
@@ -340,6 +371,23 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertTrue("remaining1 " + remaining1, remaining1 < duration);
         assertTrue("remaining2 " + remaining2, remaining2 < duration);
         assertEquals(duration, remaining3);
+    }
+    
+    @Inject
+    public FeaturesRunner runner;
+
+    protected FileEventsTrackingFeature feature;
+
+    @Before
+    public void injectFeature() {
+        feature = runner.getFeature(FileEventsTrackingFeature.class);
+    }
+
+    @Test
+    public void transientFilesWorkAreCleaned() throws Exception {
+        final File file = feature.resolveAndCreate(new File("pfouh"));
+        service.schedule(new CreateFile(file));
+        service.awaitCompletion(5, TimeUnit.SECONDS);
     }
 
 }
