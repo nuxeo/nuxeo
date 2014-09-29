@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.ui.web.component.holder;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,10 +33,12 @@ import org.apache.commons.logging.LogFactory;
  *
  * @since 5.9.6
  */
-// FIXME: annotations do not trigger registration
+// FIXME: annotations do not trigger registration, need to figure out why
 // @ViewScoped
 // @ManagedBean
-public class NuxeoValueHolderBean {
+public class NuxeoValueHolderBean implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public static final String NAME = "nuxeoValueHolderBean";
 
@@ -44,7 +47,7 @@ public class NuxeoValueHolderBean {
     // map of held value by id. id is the component corresponding facelet tag
     // id, the component facelet tag handler ensures a unique relation between
     // the two.
-    protected Map<String, Object> values;
+    protected Map<String, Serializable> values;
 
     public NuxeoValueHolderBean() {
         super();
@@ -56,7 +59,7 @@ public class NuxeoValueHolderBean {
         values = new HashMap<>();
     }
 
-    public Map<String, Object> getValues() {
+    public Map<String, Serializable> getValues() {
         return Collections.unmodifiableMap(values);
     }
 
@@ -67,7 +70,11 @@ public class NuxeoValueHolderBean {
                     + "missing facelet marker id on component attributes");
             return;
         }
-        values.put(fid, value);
+        if (value instanceof Serializable) {
+            values.put(fid, (Serializable) value);
+        } else {
+            log.warn("Value is not serializable, cannot store it in view");
+        }
     }
 
     public void saveState(UIValueHolder c) {
