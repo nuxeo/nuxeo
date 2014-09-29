@@ -5,14 +5,13 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
   <h:form id="subscriptions">
 
-    <nxu:dataList var="entry"
-      value="#{groupsSubscriptionsAction.usersByNotificationsForCurrentDocument.entrySet}">
-    
+    <c:forEach var="entry"
+      items="#{groupsSubscriptionsAction.usersByNotificationsForCurrentDocument.entrySet}">
+
       <h:panelGroup rendered="#{not empty entry.value}">
 
         <h3>
@@ -20,11 +19,11 @@
         </h3>
 
         <nxl:layout name="user_group_prefixed_suggestion" mode="view"
-          value="#{entry.value}" /> 
+          value="#{entry.value}" />
 
       </h:panelGroup>
-    
-    </nxu:dataList>
+
+    </c:forEach>
 
   </h:form>
 
@@ -38,7 +37,7 @@
     <div class="userAndGroupFilter">
 
       <nxl:layout name="user_group_prefixed_suggestion" mode="create"
-        value="#{groupsSubscriptionsAction.selectedEntries}" /> 
+        value="#{groupsSubscriptionsAction.selectedEntries}" />
       <ui:include src="/incl/group_subscriptions_action.xhtml" />
 
     </div>
