@@ -36,6 +36,7 @@ Nuxeo-Component: OSGI-INF/EventService.xml,
  OSGI-INF/ServiceManagement.xml,
  OSGI-INF/DefaultJBossBindings.xml,
  OSGI-INF/ContributionPersistence.xml
+ OSGI-INF/FileEventTracker.xml, OSGI-INF/FileEventTrackerConfig.xml
 Bundle-Activator: org.nuxeo.runtime.osgi.OSGiRuntimeActivator
 Bundle-ManifestVersion: 2
 Import-Package: javax.management,

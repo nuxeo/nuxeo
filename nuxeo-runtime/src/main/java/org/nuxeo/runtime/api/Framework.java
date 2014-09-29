@@ -23,7 +23,6 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,6 +34,8 @@ import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.ServiceManager;
 import org.nuxeo.runtime.api.login.LoginAs;
 import org.nuxeo.runtime.api.login.LoginService;
+import org.nuxeo.runtime.trackers.files.FileEvent;
+import org.nuxeo.runtime.trackers.files.FileEventTracker;
 
 /**
  * This class is the main entry point to a Nuxeo runtime application.
@@ -91,8 +92,6 @@ public final class Framework {
 
     private static final ListenerList listeners = new ListenerList();
 
-    private static final FileCleaningTracker fileCleaningTracker = new FileCleaningTracker();
-
     /**
      * A class loader used to share resources between all bundles.
      * <p>
@@ -110,6 +109,7 @@ public final class Framework {
      * controlled by the ${ecr.osgi.services} property. The default is false.
      */
     protected static Boolean isOSGiServiceSupported;
+
 
     // Utility class.
     private Framework() {
@@ -512,27 +512,29 @@ public final class Framework {
     }
 
     /**
-     * Deletes the given file when the marker object is collected by GC.
-     *
+     * @see FileEventTracker
      * @param file The file to delete
      * @param marker the marker Object
      */
-    public static void trackFile(File file, Object marker) {
-        fileCleaningTracker.track(file, marker);
+    public static void trackFile(File aFile, Object aMarker) {
+        FileEvent.onFile(Framework.class, aFile, aMarker);
     }
 
     /**
-     * Deletes the given file when the marker object is collected by GC. The
-     * fileDeleteStrategy can be used for instance do delete only empty
-     * directory or force deletion.
+     * Strategy is now always FileDeleteStrategy.FORCE unless you've specified
+     * another one
      *
+     * @deprecated
+     * @since 6.0
+     * @see #trackFile(File, Object)
      * @param file The file to delete
      * @param marker the marker Object
      * @param fileDeleteStrategy add a custom delete strategy
      */
+    @Deprecated
     public static void trackFile(File file, Object marker,
             FileDeleteStrategy fileDeleteStrategy) {
-        fileCleaningTracker.track(file, marker, fileDeleteStrategy);
+        trackFile(file, marker);
     }
 
     public static void main(String[] args) {

@@ -254,15 +254,6 @@ public class NXRuntimeTestCase implements RuntimeHarness {
 
         runtime = Framework.getRuntime();
         assertNotNull(runtime);
-
-        // avoid Streaming and Remoting services: useless and can't work
-        deployContrib(bundleFile, "OSGI-INF/DeploymentService.xml");
-        deployContrib(bundleFile, "OSGI-INF/LoginComponent.xml");
-        deployContrib(bundleFile, "OSGI-INF/ServiceManagement.xml");
-        deployContrib(bundleFile, "OSGI-INF/EventService.xml");
-        deployContrib(bundleFile, "OSGI-INF/ResourceService.xml");
-        deployContrib(bundleFile, "OSGI-INF/DefaultJBossBindings.xml");
-        deployContrib(bundleFile, "OSGI-INF/ContributionPersistence.xml");
     }
 
     protected void initTestRuntime() throws Exception {

@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     gracinet
  *
@@ -42,7 +42,7 @@ public class OSGIRuntimeTestActivator extends OSGiRuntimeActivator {
     public void start(BundleContext context) throws Exception {
         log.info("Starting Runtime Activator");
         // create the runtime
-        runtime = new OSGiRuntimeTestService(context);
+        runtime = new OSGiRuntimeService(context);
 
         // load main config file if any
         URL config = context.getBundle().getResource("/OSGI-INF/nuxeo.properties");
