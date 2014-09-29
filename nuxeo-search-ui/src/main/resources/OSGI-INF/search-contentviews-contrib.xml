@@ -30,6 +30,9 @@
             <field schema="default_search" name="dc_created_min" />
             <field schema="default_search" name="dc_created_max" />
           </predicate>
+          <predicate parameter="dc:nature" operator="IN">
+            <field schema="default_search" name="dc_nature" />
+          </predicate>
           <predicate parameter="dc:subjects" operator="STARTSWITH">
             <field schema="default_search" name="dc_subjects" />
           </predicate>
@@ -403,6 +406,25 @@
       <properties widgetMode="any">
       </properties>
       <subWidgets>
+        <widget name="dc_nature" type="suggestManyDirectory">
+          <labels>
+            <label mode="any">label.dublincore.nature</label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>defaults:dc_nature</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'hidden' : 'edit'}</mode>
+          </widgetModes>
+          <properties widgetMode="any">
+            <property name="width">100%</property>
+            <property name="minChars">0</property>
+            <property name="hideHelpLabel">true</property>
+            <property name="directoryName">nature</property>
+            <property name="localize">true</property>
+          </properties>
+        </widget>
         <widget name="dc_subjects" type="suggestManyDirectory">
           <labels>
             <label mode="any">label.dublincore.subject</label>
@@ -442,6 +464,26 @@
             <property name="filterParent">true</property>
             <property name="canSelectParent">true</property>
           </properties>
+        </widget>
+        <widget name="dc_nature_agg" type="selectManyCheckboxDirectoryAggregate">
+          <labels>
+            <label mode="any">label.dublincore.nature</label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>defaults:dc_nature_agg</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
+          </widgetModes>
+          <properties widgetMode="any">
+            <property name="directoryName">nature</property>
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_nature_agg'].buckets}</property>
+            <property name="localize">true</property>
+          </properties>
+          <controls mode="any">
+            <control name="supportInsideInputWidgetEffects">true</control>
+          </controls>
         </widget>
         <widget name="dc_subjects_agg" type="selectManyCheckboxDirectoryAggregate">
           <labels>
