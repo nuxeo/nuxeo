@@ -16,12 +16,102 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1352737132250</id>
+			<id>1412006830112</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-true-nuxeo-.*</arguments>
+				<arguments>1.0-name-matches-false-false-nuxeo-core</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1412006830114</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-nuxeo-common</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1412006830115</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-nuxeo-runtime</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1412006830117</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-nuxeo-distribution</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1412006830119</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-nuxeo-dm</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1412006830120</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-nuxeo-features</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1412006830122</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-nuxeo-jsf</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1412006830124</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-nuxeo-services</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1412006830126</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-nuxeo-theme</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1412006830128</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-nuxeo-webengine</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1412006830130</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-projectRelativePath-matches-false-false-addons/nuxeo*</arguments>
 			</matcher>
 		</filter>
 	</filteredResources>
