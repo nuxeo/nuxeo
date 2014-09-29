@@ -18,10 +18,8 @@ package org.nuxeo.ecm.core.work;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.work.api.Work;
+import org.nuxeo.runtime.trackers.concurrent.ThreadEvent;
 
 /**
  * A {@link WorkHolder} adapts a {@link Work} to {@link Runnable} for queuing
@@ -49,7 +47,12 @@ public class WorkHolder implements Runnable {
 
     @Override
     public void run() {
-        work.run();
+        ThreadEvent.onEnter(this, false).send();
+        try {
+            work.run();
+        } finally {
+            ThreadEvent.onLeave(this).send();
+        }
     }
 
 }
