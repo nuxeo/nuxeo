@@ -102,8 +102,6 @@ public class NXRuntimeTestCase implements RuntimeHarness {
 
     protected File workingDir;
 
-    private static int counter = 0;
-
     protected StandaloneBundleLoader bundleLoader;
 
     private Set<URI> readUris;
@@ -213,13 +211,6 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         return runtime != null;
     }
 
-    private static synchronized String generateId() {
-        long stamp = System.currentTimeMillis();
-        counter++;
-        return Long.toHexString(stamp) + '-'
-                + System.identityHashCode(System.class) + '.' + counter;
-    }
-
     protected void initOsgiRuntime() throws Exception {
         try {
             if (!restart) {
@@ -227,8 +218,9 @@ public class NXRuntimeTestCase implements RuntimeHarness {
                 if (System.getProperties().remove("nuxeo.home") != null) {
                     log.warn("Removed System property nuxeo.home.");
                 }
-                workingDir = File.createTempFile("nxruntime-"+Thread.currentThread().getName()+"-",
-                        null,new File("target"));
+                workingDir = File.createTempFile("nxruntime-"
+                        + Thread.currentThread().getName() + "-", null,
+                        new File("target"));
                 workingDir.delete();
             }
         } catch (IOException e) {
@@ -432,15 +424,6 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         deployContrib(url);
     }
 
-    private void deployContrib(BundleFile bundleFile, String contrib) {
-        URL url = bundleFile.getEntry(contrib);
-        if (url == null) {
-            fail(String.format("Could not find entry %s in bundle '%s",
-                    contrib, bundleFile.getURL()));
-        }
-        deployContrib(url);
-    }
-
     /**
      * Deploys a contribution from a given bundle.
      * <p>
@@ -462,7 +445,8 @@ public class NXRuntimeTestCase implements RuntimeHarness {
             BundleFile file = lookupBundle(name);
             URL location = file.getEntry(contrib);
             if (location == null) {
-                throw new AssertionError("Cannot locate " + contrib + " in " + name);
+                throw new AssertionError("Cannot locate " + contrib + " in "
+                        + name);
             }
             context.deploy(location);
             return;
@@ -526,7 +510,6 @@ public class NXRuntimeTestCase implements RuntimeHarness {
             fail("Failed to undeploy contrib " + url.toString());
         }
     }
-
 
     /**
      * Undeploys a contribution from a given bundle.
