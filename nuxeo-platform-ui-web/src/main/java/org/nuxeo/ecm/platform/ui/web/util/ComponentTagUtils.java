@@ -154,6 +154,32 @@ public final class ComponentTagUtils {
         }
     }
 
+    public static void setValueElExpression(FacesContext context,
+            String elExpression, Object value) {
+        if (!isValueReference(elExpression)) {
+            log.debug("Trying to set a hardcoded expression");
+        } else {
+            if (context == null) {
+                log.error(String.format(
+                        "FacesContext is null => cannot resolve el expression '%s'",
+                        elExpression));
+            }
+            // expression => evaluate
+            Application app = context.getApplication();
+            try {
+                ExpressionFactory eFactory = app.getExpressionFactory();
+                ELContext elContext = context.getELContext();
+                ValueExpression vExpression = eFactory.createValueExpression(
+                        elContext, elExpression, Object.class);
+                vExpression.setValue(elContext, value);
+            } catch (Exception e) {
+                log.error(String.format(
+                        "Faces context: Error processing expression '%s'",
+                        elExpression), e);
+            }
+        }
+    }
+
     /**
      * Resolves an expression from a given facelet context, using its
      * {@link ExpressionFactory} that can hold a wider context than the faces
