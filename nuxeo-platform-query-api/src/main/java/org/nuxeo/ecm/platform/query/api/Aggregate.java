@@ -67,4 +67,9 @@ public interface Aggregate<B extends Bucket> {
     List<B> getBuckets();
 
     void setBuckets(List<B> buckets);
+
+    Bucket getBucket(final String key);
+
+    boolean hasBucket(final String key);
+
 }

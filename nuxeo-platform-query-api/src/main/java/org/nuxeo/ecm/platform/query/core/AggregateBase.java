@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.query.core;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +39,7 @@ public class AggregateBase<B extends Bucket> implements Aggregate<B> {
     protected final DocumentModel searchDocument;
     protected List<String> selection;
     protected List<B> buckets;
+    protected Map<String,Bucket> bucketMap = null;
 
     public AggregateBase(AggregateDefinition definition,
                          DocumentModel searchDocument) {
@@ -107,6 +109,7 @@ public class AggregateBase<B extends Bucket> implements Aggregate<B> {
     @Override
     public void setBuckets(List<B> buckets) {
         this.buckets = buckets;
+        this.bucketMap = null;
     }
 
     public DocumentModel getSearchDocument() {
@@ -119,5 +122,25 @@ public class AggregateBase<B extends Bucket> implements Aggregate<B> {
                 getType(), getField(),
                 (getSelection() != null) ? Arrays.toString(getSelection().toArray()): null,
                 (buckets != null) ? Arrays.toString(buckets.toArray()): null);
+    }
+
+    @Override
+    public boolean hasBucket(final String key) {
+        return getBucketMap().containsKey(key);
+    }
+
+    @Override
+    public Bucket getBucket(final String key) {
+        return getBucketMap().get(key);
+    }
+
+    public Map<String, Bucket> getBucketMap() {
+        if (bucketMap == null && getBuckets() != null) {
+            bucketMap = new HashMap<String, Bucket>();
+            for (Bucket b : getBuckets()) {
+                bucketMap.put(b.getKey(), b);
+            }
+        }
+        return bucketMap;
     }
 }
