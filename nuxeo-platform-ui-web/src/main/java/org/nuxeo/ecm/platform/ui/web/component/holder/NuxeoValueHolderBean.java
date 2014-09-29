@@ -70,10 +70,11 @@ public class NuxeoValueHolderBean implements Serializable {
                     + "missing facelet marker id on component attributes");
             return;
         }
-        if (value instanceof Serializable) {
+        if (value == null || value instanceof Serializable) {
             values.put(fid, (Serializable) value);
         } else {
-            log.warn("Value is not serializable, cannot store it in view");
+            log.warn("Value is not serializable, cannot store it in view: "
+                    + value);
         }
     }
 
