@@ -313,16 +313,23 @@
           <widgetModes>
             <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
           </widgetModes>
-          <properties widgetMode="any">
-            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_modified_agg'].buckets}</property>
-          </properties>
-          <!-- selectOptions>
-            <option itemLabel="#{messages['label.aggregate.modified.last24H']}" itemValue="last24H"  />
-            <option itemLabel="#{messages['label.aggregate.modified.lastWeek']}" itemValue="lastWeek"  />
-            <option itemLabel="#{messages['label.aggregate.modified.lastMonth']}" itemValue="lastMonth" />
-            <option itemLabel="#{messages['label.aggregate.modified.lastYear']}" itemValue="lastYear" />
-            <option itemLabel="#{messages['label.aggregate.modified.priorToLastYear']}" itemValue="priorToLastYear" />
-          </selectOptions-->
+          <selectOptions>
+            <option itemLabel="#{messages['label.aggregate.modified.last24h']} (#{contentView.pageProvider.aggregates['dc_modified_agg'].getBucket('last24h').docCount})"
+              itemValue="last24h"
+              itemRendered="#{contentView.pageProvider.aggregates['dc_modified_agg'].hasBucket('last24H')}" />
+            <option itemLabel="#{messages['label.aggregate.modified.lastWeek']} (#{contentView.pageProvider.aggregates['dc_modified_agg'].getBucket('lastWeek').docCount})"
+              itemValue="lastWeek"
+              itemRendered="#{contentView.pageProvider.aggregates['dc_modified_agg'].hasBucket('lastWeek')}" />
+            <option itemLabel="#{messages['label.aggregate.modified.lastMonth']} (#{contentView.pageProvider.aggregates['dc_modified_agg'].getBucket('lastMonth').docCount})"
+              itemValue="lastMonth"
+              itemRendered="#{contentView.pageProvider.aggregates['dc_modified_agg'].hasBucket('lastMonth')}" />
+            <option itemLabel="#{messages['label.aggregate.modified.lastYear']} (#{contentView.pageProvider.aggregates['dc_modified_agg'].getBucket('lastYear').docCount})"
+              itemValue="lastYear"
+              itemRendered="#{contentView.pageProvider.aggregates['dc_modified_agg'].hasBucket('big')}" />
+            <option itemLabel="#{messages['label.aggregate.modified.priorToLastYear']} (#{contentView.pageProvider.aggregates['dc_modified_agg'].getBucket('priorToLastYear').docCount})"
+              itemValue="priorToLastYear"
+              itemRendered="#{contentView.pageProvider.aggregates['dc_modified_agg'].hasBucket('priorToLastYear')}" />
+          </selectOptions>
           <controls mode="any">
             <control name="supportInsideInputWidgetEffects">true</control>
           </controls>
@@ -538,9 +545,23 @@
           <widgetModes>
             <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
           </widgetModes>
-          <properties widgetMode="any">
-            <property name="selectOptions">#{contentView.pageProvider.aggregates['common_size_agg'].buckets}</property>
-          </properties>
+          <selectOptions>
+            <option itemLabel="#{messages['label.aggregate.size.tiny']} (#{contentView.pageProvider.aggregates['common_size_agg'].getBucket('tiny').docCount})"
+              itemValue="tiny"
+              itemRendered="#{contentView.pageProvider.aggregates['common_size_agg'].hasBucket('tiny')}" />
+            <option itemLabel="#{messages['label.aggregate.size.small']} (#{contentView.pageProvider.aggregates['common_size_agg'].getBucket('small').docCount})"
+              itemValue="small"
+              itemRendered="#{contentView.pageProvider.aggregates['common_size_agg'].hasBucket('small')}" />
+            <option itemLabel="#{messages['label.aggregate.size.medium']} (#{contentView.pageProvider.aggregates['common_size_agg'].getBucket('medium').docCount})"
+              itemValue="medium"
+              itemRendered="#{contentView.pageProvider.aggregates['common_size_agg'].hasBucket('medium')}" />
+            <option itemLabel="#{messages['label.aggregate.size.big']} (#{contentView.pageProvider.aggregates['common_size_agg'].getBucket('big').docCount})"
+              itemValue="big"
+              itemRendered="#{contentView.pageProvider.aggregates['common_size_agg'].hasBucket('big')}" />
+            <option itemLabel="#{messages['label.aggregate.size.huge']} (#{contentView.pageProvider.aggregates['common_size_agg'].getBucket('huge').docCount})"
+              itemValue="huge"
+              itemRendered="#{contentView.pageProvider.aggregates['common_size_agg'].hasBucket('huge')}" />
+          </selectOptions>
           <controls mode="any">
             <control name="supportInsideInputWidgetEffects">true</control>
           </controls>
