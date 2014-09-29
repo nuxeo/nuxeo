@@ -16,10 +16,11 @@
     <ui:insert name="stylesheets"></ui:insert>
     <ui:insert name="header_scripts"></ui:insert>
 
+    <nxthemes:themestyles cache="true" target="head"
+      id="theme_view_styles" name="theme_view_styles" />
+    <nxthemes:resources target="head"
+      id="theme_view_resources" name="theme_view_resources" />
+
   </h:head>
-  <nxthemes:resources
-    id="theme_view_resources" name="theme_view_resources" />
-  <nxthemes:themestyles cache="true"
-    id="theme_view_styles" name="theme_view_styles" />
   [nxthemes markup]
 </html>
