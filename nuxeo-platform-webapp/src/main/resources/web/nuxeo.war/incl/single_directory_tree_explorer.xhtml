@@ -20,10 +20,8 @@
     <h:panelGroup id="directoryTreeNav">
       <rich:tree
         adviseNodeOpened="#{directoryTreeManager.adviseNodeOpened}"
+        styleClass="nx-no-trn-ico"
         changeExpandListener="#{directoryTreeManager.changeExpandListener}"
-        icon="/icons/folder.gif"
-        iconExpanded="/icons/toggle_minus.png"
-        iconCollapsed="/icons/toggle_plus.png"
         rowKeyVar="rowKey"
         id="directoryNavTree"
         stateVar="nodeState"
