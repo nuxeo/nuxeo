@@ -473,7 +473,7 @@
             <field>defaults:dc_coverage_agg</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="any">
             <property name="directoryName">l10ncoverage</property>
