@@ -260,15 +260,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         runtime = handleNewRuntime((OSGiRuntimeService) Framework.getRuntime());
 
         assertNotNull(runtime);
-
-
-        deployContrib(bundleFile, "OSGI-INF/DeploymentService.xml");
-        deployContrib(bundleFile, "OSGI-INF/LoginComponent.xml");
-        deployContrib(bundleFile, "OSGI-INF/EventService.xml");
-        deployContrib(bundleFile, "OSGI-INF/ResourceService.xml");
-        deployContrib(bundleFile, "OSGI-INF/ContributionPersistence.xml");
     }
-
 
     protected OSGiRuntimeService handleNewRuntime(OSGiRuntimeService runtime) {
         return runtime;

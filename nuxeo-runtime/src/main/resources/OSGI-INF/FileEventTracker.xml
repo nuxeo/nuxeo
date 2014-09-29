@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.trackers.files">
+
+	<require>org.nuxeo.runtime.EventService</require>
+
+	<implementation class="org.nuxeo.runtime.trackers.files.FileEventTracker" />
+
+	<extension-point name="configs">
+		<object class="org.nuxeo.runtime.trackers.files.FileEventTracker$Config" />
+	</extension-point>
+
+</component>
+
