@@ -7,11 +7,13 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
   <h3><h:outputText value="#{messages['label.bulk.import.documents']}" /></h3>
-
+<a4j:log />
   <h:form enctype="multipart/form-data" id="#{fancyboxFormId}" disableDoubleClickShield="#{!useHtml5DragAndDrop}">
 
+    <nxu:set var="buttonsId" value="#{fancyboxFormId}_buttons">
+    <nxu:set var="fancyButtonsRender"
+      value="#{nxu:componentAbsoluteId(component, buttonsId)}">
     <div class="content positionR">
-
       <table class="dataInput fullWidth separator">
         <tbody>
         <tr>
@@ -27,9 +29,9 @@
               translated="true"
               minChars="3"
               placeholder="label.bulk.import.documents.select.location.placeholder"
-              ajaxReRender="#{fancyboxFormId}_typeDescriptionsPanel #{fancyboxFormId}_buttons"
+              ajaxReRender="#{fancyButtonsRender}"
               pageProviderName="importFolders"
-              documentSchemas = "dublincore,common">
+              documentSchemas="dublincore,common">
             </nxl:widgetType>
           </td>
         </tr>
@@ -75,7 +77,7 @@
                   value="#{importActions.selectedImportOptionId}"
                   id="#{widget.id}" styleClass="langSelect">
                   <a4j:ajax event="change"
-                    render="importLayout_panel" />
+                    render="#{nxu:componentAbsoluteId(component, 'importLayout_panel')}" />
                   <nxu:selectItems
                     var="importOption" value="#{importOptions}"
                     itemValue="#{importOption.id}" itemLabel="#{messages[importOption.label]}" />
@@ -114,7 +116,7 @@
 
     </div>
 
-    <a4j:outputPanel id="#{fancyboxFormId}_buttons" layout="block">
+    <a4j:outputPanel id="#{buttonsId}" layout="block">
       <div class="buttonsGadget" data-selectedimportfolder="#{!empty importActions.selectedImportFolderId}">
         <nxu:set var="importButtonDisabled"
           value="#{empty importActions.selectedImportFolderId or !importActions.hasUploadedFiles()}"
@@ -146,6 +148,8 @@
         </nxu:set>
       </div>
     </a4j:outputPanel>
+    </nxu:set>
+    </nxu:set>
   </h:form>
 
 </div>
