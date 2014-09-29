@@ -15,4 +15,5 @@ Nuxeo-Component: OSGI-INF/search-actions-contrib.xml,
  OSGI-INF/search-pageproviders-contrib.xml,
  OSGI-INF/search-theme-contrib.xml,
  OSGI-INF/search-ui-service.xml,
+ OSGI-INF/search-ui-types-contrib.xml,
  OSGI-INF/search-url-service-contrib.xml
