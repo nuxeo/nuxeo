@@ -81,6 +81,9 @@ public class TermAggregate extends AggregateEsBase<BucketTerm> {
             case AGG_ORDER_TERM_ASC:
                 ret.order(Terms.Order.term(true));
                 break;
+            default:
+                throw new IllegalArgumentException("Invalid order: "
+                        + props.get(AGG_ORDER_PROP));
             }
         }
         return ret;

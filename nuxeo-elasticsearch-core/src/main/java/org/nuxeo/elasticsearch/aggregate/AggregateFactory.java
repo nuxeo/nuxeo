@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.query.api.Bucket;
 /**
  * @since 5.9.6
  */
-public class AggregateFactory {
+final public class AggregateFactory {
 
     private AggregateFactory() {
     }

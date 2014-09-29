@@ -52,12 +52,9 @@ public class BareElasticSearchFeature extends SimpleFeature {
 
         File home = Framework.getRuntime().getHome();
         File esDirectory = new File(home, "elasticsearch");
-        if (!esDirectory.exists()) {
-            if (!esDirectory.mkdir()) {
-                throw new InvalidParameterException(
-                        "Can not create directory: "
-                                + esDirectory.getAbsolutePath());
-            }
+        if (!esDirectory.exists() && !esDirectory.mkdir()) {
+            throw new InvalidParameterException("Can not create directory: "
+                    + esDirectory.getAbsolutePath());
         }
         Settings settings = ImmutableSettings.settingsBuilder().put(
                 "node.http.enabled", true).put("path.logs",
@@ -65,7 +62,6 @@ public class BareElasticSearchFeature extends SimpleFeature {
                 esDirectory.getPath() + "/data").put("gateway.type", "none").put(
                 "index.store.type", "memory").put("index.number_of_shards", 1).put(
                 "index.number_of_replicas", 1).build();
-
         node = NodeBuilder.nodeBuilder().local(true).settings(settings).node();
         client = node.client();
         super.start(runner);

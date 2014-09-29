@@ -16,7 +16,7 @@
  */
 package org.nuxeo.elasticsearch;
 
-public class ElasticSearchConstants {
+final public class ElasticSearchConstants {
     private ElasticSearchConstants() {
     }
 

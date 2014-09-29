@@ -95,7 +95,8 @@ public class JsonDocumentModelReader {
                 case "mixinType":
                     // Can not be done via API
                     break;
-
+                default:
+                    // not taken in account
                 }
             } else {
                 try {

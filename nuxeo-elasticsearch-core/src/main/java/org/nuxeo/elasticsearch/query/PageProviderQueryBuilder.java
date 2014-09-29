@@ -38,6 +38,9 @@ import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
  */
 public class PageProviderQueryBuilder {
 
+    private PageProviderQueryBuilder() {
+    }
+
     /**
      * Create a ES request from a PP pattern
      *
@@ -56,6 +59,7 @@ public class PageProviderQueryBuilder {
         if (useNativeQuery) {
             return QueryBuilders.queryString(query);
         } else {
+
             return NxqlQueryConverter.toESQueryBuilder(query);
         }
     }

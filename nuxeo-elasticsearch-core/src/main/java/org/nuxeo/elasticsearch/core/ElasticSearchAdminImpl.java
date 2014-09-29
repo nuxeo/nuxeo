@@ -204,7 +204,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             String message = "Failed to connect to elasticsearch: "
                     + e.getMessage();
             log.error(message, e);
-            throw new RuntimeException(message);
+            throw new RuntimeException(message, e);
         }
     }
 
@@ -288,15 +288,15 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     @Override
     public void refresh() {
-        for (String RepositoryName : indexNames.keySet()) {
-            refreshRepositoryIndex(RepositoryName);
+        for (String repositoryName : indexNames.keySet()) {
+            refreshRepositoryIndex(repositoryName);
         }
     }
 
     @Override
     public void flush() {
-        for (String RepositoryName : indexNames.keySet()) {
-            flushRepositoryIndex(RepositoryName);
+        for (String repositoryName : indexNames.keySet()) {
+            flushRepositoryIndex(repositoryName);
         }
     }
 

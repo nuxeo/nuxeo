@@ -64,7 +64,7 @@ import org.nuxeo.runtime.api.Framework;
  * to build the ES request.
  *
  */
-public class NxqlQueryConverter {
+final public class NxqlQueryConverter {
     private static final Log log = LogFactory.getLog(NxqlQueryConverter.class);
     private static final String SELECT_ALL = "SELECT * FROM Document";
     private static final String SELECT_ALL_WHERE = "SELECT * FROM Document WHERE ";

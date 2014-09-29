@@ -90,6 +90,9 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
             case AGG_ORDER_KEY_ASC:
                 ret.order(Histogram.Order.KEY_ASC);
                 break;
+            default:
+                throw new IllegalArgumentException("Invalid order: "
+                        + props.get(AGG_ORDER_PROP));
             }
         }
         if (props.containsKey(AGG_EXTENDED_BOUND_MAX_PROP)
@@ -197,6 +200,8 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
             return "30d";
         case "quarter":
             return "91d";
+        default:
+            // already in ms
         }
         return interval;
     }

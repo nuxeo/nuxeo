@@ -55,7 +55,7 @@ public class ElasticSearchNativePageProvider extends
     private static final long serialVersionUID = 1L;
     protected List<DocumentModel> currentPageDocuments;
 
-    protected HashMap<String, Aggregate> currentAggregates;
+    protected Map<String, Aggregate> currentAggregates;
 
     @Override
     public Map<String, Aggregate> getAggregates() {

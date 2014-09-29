@@ -59,7 +59,7 @@ public class ElasticSearchIndexConfig {
     @XNode("settings")
     protected String settings;
 
-    public static String DEFAULT_SETTING = "{\n"
+    final public static String DEFAULT_SETTING = "{\n"
             + "   \"analysis\" : {\n"
             + "      \"filter\" : {\n"
             + "         \"en_stem_filter\" : {\n"
@@ -106,7 +106,7 @@ public class ElasticSearchIndexConfig {
     @XNode("mapping")
     protected String mapping;
 
-    public static String DEFAULT_MAPPING = "{\n"
+    final public static String DEFAULT_MAPPING = "{\n"
             + "   \"_all\" : {\n"
             + "      \"analyzer\" : \"fulltext\"\n"
             + "   },\n"
