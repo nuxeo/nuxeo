@@ -41,6 +41,21 @@ public interface LayoutDefinition extends Serializable {
     void setName(String name);
 
     /**
+     * Return the layout type, or null if not defined.
+     * <p>
+     * Since 5.9.6, the layout type can hold templates and properties
+     * configuration, so that layout does not need to define them again.
+     *
+     * @since 5.9.6
+     */
+    String getType();
+
+    /**
+     * @since 5.9.6
+     */
+    String getTypeCategory();
+
+    /**
      * Returns template to use in a given mode.
      */
     String getTemplate(String mode);

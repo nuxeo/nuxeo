@@ -66,6 +66,20 @@ public interface Layout extends Serializable {
     String getName();
 
     /**
+     * Returns the layout type.
+     *
+     * @since 5.9.6
+     */
+    String getType();
+
+    /**
+     * Returns the layout type category.
+     *
+     * @since 5.9.6
+     */
+    String getTypeCategory();
+
+    /**
      * Returns the layout mode.
      */
     String getMode();

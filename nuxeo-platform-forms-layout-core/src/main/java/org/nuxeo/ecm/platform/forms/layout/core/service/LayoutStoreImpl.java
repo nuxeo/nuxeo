@@ -28,6 +28,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
@@ -37,12 +38,14 @@ import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.ecm.platform.forms.layout.core.registries.LayoutConverterRegistry;
 import org.nuxeo.ecm.platform.forms.layout.core.registries.LayoutDefinitionRegistry;
+import org.nuxeo.ecm.platform.forms.layout.core.registries.LayoutTypeDefinitionRegistry;
 import org.nuxeo.ecm.platform.forms.layout.core.registries.WidgetConverterRegistry;
 import org.nuxeo.ecm.platform.forms.layout.core.registries.WidgetDefinitionRegistry;
 import org.nuxeo.ecm.platform.forms.layout.core.registries.WidgetTypeDefinitionRegistry;
 import org.nuxeo.ecm.platform.forms.layout.core.registries.WidgetTypeRegistry;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutConverterDescriptor;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutDescriptor;
+import org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutTypeDescriptor;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetConverterDescriptor;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetDescriptor;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetTypeDescriptor;
@@ -61,6 +64,11 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
 
     public static final String WIDGET_TYPES_EP_NAME = "widgettypes";
 
+    /**
+     * @since 5.9.6
+     */
+    public static final String LAYOUT_TYPES_EP_NAME = "layouttypes";
+
     public static final String WIDGETS_EP_NAME = "widgets";
 
     public static final String LAYOUTS_EP_NAME = "layouts";
@@ -73,6 +81,8 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
 
     protected final Map<String, WidgetTypeDefinitionRegistry> widgetTypeDefsByCat;
 
+    protected final Map<String, LayoutTypeDefinitionRegistry> layoutTypeDefsByCat;
+
     protected final Map<String, LayoutDefinitionRegistry> layoutsByCat;
 
     protected final Map<String, WidgetDefinitionRegistry> widgetsByCat;
@@ -83,6 +93,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
 
     public LayoutStoreImpl() {
         widgetTypeDefsByCat = new HashMap<String, WidgetTypeDefinitionRegistry>();
+        layoutTypeDefsByCat = new HashMap<String, LayoutTypeDefinitionRegistry>();
         widgetTypesByCat = new HashMap<String, WidgetTypeRegistry>();
         layoutsByCat = new HashMap<String, LayoutDefinitionRegistry>();
         widgetsByCat = new HashMap<String, WidgetDefinitionRegistry>();
@@ -105,6 +116,18 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             } else {
                 for (String cat : categories) {
                     registerWidgetType(cat, desc.getWidgetTypeDefinition());
+                }
+            }
+        } else if (extensionPoint.equals(LAYOUT_TYPES_EP_NAME)) {
+            LayoutTypeDescriptor desc = (LayoutTypeDescriptor) contribution;
+            String[] categories = desc.getCategories();
+            if (categories == null || categories.length == 0) {
+                log.error(String.format(
+                        "Cannot register layout type '%s': no category found",
+                        desc.getName()));
+            } else {
+                for (String cat : categories) {
+                    registerLayoutType(cat, desc.getLayoutTypeDefinition());
                 }
             }
         } else if (extensionPoint.equals(LAYOUTS_EP_NAME)) {
@@ -175,6 +198,18 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             } else {
                 for (String cat : categories) {
                     unregisterWidgetType(cat, desc.getWidgetTypeDefinition());
+                }
+            }
+        } else if (extensionPoint.equals(LAYOUT_TYPES_EP_NAME)) {
+            LayoutTypeDescriptor desc = (LayoutTypeDescriptor) contribution;
+            String[] categories = desc.getCategories();
+            if (categories == null || categories.length == 0) {
+                log.error(String.format(
+                        "Cannot unregister layout type '%s': no category found",
+                        desc.getName()));
+            } else {
+                for (String cat : categories) {
+                    unregisterLayoutType(cat, desc.getLayoutTypeDefinition());
                 }
             }
         } else if (extensionPoint.equals(LAYOUTS_EP_NAME)) {
@@ -307,6 +342,32 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
         }
     }
 
+    // layout types
+
+    public void registerLayoutType(String category,
+            LayoutTypeDefinition layoutTypeDef) {
+        LayoutTypeDefinitionRegistry reg = layoutTypeDefsByCat.get(category);
+        if (reg == null) {
+            reg = new LayoutTypeDefinitionRegistry(category);
+            layoutTypeDefsByCat.put(category, reg);
+        }
+        reg.addContribution(layoutTypeDef);
+        log.info(String.format(
+                "Registered layout type '%s' for category '%s' ",
+                layoutTypeDef.getName(), category));
+    }
+
+    public void unregisterLayoutType(String category,
+            LayoutTypeDefinition layoutTypeDef) {
+        LayoutTypeDefinitionRegistry reg = layoutTypeDefsByCat.get(category);
+        if (reg != null) {
+            reg.removeContribution(layoutTypeDef);
+            log.info(String.format(
+                    "Unregistered layout type '%s' for category '%s' ",
+                    layoutTypeDef.getName(), category));
+        }
+    }
+
     // layouts
 
     public void registerLayout(String category, LayoutDefinition layoutDef) {
@@ -429,6 +490,29 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
         WidgetTypeDefinitionRegistry reg = widgetTypeDefsByCat.get(category);
         if (reg != null) {
             Collection<WidgetTypeDefinition> defs = reg.getDefinitions();
+            if (defs != null) {
+                res.addAll(defs);
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public LayoutTypeDefinition getLayoutTypeDefinition(String category,
+            String typeName) {
+        LayoutTypeDefinitionRegistry reg = layoutTypeDefsByCat.get(category);
+        if (reg != null) {
+            return reg.getDefinition(typeName);
+        }
+        return null;
+    }
+
+    @Override
+    public List<LayoutTypeDefinition> getLayoutTypeDefinitions(String category) {
+        List<LayoutTypeDefinition> res = new ArrayList<LayoutTypeDefinition>();
+        LayoutTypeDefinitionRegistry reg = layoutTypeDefsByCat.get(category);
+        if (reg != null) {
+            Collection<LayoutTypeDefinition> defs = reg.getDefinitions();
             if (defs != null) {
                 res.addAll(defs);
             }

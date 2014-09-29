@@ -108,6 +108,17 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="layouttypes">
+
+    <layoutType name="myLayoutType">
+      <categories>
+        <category>testCategory</category>
+      </categories>
+    </layoutType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
     point="widgets">
 
     <widget name="globalTestWidget" type="test">

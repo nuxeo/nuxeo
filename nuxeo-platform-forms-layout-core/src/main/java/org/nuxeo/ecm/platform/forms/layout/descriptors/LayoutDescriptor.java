@@ -53,6 +53,12 @@ public class LayoutDescriptor {
     @XNode("@type")
     String type;
 
+    /**
+     * @since 5.9.6
+     */
+    @XNode("@typeCategory")
+    String typeCategory;
+
     @XNodeMap(value = "templates/template", key = "@mode", type = HashMap.class, componentType = String.class)
     Map<String, String> templates = new HashMap<String, String>();
 
@@ -78,6 +84,14 @@ public class LayoutDescriptor {
 
     public String getName() {
         return name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getTypeCategory() {
+        return typeCategory;
     }
 
     public String getTemplate(String mode) {
@@ -185,9 +199,11 @@ public class LayoutDescriptor {
                 crenderingInfos.put(item.getKey(), clonedInfos);
             }
         }
-        LayoutDefinition clone = new LayoutDefinitionImpl(name,
+        LayoutDefinitionImpl clone = new LayoutDefinitionImpl(name,
                 getProperties(), ctemplates, crows, cwidgets);
         clone.setRenderingInfos(crenderingInfos);
+        clone.setType(getType());
+        clone.setTypeCategory(getTypeCategory());
         return clone;
     }
 }

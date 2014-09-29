@@ -9,16 +9,14 @@
     <provide interface="org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore" />
   </service>
 
-  <implementation
-    class="org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManagerImpl" />
-
-  <service>
-    <provide interface="org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager" />
-  </service>
-
   <extension-point name="widgettypes">
     <object
       class="org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetTypeDescriptor" />
+  </extension-point>
+
+  <extension-point name="layouttypes">
+    <object
+      class="org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutTypeDescriptor" />
   </extension-point>
 
   <extension-point name="layouts">

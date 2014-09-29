@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.forms.layout.core.service;
 import java.util.List;
 
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
@@ -70,6 +71,18 @@ public abstract class AbstractLayoutManager extends DefaultComponent implements
     }
 
     @Override
+    public LayoutTypeDefinition getLayoutTypeDefinition(String typeName) {
+        return getLayoutStore().getLayoutTypeDefinition(
+                getDefaultStoreCategory(), typeName);
+    }
+
+    @Override
+    public List<LayoutTypeDefinition> getLayoutTypeDefinitions() {
+        return getLayoutStore().getLayoutTypeDefinitions(
+                getDefaultStoreCategory());
+    }
+
+    @Override
     public LayoutDefinition getLayoutDefinition(String layoutName) {
         return getLayoutStore().getLayoutDefinition(getDefaultStoreCategory(),
                 layoutName);
@@ -95,6 +108,14 @@ public abstract class AbstractLayoutManager extends DefaultComponent implements
 
     protected void unregisterWidgetType(WidgetTypeDefinition desc) {
         getLayoutStore().unregisterWidgetType(getDefaultStoreCategory(), desc);
+    }
+
+    protected void registerLayoutType(LayoutTypeDefinition desc) {
+        getLayoutStore().registerLayoutType(getDefaultStoreCategory(), desc);
+    }
+
+    protected void unregisterLayoutType(LayoutTypeDefinition desc) {
+        getLayoutStore().unregisterLayoutType(getDefaultStoreCategory(), desc);
     }
 
     protected void registerLayout(LayoutDefinition layoutDef) {

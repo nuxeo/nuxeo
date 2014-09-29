@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
@@ -62,6 +63,17 @@ public interface LayoutStore extends Serializable {
     List<WidgetTypeDefinition> getWidgetTypeDefinitions(String category);
 
     /**
+     * @since 5.9.6
+     */
+    LayoutTypeDefinition getLayoutTypeDefinition(String category,
+            String typeName);
+
+    /**
+     * @since 5.9.6
+     */
+    List<LayoutTypeDefinition> getLayoutTypeDefinitions(String category);
+
+    /**
      * Returns the registered layout definition for this name.
      * <p>
      * If the no definition is found with this name, return null.
@@ -89,6 +101,16 @@ public interface LayoutStore extends Serializable {
     void registerWidgetType(String category, WidgetTypeDefinition desc);
 
     void unregisterWidgetType(String category, WidgetTypeDefinition desc);
+
+    /**
+     * @since 5.9.6
+     */
+    void registerLayoutType(String category, LayoutTypeDefinition desc);
+
+    /**
+     * @since 5.9.6
+     */
+    void unregisterLayoutType(String category, LayoutTypeDefinition desc);
 
     void registerLayout(String category, LayoutDefinition layoutDef);
 

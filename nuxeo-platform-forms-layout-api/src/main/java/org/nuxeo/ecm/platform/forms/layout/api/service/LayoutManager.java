@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
@@ -65,6 +66,21 @@ public interface LayoutManager extends Serializable {
      * @since 5.4
      */
     List<WidgetTypeDefinition> getWidgetTypeDefinitions();
+
+    /**
+     * Returns the layout type definition with given name, or null if no layout
+     * type with this name is found.
+     *
+     * @since 5.9.6
+     */
+    LayoutTypeDefinition getLayoutTypeDefinition(String typeName);
+
+    /**
+     * Returns the layout type definitions for all the registered layout types.
+     *
+     * @since 5.9.6
+     */
+    List<LayoutTypeDefinition> getLayoutTypeDefinitions();
 
     /**
      * Returns the registered layout definition for this name.

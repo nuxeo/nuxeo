@@ -33,6 +33,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.runtime.api.Framework;
@@ -210,6 +211,14 @@ public class TestLayoutStoreComponent extends NXRuntimeTestCase {
         assertNotNull(layoutRow.getProperties("any"));
         assertEquals("layoutColumnPropValue",
                 layoutRow.getProperties("any").get("layoutColumnPropName"));
+    }
+
+    @Test
+    public void testLayoutTypeRegistration() {
+        LayoutTypeDefinition layoutTypeDef = service.getLayoutTypeDefinition(
+                "testCategory", "myLayoutType");
+        assertNotNull(layoutTypeDef);
+        assertEquals("myLayoutType", layoutTypeDef.getName());
     }
 
 }

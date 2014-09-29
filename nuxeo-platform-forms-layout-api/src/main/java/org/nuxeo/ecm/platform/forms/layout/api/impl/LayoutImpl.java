@@ -42,6 +42,10 @@ public class LayoutImpl implements Layout {
 
     protected String name;
 
+    protected String type;
+
+    protected String typeCategory;
+
     protected String mode;
 
     protected String template;
@@ -186,27 +190,6 @@ public class LayoutImpl implements Layout {
     }
 
     @Override
-    public String toString() {
-        final StringBuilder buf = new StringBuilder();
-
-        buf.append("LayoutImpl");
-        buf.append(" {");
-        buf.append(" name=");
-        buf.append(name);
-        buf.append(", id=");
-        buf.append(id);
-        buf.append(", mode=");
-        buf.append(mode);
-        buf.append(", template=");
-        buf.append(template);
-        buf.append(", properties=");
-        buf.append(properties);
-        buf.append('}');
-
-        return buf.toString();
-    }
-
-    @Override
     public String getValueName() {
         return valueName;
     }
@@ -229,6 +212,55 @@ public class LayoutImpl implements Layout {
                 }
             }
         }
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public String getTypeCategory() {
+        return typeCategory;
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public void setTypeCategory(String typeCategory) {
+        this.typeCategory = typeCategory;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder buf = new StringBuilder();
+
+        buf.append("LayoutImpl");
+        buf.append(" {");
+        buf.append(" name=");
+        buf.append(name);
+        buf.append(", id=");
+        buf.append(id);
+        buf.append(", mode=");
+        buf.append(mode);
+        buf.append(", template=");
+        buf.append(template);
+        buf.append(", properties=");
+        buf.append(properties);
+        buf.append('}');
+
+        return buf.toString();
     }
 
 }

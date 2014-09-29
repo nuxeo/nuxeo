@@ -43,6 +43,10 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
 
     protected String name;
 
+    protected String type;
+
+    protected String typeCategory;
+
     protected Map<String, Map<String, Serializable>> properties;
 
     protected Map<String, String> templates;
@@ -137,6 +141,34 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         this.name = name;
     }
 
+    /**
+     * @since 5.9.6
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public String getTypeCategory() {
+        return typeCategory;
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public void setTypeCategory(String typeCategory) {
+        this.typeCategory = typeCategory;
+    }
+
     @Override
     public Map<String, Serializable> getProperties(String layoutMode) {
         return WidgetDefinitionImpl.getProperties(properties, layoutMode);
@@ -160,8 +192,10 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         this.rows = rows;
     }
 
-    @Override
-    public String getTemplate(String mode) {
+    /**
+     * @since 5.9.6
+     */
+    public static String getTemplate(Map<String, String> templates, String mode) {
         if (templates != null) {
             String template = templates.get(mode);
             if (template == null) {
@@ -170,6 +204,11 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
             return template;
         }
         return null;
+    }
+
+    @Override
+    public String getTemplate(String mode) {
+        return getTemplate(templates, mode);
     }
 
     @Override
@@ -257,9 +296,11 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
                 crenderingInfos.put(item.getKey(), clonedInfos);
             }
         }
-        LayoutDefinition clone = new LayoutDefinitionImpl(name, cprops,
+        LayoutDefinitionImpl clone = new LayoutDefinitionImpl(name, cprops,
                 ctemplates, crows, cwidgets);
         clone.setRenderingInfos(crenderingInfos);
+        clone.setType(type);
+        clone.setTypeCategory(typeCategory);
         return clone;
     }
 
