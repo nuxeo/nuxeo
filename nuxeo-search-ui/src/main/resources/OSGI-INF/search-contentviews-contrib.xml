@@ -293,15 +293,8 @@
             <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="any">
-            <property name="selectOptions">#{aggregates['dc_created_agg'].buckets}</property>
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_created_agg'].buckets}</property>
           </properties>
-          <!-- selectOptions>
-            <option itemLabel="#{messages['label.aggregate.size.tiny']}" itemValue="tiny"  />
-            <option itemLabel="#{messages['label.aggregate.size.small']}" itemValue="small"  />
-            <option itemLabel="#{messages['label.aggregate.size.medium']}" itemValue="medium" />
-            <option itemLabel="#{messages['label.aggregate.size.big']}" itemValue="big" />
-            <option itemLabel="#{messages['label.aggregate.size.huge']}" itemValue="huge" />
-          </selectOptions-->
           <controls mode="any">
             <control name="supportInsideInputWidgetEffects">true</control>
           </controls>
@@ -318,7 +311,7 @@
             <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="any">
-            <property name="selectOptions">#{aggregates['dc_modified_agg'].buckets}</property>
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_modified_agg'].buckets}</property>
           </properties>
           <!-- selectOptions>
             <option itemLabel="#{messages['label.aggregate.modified.last24H']}" itemValue="last24H"  />
@@ -368,7 +361,7 @@
             <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="edit">
-            <property name="selectOptions">#{aggregates['dc_creator_agg'].buckets}</property>
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_creator_agg'].buckets}</property>
           </properties>
           <controls mode="any">
             <control name="supportInsideInputWidgetEffects">true</control>
@@ -463,7 +456,7 @@
           </widgetModes>
           <properties widgetMode="any">
             <property name="directoryName">l10nsubjects</property>
-            <property name="selectOptions">#{aggregates['dc_subjects_agg'].buckets}</property>
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_subjects_agg'].buckets}</property>
             <property name="dbl10n">true</property>
             <property name="localize">true</property>
           </properties>
@@ -480,11 +473,11 @@
             <field>defaults:dc_coverage_agg</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
+            <mode value="edit">#{contentView.pageProvider.contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="any">
             <property name="directoryName">l10ncoverage</property>
-            <property name="selectOptions">#{aggregates['dc_coverage_agg'].buckets}</property>
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_coverage_agg'].buckets}</property>
             <property name="dbl10n">true</property>
             <property name="localize">true</property>
           </properties>
@@ -504,15 +497,8 @@
             <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="any">
-            <property name="selectOptions">#{aggregates['common_size_agg'].buckets}</property>
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['common_size_agg'].buckets}</property>
           </properties>
-          <selectOptions>
-            <option itemLabel="#{messages['label.aggregate.size.tiny']}" itemValue="tiny"  />
-            <option itemLabel="#{messages['label.aggregate.size.small']}" itemValue="small"  />
-            <option itemLabel="#{messages['label.aggregate.size.medium']}" itemValue="medium" />
-            <option itemLabel="#{messages['label.aggregate.size.big']}" itemValue="big" />
-            <option itemLabel="#{messages['label.aggregate.size.huge']}" itemValue="huge"  />
-          </selectOptions>
           <controls mode="any">
             <control name="supportInsideInputWidgetEffects">true</control>
           </controls>
