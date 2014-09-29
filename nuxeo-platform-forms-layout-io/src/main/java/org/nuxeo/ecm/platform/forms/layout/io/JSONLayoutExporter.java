@@ -38,6 +38,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeConfiguration;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.RenderingInfo;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetReference;
@@ -50,6 +52,9 @@ import org.nuxeo.ecm.platform.forms.layout.api.converters.WidgetDefinitionConver
 import org.nuxeo.ecm.platform.forms.layout.api.impl.FieldDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutRowDefinitionImpl;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutTypeConfigurationImpl;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutTypeDefinitionComparator;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutTypeDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.RenderingInfoImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetReferenceImpl;
@@ -115,6 +120,31 @@ public class JSONLayoutExporter {
             Collections.sort(defs, new WidgetTypeDefinitionComparator(false));
         }
         for (WidgetTypeDefinition def : defs) {
+            res.element(def.getName(), exportToJson(def));
+        }
+        out.write(res.toString(2).getBytes(ENCODED_VALUES_ENCODING));
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public static void exportLayoutType(LayoutTypeDefinition def,
+            OutputStream out) throws IOException {
+        JSONObject res = exportToJson(def);
+        out.write(res.toString(2).getBytes(ENCODED_VALUES_ENCODING));
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public static void exportLayoutTypes(List<LayoutTypeDefinition> defs,
+            OutputStream out) throws IOException {
+        JSONObject res = new JSONObject();
+        if (defs != null) {
+            // sort so that order is deterministic
+            Collections.sort(defs, new LayoutTypeDefinitionComparator());
+        }
+        for (LayoutTypeDefinition def : defs) {
             res.element(def.getName(), exportToJson(def));
         }
         out.write(res.toString(2).getBytes(ENCODED_VALUES_ENCODING));
@@ -419,6 +449,204 @@ public class JSONLayoutExporter {
         return res;
     }
 
+    /**
+     * @since 5.9.6
+     */
+    public static JSONObject exportToJson(LayoutTypeDefinition def) {
+        JSONObject json = new JSONObject();
+        json.element("name", def.getName());
+
+        JSONObject templates = exportStringPropsToJson(def.getTemplates());
+        if (!templates.isEmpty()) {
+            json.element("templates", templates);
+        }
+
+        JSONObject props = exportPropsByModeToJson(def.getProperties());
+        if (!props.isEmpty()) {
+            json.element("properties", props);
+        }
+
+        LayoutTypeConfiguration conf = def.getConfiguration();
+        if (conf != null) {
+            json.element("configuration", exportToJson(conf));
+        }
+        return json;
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public static LayoutTypeDefinition importLayoutTypeDefinition(
+            JSONObject jsonDef) {
+        String name = jsonDef.optString("name");
+        Map<String, String> templates = importStringProps(jsonDef.optJSONObject("templates"));
+        Map<String, Map<String, Serializable>> properties = importPropsByMode(jsonDef.optJSONObject("properties"));
+        LayoutTypeConfiguration conf = importLayoutTypeConfiguration(jsonDef.optJSONObject("configuration"));
+        return new LayoutTypeDefinitionImpl(name, templates, properties, conf);
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public static JSONObject exportToJson(LayoutTypeConfiguration conf) {
+        JSONObject json = new JSONObject();
+        json.element("title", conf.getTitle());
+        json.element("description", conf.getDescription());
+        String demoId = conf.getDemoId();
+        if (demoId != null) {
+            JSONObject demoInfo = new JSONObject();
+            demoInfo.element("id", demoId);
+            demoInfo.element("previewEnabled", conf.isDemoPreviewEnabled());
+            json.element("demo", demoInfo);
+        }
+        json.element("sinceVersion", conf.getSinceVersion());
+        String deprVersion = conf.getDeprecatedVersion();
+        if (!StringUtils.isBlank(deprVersion)) {
+            json.element("deprecatedVersion", deprVersion);
+        }
+
+        JSONArray supportedModes = new JSONArray();
+        List<String> confSupportedModes = conf.getSupportedModes();
+        if (confSupportedModes != null) {
+            supportedModes.addAll(confSupportedModes);
+        }
+        if (!supportedModes.isEmpty()) {
+            json.element("supportedModes", supportedModes);
+        }
+
+        if (conf.isHandlingLabels()) {
+            json.element("handlingLabels", conf.isHandlingLabels());
+        }
+        JSONArray supportedControls = new JSONArray();
+        List<String> confSupportedControls = conf.getSupportedControls();
+        if (confSupportedControls != null) {
+            supportedControls.addAll(confSupportedControls);
+        }
+        if (!supportedControls.isEmpty()) {
+            json.element("supportedControls", supportedControls);
+        }
+        if (conf.isContainingForm()) {
+            json.element("containingForm", true);
+        }
+
+        JSONArray cats = new JSONArray();
+        List<String> confCats = conf.getCategories();
+        if (confCats != null) {
+            cats.addAll(confCats);
+        }
+        if (!cats.isEmpty()) {
+            json.element("categories", cats);
+        }
+
+        JSONObject props = new JSONObject();
+        Map<String, List<LayoutDefinition>> confLayouts = conf.getPropertyLayouts();
+        if (confLayouts != null) {
+            List<String> modes = new ArrayList<String>(confLayouts.keySet());
+            // sort so that order is deterministic
+            Collections.sort(modes);
+            JSONObject layouts = new JSONObject();
+            for (String mode : modes) {
+                JSONArray modeLayouts = new JSONArray();
+                for (LayoutDefinition layoutDef : confLayouts.get(mode)) {
+                    modeLayouts.add(exportToJson(null, layoutDef));
+                }
+                layouts.element(mode, modeLayouts);
+            }
+            if (!layouts.isEmpty()) {
+                props.element("layouts", layouts);
+            }
+        }
+
+        Map<String, Map<String, Serializable>> defaultPropValues = conf.getDefaultPropertyValues();
+        if (defaultPropValues != null && !defaultPropValues.isEmpty()) {
+            json.element("defaultPropertyValues",
+                    exportPropsByModeToJson(defaultPropValues));
+        }
+
+        if (!props.isEmpty()) {
+            json.element("properties", props);
+        }
+
+        return json;
+
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    @SuppressWarnings("unchecked")
+    public static LayoutTypeConfiguration importLayoutTypeConfiguration(
+            JSONObject conf) {
+        LayoutTypeConfigurationImpl res = new LayoutTypeConfigurationImpl();
+        if (conf == null) {
+            return res;
+        }
+        res.setTitle(conf.getString("title"));
+        res.setDescription(conf.optString("description"));
+        res.setSinceVersion(conf.optString("sinceVersion"));
+        res.setDeprecatedVersion(conf.optString("deprecatedVersion"));
+
+        JSONObject demoInfo = conf.optJSONObject("demo");
+        String demoId = null;
+        boolean demoPreviewEnabled = false;
+        if (demoInfo != null && !demoInfo.isNullObject()) {
+            demoId = demoInfo.optString("id");
+            demoPreviewEnabled = demoInfo.optBoolean("previewEnabled");
+        }
+        res.setDemoId(demoId);
+        res.setDemoPreviewEnabled(demoPreviewEnabled);
+
+        List<String> confSupportedModes = new ArrayList<String>();
+        JSONArray supportedModes = conf.optJSONArray("supportedModes");
+        if (supportedModes != null) {
+            confSupportedModes.addAll(supportedModes);
+        }
+        res.setSupportedModes(confSupportedModes);
+
+        res.setHandlingLabels(conf.optBoolean("handlingLabels", false));
+        List<String> confSupportedControls = new ArrayList<String>();
+        JSONArray supportedControls = conf.optJSONArray("supportedControls");
+        if (supportedControls != null) {
+            confSupportedControls.addAll(supportedControls);
+        }
+        res.setSupportedControls(confSupportedControls);
+        res.setContainingForm(conf.optBoolean("containingForm", false));
+
+        JSONArray cats = conf.optJSONArray("categories");
+        List<String> confCats = new ArrayList<String>();
+        if (cats != null) {
+            confCats.addAll(cats);
+        }
+        res.setCategories(confCats);
+
+        JSONObject props = conf.optJSONObject("properties");
+        Map<String, List<LayoutDefinition>> confLayouts = new HashMap<String, List<LayoutDefinition>>();
+        if (props != null && !props.isNullObject()) {
+            JSONObject layouts = props.optJSONObject("layouts");
+            if (layouts != null && !layouts.isNullObject()) {
+                for (Object item : layouts.keySet()) {
+                    String mode = (String) item;
+                    List<LayoutDefinition> layoutDefs = new ArrayList<LayoutDefinition>();
+                    JSONArray modeLayouts = layouts.getJSONArray(mode);
+                    if (modeLayouts != null && !mode.isEmpty()) {
+                        for (Object subitem : modeLayouts) {
+                            layoutDefs.add(importLayoutDefinition((JSONObject) subitem));
+                        }
+                    }
+                    confLayouts.put(mode, layoutDefs);
+                }
+            }
+        }
+
+        res.setPropertyLayouts(confLayouts);
+
+        JSONObject defaultPropertyValues = conf.optJSONObject("defaultPropertyValues");
+        Map<String, Map<String, Serializable>> confDefaultProps = importPropsByMode(defaultPropertyValues);
+        res.setDefaultPropertyValues(confDefaultProps);
+
+        return res;
+    }
+
     public static JSONObject exportToJson(String category,
             LayoutDefinition layoutDef) {
         return exportToJson(category, layoutDef, null, null);
@@ -441,6 +669,16 @@ public class JSONLayoutExporter {
             List<WidgetDefinitionConverter> widgetConverters) {
         JSONObject json = new JSONObject();
         json.element("name", layoutDef.getName());
+
+        String type = layoutDef.getType();
+        if (type != null) {
+            json.element("type", type);
+        }
+
+        String typeCat = layoutDef.getTypeCategory();
+        if (typeCat != null) {
+            json.element("typeCategory", typeCat);
+        }
 
         JSONObject templates = exportStringPropsToJson(layoutDef.getTemplates());
         if (!templates.isEmpty()) {
@@ -537,6 +775,8 @@ public class JSONLayoutExporter {
 
     public static LayoutDefinition importLayoutDefinition(JSONObject layoutDef) {
         String name = layoutDef.optString("name", null);
+        String type = layoutDef.optString("type", null);
+        String typeCat = layoutDef.optString("typeCategory", null);
         Map<String, String> templates = importStringProps(layoutDef.optJSONObject("templates"));
         Map<String, Map<String, Serializable>> properties = importPropsByMode(layoutDef.optJSONObject("properties"));
 
@@ -558,9 +798,11 @@ public class JSONLayoutExporter {
 
         Map<String, List<RenderingInfo>> renderingInfos = importRenderingInfosByMode(layoutDef.optJSONObject("renderingInfos"));
 
-        LayoutDefinition res = new LayoutDefinitionImpl(name, properties,
+        LayoutDefinitionImpl res = new LayoutDefinitionImpl(name, properties,
                 templates, rows, widgets);
         res.setRenderingInfos(renderingInfos);
+        res.setType(type);
+        res.setTypeCategory(typeCat);
 
         return res;
     }

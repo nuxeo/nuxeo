@@ -219,6 +219,56 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouttypes">
+
+    <layoutType name="listing">
+      <categories>
+        <category>jsf</category>
+      </categories>
+      <templates>
+        <template mode="any">/layouts/layout_listing_template.xhtml</template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <properties mode="edit_columns">
+        <property name="availableElementsLabel">
+          label.selection.availableColumns
+        </property>
+        <property name="selectedElementsLabel">
+          label.selection.selectedColumns
+        </property>
+        <property name="selectedElementsHelp"></property>
+        <property name="selectSize">10</property>
+        <property name="columnSelectionRequired">true</property>
+        <property name="displayAlwaysSelectedColumns">false</property>
+      </properties>
+      <properties mode="edit_sort_infos">
+        <property name="newSortInfoTemplate">
+          #{documentSearchActions.newSortInfo}
+        </property>
+        <property name="sortInfoSelectionRequired">false</property>
+      </properties>
+      <configuration>
+        <title>Test layout type for a custom type category</title>
+        <properties>
+          <defaultValues mode="any">
+            <property name="foo">bar</property>
+          </defaultValues>
+        </properties>
+      </configuration>
+    </layoutType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
     <widget name="globalTestWidget" type="test">
@@ -232,7 +282,7 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
 
-    <layout name="testLayout">
+    <layout name="testLayout" type="test">
       <rows>
         <row>
           <widget>testWidget</widget>

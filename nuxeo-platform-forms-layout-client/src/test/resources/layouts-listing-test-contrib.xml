@@ -5,8 +5,7 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <widget name="listing_ajax_selection_box"
-      type="listing_ajax_selection_box">
+    <widget name="listing_ajax_selection_box" type="listing_ajax_selection_box">
       <labels>
         <label mode="any"></label>
       </labels>
@@ -149,6 +148,56 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouttypes">
+
+    <layoutType name="listing">
+      <categories>
+        <category>jsf</category>
+      </categories>
+      <templates>
+        <template mode="any">/layouts/layout_listing_template.xhtml</template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <properties mode="edit_columns">
+        <property name="availableElementsLabel">
+          label.selection.availableColumns
+        </property>
+        <property name="selectedElementsLabel">
+          label.selection.selectedColumns
+        </property>
+        <property name="selectedElementsHelp"></property>
+        <property name="selectSize">10</property>
+        <property name="columnSelectionRequired">true</property>
+        <property name="displayAlwaysSelectedColumns">false</property>
+      </properties>
+      <properties mode="edit_sort_infos">
+        <property name="newSortInfoTemplate">
+          #{documentSearchActions.newSortInfo}
+        </property>
+        <property name="sortInfoSelectionRequired">false</property>
+      </properties>
+      <configuration>
+        <title>Test layout type for a custom type category</title>
+        <properties>
+          <defaultValues mode="any">
+            <property name="foo">bar</property>
+          </defaultValues>
+        </properties>
+      </configuration>
+    </layoutType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
 
     <layout name="search_listing_ajax">
@@ -185,6 +234,86 @@
         </property>
         <property name="sortInfoSelectionRequired">false</property>
       </properties>
+      <columns>
+        <column name="selection" alwaysSelected="true">
+          <properties mode="any">
+            <property name="isListingSelectionBox">true</property>
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_ajax_selection_box</widget>
+        </column>
+        <column name="title_link">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:title</property>
+            <property name="label">label.selection.column.title_link</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_title_link</widget>
+        </column>
+        <column name="modification_date">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:modified</property>
+            <property name="defaultSortAscending">false</property>
+            <property name="label">label.content.header.modified</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_modification_date</widget>
+        </column>
+        <column name="lifecycle">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">
+              ecm:currentLifeCycleState
+            </property>
+            <property name="label">
+              label.content.header.currentLifecycleState
+            </property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_lifecycle</widget>
+        </column>
+        <column name="description" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:description</property>
+            <property name="label">description</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_description</widget>
+        </column>
+        <column name="subjects" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="label">label.dublincore.subject</property>
+          </properties>
+          <widget>listing_subjects</widget>
+        </column>
+        <column name="rights" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:rights</property>
+            <property name="label">label.dublincore.rights</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_rights</widget>
+        </column>
+      </columns>
+    </layout>
+
+    <layout name="search_listing_ajax_with_type" type="listing">
       <columns>
         <column name="selection" alwaysSelected="true">
           <properties mode="any">

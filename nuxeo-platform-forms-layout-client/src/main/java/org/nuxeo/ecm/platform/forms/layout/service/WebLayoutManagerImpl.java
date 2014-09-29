@@ -46,6 +46,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetReference;
@@ -63,6 +64,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetReferenceImpl;
 import org.nuxeo.ecm.platform.forms.layout.core.service.AbstractLayoutManager;
 import org.nuxeo.ecm.platform.forms.layout.core.service.LayoutStoreImpl;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutDescriptor;
+import org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutTypeDescriptor;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetDescriptor;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetTypeDescriptor;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
@@ -92,6 +94,11 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
 
     public static final String WIDGET_TYPES_EP_NAME = LayoutStoreImpl.WIDGET_TYPES_EP_NAME;
 
+    /**
+     * @since 5.9.6
+     */
+    public static final String LAYOUT_TYPES_EP_NAME = LayoutStoreImpl.LAYOUT_TYPES_EP_NAME;
+
     public static final String WIDGETS_EP_NAME = LayoutStoreImpl.WIDGETS_EP_NAME;
 
     public static final String LAYOUTS_EP_NAME = LayoutStoreImpl.LAYOUTS_EP_NAME;
@@ -112,6 +119,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(WIDGET_TYPES_EP_NAME)) {
             registerWidgetType(((WidgetTypeDescriptor) contribution).getWidgetTypeDefinition());
+        } else if (extensionPoint.equals(LAYOUT_TYPES_EP_NAME)) {
+            registerLayoutType(((LayoutTypeDescriptor) contribution).getLayoutTypeDefinition());
         } else if (extensionPoint.equals(LAYOUTS_EP_NAME)) {
             registerLayout(((LayoutDescriptor) contribution).getLayoutDefinition());
         } else if (extensionPoint.equals(WIDGETS_EP_NAME)) {
@@ -130,6 +139,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(WIDGET_TYPES_EP_NAME)) {
             unregisterWidgetType(((WidgetTypeDescriptor) contribution).getWidgetTypeDefinition());
+        } else if (extensionPoint.equals(LAYOUT_TYPES_EP_NAME)) {
+            unregisterLayoutType(((LayoutTypeDescriptor) contribution).getLayoutTypeDefinition());
         } else if (extensionPoint.equals(LAYOUTS_EP_NAME)) {
             unregisterLayout(((LayoutDescriptor) contribution).getLayoutDefinition());
         } else if (extensionPoint.equals(WIDGETS_EP_NAME)) {
@@ -353,8 +364,9 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         // fill default property and control values from the widget definition
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         Map<String, Serializable> controls = new HashMap<String, Serializable>();
+        String actualWTypeCat = getStoreCategory(wTypeCat);
         WidgetTypeDefinition def = getLayoutStore().getWidgetTypeDefinition(
-                getStoreCategory(wTypeCat), wType);
+                actualWTypeCat, wType);
 
         WidgetTypeConfiguration conf = def != null ? def.getConfiguration()
                 : null;
@@ -381,7 +393,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 LayoutFunctions.computeWidgetDefinitionId(wDef),
                 wDef.getRenderingInfos(layoutMode));
         widget.setControls(controls);
-        widget.setTypeCategory(getStoreCategory(wTypeCat));
+        widget.setTypeCategory(actualWTypeCat);
         return widget;
     }
 
@@ -425,11 +437,11 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             log.debug("Layout definition is null");
             return null;
         }
-        String layoutName = layoutDef.getName();
         if (ctx == null) {
             log.warn("Layout creation computed in a null facelet context: expressions "
                     + "found in the layout definition will not be evaluated");
         }
+        String layoutName = layoutDef.getName();
         LayoutRowDefinition[] rowsDef = layoutDef.getRows();
         List<LayoutRow> rows = new ArrayList<LayoutRow>();
         Set<String> foundRowNames = new HashSet<String>();
@@ -498,12 +510,43 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 }
             }
         }
-        int columns = layoutDef.getColumns();
-        Layout layout = new LayoutImpl(layoutDef.getName(), mode,
-                layoutDef.getTemplate(mode), rows, columns,
-                layoutDef.getProperties(mode),
+
+        String layoutTypeCategory = layoutDef.getTypeCategory();
+        String actualLayoutTypeCategory = getStoreCategory(layoutTypeCategory);
+        LayoutTypeDefinition layoutTypeDef = null;
+        String layoutType = layoutDef.getType();
+        if (!StringUtils.isBlank(layoutType)) {
+            // retrieve type for templates and props mapping
+            layoutTypeDef = getLayoutStore().getLayoutTypeDefinition(
+                    actualLayoutTypeCategory, layoutType);
+            if (layoutTypeDef == null) {
+                log.debug(String.format(
+                        "Layout type '%s' not found for category '%s'",
+                        layoutType, layoutTypeCategory));
+            }
+        }
+
+        String template = layoutDef.getTemplate(mode);
+        Map<String, Serializable> props = new HashMap<>();
+        if (layoutTypeDef != null) {
+            if (StringUtils.isEmpty(template)) {
+                template = layoutTypeDef.getTemplate(mode);
+            }
+            Map<String, Serializable> typeProps = layoutTypeDef.getProperties(mode);
+            if (typeProps != null) {
+                props.putAll(typeProps);
+            }
+        }
+        Map<String, Serializable> lprops = layoutDef.getProperties(mode);
+        if (lprops != null) {
+            props.putAll(lprops);
+        }
+        LayoutImpl layout = new LayoutImpl(layoutDef.getName(), mode, template,
+                rows, layoutDef.getColumns(), props,
                 LayoutFunctions.computeLayoutDefinitionId(layoutDef));
         layout.setValueName(valueName);
+        layout.setType(layoutType);
+        layout.setTypeCategory(actualLayoutTypeCategory);
         return layout;
     }
 
@@ -606,8 +649,9 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         // fill default property and control values from the widget definition
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         Map<String, Serializable> controls = new HashMap<String, Serializable>();
+        String actualWTypeCat = getStoreCategory(wTypeCat);
         WidgetTypeDefinition def = getLayoutStore().getWidgetTypeDefinition(
-                getStoreCategory(wTypeCat), wType);
+                actualWTypeCat, wType);
 
         boolean required = false;
         WidgetTypeConfiguration conf = def != null ? def.getConfiguration()
@@ -649,7 +693,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 wDef.isTranslated(), props, required, subWidgets, 0, null,
                 LayoutFunctions.computeWidgetDefinitionId(wDef));
         widget.setControls(controls);
-        widget.setTypeCategory(wTypeCat);
+        widget.setTypeCategory(actualWTypeCat);
         return widget;
     }
 

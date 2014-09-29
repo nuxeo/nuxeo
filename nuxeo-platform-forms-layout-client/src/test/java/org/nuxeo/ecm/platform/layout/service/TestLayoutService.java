@@ -39,6 +39,8 @@ import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeConfiguration;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
@@ -131,6 +133,84 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertNotNull(wTypeDefs);
         assertEquals(1, wTypeDefs.size());
         assertEquals(wTypeDef, wTypeDefs.get(0));
+    }
+
+    @Test
+    public void testLayoutType() throws Exception {
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
+                "layouts-test-contrib.xml");
+        LayoutTypeDefinition lType = service.getLayoutTypeDefinition("myLayoutType");
+        assertNotNull(lType);
+        assertEquals("myLayoutType", lType.getName());
+        Map<String, String> templates = lType.getTemplates();
+        assertNotNull(templates);
+        assertEquals(3, templates.size());
+        Map<String, Map<String, Serializable>> ltprops = lType.getProperties();
+        assertNotNull(ltprops);
+        assertEquals(1, ltprops.size());
+        LayoutTypeConfiguration conf = lType.getConfiguration();
+        assertNotNull(conf);
+        Map<String, Map<String, Serializable>> defaultProps = conf.getDefaultPropertyValues();
+        assertNotNull(defaultProps);
+        assertEquals(1, defaultProps.size());
+
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
+                "layouts-listing-test-contrib.xml");
+
+        LayoutDefinition ldef = service.getLayoutDefinition("search_listing_ajax_with_type");
+        assertNotNull(ldef);
+        assertEquals("search_listing_ajax_with_type", ldef.getName());
+        assertEquals("listing", ldef.getType());
+        assertNull(ldef.getTypeCategory());
+        Map<String, String> ltemplates = ldef.getTemplates();
+        assertNotNull(ltemplates);
+        assertEquals(0, ltemplates.size());
+        Map<String, Map<String, Serializable>> lprops = ldef.getProperties();
+        assertNotNull(lprops);
+        assertEquals(0, lprops.size());
+
+        Layout layout = service.getLayout(null,
+                "search_listing_ajax_with_type", BuiltinModes.VIEW, null);
+        assertNotNull(layout);
+        assertEquals("search_listing_ajax_with_type", layout.getName());
+        assertEquals("listing", layout.getType());
+        assertEquals("jsf", layout.getTypeCategory());
+        assertEquals("/layouts/layout_listing_template.xhtml",
+                layout.getTemplate());
+        Map<String, Serializable> props = layout.getProperties();
+        assertNotNull(props);
+        assertEquals(2, props.size());
+        assertEquals("true", props.get("showRowEvenOddClass"));
+        assertEquals("true", props.get("showListingHeader"));
+
+        Layout csvLayout = service.getLayout(null,
+                "search_listing_ajax_with_type", BuiltinModes.CSV, null);
+        assertNotNull(csvLayout);
+        assertEquals("search_listing_ajax_with_type", layout.getName());
+        assertEquals("listing", layout.getType());
+        assertEquals("jsf", layout.getTypeCategory());
+        assertEquals("/layouts/layout_listing_csv_template.xhtml",
+                csvLayout.getTemplate());
+        Map<String, Serializable> csvprops = csvLayout.getProperties();
+        assertNotNull(csvprops);
+        assertEquals(2, csvprops.size());
+        assertEquals("true", csvprops.get("showRowEvenOddClass"));
+        assertEquals("true", csvprops.get("showListingHeader"));
+
+        Layout editColumnsLayout = service.getLayout(null,
+                "search_listing_ajax_with_type", "edit_columns", null);
+        assertNotNull(editColumnsLayout);
+        assertEquals("search_listing_ajax_with_type", layout.getName());
+        assertEquals("listing", layout.getType());
+        assertEquals("jsf", layout.getTypeCategory());
+        assertEquals("/layouts/layout_listing_template.xhtml",
+                editColumnsLayout.getTemplate());
+        Map<String, Serializable> editColumnsProps = editColumnsLayout.getProperties();
+        assertNotNull(editColumnsProps);
+        assertEquals(8, editColumnsProps.size());
+        assertEquals("false",
+                editColumnsProps.get("displayAlwaysSelectedColumns"));
+        assertEquals("true", editColumnsProps.get("columnSelectionRequired"));
     }
 
     @Test

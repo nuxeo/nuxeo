@@ -55,6 +55,11 @@
       class="org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetTypeDescriptor" />
   </extension-point>
 
+  <extension-point name="layouttypes">
+    <object
+      class="org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutTypeDescriptor" />
+  </extension-point>
+
   <extension-point name="layouts">
     <documentation>
       A layout is a group of widgets that defines the rendering of a document in

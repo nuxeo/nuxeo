@@ -41,6 +41,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.RenderingInfo;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetReference;
@@ -81,6 +82,23 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         String expectedString = FileUtils.read(expected).replaceAll("\r?\n", "");
         String actualString = FileUtils.read(actual).replaceAll("\r?\n", "");
         JSONAssert.assertEquals(expectedString, actualString, true);
+    }
+
+    @Test
+    public void testLayoutTypeExport() throws Exception {
+        LayoutTypeDefinition lTypeDef = service.getLayoutTypeDefinition(
+                WebLayoutManager.JSF_CATEGORY, "listing");
+        assertNotNull(lTypeDef);
+
+        File file = File.createTempFile("layouttype-export", ".json");
+        FileOutputStream out = new FileOutputStream(file);
+        JSONLayoutExporter.exportLayoutType(lTypeDef, out);
+
+        InputStream written = new FileInputStream(file);
+        InputStream expected = new FileInputStream(
+                FileUtils.getResourcePathFromContext("layouttype-export.json"));
+
+        checkEquals(expected, written);
     }
 
     @Test
