@@ -29,11 +29,10 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.servlet.http.HttpServletRequest;
 
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.theme.html.Utils;
-import org.nuxeo.theme.html.ui.ThemeStyles;
+import org.nuxeo.theme.html.ui.Resources;
 import org.nuxeo.theme.jsf.component.UIResources;
-import org.nuxeo.theme.themes.ThemeManager;
 
 import com.sun.faces.renderkit.html_basic.ScriptStyleBaseRenderer;
 
@@ -44,7 +43,8 @@ import com.sun.faces.renderkit.html_basic.ScriptStyleBaseRenderer;
  */
 @ResourceDependencies({
         @ResourceDependency(library = "javax.faces", name = "jsf.js"),
-        @ResourceDependency(library = "org.richfaces", name = "jquery.js") })
+        @ResourceDependency(library = "org.richfaces", name = "jquery.js"),
+        @ResourceDependency(library = "org.richfaces", name = "richfaces.js") })
 public class ResourcesRenderer extends ScriptStyleBaseRenderer {
 
     @Override
@@ -59,35 +59,26 @@ public class ResourcesRenderer extends ScriptStyleBaseRenderer {
     @Override
     public void encodeEnd(FacesContext context, UIComponent component)
             throws IOException {
-
-        Map<String, Object> attributes = component.getAttributes();
-        String cache = (String) attributes.get("cache");
-        String inline = (String) attributes.get("inline");
-        String theme = (String) attributes.get("theme");
-
         final ResponseWriter writer = context.getResponseWriter();
         final ExternalContext externalContext = context.getExternalContext();
 
-        Map<String, Object> requestMap = externalContext.getRequestMap();
-        final URL themeUrl = (URL) requestMap.get("org.nuxeo.theme.url");
-        if (theme == null) {
-            theme = ThemeManager.getThemeNameByUrl(themeUrl);
-        }
-
         Map<String, String> params = new HashMap<String, String>();
 
-        params.put("themeName", theme);
-        params.put("path", externalContext.getRequestContextPath());
-        // FIXME: use configuration
-        String basePath = Framework.getProperty("org.nuxeo.ecm.contextPath",
-                "/nuxeo");
+        Map<String, Object> requestMap = externalContext.getRequestMap();
+        URL themeUrl = (URL) requestMap.get("org.nuxeo.theme.url");
+        final Map<String, Object> attributes = component.getAttributes();
+
+        String contextPath = BaseURL.getContextPath();
+        params.put("contextPath", contextPath);
+        params.put("themeUrl", themeUrl.toString());
+        params.put("path", contextPath);
+        params.put("ignoreLocal", (String) attributes.get("ignoreLocal"));
+
+        String basePath = contextPath + "/site";
         params.put("basepath", basePath);
-        String collectionName = ThemeManager.getCollectionNameByUrl(themeUrl);
-        params.put("collection", collectionName);
 
         Boolean virtualHosting = Utils.isVirtualHosting((HttpServletRequest) externalContext.getRequest());
-        writer.write(ThemeStyles.render(params, Boolean.parseBoolean(cache),
-                Boolean.parseBoolean(inline), virtualHosting));
+        writer.write(Resources.render(params, virtualHosting));
     }
 
 }
