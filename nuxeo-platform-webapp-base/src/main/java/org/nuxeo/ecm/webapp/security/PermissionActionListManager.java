@@ -32,6 +32,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.common.utils.i18n.Labeler;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Lists the available permission actions. Hardcoded. ATM Grant/Deny supported.
@@ -46,17 +47,37 @@ public class PermissionActionListManager implements Serializable {
 
     private static final Labeler labeler = new Labeler("label.security");
 
-    protected String selectedGrant;
+    /**
+     * Framework property to control whether negative ACLs (deny) are allowed.
+     *
+     * @since 5.9.6
+     */
+    public static final String ALLOW_NEGATIVE_ACE_PROPERTY = "nuxeo.security.allowNegativeACE";
+
+    protected String selectedGrant = "Grant";
 
     @In(create = true)
     private transient ResourcesAccessor resourcesAccessor;
+
+    /**
+     * Returns true if negative ACEs are allowed.
+     *
+     * @since 5.9.6
+     * @see #ALLOW_NEGATIVE_ACE_PROPERTY
+     */
+    public boolean getAllowNegativeACE() {
+        return Framework.isBooleanPropertyTrue(ALLOW_NEGATIVE_ACE_PROPERTY);
+    }
 
     public SelectItem[] getPermissionActionItems() {
         List<String> permissionActions = new ArrayList<String>();
         List<SelectItem> jsfModelList = new ArrayList<SelectItem>();
 
         permissionActions.add("Grant");
-        permissionActions.add("Deny");
+
+        if (getAllowNegativeACE()) {
+            permissionActions.add("Deny");
+        }
 
         for (String permissionAction : permissionActions) {
             String label = labeler.makeLabel(permissionAction);
