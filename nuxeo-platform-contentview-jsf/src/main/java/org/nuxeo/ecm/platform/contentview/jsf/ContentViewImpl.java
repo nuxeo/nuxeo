@@ -224,13 +224,16 @@ public class ContentViewImpl implements ContentView,
                             resultLayoutBinding);
                     if (value != null && value instanceof String) {
                         setCurrentResultLayout((String) value);
-                    } else {
-                        currentResultLayout = resultLayouts.get(0);
+                        currentResultLayoutSet = true;
                     }
-                    currentResultLayoutSet = true;
                     return null;
                 }
             });
+        }
+        if (currentResultLayout == null && resultLayouts != null
+                && !resultLayouts.isEmpty()) {
+            // resolve first current result layout
+            return resultLayouts.get(0);
         }
         return currentResultLayout;
     }
