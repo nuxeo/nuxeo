@@ -122,10 +122,19 @@
               </h:selectManyListbox>
               <h:message styleClass="errorMessage"
                 for="#{widget.id}_targetSelect"/>
-              <nxu:inputList id="#{widget.id}_hiddenTargetList"
-                model="model" diff="false" value="#{fieldOrValue}"
-                defaultValue="#{widgetProperty_defaultValue}"
-                required="#{widgetProperty_required}" />
+              <c:choose>
+                <c:when test="#{widget.properties.containsKey('defaultValue')}">
+                  <nxu:inputList id="#{widget.id}_hiddenTargetList"
+                    model="model" diff="false" value="#{fieldOrValue}"
+                    defaultValue="#{widgetProperty_defaultValue}"
+                    required="#{widgetProperty_required}" />
+                </c:when>
+                <c:otherwise>
+                  <nxu:inputList id="#{widget.id}_hiddenTargetList"
+                    model="model" diff="false" value="#{fieldOrValue}"
+                    required="#{widgetProperty_required}" />
+                </c:otherwise>
+              </c:choose>
               <h:message styleClass="errorMessage" for="#{widget.id}_hiddenTargetList"/>
             </td>
             <c:if test="#{widgetProperty_showOrderingActions}">
