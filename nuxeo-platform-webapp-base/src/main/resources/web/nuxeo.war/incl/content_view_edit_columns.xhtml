@@ -1,7 +1,8 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <h3>
     <h:outputText value="#{messages['label.contentview.edit.columns']}" />
@@ -19,7 +20,7 @@
 
     <div class="buttonsGadget">
       <h:commandButton value="#{messages['command.save']}" styleClass="button">
-        <f:ajax render=":nxl_gridSearchLayout:cv_default_search_nxw_searchContentView_panel')}"
+        <f:ajax render="#{nxu:componentAbsoluteId(component, contentViewPanelId)}"
           execute="@form"
           onevent="jQuery.fancybox.close" />
       </h:commandButton>
