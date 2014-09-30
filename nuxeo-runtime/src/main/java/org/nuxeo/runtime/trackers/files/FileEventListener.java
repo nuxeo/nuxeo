@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,13 @@ package org.nuxeo.runtime.trackers.files;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
 
+
+/*
+ * Wrap a {@link FileEventHandler} for being enlisted in the
+ * {@link EventService}.
+ *
+ * @since 5.9.6
+ */
 public class FileEventListener implements EventListener {
 
     protected final FileEventHandler handler;
@@ -26,7 +33,7 @@ public class FileEventListener implements EventListener {
 
     @Override
     public void handleEvent(Event anEvent) {
-        ((FileEvent)anEvent).handle(handler);
+        ((FileEvent) anEvent).handle(handler);
     }
 
     public void install() {
