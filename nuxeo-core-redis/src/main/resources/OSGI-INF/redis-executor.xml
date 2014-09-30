@@ -2,8 +2,6 @@
 <component name="org.nuxeo.ecm.core.redis">
 
   <require>org.nuxeo.ecm.core.work.service</require>
-  <require>org.nuxeo.ecm.core.storage.lock.LockManagerService</require>
-  <require>org.nuxeo.ecm.core.cache.CacheService</require>
 
 
   <documentation>

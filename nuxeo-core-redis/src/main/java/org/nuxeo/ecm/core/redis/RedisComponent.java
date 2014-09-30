@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.text.StrBuilder;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
@@ -83,26 +82,6 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
         }
     }
 
-    @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
-        if (config == null || config.disabled) {
-            return;
-        }
-        Framework.addListener(new RuntimeServiceListener() {
-
-            @Override
-            public void handleEvent(RuntimeServiceEvent event) {
-                if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP) {
-                    return;
-                }
-                Framework.removeListener(this);
-                executor = null;
-                executor.getPool().destroy();
-            }
-        });
-        handleNewExecutor(config.newExecutor());
-    }
-
     public void handleNewExecutor(RedisExecutor executor) {
         this.executor = executor;
         try {
@@ -132,7 +111,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
         URL loc = b.getEntry(scriptName + ".lua");
         InputStream is = loc.openStream();
         final StrBuilder builder = new StrBuilder();
-        for (String line : IOUtils.readLines(is)) {
+        for (Object line : IOUtils.readLines(is)) {
             builder.appendln(line);
         }
         return executor.execute(new RedisCallable<String>() {
@@ -147,6 +126,9 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter.isAssignableFrom(RedisExecutor.class)) {
+        	if (executor == RedisExecutor.NOOP && config != null && !config.disabled) {
+                handleNewExecutor(config.newExecutor());
+        	}
             return adapter.cast(executor);
         }
         return super.getAdapter(adapter);

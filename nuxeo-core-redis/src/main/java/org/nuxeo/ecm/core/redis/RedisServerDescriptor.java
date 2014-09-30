@@ -19,7 +19,6 @@ package org.nuxeo.ecm.core.redis;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.NuxeoException;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;

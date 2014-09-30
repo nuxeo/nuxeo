@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -104,24 +105,20 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     protected static final byte[] STATE_COMPLETED = new byte[] { STATE_COMPLETED_B };
 
-    protected final WorkManagerImpl mgr;
 
     // @GuardedBy("this")
-    protected Map<String, BlockingQueue<Runnable>> allScheduled = new HashMap<String, BlockingQueue<Runnable>>();
+    protected Map<String, BlockingQueue<Runnable>> allScheduled = new ConcurrentHashMap<String, BlockingQueue<Runnable>>();
 
     protected RedisExecutor redisExecutor;
 
     protected String redisNamespace;
-
-    public RedisWorkQueuing(WorkManagerImpl mgr,
-            WorkQueueDescriptorRegistry workQueueDescriptors) {
-        this.mgr = mgr;
+    
+    public RedisWorkQueuing(WorkQueueDescriptorRegistry workQueueDescriptors) {
+    	;
     }
-
+    
     @Override
     public void init() {
-        redisExecutor = Framework.getLocalService(RedisExecutor.class);
-        redisNamespace = Framework.getService(RedisAdmin.class).namespace("work");
         try {
             for (String queueId : getSuspendedQueueIds()) {
                 int n = scheduleSuspendedWork(queueId);
@@ -134,21 +131,16 @@ public class RedisWorkQueuing implements WorkQueuing {
     }
 
     @Override
-    public BlockingQueue<Runnable> initScheduleQueue(String queueId) {
-        if (allScheduled.containsKey(queueId)) {
-            throw new IllegalStateException(queueId + " is already configured");
-        }
-        final BlockingQueue<Runnable> scheduled = newBlockingQueue(queueId);
-        allScheduled.put(queueId, scheduled);
-        return scheduled;
-    }
-
-    @Override
     public BlockingQueue<Runnable> getScheduledQueue(String queueId) {
-        if (!allScheduled.containsKey(queueId)) {
-            throw new IllegalStateException(queueId + " was not configured yet");
-        }
-        return allScheduled.get(queueId);
+    	if (redisExecutor == null) {
+    		redisExecutor = Framework.getLocalService(RedisExecutor.class);
+    		redisNamespace = Framework.getLocalService(RedisAdmin.class).namespace("work");
+    	}
+		if (!allScheduled.containsKey(queueId)) {
+			BlockingQueue<Runnable> scheduled = newBlockingQueue(queueId);
+			allScheduled.put(queueId, scheduled);
+		}
+		return allScheduled.get(queueId);
     }
 
     @Override
@@ -897,5 +889,13 @@ public class RedisWorkQueuing implements WorkQueuing {
             }
         });
     }
+
+	public Work removeScheduled(String queueId) {
+		try {
+			return removeScheduledWork(queueId);
+		} catch (IOException cause) {
+			throw new RuntimeException("Cannot take scheduled work from "+ queueId);
+		}
+	}
 
 }

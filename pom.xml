@@ -35,6 +35,7 @@
     <module>nuxeo-core-management-jtajca</module>
     <module>nuxeo-core-management-test</module>
     <module>nuxeo-core-test</module>
+    <module>nuxeo-core-redis</module>
   </modules>
 
   <scm>
