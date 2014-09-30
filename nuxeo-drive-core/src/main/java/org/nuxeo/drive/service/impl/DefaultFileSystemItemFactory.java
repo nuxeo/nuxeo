@@ -79,7 +79,7 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
      * The default factory considers that a {@link DocumentModel} is adaptable
      * as a {@link FileSystemItem} if:
      * <ul>
-     * <li>It is not a version nor a proxy</li>
+     * <li>It is not a version nor a proxy nor a rendition</li>
      * <li>AND it is not HiddenInNavigation</li>
      * <li>AND it is not in the "deleted" life cycle state, unless
      * {@code includeDeleted} is true</li>
