@@ -25,6 +25,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.RootlessItemException;
+import org.nuxeo.drive.service.FileSystemItemFactory;
+import org.nuxeo.drive.service.impl.CollectionSyncRootFolderItemFactory;
+import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -147,10 +150,20 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
     /*--------------------- FileSystemItem ---------------------*/
     @Override
     public void delete() throws ClientException {
-        List<DocumentModel> docs = new ArrayList<DocumentModel>();
         DocumentModel doc = getDocument(getSession());
-        docs.add(doc);
-        getTrashService().trashDocuments(docs);
+        FileSystemItemFactory parentFactory = getFileSystemItemAdapterService().getFileSystemItemFactoryForId(
+                parentId);
+        // Handle removal from a collection sync root
+        if (CollectionSyncRootFolderItemFactory.FACTORY_NAME.equals(parentFactory.getName())) {
+            DocumentModel collection = parentFactory.getDocumentByFileSystemId(
+                    parentId, principal);
+            Framework.getService(CollectionManager.class).removeFromCollection(
+                    collection, doc, getSession());
+        } else {
+            List<DocumentModel> docs = new ArrayList<DocumentModel>();
+            docs.add(doc);
+            getTrashService().trashDocuments(docs);
+        }
     }
 
     @Override
