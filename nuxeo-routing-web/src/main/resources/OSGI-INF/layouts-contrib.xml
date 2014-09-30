@@ -681,7 +681,7 @@
       <rows>
         <row>
           <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle1</property>
+            <property name="nxl_gridStyleClass_0">gridStyle6</property>
             <property name="nxl_gridStyleClass_1">gridStyle6</property>
           </properties>
           <widget>reassign_task_widget</widget>
