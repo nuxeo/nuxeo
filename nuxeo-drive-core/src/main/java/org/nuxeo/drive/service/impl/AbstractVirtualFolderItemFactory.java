@@ -162,6 +162,21 @@ public abstract class AbstractVirtualFolderItemFactory implements
     }
 
     @Override
+    public FileSystemItem getFileSystemItemById(String id, String parentId,
+            Principal principal) throws ClientException {
+        return getFileSystemItemById(parentId, principal);
+    }
+
+    @Override
+    public DocumentModel getDocumentByFileSystemId(String id,
+            Principal principal) throws ClientException {
+        throw new UnsupportedOperationException(
+                String.format(
+                        "Cannot get document by file system item id from VirtualFolderItemFactory %s.",
+                        getName()));
+    }
+
+    @Override
     public String getFolderName() {
         return folderName;
     }

@@ -47,12 +47,24 @@ public class NuxeoDriveGetFileSystemItem {
     @Param(name = "id")
     protected String id;
 
+    /**
+     * @since 5.9.6
+     */
+    @Param(name = "parentId", required = false)
+    protected String parentId;
+
     @OperationMethod
     public Blob run() throws ClientException, IOException {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
-        FileSystemItem fsItem = fileSystemItemManager.getFileSystemItemById(id,
-                ctx.getPrincipal());
+        FileSystemItem fsItem;
+        if (parentId == null) {
+            fsItem = fileSystemItemManager.getFileSystemItemById(id,
+                    ctx.getPrincipal());
+        } else {
+            fsItem = fileSystemItemManager.getFileSystemItemById(id, parentId,
+                    ctx.getPrincipal());
+        }
         return NuxeoDriveOperationHelper.asJSONBlob(fsItem);
     }
 

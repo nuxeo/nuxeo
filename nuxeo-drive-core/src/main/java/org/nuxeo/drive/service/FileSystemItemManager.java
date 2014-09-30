@@ -55,6 +55,7 @@ public interface FileSystemItemManager {
     /**
      * Gets the children of the top level {@link FolderItem} for the given
      * principal.
+     *
      * @deprecated use getTopLevelFolder#getChildren instead
      * @throws ClientException if the top level {@link FolderItem} or its
      *             children cannot be retrieved
@@ -94,6 +95,21 @@ public interface FileSystemItemManager {
      */
     FileSystemItem getFileSystemItemById(String id, Principal principal)
             throws ClientException;
+
+    /**
+     * Gets the {@link FileSystemItem} with the given id and parent id for the
+     * given principal.
+     *
+     * @return the {@link FileSystemItem} or null if none matches the given id
+     *         and parent id
+     * @throws ClientException if no {@link FileSystemItemFactory} can handle
+     *             the given {@link FileSystemItem} ids or if an error occurs
+     *             while retrieving the item
+     * @see #getFileSystemItemById(String, Principal)
+     * @since 5.9.6
+     */
+    FileSystemItem getFileSystemItemById(String id, String parentId,
+            Principal principal) throws ClientException;
 
     /**
      * Gets the children of the {@link FileSystemItem} with the given id for the
@@ -157,6 +173,20 @@ public interface FileSystemItemManager {
             throws ClientException;
 
     /**
+     * Updates the {@link FileSystemItem} with the given id and parent id with
+     * the given blob for the given principal.
+     *
+     * @throws ClientException if the {@link FileSystemItem} with the given id
+     *             and parent id cannot be retrieved, or if it is not a
+     *             {@link FileItem} or if an error occurs while updating the
+     *             file
+     * @see #updateFile(String, Blob, Principal)
+     * @since 5.9.6
+     */
+    FileItem updateFile(String id, String parentId, Blob blob,
+            Principal principal) throws ClientException;
+
+    /**
      * Deletes the {@link FileSystemItem} with the given id for the given
      * principal.
      *
@@ -166,6 +196,19 @@ public interface FileSystemItemManager {
      * @see FileSystemItem#delete()
      */
     void delete(String id, Principal principal) throws ClientException;
+
+    /**
+     * Deletes the {@link FileSystemItem} with the given id and parent id for
+     * the given principal.
+     *
+     * @throws ClientException if the {@link FileSystemItem} with the given id
+     *             and parent id cannot be retrieved or if an error occurs while
+     *             deleting the item
+     * @see #delete(String, Principal)
+     * @since 5.9.6
+     */
+    void delete(String id, String parentId, Principal principal)
+            throws ClientException;
 
     /**
      * Renames the {@link FileSystemItem} with the given id with the given name

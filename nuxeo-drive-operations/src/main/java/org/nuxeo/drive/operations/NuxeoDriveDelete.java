@@ -45,12 +45,23 @@ public class NuxeoDriveDelete {
     @Param(name = "id")
     protected String id;
 
+    /**
+     * @since 5.9.6
+     */
+    @Param(name = "parentId", required = false)
+    protected String parentId;
+
     @OperationMethod
     public void run() throws ClientException, InvalidOperationException {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         try {
-            fileSystemItemManager.delete(id, ctx.getPrincipal());
+            if (parentId == null) {
+                fileSystemItemManager.delete(id, ctx.getPrincipal());
+            } else {
+                fileSystemItemManager.delete(id, parentId, ctx.getPrincipal());
+            }
+
         } catch (UnsupportedOperationException e) {
             throw new InvalidOperationException(e);
         }

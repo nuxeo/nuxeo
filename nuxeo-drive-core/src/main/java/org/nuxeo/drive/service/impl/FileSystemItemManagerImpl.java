@@ -59,6 +59,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
         }
     };
 
+    @Override
     public CoreSession getSession(String repositoryName, Principal principal)
             throws ClientException {
         final String sessionKey = repositoryName + "/" + principal.getName();
@@ -151,6 +152,20 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     }
 
     @Override
+    public FileSystemItem getFileSystemItemById(String id, String parentId,
+            Principal principal) throws ClientException {
+        try {
+            return getFileSystemItemAdapterService().getFileSystemItemFactoryForId(
+                    id).getFileSystemItemById(id, parentId, principal);
+        } catch (RootlessItemException e) {
+            log.debug(String.format(
+                    "RootlessItemException thrown while trying to get file system item with id %s and parent id %s, returning null.",
+                    id, parentId));
+            return null;
+        }
+    }
+
+    @Override
     public List<FileSystemItem> getChildren(String id, Principal principal)
             throws ClientException {
         FileSystemItem fileSystemItem = getFileSystemItemById(id, principal);
@@ -229,33 +244,27 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     public FileItem updateFile(String id, Blob blob, Principal principal)
             throws ClientException {
         FileSystemItem fsItem = getFileSystemItemById(id, principal);
-        if (fsItem == null) {
-            throw new ClientException(
-                    String.format(
-                            "Cannot update the content of file system item with id %s because it doesn't exist.",
-                            id));
-        }
-        if (!(fsItem instanceof FileItem)) {
-            throw new ClientException(
-                    String.format(
-                            "Cannot update the content of file system item with id %s because it is not a file.",
-                            id));
-        }
-        FileItem file = (FileItem) fsItem;
-        file.setBlob(blob);
-        return file;
+        return updateFile(fsItem, blob);
+    }
+
+    @Override
+    public FileItem updateFile(String id, String parentId, Blob blob,
+            Principal principal) throws ClientException {
+        FileSystemItem fsItem = getFileSystemItemById(id, parentId, principal);
+        return updateFile(fsItem, blob);
     }
 
     @Override
     public void delete(String id, Principal principal) throws ClientException {
         FileSystemItem fsItem = getFileSystemItemById(id, principal);
-        if (fsItem == null) {
-            throw new ClientException(
-                    String.format(
-                            "Cannot delete file system item with id %s because it doesn't exist.",
-                            id));
-        }
-        fsItem.delete();
+        delete(fsItem);
+    }
+
+    @Override
+    public void delete(String id, String parentId, Principal principal)
+            throws ClientException {
+        FileSystemItem fsItem = getFileSystemItemById(id, parentId, principal);
+        delete(fsItem);
     }
 
     @Override
@@ -301,6 +310,31 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     /*------------- Protected ---------------*/
     protected FileSystemItemAdapterService getFileSystemItemAdapterService() {
         return Framework.getLocalService(FileSystemItemAdapterService.class);
+    }
+
+    protected FileItem updateFile(FileSystemItem fsItem, Blob blob)
+            throws ClientException {
+        if (fsItem == null) {
+            throw new ClientException(
+                    "Cannot update the content of file system item because it doesn't exist.");
+        }
+        if (!(fsItem instanceof FileItem)) {
+            throw new ClientException(
+                    String.format(
+                            "Cannot update the content of file system item with id %s because it is not a file.",
+                            fsItem.getId()));
+        }
+        FileItem file = (FileItem) fsItem;
+        file.setBlob(blob);
+        return file;
+    }
+
+    protected void delete(FileSystemItem fsItem) throws ClientException {
+        if (fsItem == null) {
+            throw new ClientException(
+                    "Cannot delete file system item because it doesn't exist.");
+        }
+        fsItem.delete();
     }
 
 }

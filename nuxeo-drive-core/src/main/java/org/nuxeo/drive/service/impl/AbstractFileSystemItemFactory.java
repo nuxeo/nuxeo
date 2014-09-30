@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.AbstractFileSystemItem;
+import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -181,6 +182,46 @@ public abstract class AbstractFileSystemItemFactory implements
 
     }
 
+    @Override
+    public FileSystemItem getFileSystemItemById(String id, String parentId,
+            Principal principal) throws ClientException {
+        try {
+            FileSystemItem parentItem = Framework.getService(
+                    FileSystemItemAdapterService.class).getFileSystemItemFactoryForId(
+                    parentId).getFileSystemItemById(parentId, principal);
+            if (!(parentItem instanceof FolderItem)) {
+                throw new ClientException(String.format(
+                        "FileSystemItem with id %s should be a FolderItem",
+                        parentId));
+            }
+            DocumentModel doc = getDocumentByFileSystemId(id, principal);
+            return getFileSystemItem(doc, (FolderItem) parentItem);
+        } catch (ClientException e) {
+            if (e.getCause() instanceof NoSuchDocumentException) {
+                log.debug(String.format(
+                        "No doc related to id %s, returning null.", id));
+                return null;
+            } else {
+                throw e;
+            }
+        }
+
+    }
+
+    @Override
+    public DocumentModel getDocumentByFileSystemId(String id,
+            Principal principal) throws ClientException {
+        // Parse id, expecting
+        // pattern:fileSystemItemFactoryName#repositoryName#docId
+        String[] idFragments = parseFileSystemId(id);
+        String repositoryName = idFragments[1];
+        String docId = idFragments[2];
+        CoreSession session = Framework.getLocalService(
+                FileSystemItemManager.class).getSession(repositoryName,
+                principal);
+        return getDocumentById(docId, session);
+    }
+
     /*--------------------------- Protected ---------------------------------*/
     protected FileSystemItem adaptDocument(DocumentModel doc,
             boolean forceParentItem, FolderItem parentItem)
@@ -225,19 +266,6 @@ public abstract class AbstractFileSystemItemFactory implements
                             factoryName, id, name));
         }
         return idFragments;
-    }
-
-    protected DocumentModel getDocumentByFileSystemId(String id,
-            Principal principal) throws ClientException {
-        // Parse id, expecting
-        // pattern:fileSystemItemFactoryName#repositoryName#docId
-        String[] idFragments = parseFileSystemId(id);
-        String repositoryName = idFragments[1];
-        String docId = idFragments[2];
-        CoreSession session = Framework.getLocalService(
-                FileSystemItemManager.class).getSession(repositoryName,
-                principal);
-        return getDocumentById(docId, session);
     }
 
     protected DocumentModel getDocumentById(String docId, CoreSession session)

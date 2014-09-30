@@ -200,4 +200,25 @@ public interface FileSystemItemFactory {
     FileSystemItem getFileSystemItemById(String id, Principal principal)
             throws ClientException;
 
+    /**
+     * Gets the {@link FileSystemItem} with the given id and parent id using a
+     * core session fetched with the given principal.
+     *
+     * @return the {@link FileSystemItem} or null if none matches the given id
+     *         and parent id
+     * @since 5.9.6
+     */
+    FileSystemItem getFileSystemItemById(String id, String parentId,
+            Principal principal) throws ClientException;
+
+    /**
+     * Gets the {@link DocumentModel} bound to the given {@link FileSystemItem}
+     * id using a core session fetched with the given principal.
+     *
+     * @return the {@link DocumentModel}
+     * @since 5.9.6
+     */
+    DocumentModel getDocumentByFileSystemId(String id, Principal principal)
+            throws ClientException;
+
 }

@@ -50,14 +50,26 @@ public class NuxeoDriveUpdateFile {
     @Param(name = "id")
     protected String id;
 
+    /**
+     * @since 5.9.6
+     */
+    @Param(name = "parentId", required = false)
+    protected String parentId;
+
     @OperationMethod
     public Blob run(Blob blob) throws ClientException, ParseException,
             IOException {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         NuxeoDriveOperationHelper.normalizeMimeTypeAndEncoding(blob);
-        FileItem fileItem = fileSystemItemManager.updateFile(id, blob,
-                ctx.getPrincipal());
+        FileItem fileItem;
+        if (parentId == null) {
+            fileItem = fileSystemItemManager.updateFile(id, blob,
+                    ctx.getPrincipal());
+        } else {
+            fileItem = fileSystemItemManager.updateFile(id, parentId, blob,
+                    ctx.getPrincipal());
+        }
 
         // Commit transaction explicitly to ensure client-side consistency
         // TODO: remove when https://jira.nuxeo.com/browse/NXP-10964 is fixed

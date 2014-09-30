@@ -124,10 +124,10 @@ public class TestFileSystemItemManagerService {
         syncRoot2 = session.createDocument(session.createDocumentModel("/",
                 "syncRoot2", "Folder"));
         Principal administrator = session.getPrincipal();
-        nuxeoDriveManager.registerSynchronizationRoot(administrator,
-                syncRoot1, session);
-        nuxeoDriveManager.registerSynchronizationRoot(administrator,
-                syncRoot2, session);
+        nuxeoDriveManager.registerSynchronizationRoot(administrator, syncRoot1,
+                session);
+        nuxeoDriveManager.registerSynchronizationRoot(administrator, syncRoot2,
+                session);
 
         // Folder
         folder = session.createDocumentModel(syncRoot1.getPathAsString(),
@@ -232,9 +232,9 @@ public class TestFileSystemItemManagerService {
         assertFalse(fileSystemItemManagerService.exists(
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(), principal));
 
-        // ------------------------------------------------------
-        // Check #getFileSystemItemById
-        // ------------------------------------------------------
+        // ------------------------------------------------------------
+        // Check #getFileSystemItemById(String id, Principal principal)
+        // ------------------------------------------------------------
         // Folder
         FileSystemItem fsItem = fileSystemItemManagerService.getFileSystemItemById(
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal);
@@ -242,7 +242,8 @@ public class TestFileSystemItemManagerService {
         assertTrue(fsItem instanceof FolderItem);
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 fsItem.getId());
-        String expectedSyncRoot1Id = DEFAULT_SYNC_ROOT_ITEM_ID_PREFIX + syncRoot1.getId();
+        String expectedSyncRoot1Id = DEFAULT_SYNC_ROOT_ITEM_ID_PREFIX
+                + syncRoot1.getId();
         assertEquals(expectedSyncRoot1Id, fsItem.getParentId());
         assertEquals("Jack's folder", fsItem.getName());
         assertTrue(fsItem.isFolder());
@@ -322,6 +323,19 @@ public class TestFileSystemItemManagerService {
         assertTrue(fsItem.getCanDelete());
         assertTrue(((FolderItem) fsItem).getCanCreateChild());
         assertTrue(((FolderItem) fsItem).getChildren().isEmpty());
+
+        // -------------------------------------------------------------------
+        // Check #getFileSystemItemById(String id, String parentId, Principal
+        // principal)
+        // -------------------------------------------------------------------
+        fsItem = fileSystemItemManagerService.getFileSystemItemById(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(),
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal);
+        assertTrue(fsItem instanceof FileItem);
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(),
+                fsItem.getId());
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
+                fsItem.getParentId());
 
         // ------------------------------------------------------
         // Check #getChildren
@@ -524,7 +538,8 @@ public class TestFileSystemItemManagerService {
         FileSystemItem fsItem = fileSystemItemManagerService.rename(fsItemId,
                 "Jack's folder has a new name", principal);
         assertEquals(fsItemId, fsItem.getId());
-        String expectedSyncRoot1Id = DEFAULT_SYNC_ROOT_ITEM_ID_PREFIX + syncRoot1.getId();
+        String expectedSyncRoot1Id = DEFAULT_SYNC_ROOT_ITEM_ID_PREFIX
+                + syncRoot1.getId();
         assertEquals(expectedSyncRoot1Id, fsItem.getParentId());
         assertEquals("Jack's folder has a new name", fsItem.getName());
         folder = session.getDocument(folder.getRef());
@@ -607,7 +622,8 @@ public class TestFileSystemItemManagerService {
         assertEquals(destFsItemId, movedFsItem.getParentId());
         assertEquals("aNote.txt", movedFsItem.getName());
         note = session.getDocument(note.getRef());
-        assertEquals("/syncRoot1/aFolder/aSubFolder/aNote", note.getPathAsString());
+        assertEquals("/syncRoot1/aFolder/aSubFolder/aNote",
+                note.getPathAsString());
         assertEquals("aNote", note.getTitle());
     }
 

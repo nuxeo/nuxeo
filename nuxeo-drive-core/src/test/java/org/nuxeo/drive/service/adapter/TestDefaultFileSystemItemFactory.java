@@ -460,6 +460,14 @@ public class TestDefaultFileSystemItemFactory {
         fsItem = defaultFileSystemItemFactory.getFileSystemItemById(
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(), principal);
         assertNull(fsItem);
+        // Use parent id
+        fsItem = defaultFileSystemItemFactory.getFileSystemItemById(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(),
+                syncRootItemId, principal);
+        assertTrue(fsItem instanceof FileItem);
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(),
+                fsItem.getId());
+        assertEquals(syncRootItemId, fsItem.getParentId());
     }
 
     @Test
