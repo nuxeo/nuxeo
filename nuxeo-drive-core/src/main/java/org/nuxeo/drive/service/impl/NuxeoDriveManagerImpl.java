@@ -42,9 +42,11 @@ import org.nuxeo.drive.service.NuxeoDriveEvents;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.drive.service.TooManyChangesException;
+import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -490,4 +492,36 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 NXQLQueryBuilder.prepareStringLiteral(username, true, true),
                 DRIVE_SUBSCRIPTIONS_PROPERTY);
     }
+
+    @Override
+    public void addToLocallyEditedCollection(CoreSession session,
+            DocumentModel doc) throws ClientException {
+
+        // Create "Locally Edited" collection if not exists
+        CollectionManager cm = Framework.getService(CollectionManager.class);
+        DocumentModel userCollections = cm.getUserDefaultCollections(doc,
+                session);
+        DocumentRef locallyEditedCollectionRef = new PathRef(
+                userCollections.getPath().toString(),
+                LOCALLY_EDITED_COLLECTION_NAME);
+        DocumentModel locallyEditedCollection = null;
+        if (session.exists(locallyEditedCollectionRef)) {
+            locallyEditedCollection = session.getDocument(locallyEditedCollectionRef);
+            cm.addToCollection(locallyEditedCollection, doc, session);
+        } else {
+            cm.addToNewCollection(LOCALLY_EDITED_COLLECTION_NAME,
+                    "Documents locally edited with Nuxeo Drive", doc, session);
+            locallyEditedCollection = session.getDocument(locallyEditedCollectionRef);
+        }
+
+        // Register "Locally Edited" collection as a synchronization root if not
+        // already the case
+        Set<IdRef> syncRootRefs = getSynchronizationRootReferences(session);
+        if (!syncRootRefs.contains(new IdRef(locallyEditedCollection.getId()))) {
+            registerSynchronizationRoot(session.getPrincipal(),
+                    locallyEditedCollection, session);
+        }
+
+    }
+
 }

@@ -33,6 +33,8 @@ import org.nuxeo.ecm.core.security.SecurityException;
  */
 public interface NuxeoDriveManager {
 
+    public static final String LOCALLY_EDITED_COLLECTION_NAME = "Locally Edited";
+
     /**
      * @param principal the Nuxeo Drive user
      * @param newRootContainer the folderish document to be used as
@@ -190,5 +192,16 @@ public interface NuxeoDriveManager {
      *            for.
      */
     void invalidateSynchronizationRootsCache(String userName);
+
+    /**
+     * Adds the given {@link DocumentModel} to the
+     * {@link #LOCALLY_EDITED_COLLECTION_NAME} collection.
+     *
+     * @throws ClientException
+     *
+     * @since 5.9.6
+     */
+    public void addToLocallyEditedCollection(CoreSession session,
+            DocumentModel doc) throws ClientException;
 
 }

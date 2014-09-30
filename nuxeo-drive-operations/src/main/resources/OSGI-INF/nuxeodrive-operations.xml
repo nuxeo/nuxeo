@@ -25,6 +25,7 @@
     <operation
       class="org.nuxeo.drive.operations.NuxeoDriveGenerateConflictedItemName" />
     <operation class="org.nuxeo.drive.operations.NuxeoDriveGetClientUpdateInfo" />
+    <operation class="org.nuxeo.drive.operations.NuxeoDriveAddToLocallyEditedCollection" />
     <!-- For test purpose -->
     <operation
       class="org.nuxeo.drive.operations.test.NuxeoDriveSetupIntegrationTests" />
