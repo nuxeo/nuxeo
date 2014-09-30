@@ -205,4 +205,25 @@ public interface ImagingService {
             List<PictureTemplate> pictureTemplates, ImageInfo imageInfo,
             boolean convert) throws IOException, ClientException;
 
+    /**
+     * Compute all the registered {@link PictureTemplate}
+     *
+     * <br />
+     * <br />
+     *
+     * For each picture template the
+     * {@link ImagingService#computeViewFor(Blob, PictureTemplate, ImageInfo, boolean)}
+     * method is call
+     *
+     * @param fileContent
+     * @param b
+     * @return
+     * @throws IOException
+     * @throws ClientException
+     *
+     * @since 5.9.6
+     */
+    List<PictureView> computeViewFor(Blob fileContent, boolean b)
+            throws ClientException, IOException;
+
 }

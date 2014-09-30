@@ -42,7 +42,7 @@ public class PictureTemplate implements Comparable<PictureTemplate> {
     protected String description;
 
     @XNode("@enabled")
-    protected boolean enabled;
+    protected boolean enabled = true;
 
     @XNode("@chainId")
     protected String chainId;

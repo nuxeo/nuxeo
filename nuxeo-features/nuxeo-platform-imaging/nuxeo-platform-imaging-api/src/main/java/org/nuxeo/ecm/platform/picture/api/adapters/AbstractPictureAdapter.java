@@ -357,23 +357,14 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
                         maxsize, filename, width, height, depth, fileContent);
             }
         } else {
-            // Default properties When PictureBook doesn't exist
-            createPictureimpl("Medium Size", "medium", "Medium", MEDIUM_SIZE,
-                    filename, width, height, depth, fileContent);
-            createPictureimpl(description, "original", "Original", null,
-                    filename, width, height, depth, fileContent);
-            createPictureimpl("Small Size", "small", "Small", SMALL_SIZE,
-                    filename, width, height, depth, fileContent);
-            createPictureimpl("Thumbnail Size", "thumb", "Thumbnail",
-                    THUMB_SIZE, filename, width, height, depth, fileContent);
-            createPictureimpl("Original Picture in JPEG format",
-                    "originalJpeg", "OriginalJpeg", null, filename, width,
-                    height, depth, fileContent);
-
+            // TODO - Call the picture template registry here ? (call with true
+            // for convert params)
+            List<PictureView> pictureViews = getImagingService().computeViewFor(
+                    fileContent, true);
+            addPictureViews(pictureViews);
         }
     }
 
-    @SuppressWarnings({ "unchecked" })
     public void createPictureimpl(String description, String tag, String title,
             Integer maxsize, String filename, Integer width, Integer height,
             Integer depth, Blob fileContent) throws IOException,
@@ -381,19 +372,75 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         if (fileContent.getFilename() == null) {
             fileContent.setFilename(filename);
         }
+
         if (maxsize == null) {
             maxsize = 0;
         }
 
         PictureTemplate pictureTemplate = new PictureTemplate(title,
                 description, tag, maxsize);
+
         PictureView view = getImagingService().computeViewFor(fileContent,
                 pictureTemplate, getImageInfo(), true);
 
+        addPictureView(view);
+    }
+
+    /**
+     * Attach new picture views with the document
+     *
+     * @param pictureViews
+     *
+     * @see AbstractPictureAdapter#addViews(List, String, String)
+     * @see DefaultPictureAdapter#preFillPictureViews(Blob, List, ImageInfo)
+     *
+     * @since 5.9.6
+     */
+    protected void addPictureViews(List<PictureView> pictureViews) {
+        List<Map<String, Serializable>> views = getPictureViews();
+
+        for (PictureView pictureView : pictureViews) {
+            views.add(pictureView.asMap());
+        }
+
+        doc.setPropertyValue(VIEWS_PROPERTY, (Serializable) views);
+    }
+
+    /**
+     * Safely get the picture views attached with the document.
+     *
+     * <br/>
+     * <br/>
+     *
+     * If the property {@link AbstractPictureAdapter#VIEWS_PROPERTY} is null
+     * then a <b>new {@link ArrayList} is created</b>.
+     *
+     * <br/>
+     * <br/>
+     *
+     * <b>This method never return null</b>
+     *
+     * @since 5.9.6
+     */
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Serializable>> getPictureViews() {
         List<Map<String, Serializable>> views = (List<Map<String, Serializable>>) doc.getPropertyValue(VIEWS_PROPERTY);
         if (views == null) {
             views = new ArrayList<Map<String, Serializable>>();
         }
+
+        return views;
+    }
+
+    /**
+     * Add a pictureView to the existing picture views attached with the
+     * document
+     *
+     * @since 5.9.6
+     */
+    protected void addPictureView(PictureView view) {
+        List<Map<String, Serializable>> views = getPictureViews();
+
         views.add(view.asMap());
         doc.setPropertyValue(VIEWS_PROPERTY, (Serializable) views);
     }

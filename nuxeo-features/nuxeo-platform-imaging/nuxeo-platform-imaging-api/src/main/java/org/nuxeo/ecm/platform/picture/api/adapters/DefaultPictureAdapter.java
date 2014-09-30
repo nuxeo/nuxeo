@@ -121,38 +121,27 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
     public void preFillPictureViews(Blob blob,
             List<Map<String, Object>> pictureTemplates, ImageInfo imageInfo)
             throws IOException, ClientException {
-        List<PictureTemplate> templates = new ArrayList<PictureTemplate>();
+        ImagingService imagingService = getImagingService();
+        List<PictureView> pictureViews = null;
+
         if (pictureTemplates != null) {
+            List<PictureTemplate> templates = new ArrayList<PictureTemplate>(
+                    pictureTemplates.size());
             for (Map<String, Object> template : pictureTemplates) {
                 templates.add(new PictureTemplate(
                         (String) template.get("title"),
                         (String) template.get("description"),
                         (String) template.get("tag"), 0));
             }
+
+            pictureViews = imagingService.computeViewsFor(blob, templates,
+                    imageInfo, false);
         } else {
-            templates = computeDefaultPictureTemplates();
+            // TODO - Call service here - call with false for convert params
+            pictureViews = imagingService.computeViewFor(fileContent, false);
         }
 
-        ImagingService imagingService = getImagingService();
-        List<PictureView> pictureViews = imagingService.computeViewsFor(blob,
-                templates, imageInfo, false);
-        List<Map<String, Serializable>> views = new ArrayList<Map<String, Serializable>>();
-        for (PictureView pictureView : pictureViews) {
-            views.add(pictureView.asMap());
-        }
-        doc.setPropertyValue(VIEWS_PROPERTY, (Serializable) views);
-    }
-
-    protected List<PictureTemplate> computeDefaultPictureTemplates() {
-        List<PictureTemplate> templates = new ArrayList<PictureTemplate>();
-        templates.add(new PictureTemplate("Medium", "Medium Size", "medium", 0));
-        templates.add(new PictureTemplate("Original", "Original", "original", 0));
-        templates.add(new PictureTemplate("Small", "Small Size", "small", 0));
-        templates.add(new PictureTemplate("Thumbnail", "Thumbnail Size",
-                "thumb", 0));
-        templates.add(new PictureTemplate("OriginalJpeg",
-                "Original Picture in JPEG format", "originalJpeg", 0));
-        return templates;
+        addPictureViews(pictureViews);
     }
 
     @Override

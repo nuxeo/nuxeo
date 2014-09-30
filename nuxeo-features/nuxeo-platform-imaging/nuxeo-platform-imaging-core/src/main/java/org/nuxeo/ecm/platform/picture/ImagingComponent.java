@@ -37,6 +37,8 @@ import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -304,20 +306,15 @@ public class ImagingComponent extends DefaultComponent implements
             PictureTemplate pictureTemplate, ImageInfo imageInfo,
             boolean convert) throws IOException, ClientException {
         if (convert) {
-            String title = pictureTemplate.getTitle();
-            if ("Original".equals(title)) {
-                return computeOriginalView(blob, pictureTemplate, imageInfo);
-            } else if ("OriginalJpeg".equals(title)) {
-                return computeOriginalJpegView(blob, pictureTemplate, imageInfo);
-            } else {
-                return computeView(blob, pictureTemplate, imageInfo);
-            }
+            return computeView(blob, pictureTemplate, imageInfo);
         } else {
             return computeViewWithoutConversion(blob, pictureTemplate,
                     imageInfo);
         }
     }
 
+    // TODO- Explain deprecation
+    @Deprecated
     protected PictureView computeOriginalView(Blob blob,
             PictureTemplate pictureTemplate, ImageInfo imageInfo)
             throws IOException {
@@ -350,6 +347,8 @@ public class ImagingComponent extends DefaultComponent implements
         return new BlobWrapper(blob);
     }
 
+    // TODO- Explain deprecation
+    @Deprecated
     protected PictureView computeOriginalJpegView(Blob blob,
             PictureTemplate pictureTemplate, ImageInfo imageInfo)
             throws ClientException, IOException {
@@ -396,43 +395,91 @@ public class ImagingComponent extends DefaultComponent implements
     }
 
     protected PictureView computeView(Blob blob,
-            PictureTemplate pictureTemplate, ImageInfo imageInfo)
-            throws ClientException, IOException {
-        String filename = blob.getFilename();
+            PictureTemplate pictureTemplate, ImageInfo imageInfo) {
+
         String title = pictureTemplate.getTitle();
-        int width = imageInfo.getWidth();
-        int height = imageInfo.getHeight();
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
-        map.put(PictureView.FIELD_TITLE, pictureTemplate.getTitle());
-        map.put(PictureView.FIELD_DESCRIPTION, pictureTemplate.getDescription());
-        map.put(PictureView.FIELD_TAG, pictureTemplate.getTag());
-        Point size = new Point(width, height);
+
+        Map<String, Serializable> pictureViewMap = new HashMap<String, Serializable>();
+        pictureViewMap.put(PictureView.FIELD_TITLE, title);
+        pictureViewMap.put(PictureView.FIELD_DESCRIPTION,
+                pictureTemplate.getDescription());
+        pictureViewMap.put(PictureView.FIELD_TAG, pictureTemplate.getTag());
+
+        Point size = new Point(imageInfo.getWidth(), imageInfo.getHeight());
         size = getSize(size, pictureTemplate.getMaxSize());
-        map.put(PictureView.FIELD_WIDTH, size.x);
-        map.put(PictureView.FIELD_HEIGHT, size.y);
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
-        options.put(OPTION_RESIZE_WIDTH, size.x);
-        options.put(OPTION_RESIZE_HEIGHT, size.y);
-        options.put(OPTION_RESIZE_DEPTH, imageInfo.getDepth());
+
+        pictureViewMap.put(PictureView.FIELD_WIDTH, size.x);
+        pictureViewMap.put(PictureView.FIELD_HEIGHT, size.y);
+
         // use the registered conversion format for 'Medium' and 'Thumbnail'
         // views
         String conversionFormat = getConfigurationValue(CONVERSION_FORMAT,
                 JPEG_CONVERSATION_FORMAT);
-        options.put(CONVERSION_FORMAT, conversionFormat);
-        BlobHolder bh = new SimpleBlobHolder(blob);
-        ConversionService conversionService = Framework.getLocalService(ConversionService.class);
-        bh = conversionService.convert(OPERATION_RESIZE, bh, options);
 
-        Blob viewBlob = bh.getBlob();
-        if (viewBlob == null) {
-            viewBlob = wrapBlob(blob);
-        }
-        String viewFilename = computeViewFilename(filename, conversionFormat);
-        viewFilename = title + "_" + viewFilename;
-        map.put(PictureView.FIELD_FILENAME, viewFilename);
+        Blob viewBlob = callPictureTemplateChain(blob, pictureTemplate,
+                imageInfo, size, conversionFormat);
+
+        String viewFilename = title + "_"
+                + computeViewFilename(blob.getFilename(), conversionFormat);
         viewBlob.setFilename(viewFilename);
-        map.put(PictureView.FIELD_CONTENT, (Serializable) viewBlob);
-        return new PictureViewImpl(map);
+
+        pictureViewMap.put(PictureView.FIELD_FILENAME, viewFilename);
+        pictureViewMap.put(PictureView.FIELD_CONTENT, (Serializable) viewBlob);
+
+        return new PictureViewImpl(pictureViewMap);
+    }
+
+    protected Blob callPictureTemplateChain(Blob blob,
+            PictureTemplate pictureTemplate, ImageInfo imageInfo, Point size,
+            String conversionFormat) {
+        Map<String, Object> parameters = new HashMap<>(3);
+        parameters.put(OPTION_RESIZE_WIDTH, size.x);
+        parameters.put(OPTION_RESIZE_HEIGHT, size.y);
+        parameters.put(OPTION_RESIZE_DEPTH, imageInfo.getDepth());
+
+        Map<String, Object> chainParameters = new HashMap<>(1);
+        chainParameters.put("parameters", parameters);
+
+        parameters.put(CONVERSION_FORMAT, conversionFormat);
+
+        OperationContext context = new OperationContext();
+        context.setInput(blob);
+
+        AutomationService automationService = Framework.getService(AutomationService.class);
+        Blob viewBlob = null;
+
+        try {
+            viewBlob = (Blob) automationService.run(context,
+                    pictureTemplate.getChainId(), chainParameters);
+
+            if (viewBlob == null) {
+                viewBlob = wrapBlob(blob);
+            }
+        } catch (Exception e) {
+            /*
+             * FIXME- How handle that case since we have to update the method
+             * signature <==> compat broken
+             */
+            throw new RuntimeException(e);
+        }
+
+        return viewBlob;
+    }
+
+    @Override
+    public List<PictureView> computeViewFor(Blob fileContent, boolean convert)
+            throws ClientException, IOException {
+        List<PictureTemplate> pictureTemplates = pictureTemplateRegistry.getPictureTemplates();
+        List<PictureView> pictureViews = new ArrayList<PictureView>(
+                pictureTemplates.size());
+
+        for (PictureTemplate pictureTemplate : pictureTemplates) {
+            PictureView pictureView = computeView(fileContent, pictureTemplate,
+                    getImageInfo(fileContent), convert);
+            pictureViews.add(pictureView);
+        }
+
+        return pictureViews;
     }
 
     protected PictureView computeViewWithoutConversion(Blob blob,

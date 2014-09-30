@@ -16,18 +16,18 @@
  */
 package org.nuxeo.ecm.platform.picture;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.picture.api.PictureTemplate;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Registry for the {@link PictureTemplate} class (merge supported)
@@ -37,46 +37,30 @@ import org.slf4j.LoggerFactory;
 public class PictureTemplateRegistry extends
         ContributionFragmentRegistry<PictureTemplate> {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final Log log = LogFactory.getLog(PictureTemplateRegistry.class);
 
-    protected final Map<String, PictureTemplate> pictureTemplates = new TreeMap<>();
+    protected final Map<String, PictureTemplate> pictureTemplates = new HashMap<>(
+            7);
 
     /**
      * Collection of picture template which can't be disabled
      */
-    protected final Set<String> defaultPictureTemplates = new HashSet<String>(5);
-
-    public PictureTemplateRegistry() {
-        super();
-        loadDefaultPictureTemplates();
-    }
+    protected final List<String> defaultPictureTemplates = Arrays.asList(
+            "Small", "Medium", "Original", "Thumbnail", "OriginalJpeg");
 
     /**
-     * Unmodifiable picture templates titles
-     *
-     * @return
+     * @return unmodifiable picture templates titles list
      */
-    public Set<String> getDefaultPictureTemplates() {
-        return Collections.unmodifiableSet(defaultPictureTemplates);
+    public List<String> getDefaultPictureTemplates() {
+        return Collections.unmodifiableList(defaultPictureTemplates);
     }
 
     /**
-     * Check if the passed picture template is present as default (so it can't
+     * Check if the passed picture template is present by default (so it can't
      * be disabled)
-     *
-     * @param pictureTemplate
-     * @return
      */
     public boolean isDefault(PictureTemplate pictureTemplate) {
         return defaultPictureTemplates.contains(pictureTemplate.getTitle());
-    }
-
-    private void loadDefaultPictureTemplates() {
-        defaultPictureTemplates.add("Small");
-        defaultPictureTemplates.add("Medium");
-        defaultPictureTemplates.add("Original");
-        defaultPictureTemplates.add("Thumbnail");
-        defaultPictureTemplates.add("OriginalJpeg");
     }
 
     @Override
@@ -88,8 +72,17 @@ public class PictureTemplateRegistry extends
         return pictureTemplates.get(id);
     }
 
-    public Collection<PictureTemplate> getPictureTemplates() {
-        return pictureTemplates.values();
+    /**
+     * JIT sort
+     *
+     * FIXME- Try a different approch since this method will be call a few time
+     * and each time a new list is created and sorted
+     */
+    public List<PictureTemplate> getPictureTemplates() {
+        List<PictureTemplate> entries = new ArrayList<>(
+                pictureTemplates.values());
+        Collections.sort(entries);
+        return entries;
     }
 
     @Override
@@ -129,10 +122,10 @@ public class PictureTemplateRegistry extends
         if (!enabled && isDefault(pictureTemplate)) {
             enabled = true;
 
-            if (logger.isWarnEnabled()) {
-                logger.warn(
-                        "The picture template named '{}' can't be disabled (it's present in the default picture template collection)",
-                        pictureTemplate.getTitle());
+            if (log.isWarnEnabled()) {
+                log.warn("The picture template named "
+                        + pictureTemplate.getTitle()
+                        + " can't be disabled (it's present in the default picture template collection)");
             }
         }
 
@@ -153,9 +146,13 @@ public class PictureTemplateRegistry extends
             oldPictureTemplate.setDescription(description);
         }
 
+        // TODO - Fix order always get updated even if it's zero so the default
+        // value if nothing is specified
+        oldPictureTemplate.setOrder(pictureTemplate.getOrder());
+
         Integer maxSize = pictureTemplate.getMaxSize();
 
-        // Ignore if maxSize is not setted or negative
+        // Ignore if maxSize is not specified or negative
         if (maxSize != null && maxSize >= 0) {
             oldPictureTemplate.setMaxSize(maxSize);
         }

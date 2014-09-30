@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.picture.core.operation.ConverterOperation">
+  <documentation>
+    Define the converter operation
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+    <operation class="org.nuxeo.ecm.platform.picture.operation.ConverterOperation" />
+  </extension>
+
+  <extension point="chains"
+    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+
+    <chain id="Picture.Resize">
+      <operation id="ConverterOperation">
+        <param name="converter" type="string">pictureResize</param>
+      </operation>
+    </chain>
+  </extension>
+</component>
