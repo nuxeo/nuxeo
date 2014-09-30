@@ -217,18 +217,17 @@ public class ContentViewImpl implements ContentView,
         // resolve binding if it is set
         if (!currentResultLayoutSet
                 && !StringUtils.isBlank(resultLayoutBinding)) {
-            resolveWithSearchDocument(new Function<FacesContext, Void>() {
+            Object res = resolveWithSearchDocument(new Function<FacesContext, Object>() {
                 @Override
-                public Void apply(FacesContext ctx) {
-                    Object value = ComponentTagUtils.resolveElExpression(ctx,
+                public Object apply(FacesContext ctx) {
+                    return ComponentTagUtils.resolveElExpression(ctx,
                             resultLayoutBinding);
-                    if (value != null && value instanceof String) {
-                        setCurrentResultLayout((String) value);
-                        currentResultLayoutSet = true;
-                    }
-                    return null;
                 }
             });
+            if (res != null && res instanceof String) {
+                setCurrentResultLayout((String) res);
+                currentResultLayoutSet = true;
+            }
         }
         if (currentResultLayout == null && resultLayouts != null
                 && !resultLayouts.isEmpty()) {
@@ -241,9 +240,9 @@ public class ContentViewImpl implements ContentView,
     public void setCurrentResultLayout(final ContentViewLayout layout) {
         if (!isBlank(resultLayoutBinding)
                 && ComponentTagUtils.isStrictValueReference(resultLayoutBinding)) {
-            resolveWithSearchDocument(new Function<FacesContext, Void>() {
+            resolveWithSearchDocument(new Function<FacesContext, Object>() {
                 @Override
-                public Void apply(FacesContext ctx) {
+                public Object apply(FacesContext ctx) {
                     ComponentTagUtils.applyValueExpression(ctx,
                             resultLayoutBinding,
                             layout == null ? null : layout.getName());
@@ -254,16 +253,19 @@ public class ContentViewImpl implements ContentView,
         // still set current result layout value
         currentResultLayoutSet = true;
         currentResultLayout = layout;
+        // reset corresponding columns
+        setCurrentResultLayoutColumns(null);
     }
 
-    protected void resolveWithSearchDocument(Function<FacesContext, Void> func) {
+    protected Object resolveWithSearchDocument(
+            Function<FacesContext, Object> func) {
         FacesContext ctx = FacesContext.getCurrentInstance();
         if (getSearchDocumentModel() == null) {
-            func.apply(ctx);
+            return func.apply(ctx);
         } else {
             Object previousSearchDocValue = addSearchDocumentToELContext(ctx);
             try {
-                func.apply(ctx);
+                return func.apply(ctx);
             } finally {
                 removeSearchDocumentFromELContext(ctx, previousSearchDocValue);
             }
@@ -537,9 +539,9 @@ public class ContentViewImpl implements ContentView,
     public List<String> getCurrentResultLayoutColumns() {
         // always resolve binding if it is set
         if (!StringUtils.isBlank(resultColumnsBinding)) {
-            resolveWithSearchDocument(new Function<FacesContext, Void>() {
+            Object res = resolveWithSearchDocument(new Function<FacesContext, Object>() {
                 @Override
-                public Void apply(FacesContext ctx) {
+                public Object apply(FacesContext ctx) {
                     Object value = ComponentTagUtils.resolveElExpression(ctx,
                             resultColumnsBinding);
                     if (value != null && !(value instanceof List)) {
@@ -548,11 +550,12 @@ public class ContentViewImpl implements ContentView,
                                         + "result is not a List: %s",
                                 resultColumnsBinding, value));
                     }
-                    currentResultLayoutColumns = value == null
-                            || ((List) value).isEmpty() ? null : (List) value;
-                    return null;
+                    return value;
                 }
             });
+            if (res != null && res instanceof List) {
+                return ((List) res).isEmpty() ? null : (List) res;
+            }
         }
         return currentResultLayoutColumns;
     }
@@ -564,9 +567,9 @@ public class ContentViewImpl implements ContentView,
             // set local values
             currentResultLayoutColumns = resultColumns;
         } else {
-            resolveWithSearchDocument(new Function<FacesContext, Void>() {
+            resolveWithSearchDocument(new Function<FacesContext, Object>() {
                 @Override
-                public Void apply(FacesContext ctx) {
+                public Object apply(FacesContext ctx) {
                     ComponentTagUtils.applyValueExpression(ctx,
                             resultColumnsBinding, resultColumns);
                     return null;
