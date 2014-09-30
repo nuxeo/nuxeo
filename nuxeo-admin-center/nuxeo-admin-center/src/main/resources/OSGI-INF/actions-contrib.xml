@@ -196,32 +196,6 @@
 
     <!-- header actions -->
 
-    <action id="StudioRegistered" label="Studio" order="200" type="bare_link">
-      <category>MAIN_TABS</category>
-      <filter-id>only_for_manager</filter-id>
-      <filter-id>isRegisteredOnConnect</filter-id>
-      <properties>
-        <property name="containerStyleClass">studioButton</property>
-        <property name="target">studio</property>
-        <property name="link">
-          #{nuxeoConnectUrl}studio/ide
-        </property>
-      </properties>
-    </action>
-
-    <action id="StudioUnregistered" label="Studio" order="200" type="bare_link">
-      <category>MAIN_TABS</category>
-      <filter-id>only_for_manager</filter-id>
-      <filter-id>isNotRegisteredOnConnect</filter-id>
-      <properties>
-        <property name="containerStyleClass">studioButton</property>
-        <property name="target">studio</property>
-        <property name="link">
-          #{nuxeoConnectUrl}connect/trial/form?source=studioButton&#38;product=#{connectUpdateStatusInfo.distributionLabel}
-        </property>
-      </properties>
-    </action>
-
     <action id="connectUpdates"
       label="#{connectUpdateStatusInfo.availableUpdateCount} update(s) available"
       order="1000" type="template" icon="/icons/update.png">
