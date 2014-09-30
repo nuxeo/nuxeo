@@ -4586,6 +4586,32 @@
       </property>
     </widgetType>
 
+    <widgetType name="shuttle">
+      <configuration>
+        <title>Shuttle widget</title>
+        <sinceVersion>5.9.6</sinceVersion>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <categories>
+          <category>configuration_not_ready</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/shuttle_widget_template.xhtml
+      </property>
+    </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"

@@ -9,10 +9,7 @@
   id="#{layout.id}">
 
 <c:if test="false">
-  Binds the value given to the layout tag to the selected columns.
-  Columns are generated from the layout.
-  
-  Properties to define on the layout:
+  Properties to define on the widget:
   - availableElementsLabel (string message to translate)
   - selectedElementsLabel (string message to translate)
   - selectedElementsHelp (string message to translate)
@@ -30,176 +27,22 @@
   <c:set var="selectionReferenceValue"
     value="#{nxu:test(empty layoutValue, selectionDefaultValue, layoutValue)}" />
 
-  <a4j:region renderRegionOnly="true">
-    <a4j:outputPanel layout="block" id="#{layout.id}_panel">
-      <table class="listShuttleTable">
-        <tbody>
-          <tr>
-            <th>
-              <c:if test="#{not empty layoutProperty_availableElementsLabel}">
-                <h:outputText value="#{messages[layoutProperty_availableElementsLabel]}" />
-              </c:if>
-            </th>
-            <th>
-            </th>
-            <th>
-              <c:if test="#{not empty layoutProperty_selectedElementsLabel}">
-                <h:outputText value="#{messages[layoutProperty_selectedElementsLabel]}" />
-              </c:if>
-            </th>
-            <th>
-            </th>
-          </tr>
-          <tr>
-            <td class="listShuttleSelectElements">
-              <h:selectManyListbox id="#{layout.id}_sourceSelect"
-                size="#{nxu:test(empty layoutProperty_selectSize, 5, layoutProperty_selectSize)}"
-                class="listShuttleSelect">
-                <nxu:selectItems
-                  value="#{nxl:notSelectedColumns(layout, selectionReferenceValue)}"
-                  var="layoutColumnVar"
-                  itemValue="#{layoutColumnVar.name}"
-                  itemLabel="#{messages[layoutColumnVar.properties.label]}"
-                  ordering="label" caseSensitive="true"
-                  id="#{layout.id}_sourceItems" />
-              </h:selectManyListbox>
-              <h:message styleClass="errorMessage" for="#{layout.id}_sourceSelect"/>
-            </td>
-            <td class="listShuttleSelectionActions">
-              <a4j:commandLink bypassUpdates="true"
-                actionListener="#{selectionActions.removeFromSelection}"
-                id="#{layout.id}_removeFormSelection"
-                render="#{layout.id}_panel"
-                ignoreDupResponses="true">
-                <f:param name="leftSelect" value="#{layout.id}_sourceSelect"/>
-                <f:param name="leftItems" value="#{layout.id}_sourceItems"/>
-                <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
-                <f:param name="rightItems" value="#{layout.id}_targetItems"/>
-                <f:param name="submittedList" value="#{layout.id}_hiddenTargetList"/>
-                <nxu:graphicImage value="/icons/move_left.png"
-                  alt="#{messages['command.selection.remove']}"
-                  title="#{messages['command.selection.remove']}"/>
-              </a4j:commandLink>
-              <a4j:commandLink bypassUpdates="true"
-                actionListener="#{selectionActions.addToSelection}"
-                id="#{layout.id}_addToSelection"
-                render="#{layout.id}_panel"
-                ignoreDupResponses="true">
-                <f:param name="leftSelect" value="#{layout.id}_sourceSelect"/>           
-                <f:param name="leftItems" value="#{layout.id}_sourceItems"/>
-                <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
-                <f:param name="rightItems" value="#{layout.id}_targetItems"/>
-                <f:param name="submittedList" value="#{layout.id}_hiddenTargetList"/>
-                <nxu:graphicImage value="/icons/move_right.png"
-                  alt="#{messages['command.selection.add']}"
-                  title="#{messages['command.selection.add']}"/>
-              </a4j:commandLink>
-              <a4j:commandLink bypassUpdates="true"
-                actionListener="#{selectionActions.addAllToSelection}"
-                id="#{layout.id}_addAllToSelection"
-                render="#{layout.id}_panel"
-                ignoreDupResponses="true">
-                <f:param name="leftSelect" value="#{layout.id}_sourceSelect"/>
-                <f:param name="leftItems" value="#{layout.id}_sourceItems"/>
-                <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
-                <f:param name="rightItems" value="#{layout.id}_targetItems"/>
-                <f:param name="submittedList" value="#{layout.id}_hiddenTargetList"/>
-                <nxu:graphicImage value="/icons/move_all_right.png"
-                  alt="#{messages['command.selection.addAll']}"
-                  title="#{messages['command.selection.addAll']}"/>
-              </a4j:commandLink>
-              <a4j:commandLink bypassUpdates="true"
-                actionListener="#{selectionActions.removeAllFromSelection}"
-                id="#{layout.id}_removeAllFromSelection"
-                render="#{layout.id}_panel"
-                ignoreDupResponses="true">
-                <f:param name="leftSelect" value="#{layout.id}_sourceSelect"/>
-                <f:param name="leftItems" value="#{layout.id}_sourceItems"/>
-                <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
-                <f:param name="rightItems" value="#{layout.id}_targetItems"/>
-                <f:param name="submittedList" value="#{layout.id}_hiddenTargetList"/>
-                <nxu:graphicImage value="/icons/move_all_left.png"
-                  alt="#{messages['command.selection.removeAll']}"
-                  title="#{messages['command.selection.removeAll']}"/>
-              </a4j:commandLink>
-            </td>
-            <td class="listShuttleSelectElements">
-              <div>
-                <h:outputText value="#{messages[layoutProperty_selectedElementsHelp]}" />
-              </div>
-              <h:selectManyListbox id="#{layout.id}_targetSelect"
-                size="#{nxu:test(empty layoutProperty_selectSize, 5, layoutProperty_selectSize)}"
-                class="listShuttleSelect">
-                <nxu:selectItems
-                  value="#{nxl:selectedColumns(layout, selectionReferenceValue, layoutProperty_displayAlwaysSelectedColumns)}"
-                  var="layoutColumnVar"
-                  itemValue="#{layoutColumnVar.name}"
-                  itemLabel="#{messages[layoutColumnVar.properties.label]}"
-                  itemDisabled="#{layoutColumnVar.alwaysSelected}"
-                  id="#{layout.id}_targetItems" />
-              </h:selectManyListbox>
-              <h:message styleClass="errorMessage"
-                for="#{layout.id}_targetSelect"/>
-              <nxu:inputList id="#{layout.id}_hiddenTargetList"
-                model="model" diff="false" value="#{layoutValue}"
-                defaultValue="#{selectionDefaultValue}"
-                required="#{layoutProperty_required}" />
-              <h:message styleClass="errorMessage" for="#{layout.id}_hiddenTargetList"/>
-            </td>
-            <td class="listShuttleSelectionActions">
-              <a4j:commandLink bypassUpdates="true"
-                actionListener="#{selectionActions.shiftSelectedFirst}"
-                id="#{layout.id}_shiftSelectedFirst"
-                render="#{layout.id}_panel"
-                ignoreDupResponses="true">
-                <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
-                <f:param name="rightItems" value="#{layout.id}_targetItems"/>
-                <f:param name="submittedList" value="#{layout.id}_hiddenTargetList"/>
-                <nxu:graphicImage value="/icons/move_top.png"
-                  alt="#{messages['command.selection.moveToTop']}"
-                  title="#{messages['command.selection.moveToTop']}"/>
-              </a4j:commandLink>
-              <a4j:commandLink bypassUpdates="true"
-                actionListener="#{selectionActions.shiftSelectedUp}"
-                id="#{layout.id}_shiftSelectedUp"
-                render="#{layout.id}_panel"
-                ignoreDupResponses="true">
-                <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
-                <f:param name="rightItems" value="#{layout.id}_targetItems"/>
-                <f:param name="submittedList" value="#{layout.id}_hiddenTargetList"/>
-                <nxu:graphicImage value="/icons/move_up.png"
-                  alt="#{messages['command.selection.moveUp']}"
-                  title="#{messages['command.selection.moveUp']}"/>
-              </a4j:commandLink>
-              <a4j:commandLink bypassUpdates="true"
-                actionListener="#{selectionActions.shiftSelectedDown}"
-                id="#{layout.id}_shiftSelectedDown"
-                render="#{layout.id}_panel"
-                ignoreDupResponses="true">
-                <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
-                <f:param name="rightItems" value="#{layout.id}_targetItems"/>
-                <f:param name="submittedList" value="#{layout.id}_hiddenTargetList"/>
-                <nxu:graphicImage value="/icons/move_down.png"
-                  alt="#{messages['command.selection.moveDown']}"
-                  title="#{messages['command.selection.moveDown']}"/>
-              </a4j:commandLink>
-              <a4j:commandLink bypassUpdates="true"
-                actionListener="#{selectionActions.shiftSelectedLast}"
-                id="#{layout.id}_shiftSelectedLast"
-                render="#{layout.id}_panel"
-                ignoreDupResponses="true">
-                <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
-                <f:param name="rightItems" value="#{layout.id}_targetItems"/>
-                <f:param name="submittedList" value="#{layout.id}_hiddenTargetList"/>
-                <nxu:graphicImage value="/icons/move_end.png"
-                  alt="#{messages['command.selection.moveToBottom']}"
-                  title="#{messages['command.selection.moveToBottom']}"/>
-              </a4j:commandLink>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </a4j:outputPanel>
-  </a4j:region>
-  
+  <nxl:widgetType name="template" value="#{layoutValue}" mode="edit"
+    properties="#{layout.properties}"
+    template="/widgets/shuttle_widget_template.xhtml"
+    defaultValue="#{selectionDefaultValue}"
+    showOrderingActions="true"
+    sourceItems="#{nxl:notSelectedColumns(layout, selectionReferenceValue)}"
+    sourceItemVar="layoutColumnVar"
+    sourceItemValue="#{layoutColumnVar.name}"
+    sourceItemLabel="#{messages[layoutColumnVar.properties.label]}"
+    sourceItemOrdering="label"
+    sourceItemCaseSensitive="true"
+    targetItems="#{nxl:selectedColumns(layout, selectionReferenceValue, widgetProperty_displayAlwaysSelectedColumns)}"
+    targetItemVar="layoutColumnVar"
+    targetItemValue="#{layoutColumnVar.name}"
+    targetItemLabel="#{messages[layoutColumnVar.properties.label]}"
+    targetItemDisabled="#{layoutColumnVar.alwaysSelected}"
+    />
+
 </f:subview>
