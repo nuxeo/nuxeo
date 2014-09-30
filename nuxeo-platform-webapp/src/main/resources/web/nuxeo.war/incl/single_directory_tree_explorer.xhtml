@@ -29,6 +29,7 @@
         <rich:treeModelRecursiveAdaptor
           roots="#{treeModel}"
           nodes="#{node.children}"
+          leaf="#{node.children == null or node.children.size == 0}"
           id="directoryNavRecursiveAdaptor">
           <rich:treeNode
             highlightedClass="treeNodeHighlightedClass"
