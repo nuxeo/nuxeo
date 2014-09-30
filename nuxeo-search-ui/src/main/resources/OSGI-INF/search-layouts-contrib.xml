@@ -250,18 +250,6 @@
         <property name="required">true</property>
         <property name="displayAlwaysSelectedColumns">false</property>
       </properties>
-      <!--<properties mode="edit_sort_infos">-->
-        <!--<property name="newSortInfoTemplate">-->
-          <!--#{documentSearchActions.newSortInfo}-->
-        <!--</property>-->
-        <!--<property name="required">false</property>-->
-      <!--</properties>-->
-      <!--<properties mode="edit_sort_infos_map">-->
-        <!--<property name="newSortInfoTemplate">-->
-          <!--#{documentSearchActions.newSortInfoMap}-->
-        <!--</property>-->
-        <!--<property name="required">false</property>-->
-      <!--</properties>-->
       <columns>
         <column name="selection" alwaysSelected="true">
           <properties mode="any">

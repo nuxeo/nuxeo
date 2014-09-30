@@ -11,36 +11,47 @@
 
   </extension>
 
-
-  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-    point="widgettypes">
-
-    <widgetType name="search_content_views_selection">
-      <configuration>
-        <categories>
-          <category>configuration_not_ready</category>
-        </categories>
-      </configuration>
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">/search/widgets/search_content_view_selection_widget_template.xhtml
-      </property>
-    </widgetType>
-
-  </extension>
-
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <widget name="search_content_views_selection" type="search_content_views_selection">
+    <widget name="search_content_views_selection" type="shuttle">
       <labels>
-        <label mode="any">label.search.local.configuration.content.view.selection.label</label>
+        <label mode="any">
+          label.search.local.configuration.content.view.selection.label
+        </label>
       </labels>
       <translated>true</translated>
       <fields>
         <field>searchc:deniedContentViews</field>
       </fields>
+      <properties mode="any">
+        <property name="availableElementsLabel">
+          label.search.local.configuration.content.view.selection.available
+        </property>
+        <property name="selectedElementsLabel">
+          label.search.local.configuration.content.view.selection.enable
+        </property>
+        <property name="sourceItems">
+          #{searchUIConfigurationActions.getNotSelectedContentViewHeaders(layoutValue)}
+        </property>
+        <property name="sourceItemVar">contentViewHeader</property>
+        <property name="sourceItemValue">#{contentViewHeader.name}</property>
+        <property name="sourceItemLabel">
+          #{contentViewHeader.translateTitle ?
+          messages[contentViewHeader.title] : contentViewHeader.title}
+        </property>
+        <property name="sourceItemOrdering">label</property>
+        <property name="sourceItemCaseSensitive">true</property>
+        <property name="targetItems">
+          #{searchUIConfigurationActions.getSelectedContentViewHeaders(layoutValue)}
+        </property>
+        <property name="targetItemVar">contentViewHeader</property>
+        <property name="targetItemValue">#{contentViewHeader.name}</property>
+        <property name="targetItemLabel">
+          #{contentViewHeader.translateTitle ?
+          messages[contentViewHeader.title] : contentViewHeader.title}
+        </property>
+      </properties>
     </widget>
   </extension>
 

@@ -3,9 +3,8 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="UI_TYPES_CONFIGURATION"
-      link="/incl/tabs/ui_types_configuration.xhtml" order="100"
-      label="action.view.types.configuration" icon="/icons/file.gif">
+    <action id="UI_TYPES_CONFIGURATION" link="/incl/tabs/ui_types_configuration.xhtml"
+      order="100" label="action.view.types.configuration" icon="/icons/file.gif">
       <category>LOCAL_CONFIGURATION</category>
       <filter-id>manage</filter-id>
     </action>
@@ -13,40 +12,9 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-    point="widgettypes">
-
-    <widgetType name="ui_types_selection">
-      <configuration>
-        <categories>
-          <category>configuration_not_ready</category>
-        </categories>
-      </configuration>
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">/widgets/ui_types_selection_widget_template.xhtml
-      </property>
-    </widgetType>
-
-    <widgetType name="default_type">
-      <configuration>
-        <categories>
-          <category>configuration_not_ready</category>
-        </categories>
-      </configuration>
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">/widgets/ui_default_type_widget_template.xhtml
-      </property>
-    </widgetType>
-
-  </extension>
-
-  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <widget name="ui_types_selection" type="ui_types_selection">
+    <widget name="ui_types_selection" type="shuttle">
       <labels>
         <label mode="any">label.local.configuration.ui.types.allowedTypesSelection</label>
       </labels>
@@ -54,6 +22,28 @@
       <fields>
         <field>uitypesconf:allowedTypes</field>
       </fields>
+      <properties mode="any">
+        <property name="availableElementsLabel">
+          label.local.configuration.selection.availableUITypes
+        </property>
+        <property name="selectedElementsLabel">
+          label.local.configuration.selection.selectedUITypes
+        </property>
+        <property name="sourceItems">
+          #{typesConfigurationActions.getNotSelectedTypes(layoutValue)}
+        </property>
+        <property name="sourceItemVar">type</property>
+        <property name="sourceItemValue">#{type.id}</property>
+        <property name="sourceItemLabel">#{messages[type.label]}</property>
+        <property name="sourceItemOrdering">label</property>
+        <property name="sourceItemCaseSensitive">true</property>
+        <property name="targetItems">
+          #{typesConfigurationActions.getSelectedTypes(layoutValue)}
+        </property>
+        <property name="targetItemVar">type</property>
+        <property name="targetItemValue">#{type.id}</property>
+        <property name="targetItemLabel">#{messages[type.label]}</property>
+      </properties>
     </widget>
 
     <widget name="deny_all_types" type="checkbox">
@@ -66,7 +56,7 @@
       </fields>
     </widget>
 
-    <widget name="default_type" type="default_type">
+    <widget name="default_type" type="selectOneMenu">
       <labels>
         <label mode="any">label.local.configuration.ui.automaticType</label>
       </labels>
@@ -74,8 +64,14 @@
       <fields>
         <field>uitypesconf:defaultType</field>
       </fields>
+      <selectOptions>
+        <option itemLabel="#{messages['label.local.configuration.ui.defaultType']}"
+          itemValue="" />
+        <options
+          value="#{typesConfigurationActions.getTypesWithSchemaFile(layoutValue)}"
+          var="type" itemValue="#{type.id}" itemLabel="#{messages[type.label]}" />
+      </selectOptions>
     </widget>
-
 
   </extension>
 
