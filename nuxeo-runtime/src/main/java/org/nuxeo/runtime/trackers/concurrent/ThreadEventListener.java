@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,16 @@ package org.nuxeo.runtime.trackers.concurrent;
 
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
+import org.nuxeo.runtime.services.event.EventService;
 
+/**
+ * Wrap a {@link ThreadEventHandler} for being enlisted in the
+ * {@link EventService}.
+ *
+ * @since 5.9.6
+ * @author Stephane Lacoin at Nuxeo (aka matic)
+ *
+ */
 public class ThreadEventListener implements EventListener {
 
     protected final ThreadEventHandler handler;

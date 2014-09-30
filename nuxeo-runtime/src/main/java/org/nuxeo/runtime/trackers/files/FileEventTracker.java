@@ -23,6 +23,14 @@ import org.nuxeo.runtime.services.event.EventService;
 import org.nuxeo.runtime.trackers.concurrent.ThreadEventHandler;
 import org.nuxeo.runtime.trackers.concurrent.ThreadEventListener;
 
+/**
+ * Files event tracker which delete files once the runtime leave the threads or
+ * at least once the associated marker object is garbaged.
+ *
+ * @author Stephane Lacoin at Nuxeo (aka matic)
+ * @since 5.9.6
+ * @see ThreadEventHandler
+ */
 public class FileEventTracker extends DefaultComponent {
 
     protected class GCDelegate implements FileEventHandler {
