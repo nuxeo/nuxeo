@@ -161,7 +161,7 @@ public class DocumentBackedFolderItem extends
     }
 
     /*--------------------- Protected -----------------*/
-    protected final void initialize(DocumentModel doc) throws ClientException {
+    protected void initialize(DocumentModel doc) throws ClientException {
         this.name = docTitle;
         this.folder = true;
         this.canCreateChild = doc.getCoreSession().hasPermission(doc.getRef(),

@@ -12,6 +12,9 @@
   <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
     point="fileSystemItemFactory">
 
+    <fileSystemItemFactory name="collectionSyncRootFolderItemFactory"
+      order="5" facet="Collection"
+      class="org.nuxeo.drive.service.impl.CollectionSyncRootFolderItemFactory" />
     <fileSystemItemFactory name="defaultSyncRootFolderItemFactory"
       order="10" facet="DriveSynchronized"
       class="org.nuxeo.drive.service.impl.DefaultSyncRootFolderItemFactory" />
@@ -45,6 +48,7 @@
 
     <activeFileSystemItemFactories>
       <factories>
+        <factory>collectionSyncRootFolderItemFactory</factory>
         <factory>defaultSyncRootFolderItemFactory</factory>
         <factory>defaultFileSystemItemFactory</factory>
       </factories>
