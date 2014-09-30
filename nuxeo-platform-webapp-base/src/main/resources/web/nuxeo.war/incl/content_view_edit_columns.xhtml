@@ -4,7 +4,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
   <h3>
-    <h:outputText value="#{messages['label.contentview.edit.column']}"/>
+    <h:outputText value="#{messages['label.contentview.edit.columns']}" />
   </h3>
 
   <h:form id="#{fancyboxFormId}">
@@ -12,17 +12,19 @@
     <div class="content">
 
       <nxl:layout name="#{contentView.currentResultLayout.name}"
-        mode="edit_columns" value="#{contentView.currentResultLayoutColumns}"/>
+        mode="edit_columns"
+        value="#{contentView.currentResultLayoutColumns}" />
 
     </div>
 
     <div class="buttonsGadget">
       <h:commandButton value="#{messages['command.save']}" styleClass="button">
-        <f:ajax render=":nxl_gridSearchLayout:cv_default_search_nxw_searchContentView_panel" execute="@form"
-          onevent="jQuery.fancybox.close"/>
+        <f:ajax render=":nxl_gridSearchLayout:cv_default_search_nxw_searchContentView_panel')}"
+          execute="@form"
+          onevent="jQuery.fancybox.close" />
       </h:commandButton>
       <h:commandButton value="#{messages['command.cancel']}" styleClass="button" immediate="true"
-        onclick="jQuery.fancybox.close();"/>
+        onclick="jQuery.fancybox.close();" />
     </div>
 
   </h:form>
