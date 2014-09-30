@@ -159,7 +159,14 @@ public class ITRichfileUploadTest extends AbstractTest {
         List<WebElement> uploadedFiles = driver.findElements(By.xpath(NX_UPLOADED_FILES_XPATH));
         assertEquals(2, uploadedFiles.size());
         // remove the first one
-        uploadedFiles.get(0).findElements(By.tagName("a")).get(0).click();
+        Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
+            public Boolean apply(WebDriver driver) {
+                List<WebElement> uploadedFiles = driver.findElements(By.xpath(NX_UPLOADED_FILES_XPATH));
+                uploadedFiles.get(0).findElements(By.tagName("a")).get(0).click();
+                return true;
+            }
+        }, StaleElementReferenceException.class);
+
         Alert confirmRemove = driver.switchTo().alert();
         confirmRemove.accept();
         // check we have 1 uploaded file
