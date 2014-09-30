@@ -5,6 +5,7 @@
   xmlns:nxs="http://www.nuxeo.org/ecm/schemas/content_view_display/">
 
   <xs:element name="contentViewName" type="xs:string" />
+  <xs:element name="resultLayoutName" type="xs:string" />
 
   <xs:element name="pageSize" type="xs:int" default="20" />
 
