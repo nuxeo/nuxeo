@@ -10,11 +10,17 @@
   <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
 
     <div class="thumbnailContainer">
+      <nxu:set var="blobInfo"
+        value="#{blobHolderGenerator.getBlobHolder(field).blob.filename}"
+        cache="true">
       <nxu:set var="thumbnailUrl"
-        value="#{nxd:fileUrl('downloadThumbnail', field, 'blobholder:0', blobHolderGenerator.getBlobHolder(field).blob.filename)}"
+        value="#{nxd:fileUrl('downloadThumbnail', field, 'blobholder:0', blobInfo)}"
         cache="true">
         <nxh:graphicImage value="#{thumbnailUrl}" />
-        <a href="#{contextPath}/api/v1/id/#{field.id}" class="image-popup" />
+        <h:outputLink value="#{contextPath}/api/v1/id/#{field.id}"
+          class="image-popup"
+          rendered="#{not empty blobInfo and field.hasFacet('Picture')}" />
+      </nxu:set>
       </nxu:set>
     </div>
 
