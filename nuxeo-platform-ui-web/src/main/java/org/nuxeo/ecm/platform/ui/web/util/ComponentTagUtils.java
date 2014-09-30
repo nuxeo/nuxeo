@@ -154,27 +154,33 @@ public final class ComponentTagUtils {
         }
     }
 
-    public static void setValueElExpression(FacesContext context,
+    /**
+     * Resolves given value expression as string and sets given value on it.
+     *
+     * @since 5.9.6
+     */
+    public static void applyValueExpression(FacesContext context,
             String elExpression, Object value) {
-        if (!isValueReference(elExpression)) {
-            log.debug("Trying to set a hardcoded expression");
+        if (!isStrictValueReference(elExpression)) {
+            log.warn(String.format("Cannot set value '%s' for expression '%s'",
+                    value, elExpression));
         } else {
             if (context == null) {
                 log.error(String.format(
                         "FacesContext is null => cannot resolve el expression '%s'",
                         elExpression));
+                return;
             }
-            // expression => evaluate
             Application app = context.getApplication();
+            ExpressionFactory eFactory = app.getExpressionFactory();
+            ELContext elContext = context.getELContext();
             try {
-                ExpressionFactory eFactory = app.getExpressionFactory();
-                ELContext elContext = context.getELContext();
                 ValueExpression vExpression = eFactory.createValueExpression(
                         elContext, elExpression, Object.class);
                 vExpression.setValue(elContext, value);
             } catch (Exception e) {
                 log.error(String.format(
-                        "Faces context: Error processing expression '%s'",
+                        "Error setting value '%s' for expression '%s'", value,
                         elExpression), e);
             }
         }

@@ -337,9 +337,14 @@ public class ContentViewServiceImpl extends DefaultComponent implements
             // init page provider
             cv.getPageProvider(searchDocument, contentViewState.getSortInfos(),
                     pageSize, currentPage, params);
-            // restore rendering info
-            cv.setCurrentResultLayout(contentViewState.getResultLayout());
-            cv.setCurrentResultLayoutColumns(contentViewState.getResultColumns());
+            // restore rendering info, unless bindings are present on content
+            // view configuration
+            if (!cv.hasResultLayoutBinding()) {
+                cv.setCurrentResultLayout(contentViewState.getResultLayout());
+            }
+            if (!cv.hasResultLayoutColumnsBinding()) {
+                cv.setCurrentResultLayoutColumns(contentViewState.getResultColumns());
+            }
         } else {
             throw new ClientException(String.format(
                     "Unknown content view with name '%s'", name));

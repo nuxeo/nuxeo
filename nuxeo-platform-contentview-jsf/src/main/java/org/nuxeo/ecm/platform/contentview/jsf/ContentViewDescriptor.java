@@ -89,6 +89,9 @@ public class ContentViewDescriptor {
     @XNode("resultColumns")
     String resultColumns;
 
+    /**
+     * @since 5.9.6
+     */
     @XNode("resultLayout")
     String resultLayout;
 
@@ -202,6 +205,9 @@ public class ContentViewDescriptor {
         return resultColumns;
     }
 
+    /**
+     * @since 5.9.6
+     */
     public String getResultLayoutBinding() {
         return resultLayout;
     }
