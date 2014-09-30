@@ -44,10 +44,9 @@
             <a4j:outputPanel id="sectionTree" layout="block"
               rendered="#{publishActions.currentPublicationTreeForPublishing != null}">
               <rich:tree
-                icon="#{nodeState.isExpanded(rowKey)?publishActions.getCurrentPublicationTreeIconExpanded():publishActions.getCurrentPublicationTreeIconCollapsed()}"
                 iconLeaf="#{publishActions.currentPublicationTreeIconCollapsed}"
-                iconExpanded="/icons/toggle_minus.png"
-                iconCollapsed="/icons/toggle_plus.png"
+                iconExpanded="#{publishActions.currentPublicationTreeIconCollapsed}"
+                iconCollapsed="#{publishActions.currentPublicationTreeIconCollapsed}"
                 rowKeyVar="rowKey"
                 stateVar="nodeState"
                 id="publishTree"
@@ -55,6 +54,7 @@
                 <rich:treeModelRecursiveAdaptor
                   roots="#{publishActions.currentPublicationTreesForPublishing}"
                   nodes="#{node.childrenNodes}"
+                  leaf="#{node.childrenNodes == null or node.childrenNodes.size == 0}"
                   id="publishRecursiveAdaptor">
                   <rich:treeNode
                     highlightedClass="treeNodeHighlightedClass"
