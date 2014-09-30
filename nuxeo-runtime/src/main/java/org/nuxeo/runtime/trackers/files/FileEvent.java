@@ -14,15 +14,15 @@ public class FileEvent extends Event {
     }
 
     public static void listen(FileEventListener aListener) {
-        Framework.getService(EventService.class).addListener(FileEvent.class.getName(), aListener);
+        Framework.getLocalService(EventService.class).addListener(FileEvent.class.getName(), aListener);
     }
 
     public static void ignore(FileEventListener aListener) {
-        Framework.getService(EventService.class).removeListener(FileEvent.class.getName(), aListener);
+        Framework.getLocalService(EventService.class).removeListener(FileEvent.class.getName(), aListener);
     }
 
     public void send() {
-        Framework.getService(EventService.class).sendEvent(this);
+        Framework.getLocalService(EventService.class).sendEvent(this);
     }
 
     public void handle(FileEventHandler handler) {

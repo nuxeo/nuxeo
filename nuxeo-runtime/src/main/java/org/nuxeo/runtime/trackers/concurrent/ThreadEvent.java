@@ -41,7 +41,7 @@ public abstract class ThreadEvent extends Event {
     public abstract void handle(ThreadEventHandler handler);
 
     public void send() {
-        Framework.getService(EventService.class).sendEvent(this);
+        Framework.getLocalService(EventService.class).sendEvent(this);
     }
 
     public static ThreadEvent onEnter(Object source, boolean isLongRunning) {
@@ -53,12 +53,12 @@ public abstract class ThreadEvent extends Event {
     }
 
     public static void listen(ThreadEventListener aListener) {
-        Framework.getService(EventService.class).addListener(
+        Framework.getLocalService(EventService.class).addListener(
                 ThreadEvent.class.getName(), aListener);
     }
 
     public static void ignore(ThreadEventListener aListener) {
-        Framework.getService(EventService.class).removeListener(
+        Framework.getLocalService(EventService.class).removeListener(
                 ThreadEvent.class.getName(), aListener);
     }
 }
