@@ -23,7 +23,6 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.richfaces.component.UITree;
 import org.richfaces.event.CollapsibleSubTableToggleEvent;
-import org.richfaces.event.TreeSelectionChangeEvent;
 
 /**
  * Local interface for the Seam component that manages the tree.
@@ -49,6 +48,9 @@ public interface TreeActions {
     @Deprecated
     void changeExpandListener(CollapsibleSubTableToggleEvent event);
 
+    /**
+     * @since 5.9.6
+     */
     void toggleListener();
 
     /**

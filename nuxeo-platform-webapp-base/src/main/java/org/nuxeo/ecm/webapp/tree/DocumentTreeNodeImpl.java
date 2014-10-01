@@ -98,8 +98,8 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
      * @deprecated since 5.9.1, sessionId not used.
      */
     @Deprecated
-    public DocumentTreeNodeImpl(String sessionId, DocumentModel document, Filter filter,
-            Sorter sorter) {
+    public DocumentTreeNodeImpl(String sessionId, DocumentModel document,
+            Filter filter, Sorter sorter) {
         this(document, filter, null, sorter, null);
     }
 
@@ -224,8 +224,8 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
     protected CoreSession getCoreSession() {
         CoreSession session = document.getCoreSession();
         if (session == null) {
-            session = (CoreSession) Component.getInstance(
-                    "documentManager", ScopeType.CONVERSATION);
+            session = (CoreSession) Component.getInstance("documentManager",
+                    ScopeType.CONVERSATION);
         }
         return session;
     }
@@ -257,28 +257,27 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
                 : null;
     }
 
-	@Override
-	public boolean isExpanded() {
-		// TODO: make sure than calling treeActionBean for each node is costless
-		final TreeActionsBean treeActionBean = (TreeActionsBean) Component
-				.getInstance("treeActions");
-		if (!treeActionBean.isNodeExpandEvent()) {
-			String currentDocPath = treeActionBean.getCurrentDocumentPath();
-			if (currentDocPath != null && getPath() != null
-					&& currentDocPath.startsWith(getPath())) {
-				// additional slower check for strict path prefix
-				if ((currentDocPath + '/').startsWith(getPath() + '/')
-						|| "/".equals(getPath())) {
-					expanded = true;
-				}
-			}
-		}
-		return expanded;
-	}
+    @Override
+    public boolean isExpanded() {
+        // TODO: make sure than calling treeActionBean for each node is
+        // costless
+        final TreeActionsBean treeActionBean = (TreeActionsBean) Component.getInstance("treeActions");
+        if (!treeActionBean.isNodeExpandEvent()) {
+            String currentDocPath = treeActionBean.getCurrentDocumentPath();
+            if (currentDocPath != null && getPath() != null
+                    && currentDocPath.startsWith(getPath())) {
+                // additional slower check for strict path prefix
+                if ((currentDocPath + '/').startsWith(getPath() + '/')
+                        || "/".equals(getPath())) {
+                    expanded = true;
+                }
+            }
+        }
+        return expanded;
+    }
 
-
-	@Override
-	public void setExpanded(boolean expanded) {
-		this.expanded = expanded;
-	}
+    @Override
+    public void setExpanded(boolean expanded) {
+        this.expanded = expanded;
+    }
 }
