@@ -29,17 +29,44 @@
       </properties>
     </widget>
 
-    <widget name="infoViewInfoLayout" type="documentLayout">
-      <properties widgetMode="view">
-        <property name="mode">view</property>
-        <property name="documentMode">info</property>
-        <property name="defaultLayout">defaultInfoLayout@view</property>
+    <widget name="infoViewTitleContainer" type="container">
+      <handlingLabels>false</handlingLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="styleClass">infoViewTitle</property>
+        <property name="display">block_top</property>
       </properties>
+      <subWidgets>
+        <widget name="infoViewTitle" type="title">
+          <controls mode="any">
+            <control name="handleLabels">true</control>
+          </controls>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="infoViewInfoLayoutContainer" type="container">
+      <handlingLabels>false</handlingLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="styleClass">infoViewInfoLayout</property>
+        <property name="display">block_top</property>
+      </properties>
+      <subWidgets>
+        <widget name="infoViewInfoLayout" type="documentLayout">
+          <properties widgetMode="view">
+            <property name="mode">view</property>
+            <property name="documentMode">info</property>
+            <property name="defaultLayout">defaultInfoLayout@view</property>
+          </properties>
+        </widget>
+      </subWidgets>
     </widget>
 
     <widget name="infoViewActions" type="documentActions">
       <properties widgetMode="view">
         <property name="category">INFO_VIEW_ACTIONS</property>
+        <property name="styleClass">infoViewActions</property>
       </properties>
       <controls mode="any">
         <control name="requireSurroundingForm">false</control>
@@ -59,14 +86,21 @@
       <filter-id>denyInfoViewPreview</filter-id>
     </action>
 
-    <action id="infoViewInfoLayout" type="widget" order="100">
+    <action id="infoViewTitleContainer" type="widget" order="100">
       <category>INFO_VIEW_PANEL_RIGHT</category>
       <properties>
-        <property name="widgetName">infoViewInfoLayout</property>
+        <property name="widgetName">infoViewTitleContainer</property>
       </properties>
     </action>
 
-    <action id="infoViewActions" type="widget" order="200">
+    <action id="infoViewInfoLayoutContainer" type="widget" order="200">
+      <category>INFO_VIEW_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">infoViewInfoLayoutContainer</property>
+      </properties>
+    </action>
+
+    <action id="infoViewActions" type="widget" order="300">
       <category>INFO_VIEW_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">infoViewActions</property>
@@ -98,31 +132,130 @@
 
     <layout name="defaultInfoLayout@view">
       <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml</template>
+        <template mode="any">/layouts/layout_div_template.xhtml</template>
       </templates>
       <rows>
         <row>
-          <widget>title</widget>
+          <widget>infoViewMetadata</widget>
         </row>
         <row>
-          <widget>subjects</widget>
+          <widget>infoViewWorkflow</widget>
         </row>
         <row>
-          <widget>coverage</widget>
+          <widget>infoViewTags</widget>
         </row>
         <row>
-          <widget>source</widget>
+          <widget>infoViewCollections</widget>
         </row>
         <row>
-          <widget>comments</widget>
+          <widget>infoViewComments</widget>
         </row>
       </rows>
-      <widget name="title" type="title">
+      <widget name="infoViewMetadata" type="container">
+        <labels>
+          <label mode="any">action.view.metadata</label>
+        </labels>
+        <translated>true</translated>
+        <subWidgets>
+          <widget name="metadata" type="documentLayout">
+            <properties widgetMode="view">
+              <property name="mode">view</property>
+              <property name="documentMode">view</property>
+            </properties>
+          </widget>
+        </subWidgets>
         <controls mode="any">
           <control name="handleLabels">true</control>
         </controls>
+        <properties widgetMode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
       </widget>
-      <widget name="comments" type="summary_current_document_comments">
+      <widget name="infoViewWorkflow" type="container">
+        <labels>
+          <label mode="any">label.document.routing.workflow</label>
+        </labels>
+        <translated>true</translated>
+        <subWidgets>
+          <widget name="workflow" type="summary_document_route">
+            <controls mode="any">
+              <control name="requireSurroundingForm">true</control>
+            </controls>
+          </widget>
+        </subWidgets>
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+        </controls>
+        <properties widgetMode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
+        <widgetModes>
+          <mode value="view">#{routingActions.filteredRouteModels.size() > 0 ? 'view' : 'hidden'}</mode>
+        </widgetModes>
+      </widget>
+      <widget name="infoViewTags" type="container">
+        <labels>
+          <label mode="any">action.view.tagging</label>
+        </labels>
+        <translated>true</translated>
+        <subWidgets>
+          <widget name="tags" type="summary_current_document_tagging">
+            <controls mode="any">
+              <control name="requireSurroundingForm">true</control>
+            </controls>
+            <properties widgetMode="any">
+              <property name="placeholder">
+                #{messages['label.add.tag.placeholder']}
+              </property>
+            </properties>
+          </widget>
+        </subWidgets>
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+        </controls>
+        <properties widgetMode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
+      </widget>
+      <widget name="infoViewCollections" type="container">
+        <labels>
+          <label mode="any">label.collections</label>
+        </labels>
+        <translated>true</translated>
+        <subWidgets>
+          <widget name="collections" type="summary_current_document_collections" />
+        </subWidgets>
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+        </controls>
+        <properties widgetMode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
+        <widgetModes>
+          <mode value="view">#{collectionActions.hasCurrentDocumentVisibleCollection() ? 'view' : 'hidden'}</mode>
+        </widgetModes>
+      </widget>
+      <widget name="infoViewComments" type="container">
+        <labels>
+          <label mode="any">#{nxu:translate('label.summary.comments', documentThreadedComments.size)}</label>
+        </labels>
+        <translated>false</translated>
+        <subWidgets>
+          <widget name="comments" type="summary_current_document_comments">
+            <controls mode="any">
+              <control name="requireSurroundingForm">true</control>
+            </controls>
+          </widget>
+        </subWidgets>
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+        </controls>
+        <properties widgetMode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
+        <widgetModes>
+          <mode value="view">#{documentThreadedComments.size() > 0 ? 'view' : 'hidden'}</mode>
+        </widgetModes>
       </widget>
     </layout>
 
