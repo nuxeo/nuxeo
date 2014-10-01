@@ -196,6 +196,7 @@ final public class NxqlQueryConverter {
         if (NXQL.ECM_ISVERSION_OLD.equals(name)) {
             name = NXQL.ECM_ISVERSION;
         }
+        name = name.replace("/", ".");
         if (name.startsWith(NXQL.ECM_FULLTEXT)
                 && ("=".equals(op) || "!=".equals(op) || "<>".equals(op)
                         || "LIKE".equals(op) || "NOT LIKE".equals(op))) {

@@ -592,6 +592,22 @@ public class TestNxqlConversion {
                 "}", es);
     }
 
+    @Test
+    public void testConvertComplexProperties() throws Exception {
+        String es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where file:content/name = 'foo'")
+                .toString();
+        assertEqualsEvenUnderWindows("{\n"
+                + "  \"constant_score\" : {\n"
+                + "    \"filter\" : {\n"
+                + "      \"term\" : {\n"
+                + "        \"file:content.name\" : \"foo\"\n"
+                + "      }\n"
+                + "    }\n"
+                + "  }\n"
+                + "}", es);
+    }
+
     protected void assertEqualsEvenUnderWindows(String expected, String actual) {
         if (SystemUtils.IS_OS_WINDOWS) {
             // make tests pass under Windows
