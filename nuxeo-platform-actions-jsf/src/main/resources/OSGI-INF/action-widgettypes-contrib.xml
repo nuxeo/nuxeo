@@ -762,6 +762,7 @@
         </supportedModes>
         <properties>
           <defaultValues mode="any">
+            <property name="repositoryName">#{currentServerLocation.name}</property>
             <property name="discardSurroundingForm">true</property>
             <property name="disableMultiPartForm">true</property>
             <property name="supportAjax">#{canUseAjaxTabs}</property>

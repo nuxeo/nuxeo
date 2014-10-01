@@ -22,6 +22,7 @@
 <c:if test="#{not useAjaxForm}">
   <nxd:restDocumentLink
     document="#{fieldOrValue}"
+    repositoryName="#{nxu:test(empty action.properties.repositoryName, widgetProperty_repositoryName, action.properties.repositoryName)}"
     view="#{nxu:test(empty action.properties.view, widgetProperty_view, action.properties.view)}"
     pattern="#{nxu:test(empty action.properties.pattern, widgetProperty_pattern, action.properties.pattern)}"
     tabs="#{tabIds}"
@@ -39,6 +40,7 @@
 
   <nxd:restDocumentLink
     document="#{fieldOrValue}"
+    repositoryName="#{nxu:test(empty action.properties.repositoryName, widgetProperty_repositoryName, action.properties.repositoryName)}"
     view="#{nxu:test(empty action.properties.view, widgetProperty_view, action.properties.view)}"
     pattern="#{nxu:test(empty action.properties.pattern, widgetProperty_pattern, action.properties.pattern)}"
     tabs="#{tabIds}"
