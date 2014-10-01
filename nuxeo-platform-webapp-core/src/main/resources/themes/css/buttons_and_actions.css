@@ -18,9 +18,8 @@ input::-moz-focus-inner {
 a.button,
 input.button,
 .action_bar a {
-  box-shadow: 0 -2px 3px #f3f3f3 inset;
   background: none "button (__FLAVOR__ background)";
-  border-radius: 1px;
+  border-radius: 2px;
   border: 1px solid;
   border-color: "button (__FLAVOR__ border)";
   color: "link.action (__FLAVOR__ color)";
@@ -28,20 +27,22 @@ input.button,
   display: inline-block;
   font-size: .95em;
   font-weight: bold;
+  line-height: 1.3em;
   margin: 0 .9em .9em 0;
-  padding: .3em .7em .4em;
+  padding: .4em .8em;
   text-decoration: none;
   white-space: nowrap }
 
 a.button {
-  padding: .3em .5em }
+  padding: .4em .6em }
 
 .button:hover,
 a.button:hover,
 input.button:hover,
 .action_bar a:hover {
   border-color: "button.hover (__FLAVOR__ border)";
-  box-shadow: 0 -2px 0 #ddd inset; }
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 150ms ease-in-out 0s }
 
 .button:focus {
   border-color: #2e9cff;
@@ -235,16 +236,20 @@ input.tinyButton {
 .horizontalAction ~ .actionList li {
   border-left: 0 none;
   line-height: 1.75em;
+  color: #555;
+  font-weight: bold;
   margin: 0 }
 
 .contextActions .button  {
+  border-radius: 0;
   margin: 0;
   padding: .5em .6em;
   border-left: medium none;
   line-height: normal }
 
 .globalActions .horizontalAction:first-child {
-  border-left: 1px solid "neutral.light (__FLAVOR__ border)" }
+  border-left: 1px solid "neutral.light (__FLAVOR__ border)";
+  border-radius: 2px 0 0 2px; }
 
 /* =Kept for social collab custom actions */
 .headerTitleAndTools h1 {
@@ -356,6 +361,7 @@ input.tinyButton {
 .column .importButton {
   background: url('${basePath}/icons/import.png') no-repeat scroll 29% center / 25px 25px #00adff;
   border: none;
+  border-radius: 2px;
   box-shadow: none;
   color: #fff;
   cursor: pointer;
@@ -365,7 +371,7 @@ input.tinyButton {
 
 .column .importButton:hover {
   border: none;
-  box-shadow: 0 -3px 0 rgba(0,0,0,0.2) inset }
+  box-shadow: 0 -30px 20px rgba(255, 255, 255, 0.2) inset }
 
 /* Link on forms */
 .actionLink {
