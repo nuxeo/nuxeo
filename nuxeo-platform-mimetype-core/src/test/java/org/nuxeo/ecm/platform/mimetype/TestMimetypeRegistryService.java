@@ -34,22 +34,25 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.service.ExtensionDescriptor;
 import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /*
  * Test the Nuxeo component. No deployment here (true unit test).
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-//disabled for now, see NXP-15315
-@Ignore
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
 public class TestMimetypeRegistryService {
 
     private MimetypeRegistryService mimetypeRegistry;
