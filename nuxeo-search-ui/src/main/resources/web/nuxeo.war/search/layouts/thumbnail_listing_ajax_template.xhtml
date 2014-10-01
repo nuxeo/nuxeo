@@ -40,7 +40,14 @@
   <c:set var="boxSelectedStyleClass" value="#{nxu:test(value.data.id == currentDocument.id, 'selectedItem', '')}" />
   <c:set var="infoViewUrl" value="#{nxd:complexDocumentUrl('id', value.data, 'info_view', null, false)}" />
   <div data-docref="#{value.data.id}" class="bubbleBox #{boxSelectedStyleClass}"
-    onclick="openFancyBox('#{infoViewUrl}')">
+    onclick="openFancyBox('#{infoViewUrl}', {
+      'autoDimensions': false,
+      'width': '100%',
+      'height': '100%',
+      'centerOnScroll': true,
+      'scrolling': 'auto',
+      'padding': 0
+    })">
     <nxl:layout name="thumbnail_listing_header" value="#{value}" mode="view" />
     <nxl:layoutColumn>
       <nxu:set var="divStyleClass" value="#{nxu:test(layoutColumn.properties.isBoxTitle, 'bubbleHeader', '')}">
