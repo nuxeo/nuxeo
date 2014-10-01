@@ -27,6 +27,9 @@
           </supportedTypes>
         </fields>
         <properties>
+          <defaultValues mode="edit">
+            <property name="width">100%</property>
+          </defaultValues>
           <layouts mode="edit">
             <layout name="select_tags_widget_type_properties_edit">
               <rows>
