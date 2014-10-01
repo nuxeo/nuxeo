@@ -19,6 +19,11 @@
 
 package org.nuxeo.ecm.platform.mimetype;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -27,11 +32,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
@@ -44,6 +48,8 @@ import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
+//disabled for now, see NXP-15315
+@Ignore
 public class TestMimetypeRegistryService {
 
     private MimetypeRegistryService mimetypeRegistry;
