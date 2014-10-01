@@ -26,15 +26,19 @@ import java.util.Arrays;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-// ignored, see NXP-15315
-@Ignore
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
 public class SerializableInputStreamTest {
 
     @Test
@@ -57,4 +61,5 @@ public class SerializableInputStreamTest {
         assertTrue(Arrays.equals(bytes1, bytes2));
         sin.close();
     }
+
 }
