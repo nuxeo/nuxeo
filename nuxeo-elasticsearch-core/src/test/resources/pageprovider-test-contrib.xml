@@ -5,23 +5,33 @@
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
              point="providers">
 
-    <genericPageProvider name="NATIVE_PP_1"
+    <genericPageProvider name="NATIVE_PP_PATTERN"
                          class="org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider">
       <pattern>ecm\:primaryType:("File" "Workspace")</pattern>
       <sort column="dc:title" ascending="false"/>
     </genericPageProvider>
 
-    <genericPageProvider name="NXQL_PP_1"
+    <genericPageProvider name="NXQL_PP_PATTERN"
                          class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <pattern>SELECT * FROM Document WHERE
         ecm:primaryType IN ('File', 'Workspace') AND
         ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:currentLifeCycleState !='deleted'
+        ecm:currentLifeCycleState !='deleted' AND
+        SORTED_COLUMN IS NOT NULL
       </pattern>
       <sort column="dc:title" ascending="false"/>
     </genericPageProvider>
 
-    <genericPageProvider name="NXQL_PP_2"
+    <genericPageProvider name="nxql_search"
+                         class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+      <property name="coreSession">#{documentManager}</property>
+      <property name="maxResults">-1</property>
+      <pattern quoteParameters="false" escapeParameters="false">?</pattern>
+      <parameter>#{documentSearchActions.nxqlQuery}</parameter>
+      <pageSize>20</pageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="NXQL_PP_FIXED_PART"
                          class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <property name="coreSession">#{documentManager}</property>
       <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
@@ -37,45 +47,14 @@
           <field schema="advanced_search" name="modified_min"/>
           <field schema="advanced_search" name="modified_max"/>
         </predicate>
-        <fixedPart>SELECT * FROM Document WHERE
+        <fixedPart>
           ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
-          ecm:mixinType !=
-          'HiddenInNavigation' AND ecm:currentLifeCycleState
-          != 'deleted'
+          ecm:mixinType != 'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'
         </fixedPart>
       </whereClause>
       <parameter>#{currentDocument.id}</parameter>
       <sort column="dc:title" ascending="true"/>
       <pageSize>20</pageSize>
-    </genericPageProvider>
-
-    <genericPageProvider name="CURRENT_DOCUMENT_CHILDREN"
-                         class="org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider">
-      <property name="dummy">dummy</property>
-      <pattern>
-        ecm\:parentId: ? AND ecm\:isVersion:F AND NOT
-        ecm\:mixinType:"HiddenInNavigation" AND
-        NOT ecm\:currentLifeCycleState:"deleted"
-      </pattern>
-      <sort column="dc:title" ascending="true"/>
-      <pageSize>2</pageSize>
-    </genericPageProvider>
-
-    <genericPageProvider
-        name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT"
-        class="org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider">
-      <whereClause docType="File">
-        <fixedPart statement="SELECT * FROM Note">
-          ecm\:parentId: ? AND ecm\:isVersion:F AND NOT
-          ecm\:mixinType:"HiddenInNavigation" AND
-          NOT ecm\:currentLifeCycleState:"deleted"
-        </fixedPart>
-        <predicate parameter="dc:title" operator="FULLTEXT">
-          <field schema="dublincore" name="title"/>
-        </predicate>
-      </whereClause>
-      <sort column="dc:title" ascending="true"/>
-      <pageSize>2</pageSize>
     </genericPageProvider>
 
     <genericPageProvider name="ADVANCED_SEARCH"
@@ -128,28 +107,6 @@
       <pageSize>20</pageSize>
     </genericPageProvider>
 
-    <genericPageProvider name="CUSTOM_SELECT_STATEMENT">
-      class="org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider">
-      <property name="coreSession">#{documentManager}</property>
-      <whereClause docType="AdvancedSearch">
-        <predicate parameter="ecm:fulltext" operator="FULLTEXT">
-          <field schema="advanced_search" name="fulltext_all"/>
-        </predicate>
-        <predicate parameter="dc:title" operator="LIKE">
-          <field schema="advanced_search" name="title"/>
-        </predicate>
-        <predicate parameter="dc:modified" operator="IS NULL">
-          <field schema="advanced_search" name="isPresent"/>
-        </predicate>
-        <fixedPart statement="SELECT * FROM Note">
-          ecm\:parentId: ?
-        </fixedPart>
-      </whereClause>
-      <parameter>#{currentDocument.id}</parameter>
-      <sort column="dc:title" ascending="true"/>
-      <pageSize>20</pageSize>
-    </genericPageProvider>
-
     <genericPageProvider name="TEST_IN"
                          class="org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider">
       <whereClause docType="AdvancedSearch">
@@ -168,21 +125,12 @@
       </whereClause>
     </genericPageProvider>
 
-    <genericPageProvider name="nxql_search"
-                         class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
-      <property name="coreSession">#{documentManager}</property>
-      <property name="maxResults">-1</property>
-      <pattern quoteParameters="false" escapeParameters="false">?</pattern>
-      <parameter>#{documentSearchActions.nxqlQuery}</parameter>
-      <pageSize>20</pageSize>
-    </genericPageProvider>
-
     <genericPageProvider name="aggregates_1"
                          class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <property name="coreSession">#{documentManager}</property>
       <property name="maxResults">-1</property>
       <pageSize>20</pageSize>
-      <fixedPart>SELECT * FROM Document</fixedPart>
+      <pattern>SELECT * FROM Document</pattern>
       <aggregates>
         <aggregate id="source" type="terms" parameter="dc:source">
           <field schema="advanced_search" name="source_agg"/>
@@ -252,7 +200,7 @@
       <property name="coreSession">#{documentManager}</property>
       <property name="maxResults">-1</property>
       <pageSize>20</pageSize>
-      <fixedPart>SELECT * FROM Document</fixedPart>
+      <pattern>SELECT * FROM Document</pattern>
       <aggregates>
         <aggregate id="source" type="terms" parameter="dc:source">
           <field schema="advanced_search" name="source_agg"/>

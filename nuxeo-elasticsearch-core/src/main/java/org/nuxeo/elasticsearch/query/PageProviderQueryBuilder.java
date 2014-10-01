@@ -34,7 +34,7 @@ import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 
 /**
- * Elasticsearch query builder for Page provider.
+ * Elasticsearch query builder for Native Page provider.
  */
 public class PageProviderQueryBuilder {
 

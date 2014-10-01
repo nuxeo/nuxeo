@@ -41,6 +41,7 @@ import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider;
+import org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider;
 import org.nuxeo.elasticsearch.query.PageProviderQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
@@ -91,14 +92,14 @@ public class TestPageProvider {
         Assert.assertNotNull(pps);
 
         PageProviderDefinition ppdef = pps
-                .getPageProviderDefinition("NATIVE_PP_1");
+                .getPageProviderDefinition("NATIVE_PP_PATTERN");
         Assert.assertNotNull(ppdef);
 
         HashMap<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
         long pageSize = 5;
-        PageProvider<?> pp = pps.getPageProvider("NATIVE_PP_1", ppdef, null,
+        PageProvider<?> pp = pps.getPageProvider("NATIVE_PP_PATTERN", ppdef, null,
                 null, pageSize, (long) 0, props);
         Assert.assertNotNull(pp);
 
@@ -143,14 +144,14 @@ public class TestPageProvider {
         Assert.assertNotNull(pps);
 
         PageProviderDefinition ppdef = pps
-                .getPageProviderDefinition("NXQL_PP_1");
+                .getPageProviderDefinition("NXQL_PP_PATTERN");
         Assert.assertNotNull(ppdef);
 
         HashMap<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
         long pageSize = 5;
-        PageProvider<?> pp = pps.getPageProvider("NXQL_PP_1", ppdef, null,
+        ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("NXQL_PP_PATTERN", ppdef, null,
                 null, pageSize, (long) 0, props);
         Assert.assertNotNull(pp);
 
@@ -189,7 +190,7 @@ public class TestPageProvider {
     }
 
     @Test
-    public void ICanUseANxqlPageProviderWithFixedPart() throws Exception {
+    public void ICanUseANxqlPageProviderWithParameters() throws Exception {
         PageProviderService pps = Framework
                 .getService(PageProviderService.class);
         Assert.assertNotNull(pps);
@@ -197,14 +198,12 @@ public class TestPageProvider {
         PageProviderDefinition ppdef = pps
                 .getPageProviderDefinition("nxql_search");
         Assert.assertNotNull(ppdef);
-
         HashMap<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
         long pageSize = 5;
         PageProvider<?> pp = pps.getPageProvider("nxql_search", ppdef, null,
                 null, pageSize, (long) 0, props);
-        Assert.assertNotNull(pp);
 
         // create 10 docs
         ElasticSearchService ess = Framework
@@ -219,35 +218,88 @@ public class TestPageProvider {
         startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
         assertNumberOfCommandProcessed(10);
-
         TransactionHelper.startTransaction();
         esa.refresh();
 
         // get current page
+        String[] params = { "Select * from File where dc:title LIKE 'Test%'" };
+        pp.setParameters(params);
+        List<DocumentModel> p = (List<DocumentModel>) pp.getCurrentPage();
+        String esquery = ((ElasticSearchNxqlPageProvider) pp).getCurrentQueryAsEsBuilder().toString();
+        assertEqualsEvenUnderWindows("{\n"
+                + "  \"filtered\" : {\n"
+                + "    \"query\" : {\n"
+                + "      \"match\" : {\n"
+                + "        \"dc:title\" : {\n"
+                + "          \"query\" : \"Test\",\n"
+                + "          \"type\" : \"phrase_prefix\"\n"
+                + "        }\n"
+                + "      }\n"
+                + "    },\n"
+                + "    \"filter\" : {\n"
+                + "      \"terms\" : {\n"
+                + "        \"ecm:primaryType\" : [ \"File\" ]\n"
+                + "      }\n"
+                + "    }\n"
+                + "  }\n"
+                + "}", esquery);
+
+        Assert.assertEquals(10, pp.getResultsCount());
+        Assert.assertNotNull(p);
+        Assert.assertEquals(pageSize, p.size());
+        Assert.assertEquals(2, pp.getNumberOfPages());
+        DocumentModel doc = p.get(0);
+    }
+
+    @Test
+    public void ICanUseANxqlPageProviderWithFixedPart() throws Exception {
+        PageProviderService pps = Framework
+                .getService(PageProviderService.class);
+        Assert.assertNotNull(pps);
+
+        PageProviderDefinition ppdef = pps
+                .getPageProviderDefinition("NXQL_PP_FIXED_PART");
+        Assert.assertNotNull(ppdef);
+        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
         DocumentModel model = new DocumentModelImpl("/", "doc",
                 "AdvancedSearch");
-        pp.setSearchDocumentModel(model);
-        Object[] params = new Object[1];
-        params[0] = "Select * from Document ORDER BY dc:title DESC";
+        String[] sources = { "Source1", "Source2" };
+        model.setProperty("advanced_search", "source_agg", sources);
+        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY,
+                (Serializable) session);
+        long pageSize = 5;
+        PageProvider<?> pp = pps.getPageProvider("NXQL_PP_FIXED_PART", ppdef, model,
+                null, pageSize, (long) 0, props);
+        // create 10 docs
+        ElasticSearchService ess = Framework
+                .getLocalService(ElasticSearchService.class);
+        Assert.assertNotNull(ess);
+        for (int i = 0; i < 10; i++) {
+            DocumentModel doc = session.createDocumentModel("/", "testDoc" + i,
+                    "File");
+            doc.setPropertyValue("dc:title", "TestMe" + i);
+            doc = session.createDocument(doc);
+        }
+        startCountingCommandProcessed();
+        TransactionHelper.commitOrRollbackTransaction();
+        assertNumberOfCommandProcessed(10);
+        TransactionHelper.startTransaction();
+        esa.refresh();
+
+        String[] params = { session.getRootDocument().getId() };
         pp.setParameters(params);
+
+        // get current page
         List<DocumentModel> p = (List<DocumentModel>) pp.getCurrentPage();
         Assert.assertEquals(10, pp.getResultsCount());
         Assert.assertNotNull(p);
         Assert.assertEquals(pageSize, p.size());
         Assert.assertEquals(2, pp.getNumberOfPages());
         DocumentModel doc = p.get(0);
-        // TODO fix this order by is not taken in account
-        // Assert.assertEquals("TestMe9", doc.getTitle());
-
-        pp.nextPage();
-        p = (List<DocumentModel>) pp.getCurrentPage();
-        Assert.assertEquals(pageSize, p.size());
-        doc = p.get((int) pageSize - 1);
-        // Assert.assertEquals("TestMe0", doc.getTitle());
     }
 
     @Test
-    public void testBuildInQuery() throws Exception {
+    public void testNativePredicateIn() throws Exception {
         QueryBuilder qb;
         PageProviderService pps = Framework
                 .getService(PageProviderService.class);
@@ -296,7 +348,7 @@ public class TestPageProvider {
     }
 
     @Test
-    public void testBuildInIntegersQuery() throws Exception {
+    public void testNativePredicateInIntegers() throws Exception {
         QueryBuilder qb;
         PageProviderService pps = Framework
                 .getService(PageProviderService.class);
@@ -344,7 +396,7 @@ public class TestPageProvider {
     }
 
     @Test
-    public void testBuildInStringListQuery() throws Exception {
+    public void testNativePredicateInStringList() throws Exception {
         QueryBuilder qb;
         PageProviderService pps = Framework
                 .getService(PageProviderService.class);
@@ -395,7 +447,7 @@ public class TestPageProvider {
     }
 
     @Test
-    public void testBuildInStringListNxqlQuery() throws Exception {
+    public void testNxqlPredicateInStringList() throws Exception {
         QueryBuilder qb;
         PageProviderService pps = Framework
                 .getService(PageProviderService.class);
@@ -446,7 +498,7 @@ public class TestPageProvider {
     }
 
     @Test
-    public void testBuildIsNullQuery() throws Exception {
+    public void testNativePredicateIsNull() throws Exception {
         QueryBuilder qb;
         PageProviderService pps = Framework
                 .getService(PageProviderService.class);
@@ -550,7 +602,7 @@ public class TestPageProvider {
     }
 
     @Test
-    public void testBuildFulltextQuery() throws Exception {
+    public void testNativeFulltext() throws Exception {
         QueryBuilder qb;
         PageProviderService pps = Framework
                 .getService(PageProviderService.class);
