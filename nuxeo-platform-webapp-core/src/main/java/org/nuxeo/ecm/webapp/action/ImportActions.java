@@ -150,6 +150,9 @@ public class ImportActions implements Serializable {
     public String getSelectedImportFolderId() throws ClientException {
         if (selectedImportFolderId == null) {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
+            if (currentDocument == null) {
+                return null;
+            }
             if (currentDocument.isFolder()
                     && !"/".equals(currentDocument.getPathAsString())
                     && documentManager.hasPermission(currentDocument.getRef(),
