@@ -9,19 +9,18 @@
 
 <a4j:region renderRegionOnly="true">
   <h:form id="directoryTreeForm" rendered="#{directoryTreeManager.initialized}">
-    <div style="float:right">
-        <a4j:commandLink action="#{directoryTreeManager.resetCurrentTree}" render="directoryTreeNav">
-          <h:graphicImage value="/icons/refresh.png"
-            alt="#{messages['label.refresh']}"
-            title="#{messages['label.refresh']}"
-            styleClass="tipsyShow tipsyGravitySW" />
-        </a4j:commandLink>
+    <div class="floatR">
+      <a4j:commandLink action="#{directoryTreeManager.resetCurrentTree}" render="directoryTreeNav">
+        <h:graphicImage value="/icons/refresh.png"
+          alt="#{messages['label.refresh']}"
+          title="#{messages['label.refresh']}"
+          styleClass="tipsyShow tipsyGravitySW" />
+      </a4j:commandLink>
     </div>
     <h:panelGroup id="directoryTreeNav">
       <rich:tree
-        adviseNodeOpened="#{directoryTreeManager.adviseNodeOpened}"
+        toggleListener="#{treeActions.toggleListener}"
         styleClass="nx-no-trn-ico"
-        changeExpandListener="#{directoryTreeManager.changeExpandListener}"
         rowKeyVar="rowKey"
         id="directoryNavTree"
         stateVar="nodeState"
@@ -29,9 +28,10 @@
         <rich:treeModelRecursiveAdaptor
           roots="#{treeModel}"
           nodes="#{node.children}"
-          leaf="#{node.children == null or node.children.size == 0}"
+          leaf="#{node.children.size lt 1}"
           id="directoryNavRecursiveAdaptor">
           <rich:treeNode
+            expanded="#{node.open}"
             highlightedClass="treeNodeHighlightedClass"
             id="directoryNavTreeNode"
             selectedClass="treeNodeSelectedClass">
