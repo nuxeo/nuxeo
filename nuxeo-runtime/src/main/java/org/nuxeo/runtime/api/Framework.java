@@ -33,6 +33,7 @@ import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.login.LoginAs;
 import org.nuxeo.runtime.api.login.LoginService;
+import org.nuxeo.runtime.trackers.files.FileEvent;
 import org.nuxeo.runtime.trackers.files.FileEventTracker;
 
 /**
@@ -494,9 +495,7 @@ public final class Framework {
      * @param marker the marker Object
      */
     public static void trackFile(File aFile, Object aMarker) {
-        // NXP-15315 Disabling until being fully qualified again on
-        // test and push
-        // FileEvent.onFile(Framework.class, aFile, aMarker).send();
+        FileEvent.onFile(Framework.class, aFile, aMarker).send();
     }
 
     /**
