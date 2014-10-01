@@ -24,6 +24,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 
@@ -84,7 +85,6 @@ public class RestDocumentLinkRenderer extends OutputLinkRenderer {
         }
 
         // Write Anchor attributes
-
         Param paramList[] = getParamList(component);
         StringBuffer sb = new StringBuffer();
         sb.append(hrefVal);
@@ -103,18 +103,22 @@ public class RestDocumentLinkRenderer extends OutputLinkRenderer {
             }
         }
 
-        String urlNewConversation = context.getExternalContext().encodeResourceURL(
-                sb.toString());
-        String urlCurrentConversation = RestHelper.addCurrentConversationParameters(urlNewConversation);
-
-        writer.writeURIAttribute("href", urlNewConversation, "href");
-
+        String url;
         Boolean isNewConversation = ((RestDocumentLink) component).getNewConversation();
-        if (!Boolean.TRUE.equals(isNewConversation)) {
+        if (!Boolean.TRUE.equals(isNewConversation)
+                && !StringUtils.isBlank(sb.toString())) {
+            url = RestHelper.addCurrentConversationParameters(sb.toString());
+            url += getFragment(component);
+            url = context.getExternalContext().encodeResourceURL(url);
             String onclickJS = "if(!(event.ctrlKey||event.metaKey||event.button==1)){this.href='"
-                    + Functions.javaScriptEscape(urlCurrentConversation) + "'}";
+                    + Functions.javaScriptEscape(url) + "'}";
             writer.writeAttribute("onclick", onclickJS, "onclick");
+        } else {
+            sb.append(getFragment(component));
+            url = context.getExternalContext().encodeResourceURL(sb.toString());
         }
+
+        writer.writeURIAttribute("href", url, "href");
 
         RenderKitUtils.renderPassThruAttributes(context, writer, component,
                 PASSTHROUGHATTRIBUTES);
@@ -128,6 +132,5 @@ public class RestDocumentLinkRenderer extends OutputLinkRenderer {
         writeCommonLinkAttributes(writer, component);
 
         writer.flush();
-
     }
 }
