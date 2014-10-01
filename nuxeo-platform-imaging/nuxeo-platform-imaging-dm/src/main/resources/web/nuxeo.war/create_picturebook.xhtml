@@ -19,7 +19,7 @@
 
     <h3><h:outputText value="#{messages['title.create.picturebook']}" /></h3>
     <ui:include src="/incl/message_banner.xhtml" /> <h:form
-      enctype="multipart/form-data">
+      enctype="multipart/form-data" id="document_create">
 
       <nxl:documentLayout mode="create" value="#{changeableDocument}" />
 
@@ -106,7 +106,7 @@
 
       </a4j:region>
       <div class="buttonsGadget">
-        <h:commandButton class="button"
+        <h:commandButton class="button primary"
           value="#{messages['command.create']}"
           action="#{pictureBookManager.createPictureBook}" />
         <h:commandButton class="button" value="#{messages['command.cancel']}"
