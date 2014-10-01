@@ -155,6 +155,9 @@ $(document).ready(function() {
 <fmt:message key="label.userSettings.explanations" /> <br/>
 </span>
 
+<a href="http://doc.nuxeo.com/x/K4AO" target="doc">
+    <fmt:message key="label.userSettings.doc"/>
+</a>
 
 <%@ include file="includes/feedback.jsp" %>
 <%
@@ -270,7 +273,7 @@ if (ctx.hasInfos()) {%>
     </table>
    <%if (!"default".equals(directoryType)){%>
   <table>
-    <tr><td colspan="3" id="serverconf" class="foldingBox on">LDAP server configuration<th></td>
+    <tr><td colspan="3" id="serverconf" class="foldingBox on"><fmt:message key="label.nuxeo.ldap.server.configuration"/><th></td>
     <tbody id="body-serverconf">
     <tr>
       <td><span class="labelCell required"><fmt:message key="label.nuxeo.ldap.url"/></span></td>
@@ -301,7 +304,7 @@ if (ctx.hasInfos()) {%>
           placeholder="stuart" /></td>
     </tr>
     </tbody>
-    <tr><td colspan="3" id="userdirgeneral" class="foldingBox on">User directory configuration<th></tr>
+    <tr><td colspan="3" id="userdirgeneral" class="foldingBox on"><fmt:message key="label.nuxeo.ldap.user.directory.configuration"/><th></tr>
     <tbody id="body-userdirgeneral">
     <tr>
       <td><span class="labelCell required"><fmt:message key="label.nuxeo.ldap.searchBaseDn"/></span></td>
@@ -398,7 +401,7 @@ if (ctx.hasInfos()) {%>
     </tr>
     </tbody>
     <%if (!"userLdapOnly".equals(userGroupStorage) && !"multiUserSqlGroup".equals(userGroupStorage) ){%>
-    <tr><td colspan="3" id="groupdir" class="foldingBox on">Group directory configuration<th></tr>
+    <tr><td colspan="3" id="groupdir" class="foldingBox on"><fmt:message key="label.nuxeo.ldap.group.directory.configuration"/><th></tr>
     <tbody id="body-groupdir">
     <tr>
       <td><span class="labelCell required"><fmt:message key="label.nuxeo.ldap.searchBaseDn"/></span></td>
@@ -477,7 +480,7 @@ if (ctx.hasInfos()) {%>
     </tr>
     </tbody>
     <%} %>
-     <tr><td colspan="3" id="addconf" class="foldingBox on">Additional configuration<th></tr>
+     <tr><td colspan="3" id="addconf" class="foldingBox on"><fmt:message key="label.nuxeo.ldap.additional.configuration"/><th></tr>
     <tbody id="body-addconf">
     <tr>
       <td class="labelCell"><fmt:message key="label.nuxeo.ldap.defaultAdministratorId"/></td>
@@ -543,15 +546,6 @@ if (ctx.hasInfos()) {%>
     </tbody>
   </table>
   <%} %>
-  </td><td class="helpCell">
-
-  <fmt:message key="label.userSettings.doc"/>
-
-  <a href="http://doc.nuxeo.com/x/K4AO" target="doc">
-  <fmt:message key="label.userSettings.doclink"/>
-  </a>
-
-
   </td></tr></table>
   </div>
 
