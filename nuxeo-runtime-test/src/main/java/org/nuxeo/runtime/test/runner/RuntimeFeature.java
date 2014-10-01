@@ -171,7 +171,7 @@ public class RuntimeFeature extends SimpleFeature {
 
     protected void blacklistComponents(FeaturesRunner aRunner) {
         BlacklistComponent config = aRunner.getConfig(BlacklistComponent.class);
-        if (config.value().length == 0) {
+        if (config == null || config.value().length == 0) {
             return;
         }
         final ComponentManager manager = Framework.getRuntime()
