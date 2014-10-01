@@ -37,12 +37,12 @@ public class FileEvent extends Event {
     }
 
     public static void listen(FileEventListener aListener) {
-        Framework.getService(EventService.class).addListener(
+        Framework.getLocalService(EventService.class).addListener(
                 FileEvent.class.getName(), aListener);
     }
 
     public static void ignore(FileEventListener aListener) {
-        Framework.getService(EventService.class).removeListener(
+        Framework.getLocalService(EventService.class).removeListener(
                 FileEvent.class.getName(), aListener);
     }
 

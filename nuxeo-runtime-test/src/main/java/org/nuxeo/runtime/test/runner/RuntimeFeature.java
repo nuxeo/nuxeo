@@ -19,18 +19,24 @@
 package org.nuxeo.runtime.test.runner;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
+import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 import com.google.inject.Binder;
@@ -143,13 +149,36 @@ public class RuntimeFeature extends SimpleFeature {
     }
 
     @Override
-    public void start(FeaturesRunner runner) throws Exception {
+    public void start(final FeaturesRunner runner) throws Exception {
+        Framework.addListener(new RuntimeServiceListener() {
+
+            @Override
+            public void handleEvent(RuntimeServiceEvent event) {
+                if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_START) {
+                    return;
+                }
+                Framework.removeListener(this);
+                blacklistComponents(runner);
+            }
+        });
         // Starts Nuxeo Runtime
         if (!harness.isStarted()) {
             harness.start();
         }
         // Deploy bundles
         deployTestClassBundles();
+    }
+
+    protected void blacklistComponents(FeaturesRunner aRunner) {
+        BlacklistComponent config = aRunner.getConfig(BlacklistComponent.class);
+        if (config.value().length == 0) {
+            return;
+        }
+        final ComponentManager manager = Framework.getRuntime()
+            .getComponentManager();
+        Set<String> blacklist = new HashSet<>(manager.getBlacklist());
+        blacklist.addAll(Arrays.asList(config.value()));
+        manager.setBlacklist(blacklist);
     }
 
     @Override

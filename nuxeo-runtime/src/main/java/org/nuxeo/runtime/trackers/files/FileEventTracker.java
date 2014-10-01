@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.io.FileCleaningTracker;
-import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -26,6 +25,14 @@ import org.nuxeo.runtime.trackers.concurrent.ThreadEventListener;
 /**
  * Files event tracker which delete files once the runtime leave the threads or
  * at least once the associated marker object is garbaged.
+ *
+ * Note: for being backward compatible you may disable the thread events
+ * tracking by black-listing the default configuration component
+ * "org.nuxeo.runtime.trackers.files.threadstracking.config" in the runtime.
+ *
+ * This could be achieved by editing the "blacklist" file in your
+ * 'config' directory or using the @{link BlacklistComponent} annotation
+ * on your test class.
  *
  * @author Stephane Lacoin at Nuxeo (aka matic)
  * @since 5.9.6
@@ -67,11 +74,8 @@ public class FileEventTracker extends DefaultComponent {
 
     }
 
-    @XObject("config")
-    public static class Config {
-
-        @XNode("threadsTracking")
-        public final boolean threadsTracking = true;
+    @XObject("enableThreadsTracking")
+    public static class EnableThreadsTracking {
 
     }
 
@@ -128,13 +132,8 @@ public class FileEventTracker extends DefaultComponent {
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if (contribution instanceof Config) {
-            Config config = (Config) contribution;
-            if (config.threadsTracking) {
-                threadsListener.install();
-            } else {
-                threadsListener.uninstall();
-            }
+        if (contribution instanceof EnableThreadsTracking) {
+            threadsListener.install();
         } else {
             super.registerContribution(contribution, extensionPoint,
                     contributor);
