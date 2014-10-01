@@ -112,6 +112,7 @@ public class TestDefaultImporterServiceWithMetaAndDocType extends SQLRepositoryT
                 kBRANCH_FOLDER_PATH + "/do_Note.html"));
         assertNotNull(note);
         assertEquals("Note", note.getType());
+        assertTrue(note.hasFacet("testfacet"));
         assertEquals("the note", note.getPropertyValue("note:note"));
 
         /* MailMessage not a default type...

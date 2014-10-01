@@ -21,9 +21,12 @@
 package org.nuxeo.ecm.platform.importer.factories;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -50,6 +53,8 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
 public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
 
     public static final String DOCTYPE_KEY_NAME = "ecm:primaryType";
+
+    public static final String FACETS_KEY_NAME = "ecm:mixinTypes";
 
     protected String folderishType;
 
@@ -93,10 +98,13 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
         if(folderishTypeToUse == null) {
             folderishTypeToUse = folderishType;
         }
+        List<String> facets = getFacetsToUse(bh);
 
-        Map<String, Object> options = new HashMap<String, Object>();
-        DocumentModel doc = session.createDocumentModel(folderishTypeToUse, options);
-        doc.setPathInfo(parent.getPathAsString(), name);
+        DocumentModel doc = session.createDocumentModel(
+                parent.getPathAsString(), name, folderishTypeToUse);
+        for (String facet : facets) {
+            doc.addFacet(facet);
+        }
         doc.setProperty("dublincore", "title", node.getName());
         doc = session.createDocument(doc);
 
@@ -129,6 +137,7 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
         if(leafTypeToUse == null) {
             leafTypeToUse = leafType;
         }
+        List<String> facets = getFacetsToUse(bh);
 
         String mimeType = bh.getBlob().getMimeType();
         if (mimeType == null) {
@@ -138,9 +147,11 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
         String name = getValidNameFromFileName(node.getName());
         String fileName = node.getName();
 
-        Map<String, Object> options = new HashMap<String, Object>();
-        DocumentModel doc = session.createDocumentModel(leafTypeToUse, options);
-        doc.setPathInfo(parent.getPathAsString(), name);
+        DocumentModel doc = session.createDocumentModel(
+                parent.getPathAsString(), name, leafTypeToUse);
+        for (String facet : facets) {
+            doc.addFacet(facet);
+        }
         doc.setProperty("dublincore", "title", node.getName());
         doc.setProperty("file", "filename", fileName);
         doc.setProperty("file", "content", bh.getBlob());
@@ -173,6 +184,24 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
 
 
         return type;
+    }
+
+    protected List<String> getFacetsToUse(BlobHolder inBH) {
+        if (inBH != null) {
+            Map<String, Serializable> props = inBH.getProperties();
+            if (props != null) {
+                Serializable ob = props.get(FACETS_KEY_NAME);
+                if (ob instanceof String) {
+                    String facet = (String) ob;
+                    if (StringUtils.isNotBlank(facet)) {
+                        return Collections.singletonList(facet);
+                    }
+                } else if (ob != null) {
+                    return (List<String>) ob;
+                }
+            }
+        }
+        return Collections.emptyList();
     }
 
     /** Modify this to get right mime types depending on the file input */
