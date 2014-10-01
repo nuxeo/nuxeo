@@ -25,14 +25,16 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
 public abstract class PackageTestCase {
 
     protected static final Log log = LogFactory.getLog(PackageTestCase.class);

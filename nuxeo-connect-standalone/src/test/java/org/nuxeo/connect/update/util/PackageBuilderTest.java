@@ -25,13 +25,13 @@ import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
-
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.connect.update.PackageType;
+import org.nuxeo.connect.update.standalone.PackageTestCase;
 import org.nuxeo.connect.update.standalone.StandaloneUpdateService;
 import org.nuxeo.connect.update.xml.PackageDefinitionImpl;
 
-public class PackageBuilderTest {
+public class PackageBuilderTest extends PackageTestCase {
 
     @Test
     public void testPackageBuilder() {
