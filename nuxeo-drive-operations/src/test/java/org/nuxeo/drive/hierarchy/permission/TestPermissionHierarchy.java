@@ -284,7 +284,8 @@ public class TestPermissionHierarchy {
                 topLevelFolderItemFactory.getName());
 
         Set<String> activeFactories = fileSystemItemAdapterService.getActiveFileSystemItemFactories();
-        assertEquals(4, activeFactories.size());
+        assertEquals(5, activeFactories.size());
+        assertTrue(activeFactories.contains("collectionSyncRootFolderItemFactory"));
         assertTrue(activeFactories.contains("defaultFileSystemItemFactory"));
         assertTrue(activeFactories.contains("userSyncRootParentFactory"));
         assertTrue(activeFactories.contains("permissionSyncRootFactory"));

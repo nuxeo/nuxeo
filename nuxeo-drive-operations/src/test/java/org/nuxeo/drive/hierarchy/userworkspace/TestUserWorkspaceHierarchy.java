@@ -263,7 +263,8 @@ public class TestUserWorkspaceHierarchy {
                 topLevelFolderItemFactory.getName());
 
         Set<String> activeFactories = fileSystemItemAdapterService.getActiveFileSystemItemFactories();
-        assertEquals(3, activeFactories.size());
+        assertEquals(4, activeFactories.size());
+        assertTrue(activeFactories.contains("collectionSyncRootFolderItemFactory"));
         assertTrue(activeFactories.contains("defaultFileSystemItemFactory"));
         assertTrue(activeFactories.contains("userWorkspaceSyncRootParentFactory"));
         assertTrue(activeFactories.contains("userWorkspaceSyncRootFactory"));

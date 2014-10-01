@@ -145,7 +145,7 @@ public class TestFileSystemItemAdapterService {
         // ------------------------------------------------------
         Map<String, FileSystemItemFactoryDescriptor> fileSystemItemFactoryDescs = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactoryDescriptors();
         assertNotNull(fileSystemItemFactoryDescs);
-        assertEquals(11, fileSystemItemFactoryDescs.size());
+        assertEquals(12, fileSystemItemFactoryDescs.size());
 
         FileSystemItemFactoryDescriptor desc = fileSystemItemFactoryDescs.get("defaultSyncRootFolderItemFactory");
         assertNotNull(desc);
@@ -224,44 +224,51 @@ public class TestFileSystemItemAdapterService {
         // ------------------------------------------------------
         List<FileSystemItemFactoryWrapper> fileSystemItemFactories = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactories();
         assertNotNull(fileSystemItemFactories);
-        assertEquals(6, fileSystemItemFactories.size());
+        assertEquals(7, fileSystemItemFactories.size());
 
         FileSystemItemFactoryWrapper factoryWrapper = fileSystemItemFactories.get(0);
+        assertNotNull(factoryWrapper);
+        assertNull(factoryWrapper.getDocType());
+        assertEquals("Collection", factoryWrapper.getFacet());
+        assertTrue(factoryWrapper.getFactory().getClass().getName().endsWith(
+                "CollectionSyncRootFolderItemFactory"));
+
+        factoryWrapper = fileSystemItemFactories.get(1);
         assertNotNull(factoryWrapper);
         assertNull(factoryWrapper.getDocType());
         assertEquals("DriveSynchronized", factoryWrapper.getFacet());
         assertTrue(factoryWrapper.getFactory().getClass().getName().endsWith(
                 "DefaultSyncRootFolderItemFactory"));
 
-        factoryWrapper = fileSystemItemFactories.get(1);
+        factoryWrapper = fileSystemItemFactories.get(2);
         assertNotNull(factoryWrapper);
         assertEquals("File", factoryWrapper.getDocType());
         assertNull(factoryWrapper.getFacet());
         assertTrue(factoryWrapper.getFactory().getClass().getName().endsWith(
                 "DummyFileItemFactory"));
 
-        factoryWrapper = fileSystemItemFactories.get(2);
+        factoryWrapper = fileSystemItemFactories.get(3);
         assertNotNull(factoryWrapper);
         assertNull(factoryWrapper.getDocType());
         assertEquals("Folderish", factoryWrapper.getFacet());
         assertTrue(factoryWrapper.getFactory().getClass().getName().endsWith(
                 "DummyFolderItemFactory"));
 
-        factoryWrapper = fileSystemItemFactories.get(3);
+        factoryWrapper = fileSystemItemFactories.get(4);
         assertNotNull(factoryWrapper);
         assertNull(factoryWrapper.getDocType());
         assertNull(factoryWrapper.getFacet());
         assertTrue(factoryWrapper.getFactory().getClass().getName().endsWith(
                 "DefaultFileSystemItemFactory"));
 
-        factoryWrapper = fileSystemItemFactories.get(4);
+        factoryWrapper = fileSystemItemFactories.get(5);
         assertNotNull(factoryWrapper);
         assertNull(factoryWrapper.getDocType());
         assertNull(factoryWrapper.getFacet());
         assertTrue(factoryWrapper.getFactory().getClass().getName().endsWith(
                 "DummyVirtualFolderItemFactory"));
 
-        factoryWrapper = fileSystemItemFactories.get(5);
+        factoryWrapper = fileSystemItemFactories.get(6);
         assertNotNull(factoryWrapper);
         assertEquals("Note", factoryWrapper.getDocType());
         assertNull(factoryWrapper.getFacet());
@@ -416,7 +423,8 @@ public class TestFileSystemItemAdapterService {
         // Check #getActiveFileSystemItemFactories()
         // -------------------------------------------------------------
         Set<String> activeFactories = fileSystemItemAdapterService.getActiveFileSystemItemFactories();
-        assertEquals(6, activeFactories.size());
+        assertEquals(7, activeFactories.size());
+        assertTrue(activeFactories.contains("collectionSyncRootFolderItemFactory"));
         assertTrue(activeFactories.contains("defaultSyncRootFolderItemFactory"));
         assertTrue(activeFactories.contains("defaultFileSystemItemFactory"));
         assertTrue(activeFactories.contains("dummyDocTypeFactory"));
@@ -441,7 +449,7 @@ public class TestFileSystemItemAdapterService {
         // ------------------------------------------------------
         Map<String, FileSystemItemFactoryDescriptor> fileSystemItemFactoryDescs = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactoryDescriptors();
         assertNotNull(fileSystemItemFactoryDescs);
-        assertEquals(11, fileSystemItemFactoryDescs.size());
+        assertEquals(12, fileSystemItemFactoryDescs.size());
 
         FileSystemItemFactoryDescriptor desc = fileSystemItemFactoryDescs.get("defaultSyncRootFolderItemFactory");
         assertNotNull(desc);
@@ -504,33 +512,40 @@ public class TestFileSystemItemAdapterService {
         // ------------------------------------------------------
         List<FileSystemItemFactoryWrapper> fileSystemItemFactories = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactories();
         assertNotNull(fileSystemItemFactories);
-        assertEquals(5, fileSystemItemFactories.size());
+        assertEquals(6, fileSystemItemFactories.size());
 
         FileSystemItemFactoryWrapper factoryWrapper = fileSystemItemFactories.get(0);
+        assertNotNull(factoryWrapper);
+        assertNull(factoryWrapper.getDocType());
+        assertEquals("Collection", factoryWrapper.getFacet());
+        assertTrue(factoryWrapper.getFactory().getClass().getName().endsWith(
+                "CollectionSyncRootFolderItemFactory"));
+
+        factoryWrapper = fileSystemItemFactories.get(1);
         assertNotNull(factoryWrapper);
         assertNull(factoryWrapper.getDocType());
         assertEquals("DriveSynchronized", factoryWrapper.getFacet());
         assertTrue(factoryWrapper.getFactory().getClass().getName().endsWith(
                 "DefaultSyncRootFolderItemFactory"));
 
-        factoryWrapper = fileSystemItemFactories.get(1);
+        factoryWrapper = fileSystemItemFactories.get(2);
         assertNotNull(factoryWrapper);
         assertNull(factoryWrapper.getDocType());
         assertEquals("Folderish", factoryWrapper.getFacet());
         assertTrue(factoryWrapper.getFactory().getClass().getName().endsWith(
                 "DefaultFileSystemItemFactory"));
 
-        factoryWrapper = fileSystemItemFactories.get(2);
+        factoryWrapper = fileSystemItemFactories.get(3);
         assertNotNull(factoryWrapper);
         assertEquals("File", factoryWrapper.getDocType());
         assertNull(factoryWrapper.getFacet());
         assertTrue(factoryWrapper.getFactory().getClass().getName().endsWith(
                 "DefaultFileSystemItemFactory"));
 
-        factoryWrapper = fileSystemItemFactories.get(3);
+        factoryWrapper = fileSystemItemFactories.get(4);
         assertNotNull(factoryWrapper);
 
-        factoryWrapper = fileSystemItemFactories.get(4);
+        factoryWrapper = fileSystemItemFactories.get(5);
         assertNotNull(factoryWrapper);
         assertEquals("Note", factoryWrapper.getDocType());
         assertNull(factoryWrapper.getFacet());
@@ -633,7 +648,8 @@ public class TestFileSystemItemAdapterService {
         // Check #getActiveFileSystemItemFactories()
         // -------------------------------------------------------------
         Set<String> activeFactories = fileSystemItemAdapterService.getActiveFileSystemItemFactories();
-        assertEquals(5, activeFactories.size());
+        assertEquals(6, activeFactories.size());
+        assertTrue(activeFactories.contains("collectionSyncRootFolderItemFactory"));
         assertTrue(activeFactories.contains("defaultSyncRootFolderItemFactory"));
         assertTrue(activeFactories.contains("dummyDocTypeFactory"));
         assertTrue(activeFactories.contains("dummyFacetFactory"));

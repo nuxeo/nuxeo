@@ -98,7 +98,8 @@ public class TestActivateFactories {
         assertTrue(fileSystemItemAdapterService.getTopLevelFolderItemFactory().getName().endsWith(
                 "DefaultTopLevelFolderItemFactory"));
         Set<String> activeFSItemFactories = fileSystemItemAdapterService.getActiveFileSystemItemFactories();
-        assertEquals(2, activeFSItemFactories.size());
+        assertEquals(3, activeFSItemFactories.size());
+        assertTrue(activeFSItemFactories.contains("collectionSyncRootFolderItemFactory"));
         assertTrue(activeFSItemFactories.contains("defaultSyncRootFolderItemFactory"));
         assertTrue(activeFSItemFactories.contains("defaultFileSystemItemFactory"));
     }
@@ -107,7 +108,8 @@ public class TestActivateFactories {
         assertTrue(fileSystemItemAdapterService.getTopLevelFolderItemFactory().getName().endsWith(
                 "UserWorkspaceTopLevelFactory"));
         Set<String> activeFSItemFactories = fileSystemItemAdapterService.getActiveFileSystemItemFactories();
-        assertEquals(3, activeFSItemFactories.size());
+        assertEquals(4, activeFSItemFactories.size());
+        assertTrue(activeFSItemFactories.contains("collectionSyncRootFolderItemFactory"));
         assertTrue(activeFSItemFactories.contains("userWorkspaceSyncRootParentFactory"));
         assertTrue(activeFSItemFactories.contains("userWorkspaceSyncRootFactory"));
         assertTrue(activeFSItemFactories.contains("defaultFileSystemItemFactory"));
@@ -117,7 +119,8 @@ public class TestActivateFactories {
         assertTrue(fileSystemItemAdapterService.getTopLevelFolderItemFactory().getName().endsWith(
                 "PermissionTopLevelFactory"));
         Set<String> activeFSItemFactories = fileSystemItemAdapterService.getActiveFileSystemItemFactories();
-        assertEquals(4, activeFSItemFactories.size());
+        assertEquals(5, activeFSItemFactories.size());
+        assertTrue(activeFSItemFactories.contains("collectionSyncRootFolderItemFactory"));
         assertTrue(activeFSItemFactories.contains("userSyncRootParentFactory"));
         assertTrue(activeFSItemFactories.contains("permissionSyncRootFactory"));
         assertTrue(activeFSItemFactories.contains("sharedSyncRootParentFactory"));
