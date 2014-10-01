@@ -240,7 +240,8 @@ public class Select2ActionsBean implements Serializable {
                 if (entry.getKey().equals(Select2Common.PLACEHOLDER)) {
                     hasPlaceholder = true;
                     // placeholder can be translated
-                    if (isTranslated) {
+                    if (isTranslated
+                            || Boolean.parseBoolean((String) propertySet.get("translatePlaceholder"))) {
                         value = messages.get(entry.getValue().toString());
                     }
                 } else if (entry.getKey().equals(Select2Common.AJAX_RERENDER)) {
