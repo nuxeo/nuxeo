@@ -32,18 +32,19 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
+ * @deprecated since 5.9.6. Use instead {@link RunOperationOnList} with ID
+ * 'Context.RunOperationOnList'.
+ *
  * Run an embedded operation chain inside separated transactions using the
  * current input. The output is undefined (Void)
- *
  * @since 5.7.2
  */
-@Operation(id = RunOperationOnListInNewTransaction.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run For Each in new TX", description = "Run an operation/chain in a new Transaction for each element from the list defined by the 'list' paramter. The 'list' parameter is pointing to context variable that represent the list which will be iterated. The 'itemName' parameter represent the name of the context varible which will point to the current element in the list at each iteration. You can use the 'isolate' parameter to specify whether or not the evalution context is the same as the parent context or a copy of it. If the isolate is 'true' then a copy of the current contetx is used and so that modifications in this context will not affect the parent context. Any input is accepted. The input is returned back as output when operation terminate.")
+@Operation(id = RunOperationOnListInNewTransaction.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run For Each in new TX", description = "Run an operation/chain in a new Transaction for each element from the list defined by the 'list' paramter. The 'list' parameter is pointing to context variable that represent the list which will be iterated. The 'itemName' parameter represent the name of the context varible which will point to the current element in the list at each iteration. You can use the 'isolate' parameter to specify whether or not the evalution context is the same as the parent context or a copy of it. If the isolate is 'true' then a copy of the current contetx is used and so that modifications in this context will not affect the parent context. Any input is accepted. The input is returned back as output when operation terminate.", deprecatedSince = "5.9.6")
 public class RunOperationOnListInNewTransaction {
 
     protected static Log log = LogFactory.getLog(RunOperationOnListInNewTransaction.class);
@@ -72,8 +73,8 @@ public class RunOperationOnListInNewTransaction {
     protected boolean isolate = true;
 
     @OperationMethod
+    @SuppressWarnings("unchecked")
     public void run() throws Exception {
-
         Map<String, Object> vars = isolate ? new HashMap<String, Object>(
                 ctx.getVars()) : ctx.getVars();
 

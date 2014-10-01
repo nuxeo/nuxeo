@@ -31,12 +31,15 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
+ * @deprecated since 5.9.6. Use instead {@link RunDocumentChain} with ID
+ * 'Context.RunDocumentOperation'.
+ *
  * Operation to run an operation chain in a separate transaction.
  * The existing transaction is committed before running the new transaction.
  *
  * @since 5.6
  */
-@Operation(id = RunInNewTransaction.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run Document Chain in new Tx", description = "Run an operation chain in a separate tx. The 'parameters' injected are accessible in the subcontext ChainParameters. For instance, @{ChainParameters['parameterKey']}.")
+@Operation(id = RunInNewTransaction.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run Document Chain in new Tx", description = "Run an operation chain in a separate tx. The 'parameters' injected are accessible in the subcontext ChainParameters. For instance, @{ChainParameters['parameterKey']}.", deprecatedSince = "5.9.6")
 public class RunInNewTransaction {
 
     public static final String ID = "Context.RunDocumentOperationInNewTx";

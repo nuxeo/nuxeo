@@ -52,6 +52,7 @@ import org.nuxeo.ecm.automation.core.exception.ChainExceptionRegistry;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * The operation registry is thread safe and optimized for modifications at
@@ -116,6 +117,50 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
             Map<String, Object> runtimeParameters) throws Exception {
         OperationType type = getOperation(operationId);
         return run(ctx, type, runtimeParameters);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object runInNewTx(OperationContext ctx, String chainId,
+            Map chainParameters, Integer timeout,
+            boolean rollbackGlobalOnError) throws Exception {
+        Object result = null;
+        // if the current transaction was already marked for rollback,
+        // do nothing
+        if (TransactionHelper.isTransactionMarkedRollback()) {
+            return null;
+        }
+        // commit the current transaction
+        TransactionHelper.commitOrRollbackTransaction();
+
+        int to = timeout == null ? 0 : timeout;
+
+        TransactionHelper.startTransaction(to);
+        boolean ok = false;
+
+        try {
+            result = run(ctx, chainId, chainParameters);
+            ok = true;
+        } catch (OperationException e) {
+            if (rollbackGlobalOnError) {
+                throw e;
+            } else {
+                // just log, no rethrow
+                log.error("Error while executing operation " + chainId, e);
+            }
+        } finally {
+            if (!ok) {
+                // will be logged by Automation framework
+                TransactionHelper.setTransactionRollbackOnly();
+            }
+            TransactionHelper.commitOrRollbackTransaction();
+            // caller expects a transaction to be started
+            TransactionHelper.startTransaction();
+        }
+        return result;
     }
 
     /**
@@ -570,7 +615,8 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
     @Override
     public AutomationFilter[] getAutomationFilters() {
         Collection<AutomationFilter> automationFilters = automationFilterRegistry.lookup().values();
-        return automationFilters.toArray(new AutomationFilter[automationFilters.size()]);
+        return automationFilters.toArray(new AutomationFilter
+                [automationFilters.size()]);
     }
 
     /**

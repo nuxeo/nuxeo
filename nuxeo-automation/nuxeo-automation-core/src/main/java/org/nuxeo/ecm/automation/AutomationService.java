@@ -295,4 +295,17 @@ public interface AutomationService {
             List<WidgetDefinition> widgetDefinitionList)
             throws OperationException;
 
+
+    /**
+     * This running method execute operation process through a new transaction.
+     *
+     * @param ctx                the operation context.
+     * @param chainId               the chain Id.
+     * @param chainParameters       chain parameters.
+     * @param timeout               Transaction timeout.
+     * @param rollbackGlobalOnError Rollback or not transaction after failing.
+     * @since 5.9.6
+     */
+    Object runInNewTx(OperationContext ctx, String chainId, Map chainParameters,
+            Integer timeout, boolean rollbackGlobalOnError) throws Exception;
 }
