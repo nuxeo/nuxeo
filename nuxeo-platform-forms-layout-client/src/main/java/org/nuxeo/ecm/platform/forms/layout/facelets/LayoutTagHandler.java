@@ -247,8 +247,8 @@ public class LayoutTagHandler extends TagHandler {
                     } else if (selectedColumns != null) {
                         List<String> selectedColumnsList = (List<String>) selectedColumns.getObject(
                                 ctx, List.class);
-                        // Handle empty selected columns list as null to display
-                        // all columns.
+                        // Handle empty selected columns list as null to
+                        // display all columns.
                         if (selectedColumnsList != null
                                 && selectedColumnsList.isEmpty()) {
                             selectedColumnsList = null;
@@ -324,10 +324,12 @@ public class LayoutTagHandler extends TagHandler {
     protected List<String> resolveLayoutNames(String nameValue) {
         List<String> res = new ArrayList<String>();
         if (nameValue != null) {
-            String[] split = StringUtils.split(nameValue, ',');
+            String[] split = nameValue.split(",|\\s");
             if (split != null) {
                 for (String item : split) {
-                    res.add(item.trim());
+                    if (!StringUtils.isBlank(item)) {
+                        res.add(item.trim());
+                    }
                 }
             }
         }

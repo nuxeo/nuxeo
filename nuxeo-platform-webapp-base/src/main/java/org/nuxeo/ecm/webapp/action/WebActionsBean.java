@@ -98,10 +98,12 @@ public class WebActionsBean implements WebActions, Serializable {
         List<Action> list = new ArrayList<Action>();
         List<String> categories = new ArrayList<String>();
         if (category != null) {
-            String[] split = StringUtils.split(category, ',');
+            String[] split = category.split(",|\\s");
             if (split != null) {
                 for (String item : split) {
-                    categories.add(item.trim());
+                    if (!StringUtils.isBlank(item)) {
+                        categories.add(item.trim());
+                    }
                 }
             }
         }
