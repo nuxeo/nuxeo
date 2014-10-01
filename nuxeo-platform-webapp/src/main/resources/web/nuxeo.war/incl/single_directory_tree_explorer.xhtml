@@ -36,11 +36,11 @@
             id="directoryNavTreeNode"
             selectedClass="treeNodeSelectedClass">
             <div class="#{nxu:test(node.selected, 'selected', '')}">
-              <a4j:commandLink immediate="true"
-               id="directoryNavCommandLink"
+              <h:commandLink immediate="true"
+                id="directoryNavCommandLink"
                 action="#{node.selectNode}" styleClass="treeLink">
                 <h:outputText value="#{node.description}" />
-              </a4j:commandLink>
+              </h:commandLink>
             </div>
           </rich:treeNode>
         </rich:treeModelRecursiveAdaptor>
