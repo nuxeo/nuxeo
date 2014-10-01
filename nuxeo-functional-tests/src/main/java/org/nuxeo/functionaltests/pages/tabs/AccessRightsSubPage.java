@@ -19,6 +19,8 @@ package org.nuxeo.functionaltests.pages.tabs;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.AbstractPage;
@@ -36,6 +38,8 @@ import org.openqa.selenium.support.ui.Select;
  */
 public class AccessRightsSubPage extends AbstractPage {
 
+    private static final Log log = LogFactory.getLog(AccessRightsSubPage.class);
+
     /*@Required
     @FindBy(id = "add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest")
     WebElement userSelectionSuggestInputText;*/
@@ -43,16 +47,6 @@ public class AccessRightsSubPage extends AbstractPage {
     @Required
     @FindBy(id = "add_rights_form:rights_grant_select")
     WebElement selectGrantElement;
-
-    @Required
-    @FindBys({ @FindBy(id = "add_rights_form:rights_grant_select"),
-            @FindBy(xpath = "//option[@value='Grant']") })
-    WebElement selectGrantOption;
-
-    @Required
-    @FindBys({ @FindBy(id = "add_rights_form:rights_grant_select"),
-            @FindBy(xpath = "//option[@value='Deny']") })
-    WebElement selectDenyOption;
 
     @Required
     @FindBy(id = "add_rights_form:rights_permission_select")
@@ -65,8 +59,18 @@ public class AccessRightsSubPage extends AbstractPage {
     @FindBy(id = "validate_rights:document_rights_validate_button")
     WebElement validateButton;
 
+    @Required
+    @FindBys({ @FindBy(id = "block_inherit"),
+            @FindBy(xpath = "//input[@type='checkbox']") })
+    WebElement blockInherit;
+
     public AccessRightsSubPage(WebDriver driver) {
         super(driver);
+    }
+
+    public AccessRightsSubPage blockInheritance() {
+        blockInherit.click();
+        return asPage(AccessRightsSubPage.class);
     }
 
     public boolean hasPermissionForUser(String permission, String username) {
@@ -101,8 +105,23 @@ public class AccessRightsSubPage extends AbstractPage {
         return hasPermission;
     }
 
+    /**
+     * @deprecated use {@link #grantPermissionForUser} unless negative ACE are enabled.
+     */
+    @Deprecated
     public AccessRightsSubPage addPermissionForUser(String username,
-            String permission, boolean grant) {
+        String permission, boolean grant) {
+
+        boolean allowNegativeACE = selectGrantElement.isEnabled();
+
+        if (!allowNegativeACE) {
+            if (grant) {
+                log.warn("addPermissionForUser with negative ACE disabled is deprecated.");
+                return grantPermissionForUser(permission, username);
+            } else {
+                throw new UnsupportedOperationException("Negative ACE are currently disabled!");
+            }
+        }
 
         Select2WidgetElement userSelection = new Select2WidgetElement(
                 driver,
@@ -125,7 +144,26 @@ public class AccessRightsSubPage extends AbstractPage {
         addButton.click();
 
         return asPage(AccessRightsSubPage.class).saveChanges();
+    }
 
+    /**
+     * @since 5.9.6
+     */
+    public AccessRightsSubPage grantPermissionForUser(String permission,
+            String username) {
+
+        Select2WidgetElement userSelection = new Select2WidgetElement(
+                driver,
+                driver.findElement(By.xpath("//*[@id='s2id_add_rights_form:nxl_user_group_suggestion:nxw_selection_select2']")),
+                true);
+        userSelection.selectValue(username);
+
+        Select selectPermission = new Select(selectPermissionElement);
+        selectPermission.selectByVisibleText(permission);
+
+        addButton.click();
+
+        return asPage(AccessRightsSubPage.class).saveChanges();
     }
 
     public AccessRightsSubPage saveChanges() {

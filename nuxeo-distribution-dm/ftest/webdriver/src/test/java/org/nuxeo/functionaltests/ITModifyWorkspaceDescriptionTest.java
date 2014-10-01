@@ -66,8 +66,8 @@ public class ITModifyWorkspaceDescriptionTest extends AbstractTest {
         // Workspace
         if (!accessRightSubTab.hasPermissionForUser("Manage everything",
                 TEST_USERNAME)) {
-            accessRightSubTab.addPermissionForUser(TEST_USERNAME,
-                    "Manage everything", true);
+            accessRightSubTab.grantPermissionForUser("Manage everything",
+                TEST_USERNAME);
         }
 
         logout();

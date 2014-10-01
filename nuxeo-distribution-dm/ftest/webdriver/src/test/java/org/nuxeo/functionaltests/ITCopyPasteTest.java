@@ -74,7 +74,7 @@ public class ITCopyPasteTest extends AbstractTest {
         AccessRightsSubPage accessRightSubTab = workspacePage.getManageTab().getAccessRightsSubTab();
         // Need Read
         if (!accessRightSubTab.hasPermissionForUser("Read", TEST_USERNAME)) {
-            accessRightSubTab.addPermissionForUser(TEST_USERNAME, "Read", true);
+            accessRightSubTab.grantPermissionForUser("Read", TEST_USERNAME);
         }
         // Create test File 1
         createFile(workspacePage, FILE1_NAME, null, false, null, null, null);
@@ -86,8 +86,8 @@ public class ITCopyPasteTest extends AbstractTest {
         accessRightSubTab = workspacePage.getManageTab().getAccessRightsSubTab();
         if (!accessRightSubTab.hasPermissionForUser("Manage everything",
                 TEST_USERNAME)) {
-            accessRightSubTab.addPermissionForUser(TEST_USERNAME,
-                    "Manage everything", true);
+            accessRightSubTab.grantPermissionForUser("Manage everything",
+                TEST_USERNAME);
         }
 
         logout();

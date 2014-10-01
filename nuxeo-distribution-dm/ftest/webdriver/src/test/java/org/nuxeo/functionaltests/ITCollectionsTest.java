@@ -88,8 +88,6 @@ public class ITCollectionsTest extends AbstractTest {
         contentTabSubPage = contentTabSubPage.removeAllDocuments();
         ManageTabSubPage manageTabSubPage = contentTabSubPage.getManageTab();
         manageTabSubPage.getTrashSubTab().purgeAllDocuments();
-        asPage(DocumentBasePage.class).swithToDocumentBase();
-        deleteWorkspace(documentBasePage, WORKSPACE_TITLE);
         logout();
     }
 
@@ -240,18 +238,9 @@ public class ITCollectionsTest extends AbstractTest {
         documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
                 "Workspaces");
 
-        // Create workspace and deny all to test user
-        DocumentBasePage workspacePage = createWorkspace(documentBasePage,
-                WORKSPACE_TITLE, null);
-        AccessRightsSubPage accessRightSubTab = workspacePage.getManageTab().getAccessRightsSubTab();
-        if (!accessRightSubTab.hasPermissionForUser("Manage everything",
-                TEST_USERNAME)) {
-            accessRightSubTab.addPermissionForUser(TEST_USERNAME, "Read", false);
-        }
-
         // Create 2 collections in "My Collections" container
         documentBasePage = documentBasePage.swithToPersonalWorkspace();
-        workspacePage = documentBasePage.getNavigationSubPage().goToDocument(
+        DocumentBasePage workspacePage = documentBasePage.getNavigationSubPage().goToDocument(
                 "Administrator");
         // Add a file to this collection that test user can't see
         FileDocumentBasePage fileDocumentBasePage = createFile(workspacePage,
@@ -273,8 +262,8 @@ public class ITCollectionsTest extends AbstractTest {
         documentBasePage = createCollection(workspacePage, COLLECTION_NAME_2,
                 COLLECTION_DESSCRIPTION_2);
 
-        documentBasePage.getManageTab().getAccessRightsSubTab().addPermissionForUser(
-                TEST_USERNAME, CAN_COLLECT_RIGHT, true);
+        documentBasePage.getManageTab().getAccessRightsSubTab().grantPermissionForUser(
+                CAN_COLLECT_RIGHT, TEST_USERNAME);
 
         logout();
 
