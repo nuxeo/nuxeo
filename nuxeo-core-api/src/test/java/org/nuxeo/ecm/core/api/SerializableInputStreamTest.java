@@ -24,8 +24,8 @@ import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.Arrays;
 
+import org.junit.Ignore;
 import org.junit.Test;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.api.Framework;
 
@@ -33,6 +33,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+// ignored, see NXP-15315
+@Ignore
 public class SerializableInputStreamTest {
 
     @Test
