@@ -495,7 +495,7 @@ public final class Framework {
      * @param marker the marker Object
      */
     public static void trackFile(File aFile, Object aMarker) {
-        FileEvent.onFile(Framework.class, aFile, aMarker);
+        FileEvent.onFile(Framework.class, aFile, aMarker).send();
     }
 
     /**
