@@ -271,4 +271,18 @@ public interface CollectionManager {
      */
     DocumentModel createCollection(final CoreSession session, String title,
             String description, String path) throws ClientException;
+
+    /**
+     * Get user collections root document.
+     *
+     * @param context contextual document
+     * @param session the core session
+     * @return the user collections root document
+     * @throws ClientException
+     *
+     * @since 5.9.6
+     */
+    DocumentModel getUserDefaultCollections(final DocumentModel context,
+            final CoreSession session) throws ClientException;
+
 }

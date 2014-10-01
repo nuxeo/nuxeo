@@ -219,7 +219,7 @@ public class CollectionManagerImpl extends DefaultComponent implements
         return doc;
     }
 
-    protected DocumentModel getUserDefaultCollections(
+    public DocumentModel getUserDefaultCollections(
             final DocumentModel context, final CoreSession session)
             throws ClientException {
         final UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
