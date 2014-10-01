@@ -33,7 +33,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
@@ -44,6 +43,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.google.inject.Inject;
 
@@ -52,10 +52,8 @@ import com.google.inject.Inject;
  *
  */
 @RunWith(FeaturesRunner.class)
-@Features(LogCaptureFeature.class)
+@Features({ LogCaptureFeature.class, RuntimeFeature.class })
 @LogCaptureFeature.FilterWith(value = CustomLogFilter.class)
-// disabled for now, see NXP-15315
-@Ignore
 public class TestSetupWizardActionBean {
 
     private SetupWizardActionBean setupWizardActionBean;
