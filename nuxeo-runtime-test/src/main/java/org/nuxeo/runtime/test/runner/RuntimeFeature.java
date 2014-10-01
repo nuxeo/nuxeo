@@ -21,6 +21,7 @@ package org.nuxeo.runtime.test.runner;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,7 +32,10 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URLStreamHandlerFactoryInstaller;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.osgi.framework.Bundle;
 
@@ -84,8 +88,8 @@ public class RuntimeFeature extends SimpleFeature {
             deploy.load(FeaturesRunner.getScanner(), feature.getClass());
         }
         // load deployments from class to run
-        deploy.load(FeaturesRunner.getScanner(),
-                runner.getTestClass().getJavaClass());
+        deploy.load(FeaturesRunner.getScanner(), runner.getTestClass()
+            .getJavaClass());
     }
 
     public String[] getDeployments() {
@@ -98,9 +102,9 @@ public class RuntimeFeature extends SimpleFeature {
                 new String[deploy.getLocalDeployments().size()]);
     }
 
-    protected void indexBundleResources(FeaturesRunner runner, Set<String> bundles,
-            SetMultimap<String, String> resources, String[] directives)
-            throws IOException {
+    protected void indexBundleResources(FeaturesRunner runner,
+            Set<String> bundles, SetMultimap<String, String> resources,
+            String[] directives) throws IOException {
         for (String directive : directives) {
             int sepIndex = directive.indexOf(':');
             if (sepIndex == -1) {
@@ -116,19 +120,20 @@ public class RuntimeFeature extends SimpleFeature {
     /**
      * Deploys bundles specified in the @Bundles annotation.
      */
-    protected void deployTestClassBundles(FeaturesRunner runner) throws Exception {
+    protected void deployTestClassBundles(FeaturesRunner runner)
+            throws Exception {
         Set<String> bundles = new HashSet<String>();
         Map<String, Collection<String>> mainDeployments = new HashMap<>();
-        SetMultimap<String, String> mainIndex = Multimaps.newSetMultimap(mainDeployments,
-                new Supplier<Set<String>>() {
+        SetMultimap<String, String> mainIndex = Multimaps.newSetMultimap(
+                mainDeployments, new Supplier<Set<String>>() {
                     @Override
                     public Set<String> get() {
                         return new HashSet<String>();
                     }
                 });
         Map<String, Collection<String>> localDeployments = new HashMap<>();
-        SetMultimap<String, String> localIndex = Multimaps.newSetMultimap(localDeployments,
-                new Supplier<Set<String>>() {
+        SetMultimap<String, String> localIndex = Multimaps.newSetMultimap(
+                localDeployments, new Supplier<Set<String>>() {
                     @Override
                     public Set<String> get() {
                         return new HashSet<String>();
@@ -162,28 +167,28 @@ public class RuntimeFeature extends SimpleFeature {
                         url = bundle.getEntry(resource);
                     }
                     if (url == null) {
-                        url = runner.getTargetTestClass().getClassLoader().getResource(
-                                resource);
+                        url = runner.getTargetTestClass().getClassLoader()
+                            .getResource(resource);
                     }
                     if (url == null) {
                         throw new AssertionError("Cannot find " + resource
                                 + " in " + name);
                     }
-                    harness.deployTestContrib(name,  url);
+                    harness.deployTestContrib(name, url);
                 }
             } catch (Exception error) {
                 errors.addSuppressed(error);
             }
         }
 
-        for (Map.Entry<String,String> resource:mainIndex.entries()) {
+        for (Map.Entry<String, String> resource : mainIndex.entries()) {
             try {
                 harness.deployContrib(resource.getKey(), resource.getValue());
             } catch (Exception error) {
                 errors.addSuppressed(error);
             }
         }
-        for (Map.Entry<String,String> resource:localIndex.entries()) {
+        for (Map.Entry<String, String> resource : localIndex.entries()) {
             try {
                 harness.deployTestContrib(resource.getKey(),
                         resource.getValue());
@@ -204,13 +209,36 @@ public class RuntimeFeature extends SimpleFeature {
     }
 
     @Override
-    public void start(FeaturesRunner runner) throws Exception {
+    public void start(final FeaturesRunner runner) throws Exception {
+        Framework.addListener(new RuntimeServiceListener() {
+
+            @Override
+            public void handleEvent(RuntimeServiceEvent event) {
+                if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_START) {
+                    return;
+                }
+                Framework.removeListener(this);
+                blacklistComponents(runner);
+            }
+        });
         // Starts Nuxeo Runtime
         if (!harness.isStarted()) {
             harness.start();
         }
         // Deploy bundles
         deployTestClassBundles(runner);
+    }
+
+    protected void blacklistComponents(FeaturesRunner aRunner) {
+        BlacklistComponent config = aRunner.getConfig(BlacklistComponent.class);
+        if (config.value().length == 0) {
+            return;
+        }
+        final ComponentManager manager = Framework.getRuntime()
+            .getComponentManager();
+        Set<String> blacklist = new HashSet<>(manager.getBlacklist());
+        blacklist.addAll(Arrays.asList(config.value()));
+        manager.setBlacklist(blacklist);
     }
 
     @Override
@@ -252,10 +280,11 @@ public class RuntimeFeature extends SimpleFeature {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
-        for (String svc : Framework.getRuntime().getComponentManager().getServices()) {
+        for (String svc : Framework.getRuntime().getComponentManager()
+            .getServices()) {
             try {
-                Class clazz = Thread.currentThread().getContextClassLoader().loadClass(
-                        svc);
+                Class clazz = Thread.currentThread().getContextClassLoader()
+                    .loadClass(svc);
                 ServiceProvider provider = serviceProviders.get(clazz);
                 if (provider == null) {
                     provider = new ServiceProvider(clazz);

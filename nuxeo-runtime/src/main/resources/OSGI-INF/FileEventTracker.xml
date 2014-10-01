@@ -6,7 +6,7 @@
 	<implementation class="org.nuxeo.runtime.trackers.files.FileEventTracker" />
 
 	<extension-point name="configs">
-		<object class="org.nuxeo.runtime.trackers.files.FileEventTracker$Config" />
+		<object class="org.nuxeo.runtime.trackers.files.FileEventTracker$EnableThreadsTracking" />
 	</extension-point>
 
 </component>
