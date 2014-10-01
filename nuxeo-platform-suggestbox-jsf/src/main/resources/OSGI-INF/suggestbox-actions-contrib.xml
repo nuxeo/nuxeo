@@ -22,7 +22,7 @@
         <property name="minChars">1</property>
         <property name="multiple">false</property>
         <property name="operationId">Search.SuggestersLauncher</property>
-        <property name="placeholder">Type a value</property>
+        <property name="placeholder">label.suggestion.placeholder</property>
         <property name="readonly">false</property>
         <property name="selectionFormatter">nxSelectedSuggestBoxFormatter</property>
         <property name="suggestionFormatter">nxSuggestedSuggestBoxFormatter</property>
@@ -31,6 +31,7 @@
         <property name="dropdownCssClass">nx-header-s2-dd</property>
         <property name="containerCssClass">nx-header-s2-ct</property>
         <property name="width">200px</property>
+        <property name="translatePlaceholder">true</property>
       </properties>
     </action>
 
