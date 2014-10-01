@@ -63,14 +63,17 @@
       </subWidgets>
     </widget>
 
-    <widget name="infoViewActions" type="documentActions">
+    <widget name="infoViewActions" type="documentActionsWithForms">
       <properties widgetMode="view">
         <property name="category">INFO_VIEW_ACTIONS</property>
-        <property name="styleClass">infoViewActions</property>
+        <property name="styleClass">globalActionBar infoViewActions</property>
+        <property name="subStyleClass">contextActions</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="actionsDisplay">icons</property>
+        <property name="useAjaxForm">true</property>
+        <property name="ignoreTemplateProperty">true</property>
+        <property name="maxActionsNumber">5</property>
       </properties>
-      <controls mode="any">
-        <control name="requireSurroundingForm">false</control>
-      </controls>
     </widget>
 
   </extension>
@@ -104,6 +107,83 @@
       <category>INFO_VIEW_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">infoViewActions</property>
+      </properties>
+    </action>
+
+    <action id="infoAddToFavoritesAction" order="0" label="label.addToFavorites"
+      link="#{favoritesActions.addCurrentDocumentToFavorites()}" icon="/icons/pin.png">
+      <category>INFO_VIEW_ACTIONS</category>
+      <filter-id>canAddToFavorites</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="infoRemoveFromFavoritesAction" order="0"
+      label="label.removeFromFavorites" link="#{favoritesActions.removeCurrentDocumentFromFavorites()}"
+      icon="/icons/pinned.png">
+      <category>INFO_VIEW_ACTIONS</category>
+      <filter-id>canRemoveFromFavorites</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="infoDocumentLock" link="#{lockActions.lockCurrentDocument}"
+      order="10" label="command.lock" type="link" icon="/icons/contextual_menu/unlocked.png">
+      <category>INFO_VIEW_ACTIONS</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>can_lock</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="infoDocumentUnlock" link="#{lockActions.unlockCurrentDocument}"
+      order="10" label="command.unlock" type="link" icon="/icons/contextual_menu/locked.png">
+      <category>INFO_VIEW_ACTIONS</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>can_unlock</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="infoPermalinkAction" order="20" label="label.permalink" type="fancybox"
+      icon="/icons/contextual_menu/share.png" accessKey="k">
+      <category>INFO_VIEW_ACTIONS</category>
+      <properties>
+        <property name="include">/incl/permalink_box.xhtml</property>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="infoDownloadAction" link="#{operationActionBean.doOperation('downloadFilesZip')}"
+      order="30" label="label.document.download" type="link"
+      icon="/icons/contextual_menu/download.png">
+      <category>INFO_VIEW_ACTIONS</category>
+      <filter-id>documentHasBlobs</filter-id>
+    </action>
+
+    <action id="infoSubscribesAllDocNotifications" link="#{subscriptionAction.updateAllSubscriptions}"
+      order="40" label="label.subscriptions.follow" type="link"
+      icon="/icons/contextual_menu/subscribe.png">
+      <category>INFO_VIEW_ACTIONS</category>
+      <filter-id>hasNoSubscriptions</filter-id>
+      <filter-id>canSubscribe</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="infoUnsubscribesAllDocNotifications" link="#{subscriptionAction.updateAllSubscriptions}"
+      order="40" label="label.subscriptions.unfollow" type="link"
+      icon="/icons/contextual_menu/unsubscribe.png">
+      <category>INFO_VIEW_ACTIONS</category>
+      <filter-id>hasSubscriptions</filter-id>
+      <filter-id>canSubscribe</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
       </properties>
     </action>
 
