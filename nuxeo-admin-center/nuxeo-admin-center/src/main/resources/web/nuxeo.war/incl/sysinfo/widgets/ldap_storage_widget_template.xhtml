@@ -14,15 +14,15 @@
   <c:if test="#{widget.mode == 'edit'}">
     <h:selectOneMenu value="#{field}" id="#{widget.id}"
       required="#{widget.required}">
-      <f:selectItem itemValue="default" itemLabel="Default"
+      <f:selectItem itemValue="default" itemLabel="#{messages['label.setup.nuxeo.directory.storage.default']}"
         itemDisabled="#{setupWizardAction.directoryType == 'multi'}"/>
-      <f:selectItem itemValue="userLdapOnly" itemLabel="Only LDAP users"
+      <f:selectItem itemValue="userLdapOnly" itemLabel="#{messages['label.setup.nuxeo.directory.storage.userldap']}"
         itemDisabled="#{setupWizardAction.directoryType == 'multi'}"/>
-      <f:selectItem itemValue="multiUserGroup" itemLabel="Multidirectory for users and groups" 
+      <f:selectItem itemValue="multiUserGroup" itemLabel="#{messages['label.setup.nuxeo.directory.storage.multiUserGroup']}" 
         itemDisabled="#{setupWizardAction.directoryType == 'ldap'}"/>
-      <f:selectItem itemValue="multiUserSqlGroup" itemLabel="Multidirectory for users and SQL groups"
+      <f:selectItem itemValue="multiUserSqlGroup" itemLabel="#{messages['label.setup.nuxeo.directory.storage.multiUserSqlGroup']}"
         itemDisabled="#{setupWizardAction.directoryType == 'ldap'}"/>
-      <f:selectItem itemValue="ldapUserMultiGroup" itemLabel="LDAP users and multidirectory for groups"
+      <f:selectItem itemValue="ldapUserMultiGroup" itemLabel="#{messages['label.setup.nuxeo.directory.storage.ldapUserMultiGroup']}"
         itemDisabled="#{setupWizardAction.directoryType == 'ldap'}"/>
           <a4j:ajax event="change"
         render="#{widgetProperty_reRender}"
