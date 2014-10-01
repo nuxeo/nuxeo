@@ -631,6 +631,9 @@
     </widget>
 
     <widget name="listing_size_and_format" type="container">
+      <labels>
+        <label mode="any">label.search.size_and_format</label>
+      </labels>
       <properties widgetMode="view">
         <property name="display">inline</property>
         <property name="hideSubLabels">true</property>
@@ -754,10 +757,16 @@
         <property name="display">block</property>
       </properties>
       <columns>
-        <column>
+        <column name="last_contributor">
+          <properties mode="any">
+            <property name="label">label.dublincore.lastContributor</property>
+          </properties>
           <widget>listing_last_contributor</widget>
         </column>
-        <column>
+        <column name="size_and_format">
+          <properties mode="any">
+            <property name="label">label.selection.column.size_and_format</property>
+          </properties>
           <widget>listing_size_and_format</widget>
         </column>
       </columns>
