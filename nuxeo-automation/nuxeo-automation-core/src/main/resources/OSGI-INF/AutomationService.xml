@@ -159,6 +159,9 @@
     <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.ArrayNodeToList"
       accept="org.codehaus.jackson.node.ArrayNode"
       produce="java.util.List" />
+    <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.ArrayStringToDocModelList"
+             accept="[Ljava.lang.String;"
+             produce="org.nuxeo.ecm.core.api.DocumentModelList" />
 
   </extension>
 
