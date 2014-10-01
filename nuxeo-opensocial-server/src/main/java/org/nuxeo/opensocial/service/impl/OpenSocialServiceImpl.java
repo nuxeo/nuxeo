@@ -39,7 +39,6 @@ import org.nuxeo.opensocial.servlet.GuiceContextListener;
 import org.nuxeo.opensocial.shindig.crypto.OAuthServiceDescriptor;
 import org.nuxeo.opensocial.shindig.crypto.OpenSocialDescriptor;
 import org.nuxeo.opensocial.shindig.crypto.PortalConfig;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -122,10 +121,11 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
     }
 
     public Object getInstance(Class<?> klass) {
-        if (getInjector() != null)
+        if (getInjector() != null) {
             return getInjector().getInstance(klass);
-        else
+        } else {
             return null;
+        }
     }
 
     @Override
@@ -177,7 +177,6 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
     // assumptions that the container is reasonably secure
     protected File createTempFileForAKey(String keyValue) throws IOException {
         File f = File.createTempFile("nxkey", ".txt");
-        Framework.trackFile(f, f);
         FileWriter writer = new FileWriter(f);
         writer.append(keyValue);
         writer.flush();
