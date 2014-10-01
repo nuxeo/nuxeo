@@ -43,6 +43,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
@@ -99,12 +100,21 @@ public class ESAuditBackend extends AbstractAuditBackend implements
     public List<LogEntry> getLogEntriesFor(String uuid,
             Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
 
-        SearchResponse searchResponse = getClient().prepareSearch(IDX_NAME).setTypes(
-                IDX_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setQuery(
-                QueryBuilders.matchQuery("docUUID", uuid)) // Query
-        .setFrom(0).setSize(60).execute().actionGet();
-
-        // filterMap
+        SearchRequestBuilder builder = getClient().prepareSearch(IDX_NAME).setTypes(
+                IDX_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+        
+        if (filterMap==null || filterMap.size()==0) {
+            builder.setQuery(QueryBuilders.matchQuery("docUUID", uuid));
+        } else {
+            BoolFilterBuilder filterBuilder = FilterBuilders.boolFilter();
+            for (String key : filterMap.keySet()) {
+                FilterMapEntry entry = filterMap.get(key);
+                filterBuilder.must(FilterBuilders.termFilter(entry.getColumnName(),entry.getObject()));
+            }            
+            builder.setQuery( QueryBuilders.filteredQuery(QueryBuilders.matchQuery("docUUID", uuid), filterBuilder));
+        }
+                
+        SearchResponse searchResponse = builder.setFrom(0).setSize(60).execute().actionGet();
         
         List<LogEntry> entries = new ArrayList<>();
         for (SearchHit hit : searchResponse.getHits()) {
@@ -140,7 +150,39 @@ public class ESAuditBackend extends AbstractAuditBackend implements
     @Override
     public List<?> nativeQuery(String query, Map<String, Object> params,
             int pageNb, int pageSize) {
-        throw new UnsupportedOperationException("Not implemented yet!");
+        
+        // do params replacement ?
+        if (params!=null && params.size()>0) {
+            TextTemplate tmpl = new TextTemplate();
+            for (String key : params.keySet()) {
+                tmpl.setVariable(key, params.get(key).toString());
+            }
+            query = tmpl.process(query);
+        }
+
+        SearchRequestBuilder builder = getClient().prepareSearch(IDX_NAME).setTypes(
+                IDX_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+        
+        builder.setQuery(query);
+        
+        if (pageNb>0) {
+            builder.setFrom(pageNb*pageSize);
+        }
+        
+        if (pageSize>0) {
+            builder.setSize(pageSize);
+        }
+                
+        SearchResponse searchResponse = builder.execute().actionGet();        
+        List<LogEntry> entries = new ArrayList<>();
+        for (SearchHit hit : searchResponse.getHits()) {
+            try {
+                entries.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
+            } catch (Exception e) {
+                log.error("Error while reading Audit Entry from ES", e);
+            }
+        }
+        return entries;
     }
 
     @Override

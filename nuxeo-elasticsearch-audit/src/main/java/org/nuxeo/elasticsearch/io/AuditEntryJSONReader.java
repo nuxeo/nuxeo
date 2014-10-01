@@ -22,6 +22,7 @@ public class AuditEntryJSONReader {
             
         factory.setCodec(new ObjectMapper());
         JsonParser jp = factory.createJsonParser(content);
+        
         JsonToken tok = jp.nextToken();
 
         // skip {

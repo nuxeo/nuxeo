@@ -28,12 +28,12 @@ import java.util.Map;
 
 import junit.framework.Assert;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.platform.audit.api.AuditAdmin;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
@@ -115,8 +115,7 @@ public class TestAuditWithElasticSearch {
         assertThat(trail, notNullValue());
 
         Assert.assertEquals(2, trail.size());
-        
-        
+
         Long startId = trail.get(0).getId();
         Assert.assertEquals("documentCreated", trail.get(0).getEventId());
         Assert.assertEquals("eventDocumentCategory", trail.get(0).getCategory());
@@ -124,24 +123,25 @@ public class TestAuditWithElasticSearch {
                 "A File",
                 trail.get(0).getExtendedInfos().get("title").getValue(
                         String.class));
-        
-        Assert.assertEquals(startId+1, trail.get(1).getId());
+
+        Assert.assertEquals(startId + 1, trail.get(1).getId());
         Assert.assertEquals("documentModified", trail.get(1).getEventId());
         Assert.assertEquals("eventDocumentCategory", trail.get(1).getCategory());
         Assert.assertEquals(
                 "A modified File",
                 trail.get(1).getExtendedInfos().get("title").getValue(
-                        String.class));        
+                        String.class));
     }
 
-    
     protected Map<String, ExtendedInfo> createExtendedInfos() {
         Map<String, ExtendedInfo> infos = new HashMap<String, ExtendedInfo>();
         ExtendedInfo info = ExtendedInfoImpl.createExtendedInfo(new Long(1));
         infos.put("id", info);
         return infos;
     }
-    protected LogEntry doCreateEntry(String docId, String eventId, String category) {
+
+    protected LogEntry doCreateEntry(String docId, String eventId,
+            String category) {
         LogEntry createdEntry = new LogEntryImpl();
         createdEntry.setEventId(eventId);
         createdEntry.setCategory(category);
@@ -150,58 +150,95 @@ public class TestAuditWithElasticSearch {
         createdEntry.setDocPath("/" + docId);
         createdEntry.setRepositoryId("test");
         createdEntry.setExtendedInfos(createExtendedInfos());
-        
+
         return createdEntry;
     }
 
     @Test
     public void shouldSupportMultiCriteriaQueries() throws Exception {
-        
+
         List<LogEntry> entries = new ArrayList<>();
-        
+
         AuditLogger logger = Framework.getLocalService(AuditLogger.class);
         Assert.assertNotNull(logger);
 
         for (int i = 0; i < 9; i++) {
-            entries.add(doCreateEntry("d"+i%5, "evt" + i, "cat" + i%2));            
+            entries.add(doCreateEntry("mydoc", "evt" + i, "cat" + i % 2));
         }
         logger.addLogEntries(entries);
         flushAndSync();
-        
+
         AuditReader reader = Framework.getLocalService(AuditReader.class);
-        
+
         // simple Query
-        String[] evts = {"evt1","evt2"};        
+        String[] evts = { "evt1", "evt2" };
         List<LogEntry> res = reader.queryLogs(evts, null);
         Assert.assertNotNull(res);
         Assert.assertEquals(2, res.size());
 
-        evts = new String[] {"evt1",};        
+        evts = new String[] { "evt1", };
         res = reader.queryLogs(evts, null);
         Assert.assertEquals(1, res.size());
-        
-        evts = new String[] {"evt",};        
+
+        evts = new String[] { "evt", };
         res = reader.queryLogs(evts, null);
-        Assert.assertEquals(0, res.size());        
-       
-        // multi  Query
-        evts = new String[] {"evt1","evt2"};
-        String[] cats = {"cat1"};
-        res =  reader.queryLogsByPage(evts, (Date) null, cats, null, 0, 5);
+        Assert.assertEquals(0, res.size());
+
+        // multi Query
+        evts = new String[] { "evt1", "evt2" };
+        String[] cats = { "cat1" };
+        res = reader.queryLogsByPage(evts, (Date) null, cats, null, 0, 5);
         Assert.assertEquals(1, res.size());
-        
-        evts = new String[] {"evt1","evt2"};
-        cats = new String[] {"cat1", "cat0"};
-        res =  reader.queryLogsByPage(evts, (Date) null, cats, null, 0, 5);
+
+        evts = new String[] { "evt1", "evt2" };
+        cats = new String[] { "cat1", "cat0" };
+        res = reader.queryLogsByPage(evts, (Date) null, cats, null, 0, 5);
         Assert.assertEquals(2, res.size());
 
         // test page size
-        res =  reader.queryLogsByPage((String[]) null, (Date) null, (String[])null, null, 0, 5);
+        res = reader.queryLogsByPage((String[]) null, (Date) null,
+                (String[]) null, "/mydoc", 0, 5);
         Assert.assertEquals(5, res.size());
-        
-        res =  reader.queryLogsByPage((String[]) null, (Date) null, (String[])null, null, 1, 5);
+
+        res = reader.queryLogsByPage((String[]) null, (Date) null,
+                (String[]) null, "/mydoc", 1, 5);
         Assert.assertEquals(4, res.size());
-                
+
     }
-    
+
+    @Test
+    public void shouldSupportNativeQueries() throws Exception {
+
+        List<LogEntry> entries = new ArrayList<>();
+
+        AuditLogger logger = Framework.getLocalService(AuditLogger.class);
+        Assert.assertNotNull(logger);
+
+        for (int i = 0; i < 9; i++) {
+            entries.add(doCreateEntry("dummy", "entry" + i, "category" + i % 2));
+        }
+        logger.addLogEntries(entries);
+        flushAndSync();
+
+        AuditReader reader = Framework.getLocalService(AuditReader.class);
+
+        String jsonQuery = IOUtils.toString(
+                this.getClass().getClassLoader().getResourceAsStream(
+                        "filtredQuery.json"), "UTF-8");
+        List<?> res = reader.nativeQuery(jsonQuery, 0, 5);
+
+        Assert.assertEquals(2, res.size());
+
+        jsonQuery = IOUtils.toString(
+                this.getClass().getClassLoader().getResourceAsStream(
+                        "filtredQueryWithParams.json"), "UTF-8");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("category", "category1");
+        res = reader.nativeQuery(jsonQuery, params, 0, 5);
+
+        Assert.assertEquals(1, res.size());
+
+    }
+
 }

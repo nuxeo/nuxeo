@@ -1,0 +1,29 @@
+{    	"filtered" : {
+      "query" : {
+        "bool" : {
+          "must" : {
+            "match" : {
+              "docPath" : {
+                "query" : "/dummy",
+                "type" : "boolean"
+              }
+            }
+          }
+        }
+      },
+      "filter" : {
+        "bool" : {
+          "must" : [{
+            "terms" : {
+              "eventId" : [ "entry1", "entry2" ]
+            }
+          },
+          {
+            "term" : {
+              "category" :  "${category}"
+            }
+          }]
+        }
+      }
+    }
+}
