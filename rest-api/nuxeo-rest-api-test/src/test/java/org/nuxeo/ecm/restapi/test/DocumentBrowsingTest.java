@@ -30,8 +30,13 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.io.services.enricher.ACLContentEnricher;
 import org.nuxeo.ecm.automation.io.services.enricher
         .ContentEnricherServiceImpl;
+import org.nuxeo.ecm.automation.io.services.enricher.PreviewContentEnricher;
+import org.nuxeo.ecm.automation.io.services.enricher.ThumbnailContentEnricher;
+import org.nuxeo.ecm.automation.io.services.enricher
+        .UserPermissionsContentEnricher;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -279,7 +284,8 @@ public class DocumentBrowsingTest extends BaseTest {
         // Given an existing document
         DocumentModel note = RestServerInit.getNote(0, session);
         Map<String,String> headers = new HashMap<>();
-        headers.put(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER, "acls");
+        headers.put(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER,
+                ACLContentEnricher.ACLS_CONTENT_ID);
 
         // When i do a GET Request on the note repository
         ClientResponse response = getResponse(
@@ -321,7 +327,7 @@ public class DocumentBrowsingTest extends BaseTest {
 
         Map<String, String> headers = new HashMap<>();
         headers.put(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER,
-                "thumbnail");
+                ThumbnailContentEnricher.THUMBNAIL_CONTENT_ID);
 
         // Given an existing document
         DocumentModel note = RestServerInit.getNote(0, session);
@@ -346,7 +352,7 @@ public class DocumentBrowsingTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
         Map<String, String> headers = new HashMap<>();
         headers.put(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER,
-                "permissions");
+                UserPermissionsContentEnricher.PERMISSIONS_CONTENT_ID);
 
         // When i do a GET Request on the note repository
         ClientResponse response = getResponse(RequestType.GET,
@@ -360,6 +366,29 @@ public class DocumentBrowsingTest extends BaseTest {
                 RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("permissions");
         assertNotNull(permissions);
         assertTrue(permissions.isArray());
+    }
+
+    @Test
+    public void iCanGetThePreviewURLThroughContributor() throws Exception {
+        // Given an existing document
+        DocumentModel note = RestServerInit.getNote(0, session);
+        Map<String, String> headers = new HashMap<>();
+        headers.put(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER,
+                PreviewContentEnricher.PREVIEW_CONTENT_ID);
+
+        // When i do a GET Request on the note repository
+        ClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path"
+                        + note.getPathAsString(), headers);
+
+        // Then i get a preview url
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        JsonNode preview = node.get(
+                RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("preview");
+        assertNotNull(preview);
+        StringUtils.endsWith(preview.get(PreviewContentEnricher
+                .PREVIEW_URL_LABEL).getTextValue(), "/default/");
     }
 
     @Test

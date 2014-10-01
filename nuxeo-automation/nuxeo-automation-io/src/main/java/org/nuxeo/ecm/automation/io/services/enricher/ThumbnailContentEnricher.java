@@ -35,6 +35,8 @@ public class ThumbnailContentEnricher implements ContentEnricher {
 
     public static final String THUMBNAIL_URL_LABEL = "url";
 
+    public static final String THUMBNAIL_CONTENT_ID = "thumbnail";
+
     public static final String THUMB_THUMBNAIL = "thumb:thumbnail";
 
     public static final String DOWNLOAD_THUMBNAIL = "downloadThumbnail";

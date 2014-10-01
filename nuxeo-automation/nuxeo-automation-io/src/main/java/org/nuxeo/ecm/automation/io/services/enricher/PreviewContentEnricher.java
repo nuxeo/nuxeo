@@ -19,46 +19,41 @@ package org.nuxeo.ecm.automation.io.services.enricher;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.security.ACE;
-import org.nuxeo.ecm.core.api.security.ACL;
-import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
+import org.nuxeo.runtime.api.Framework;
 
 import java.io.IOException;
 
 /**
- * This enricher adds a document ACLs
+ * This content enricher adds a document Preview URL.
  *
- * @since 5.9.5
+ * @since 5.9.6
  */
-public class ACLContentEnricher implements ContentEnricher {
+public class PreviewContentEnricher implements ContentEnricher {
 
-    public static final String ACLS_CONTENT_ID= "acls";
+    public static final String PREVIEW_URL_LABEL = "url";
+
+    public static final String PREVIEW_CONTENT_ID = "preview";
 
     @Override
     public void enrich(JsonGenerator jg, RestEvaluationContext ec)
             throws ClientException, IOException {
         DocumentModel doc = ec.getDocumentModel();
-        ACP item = doc.getACP();
-        jg.writeStartArray();
-        for (ACL acl : item.getACLs()) {
-            jg.writeStartObject();
-            jg.writeStringField("name", acl.getName());
-
-            jg.writeArrayFieldStart("ace");
-
-            for (ACE ace : acl.getACEs()) {
-                jg.writeStartObject();
-                jg.writeStringField("username", ace.getUsername());
-                jg.writeStringField("permission", ace.getPermission());
-                jg.writeBooleanField("granted", ace.isGranted());
-                jg.writeEndObject();
-            }
-
-            jg.writeEndArray();
-            jg.writeEndObject();
+        String relativeUrl = PreviewHelper.getPreviewURL(doc);
+        jg.writeStartObject();
+        if (relativeUrl != null && !relativeUrl.isEmpty()) {
+            String url = Framework.getProperty("nuxeo.url") + "/"
+                    + PreviewHelper.getPreviewURL(doc);
+            jg.writeStringField(PREVIEW_URL_LABEL, url);
+        } else {
+            writeEmptyURL(jg);
         }
-        jg.writeEndArray();
+        jg.writeEndObject();
         jg.flush();
+    }
+
+    private void writeEmptyURL(JsonGenerator jg) throws IOException {
+        jg.writeStringField(PREVIEW_URL_LABEL, null);
     }
 
 }

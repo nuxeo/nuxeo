@@ -41,6 +41,8 @@ public class UserPermissionsContentEnricher implements ContentEnricher {
 
     private static final List<String> PERMISSIONS = ImmutableList.of(READ, WRITE, EVERYTHING);
 
+    public static final String PERMISSIONS_CONTENT_ID = "permissions";
+
     @Override
     public void enrich(JsonGenerator jg, RestEvaluationContext ec)
             throws ClientException, IOException {
