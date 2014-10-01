@@ -1,66 +1,69 @@
 <div xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-  <c:if test="#{widget.handlingLabels}">
-    <c:if test="#{!empty widget.label}">
-      <ui:include src="/widgets/incl/widget_label_template.xhtml">
-        <ui:param name="labelStyleClass"
-          value="summaryTitle #{widgetProperty_headerStyleClass}" />
-      </ui:include>
+  <c:if test="#{collectionActions.hasVisibleCollection(fieldOrValue)}">
+
+    <c:if test="#{widget.handlingLabels}">
+      <c:if test="#{!empty widget.label}">
+        <ui:include src="/widgets/incl/widget_label_template.xhtml">
+          <ui:param name="labelStyleClass"
+            value="summaryTitle #{widgetProperty_headerStyleClass}" />
+        </ui:include>
+      </c:if>
+      <c:if test="#{empty widget.label}">
+        <ui:include src="/widgets/incl/label_template.xhtml">
+          <ui:param name="label" value="label.collections" />
+          <ui:param name="helpLabel" value="#{widget.helpLabel}" />
+          <ui:param name="translated" value="true" />
+          <ui:param name="required" value="#{widget.required}" />
+          <ui:param name="labelStyleClass"
+            value="summaryTitle #{widgetProperty_headerStyleClass}" />
+        </ui:include>
+      </c:if>
     </c:if>
-    <c:if test="#{empty widget.label}">
-      <ui:include src="/widgets/incl/label_template.xhtml">
-        <ui:param name="label" value="label.collections" />
-        <ui:param name="helpLabel" value="#{widget.helpLabel}" />
-        <ui:param name="translated" value="true" />
-        <ui:param name="required" value="#{widget.required}" />
-        <ui:param name="labelStyleClass"
-          value="summaryTitle #{widgetProperty_headerStyleClass}" />
-      </ui:include>
-    </c:if>
+
+    <a4j:outputPanel id="collections">
+      <nxu:set var="currentDocCollections"
+        value="#{currentDocumentCollection.getCurrentDocumentCollections()}"
+        cache="true">
+        <c:forEach var="collection" id="cit" varStatus="status"
+          items="#{currentDocCollections}">
+
+          <span class="tag tagLink"> <nxu:graphicImage
+              value="#{nxd:iconPath(collection)}"
+              rendered="#{!empty nxd:iconPath(collection)}"
+              styleClass="smallIcon" /> <nxd:restDocumentLink
+              document="#{collection}" tab="#{widgetProperty_tab}"
+              subTab="#{widgetProperty_subTab}">
+              <h:outputText value=" #{nxd:titleOrId(collection)} " />
+            </nxd:restDocumentLink> <a4j:commandLink immediate="true"
+              rendered="#{collectionActions.canRemoveFromCollection(collection)}"
+              actionListener="#{collectionActions.removeCurrentDocumentFromCollection}"
+              render="documentViewPanel" bypassUpdates="true"
+              execute="@this">
+              <h:graphicImage value="/icons/action_tag_delete.png"
+                alt="#{messages['label.addToCollection.multiple.remove']}"
+                title="#{messages['label.addToCollection.multiple.remove']}" />
+              <f:param name="collectionId" value="#{collection.id}" />
+            </a4j:commandLink>
+          </span>
+
+        </c:forEach>
+      </nxu:set>
+      <div>
+        <a4j:commandLink value="#{messages['label.collection.seeAll']}"
+          action="#{currentDocumentCollection.setDisplayAll(true)}"
+          render="collections" bypassUpdates="true"
+          rendered="#{!currentDocumentCollection.displayAll}"
+          execute="@this" />
+      </div>
+    </a4j:outputPanel>
+
   </c:if>
-
-  <a4j:outputPanel id="collections">
-    <nxu:set var="currentDocCollections"
-      value="#{currentDocumentCollection.getCurrentDocumentCollections()}"
-      cache="true">
-      <c:forEach var="collection" id="cit" varStatus="status"
-        items="#{currentDocCollections}">
-
-        <span class="tag tagLink"> <nxu:graphicImage
-            value="#{nxd:iconPath(collection)}"
-            rendered="#{!empty nxd:iconPath(collection)}"
-            styleClass="smallIcon" /> <nxd:restDocumentLink
-            document="#{collection}" tab="#{widgetProperty_tab}"
-            subTab="#{widgetProperty_subTab}">
-            <h:outputText value=" #{nxd:titleOrId(collection)} " />
-          </nxd:restDocumentLink> <a4j:commandLink immediate="true"
-            rendered="#{collectionActions.canRemoveFromCollection(collection)}"
-            actionListener="#{collectionActions.removeCurrentDocumentFromCollection}"
-            render="documentViewPanel" bypassUpdates="true"
-            execute="@this">
-            <h:graphicImage value="/icons/action_tag_delete.png"
-              alt="#{messages['label.addToCollection.multiple.remove']}"
-              title="#{messages['label.addToCollection.multiple.remove']}" />
-            <f:param name="collectionId" value="#{collection.id}" />
-          </a4j:commandLink>
-        </span>
-
-      </c:forEach>
-    </nxu:set>
-    <div>
-      <a4j:commandLink value="#{messages['label.collection.seeAll']}"
-        action="#{currentDocumentCollection.setDisplayAll(true)}"
-        render="collections" bypassUpdates="true"
-        rendered="#{!currentDocumentCollection.displayAll}"
-        execute="@this" />
-    </div>
-  </a4j:outputPanel>
 
 </div>
