@@ -554,10 +554,16 @@
                   <widget>subTab</widget>
                 </row>
                 <row>
+                  <widget>target</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">localize</widget>
                 </row>
                 <row>
                   <widget>hideExternalLink</widget>
+                </row>
+                <row>
+                  <widget>hideDownloadLink</widget>
                 </row>
               </rows>
               <widget name="tab" type="text">
@@ -586,6 +592,19 @@
                 </helpLabels>
                 <fields>
                   <field>subTab</field>
+                </fields>
+              </widget>
+              <widget name="target" type="text">
+                <labels>
+                  <label mode="any">Target</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Available since 5.9.6. The target attribute of the link.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>target</field>
                 </fields>
               </widget>
               <widget name="localize" type="checkbox">
@@ -617,6 +636,20 @@
                 </helpLabels>
                 <fields>
                   <field>hideExternalLink</field>
+                </fields>
+              </widget>
+              <widget name="hideDownloadLink" type="checkbox">
+                <labels>
+                  <label mode="any">Hide Download Link</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Available since 5.9.6. Flag indicating that
+                    the download link must be hidden.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>hideDownloadLink</field>
                 </fields>
               </widget>
             </layout>

@@ -16,7 +16,8 @@
   <div class="popupTarget dropout" docRef="#{field_1}">
 
     <nxd:restDocumentLink document="#{field_0}"
-      tab="#{widgetProperty_tab}" subTab="#{widgetProperty_subTab}">
+      tab="#{widgetProperty_tab}" subTab="#{widgetProperty_subTab}"
+      target="#{widgetProperty_target}">
       <span id="title_#{field_1}" title="#{label}">
        <c:if test="#{widgetProperty_localize}">
         #{messages[nxd:titleOrId(field_0)]}
@@ -39,13 +40,15 @@
       </nxd:restDocumentLink>
     </c:if>
 
-    <nxh:outputLink
-      rendered="#{field_0.hasSchema(widget.properties.file_schema) and !empty field_3}"
-      value="#{nxd:fileUrl('downloadFile', field_0, widget.properties.file_property_name, field_4)}">
-      <nxh:graphicImage value="/icons/download.png" style="vertical-align:middle"
-        title="#{nxd:fileDescription(field_0, widget.properties.file_property_name, widget.properties.filename_property_name, field_4)}"
-        alt="#{nxd:fileDescription(field_0, widget.properties.file_property_name, widget.properties.filename_property_name, field_4)}" />
-    </nxh:outputLink>
+    <c:if test="#{!widgetProperty_hideDownloadLink}">
+      <nxh:outputLink
+        rendered="#{field_0.hasSchema(widget.properties.file_schema) and !empty field_3}"
+        value="#{nxd:fileUrl('downloadFile', field_0, widget.properties.file_property_name, field_4)}">
+        <nxh:graphicImage value="/icons/download.png" style="vertical-align:middle"
+          title="#{nxd:fileDescription(field_0, widget.properties.file_property_name, widget.properties.filename_property_name, field_4)}"
+          alt="#{nxd:fileDescription(field_0, widget.properties.file_property_name, widget.properties.filename_property_name, field_4)}" />
+      </nxh:outputLink>
+    </c:if>
 
   </div>
 
