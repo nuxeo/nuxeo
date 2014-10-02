@@ -3,4 +3,5 @@ Bundle-ManifestVersion: 1
 Bundle-Name: Audit ElasticSearch backend
 Bundle-SymbolicName: org.nuxeo.elasticsearch.audit;singleton:=true
 Bundle-Version: 1.0.0
-Nuxeo-Component: OSGI-INF/elasticsearch-audit-index-contrib.xml
+Nuxeo-Component: OSGI-INF/elasticsearch-audit-index-contrib.xml,
+ OSGI-INF/es-audit-pageprovider-contrib.xml

@@ -6,7 +6,20 @@
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
     point="elasticSearchIndex">
 
-    <elasticSearchIndex name="audit" type="entry" />
+    <elasticSearchIndex name="audit" type="entry" >    
+	   <mapping>
+		{
+	      "eventDate": {
+	         "format": "dateOptionalTime",
+	        "type": "date"
+	      },
+	      "logDate": {
+	         "format": "dateOptionalTime",
+	        "type": "date"
+	      }
+		}
+	  </mapping>
+    </elasticSearchIndex>
 
   </extension>
 

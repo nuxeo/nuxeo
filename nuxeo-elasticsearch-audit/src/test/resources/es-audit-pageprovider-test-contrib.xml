@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.elasticsearch.PageProviderservice.test.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <genericPageProvider name="SimpleESAuditPP"
+      class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
+       <pattern>
+			{   "filtered" : {
+			      "query" : {
+			        "bool" : {
+			          "must" : {
+			            "match" : {
+			              "docPath" : {
+			                "query" : "/dummy",
+			                "type" : "boolean"
+			              }
+			            }
+			          }
+			        }
+			      },
+			      "filter" : {
+			        "bool" : {
+			          "must" : {
+			            "term" : {
+			              "category" :  "category1"
+			            }
+			          }
+			        }
+			      }
+			    }
+			}
+      </pattern>
+      <sort ascending="true" column="id"/>
+      <pageSize>5</pageSize>    
+    </genericPageProvider>
+
+
+    <genericPageProvider name="SimpleESAuditPPWithParams"
+      class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
+       <pattern>
+			{   "filtered" : {
+			      "query" : {
+			        "bool" : {
+			          "must" : {
+			            "match" : {
+			              "docPath" : {
+			                "query" : "/withParams",
+			                "type" : "boolean"
+			              }
+			            }
+			          }
+			        }
+			      },
+			      "filter" : {
+			        "bool" : {
+			          "must" : [{
+			            "terms" : {
+			              "eventId" : [ "entry1", "entry2", "entry3"]
+			            }
+			          },
+			          {
+			            "term" : {
+			              "category" :  "?"
+			            }
+			          }]
+			        }
+			      }
+			    }
+			}
+      </pattern>
+      <sort ascending="false" column="id"/>
+      <pageSize>5</pageSize>    
+    </genericPageProvider>
+
+
+    <genericPageProvider name="SearchById"
+      class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
+       <pattern>
+            {
+	        "bool" : {
+	          "must" : {
+	            "match" : {
+	              "docUUID" : {
+	                "query" : "?",
+	                "type" : "boolean"
+	              }
+	            }
+	          }
+	        }
+			  }          
+      </pattern>
+      <sort ascending="true" column="id"/>
+      <pageSize>5</pageSize>    
+    </genericPageProvider>
+
+  </extension>
+
+</component>

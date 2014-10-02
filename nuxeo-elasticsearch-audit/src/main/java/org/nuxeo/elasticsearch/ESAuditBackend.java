@@ -21,6 +21,8 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +47,8 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -53,6 +57,8 @@ import org.nuxeo.ecm.platform.audit.api.query.DateRangeParser;
 import org.nuxeo.ecm.platform.audit.service.AbstractAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.BaseLogEntryProvider;
+import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
+import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.io.AuditEntryJSONReader;
 import org.nuxeo.elasticsearch.io.AuditEntryJSONWriter;
@@ -102,20 +108,22 @@ public class ESAuditBackend extends AbstractAuditBackend implements
 
         SearchRequestBuilder builder = getClient().prepareSearch(IDX_NAME).setTypes(
                 IDX_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
-        
-        if (filterMap==null || filterMap.size()==0) {
+
+        if (filterMap == null || filterMap.size() == 0) {
             builder.setQuery(QueryBuilders.matchQuery("docUUID", uuid));
         } else {
             BoolFilterBuilder filterBuilder = FilterBuilders.boolFilter();
             for (String key : filterMap.keySet()) {
                 FilterMapEntry entry = filterMap.get(key);
-                filterBuilder.must(FilterBuilders.termFilter(entry.getColumnName(),entry.getObject()));
-            }            
-            builder.setQuery( QueryBuilders.filteredQuery(QueryBuilders.matchQuery("docUUID", uuid), filterBuilder));
+                filterBuilder.must(FilterBuilders.termFilter(
+                        entry.getColumnName(), entry.getObject()));
+            }
+            builder.setQuery(QueryBuilders.filteredQuery(
+                    QueryBuilders.matchQuery("docUUID", uuid), filterBuilder));
         }
-                
+
         SearchResponse searchResponse = builder.setFrom(0).setSize(60).execute().actionGet();
-        
+
         List<LogEntry> entries = new ArrayList<>();
         for (SearchHit hit : searchResponse.getHits()) {
             try {
@@ -147,33 +155,55 @@ public class ESAuditBackend extends AbstractAuditBackend implements
         }
     }
 
-    @Override
-    public List<?> nativeQuery(String query, Map<String, Object> params,
-            int pageNb, int pageSize) {
-        
-        // do params replacement ?
-        if (params!=null && params.size()>0) {
+    public SearchRequestBuilder buildQuery(String query, Map<String, Object> params) {
+        if (params != null && params.size() > 0) {            
+            query = expandQueryVariables(query, params);
+        }
+
+        SearchRequestBuilder builder = getClient().prepareSearch(IDX_NAME).setTypes(
+                IDX_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+        builder.setQuery(query);
+
+        return builder;
+    }
+    
+    public String expandQueryVariables(String query, Object[] params) {        
+        Map<String, Object> qParams = new HashMap<String, Object>();
+        for (int i = 0; i < params.length; i++) {
+            query = query.replaceFirst("\\?", "\\${param" + i + "}");
+            qParams.put("param" + i, params[i]);
+        }
+        return expandQueryVariables(query, qParams);
+    }
+    
+    public String expandQueryVariables(String query, Map<String, Object> params) {
+        if (params != null && params.size() > 0) {
             TextTemplate tmpl = new TextTemplate();
             for (String key : params.keySet()) {
                 tmpl.setVariable(key, params.get(key).toString());
             }
             query = tmpl.process(query);
         }
+        
+        return query;
+    }
+    
+    
+    @Override
+    public List<?> nativeQuery(String query, Map<String, Object> params,
+            int pageNb, int pageSize) {
 
-        SearchRequestBuilder builder = getClient().prepareSearch(IDX_NAME).setTypes(
-                IDX_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
-        
-        builder.setQuery(query);
-        
-        if (pageNb>0) {
-            builder.setFrom(pageNb*pageSize);
+        SearchRequestBuilder builder = buildQuery(query, params);
+
+        if (pageNb > 0) {
+            builder.setFrom(pageNb * pageSize);
         }
-        
-        if (pageSize>0) {
+
+        if (pageSize > 0) {
             builder.setSize(pageSize);
         }
-                
-        SearchResponse searchResponse = builder.execute().actionGet();        
+        
+        SearchResponse searchResponse = builder.execute().actionGet();
         List<LogEntry> entries = new ArrayList<>();
         for (SearchHit hit : searchResponse.getHits()) {
             try {
@@ -188,72 +218,76 @@ public class ESAuditBackend extends AbstractAuditBackend implements
     @Override
     public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit,
             String[] categories, String path, int pageNb, int pageSize) {
-        
+
         SearchRequestBuilder builder = getClient().prepareSearch(IDX_NAME).setTypes(
                 IDX_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
-       
+
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         BoolFilterBuilder filterBuilder = FilterBuilders.boolFilter();
-        int nbClauses = 0; 
+        int nbClauses = 0;
         int nbFilters = 0;
-                
-        if (eventIds !=null && eventIds.length>0) {
-            if (eventIds.length==1) {
-                queryBuilder.must(QueryBuilders.matchQuery("eventId", eventIds[0]));
+
+        if (eventIds != null && eventIds.length > 0) {
+            if (eventIds.length == 1) {
+                queryBuilder.must(QueryBuilders.matchQuery("eventId",
+                        eventIds[0]));
                 nbClauses++;
             } else {
-                filterBuilder.must(FilterBuilders.termsFilter("eventId", eventIds));
+                filterBuilder.must(FilterBuilders.termsFilter("eventId",
+                        eventIds));
                 nbFilters++;
-            }            
-        }                
-        
-        if (categories !=null && categories.length>0) {
-            if (categories.length==1) {
-                queryBuilder.must(QueryBuilders.matchQuery("category", categories[0]));
+            }
+        }
+
+        if (categories != null && categories.length > 0) {
+            if (categories.length == 1) {
+                queryBuilder.must(QueryBuilders.matchQuery("category",
+                        categories[0]));
                 nbClauses++;
             } else {
-                filterBuilder.must(FilterBuilders.termsFilter("category", categories));
+                filterBuilder.must(FilterBuilders.termsFilter("category",
+                        categories));
                 nbFilters++;
-            }            
+            }
         }
 
-        if (path !=null ) {            
-           queryBuilder.must(QueryBuilders.matchQuery("docPath", path));
-           nbClauses++;
+        if (path != null) {
+            queryBuilder.must(QueryBuilders.matchQuery("docPath", path));
+            nbClauses++;
         }
 
-        if (limit !=null ) {                        
+        if (limit != null) {
             queryBuilder.must(QueryBuilders.rangeQuery("eventDate").lt(limit));
             nbClauses++;
-         }
-        
-        QueryBuilder targetBuilder = null;
-        FilterBuilder targetFilter = null;
-        
-        
-        if (nbClauses>0) {        
-            targetBuilder = queryBuilder;            
-        } else {
-            targetBuilder = QueryBuilders.matchAllQuery();            
         }
 
-        if (nbFilters>0) {
+        QueryBuilder targetBuilder = null;
+        FilterBuilder targetFilter = null;
+
+        if (nbClauses > 0) {
+            targetBuilder = queryBuilder;
+        } else {
+            targetBuilder = QueryBuilders.matchAllQuery();
+        }
+
+        if (nbFilters > 0) {
             targetFilter = filterBuilder;
         } else {
             targetFilter = FilterBuilders.matchAllFilter();
         }
-        
-        builder.setQuery(QueryBuilders.filteredQuery(targetBuilder, targetFilter));
-        
-        if (pageNb>0) {
-            builder.setFrom(pageNb*pageSize);
+
+        builder.setQuery(QueryBuilders.filteredQuery(targetBuilder,
+                targetFilter));
+
+        if (pageNb > 0) {
+            builder.setFrom(pageNb * pageSize);
         }
-        
-        if (pageSize>0) {
+
+        if (pageSize > 0) {
             builder.setSize(pageSize);
         }
-        
-        SearchResponse searchResponse = builder.execute().actionGet();        
+
+        SearchResponse searchResponse = builder.execute().actionGet();
         List<LogEntry> entries = new ArrayList<>();
         for (SearchHit hit : searchResponse.getHits()) {
             try {
@@ -265,15 +299,15 @@ public class ESAuditBackend extends AbstractAuditBackend implements
         return entries;
     }
 
-    
     @Override
     public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,
             String[] categories, String path, int pageNb, int pageSize) {
 
         Date limit = null;
-        if  (dateRange!=null) {
+        if (dateRange != null) {
             try {
-                limit = DateRangeParser.parseDateRangeQuery(new Date(), dateRange);
+                limit = DateRangeParser.parseDateRangeQuery(new Date(),
+                        dateRange);
             } catch (AuditQueryException aqe) {
                 throw new AuditRuntimeException(
                         "Wrong date range query. Query was " + dateRange, aqe);
@@ -282,7 +316,6 @@ public class ESAuditBackend extends AbstractAuditBackend implements
         return queryLogsByPage(eventIds, limit, categories, path, pageNb,
                 pageSize);
     }
-
 
     @Override
     public void addLogEntries(List<LogEntry> entries) {
@@ -322,8 +355,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements
     @Override
     public Long getEventsCount(String eventId) {
         CountResponse res = getClient().prepareCount(IDX_NAME).setTypes(
-                IDX_TYPE).setQuery(QueryBuilders.matchQuery("eventId", eventId)).execute().actionGet();        
-        return res.getCount();        
+                IDX_TYPE).setQuery(QueryBuilders.matchQuery("eventId", eventId)).execute().actionGet();
+        return res.getCount();
     }
 
     protected BaseLogEntryProvider getProvider() {
@@ -354,4 +387,128 @@ public class ESAuditBackend extends AbstractAuditBackend implements
         return syncLogCreationEntries(getProvider(), repoId, path, recurs);
     }
 
+    protected FilterBuilder buildFilter(PredicateDefinition[] predicates,
+            DocumentModel searchDocumentModel) {        
+        
+        BoolFilterBuilder filterBuilder = FilterBuilders.boolFilter();
+
+        int nbFilters = 0;
+        
+        for (PredicateDefinition predicate : predicates) {
+
+            // extract data from DocumentModel
+            Object[] val;
+            try {
+                PredicateFieldDefinition[] fieldDef = predicate.getValues();
+                val = new Object[fieldDef.length];
+
+                for (int fidx = 0; fidx < fieldDef.length; fidx++) {
+                    if (fieldDef[fidx].getXpath() != null) {
+                        val[fidx] = searchDocumentModel.getPropertyValue(fieldDef[fidx].getXpath());
+                    } else {
+                        val[fidx] = searchDocumentModel.getProperty(
+                                fieldDef[fidx].getSchema(),
+                                fieldDef[fidx].getName());
+                    }
+                }
+            } catch (Exception e) {
+                throw new ClientRuntimeException(e);
+            }
+
+            if (!isNonNullParam(val)) {
+                // skip predicate where all values are null
+                continue;
+            }
+
+            nbFilters++;
+            
+            String op = predicate.getOperator();
+            if (op.equalsIgnoreCase("IN")) {
+
+                String[] values = null;
+                if (val[0] instanceof Iterable<?>) {
+                    List<String> l = new ArrayList<>();
+                    Iterable<?> vals = (Iterable<?>) val[0];
+                    Iterator<?> valueIterator = vals.iterator();
+
+                    while (valueIterator.hasNext()) {
+
+                        Object v = valueIterator.next();
+                        if (v != null) {
+                            l.add(v.toString());
+                        }
+                    }
+                    values = l.toArray(new String[l.size()]);
+                } else if (val[0] instanceof Object[]) {
+                    values = (String[]) val[0];
+                }
+                filterBuilder.must(FilterBuilders.termsFilter(
+                        predicate.getParameter(), values));
+            } else if (op.equalsIgnoreCase("BETWEEN")) {
+                filterBuilder.must(FilterBuilders.rangeFilter(
+                        predicate.getParameter()).gt(val[0]));
+                if (val.length > 1) {
+                    filterBuilder.must(FilterBuilders.rangeFilter(
+                            predicate.getParameter()).lt(val[1]));
+                }
+            } else if (">".equals(op)) {
+                filterBuilder.must(FilterBuilders.rangeFilter(
+                        predicate.getParameter()).gt(val[0]));                
+            } else if (">=".equals(op)) {
+                filterBuilder.must(FilterBuilders.rangeFilter(
+                        predicate.getParameter()).gte(val[0]));                
+            } else if ("<".equals(op)) {
+                filterBuilder.must(FilterBuilders.rangeFilter(
+                        predicate.getParameter()).lt(val[0]));                
+            } else if ("<=".equals(op)) {
+                filterBuilder.must(FilterBuilders.rangeFilter(
+                        predicate.getParameter()).lte(val[0]));                
+            } else {
+                filterBuilder.must(FilterBuilders.termFilter(
+                        predicate.getParameter(), val[0]));
+            }
+        }
+
+        if (nbFilters==0) {
+            return FilterBuilders.matchAllFilter();
+        }
+        return filterBuilder;
+    }
+
+    public SearchRequestBuilder buildSearchQuery(String fixedPart,
+            PredicateDefinition[] predicates,
+            DocumentModel searchDocumentModel) {
+
+        SearchRequestBuilder builder = getClient().prepareSearch(IDX_NAME).setTypes(
+                IDX_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+
+        QueryBuilder queryBuilder = QueryBuilders.wrapperQuery(fixedPart);
+        FilterBuilder filterBuilder = buildFilter(predicates,
+                searchDocumentModel);
+        builder.setQuery(QueryBuilders.filteredQuery(queryBuilder,
+                filterBuilder));
+        return builder;
+    }
+
+    protected boolean isNonNullParam(Object[] val) {
+        if (val == null) {
+            return false;
+        }
+        for (Object v : val) {
+            if (v != null) {
+                if (v instanceof String) {
+                    if (!((String) v).isEmpty()) {
+                        return true;
+                    }
+                } else if (v instanceof String[]) {
+                    if (((String[]) v).length > 0) {
+                        return true;
+                    }
+                } else {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

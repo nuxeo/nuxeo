@@ -17,10 +17,6 @@
  */
 package org.nuxeo.elasticsearch;
 
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -33,8 +29,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -49,7 +43,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
@@ -80,6 +73,7 @@ public class TestAuditWithElasticSearch {
         Assert.assertTrue(backend instanceof ESAuditBackend);
     }
 
+    /*
     protected void flushAndSync() throws Exception {
 
         TransactionHelper.commitOrRollbackTransaction();
@@ -92,7 +86,7 @@ public class TestAuditWithElasticSearch {
 
         TransactionHelper.startTransaction();
 
-    }
+    }*/
 
     @Test
     public void shouldLogInAudit() throws Exception {
@@ -101,19 +95,18 @@ public class TestAuditWithElasticSearch {
         doc.setPropertyValue("dc:title", "A File");
         doc = session.createDocument(doc);
 
-        flushAndSync();
+        LogEntryGen.flushAndSync();
 
         doc.setPropertyValue("dc:title", "A modified File");
         doc = session.saveDocument(doc);
 
-        flushAndSync();
+        LogEntryGen.flushAndSync();
 
         // test audit trail
         AuditReader reader = Framework.getLocalService(AuditReader.class);
         List<LogEntry> trail = reader.getLogEntriesFor(doc.getId());
 
-        assertThat(trail, notNullValue());
-
+        Assert.assertNotNull(trail);
         Assert.assertEquals(2, trail.size());
 
         Long startId = trail.get(0).getId();
@@ -156,17 +149,8 @@ public class TestAuditWithElasticSearch {
 
     @Test
     public void shouldSupportMultiCriteriaQueries() throws Exception {
-
-        List<LogEntry> entries = new ArrayList<>();
-
-        AuditLogger logger = Framework.getLocalService(AuditLogger.class);
-        Assert.assertNotNull(logger);
-
-        for (int i = 0; i < 9; i++) {
-            entries.add(doCreateEntry("mydoc", "evt" + i, "cat" + i % 2));
-        }
-        logger.addLogEntries(entries);
-        flushAndSync();
+        
+        LogEntryGen.generate("mydoc", "evt", "cat", 9);;
 
         AuditReader reader = Framework.getLocalService(AuditReader.class);
 
@@ -209,16 +193,7 @@ public class TestAuditWithElasticSearch {
     @Test
     public void shouldSupportNativeQueries() throws Exception {
 
-        List<LogEntry> entries = new ArrayList<>();
-
-        AuditLogger logger = Framework.getLocalService(AuditLogger.class);
-        Assert.assertNotNull(logger);
-
-        for (int i = 0; i < 9; i++) {
-            entries.add(doCreateEntry("dummy", "entry" + i, "category" + i % 2));
-        }
-        logger.addLogEntries(entries);
-        flushAndSync();
+        LogEntryGen.generate("dummy", "entry", "category", 9);
 
         AuditReader reader = Framework.getLocalService(AuditReader.class);
 
