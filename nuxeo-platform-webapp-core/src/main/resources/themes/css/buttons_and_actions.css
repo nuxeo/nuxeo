@@ -17,7 +17,11 @@ input::-moz-focus-inner {
 .button,
 a.button,
 input.button,
-.action_bar a {
+.action_bar a,
+button,
+input[type="reset"],
+input[type="submit"],
+input[type="button"] {
   background: none "button (__FLAVOR__ background)";
   border-radius: 2px;
   border: 1px solid;
@@ -28,8 +32,8 @@ input.button,
   font-size: .95em;
   font-weight: bold;
   line-height: 1.3em;
-  margin: 0 .9em .9em 0;
-  padding: .4em .8em;
+  margin: 0 .5em .5em 0;
+  padding: .4em .9em;
   text-decoration: none;
   white-space: nowrap }
 
@@ -39,14 +43,22 @@ a.button {
 .button:hover,
 a.button:hover,
 input.button:hover,
-.action_bar a:hover {
+.action_bar a:hover,
+button:hover,
+input[type="reset"]:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover {
   border-color: "button.hover (__FLAVOR__ border)";
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: all 150ms ease-in-out 0s }
 
-.button:focus {
+.button:focus,
+button:focus,
+input[type="reset"]:focus,
+input[type="submit"]:focus,
+input[type="button"]:focus {
   border-color: #2e9cff;
-  box-shadow: 0 0 3px #b5dcff, 0 -2px 0 #ddd inset;
+  box-shadow: 0 0 3px #b5dcff;
   outline: none }
 
 button.disabled,
@@ -56,7 +68,15 @@ input.disabled:hover,
 .button[disabled],
 .button[disabled]:hover,
 .button[disabled=disabled],
-.button[disabled=disabled]:hover {
+.button[disabled=disabled]:hover,
+button:disabled,
+button:disabled:hover,
+input[type="reset"]:disabled,
+input[type="reset"]:disabled:hover,
+input[type="submit"]:disabled,
+input[type="submit"]:disabled:hover,
+input[type="button"]:disabled,
+input[type="button"]:disabled:hover {
   background: none "button.disabled (__FLAVOR__ background)";
   border: 1px solid;
   box-shadow: none;
@@ -250,6 +270,9 @@ input.tinyButton {
 .globalActions .horizontalAction:first-child {
   border-left: 1px solid "neutral.light (__FLAVOR__ border)";
   border-radius: 2px 0 0 2px; }
+
+.globalActions .actionList:only-of-type .button {
+  border: 1px solid "neutral.light (__FLAVOR__ border)"}
 
 /* =Kept for social collab custom actions */
 .headerTitleAndTools h1 {
