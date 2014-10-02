@@ -13,12 +13,14 @@
 
 package org.nuxeo.ecm.core.convert.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 
-import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -30,23 +32,19 @@ import org.nuxeo.ecm.core.convert.cache.ConversionCacheHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-public class TestCache extends NXRuntimeTestCase {
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core.convert.api");
-        deployBundle("org.nuxeo.ecm.core.convert");
-        deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/convert-service-config-enabled.xml");
-    }
+@RunWith(FeaturesRunner.class)
+@Features(ConvertFeature.class)
+@LocalDeploy({
+        "org.nuxeo.ecm.core.convert:OSGI-INF/convert-service-config-enabled.xml",
+        "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib3.xml" })
+public class TestCache {
 
     @Test
     public void testCache() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib3.xml");
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
         Converter cv = ConversionServiceImpl.getConverter("identity");
@@ -74,7 +72,7 @@ public class TestCache extends NXRuntimeTestCase {
         // check new cache entry was created
         assertEquals(1, cacheSize2 - cacheSize1);
 
-        BlobHolder result2 = cs.convert("identity", bh, null);
+        cs.convert("identity", bh, null);
 
         // check NO new cache entry was created
         cacheSize2 = ConversionCacheHolder.getNbCacheEntries();

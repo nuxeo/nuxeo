@@ -17,8 +17,6 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -40,8 +38,6 @@ public class GlobalConfigDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(GlobalConfigDescriptor.class);
-
     @XNode("gcInterval")
     protected long GCInterval;
 
@@ -59,6 +55,10 @@ public class GlobalConfigDescriptor implements Serializable {
             return DEFAULT_GC_INTERVAL_IN_MIN;
         }
         return GCInterval;
+    }
+
+    public void setGCInterval(long interval) {
+        GCInterval = interval;
     }
 
     public int getDiskCacheSize() {
@@ -92,12 +92,14 @@ public class GlobalConfigDescriptor implements Serializable {
     }
 
     protected File defaultCachingDirectory() {
-        File data = new File(Environment.getDefault().getData(), CACHING_DIRECTORY);
+        File data = new File(Environment.getDefault().getData(),
+                CACHING_DIRECTORY);
         if (data.exists()) {
             try {
                 FileUtils.deleteDirectory(data);
             } catch (IOException cause) {
-                throw new RuntimeException("Cannot create cache dir " + data, cause);
+                throw new RuntimeException("Cannot create cache dir " + data,
+                        cause);
             }
         }
         data.mkdirs();

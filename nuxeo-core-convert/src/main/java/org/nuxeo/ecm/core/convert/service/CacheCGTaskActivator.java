@@ -53,7 +53,6 @@ public class CacheCGTaskActivator implements BundleActivator, FrameworkListener 
             if (interval <= 0) {
                 interval = defaultGCIntervalInMins;
             }
-            GCTask.setGCIntervalInMinutes(interval);
             startGC();
         }
     }

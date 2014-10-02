@@ -19,8 +19,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -29,35 +29,23 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.cache.ConversionCacheGCManager;
 import org.nuxeo.ecm.core.convert.cache.ConversionCacheHolder;
-import org.nuxeo.ecm.core.convert.cache.GCTask;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-public class TestCGCache extends NXRuntimeTestCase {
+import com.google.inject.Inject;
 
+@RunWith(FeaturesRunner.class)
+@Features(ConvertFeature.class)
+@LocalDeploy({
+        "org.nuxeo.ecm.core.convert:OSGI-INF/convert-service-config-enabled-gc.xml",
+        "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib3.xml" })
+public class TestCGCache {
+
+    @Inject
     ConversionService cs;
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core.convert.api");
-        deployBundle("org.nuxeo.ecm.core.convert");
-        deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/convert-service-config-enabled-gc.xml");
-        cs = Framework.getLocalService(ConversionService.class);
-
-        //  fire the frameworkStarted event and make sure that the GC thread is started
-        fireFrameworkStarted();
-
-        // do testing configuration
-        // cachesize = -1 (actually 0)
-        // GC interval negative => interpreted as seconds
-        ConversionServiceImpl.setMaxCacheSizeInKB(-1);
-        GCTask.setGCIntervalInMinutes(-1000);
-    }
 
     @Test
     public void testCGTask() throws Exception {
@@ -77,21 +65,21 @@ public class TestCGCache extends NXRuntimeTestCase {
         // wait for the GCThread to run
         int retryCount = 0;
         int noRuns = ConversionCacheGCManager.getGCRuns();
-        while ( ConversionCacheGCManager.getGCRuns() == noRuns && retryCount++ < 5) {
+        while (ConversionCacheGCManager.getGCRuns() == noRuns
+                && retryCount++ < 5) {
             Thread.sleep(1100);
         }
         assertTrue(ConversionCacheGCManager.getGCRuns() > 0);
 
         int cacheSize3 = ConversionCacheHolder.getNbCacheEntries();
-        assertEquals(0, cacheSize3-cacheSize1);
+        assertEquals(0, cacheSize3 - cacheSize1);
     }
 
-    private Converter deployConverter() throws Exception{
-        deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib3.xml");
+    private Converter deployConverter() throws Exception {
         return ConversionServiceImpl.getConverter("identity");
     }
 
-    private static BlobHolder getBlobHolder(){
+    private static BlobHolder getBlobHolder() {
         File file = FileUtils.getResourceFileFromContext("test-data/hello.doc");
         assertNotNull(file);
         assertTrue(file.length() > 0);

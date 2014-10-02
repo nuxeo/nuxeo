@@ -14,19 +14,26 @@
 
 package org.nuxeo.ecm.core.convert.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.cache.CachableBlobHolder;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
+@RunWith(FeaturesRunner.class)
+@Features(ConvertFeature.class)
 public class TestBlobHolderPersistence {
 
     @Test
@@ -63,7 +70,8 @@ public class TestBlobHolderPersistence {
             if (file.getName().startsWith("index.html")) {
                 mainFileFound = true;
             } else {
-                assertTrue(new FileBlob(file).getString().startsWith("FileContent_"));
+                assertTrue(new FileBlob(file).getString().startsWith(
+                        "FileContent_"));
             }
 
         }

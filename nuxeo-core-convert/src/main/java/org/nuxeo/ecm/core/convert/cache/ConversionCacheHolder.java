@@ -21,10 +21,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.nuxeo.common.utils.Base64;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
@@ -64,7 +63,7 @@ public class ConversionCacheHolder {
     protected static List<String> getSubPathFromKey(String key) {
         List<String> subPath = new ArrayList<>();
 
-        String path = Base64.encodeBytes(key.getBytes());
+        String path = Base64.encodeBase64String(key.getBytes());
 
         path = path.replace("+", "X");
         path = path.replace("/", "Y");

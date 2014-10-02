@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -48,22 +47,25 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class ConversionServiceImpl extends DefaultComponent implements
         ConversionService {
 
-    private static final Log log = LogFactory.getLog(ConversionServiceImpl.class);
+    protected static final Log log = LogFactory.getLog(ConversionServiceImpl.class);
 
     public static final String CONVERTER_EP = "converter";
 
     public static final String CONFIG_EP = "configuration";
 
-    protected static final Map<String, ConverterDescriptor> converterDescriptors = new HashMap<>();
+    protected final Map<String, ConverterDescriptor> converterDescriptors = new HashMap<>();
 
-    protected static final MimeTypeTranslationHelper translationHelper = new MimeTypeTranslationHelper();
+    protected final MimeTypeTranslationHelper translationHelper = new MimeTypeTranslationHelper();
 
-    protected static final GlobalConfigDescriptor config = new GlobalConfigDescriptor();
+    protected final GlobalConfigDescriptor config = new GlobalConfigDescriptor();
+
+    protected static ConversionServiceImpl self;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
         converterDescriptors.clear();
         translationHelper.clear();
+        self = this;
     }
 
     @Override
@@ -71,6 +73,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
         if (config.isCacheEnabled()) {
             ConversionCacheHolder.deleteCache();
         }
+        self = null;
         converterDescriptors.clear();
         translationHelper.clear();
     }
@@ -104,7 +107,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
     /* Component API */
 
     public static Converter getConverter(String converterName) {
-        ConverterDescriptor desc = converterDescriptors.get(converterName);
+        ConverterDescriptor desc = self.converterDescriptors.get(converterName);
         if (desc == null) {
             return null;
         }
@@ -113,18 +116,22 @@ public class ConversionServiceImpl extends DefaultComponent implements
 
     public static ConverterDescriptor getConverterDescriptor(
             String converterName) {
-        return converterDescriptors.get(converterName);
+        return self.converterDescriptors.get(converterName);
     }
 
     public static long getGCIntervalInMinutes() {
-        return config.getGCInterval();
+        return self.config.getGCInterval();
+    }
+
+    public static void setGCIntervalInMinutes(long interval) {
+        self.config.setGCInterval(interval);
     }
 
     public static void registerConverter(ConverterDescriptor desc) {
 
-        if (converterDescriptors.containsKey(desc.getConverterName())) {
+        if (self.converterDescriptors.containsKey(desc.getConverterName())) {
 
-            ConverterDescriptor existing = converterDescriptors.get(desc.getConverterName());
+            ConverterDescriptor existing = self.converterDescriptors.get(desc.getConverterName());
             desc = existing.merge(desc);
         }
         try {
@@ -133,24 +140,24 @@ public class ConversionServiceImpl extends DefaultComponent implements
             log.error("Unable to init converter " + desc.getConverterName(), e);
             return;
         }
-        translationHelper.addConverter(desc);
-        converterDescriptors.put(desc.getConverterName(), desc);
+        self.translationHelper.addConverter(desc);
+        self.converterDescriptors.put(desc.getConverterName(), desc);
     }
 
     public static int getMaxCacheSizeInKB() {
-        return config.getDiskCacheSize();
+        return self.config.getDiskCacheSize();
     }
 
     public static void setMaxCacheSizeInKB(int size) {
-        config.setDiskCacheSize(size);
+        self.config.setDiskCacheSize(size);
     }
 
     public static boolean isCacheEnabled() {
-        return config.isCacheEnabled();
+        return self.config.isCacheEnabled();
     }
 
     public static String getCacheBasePath() {
-        return config.getCachingDirectory();
+        return self.config.getCachingDirectory();
     }
 
     /* Service API */
