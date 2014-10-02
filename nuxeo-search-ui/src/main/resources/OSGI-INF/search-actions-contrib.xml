@@ -39,6 +39,7 @@
         <property name="ajaxReRender">
           searchPanelLeft searchPanelRight
         </property>
+        <property name="styleClass">primary</property>
       </properties>
     </action>
 

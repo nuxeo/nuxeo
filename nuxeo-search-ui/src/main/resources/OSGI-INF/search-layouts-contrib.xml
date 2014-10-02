@@ -91,6 +91,7 @@
       <properties widgetMode="any">
         <property name="category">SEARCH_FILTER_ACTIONS</property>
         <property name="actionsDisplay">buttons</property>
+        <property name="actionStyleClass">button</property>
         <property name="overallDisplay">horizontal_block</property>
         <property name="hideSubLabels">true</property>
         <property name="styleClass">searchFilterActions</property>
