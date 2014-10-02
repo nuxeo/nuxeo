@@ -38,7 +38,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -69,7 +68,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.internal.WrapsElement;
@@ -113,13 +111,6 @@ public abstract class AbstractTest {
      * @since 5.9.2
      */
     public static final int PAGE_LOAD_TIME_OUT_SECONDS = 60;
-
-    /**
-     * Helper to set FF binary path when running tests in eclipse
-     *
-     * @since 5.9.6
-     */
-    public static final String FIREFOX_DRIVER_PATH = "";
 
     /**
      * @since 5.7
@@ -221,11 +212,6 @@ public abstract class AbstractTest {
     }
 
     protected static void initFirefoxDriver() throws Exception {
-        FirefoxBinary binary = null;
-        if (!StringUtils.isEmpty(FIREFOX_DRIVER_PATH)) {
-            binary = new FirefoxBinary(new File(FIREFOX_DRIVER_PATH));
-        }
-
         DesiredCapabilities dc = DesiredCapabilities.firefox();
         FirefoxProfile profile = new FirefoxProfile();
         // Disable native events (makes things break on Windows)
@@ -324,11 +310,7 @@ public abstract class AbstractTest {
             profile.setProxyPreferences(proxy);
         }
         dc.setCapability(FirefoxDriver.PROFILE, profile);
-        if (binary == null) {
-            driver = new FirefoxDriver(dc);
-        } else {
-            driver = new FirefoxDriver(binary, profile, dc);
-        }
+        driver = new FirefoxDriver(dc);
     }
 
     @SuppressWarnings("deprecation")
