@@ -1958,38 +1958,138 @@
       </property>
     </widgetType>
 
-    <widgetType name="title">
+    <widgetType name="title_link">
       <configuration>
         <sinceVersion>5.9.6</sinceVersion>
-        <title>Title</title>
+        <title>Title with link</title>
         <description>
-          This widgets displays the document title. If the
-          document is a version, the major and minor are displayed in
-          parenthesis.
-
-          One field is required:
-          <ul>
-            <li>an empty field to map the document</li>
-          </ul>
+          <p>
+            This widget type displays a link to navigate to a document, as well
+            as a download link for the document binary content.
+          </p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps the document model, it will be used to
+                display the document link and its title
+              </li>
+              <li>
+                second field maps the unique id to be used for contextual menu
+                (e.g. the document model id)
+              </li>
+              <li>
+                third field maps the displayed link title (can be the document
+                model description)
+              </li>
+              <li>
+                fourth field maps the document model file to be used for
+                download link
+              </li>
+              <li>
+                fifth field maps the file name to be used for download link
+                (can be the document model file name property value)
+              </li>
+            </ul>
+          </p>
+          <p>
+            It also requires the following properties configuration:
+            <ul>
+              <li>
+                file_schema: the file schema name, used to check whether
+                download link should be displayed (e.g: file)
+              </li>
+              <li>
+                file_property_name: the file property name (e.g file:content)
+              </li>
+            </ul>
+          </p>
         </description>
+        <demo id="title_linkWidget" />
+        <confProperties>
+          <property name="sortPropertyName">dc:title</property>
+        </confProperties>
         <fields>
           <list>false</list>
           <complex>false</complex>
           <defaultConfiguration>
             <field></field>
+            <field>ref</field>
+            <field>dc.description</field>
+            <field>file.content</field>
+            <field>file.content.filename</field>
           </defaultConfiguration>
         </fields>
         <categories>
           <category>standalone</category>
         </categories>
         <properties>
+          <defaultValues mode="any">
+            <property name="hideExternalLink">true</property>
+          </defaultValues>
           <layouts mode="any">
-            <layout name="title_widget_type_properties_any">
+            <layout name="title_link_widget_type_properties_any">
               <rows>
+                <row>
+                  <widget>tab</widget>
+                </row>
+                <row>
+                  <widget>subTab</widget>
+                </row>
+                <row>
+                  <widget>target</widget>
+                </row>
                 <row>
                   <widget category="widgetTypeConf">localize</widget>
                 </row>
+                <row>
+                  <widget>hideExternalLink</widget>
+                </row>
+                <row>
+                  <widget>hideDownloadLink</widget>
+                </row>
               </rows>
+              <widget name="tab" type="text">
+                <labels>
+                  <label mode="any">Tab</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The tab to select when clicking on the
+                    document link.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>tab</field>
+                </fields>
+              </widget>
+              <widget name="subTab" type="text">
+                <labels>
+                  <label mode="any">Sub Tab</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The sub tab to select when clicking on the
+                    document link.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>subTab</field>
+                </fields>
+              </widget>
+              <widget name="target" type="text">
+                <labels>
+                  <label mode="any">Target</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The target attribute of the link.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>target</field>
+                </fields>
+              </widget>
               <widget name="localize" type="checkbox">
                 <categories>
                   <category>widgetTypeConf</category>
@@ -1999,12 +2099,38 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Available since 5.7.1. Flag indicating that
-                    the title is localized.
+                    Flag indicating that the title is localized.
                   </label>
                 </helpLabels>
                 <fields>
                   <field>localize</field>
+                </fields>
+              </widget>
+              <widget name="hideExternalLink" type="checkbox">
+                <labels>
+                  <label mode="any">Hide External Link</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Flag indicating that the external link, opening the document
+                    in a new conversation, must be hidden.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>hideExternalLink</field>
+                </fields>
+              </widget>
+              <widget name="hideDownloadLink" type="checkbox">
+                <labels>
+                  <label mode="any">Hide Download Link</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Flag indicating that the download link must be hidden.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>hideDownloadLink</field>
                 </fields>
               </widget>
             </layout>
@@ -2015,8 +2141,9 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/title_widget.xhtml
+        /widgets/listing/listing_title_link_widget_template.xhtml
       </property>
+
     </widgetType>
 
     <widgetType name="title_and_permlink">
