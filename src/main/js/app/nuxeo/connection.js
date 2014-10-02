@@ -20,25 +20,47 @@
  */
 class Connection extends nuxeo.Client {
 
-  constructor(baseURL = 'http://localhost:8080/nuxeo', username = 'Administrator', password = 'Administrator') {
-    this.baseURL = baseURL;
-    this.username = username;
-    this.password = password;
+  constructor(baseURL = '/nuxeo', username = null, password = null) {
     super({
-        baseURL: this.baseURL,
-        username: this.username,
-        password: this.password,
+        baseURL,
+        username,
+        password,
         timeout: 300000
     });
   }
 
+  get baseURL() { return this._baseURL; }
+
   connect() {
     return new Promise((resolve, reject) => {
-      super.connect((error, client) => {
-        if (error) {
-          reject(Error(error));
+      var headers = {
+        'Accept': 'application/json'
+      };
+
+      var xhrFields = {};
+      if (this._username && this._password) {
+        headers['Authorization'] = 'Basic ' + btoa(this._username + ':' + this._password);
+        xhrFields = {
+          withCredentials: true
+        };
+      }
+
+      $.ajax({
+        type: 'POST',
+        url: `${this._automationURL}/login`,
+        headers,
+        xhrFields
+      })
+      .done((data, textStatus, jqXHR) => {
+        if (data['entity-type'] === 'login') {
+          this.connected = true;
+          resolve(this);
+        } else {
+          reject(Error(data));
         }
-        resolve(this);
+      })
+      .fail(function(jqXHR, textStatus, errorThrown) {
+         reject(Error(errorThrown));
       });
     });
   }

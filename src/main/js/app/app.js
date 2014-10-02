@@ -20,7 +20,7 @@ import {DataGrid} from './ui/dataGrid';
 var {layout, query, columns} = parseParams();
 
 function run() {
-  var nx = new Connection('/nuxeo');
+  var nx = new Connection();
   nx.schemas(['*']);
 
   $(() => nx.connect().then(() => {
