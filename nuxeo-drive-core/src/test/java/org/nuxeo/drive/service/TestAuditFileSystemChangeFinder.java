@@ -43,9 +43,7 @@ import org.nuxeo.drive.service.impl.RootDefinitionsHelper;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -433,23 +431,6 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals(1, versions.size());
             DocumentModel version = versions.get(0);
             session.restoreToVersion(docToVersion.getRef(), version.getRef());
-
-            {
-                commitAndWaitForAsyncCompletion();
-                session.removeChildren(new PathRef("/"));
-                session.save();
-                commitAndWaitForAsyncCompletion();
-                final DocumentModelList query = session.query("SELECT * FROM Document");
-                if (! query.isEmpty()) {
-                    log.error("Fail to cleanupSession, repository will not be empty for the next test.");
-                    for (DocumentModel each:query) {
-                        log.trace("leaking " + each + " of type " + each.getType());
-                    }
-                }
-                if (true) {
-                    return;
-                }
-            }
         } finally {
             commitAndWaitForAsyncCompletion();
         }
