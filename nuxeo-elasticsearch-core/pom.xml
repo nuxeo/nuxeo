@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.elasticsearch</groupId>
     <artifactId>nuxeo-elasticsearch-parent</artifactId>
-    <version>5.8.0-HF22</version>
+    <version>5.8.0-HF23-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-elasticsearch-core</artifactId>
