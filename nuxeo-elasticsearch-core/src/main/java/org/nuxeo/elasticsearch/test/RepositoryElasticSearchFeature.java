@@ -4,7 +4,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
  *
  */
 @Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.automation.io",
+        "org.nuxeo.ecm.webengine.core","org.nuxeo.ecm.platform.web.common",
         "org.nuxeo.elasticsearch.core", "org.nuxeo.ecm.platform.query.api" })
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
@@ -44,7 +45,7 @@ public class RepositoryElasticSearchFeature extends SimpleFeature {
     public void initialize(FeaturesRunner runner) throws Exception {
         super.initialize(runner);
         // Uncomment to use Derby when h2 lucene lib is not aligned with ES
-         DatabaseHelper.setDatabaseForTests(DatabaseDerby.class.getCanonicalName());
+        DatabaseHelper.setDatabaseForTests(DatabaseDerby.class.getCanonicalName());
     }
 
 }

@@ -4,7 +4,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,11 +27,11 @@ import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse;
 import org.elasticsearch.action.admin.cluster.node.stats.NodesStatsResponse;
-import org.elasticsearch.action.admin.cluster.tasks.PendingClusterTasksResponse;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
@@ -72,6 +72,8 @@ public class ElasticSearchManager {
 
     protected Timer indexTimer;
 
+    private String rootId;
+
     public String getNodesInfo() {
         NodesInfoResponse nodesInfo = esa.getClient().admin().cluster()
                 .prepareNodesInfo().execute().actionGet();
@@ -94,6 +96,17 @@ public class ElasticSearchManager {
         log.warn("Start re-indexing repository");
         IndexingCommand cmd = new IndexingCommand(
                 documentManager.getRootDocument(), false, true);
+        esi.scheduleIndexing(cmd);
+    }
+
+    public void startReindexFrom() throws Exception {
+        if (rootId == null) {
+            startReindex();
+            return;
+        }
+        log.warn(String.format("Start re-indexing from %s repository", rootId));
+        IndexingCommand cmd = new IndexingCommand(
+                documentManager.getDocument(new IdRef(rootId)), false, true);
         esi.scheduleIndexing(cmd);
     }
 
@@ -181,5 +194,13 @@ public class ElasticSearchManager {
         return String.format("%.2f, %.2f, %.2f", indexTimer.getOneMinuteRate(),
                 indexTimer.getFiveMinuteRate(),
                 indexTimer.getFifteenMinuteRate());
+    }
+
+    public String getRootId() {
+        return rootId;
+    }
+
+    public void setRootId(String rootId) {
+        this.rootId = rootId;
     }
 }

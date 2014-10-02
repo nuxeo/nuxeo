@@ -4,7 +4,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,6 +30,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class ElasticSearchRemoteConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    @XNode("@enabled")
+    protected boolean isEnabled = true;
 
     @XNode("@clusterName")
     protected String clusterName;
@@ -92,5 +95,23 @@ public class ElasticSearchRemoteConfig implements Serializable {
 
     public String getNumberOfReplicas() {
         return numberOfReplicas;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
+    }
+
+    @Override
+    public String toString() {
+        if (isEnabled()) {
+            return String.format("EsRemoteConfig(%s, [%s], %s, %s)",
+                    getClusterName(), addressList, getNumberOfReplicas(),
+                    getNumberOfShards());
+        }
+        return "EsRemoteConfig disabled";
     }
 }

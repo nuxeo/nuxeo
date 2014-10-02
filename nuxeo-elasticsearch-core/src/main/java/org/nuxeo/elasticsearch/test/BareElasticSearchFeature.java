@@ -4,7 +4,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -52,12 +52,9 @@ public class BareElasticSearchFeature extends SimpleFeature {
 
         File home = Framework.getRuntime().getHome();
         File esDirectory = new File(home, "elasticsearch");
-        if (!esDirectory.exists()) {
-            if (!esDirectory.mkdir()) {
-                throw new InvalidParameterException(
-                        "Can not create directory: "
-                                + esDirectory.getAbsolutePath());
-            }
+        if (!esDirectory.exists() && !esDirectory.mkdir()) {
+            throw new InvalidParameterException("Can not create directory: "
+                    + esDirectory.getAbsolutePath());
         }
         Settings settings = ImmutableSettings.settingsBuilder().put(
                 "node.http.enabled", true).put("path.logs",
@@ -65,7 +62,6 @@ public class BareElasticSearchFeature extends SimpleFeature {
                 esDirectory.getPath() + "/data").put("gateway.type", "none").put(
                 "index.store.type", "memory").put("index.number_of_shards", 1).put(
                 "index.number_of_replicas", 1).build();
-
         node = NodeBuilder.nodeBuilder().local(true).settings(settings).node();
         client = node.client();
         super.start(runner);

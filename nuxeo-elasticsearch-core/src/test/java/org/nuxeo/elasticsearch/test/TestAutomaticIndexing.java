@@ -4,7 +4,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -97,7 +97,7 @@ public class TestAutomaticIndexing {
         for (int i = 0; (i < 100) && esa.isIndexingInProgress(); i++) {
             Thread.sleep(100);
         }
-        Assert.assertFalse("Strill indexing in progress",
+        Assert.assertFalse("Still indexing in progress",
                 esa.isIndexingInProgress());
         esa.refresh();
     }
@@ -291,12 +291,13 @@ public class TestAutomaticIndexing {
         waitForIndexing();
 
         startTransaction();
-        DocumentModelList ret = ess.query(session, "SELECT * FROM Document",
-                10, 0);
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session)
+                .nxql("SELECT * FROM Document").limit(10));
         Assert.assertEquals(1, ret.totalSize());
 
-        ret = ess.query(session,
-                "SELECT * FROM Document WHERE ecm:fulltext='search'", 10, 0);
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE ecm:fulltext='search'")
+                .limit(10));
         Assert.assertEquals(1, ret.totalSize());
     }
 

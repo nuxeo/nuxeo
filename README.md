@@ -24,7 +24,7 @@ https://github.com/nuxeo/marketplace-elasticsearch
 
 ## Limitations
 
-- The 5.8 version does not support default H2 database.
+- The 5.8 version does not support default H2 database and don't have Aggregate support.
 
 - Only supports a single repository.
 

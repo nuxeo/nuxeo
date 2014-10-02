@@ -4,7 +4,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -275,10 +275,13 @@ public class IndexingCommand implements Serializable {
     }
 
     public String[] getSchemas() {
-        if (schemas == null || schemas.size() == 0) {
-            return targetDocument.getSchemas();
+        String[] ret = null;
+        if (schemas != null && schemas.size() > 0) {
+            ret = schemas.toArray(new String[schemas.size()]);
+        } else if (targetDocument != null) {
+            ret = targetDocument.getSchemas();
         }
-        return schemas.toArray(new String[schemas.size()]);
+        return ret;
     }
 
     public void addSchemas(String schema) {

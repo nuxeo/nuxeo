@@ -4,7 +4,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
+import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.query.NxqlQueryConverter;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.api.Framework;
@@ -133,7 +134,8 @@ public class TestNxqlConversion {
     protected void checkNXQL(String nxql, int expectedNumberOfHis)
             throws Exception {
         //System.out.println(NXQLQueryConverter.toESQueryString(nxql));
-        DocumentModelList docs = ess.query(session, nxql, 10, 0);
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session)
+                .nxql(nxql).limit(10));
         Assert.assertEquals(expectedNumberOfHis, docs.size());
     }
 
@@ -588,6 +590,22 @@ public class TestNxqlConversion {
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"match_all\" : { }\n" +
                 "}", es);
+    }
+
+    @Test
+    public void testConvertComplexProperties() throws Exception {
+        String es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where file:content/name = 'foo'")
+                .toString();
+        assertEqualsEvenUnderWindows("{\n"
+                + "  \"constant_score\" : {\n"
+                + "    \"filter\" : {\n"
+                + "      \"term\" : {\n"
+                + "        \"file:content.name\" : \"foo\"\n"
+                + "      }\n"
+                + "    }\n"
+                + "  }\n"
+                + "}", es);
     }
 
     protected void assertEqualsEvenUnderWindows(String expected, String actual) {

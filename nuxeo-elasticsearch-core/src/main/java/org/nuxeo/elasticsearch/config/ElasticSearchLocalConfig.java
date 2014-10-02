@@ -4,7 +4,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,6 +33,9 @@ public class ElasticSearchLocalConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @XNode("@enabled")
+    protected boolean isEnabled = true;
+
     @XNode("@clusterName")
     protected String clusterName;
 
@@ -50,7 +53,8 @@ public class ElasticSearchLocalConfig implements Serializable {
 
     public String getDataPath() {
         if (dataPath == null) {
-            File dir = new File(Framework.getRuntime().getHome(), "data/elasticsearch");
+            File dir = new File(Framework.getRuntime().getHome(),
+                    "data/elasticsearch");
             dataPath = dir.getPath();
         }
         return dataPath;
@@ -87,16 +91,34 @@ public class ElasticSearchLocalConfig implements Serializable {
         return clusterName;
     }
 
-    public String getNodeName() {
-        return nodeName;
-    }
-
     public void setClusterName(String clusterName) {
         this.clusterName = clusterName;
+    }
+
+    public String getNodeName() {
+        return nodeName;
     }
 
     public void setNodeName(String nodeName) {
         this.nodeName = nodeName;
     }
 
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
+    }
+
+    @Override
+    public String toString() {
+        if (isEnabled()) {
+            return String
+                    .format("EsLocalConfig(%s, %s, %s, %s)", getClusterName(),
+                            getDataPath(), httpEnabled(),
+                            getIndexStorageType());
+        }
+        return "EsLocalConfig disabled";
+    }
 }
