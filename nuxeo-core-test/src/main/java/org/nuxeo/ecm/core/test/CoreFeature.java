@@ -48,11 +48,12 @@ import com.google.inject.Binder;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Deploy({ "org.nuxeo.runtime.management", "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core.query",
-        "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.core.event",
-        "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.convert",
-        "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.core.storage",
-        "org.nuxeo.ecm.core.storage.sql", "org.nuxeo.ecm.core.storage.sql.test" })
+@Deploy({ "org.nuxeo.runtime.management", "org.nuxeo.ecm.core.schema",
+        "org.nuxeo.ecm.core.query", "org.nuxeo.ecm.core.api",
+        "org.nuxeo.ecm.core.event", "org.nuxeo.ecm.core",
+        "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.core.convert.plugins",
+        "org.nuxeo.ecm.core.storage", "org.nuxeo.ecm.core.storage.sql",
+        "org.nuxeo.ecm.core.storage.sql.test" })
 @Features(RuntimeFeature.class)
 public class CoreFeature extends SimpleFeature {
 
@@ -162,7 +163,8 @@ public class CoreFeature extends SimpleFeature {
 
     protected void cleanupSession(FeaturesRunner runner) throws ClientException {
         waitForAsyncCompletion();
-        if (TransactionHelper.isTransactionMarkedRollback()) { // ensure tx is active
+        if (TransactionHelper.isTransactionMarkedRollback()) { // ensure tx is
+                                                               // active
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
         }
@@ -186,7 +188,7 @@ public class CoreFeature extends SimpleFeature {
             results.close();
             session.save();
             waitForAsyncCompletion();
-            if (! session.query("SELECT * FROM Document").isEmpty()) {
+            if (!session.query("SELECT * FROM Document").isEmpty()) {
                 log.error("Fail to cleanupSession, repository will not be empty for the next test.");
             }
         } catch (ClientException e) {
