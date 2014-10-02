@@ -90,13 +90,15 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
     }
 
     public DirectoryTreeNode get(String treeName) {
+        DirectoryTreeService dirTreeService = getDirectoryTreeService();
         if (seamReload.isDevModeSet()
-                && seamReload.shouldResetCache(getDirectoryTreeService(),
+                && seamReload.shouldResetCache(dirTreeService,
                         treeModelsTimestamp)) {
             treeModels = null;
         }
         if (treeModels == null) {
             treeModels = new HashMap<String, DirectoryTreeNode>();
+            treeModelsTimestamp = dirTreeService.getLastModified();
         }
         // lazy loading of tree models
         DirectoryTreeNode treeModel = treeModels.get(treeName);
@@ -104,8 +106,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
             // return cached model
             return treeModel;
         }
-        DirectoryTreeDescriptor config = getDirectoryTreeService().getDirectoryTreeDescriptor(
-                treeName);
+        DirectoryTreeDescriptor config = dirTreeService.getDirectoryTreeDescriptor(treeName);
         if (config == null) {
             log.error("no DirectoryTreeDescriptor registered as " + treeName);
             return null;
