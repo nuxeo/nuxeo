@@ -119,7 +119,7 @@
       value="#{nxu:test(foldedByDefault or (foldedIfEmpty and empty provider.currentPage), true, false)}"
       cache="true">
 
-      <div class="#{nxu:test(foldable, 'foldableBox', '')} #{foldableBoxStyleClass}">
+      <div class="#{foldableBoxStyleClass} #{nxu:test(foldable, 'foldableBox', '')}">
 
         <ui:insert name="content_view_title">
           <nxu:set var="translateTitle"

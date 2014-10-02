@@ -80,7 +80,7 @@
         <ui:param name="hideHeader" value="#{not widget.handlingLabels}" />
         <ui:param name="foldable" value="#{widgetProperty_foldable}" />
         <ui:param name="foldedByDefault" value="#{widgetProperty_foldedByDefault and layoutWidgetMode == initialMode}" />
-        <ui:param name="foldableStyleClass" value="widgetPanel layoutWidgetPanel #{widgetProperty_styleClass}" />
+        <ui:param name="foldableBoxStyleClass" value="widgetPanel layoutWidgetPanel #{widgetProperty_styleClass}" />
         <ui:param name="headerStyleClass" value="widgetHeader #{nxu:test(widgetProperty_foldable, '', 'summaryTitle')} #{widgetProperty_headerStyleClass}" />
         <ui:param name="headerFormId" value="#{widget.id}_headerForm" />
 

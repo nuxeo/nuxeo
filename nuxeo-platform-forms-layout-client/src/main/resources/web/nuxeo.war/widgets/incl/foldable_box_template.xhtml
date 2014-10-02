@@ -30,7 +30,7 @@ Templating zone to define:
 
   <c:when test="#{foldable and not hideHeader}">
 
-    <div class="#{foldableStyleClass} foldableBox">
+    <div class="#{foldableBoxStyleClass} foldableBox">
       <ui:include src="./foldable_box_header_template.xhtml" />
       <div class="boxBody"
         style="#{nxu:test(foldedByDefault, 'display: none;', '')}">
@@ -42,7 +42,7 @@ Templating zone to define:
 
   <c:otherwise>
 
-    <span class="#{foldableStyleClass}">
+    <span class="#{foldableBoxStyleClass}">
       <ui:include src="./foldable_box_header_template.xhtml" />
       <ui:insert name="foldable_box_content" />
     </span>
