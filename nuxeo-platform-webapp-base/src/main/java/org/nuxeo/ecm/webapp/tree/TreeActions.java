@@ -21,8 +21,6 @@ package org.nuxeo.ecm.webapp.tree;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.richfaces.component.UITree;
-import org.richfaces.event.CollapsibleSubTableToggleEvent;
 
 /**
  * Local interface for the Seam component that manages the tree.
@@ -40,13 +38,11 @@ public interface TreeActions {
      */
     List<DocumentTreeNode> getTreeRoots() throws ClientException;
 
-    /**
-     * Listener for node opening/closing events.
-     * <p>
-     * Used to not interfere with node state when manually changing open nodes.
-     */
-    @Deprecated
-    void changeExpandListener(CollapsibleSubTableToggleEvent event);
+    String getCurrentDocumentPath();
+
+    void resetCurrentDocumentData();
+
+    void reset();
 
     /**
      * @since 5.9.6
@@ -54,14 +50,8 @@ public interface TreeActions {
     void toggleListener();
 
     /**
-     * Returns true if node should be opened according to current document.
+     * @since 5.9.6
      */
-
-    @Deprecated
-    Boolean adviseNodeOpened(UITree tree);
-
-    void resetCurrentDocumentData();
-
-    void reset();
+    boolean isNodeExpandEvent();
 
 }

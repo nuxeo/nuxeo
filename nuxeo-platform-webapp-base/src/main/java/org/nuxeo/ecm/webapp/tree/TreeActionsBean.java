@@ -52,10 +52,7 @@ import org.nuxeo.ecm.core.api.Sorter;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
-import org.richfaces.component.UITree;
 import org.richfaces.event.CollapsibleSubTableToggleEvent;
-import org.richfaces.event.TreeSelectionChangeEvent;
-import org.richfaces.event.TreeToggleEvent;
 
 /**
  * Manages the navigation tree.
@@ -205,25 +202,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
         requestMap.put(NODE_SELECTED_MARKER, Boolean.TRUE);
     }
 
-    public void toggleListener() {
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        Map<String, Object> requestMap = facesContext.getExternalContext().getRequestMap();
-        requestMap.put(NODE_SELECTED_MARKER, Boolean.TRUE);
-    }
-
-    protected Boolean isNodeExpandEvent() {
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        if (facesContext != null) {
-            ExternalContext externalContext = facesContext.getExternalContext();
-            if (externalContext != null) {
-                return Boolean.TRUE.equals(externalContext.getRequestMap().get(
-                        NODE_SELECTED_MARKER));
-            }
-        }
-        return false;
-    }
-
-    protected String getCurrentDocumentPath() {
+    public String getCurrentDocumentPath() {
         if (currentDocumentPath == null) {
             DocumentModel currentDoc = navigationContext.getCurrentDocument();
             if (currentDoc != null) {
@@ -264,26 +243,6 @@ public class TreeActionsBean implements TreeActions, Serializable {
         } while (!containerPath.isRoot()
                 && documentManager.exists(new PathRef(containerPath.toString())));
         return result;
-    }
-
-    public Boolean adviseNodeOpened(UITree treeComponent) {
-        if (!isNodeExpandEvent()) {
-            Object value = treeComponent.getRowData();
-            if (value instanceof DocumentTreeNode) {
-                DocumentTreeNode treeNode = (DocumentTreeNode) value;
-                String nodePath = treeNode.getPath();
-                String currentDocPath = getCurrentDocumentPath();
-                if (currentDocPath != null && nodePath != null
-                        && currentDocPath.startsWith(nodePath)) {
-                    // additional slower check for strict path prefix
-                    if ((currentDocPath + '/').startsWith(nodePath + '/')
-                            || "/".equals(nodePath)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED }, create = false)
@@ -354,4 +313,29 @@ public class TreeActionsBean implements TreeActions, Serializable {
 
         return null;
     }
+
+    /**
+     * @since 5.9.6
+     */
+    public void toggleListener() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        Map<String, Object> requestMap = facesContext.getExternalContext().getRequestMap();
+        requestMap.put(NODE_SELECTED_MARKER, Boolean.TRUE);
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public boolean isNodeExpandEvent() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext != null) {
+            ExternalContext externalContext = facesContext.getExternalContext();
+            if (externalContext != null) {
+                return Boolean.TRUE.equals(externalContext.getRequestMap().get(
+                        NODE_SELECTED_MARKER));
+            }
+        }
+        return false;
+    }
+
 }

@@ -21,9 +21,6 @@ package org.nuxeo.ecm.webapp.directory;
 import java.io.Serializable;
 import java.util.List;
 
-import org.richfaces.component.UITree;
-import org.richfaces.event.CollapsibleSubTableToggleEvent;
-
 public interface DirectoryTreeManager extends Serializable {
 
     DirectoryTreeNode get(String treeName);
@@ -39,18 +36,6 @@ public interface DirectoryTreeManager extends Serializable {
     void setSelectedTreeName(String treeName);
 
     boolean isInitialized();
-
-    /**
-     * Listener for node opening/closing events.
-     * <p/>
-     * Used to not interfere with node state when manually changing open nodes.
-     */
-    void changeExpandListener(CollapsibleSubTableToggleEvent event);
-
-    /**
-     * Returns true if node should be opened according to last selection.
-     */
-    Boolean adviseNodeOpened(UITree tree);
 
     /**
      * Returns the internationalized label for a given path of the specified

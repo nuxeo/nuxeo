@@ -32,6 +32,7 @@ import javax.faces.context.FacesContext;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.Component;
 import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -49,6 +50,8 @@ import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.ecm.webapp.tree.TreeActions;
+import org.nuxeo.ecm.webapp.tree.TreeActionsBean;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -182,35 +185,6 @@ public class DirectoryTreeNode {
             log.error(String.format(
                     "Cannot check if node is selected on tree '%s': no "
                             + "content view available", identifier));
-        }
-        return false;
-    }
-
-    /**
-     * Returns true if current node is a parent from selected value(s).
-     */
-    public boolean isOpened() throws ClientException {
-        if (config.isMultiselect()) {
-            return isOpen();
-        } else {
-            if (config.hasContentViewSupport()) {
-                DocumentModel searchDoc = getContentViewSearchDocumentModel();
-                if (searchDoc != null) {
-                    String fieldName = config.getFieldName();
-                    String schemaName = config.getSchemaName();
-                    Object value = searchDoc.getProperty(schemaName, fieldName);
-                    if (value instanceof String) {
-                        return ((String) value).startsWith(path);
-                    }
-                } else {
-                    log.error("Cannot check if node is opened: "
-                            + "search document model is null");
-                }
-            } else {
-                log.error(String.format(
-                        "Cannot check if node is opened on tree '%s': no "
-                                + "content view available", identifier));
-            }
         }
         return false;
     }
@@ -454,7 +428,36 @@ public class DirectoryTreeNode {
         }
     }
 
+    /**
+     * @deprecated since 5.9.6, use {@link #isOpen()} instead
+     */
+    @Deprecated
+    public boolean isOpened() {
+        return isOpen();
+    }
+
     public boolean isOpen() {
+        final TreeActions treeActionBean = (TreeActionsBean) Component.getInstance("treeActions");
+        if (!treeActionBean.isNodeExpandEvent()) {
+            if (!config.isMultiselect() && config.hasContentViewSupport()) {
+                DocumentModel searchDoc = getContentViewSearchDocumentModel();
+                if (searchDoc != null) {
+                    String fieldName = config.getFieldName();
+                    String schemaName = config.getSchemaName();
+                    Object value = searchDoc.getProperty(schemaName, fieldName);
+                    if (value instanceof String) {
+                        open = ((String) value).startsWith(path);
+                    }
+                } else {
+                    log.error("Cannot check if node is opened: "
+                            + "search document model is null");
+                }
+            } else {
+                log.error(String.format(
+                        "Cannot check if node is opened on tree '%s': no "
+                                + "content view available", identifier));
+            }
+        }
         return open;
     }
 

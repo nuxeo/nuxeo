@@ -27,17 +27,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -48,8 +43,6 @@ import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.ecm.webapp.seam.NuxeoSeamHotReloader;
 import org.nuxeo.runtime.api.Framework;
-import org.richfaces.component.UITree;
-import org.richfaces.event.CollapsibleSubTableToggleEvent;
 
 /**
  * Manage trees defined by xvocabulary directories. Update the associated
@@ -201,64 +194,6 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         directoryTreeService = (DirectoryTreeService) Framework.getRuntime().getComponent(
                 DirectoryTreeService.NAME);
         return directoryTreeService;
-    }
-
-    public void changeExpandListener(CollapsibleSubTableToggleEvent event) {
-
-        // Toggle the expanded/collapse state for this node:
-        // its only used for multi-select (see DirectoryTreeNode.isOpened())
-        // Note: we can't use the internal nodeState.isExpanded() method
-        // because this is broken as of writing
-        // https://jira.jboss.org/jira/browse/RF-7273
-        // TreeState nodeState = (TreeState) requestMap.get("nodeState");
-        // TreeRowKey treeRowKey = nodeState.getSelectedNode();
-        // boolean isExpanded = nodeState.isExpanded(treeRowKey);
-
-        UIComponent component = event.getComponent();
-        if (component instanceof UITree) {
-            UITree treeComponent = (UITree) component;
-            Object value = treeComponent.getRowData();
-            if (value instanceof DirectoryTreeNode) {
-                DirectoryTreeNode treeNode = (DirectoryTreeNode) value;
-                if (treeNode.isOpen()) {
-                    treeNode.setOpen(false);
-                } else {
-                    treeNode.setOpen(true);
-                }
-            }
-        }
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        Map<String, Object> requestMap = facesContext.getExternalContext().getRequestMap();
-        requestMap.put(NODE_SELECTED_MARKER, Boolean.TRUE);
-    }
-
-    protected Boolean isNodeExpandEvent() {
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        if (facesContext != null) {
-            ExternalContext externalContext = facesContext.getExternalContext();
-            if (externalContext != null) {
-                return Boolean.TRUE.equals(externalContext.getRequestMap().get(
-                        NODE_SELECTED_MARKER));
-            }
-        }
-        return false;
-    }
-
-    public Boolean adviseNodeOpened(UITree treeComponent) {
-        if (!isNodeExpandEvent()) {
-            try {
-                Object value = treeComponent.getRowData();
-                if (value instanceof DirectoryTreeNode) {
-                    DirectoryTreeNode treeNode = (DirectoryTreeNode) value;
-                    if (treeNode.isOpened()) {
-                        return Boolean.TRUE;
-                    }
-                }
-            } catch (ClientException e) {
-                log.error(e);
-            }
-        }
-        return null;
     }
 
     public String getLabelFor(String directoryTreeName, String fullPath) {
