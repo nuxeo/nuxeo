@@ -32,6 +32,8 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +43,9 @@ import org.nuxeo.drive.service.impl.RootDefinitionsHelper;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -82,6 +86,8 @@ import com.google.inject.Inject;
 @Deploy("org.nuxeo.drive.core")
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
 public class TestAuditFileSystemChangeFinder {
+
+    private static final Log log = LogFactory.getLog(TestAuditFileSystemChangeFinder.class);
 
     @Inject
     protected CoreSession session;
@@ -214,7 +220,7 @@ public class TestAuditFileSystemChangeFinder {
             assertNotNull(changes);
             assertTrue(changes.isEmpty());
 
-            // Sync roots for Administrator
+            log.trace("Sync roots for Administrator");
             nuxeoDriveManager.registerSynchronizationRoot(
                     session.getPrincipal(), folder1, session);
             nuxeoDriveManager.registerSynchronizationRoot(
@@ -229,7 +235,7 @@ public class TestAuditFileSystemChangeFinder {
             // Root registration events
             assertEquals(2, changes.size());
 
-            // Create 3 documents, only 2 in sync roots
+            log.trace("Create 3 documents, only 2 in sync roots");
             doc1 = session.createDocumentModel("/folder1", "doc1", "File");
             doc1.setPropertyValue("file:content", new StringBlob(
                     "The content of file 1."));
@@ -262,7 +268,7 @@ public class TestAuditFileSystemChangeFinder {
             changes = getChanges();
             assertTrue(changes.isEmpty());
 
-            // Update both synchronized documents and unsynchronize a root
+            log.trace("Update both synchronized documents and unsynchronize a root");
             doc1.setPropertyValue("file:content", new StringBlob(
                     "The content of file 1, updated."));
             session.saveDocument(doc1);
@@ -290,7 +296,7 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals("documentModified", change.getEventId());
             assertEquals(doc1.getId(), change.getDocUuid());
 
-            // Delete a document with a lifecycle transition (trash)
+            log.trace("Delete a document with a lifecycle transition (trash)");
             session.followTransition(doc1.getRef(), "delete");
         } finally {
             commitAndWaitForAsyncCompletion();
@@ -306,8 +312,7 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals("defaultFileSystemItemFactory#test#" + doc1.getId(),
                     change.getFileSystemItemId());
 
-            // Restore a deleted document and move a document in a newly
-            // synchronized root
+            log.trace("Restore a deleted document and move a document in a newly synchronized root");
             session.followTransition(doc1.getRef(), "undelete");
             session.move(doc3.getRef(), folder2.getRef(), null);
             nuxeoDriveManager.registerSynchronizationRoot(
@@ -335,7 +340,7 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals("lifecycle_transition_event", change.getEventId());
             assertEquals(doc1.getId(), change.getDocUuid());
 
-            // Physical deletion without triggering the delete transition first
+            log.trace("Physical deletion without triggering the delete transition first");
             session.removeDocument(doc3.getRef());
         } finally {
             commitAndWaitForAsyncCompletion();
@@ -351,7 +356,7 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals("defaultFileSystemItemFactory#test#" + doc3.getId(),
                     change.getFileSystemItemId());
 
-            // Create a doc and copy it from a sync root to another one
+            log.trace("Create a doc and copy it from a sync root to another one");
             docToCopy = session.createDocumentModel("/folder1", "docToCopy",
                     "File");
             docToCopy.setPropertyValue("file:content", new StringBlob(
@@ -383,8 +388,7 @@ public class TestAuditFileSystemChangeFinder {
                     change.getFileSystemItemId());
             assertEquals("docToCopy", change.getFileSystemItemName());
 
-            // Remove file from a document, mapped to a fake deletion from the
-            // client's point of view
+            log.trace("Remove file from a document, mapped to a fake deletion from the client's point of view");
             doc1.setPropertyValue("file:content", null);
             session.saveDocument(doc1);
         } finally {
@@ -399,7 +403,7 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals("deleted", change.getEventId());
             assertEquals(doc1.getId(), change.getDocUuid());
 
-            // Move a doc from a sync root to a non synchronized folder
+            log.trace("Move a doc from a sync root to a non synchronized folder");
             session.move(copiedDoc.getRef(), folder3.getRef(), null);
         } finally {
             commitAndWaitForAsyncCompletion();
@@ -413,8 +417,7 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals("deleted", change.getEventId());
             assertEquals(copiedDoc.getId(), change.getDocUuid());
 
-            // Create a doc, create a version of it, update doc and restore the
-            // version
+            log.trace("Create a doc, create a version of it, update doc and restore the version");
             docToVersion = session.createDocumentModel("/folder1",
                     "docToVersion", "File");
             docToVersion.setPropertyValue("file:content", new StringBlob(
@@ -430,6 +433,23 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals(1, versions.size());
             DocumentModel version = versions.get(0);
             session.restoreToVersion(docToVersion.getRef(), version.getRef());
+
+            {
+                commitAndWaitForAsyncCompletion();
+                session.removeChildren(new PathRef("/"));
+                session.save();
+                commitAndWaitForAsyncCompletion();
+                final DocumentModelList query = session.query("SELECT * FROM Document");
+                if (! query.isEmpty()) {
+                    log.error("Fail to cleanupSession, repository will not be empty for the next test.");
+                    for (DocumentModel each:query) {
+                        log.trace("leaking " + each + " of type " + each.getType());
+                    }
+                }
+                if (true) {
+                    return;
+                }
+            }
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -454,7 +474,7 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals("documentCreated", change.getEventId());
             assertEquals(docToVersion.getId(), change.getDocUuid());
 
-            // Too many changes
+            log.trace("Too many changes");
             session.followTransition(doc1.getRef(), "delete");
             session.followTransition(doc2.getRef(), "delete");
         } finally {
