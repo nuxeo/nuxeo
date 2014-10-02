@@ -22,8 +22,13 @@ import {WIDGETS} from './widgets';
 class Column {
   constructor( connection, def, widget, renderer) {
     Object.assign(this, {connection, def, widget, renderer});
+    // Mixin widget type
     if (WIDGETS[widget.type]) {
       Object.assign(this, WIDGETS[widget.type]);
+    }
+    // Mixin special field widget
+    if (SPECIAL_FIELDS[this.field] && SPECIAL_FIELDS[this.field].widget) {
+      Object.assign(this, SPECIAL_FIELDS[this.field].widget);
     }
   }
 
@@ -44,8 +49,8 @@ class Column {
       return null;
     }
     // Check for special fields
-    if (SPECIAL_FIELDS[this.field]) {
-      return SPECIAL_FIELDS[this.field];
+    if (SPECIAL_FIELDS[this.field] && SPECIAL_FIELDS[this.field].field) {
+      return SPECIAL_FIELDS[this.field].field;
     }
     return `properties.${this.field}`;
   }
@@ -66,7 +71,37 @@ class Column {
 }
 
 const SPECIAL_FIELDS = {
-  currentLifeCycleState: 'state'
+
+  // system metadata fields
+  'dc:created': {
+    widget: {
+      readOnly: true
+    }
+  },
+  'dc:modified': {
+    widget: {
+      readOnly: true
+    }
+  },
+  'dc:creator': {
+    widget: {
+      readOnly: true
+    }
+  },
+  'dc:lastContributor': {
+    widget: {
+      readOnly: true
+    }
+  },
+  'dc:contributors': {
+    widget: {
+      readOnly: true
+    }
+  },
+
+  'currentLifeCycleState': {
+    field: 'state'
+  }
 };
 
 export {Column};
