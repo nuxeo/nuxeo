@@ -28,7 +28,7 @@ input[type="text"],
 input[type="file"],
 input[type="password"] {
   font-family: "default (__FLAVOR__ font)";
-  background: none;
+  background: none #fff;
   box-sizing: border-box;
   border: 1px solid;
   border-color: "neutral.light (__FLAVOR__ border)";

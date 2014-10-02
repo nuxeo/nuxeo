@@ -280,12 +280,8 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   width: 50% }
 
 .compactLayout .searchFilterActions {
-  border-color: "neutral.light (__FLAVOR__ border)";
-  border-style: solid none;
-  border-width: 1px 0 0;
   font-size: 1.15em;
-  padding: .3em .1em;
-  text-align: right }
+  padding: .5em 0 }
 
 /* Compact Widgets */
 .compactLayout .widgetPanel {
