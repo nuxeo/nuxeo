@@ -37,10 +37,17 @@
         <property name="display">block_top</property>
       </properties>
       <subWidgets>
-        <widget name="infoViewTitle" type="title">
-          <controls mode="any">
-            <control name="handleLabels">true</control>
-          </controls>
+        <widget name="infoViewTitle" type="title_link">
+          <fields>
+            <field></field>
+            <field>ref</field>
+            <field>dc.description</field>
+          </fields>
+          <properties mode="any">
+            <property name="target">_top</property>
+            <property name="hideExternalLink">true</property>
+            <property name="hideDownloadLink">true</property>
+          </properties>
         </widget>
       </subWidgets>
     </widget>
