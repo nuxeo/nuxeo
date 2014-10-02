@@ -22,7 +22,7 @@
         action="#{routingTaskActions.reassignTask(fieldOrValue)}"
         styleClass="button" />
       <a4j:commandButton value="#{messages['command.cancel']}"
-        immediate="true"
+        immediate="true" execute="@this"
         oncomplete="jQuery.fancybox.close()"
         styleClass="button" />
     </div>
