@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,6 +16,10 @@
  *     Florent Guillaume
  *     Benoit Delbosc
  *     Antoine Taillefer
+ *     Anahide Tchertchian
+ *     Guillaume Renard
+ *     Mathieu Guillaume
+ *     Julien Carsique
  */
 package org.nuxeo.functionaltests;
 
@@ -46,20 +50,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.MethodRule;
-import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.functionaltests.fragment.WebFragment;
-import org.nuxeo.functionaltests.pages.AbstractPage;
-import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
-import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
-import org.nuxeo.functionaltests.pages.LoginPage;
-import org.nuxeo.functionaltests.pages.NoteDocumentBasePage;
-import org.nuxeo.functionaltests.pages.forms.CollectionCreationFormPage;
-import org.nuxeo.functionaltests.pages.forms.DublinCoreCreationDocumentFormPage;
-import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
-import org.nuxeo.functionaltests.pages.forms.NoteCreationFormPage;
-import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
-import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
@@ -79,6 +69,21 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
+
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.functionaltests.fragment.WebFragment;
+import org.nuxeo.functionaltests.pages.AbstractPage;
+import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
+import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
+import org.nuxeo.functionaltests.pages.LoginPage;
+import org.nuxeo.functionaltests.pages.NoteDocumentBasePage;
+import org.nuxeo.functionaltests.pages.forms.CollectionCreationFormPage;
+import org.nuxeo.functionaltests.pages.forms.DublinCoreCreationDocumentFormPage;
+import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
+import org.nuxeo.functionaltests.pages.forms.NoteCreationFormPage;
+import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
+import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
@@ -308,12 +313,12 @@ public abstract class AbstractTest {
             // Workaround: use 127.0.0.2
             proxy.setNoProxy("");
             profile.setProxyPreferences(proxy);
+            // FIXME Should be dc.setCapability(CapabilityType.PROXY, proxy);
         }
         dc.setCapability(FirefoxDriver.PROFILE, profile);
         driver = new FirefoxDriver(dc);
     }
 
-    @SuppressWarnings("deprecation")
     protected static void initChromeDriver() throws Exception {
         if (System.getProperty(SYSPROP_CHROME_DRIVER_PATH) == null) {
             String chromeDriverDefaultPath = null;
@@ -393,7 +398,7 @@ public abstract class AbstractTest {
     }
 
     @AfterClass
-    public static void quitDriver() throws InterruptedException {
+    public static void quitDriver() {
         if (driver != null) {
             driver.quit();
             driver = null;
@@ -473,7 +478,7 @@ public abstract class AbstractTest {
             }
         }
         // turn into files
-        List<String> files = new ArrayList<String>(urls.length);
+        List<String> files = new ArrayList<>(urls.length);
         for (URL url : urls) {
             files.add(url.toURI().getPath());
         }
@@ -621,8 +626,8 @@ public abstract class AbstractTest {
                 AJAX_TIMEOUT_SECONDS), page);
         // check all required WebElements on the page and wait for their
         // loading
-        final List<String> fieldNames = new ArrayList<String>();
-        final List<WrapsElement> elements = new ArrayList<WrapsElement>();
+        final List<String> fieldNames = new ArrayList<>();
+        final List<WrapsElement> elements = new ArrayList<>();
         for (Field field : pageClassToProxy.getDeclaredFields()) {
             if (field.getAnnotation(Required.class) != null) {
                 try {
@@ -635,12 +640,13 @@ public abstract class AbstractTest {
             }
         }
 
-        Wait<T> wait = new FluentWait<T>(page).withTimeout(
-                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        Wait<T> wait = new FluentWait<>(page).withTimeout(LOAD_TIMEOUT_SECONDS,
+                TimeUnit.SECONDS).pollingEvery(POLLING_FREQUENCY_MILLISECONDS,
+                TimeUnit.MILLISECONDS);
 
         return wait.until(new Function<T, T>() {
-            public T apply(T page) {
+            @Override
+            public T apply(@SuppressWarnings("hiding") T page) {
                 String notLoaded = anyElementNotLoaded(elements, fieldNames);
                 if (notLoaded == null) {
                     return page;
