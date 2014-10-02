@@ -9,6 +9,9 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://java.sun.com/jstl/core">
 
+<nxu:set var="actionStyleClass"
+  value="#{widgetProperty_actionStyleClass}"
+  cache="true">
 <nxu:set var="action" value="#{widgetProperty_action}"
   cache="true">
 <nxu:set var="idPrefix" value="#{widget.id}_"
@@ -41,6 +44,7 @@
     </a4j:outputPanel>
 
   </nxu:valueHolder>
+</nxu:set>
 </nxu:set>
 </nxu:set>
 </nxu:set>
