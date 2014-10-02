@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.forms.layouts.webapp.types">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouttypes">
+
+    <layoutType name="thumbnail">
+      <categories>
+        <category>jsf</category>
+      </categories>
+      <templates>
+        <template mode="any">
+          /layouts/layout_thumbnail_template.xhtml
+        </template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+        <template mode="edit_columns">
+          /layouts/layout_column_selection_template.xhtml
+        </template>
+        <template mode="edit_sort_infos">
+          /layouts/layout_sort_infos_template.xhtml
+        </template>
+        <template mode="edit_sort_infos_map">
+          /layouts/layout_sort_infos_template.xhtml
+        </template>
+      </templates>
+      <configuration>
+        <title>Layout thumbnail type</title>
+        <description>
+          <p>This layout type displays the layout in a box style using another layout for the box heading.</p>
+        </description>
+        <properties>
+          <defaultValues mode="any">
+            <property name="display">block</property>
+          </defaultValues>
+        </properties>
+      </configuration>
+    </layoutType>
+
+  </extension>
+
+</component>
