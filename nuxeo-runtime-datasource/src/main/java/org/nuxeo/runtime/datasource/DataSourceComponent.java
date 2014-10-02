@@ -121,12 +121,10 @@ public class DataSourceComponent extends DefaultComponent {
     public void deactivate(ComponentContext context) throws Exception {
         super.deactivate(context);
         for (DataSourceLinkDescriptor desc : links.values()) {
-            log.warn(desc.name + " datasource link still referenced");
             unbindDataSourceLink(desc);
         }
         links.clear();
         for (DataSourceDescriptor desc : datasources.values()) {
-            log.warn(desc.getName() + " datasource still referenced");
             unbindDataSource(desc);
         }
         datasources.clear();
