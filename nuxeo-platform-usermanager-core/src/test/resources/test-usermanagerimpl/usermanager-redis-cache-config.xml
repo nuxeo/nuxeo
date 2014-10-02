@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.cache.config.usermanager.test">
   <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
-    <cache name="userManagerCache" class="org.nuxeo.ecm.core.redis.RedisCacheImpl">
+    <cache name="userManagerCache" class="org.nuxeo.ecm.core.redis.contribs.RedisCache">
       <ttl>10</ttl>
     </cache>
 
