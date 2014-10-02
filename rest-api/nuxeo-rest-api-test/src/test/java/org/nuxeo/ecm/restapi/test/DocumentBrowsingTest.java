@@ -186,7 +186,7 @@ public class DocumentBrowsingTest extends BaseTest {
         // Given a folder and a Rest Creation request
         DocumentModel folder = RestServerInit.getFolder(0, session);
 
-        String data = "{\"entity-type\": \"document\",\"type\": \"File\",\"name\":\"newName\",\"properties\": {\"dc:title\":\"My title\"}}";
+        String data = "{\"entity-type\": \"document\",\"type\": \"File\",\"name\":\"newName\",\"properties\": {\"dc:title\":\"My title\",\"dc:description\":\" \"}}";
 
         ClientResponse response = getResponse(RequestType.POST,
                 "path" + folder.getPathAsString(), data);
@@ -197,6 +197,8 @@ public class DocumentBrowsingTest extends BaseTest {
         // Then the create document is returned
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals("My title", node.get("title").getValueAsText());
+        assertEquals(" ", node.get("properties").get("dc:description")
+                .getTextValue());
         String id = node.get("uid").getValueAsText();
         assertTrue(StringUtils.isNotBlank(id));
 
