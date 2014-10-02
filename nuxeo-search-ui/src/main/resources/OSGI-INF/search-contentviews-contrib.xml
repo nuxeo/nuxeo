@@ -732,30 +732,7 @@
       </columns>
     </layout>
 
-    <layout name="thumbnail_listing_ajax">
-      <templates>
-        <template mode="any">
-          /search/layouts/thumbnail_listing_ajax_template.xhtml
-        </template>
-        <template mode="csv">
-          /layouts/layout_listing_csv_template.xhtml
-        </template>
-        <template mode="pdf">
-          /layouts/layout_listing_pdf_template.xhtml
-        </template>
-        <template mode="edit_columns">
-          /layouts/layout_column_selection_template.xhtml
-        </template>
-        <template mode="edit_sort_infos">
-          /layouts/layout_sort_infos_template.xhtml
-        </template>
-        <template mode="edit_sort_infos_map">
-          /layouts/layout_sort_infos_template.xhtml
-        </template>
-      </templates>
-      <properties mode="any">
-        <property name="display">block</property>
-      </properties>
+    <layout name="thumbnail_listing_ajax" type="thumbnail">
       <columns>
         <column name="last_contributor">
           <properties mode="any">
