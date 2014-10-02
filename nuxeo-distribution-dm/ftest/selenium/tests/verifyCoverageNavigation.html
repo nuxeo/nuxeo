@@ -54,7 +54,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>//a[@id='virtualNavTreeTab:virtualNavTreeList:3:virtualNavTreeLink']/img</td>
+	<td>//a[@id='virtualNavTreeTab:virtualNavTreeList:2:virtualNavTreeLink']/img</td>
 	<td></td>
 </tr>
 <tr>
@@ -64,45 +64,40 @@
 </tr>
 <!--Browsing-->
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
 	<td>click</td>
 	<td>//div[@id='directoryTreeForm:directoryNavTree:directoryNavRecursiveAdaptor.0:directoryNavTreeNode']/div/span</td>
 	<td></td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
+	<td>waitForElementPresent</td>
+	<td>link=Africa</td>
 	<td></td>
 </tr>
-<!--Europe-->
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
+<!--Africa-->
 <tr>
 	<td>click</td>
-	<td>//div[@id='directoryTreeForm:directoryNavTree:directoryNavRecursiveAdaptor.0.directoryNavRecursiveAdaptor.4:directoryNavTreeNode']/div/span</td>
+	<td>//div[@id='directoryTreeForm:directoryNavTree:directoryNavRecursiveAdaptor.0.directoryNavRecursiveAdaptor.0:directoryNavTreeNode']/div/span</td>
 	<td></td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
+	<td>waitForElementPresent</td>
+	<td>link=Algeria</td>
 	<td></td>
 </tr>
-<!-- Aland Islands -->
+<!-- Algeria-->
 <tr>
 	<td>clickAndWait</td>
-	<td>id=directoryTreeForm:directoryNavTree:directoryNavRecursiveAdaptor.0.directoryNavRecursiveAdaptor.4.directoryNavRecursiveAdaptor.0:directoryNavCommandLink</td>
+	<td>id=directoryTreeForm:directoryNavTree:directoryNavRecursiveAdaptor.0.directoryNavRecursiveAdaptor.0.directoryNavRecursiveAdaptor.0:directoryNavCommandLink</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
 	<td>Note to be modified</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
 	<td></td>
 </tr>
 </tbody></table>
