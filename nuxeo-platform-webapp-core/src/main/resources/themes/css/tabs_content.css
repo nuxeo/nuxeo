@@ -9,6 +9,7 @@ author: lkemen@nuxeo.com
 /* =TabsContent */
 .tabsContent {
   background: none #fff;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
   margin: 1px 1px 0;
   padding: 2em 1.5em}
 
@@ -22,11 +23,6 @@ author: lkemen@nuxeo.com
   border-bottom: 1px solid #eee;
   margin: -0.5em -1.5rem 1.5rem;
   padding: 0 1.5em 1em }
-
-.mainNoTabs .buttonsGadget {
-  border-top: 1px solid #eee;
-  margin: 2em -2em -2em;
-  padding: 1em 2em .5em }
 
 .contentViewTitle {
   border-bottom: 1px solid;

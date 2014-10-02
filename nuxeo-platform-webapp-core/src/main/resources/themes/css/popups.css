@@ -39,7 +39,7 @@ author: lkemen@nuxeo.com
   border-top: 1px solid #e7e7e7;
   font-size: 1.1em;
   margin: 0;
-  padding: 1em 1.8em 0 }
+  padding: 1em 1.8em .5em }
 
 #fancybox-content .popUpDescription {
   padding: 0 0 1em }

@@ -15,7 +15,7 @@ author: lkemen@nuxeo.com
 
 .nxMainContainer .content {
   padding: 1em 3em 3em;
-  background-color: #f9f9f9; }
+  background-color: "neutral.lighter (__FLAVOR__ background)"; }
 
 .nxMainContainer .column {
   font-size: .85em;
@@ -63,7 +63,7 @@ author: lkemen@nuxeo.com
 .userClipboardContent {
   background-color: #fff;
   margin: 0;
-  padding: 0 1em 1em;
+  padding: .4em 1em 1em;
   word-wrap: break-word }
 
 .dropInto,

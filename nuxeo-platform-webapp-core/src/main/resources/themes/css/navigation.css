@@ -17,6 +17,7 @@ author: lkemen@nuxeo.com
   display: inline-block;
   font-family: arial,sans-serif;
   font-size: 1em;
+  margin: 0 0 -0.5em;
   width: 100% }
 
 .tabsBar ul {
@@ -28,7 +29,7 @@ author: lkemen@nuxeo.com
   border-width: 1px;
   border-style: none solid none none;
   border-color: "neutral.lighter (__FLAVOR__ border)";
-  display: inline-block;
+  float: left;
   padding: 0 }
 
 .tabsBar.vertical li {
@@ -36,6 +37,7 @@ author: lkemen@nuxeo.com
   border-style: none solid none none;
   border-color: "neutral.lighter (__FLAVOR__ border)";
   display: block;
+  float: none;
   padding: 0 }
 
 .tabsBar a,
@@ -125,8 +127,7 @@ author: lkemen@nuxeo.com
 .verticalTabsContent {
   padding: 2em;
   min-height: 650px;
-  background-color: #f9f9f9;
-  box-shadow: -1px 0 4px rgba(0,0,0,0.4); }
+  background-color: "neutral.lighter (__FLAVOR__ background)" }
 
 .tabsBar.vertical {
   background: none 0;
@@ -143,7 +144,7 @@ author: lkemen@nuxeo.com
 
 .tabsBar.vertical li a,
 .tabsBar.vertical li a:visited {
-  color: "link (__FLAVOR__ color)";
+  color: "gray.light (__FLAVOR__ color)";
   display: block;
   font-size: 1.1em;
   border-top: none;
@@ -157,10 +158,8 @@ author: lkemen@nuxeo.com
 .tabsBar.vertical li:hover,
 .tabsBar.vertical li.selected,
 .tabsBar.vertical li.selected:hover {
-  background-color: #fff;
+  background-color: "neutral.lighter (__FLAVOR__ background)";
   margin-left: .2em;
-  -moz-transition: margin 0.1s ease-in 0.1s;
-  -webkit-transition: margin 0.1s ease-in 0.1s;
   transition: margin 0.1s ease-in 0.1s }
 
 .tabsBar.vertical li:hover a,
