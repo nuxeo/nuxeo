@@ -48,8 +48,8 @@ class DataGrid {
       var cols = (!columns) ? layout.columns :  layout.columns.filter((c) => columns.indexOf(c.name) !== -1);
       this.columns = cols
         .map((c) => new Column(connection, c, layout.widgets[c.widgets[0].name], this.dirtyRenderer.bind(this)))
-        // Remove columns without a field
-        .filter((c) => c.field);
+        // Only show columns with a known widget type and with a field
+        .filter((c) => c.hasSupportedWidgetType && c.field);
     });
 
     this._dirty = {};

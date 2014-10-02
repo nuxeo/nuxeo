@@ -15,6 +15,7 @@
  *     Nelson Silva <nelson.silva@inevo.pt>
  */
 import {WIDGETS} from './widgets';
+
  /**
   * Handsontable column options
   */
@@ -39,7 +40,14 @@ class Column {
   }
 
   get data() {
-    return (this.field) ? `properties.${this.field}`: null;
+    if (!this.field) {
+      return null;
+    }
+    // Check for special fields
+    if (SPECIAL_FIELDS[this.field]) {
+      return SPECIAL_FIELDS[this.field];
+    }
+    return `properties.${this.field}`;
   }
 
   get header() {
@@ -51,6 +59,14 @@ class Column {
   }
 
   get width() { return 200; }
+
+  get hasSupportedWidgetType() {
+    return !!WIDGETS[this.widget.type];
+  }
 }
+
+const SPECIAL_FIELDS = {
+  currentLifeCycleState: 'state'
+};
 
 export {Column};

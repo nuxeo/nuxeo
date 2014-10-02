@@ -23,6 +23,15 @@ Handsontable.editors.registerEditor('document', DocumentEditor);
 Handsontable.editors.registerEditor('user', UserEditor);
 
 export const WIDGETS = {
+  text: {
+    type: 'text'
+  },
+  datetime: {
+    type: 'date',
+    dateFormat: 'yy-mm-ddT00:00:00.000'
+  },
+
+  // SELECT
   selectOneDirectory: {
     editor: 'directory'
   },
@@ -30,6 +39,8 @@ export const WIDGETS = {
     editor: 'directory',
     multiple: true
   },
+
+  // SUGGESTION
   suggestOneDirectory: {
     editor: 'directory'
   },
@@ -44,15 +55,19 @@ export const WIDGETS = {
     editor: 'user',
     multiple: true
   },
-  multipleDocumentSuggestion: {
+  singleDocumentSuggestion: {
     editor: 'document'
   },
   multipleDocumentsSuggestion: {
     editor: 'document',
     multiple: true
   },
-  datetime: {
-    type: 'date',
-    dateFormat: 'yy-mm-ddT00:00:00.000'
+
+  // LISTING
+  listing_title_link: {
+    type: 'text'
+  },
+  listing_last_contributor: {
+    type: 'text'
   }
 };
