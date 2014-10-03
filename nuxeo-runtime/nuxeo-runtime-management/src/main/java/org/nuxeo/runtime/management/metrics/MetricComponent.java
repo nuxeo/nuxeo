@@ -34,6 +34,12 @@ public class MetricComponent extends DefaultComponent {
         if (MetricSerializerMXBean.class.isAssignableFrom(adapter)) {
             return adapter.cast(serializer);
         }
+        if (MetricEnabler.class.isAssignableFrom(adapter)) {
+            return adapter.cast(enabler);
+        }
+        if (MetricSerializer.class.isAssignableFrom(adapter)) {
+            return adapter.cast(serializer);
+        }
         return super.getAdapter(adapter);
     }
 
