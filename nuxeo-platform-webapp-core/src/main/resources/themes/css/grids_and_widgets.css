@@ -260,7 +260,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 
 /* Compact Action bar*/
 .compactLayout .contextActions .actionsWidgetPanel {
-	margin: 0 }
+  margin: 0 }
 
 .compactLayout .actionsWidgetPanel .button,
 .compactLayout .actionsWidgetPanel a.button,
@@ -307,7 +307,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 
 /* Compact Tables */
 .compactLayout .dataTableNoBorder.containerWidgetTable {
-	margin-bottom: .5em }
+  margin-bottom: .5em }
 
 .compactLayout .dataInput,
 .compactLayout .dataTableNoBorder {
@@ -334,3 +334,59 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .compactLayout .containerWidgetPanel .foldedDisabled {
   padding-left: 0 }
 
+/* InfoView Layout */
+.infoViewLeft {
+  position: fixed }
+
+.infoViewRight {
+  bottom: 0;
+  position: absolute;
+  right: 0;
+  top: 0 }
+
+.infoViewRight .infoViewTitle {
+  background-color: #fff;
+  box-shadow: 0 2px 1px rgba(0, 0, 0, 0.2);
+  font-size: 1.3em;
+  font-weight: bold;
+  padding: 1em;
+  position: fixed;
+  width: 100%;
+  z-index: 60; }
+
+.infoViewRight .containerSubWidget {
+  margin: 0 }
+
+.infoViewRight .infoViewInfoLayout {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding: 5.5em 0 5.5em;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 50; }
+
+.infoViewRight .infoViewInfoLayout .containerWidgetPanel {
+  background-color: #fff;
+  margin: 0 1em 1em;
+  padding: .5em }
+
+.compactLayout .infoViewInfoLayout .widgetHeader.foldedDisabled {
+  border: medium none;
+  color: #000;
+  font-size: 1.2em;
+  margin: 0 0 1em;
+  padding: 0 }
+
+.infoViewRight .infoViewActions {
+  background-color: #fff;
+  bottom: 0;
+  box-shadow: 0 -2px 1px rgba(0, 0, 0, 0.2);
+  padding: 1em;
+  position: fixed;
+  width: 100%;
+  z-index: 70 }
+
+.infoViewActions .horizontalAction {
+  padding-right: 1em }

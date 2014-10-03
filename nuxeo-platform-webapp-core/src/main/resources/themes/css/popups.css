@@ -48,6 +48,10 @@ author: lkemen@nuxeo.com
   max-width: none }
 
 /* Override default size from the page */
+#fancybox-frame body,
+.nxPopUp.nxMainContainer {
+  height: 100% }
+
 .nxPopUp.nxMainContainer {
   height: auto;
   margin: 0;

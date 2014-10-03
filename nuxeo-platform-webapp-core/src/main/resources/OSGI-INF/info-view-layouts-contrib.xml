@@ -209,8 +209,8 @@
       <rows>
         <row>
           <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle8</property>
-            <property name="nxl_gridStyleClass_1">gridStyle4 compactLayout</property>
+            <property name="nxl_gridStyleClass_0">gridStyle8 infoViewLeft</property>
+            <property name="nxl_gridStyleClass_1">gridStyle4 compactLayout infoViewRight</property>
           </properties>
           <widget>infoViewPanelLeft</widget>
           <widget>infoViewPanelRight</widget>
