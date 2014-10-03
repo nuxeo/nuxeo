@@ -52,7 +52,7 @@ public class PermissionActionListManager implements Serializable {
      *
      * @since 5.9.6
      */
-    public static final String ALLOW_NEGATIVE_ACE_PROPERTY = "nuxeo.security.allowNegativeACE";
+    public static final String ALLOW_NEGATIVE_ACL_PROPERTY = "nuxeo.security.allowNegativeACL";
 
     protected String selectedGrant = "Grant";
 
@@ -60,13 +60,13 @@ public class PermissionActionListManager implements Serializable {
     private transient ResourcesAccessor resourcesAccessor;
 
     /**
-     * Returns true if negative ACEs are allowed.
+     * Returns true if negative ACLs are allowed.
      *
      * @since 5.9.6
-     * @see #ALLOW_NEGATIVE_ACE_PROPERTY
+     * @see #ALLOW_NEGATIVE_ACL_PROPERTY
      */
-    public boolean getAllowNegativeACE() {
-        return Framework.isBooleanPropertyTrue(ALLOW_NEGATIVE_ACE_PROPERTY);
+    public boolean getAllowNegativeACL() {
+        return Framework.isBooleanPropertyTrue(ALLOW_NEGATIVE_ACL_PROPERTY);
     }
 
     public SelectItem[] getPermissionActionItems() {
@@ -75,7 +75,7 @@ public class PermissionActionListManager implements Serializable {
 
         permissionActions.add("Grant");
 
-        if (getAllowNegativeACE()) {
+        if (getAllowNegativeACL()) {
             permissionActions.add("Deny");
         }
 
