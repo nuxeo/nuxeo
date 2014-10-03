@@ -9,7 +9,7 @@
     <c:set var="extension" value="#{nxu:fileExtension(mainBlob.filename)}" />
     <c:if test="#{not empty extension}">
       <h:outputText value="#{extension}"
-        styleClass="tag" />
+        styleClass="label" />
     </c:if>
   </c:if>
 
