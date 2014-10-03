@@ -229,7 +229,7 @@
       <cacheSize>1</cacheSize>
 
       <resultLayouts>
-        <layout name="document_listing_ajax" title="document_listing"
+        <layout name="document_listing_table" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
           showCSVExport="true" showPDFExport="true" />
       </resultLayouts>
