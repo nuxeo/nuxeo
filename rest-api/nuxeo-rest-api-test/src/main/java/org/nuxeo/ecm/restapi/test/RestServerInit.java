@@ -27,6 +27,8 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
@@ -56,6 +58,8 @@ public class RestServerInit implements RepositoryInit {
 
     @Override
     public void populate(CoreSession session) throws ClientException {
+        // try to prevent NXP-15404
+        clearRepositoryCaches(session.getRepositoryName());
         // Create some docs
         for (int i = 0; i < 5; i++) {
             DocumentModel doc = session.createDocumentModel("/", "folder_" + i,
@@ -95,6 +99,12 @@ public class RestServerInit implements RepositoryInit {
             createUsersAndGroups(um);
         }
 
+    }
+
+    private void clearRepositoryCaches(String repositoryName) {
+        SQLRepositoryService repoService = Framework.getService(SQLRepositoryService.class);
+        RepositoryManagement repo = repoService.getRepository(repositoryName);
+        repo.clearCaches();
     }
 
     private void createUsersAndGroups(UserManager um) throws ClientException,
