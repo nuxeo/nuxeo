@@ -239,6 +239,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void afterRun() throws Exception {
+        injector = injector.getParent();
         invokeFeatures(reversed(features), new FeatureCallable() {
 
             @Override
@@ -306,43 +307,30 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void configureBindings() {
-        final Binder binder = injector.getInstance(Binder.class);
-        invokeFeatures(reversed(features), new FeatureCallable() {
-
-            @Override
-            public void call(RunnerFeature feature) throws Exception {
-                feature.configure(FeaturesRunner.this, binder);
-            }
-
-        });
+        injector = injector.createChildInjector(new FeaturesModule());
+        for (RunnerFeature each:features) {
+            injector.injectMembers(each);
+        }
     }
 
     public Injector getInjector() {
         return injector;
     }
 
-    protected void resetInjector(RunNotifier aNotifier) {
-        injector = onInjector(aNotifier);
-    }
-
     protected Injector onInjector(RunNotifier aNotifier) {
         Injector injector = Guice.createInjector(Stage.DEVELOPMENT,
-                new FeaturesModule(this, aNotifier));
-        for (RunnerFeature each : features) {
-            injector.injectMembers(each);
-        }
+                new RunnerModule(aNotifier));
         return injector;
+
     }
 
-    protected static class FeaturesModule implements Module {
-        protected final FeaturesRunner runner;
+    protected class RunnerModule implements Module {
 
         protected final RunNotifier notifier;
 
         protected Binder binder;
 
-        public FeaturesModule(FeaturesRunner aRunner, RunNotifier aNotifier) {
-            runner = aRunner;
+        public RunnerModule(RunNotifier aNotifier) {
             notifier = aNotifier;
         }
 
@@ -351,11 +339,24 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             if (binder != null) {
                 throw new IllegalStateException("Cannot re-enter");
             }
-            binder.bind(Binder.class).toInstance(aBinder);
-            binder.bind(FeaturesRunner.class).toInstance(runner);
-            binder.bind(RunNotifier.class).toInstance(notifier);
-            binder.bind(TargetResourceLocator.class).toInstance(runner.locator);
+
+            aBinder.bind(FeaturesRunner.class).toInstance(FeaturesRunner.this);
+            aBinder.bind(RunNotifier.class).toInstance(notifier);
+            aBinder.bind(TargetResourceLocator.class)
+                .toInstance(locator);
+            binder = aBinder;
         }
+    }
+
+    protected class FeaturesModule implements Module {
+
+        @Override
+        public void configure(Binder binder) {
+            for (RunnerFeature each:features) {
+                each.configure(FeaturesRunner.this, binder);
+            }
+        }
+
     }
 
     protected class BeforeClassStatement extends Statement {
@@ -369,8 +370,8 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         public void evaluate() throws Throwable {
             initialize();
             start();
-            beforeRun();
             configureBindings();
+            beforeRun();
             next.evaluate();
         }
 
@@ -416,9 +417,10 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     protected RulesFactory<Rule, TestRule> methodRulesFactory = new RulesFactory<>(
             Rule.class, TestRule.class);
 
+
     @Override
     protected Statement classBlock(final RunNotifier aNotifier) {
-        resetInjector(aNotifier);
+        injector = onInjector(aNotifier);
         return super.classBlock(aNotifier);
     }
 
@@ -563,10 +565,12 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     @Override
     public Object createTest() throws Exception {
-        return underTest = super.createTest();
-        // TODO
-        // final Class<?> testType = underTest.getClass();
-        // injector.getInstance(Binder.class).bind(testType).toInstance(testType.cast(underTest));
+        underTest = super.createTest();
+// TODO replace underTest member with a binding
+//        Class<?> testType = underTest.getClass();
+//        injector.getInstance(Binder.class).bind(testType)
+//            .toInstance(testType.cast(underTest));
+        return underTest;
     }
 
     @Override
