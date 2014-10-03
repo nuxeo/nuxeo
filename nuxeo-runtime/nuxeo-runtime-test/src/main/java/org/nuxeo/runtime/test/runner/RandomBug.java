@@ -22,6 +22,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import javax.inject.Inject;
+
 import org.apache.log4j.MDC;
 import org.junit.ClassRule;
 import org.junit.Ignore;
@@ -30,6 +32,7 @@ import org.junit.internal.AssumptionViolatedException;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
+import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
@@ -100,11 +103,15 @@ public class RandomBug {
     protected static final RandomBug self = new RandomBug();
 
     public static class Feature extends SimpleFeature {
-        @ClassRule // TODO change the way of injecting the class rule in features runner
-        public static final TestRule test = self.onClass();
+        @ClassRule
+        public static TestRule onClass() {
+            return self.onClass();
+        }
 
         @Rule
-        public final MethodRule method = self.onMethod();
+        public MethodRule onMethod() {
+            return self.onMethod();
+        }
     }
 
     /**
@@ -162,43 +169,48 @@ public class RandomBug {
         return Mode.valueOf(mode.toUpperCase());
     }
 
-
-
     protected TestRule onClass() {
         return new TestRule() {
+
+            @Inject RunNotifier notifier;
 
             @Override
             public Statement apply(Statement base, Description description) {
                 Repeat repeat = description.getTestClass().getAnnotation(
                         Repeat.class);
-                return onRepeat(repeat, base);
+                return onRepeat(repeat, notifier, base);
             }
         };
     }
 
     protected MethodRule onMethod() {
         return new MethodRule() {
+            @Inject RunNotifier notifier;
+
             @Override
             public Statement apply(Statement statement, FrameworkMethod method,
                     Object target) {
                 Repeat repeat = method.getAnnotation(Repeat.class);
-                return onRepeat(repeat, statement);
+                return onRepeat(repeat, notifier, statement);
             }
 
         };
     }
 
     protected static class RepeatOnFailure extends Statement {
-        protected final int times;
 
-        protected final Statement statement;
+        protected final Repeat params;
+
+        protected final RunNotifier notifier;
+
+        protected final Statement next;
 
         protected String issue;
 
-        protected RepeatOnFailure(Statement statement, int times, String issue) {
-            this.statement = statement;
-            this.times = times;
-            this.issue = issue;
+        protected RepeatOnFailure(Repeat someParams, RunNotifier aNotifier, Statement aStatement) {
+            params = someParams;
+            notifier = aNotifier;
+            next = aStatement;
         }
 
         @Override
@@ -206,11 +218,11 @@ public class RandomBug {
             Error error = new AssertionError(String.format(
                     "No success after %d tries. Either the bug is not random "
                             + "or you should increase the 'onFailure' value.\n"
-                            + "Issue: %s", times, issue));
-            for (int i = 1; i <= times; i++) {
+                            + "Issue: %s", params.onFailure(), issue));
+            for (int i = 1; i <= params.onFailure(); i++) {
                 MDC.put("fRepeat", i);
                 try {
-                    statement.evaluate();
+                    next.evaluate();
                     return;
                 } catch (Throwable t) {
                     error.addSuppressed(t);
@@ -223,16 +235,17 @@ public class RandomBug {
     }
 
     protected static class RepeatOnSuccess extends Statement {
-        protected final int times;
 
         protected final Statement statement;
 
-        protected String issue;
+        protected final RunNotifier notifier;
 
-        protected RepeatOnSuccess(Statement statement, int times, String issue) {
-            this.statement = statement;
-            this.times = times;
-            this.issue = issue;
+        protected final Repeat params;
+
+        protected RepeatOnSuccess(Repeat someParams, RunNotifier aNotifier, Statement aStatement) {
+            params = someParams;
+            statement = aStatement;
+            notifier = aNotifier;
         }
 
         @Override
@@ -240,8 +253,8 @@ public class RandomBug {
             Error error = new AssertionError(String.format(
                     "No failure after %d tries. Either the bug is fixed "
                             + "or you should increase the 'onSuccess' value.\n"
-                            + "Issue: %s", times, issue));
-            for (int i = 1; i <= times; i++) {
+                            + "Issue: %s", params.onSuccess(), params.issue()));
+            for (int i = 1; i <= params.onSuccess(); i++) {
                 MDC.put("fRepeat", i);
                 try {
                     statement.evaluate();
@@ -267,7 +280,7 @@ public class RandomBug {
         }
     }
 
-    protected Statement onRepeat(Repeat aRepeat, Statement aStatement) {
+    protected Statement onRepeat(Repeat aRepeat, RunNotifier aNotifier, Statement aStatement) {
         if (aRepeat == null) {
             return aStatement;
         }
@@ -275,11 +288,9 @@ public class RandomBug {
         case BYPASS:
             return new NoopStatement(aRepeat.issue());
         case STRICT:
-            return new RepeatOnSuccess(aStatement, aRepeat.onSuccess(),
-                    aRepeat.issue());
+            return new RepeatOnSuccess(aRepeat, aNotifier, aStatement);
         case RELAX:
-            return new RepeatOnFailure(aStatement, aRepeat.onFailure(),
-                    aRepeat.issue());
+            return new RepeatOnFailure(aRepeat, aNotifier, aStatement);
         }
         throw new IllegalArgumentException("no such mode");
     }

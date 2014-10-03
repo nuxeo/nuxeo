@@ -34,6 +34,7 @@ import org.junit.Rule;
 import org.junit.internal.AssumptionViolatedException;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
+import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
@@ -304,9 +305,8 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         });
     }
 
-    protected void configureBindings(final Binder binder) {
-        binder.bind(FeaturesRunner.class).toInstance(this);
-        binder.bind(TargetResourceLocator.class).toInstance(locator);
+    protected void configureBindings() {
+        final Binder binder = injector.getInstance(Binder.class);
         invokeFeatures(reversed(features), new FeatureCallable() {
 
             @Override
@@ -321,21 +321,29 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         return injector;
     }
 
-    public void resetInjector() {
-        injector = onInjector();
+    protected void resetInjector(RunNotifier aNotifier) {
+        injector = onInjector(aNotifier);
     }
 
-    protected Injector onInjector() {
-        return Guice.createInjector(Stage.DEVELOPMENT,new FeaturesModule(this));
+    protected Injector onInjector(RunNotifier aNotifier) {
+        Injector injector = Guice.createInjector(Stage.DEVELOPMENT,
+                new FeaturesModule(this, aNotifier));
+        for (RunnerFeature each : features) {
+            injector.injectMembers(each);
+        }
+        return injector;
     }
 
     protected static class FeaturesModule implements Module {
         protected final FeaturesRunner runner;
 
+        protected final RunNotifier notifier;
+
         protected Binder binder;
 
-        public FeaturesModule(FeaturesRunner aRunner) {
+        public FeaturesModule(FeaturesRunner aRunner, RunNotifier aNotifier) {
             runner = aRunner;
+            notifier = aNotifier;
         }
 
         @Override
@@ -343,12 +351,10 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             if (binder != null) {
                 throw new IllegalStateException("Cannot re-enter");
             }
-            binder = aBinder;
-            try {
-                runner.configureBindings(aBinder);
-            } finally {
-                binder = null;
-            }
+            binder.bind(Binder.class).toInstance(aBinder);
+            binder.bind(FeaturesRunner.class).toInstance(runner);
+            binder.bind(RunNotifier.class).toInstance(notifier);
+            binder.bind(TargetResourceLocator.class).toInstance(runner.locator);
         }
     }
 
@@ -364,7 +370,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             initialize();
             start();
             beforeRun();
-            resetInjector();
+            configureBindings();
             next.evaluate();
         }
 
@@ -404,18 +410,28 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         return actual;
     }
 
+    protected RulesFactory<ClassRule, TestRule> testRulesFactory = new RulesFactory<>(
+            ClassRule.class, TestRule.class);
+
+    protected RulesFactory<Rule, TestRule> methodRulesFactory = new RulesFactory<>(
+            Rule.class, TestRule.class);
+
+    @Override
+    protected Statement classBlock(final RunNotifier aNotifier) {
+        resetInjector(aNotifier);
+        return super.classBlock(aNotifier);
+    }
+
     @Override
     protected List<TestRule> classRules() {
-        List<TestRule> rules = new ArrayList<>();
-        for (Class<?> each : featureClasses) {
-            TestClass type = new TestClass(each);
-            rules.addAll(type.getAnnotatedMethodValues(null, ClassRule.class,
-                    TestRule.class));
-            rules.addAll(type.getAnnotatedFieldValues(null, ClassRule.class,
-                    TestRule.class));
+        List<TestRule> actual = new ArrayList<>();
+
+        for (Class<?> eachFeature : featureClasses) {
+            TestClass type = new TestClass(eachFeature);
+            actual.addAll(testRulesFactory.onRules(type, null));
         }
-        rules.addAll(super.classRules());
-        return rules;
+        actual.addAll(super.classRules());
+        return actual;
     }
 
     protected class BeforeMethodRunStatement extends Statement {
@@ -524,16 +540,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     @Override
     protected List<TestRule> getTestRules(Object target) {
-        List<TestRule> rules = new ArrayList<>();
-        for (RunnerFeature each : features) {
-            TestClass type = new TestClass(each.getClass());
-            rules.addAll(type.getAnnotatedMethodValues(each, Rule.class,
-                    TestRule.class));
-            rules.addAll(type.getAnnotatedFieldValues(each, Rule.class,
-                    TestRule.class));
-        }
-        rules.addAll(super.getTestRules(target));
-        return rules;
+        return methodRulesFactory.onRules(getTestClass(), target);
     }
 
     @Override
@@ -557,7 +564,9 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     @Override
     public Object createTest() throws Exception {
         return underTest = super.createTest();
-        // injector.getInstance(getTestClass().getJavaClass());
+        // TODO
+        // final Class<?> testType = underTest.getClass();
+        // injector.getInstance(Binder.class).bind(testType).toInstance(testType.cast(underTest));
     }
 
     @Override
@@ -618,6 +627,47 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         if (errors.getSuppressed().length > 0) {
             throw errors;
         }
+    }
+
+    protected class RulesFactory<A extends Annotation, R> {
+
+        protected final Class<A> annotationType;
+
+        protected final Class<R> ruleType;
+
+        protected RulesFactory(Class<A> anAnnotationType, Class<R> aRuleType) {
+            annotationType = anAnnotationType;
+            ruleType = aRuleType;
+        }
+
+        protected List<R> onRules(TestClass aType, Object aTest) {
+            List<R> actual = new ArrayList<>();
+            for (R each : aType.getAnnotatedFieldValues(aTest, annotationType,
+                    ruleType)) {
+                actual.add(each);
+            }
+
+            for (FrameworkMethod each : aType
+                .getAnnotatedMethods(annotationType)) {
+                actual.add(onRule(ruleType, each, aTest));
+            }
+
+            return actual;
+        }
+
+        protected R onRule(Class<R> aRuleType, FrameworkMethod aMethod,
+                Object aTarget, Object... someParms) {
+            try {
+                R aRule = aRuleType.cast(aMethod.invokeExplosively(aTarget,
+                        someParms));
+                injector.injectMembers(aRule);
+                return aRule;
+            } catch (Throwable cause) {
+                throw new RuntimeException(
+                        "Errors in rules factory " + aMethod, cause);
+            }
+        }
+
     }
 
 }
