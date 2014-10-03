@@ -4,13 +4,13 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouttypes">
 
-    <layoutType name="thumbnail">
+    <layoutType name="listingThumbnail">
       <categories>
         <category>jsf</category>
       </categories>
       <templates>
         <template mode="any">
-          /layouts/layout_thumbnail_template.xhtml
+          /layouts/layout_listing_thumbnail_template.xhtml
         </template>
         <template mode="csv">
           /layouts/layout_listing_csv_template.xhtml
@@ -35,7 +35,7 @@
         </description>
         <properties>
           <defaultValues mode="any">
-            <property name="display">block</property>
+            <property name="thumbnailHeaderLayout">listing_thumbnail_header</property>
           </defaultValues>
         </properties>
       </configuration>

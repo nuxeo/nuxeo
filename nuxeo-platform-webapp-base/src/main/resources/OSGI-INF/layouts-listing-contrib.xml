@@ -2000,6 +2000,25 @@
       </columns>
     </layout>
 
+    <layout name="listing_thumbnail_header">
+      <templates>
+        <template mode="any">
+          /layouts/layout_div_template.xhtml
+        </template>
+      </templates>
+      <columns>
+        <column>
+          <widget>listing_ajax_selection_box</widget>
+        </column>
+        <column>
+          <widget>listing_thumbnail</widget>
+        </column>
+        <column>
+          <widget>listing_title_link</widget>
+        </column>
+      </columns>
+    </layout>
+
   </extension>
 
 </component>
