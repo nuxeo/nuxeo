@@ -16,16 +16,22 @@
  */
 package org.nuxeo.elasticsearch.test.rest;
 
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentListWriter;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -42,14 +48,10 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RandomBug;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
  * Test the various ways to get elasticsearch Json output.
@@ -57,7 +59,7 @@ import static org.junit.Assert.assertTrue;
  * @since 5.9.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RestServerFeature.class, RepositoryElasticSearchFeature.class })
+@Features({ TransactionalFeature.class, RestServerFeature.class, RepositoryElasticSearchFeature.class, RandomBug.Feature.class })
 @Jetty(port = 18090)
 @LocalDeploy({"org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml",
         "org.nuxeo.ecm.platform.restapi.test:elasticsearch-test-contrib.xml"})

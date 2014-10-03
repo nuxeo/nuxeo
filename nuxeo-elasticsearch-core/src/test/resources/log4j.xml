@@ -18,10 +18,22 @@
     <param name="File" value="target/trace.log" />
     <param name="Append" value="false" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} [%t] %-5p [%C{1}] %m%n" />
+      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} [%t] %-5p [%C{1}] %m %X%n" />
     </layout>
   </appender>
 
+  <appender name="POOL" class="org.apache.log4j.FileAppender">
+    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
+    <param name="File" value="target/pool.log" />
+    <param name="Append" value="false" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} [%t] %-5p [%C{1}] %m %X%n" />
+    </layout>
+  </appender>
+
+  <category name="org.nuxeo.ecm.core.management.jtajca" additivity="false">
+    <appender-ref ref="POOL"/>
+  </category>
 
   <root>
     <priority value="TRACE" />
