@@ -13,7 +13,7 @@
     value="#{nxu:test(!empty widgetProperty_acceptedExtensions, widgetProperty_acceptedExtensions, '.jpg, .jpeg, .png, .gif, .tif, .tiff, .psd, .raw, .ai, .svg, .ps, .eps, .epsi, .epsf, .xcf, .bmp')}" />
 
   <nxu:inputFile id="#{widget.id}" value="#{field}"
-    filename="#{field.filename}" required="#{widget.required}" editFilename="false"
+    filename="#{field.filename}" required="#{widgetProperty_required}" editFilename="false"
     onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}">
     <nxu:validateFileMimetype extensions="#{acceptedExtensions}" hidden="true" />
   </nxu:inputFile>
