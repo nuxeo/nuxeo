@@ -28,7 +28,7 @@ public class LogEntryGen {
         return infos;
     }
 
-    protected static LogEntry doCreateEntry(String docId, String eventId,
+    public static LogEntry doCreateEntry(String docId, String eventId,
             String category) {
         LogEntry createdEntry = new LogEntryImpl();
         createdEntry.setEventId(eventId);

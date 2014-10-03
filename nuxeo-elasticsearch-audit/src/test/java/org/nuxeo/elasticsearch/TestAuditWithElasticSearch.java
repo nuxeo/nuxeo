@@ -74,21 +74,6 @@ public class TestAuditWithElasticSearch {
         Assert.assertTrue(backend instanceof ESAuditBackend);
     }
 
-    /*
-    protected void flushAndSync() throws Exception {
-
-        TransactionHelper.commitOrRollbackTransaction();
-
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-
-        esa.getClient().admin().indices().prepareFlush(ESAuditBackend.IDX_NAME).execute().actionGet();
-        esa.getClient().admin().indices().prepareRefresh(
-                ESAuditBackend.IDX_NAME).execute().actionGet();
-
-        TransactionHelper.startTransaction();
-
-    }*/
-
     @Test
     public void shouldLogInAudit() throws Exception {
         // generate events
@@ -125,27 +110,6 @@ public class TestAuditWithElasticSearch {
                 "A modified File",
                 trail.get(1).getExtendedInfos().get("title").getValue(
                         String.class));
-    }
-
-    protected Map<String, ExtendedInfo> createExtendedInfos() {
-        Map<String, ExtendedInfo> infos = new HashMap<String, ExtendedInfo>();
-        ExtendedInfo info = ExtendedInfoImpl.createExtendedInfo(new Long(1));
-        infos.put("id", info);
-        return infos;
-    }
-
-    protected LogEntry doCreateEntry(String docId, String eventId,
-            String category) {
-        LogEntry createdEntry = new LogEntryImpl();
-        createdEntry.setEventId(eventId);
-        createdEntry.setCategory(category);
-        createdEntry.setDocUUID(docId);
-        createdEntry.setEventDate(new Date());
-        createdEntry.setDocPath("/" + docId);
-        createdEntry.setRepositoryId("test");
-        createdEntry.setExtendedInfos(createExtendedInfos());
-
-        return createdEntry;
     }
 
     @Test

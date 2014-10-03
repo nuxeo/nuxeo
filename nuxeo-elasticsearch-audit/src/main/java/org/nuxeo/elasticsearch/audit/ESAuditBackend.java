@@ -52,6 +52,9 @@ import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.work.AbstractWork;
+import org.nuxeo.ecm.core.work.api.Work;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -60,6 +63,7 @@ import org.nuxeo.ecm.platform.audit.api.query.DateRangeParser;
 import org.nuxeo.ecm.platform.audit.service.AbstractAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.BaseLogEntryProvider;
+import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
@@ -67,6 +71,7 @@ import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONWriter;
 import org.nuxeo.elasticsearch.seqgen.SequenceGenerator;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.sun.star.uno.RuntimeException;
 
@@ -522,5 +527,52 @@ public class ESAuditBackend extends AbstractAuditBackend implements
             }
         }
         return false;
+    }
+            
+    public void migrate(final int batchSize) throws Exception {
+        
+        final AuditBackend sourceBackend = new DefaultAuditBackend();
+        sourceBackend.activate(component);
+                        
+        List<Long> res = (List<Long>) sourceBackend.nativeQuery("select count(*) from LogEntry", 1,20);
+        
+        final long nbEntriesToMigrate = res.get(0).longValue();
+        
+        Work migrationWork = new AbstractWork("AuditMigration") {
+            
+            @Override
+            public String getTitle() {
+                return "Audit migration worker";
+            }
+            
+            @Override
+            public void work() throws Exception {
+                TransactionHelper.commitOrRollbackTransaction();
+                try {
+        
+                    long nbEntriesMigrated=0;
+                    int pageIdx =  0;
+                    
+                    while (nbEntriesMigrated < nbEntriesToMigrate) {
+                        List<LogEntry> entries = (List<LogEntry>)sourceBackend.nativeQuery("from LogEntry log order by log.id asc", pageIdx, batchSize);
+                        
+                        if (entries.size()==0) {
+                            log.warn("Migration ending after " + nbEntriesMigrated + " entries");
+                            break;
+                        }                        
+                        setProgress(new Progress(nbEntriesMigrated, nbEntriesToMigrate));
+                        addLogEntries(entries);
+                        pageIdx++;
+                        nbEntriesMigrated+=entries.size();
+                        log.debug("migrated " + nbEntriesMigrated + " log entries on " + nbEntriesToMigrate);
+                    }
+                } finally {
+                    TransactionHelper.startTransaction();
+                }                
+            }
+        };
+                
+        Framework.getService(WorkManager.class).schedule (migrationWork);        
+                
     }
 }
