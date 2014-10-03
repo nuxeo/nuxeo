@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-20014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -46,31 +47,21 @@ public class ConverterBasedHtmlPreviewAdapter extends
 
     private static final Log log = LogFactory.getLog(ConverterBasedHtmlPreviewAdapter.class);
 
-    protected static PreviewAdapterManager previewManager;
-
-    protected static ConversionService cs;
-
     protected String defaultFieldXPath;
 
     protected MimetypeRegistry mimeTypeService;
 
-    public static ConversionService getConversionService() throws Exception {
-        if (cs == null) {
-            cs = Framework.getService(ConversionService.class);
-        }
-        return cs;
+    public ConversionService getConversionService() throws Exception {
+        return Framework.getService(ConversionService.class);
     }
 
     @Override
     protected PreviewAdapterManager getPreviewManager() throws PreviewException {
-        if (previewManager == null) {
-            try {
-                previewManager = Framework.getService(PreviewAdapterManager.class);
-            } catch (Exception e) {
-                throw new PreviewException(e);
-            }
+        try {
+            return Framework.getService(PreviewAdapterManager.class);
+        } catch (Exception e) {
+            throw new PreviewException(e);
         }
-        return previewManager;
     }
 
     protected static String getMimeType(Blob blob) {
@@ -119,7 +110,7 @@ public class ConverterBasedHtmlPreviewAdapter extends
         BlobHolder blobHolder2preview = getBlobHolder2preview(xpath);
         Blob blob2Preview = getBlob2preview(blobHolder2preview);
 
-        List<Blob> blobResults = new ArrayList<Blob>();
+        List<Blob> blobResults = new ArrayList<>();
 
         String srcMT = getMimeType(blob2Preview);
         log.debug("Source type for HTML preview =" + srcMT);
@@ -183,6 +174,7 @@ public class ConverterBasedHtmlPreviewAdapter extends
 
     /**
      * Returns a blob holder suitable for a preview.
+     *
      * @param xpath
      * @param adaptedDoc
      * @return
