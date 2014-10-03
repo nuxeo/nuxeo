@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.filemanager.core.listener.tests;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -82,6 +83,14 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
         String icon = (String) file.getProperty("common", "icon");
         assertNotNull(icon);
         assertEquals("/icons/pdf.png", icon);
+        assertTrue((Long)file.getPropertyValue("common:size") > 0L);
+
+        // removing blob
+        removeMainBlob(file);
+        icon = (String) file.getProperty("common", "icon");
+        assertNotNull(icon);
+        assertEquals("/icons/pdf.png", icon);
+        assertEquals(0L, file.getPropertyValue("common:size"));
     }
 
     /**
@@ -199,6 +208,13 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
         getCoreSession().save();
 
         return fileDoc;
+    }
+
+    protected DocumentModel removeMainBlob(DocumentModel doc) throws ClientException {
+        doc.setPropertyValue("file:content", null);
+        doc = getCoreSession().saveDocument(doc);
+        getCoreSession().save();
+        return doc;
     }
 
     protected DocumentModel createWorkspace() throws ClientException {
