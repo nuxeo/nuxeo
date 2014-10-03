@@ -65,7 +65,7 @@
       <cacheSize>1</cacheSize>
 
       <resultLayouts>
-        <layout name="thumbnail_listing_ajax" title="document_thumbnail_listing"
+        <layout name="thumbnail_listing" title="document_thumbnail_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
           showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
         <layout name="search_listing_ajax" title="document_listing"
@@ -128,7 +128,7 @@
       <cacheSize>1</cacheSize>
 
       <resultLayouts>
-        <layout name="thumbnail_listing_ajax" title="document_thumbnail_listing"
+        <layout name="thumbnail_listing" title="document_thumbnail_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
           showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
         <layout name="search_listing_ajax" title="document_listing"
@@ -172,7 +172,7 @@
       <cacheSize>1</cacheSize>
 
       <resultLayouts>
-        <layout name="thumbnail_listing_ajax" title="document_thumbnail_listing"
+        <layout name="thumbnail_listing" title="document_thumbnail_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
           showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
         <layout name="search_listing_ajax" title="document_listing"
@@ -713,26 +713,7 @@
       </rows>
     </layout>
 
-    <layout name="thumbnail_listing_header">
-      <templates>
-        <template mode="any">
-          /layouts/layout_div_template.xhtml
-        </template>
-      </templates>
-      <columns>
-        <column>
-          <widget>listing_ajax_selection_box</widget>
-        </column>
-        <column>
-          <widget>listing_thumbnail</widget>
-        </column>
-        <column>
-          <widget>listing_title_link</widget>
-        </column>
-      </columns>
-    </layout>
-
-    <layout name="thumbnail_listing_ajax" type="thumbnail">
+    <layout name="thumbnail_listing" type="listingThumbnail">
       <columns>
         <column name="last_contributor">
           <properties mode="any">
