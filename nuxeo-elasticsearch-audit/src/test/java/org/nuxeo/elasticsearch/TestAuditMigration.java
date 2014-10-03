@@ -115,8 +115,6 @@ public class TestAuditMigration {
                 + "                      }\n" + "                    }\n"
                 + "                  }\n" + "                }\n"
                 + "              }          \n" + "";
-
-        //String matchAll = "{ \"match_all\" : { }}";
         List<LogEntry> migratedEntries = (List<LogEntry>) backend.nativeQuery(singleQuery, 0,1001);        
         Assert.assertEquals(1000, migratedEntries.size());                       
     }

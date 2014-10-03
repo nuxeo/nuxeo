@@ -22,7 +22,6 @@
     </layout>
   </appender>
 
-
   <root>
     <priority value="TRACE" />
     <appender-ref ref="CONSOLE" />

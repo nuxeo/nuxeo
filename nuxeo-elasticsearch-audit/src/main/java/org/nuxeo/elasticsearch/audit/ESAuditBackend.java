@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.Work;
+import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
@@ -529,16 +530,25 @@ public class ESAuditBackend extends AbstractAuditBackend implements
         return false;
     }
             
-    public void migrate(final int batchSize) throws Exception {
+    public String migrate(final int batchSize) throws Exception {
         
         final AuditBackend sourceBackend = new DefaultAuditBackend();
         sourceBackend.activate(component);
-                        
+
+        final String MIGRATION_WORK_ID="AuditMigration";
+        
+        WorkManager wm = Framework.getService(WorkManager.class);
+        
+        State migrationState = wm.getWorkState(MIGRATION_WORK_ID);
+        if (migrationState!=null) {            
+            return "Migration already scheduled : " + migrationState.toString();
+        }
+        
         List<Long> res = (List<Long>) sourceBackend.nativeQuery("select count(*) from LogEntry", 1,20);
         
         final long nbEntriesToMigrate = res.get(0).longValue();
         
-        Work migrationWork = new AbstractWork("AuditMigration") {
+        Work migrationWork = new AbstractWork(MIGRATION_WORK_ID) {
             
             @Override
             public String getTitle() {
@@ -550,6 +560,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements
                 TransactionHelper.commitOrRollbackTransaction();
                 try {
         
+                    long t0 = System.currentTimeMillis();
                     long nbEntriesMigrated=0;
                     int pageIdx =  0;
                     
@@ -564,7 +575,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements
                         addLogEntries(entries);
                         pageIdx++;
                         nbEntriesMigrated+=entries.size();
-                        log.debug("migrated " + nbEntriesMigrated + " log entries on " + nbEntriesToMigrate);
+                        log.info("migrated " + nbEntriesMigrated + " log entries on " + nbEntriesToMigrate);
+                        log.info("migration speed " + (nbEntriesMigrated/((System.currentTimeMillis()-t0)/1000)) + " entries/s");
                     }
                 } finally {
                     TransactionHelper.startTransaction();
@@ -572,7 +584,9 @@ public class ESAuditBackend extends AbstractAuditBackend implements
             }
         };
                 
-        Framework.getService(WorkManager.class).schedule (migrationWork);        
-                
+        wm.schedule (migrationWork);
+        
+        return "Migration work started : " + MIGRATION_WORK_ID;
+
     }
 }
