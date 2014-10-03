@@ -23,9 +23,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.apache.log4j.MDC;
+import org.junit.ClassRule;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.internal.AssumptionViolatedException;
 import org.junit.rules.MethodRule;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
@@ -81,46 +85,32 @@ import org.junit.runners.model.Statement;
  * </blockquote> In the above example, the test fails sometimes.<br>
  * With the {@code @RandomBugRule.Repeat} annotation, it will be repeated in
  * case of failure up to 5 times until success. This is the default
- * {@link MODE#RELAX} mode.<br>
- * In order to reproduce the bug, use the {@link MODE#STRICT} mode. It will be
+ * {@link Mode#RELAX} mode.<br>
+ * In order to reproduce the bug, use the {@link Mode#STRICT} mode. It will be
  * repeated in case of success up to 50 times until failure.<br>
- * In {@link MODE#BYPASS} mode, the test is ignored.
+ * In {@link Mode#BYPASS} mode, the test is ignored.
  * </p>
  *
- * @see MODE
+ * @see Mode
  * @see MODE_PROPERTY
  * @since 5.9.5
  */
-public class RandomBug implements MethodRule {
+public class RandomBug {
 
-    public static final String MODE_PROPERTY = "nuxeo.tests.random.mode";
+    protected static final RandomBug self = new RandomBug();
 
-    /**
-     * <ul>
-     * <li>BYPASS: the test is ignored. Like with @{@link Ignore} JUnit
-     * annotation.</li>
-     * <li>STRICT: the test must fail. On success, the test is repeated until
-     * failure or the limit number of tries {@link Repeat#onSuccess()} is
-     * reached. If it does not fail during the tries, then the whole test class
-     * is marked as failed.</li>
-     * <li>RELAX: the test must succeed. On failure, the test is repeated until
-     * success or the limit number of tries {@link Repeat#onFailure()} is
-     * reached.</li>
-     * </ul>
-     */
-    public static enum MODE {
-        BYPASS, STRICT, RELAX
-    };
+    public static class Feature extends SimpleFeature {
+        @ClassRule // TODO change the way of injecting the class rule in features runner
+        public static final TestRule test = self.onClass();
 
-    /**
-     * The default mode if {@link MODE_PROPERTY} is not set.
-     */
-    public static final MODE DEFAULT = MODE.RELAX;
+        @Rule
+        public final MethodRule method = self.onMethod();
+    }
 
     /**
      * Repeat condition based on
      *
-     * @see MODE
+     * @see Mode
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.METHOD, ElementType.TYPE })
@@ -143,14 +133,69 @@ public class RandomBug implements MethodRule {
         int onFailure() default 10;
     }
 
-    private static class RepeatOnFailure extends Statement {
-        private final int times;
+    public static final String MODE_PROPERTY = "nuxeo.tests.random.mode";
 
-        private final Statement statement;
+    /**
+     * <ul>
+     * <li>BYPASS: the test is ignored. Like with @{@link Ignore} JUnit
+     * annotation.</li>
+     * <li>STRICT: the test must fail. On success, the test is repeated until
+     * failure or the limit number of tries {@link Repeat#onSuccess()} is
+     * reached. If it does not fail during the tries, then the whole test class
+     * is marked as failed.</li>
+     * <li>RELAX: the test must succeed. On failure, the test is repeated until
+     * success or the limit number of tries {@link Repeat#onFailure()} is
+     * reached.</li>
+     * </ul>
+     */
+    public static enum Mode {
+        BYPASS, STRICT, RELAX
+    };
 
-        private String issue;
+    /**
+     * The default mode if {@link MODE_PROPERTY} is not set.
+     */
+    public final Mode DEFAULT = Mode.STRICT;
 
-        private RepeatOnFailure(Statement statement, int times, String issue) {
+    protected Mode fetchMode() {
+        String mode = System.getProperty(MODE_PROPERTY, DEFAULT.name());
+        return Mode.valueOf(mode.toUpperCase());
+    }
+
+
+
+    protected TestRule onClass() {
+        return new TestRule() {
+
+            @Override
+            public Statement apply(Statement base, Description description) {
+                Repeat repeat = description.getTestClass().getAnnotation(
+                        Repeat.class);
+                return onRepeat(repeat, base);
+            }
+        };
+    }
+
+    protected MethodRule onMethod() {
+        return new MethodRule() {
+            @Override
+            public Statement apply(Statement statement, FrameworkMethod method,
+                    Object target) {
+                Repeat repeat = method.getAnnotation(Repeat.class);
+                return onRepeat(repeat, statement);
+            }
+
+        };
+    }
+
+    protected static class RepeatOnFailure extends Statement {
+        protected final int times;
+
+        protected final Statement statement;
+
+        protected String issue;
+
+        protected RepeatOnFailure(Statement statement, int times, String issue) {
             this.statement = statement;
             this.times = times;
             this.issue = issue;
@@ -177,14 +222,14 @@ public class RandomBug implements MethodRule {
         }
     }
 
-    private static class RepeatOnSuccess extends Statement {
-        private final int times;
+    protected static class RepeatOnSuccess extends Statement {
+        protected final int times;
 
-        private final Statement statement;
+        protected final Statement statement;
 
-        private String issue;
+        protected String issue;
 
-        private RepeatOnSuccess(Statement statement, int times, String issue) {
+        protected RepeatOnSuccess(Statement statement, int times, String issue) {
             this.statement = statement;
             this.times = times;
             this.issue = issue;
@@ -208,8 +253,8 @@ public class RandomBug implements MethodRule {
         }
     }
 
-    private static class NoopStatement extends Statement {
-        private String issue;
+    protected static class NoopStatement extends Statement {
+        protected String issue;
 
         public NoopStatement(String issue) {
             this.issue = issue;
@@ -222,34 +267,21 @@ public class RandomBug implements MethodRule {
         }
     }
 
-    @Override
-    public Statement apply(Statement statement, FrameworkMethod method,
-            Object target) {
-        Repeat repeat = method.getAnnotation(Repeat.class);
-        if (repeat == null) {
-            repeat = target.getClass().getAnnotation(Repeat.class);
+    protected Statement onRepeat(Repeat aRepeat, Statement aStatement) {
+        if (aRepeat == null) {
+            return aStatement;
         }
-        if (repeat == null) {
-            return statement;
-        }
-        switch (getMode()) {
+        switch (fetchMode()) {
         case BYPASS:
-            return new NoopStatement(repeat.issue());
+            return new NoopStatement(aRepeat.issue());
         case STRICT:
-            return new RepeatOnSuccess(statement, repeat.onSuccess(),
-                    repeat.issue());
+            return new RepeatOnSuccess(aStatement, aRepeat.onSuccess(),
+                    aRepeat.issue());
         case RELAX:
-            return new RepeatOnFailure(statement, repeat.onFailure(),
-                    repeat.issue());
-        default:
-            return statement;
+            return new RepeatOnFailure(aStatement, aRepeat.onFailure(),
+                    aRepeat.issue());
         }
-
-    }
-
-    public static MODE getMode() {
-        String mode = System.getProperty(MODE_PROPERTY, DEFAULT.name());
-        return MODE.valueOf(mode.toUpperCase());
+        throw new IllegalArgumentException("no such mode");
     }
 
 }

@@ -22,12 +22,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.MethodRule;
 import org.junit.runner.JUnitCore;
@@ -36,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 import org.nuxeo.runtime.test.Failures;
+import org.nuxeo.runtime.test.runner.RandomBug.Repeat;
 
 /**
  * Tests verifying that test fixtures ({@link Before} and {@link After}) and
@@ -73,10 +76,10 @@ public class RandomBugTest {
     }
 
     @RunWith(FeaturesRunner.class)
-    @Features({ RuntimeFeature.class })
+    @Features({ RandomBug.Feature.class })
     public static class BeforeWithIgnoredTest {
 
-        @Rule
+        @ClassRule
         public static final IgnoreInner ignoreInner = new IgnoreInner();
 
         @Before
@@ -94,17 +97,17 @@ public class RandomBugTest {
     @Test
     public void beforeShouldNotRunWhenAllTestsAreIgnored() {
         System.setProperty(RandomBug.MODE_PROPERTY,
-                RandomBug.MODE.BYPASS.toString());
+                RandomBug.Mode.BYPASS.toString());
         runClassAndVerifyNoFailures(
                 BeforeWithIgnoredTest.class,
                 "Before method should not have been executed because the test method is ignored");
     }
 
     @RunWith(FeaturesRunner.class)
-    @Features({ RuntimeFeature.class })
+    @Features({ RandomBug.Feature.class })
     public static class AfterWithIgnoredTest {
 
-        @Rule
+        @ClassRule
         public static final IgnoreInner ignoreInner = new IgnoreInner();
 
         @Test
@@ -122,16 +125,16 @@ public class RandomBugTest {
     @Test
     public void afterShouldNotRunWhenAllTestsAreIgnored() {
         System.setProperty(RandomBug.MODE_PROPERTY,
-                RandomBug.MODE.BYPASS.toString());
+                RandomBug.Mode.BYPASS.toString());
         runClassAndVerifyNoFailures(AfterWithIgnoredTest.class,
                 "After method should not have been executed because the test method is ignored");
     }
 
     @RunWith(FeaturesRunner.class)
-    @Features({ RuntimeFeature.class })
+    @Features({ RandomBug.Feature.class })
     public static class RandomlyFailingTest {
 
-        @Rule
+        @ClassRule
         public static final IgnoreInner ignoreInner = new IgnoreInner();
 
         @Test
@@ -155,7 +158,7 @@ public class RandomBugTest {
     @Test
     public void testBypass() {
         System.setProperty(RandomBug.MODE_PROPERTY,
-                RandomBug.MODE.BYPASS.toString());
+                RandomBug.Mode.BYPASS.toString());
         runClassAndVerifyNoFailures(RandomlyFailingTest.class,
                 "Test should be ignored in BYPASS mode!");
     }
@@ -163,7 +166,7 @@ public class RandomBugTest {
     @Test
     public void testStrict() {
         System.setProperty(RandomBug.MODE_PROPERTY,
-                RandomBug.MODE.STRICT.toString());
+                RandomBug.Mode.STRICT.toString());
         Result result = JUnitCore.runClasses(RandomlyFailingTest.class);
         if (result.wasSuccessful() || result.getIgnoreCount() > 0
                 || result.getFailureCount() != result.getRunCount()) {
@@ -174,11 +177,60 @@ public class RandomBugTest {
     @Test
     public void testRelax() {
         System.setProperty(RandomBug.MODE_PROPERTY,
-                RandomBug.MODE.RELAX.toString());
+                RandomBug.Mode.RELAX.toString());
         Result result = JUnitCore.runClasses(RandomlyFailingTest.class);
         if (!result.wasSuccessful()) {
             Failures failures = new Failures(result.getFailures());
             fail("Unexpected failure: RELAX mode expects a success\n"
+                    + failures.toString());
+        }
+    }
+
+    public static class ThisFeature extends SimpleFeature {
+
+        public int repeated;
+
+        @Override
+        public void beforeSetup(FeaturesRunner runner) throws Exception {
+            repeated++;
+        }
+    }
+
+    @RunWith(FeaturesRunner.class)
+    @Features({ RandomBug.Feature.class, ThisFeature.class })
+    public static class RepeatFeaturesTest {
+
+        @ClassRule
+        public static final IgnoreInner ignoreInner = new IgnoreInner();
+
+        @Inject
+        public FeaturesRunner runner;
+
+        public ThisFeature feature;
+
+        @Before
+        public void injectFeature() {
+            feature = runner.getFeature(ThisFeature.class);
+        }
+
+        @Test
+        @Repeat(issue="repeatedTest", onFailure=5)
+        public void repeatedTest() {
+           if (feature.repeated < 5) {
+               fail("should fail");
+           }
+        }
+    }
+
+
+    @Test
+    public void shouldRepeatFeatures() {
+        System.setProperty(RandomBug.MODE_PROPERTY,
+                RandomBug.Mode.RELAX.toString());
+        Result result = JUnitCore.runClasses(RepeatFeaturesTest.class);
+        if (!result.wasSuccessful()) {
+            Failures failures = new Failures(result.getFailures());
+            fail("Unexpected failure\n"
                     + failures.toString());
         }
     }

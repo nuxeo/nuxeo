@@ -23,12 +23,30 @@ import java.lang.reflect.Method;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.internal.AssumptionViolatedException;
 import org.junit.rules.MethodRule;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
-public class ConditionalIgnoreRule implements MethodRule {
+public class ConditionalIgnoreRule implements MethodRule, TestRule {
+
+    public static class Feature extends SimpleFeature {
+        protected static final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
+
+        @ClassRule
+        public static TestRule classRule() {
+            return rule;
+        }
+
+        @Rule
+        public MethodRule methodRule() {
+            return rule;
+        }
+    }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.TYPE, ElementType.METHOD })
@@ -40,7 +58,6 @@ public class ConditionalIgnoreRule implements MethodRule {
         boolean shouldIgnore();
     }
 
-
     public static final class NXP10926H2Upgrade implements Condition {
 
         @Override
@@ -51,7 +68,8 @@ public class ConditionalIgnoreRule implements MethodRule {
     }
 
     public static final class IgnoreIsolated implements Condition {
-        boolean isIsolated = "org.nuxeo.runtime.testsuite.IsolatedClassloader".equals(getClass().getClassLoader().getClass().getName());
+        boolean isIsolated = "org.nuxeo.runtime.testsuite.IsolatedClassloader"
+            .equals(getClass().getClassLoader().getClass().getName());
 
         @Override
         public boolean shouldIgnore() {
@@ -74,12 +92,21 @@ public class ConditionalIgnoreRule implements MethodRule {
         Class<?> fixtureType = fixtureTarget.getClass();
         Method fixtureMethod = method.getMethod();
         if (fixtureType.isAnnotationPresent(Ignore.class)) {
-            check(fixtureType.getAnnotation(Ignore.class),
-                    fixtureType, fixtureMethod, fixtureTarget);
+            check(fixtureType.getAnnotation(Ignore.class), fixtureType,
+                    fixtureMethod, fixtureTarget);
         }
         if (fixtureMethod.isAnnotationPresent(Ignore.class)) {
-            check(fixtureMethod.getAnnotation(Ignore.class),
-                    fixtureType, fixtureMethod, fixtureTarget);
+            check(fixtureMethod.getAnnotation(Ignore.class), fixtureType,
+                    fixtureMethod, fixtureTarget);
+        }
+        return base;
+    }
+
+    @Override
+    public Statement apply(Statement base, Description description) {
+        Class<?> fixtureType = description.getTestClass();
+        if (fixtureType.isAnnotationPresent(Ignore.class)) {
+            check(fixtureType.getAnnotation(Ignore.class), fixtureType);
         }
         return base;
     }
@@ -88,19 +115,21 @@ public class ConditionalIgnoreRule implements MethodRule {
         check(ignore, type, null, null);
     }
 
-    protected void check(Ignore ignore, Class<?> type, Method method,Object target) {
+    protected void check(Ignore ignore, Class<?> type, Method method,
+            Object target) {
         Class<? extends Condition> conditionType = ignore.condition();
         if (conditionType == null) {
             return;
         }
         Condition condition = newCondition(type, method, target, conditionType);
-        if(condition.shouldIgnore()) {
-            throw new AssumptionViolatedException(condition.getClass().getSimpleName());
+        if (condition.shouldIgnore()) {
+            throw new AssumptionViolatedException(condition.getClass()
+                .getSimpleName());
         }
     }
 
-
-    protected Condition newCondition(Class<?> type, Method method, Object target, Class<? extends Condition> conditionType)
+    protected Condition newCondition(Class<?> type, Method method,
+            Object target, Class<? extends Condition> conditionType)
             throws Error {
         Condition condition;
         try {
@@ -114,9 +143,9 @@ public class ConditionalIgnoreRule implements MethodRule {
     }
 
     protected void injectCondition(Class<?> type, Method method, Object target,
-            Condition condition)
-            throws SecurityException, Error {
-        Error errors = new Error("Cannot inject condition parameters in " + condition.getClass());
+            Condition condition) throws SecurityException, Error {
+        Error errors = new Error("Cannot inject condition parameters in "
+                + condition.getClass());
         for (Field eachField : condition.getClass().getDeclaredFields()) {
             if (!eachField.isAnnotationPresent(Inject.class)) {
                 continue;
@@ -157,6 +186,7 @@ public class ConditionalIgnoreRule implements MethodRule {
             throw errors;
         }
     }
+
 
 
 }
