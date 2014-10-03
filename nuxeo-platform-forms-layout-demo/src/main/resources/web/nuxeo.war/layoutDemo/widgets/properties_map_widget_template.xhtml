@@ -14,7 +14,7 @@
 
       <nxu:inputList value="#{field}" id="#{widget.id}_input" model="model"
         template="#{layoutValue.newCustomProperty}"
-        required="#{widget.required}" diff="#{widget.properties['diff']}"
+        required="#{widgetProperty_required}" diff="#{widget.properties['diff']}"
         validator="#{layoutValue.validateCustomProperties}">
 
         <h:panelGrid columns="2">
@@ -60,7 +60,7 @@
 
   <nxu:inputList value="#{field}" id="#{widget.id}_input" model="model"
     template="#{layoutValue.newCustomProperty}"
-    required="#{widget.required}" diff="#{widget.properties['diff']}"
+    required="#{widgetProperty_required}" diff="#{widget.properties['diff']}"
     validator="#{layoutValue.validateCustomProperties}">
 
     <h:panelGrid columns="1">
