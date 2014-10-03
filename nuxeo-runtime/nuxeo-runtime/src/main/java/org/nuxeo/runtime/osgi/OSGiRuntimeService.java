@@ -251,7 +251,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     protected boolean loadConfigurationFromProvider() throws IOException {
         // TODO use a OSGi service for this.
-        Iterable<URL> provider = Environment.getDefault().getConfigurationProvider();
+        Iterable<URL> provider = Environment.getDefault()
+            .getConfigurationProvider();
         if (provider == null) {
             return false;
         }
@@ -453,7 +454,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         Properties props = new Properties();
         props.load(in);
         for (Entry<Object, Object> prop : props.entrySet()) {
-            properties.put(prop.getKey().toString(), prop.getValue().toString());
+            properties
+                .put(prop.getKey().toString(), prop.getValue().toString());
         }
     }
 
@@ -598,17 +600,17 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     protected File getEclipseBundleFileUsingReflection(Bundle bundle) {
         try {
-            Object proxy = bundle.getClass().getMethod("getLoaderProxy").invoke(
-                    bundle);
-            Object loader = proxy.getClass().getMethod("getBundleLoader").invoke(
-                    proxy);
-            URL root = (URL) loader.getClass().getMethod("findResource",
-                    String.class).invoke(loader, "/");
+            Object proxy = bundle.getClass().getMethod("getLoaderProxy")
+                .invoke(bundle);
+            Object loader = proxy.getClass().getMethod("getBundleLoader")
+                .invoke(proxy);
+            URL root = (URL) loader.getClass()
+                .getMethod("findResource", String.class).invoke(loader, "/");
             Field field = root.getClass().getDeclaredField("handler");
             field.setAccessible(true);
             Object handler = field.get(root);
-            Field entryField = handler.getClass().getSuperclass().getDeclaredField(
-                    "bundleEntry");
+            Field entryField = handler.getClass().getSuperclass()
+                .getDeclaredField("bundleEntry");
             entryField.setAccessible(true);
             Object entry = entryField.get(handler);
             Field fileField = entry.getClass().getDeclaredField("file");

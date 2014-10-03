@@ -31,7 +31,7 @@ import com.google.inject.Binder;
  * feature.initialize() --> can be used to configure nuxeo home or register JNDI objects
  * START FRAMEWORK
  * feature.start()
- * CREATE INJECTOR => feature.configure() --> can be used to add guice bindings and to dynamically deploy components using the harness
+ * feature.configure() --> can be used to add guice bindings and to dynamically deploy components using the harness
  * feature.beforeRun()
  * feature.beforeMethodRun()  --> test method interceptor
  * feature.afterMethodRun()   --> test method interceptor

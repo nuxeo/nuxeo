@@ -296,8 +296,6 @@ public class RuntimeFeature extends SimpleFeature {
             }
         }
         binder.bind(RuntimeHarness.class).toInstance(getHarness());
-        // binder.bind(FeaturesRunner.class).toInstance(runner);
-        // binder.bind(NuxeoRunner.class).toInstance(runner);
     }
 
     protected <T> void bind0(Binder binder, Class<T> type,

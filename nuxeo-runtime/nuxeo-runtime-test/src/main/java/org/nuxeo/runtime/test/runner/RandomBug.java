@@ -172,7 +172,8 @@ public class RandomBug {
     protected TestRule onClass() {
         return new TestRule() {
 
-            @Inject RunNotifier notifier;
+            @Inject
+            RunNotifier notifier;
 
             @Override
             public Statement apply(Statement base, Description description) {
@@ -185,7 +186,8 @@ public class RandomBug {
 
     protected MethodRule onMethod() {
         return new MethodRule() {
-            @Inject RunNotifier notifier;
+            @Inject
+            RunNotifier notifier;
 
             @Override
             public Statement apply(Statement statement, FrameworkMethod method,
@@ -207,7 +209,8 @@ public class RandomBug {
 
         protected String issue;
 
-        protected RepeatOnFailure(Repeat someParams, RunNotifier aNotifier, Statement aStatement) {
+        protected RepeatOnFailure(Repeat someParams, RunNotifier aNotifier,
+                Statement aStatement) {
             params = someParams;
             notifier = aNotifier;
             next = aStatement;
@@ -242,7 +245,8 @@ public class RandomBug {
 
         protected final Repeat params;
 
-        protected RepeatOnSuccess(Repeat someParams, RunNotifier aNotifier, Statement aStatement) {
+        protected RepeatOnSuccess(Repeat someParams, RunNotifier aNotifier,
+                Statement aStatement) {
             params = someParams;
             statement = aStatement;
             notifier = aNotifier;
@@ -280,7 +284,8 @@ public class RandomBug {
         }
     }
 
-    protected Statement onRepeat(Repeat aRepeat, RunNotifier aNotifier, Statement aStatement) {
+    protected Statement onRepeat(Repeat aRepeat, RunNotifier aNotifier,
+            Statement aStatement) {
         if (aRepeat == null) {
             return aStatement;
         }
