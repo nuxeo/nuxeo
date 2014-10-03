@@ -4,10 +4,31 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouttypes">
 
+    <layoutType name="listingTable">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <configuration>
+        <title>Layout listing displayed as table.</title>
+        <properties>
+          <defaultValues name="any">
+            <property name="showListingHeader">true</property>
+            <property name="showRowEvenOddClass">true</property>
+            <property name="display">table</property>
+          </defaultValues>
+        </properties>
+      </configuration>
+    </layoutType>
+
     <layoutType name="listingThumbnail">
-      <categories>
-        <category>jsf</category>
-      </categories>
       <templates>
         <template mode="any">
           /layouts/layout_listing_thumbnail_template.xhtml
@@ -29,7 +50,7 @@
         </template>
       </templates>
       <configuration>
-        <title>Layout thumbnail type</title>
+        <title>Layout listing displayed as thumbnail.</title>
         <description>
           <p>This layout type displays the layout in a box style using another layout for the box heading.</p>
         </description>

@@ -1466,23 +1466,7 @@
       </columns>
     </layout>
 
-    <layout name="document_listing_ajax">
-      <templates>
-        <template mode="any">
-          /layouts/layout_listing_ajax_template.xhtml
-        </template>
-        <template mode="csv">
-          /layouts/layout_listing_csv_template.xhtml
-        </template>
-        <template mode="pdf">
-          /layouts/layout_listing_pdf_template.xhtml
-        </template>
-      </templates>
-      <properties mode="any">
-        <property name="showListingHeader">true</property>
-        <property name="showRowEvenOddClass">true</property>
-        <property name="display">table</property>
-      </properties>
+    <layout name="document_listing_table" type="listingTable">
       <columns>
         <column>
           <properties mode="any">
