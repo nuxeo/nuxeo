@@ -204,8 +204,11 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     @Override
     protected void doStop() {
         bundleContext.removeFrameworkListener(this);
-        super.doStop();
-        context.destroy();
+        try {
+            super.doStop();
+        } finally {
+            context.destroy();
+        }
     }
 
     protected void loadComponents(Bundle bundle, RuntimeContext ctx) {
