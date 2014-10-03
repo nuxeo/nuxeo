@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -45,7 +45,7 @@ public class RedisEmbeddedLuaLibrary extends TwoArgFunction {
         return CoerceJavaToLua.coerce(value);
     }
 
-    class RedisCall extends LibFunction {
+    public class RedisCall extends LibFunction {
 
         @Override
         public Varargs invoke(Varargs varargs) {
@@ -65,22 +65,21 @@ public class RedisEmbeddedLuaLibrary extends TwoArgFunction {
             String opcode = (String) CoerceLuaToJava.coerce(luaOpcode,
                     String.class);
             String key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
-            switch (opcode.toLowerCase()) {
-            case "get": {
+            opcode = opcode.toLowerCase();
+            if ("get".equals(opcode)) {
                 return valueOfOrFalse(connection.get(key));
             }
-            case "del": {
-                return valueOfOrFalse(connection.del((String[]) CoerceLuaToJava.coerce(
-                        luaKey, String[].class)));
+            if ("del".equals(opcode)) {
+                return valueOfOrFalse(connection.del((String[]) CoerceLuaToJava
+                    .coerce(luaKey, String[].class)));
             }
-            case "keys": {
+            if ("keys".equals(opcode)) {
                 LuaTable table = LuaValue.tableOf();
                 int i = 0;
                 for (String value : connection.keys(key)) {
                     table.rawset(++i, LuaValue.valueOf(value));
                 }
                 return table;
-            }
             }
             throw new UnsupportedOperationException(opcode);
         }

@@ -5060,7 +5060,7 @@
               <dependency>
                 <groupId>org.eclipse.tycho</groupId>
                 <artifactId>tycho-compiler-jdt</artifactId>
-                <version>0.20.0</version>
+                <version>0.21.0</version>
               </dependency>
             </dependencies>
           </plugin>
