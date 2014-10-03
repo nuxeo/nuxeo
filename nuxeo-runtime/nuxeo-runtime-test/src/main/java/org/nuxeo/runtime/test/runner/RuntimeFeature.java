@@ -47,6 +47,7 @@ import com.google.inject.Binder;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+@Features({MDCFeature.class, ConditionalIgnoreRule.Feature.class, RandomBug.Feature.class})
 public class RuntimeFeature extends SimpleFeature {
 
     private static final Log log = LogFactory.getLog(RuntimeFeature.class);
