@@ -195,6 +195,10 @@ public class NxQueryBuilder {
 
     /**
      * Get the Elasticsearch queryBuilder.
+     *
+     * Note that it returns only the query part without order, limits nor
+     * aggregates, use the udpateRequest to get the full request.
+     *
      */
     public QueryBuilder makeQuery() {
         if (esQueryBuilder == null) {

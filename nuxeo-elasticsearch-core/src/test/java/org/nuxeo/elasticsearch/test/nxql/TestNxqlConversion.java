@@ -608,6 +608,25 @@ public class TestNxqlConversion {
                 + "}", es);
     }
 
+    @Test
+    public void testOrderByFromNxql() throws Exception {
+        NxQueryBuilder qb = new NxQueryBuilder(session)
+                .nxql("name='foo' ORDER BY name DESC").limit(10);
+        String es = qb.makeQuery().toString();
+        assertEqualsEvenUnderWindows("{\n"
+                + "  \"constant_score\" : {\n"
+                + "    \"filter\" : {\n"
+                + "      \"term\" : {\n"
+                + "        \"name\" : \"foo\"\n"
+                + "      }\n"
+                + "    }\n"
+                + "  }\n"
+                + "}", es);
+        Assert.assertEquals(1, qb.getSortInfos().size());
+        Assert.assertEquals("SortInfo [sortColumn=name, sortAscending=false]",
+                qb.getSortInfos().get(0).toString());
+    }
+
     protected void assertEqualsEvenUnderWindows(String expected, String actual) {
         if (SystemUtils.IS_OS_WINDOWS) {
             // make tests pass under Windows
