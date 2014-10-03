@@ -7,6 +7,9 @@ author: lkemen@nuxeo.com
 .select2-container {
   margin-bottom: .5em }
 
+.dataInput .select2-container {
+  margin-bottom: 0 }
+
 .select2-container .select2-choice,
 .select2-container-multi .select2-choices {
   background-image: none;
@@ -137,12 +140,12 @@ div.select2-container-disabled span.select2-arrow {
   box-shadow: none }
 
 .s2tagContainerCssClass .select2-choices .select2-input.select2-default {
-  background: url("${basePath}/icons/add.png") no-repeat scroll 0 5px transparent !important;
+  background: url("${basePath}/icons/action_add.gif") no-repeat scroll 0 5px transparent !important;
   padding-left: 1.5em;
   min-width: 9em }
 
 .s2tagContainerCssClass .select2-choices .select2-input {
-  background: url("${basePath}/icons/add.png") no-repeat scroll 0 5px transparent !important }
+  background: url("${basePath}/icons/action_add.gif") no-repeat scroll 0 5px transparent !important }
 
 .s2tagContainerCssClass .select2-choices .select2-input.select2-focused {
   background: none !important }
