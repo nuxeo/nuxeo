@@ -93,6 +93,7 @@
       <properties>
         <property name="widgetName">infoViewPreview</property>
       </properties>
+      <filter-id>view_preview</filter-id>
       <filter-id>denyInfoViewPreview</filter-id>
     </action>
 
