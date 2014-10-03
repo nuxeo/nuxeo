@@ -59,6 +59,8 @@ public class MimetypeIconUpdater implements EventListener {
 
     public static final String MAIN_BLOB_FIELD = "file:content";
 
+    public static final String MAIN_BLOB_SCHEMA = "file";
+
     @Deprecated
     // the length of the main blob is now stored inside the blob itself
     private static final String SIZE_FIELD = "common:size";
@@ -109,8 +111,9 @@ public class MimetypeIconUpdater implements EventListener {
                     }
                 }
 
-                // update the document icon according to the main blob
-                if (doc.getProperty(MAIN_BLOB_FIELD).isDirty()) {
+                // update the document icon and size according to the main blob
+                if (doc.hasSchema(MAIN_BLOB_SCHEMA)
+                        && doc.getProperty(MAIN_BLOB_FIELD).isDirty()) {
                     updateIconAndSizeFields(
                             doc,
                             getMimetypeRegistry(),
