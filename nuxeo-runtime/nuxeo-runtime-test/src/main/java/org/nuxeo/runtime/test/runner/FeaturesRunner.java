@@ -29,15 +29,16 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.MDC;
-import org.junit.Ignore;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.internal.AssumptionViolatedException;
-import org.junit.runner.notification.Failure;
-import org.junit.runner.notification.RunNotifier;
+import org.junit.rules.MethodRule;
+import org.junit.rules.TestRule;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
+import org.junit.runners.model.TestClass;
 import org.nuxeo.runtime.test.TargetResourceLocator;
 
 import com.google.common.collect.Lists;
@@ -45,6 +46,7 @@ import com.google.inject.Binder;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.Stage;
 
 /**
  * A Test Case runner that can be extended through features and provide
@@ -193,12 +195,12 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void initialize() throws Exception {
-        for (Class<? extends RunnerFeature> fc : featureClasses) {
-            RunnerFeature rf = fc.newInstance();
+        for (Class<? extends RunnerFeature> each : featureClasses) {
+            RunnerFeature rf = each.newInstance();
             features.add(rf);
         }
-        for (RunnerFeature feature : features) {
-            feature.initialize(this);
+        for (RunnerFeature each : features) {
+            each.initialize(this);
         }
     }
 
@@ -214,7 +216,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     protected void beforeMethodRun(final FrameworkMethod method,
             final Object test) throws Exception {
-        MDC.put("fMethod", method.getMethod());
         invokeFeatures(features, new FeatureCallable() {
 
             @Override
@@ -227,17 +228,13 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     protected void afterMethodRun(final FrameworkMethod method,
             final Object test) throws Exception {
-        try {
-            invokeFeatures(features, new FeatureCallable() {
+        invokeFeatures(features, new FeatureCallable() {
 
-                @Override
-                public void call(RunnerFeature feature) throws Exception {
-                    feature.afterMethodRun(FeaturesRunner.this, method, test);
-                }
-            });
-        } finally {
-            MDC.remove("fMethod");
-        }
+            @Override
+            public void call(RunnerFeature feature) throws Exception {
+                feature.afterMethodRun(FeaturesRunner.this, method, test);
+            }
+        });
     }
 
     protected void afterRun() throws Exception {
@@ -261,8 +258,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void start() throws Exception {
-        MDC.put("fclass", getTargetTestClass());
-        initialize();
         invokeFeatures(features, new FeatureCallable() {
 
             @Override
@@ -273,20 +268,18 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void stop() throws Exception {
-        try {
-            invokeFeatures(reversed(features), new FeatureCallable() {
+        invokeFeatures(reversed(features), new FeatureCallable() {
 
-                @Override
-                public void call(RunnerFeature feature) throws Exception {
-                    feature.stop(FeaturesRunner.this);
-                }
-            });
-        } finally {
-            MDC.remove("fclass");
-        }
+            @Override
+            public void call(RunnerFeature feature) throws Exception {
+                feature.stop(FeaturesRunner.this);
+            }
+        });
+        features.clear();
     }
 
-    protected void beforeSetup() {
+    protected void beforeSetup() throws Exception {
+
         invokeFeatures(features, new FeatureCallable() {
 
             @Override
@@ -295,6 +288,9 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             }
 
         });
+
+        injector.injectMembers(underTest);
+        testCreated(underTest);
     }
 
     protected void afterTeardown() {
@@ -321,101 +317,247 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         });
     }
 
-    /**
-     * Gets the Guice injector.
-     */
     public Injector getInjector() {
         return injector;
     }
 
     public void resetInjector() {
-        injector = createInjector();
+        injector = onInjector();
     }
 
-    protected Injector createInjector() {
-        Module module = new Module() {
-            @Override
-            public void configure(Binder arg0) {
-                configureBindings(arg0);
-            }
-        };
-        // build injector
-        return Guice.createInjector(module);
+    protected Injector onInjector() {
+        return Guice.createInjector(Stage.DEVELOPMENT,new FeaturesModule(this));
     }
 
-    protected final ConditionalIgnoreRule ignoreRule = new ConditionalIgnoreRule();
+    protected static class FeaturesModule implements Module {
+        protected final FeaturesRunner runner;
 
-    protected final RandomBug randomBugRule = new RandomBug();
+        protected Binder binder;
 
-    @Override
-    public void run(final RunNotifier notifier) {
-        try {
-            ignoreRule.check(getConfig(ConditionalIgnoreRule.Ignore.class),
-                    getTargetTestClass());
-        } catch (AssumptionViolatedException cause) {
-            notifier.fireTestIgnored(getDescription());
-            return;
+        public FeaturesModule(FeaturesRunner aRunner) {
+            runner = aRunner;
         }
-        AssertionError errors = new AssertionError("features error");
-        try {
+
+        @Override
+        public void configure(Binder aBinder) {
+            if (binder != null) {
+                throw new IllegalStateException("Cannot re-enter");
+            }
+            binder = aBinder;
             try {
-                start();
-                try {
-                    beforeRun();
-                    resetInjector();
-                    super.run(notifier); // launch tests
-                } catch (Exception error) {
-                    errors.addSuppressed(error);
-                } finally {
-                    afterRun();
-                }
-            } catch (AssumptionViolatedException e) {
-                notifier.fireTestIgnored(getDescription());
-            } catch (Exception error) {
-                errors.addSuppressed(error);
+                runner.configureBindings(aBinder);
             } finally {
-                try {
-                    stop();
-                } catch (Exception error) {
-                    error.addSuppressed(errors);
-                }
+                binder = null;
             }
-        } catch (Throwable error) {
-            errors.addSuppressed(error);
-        } finally {
-            if (errors.getSuppressed().length > 0) {
-                notifier.fireTestFailure(new Failure(getDescription(), errors));
+        }
+    }
+
+    protected class BeforeClassStatement extends Statement {
+        protected final Statement next;
+
+        protected BeforeClassStatement(Statement aStatement) {
+            next = aStatement;
+        }
+
+        @Override
+        public void evaluate() throws Throwable {
+            initialize();
+            start();
+            beforeRun();
+            resetInjector();
+            next.evaluate();
+        }
+
+    }
+
+    @Override
+    protected Statement withBeforeClasses(Statement statement) {
+        Statement actual = statement;
+        actual = super.withBeforeClasses(actual);
+        actual = new BeforeClassStatement(actual);
+        return actual;
+    }
+
+    protected class AfterClassStatement extends Statement {
+        protected final Statement previous;
+
+        protected AfterClassStatement(Statement aStatement) {
+            previous = aStatement;
+        }
+
+        @Override
+        public void evaluate() throws Throwable {
+            previous.evaluate();
+            try {
+                afterRun();
+            } finally {
+                stop();
             }
         }
     }
 
     @Override
-    protected void runChild(FrameworkMethod method, RunNotifier notifier) {
-        if (method.getAnnotation(Ignore.class) != null
-                || (method.getAnnotation(RandomBug.Repeat.class) != null && RandomBug.getMode() == RandomBug.MODE.BYPASS)) {
-            notifier.fireTestIgnored(describeChild(method));
-            return;
-        }
-        beforeSetup();
-        try {
-            super.runChild(method, notifier);
-        } finally {
-            afterTeardown();
-        }
+    protected Statement withAfterClasses(Statement statement) {
+        Statement actual = statement;
+        actual = super.withAfterClasses(statement);
+        actual = new AfterClassStatement(actual);
+        return actual;
     }
+
+    @Override
+    protected List<TestRule> classRules() {
+        List<TestRule> rules = new ArrayList<>();
+        for (Class<?> each : featureClasses) {
+            TestClass type = new TestClass(each);
+            rules.addAll(type.getAnnotatedMethodValues(null, ClassRule.class,
+                    TestRule.class));
+            rules.addAll(type.getAnnotatedFieldValues(null, ClassRule.class,
+                    TestRule.class));
+        }
+        rules.addAll(super.classRules());
+        return rules;
+    }
+
+    protected class BeforeMethodRunStatement extends Statement {
+
+        protected final Statement next;
+
+        protected final FrameworkMethod method;
+
+        protected final Object target;
+
+        protected BeforeMethodRunStatement(FrameworkMethod aMethod,
+                Object aTarget, Statement aStatement) {
+            method = aMethod;
+            target = aTarget;
+            next = aStatement;
+        }
+
+        @Override
+        public void evaluate() throws Throwable {
+            beforeMethodRun(method, target);
+            next.evaluate();
+        }
+
+    }
+
+    protected class BeforeSetupStatement extends Statement {
+
+        protected final Statement next;
+
+        protected BeforeSetupStatement(Statement aStatement) {
+            next = aStatement;
+        }
+
+        @Override
+        public void evaluate() throws Throwable {
+            beforeSetup();
+            next.evaluate();
+        }
+
+    }
+
+    @Override
+    protected Statement withBefores(FrameworkMethod method, Object target,
+            Statement statement) {
+        Statement actual = statement;
+        actual = new BeforeMethodRunStatement(method, target, actual);
+        actual = super.withBefores(method, target, actual);
+        actual = new BeforeSetupStatement(actual);
+        return actual;
+    }
+
+    protected class AfterMethodRunStatement extends Statement {
+
+        protected final Statement previous;
+
+        protected final FrameworkMethod method;
+
+        protected final Object target;
+
+        protected AfterMethodRunStatement(FrameworkMethod aMethod,
+                Object aTarget, Statement aStatement) {
+            method = aMethod;
+            target = aTarget;
+            previous = aStatement;
+        }
+
+        @Override
+        public void evaluate() throws Throwable {
+            try {
+                previous.evaluate();
+            } finally {
+                afterMethodRun(method, target);
+            }
+        }
+
+    }
+
+    protected class AfterTeardownStatement extends Statement {
+
+        protected final Statement previous;
+
+        protected AfterTeardownStatement(Statement aStatement) {
+            previous = aStatement;
+        }
+
+        @Override
+        public void evaluate() throws Throwable {
+            try {
+                previous.evaluate();
+            } finally {
+                afterTeardown();
+            }
+        }
+
+    }
+
+    @Override
+    protected Statement withAfters(FrameworkMethod method, Object target,
+            Statement statement) {
+        Statement actual = statement;
+        actual = new AfterMethodRunStatement(method, target, statement);
+        actual = super.withAfters(method, target, statement);
+        actual = new AfterTeardownStatement(actual);
+        return actual;
+    }
+
+    @Override
+    protected List<TestRule> getTestRules(Object target) {
+        List<TestRule> rules = new ArrayList<>();
+        for (RunnerFeature each : features) {
+            TestClass type = new TestClass(each.getClass());
+            rules.addAll(type.getAnnotatedMethodValues(each, Rule.class,
+                    TestRule.class));
+            rules.addAll(type.getAnnotatedFieldValues(each, Rule.class,
+                    TestRule.class));
+        }
+        rules.addAll(super.getTestRules(target));
+        return rules;
+    }
+
+    @Override
+    protected List<MethodRule> rules(Object target) {
+        final List<MethodRule> rules = new ArrayList<>();
+        for (RunnerFeature each : features) {
+            final TestClass type = new TestClass(each.getClass());
+            rules.addAll(type.getAnnotatedMethodValues(each, Rule.class,
+                    org.junit.rules.MethodRule.class));
+            rules.addAll(type.getAnnotatedFieldValues(each, Rule.class,
+                    org.junit.rules.MethodRule.class));
+        }
+        rules.addAll(super.rules(target));
+        rules.addAll(getTestClass().getAnnotatedMethodValues(target,
+                Rule.class, org.junit.rules.MethodRule.class));
+        return rules;
+    }
+
+    protected Object underTest;
 
     @Override
     public Object createTest() throws Exception {
-        // Return a Guice injected test class
-        Object test = injector.getInstance(getTestClass().getJavaClass());
-        // let features adapt the test object if needed
-        try {
-            testCreated(test);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to prepare test instance: "
-                    + test, e);
-        }
-        return test;
+        return underTest = super.createTest();
+        // injector.getInstance(getTestClass().getJavaClass());
     }
 
     @Override
@@ -455,19 +597,11 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         return "FeaturesRunner [fTest=" + getTargetTestClass() + "]";
     }
 
-    @Override
-    protected List<org.junit.rules.MethodRule> rules(Object target) {
-        List<org.junit.rules.MethodRule> rules = super.rules(target);
-        rules.add(ignoreRule);
-        rules.add(randomBugRule);
-        return rules;
-    }
-
     protected interface FeatureCallable {
         void call(RunnerFeature feature) throws Exception;
     }
 
-    protected void invokeFeatures(List<RunnerFeature> features,
+    protected void invokeFeatures(Iterable<RunnerFeature> features,
             FeatureCallable callable) {
         AssertionError errors = new AssertionError("invoke on features error "
                 + features);
@@ -485,4 +619,5 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             throw errors;
         }
     }
+
 }
