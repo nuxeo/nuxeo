@@ -33,13 +33,6 @@ public interface LayoutTypeDefinition extends Serializable {
 
     String getTemplate(String mode);
 
-    /**
-     * Returns properties by mode.
-     */
-    Map<String, Map<String, Serializable>> getProperties();
-
-    Map<String, Serializable> getProperties(String mode);
-
     LayoutTypeConfiguration getConfiguration();
 
 }

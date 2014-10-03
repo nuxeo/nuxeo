@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.descriptors;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,9 +39,6 @@ public class LayoutTypeDescriptor {
     @XNodeMap(value = "templates/template", key = "@mode", type = HashMap.class, componentType = String.class)
     Map<String, String> templates = new HashMap<String, String>();
 
-    @XNodeMap(value = "properties", key = "@mode", type = HashMap.class, componentType = PropertiesDescriptor.class)
-    Map<String, PropertiesDescriptor> properties = new HashMap<String, PropertiesDescriptor>();
-
     @XNode("configuration")
     LayoutTypeConfigurationDescriptor configuration;
 
@@ -57,14 +53,6 @@ public class LayoutTypeDescriptor {
         return templates;
     }
 
-    public Map<String, Serializable> getProperties(String layoutMode) {
-        return WidgetDescriptor.getProperties(properties, layoutMode);
-    }
-
-    public Map<String, Map<String, Serializable>> getProperties() {
-        return WidgetDescriptor.getProperties(properties);
-    }
-
     public LayoutTypeConfiguration getConfiguration() {
         if (configuration == null) {
             return null;
@@ -77,8 +65,7 @@ public class LayoutTypeDescriptor {
     }
 
     public LayoutTypeDefinition getLayoutTypeDefinition() {
-        return new LayoutTypeDefinitionImpl(name, templates, getProperties(),
-                getConfiguration());
+        return new LayoutTypeDefinitionImpl(name, templates, getConfiguration());
     }
 
 }

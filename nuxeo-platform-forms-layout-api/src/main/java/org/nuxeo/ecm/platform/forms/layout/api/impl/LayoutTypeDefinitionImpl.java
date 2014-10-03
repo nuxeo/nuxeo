@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.api.impl;
 
-import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeConfiguration;
@@ -33,8 +32,6 @@ public class LayoutTypeDefinitionImpl implements LayoutTypeDefinition {
 
     protected Map<String, String> templates;
 
-    protected Map<String, Map<String, Serializable>> properties;
-
     protected LayoutTypeConfiguration configuration;
 
     // needed by GWT serialization
@@ -43,12 +40,10 @@ public class LayoutTypeDefinitionImpl implements LayoutTypeDefinition {
     }
 
     public LayoutTypeDefinitionImpl(String name, Map<String, String> templates,
-            Map<String, Map<String, Serializable>> properties,
             LayoutTypeConfiguration configuration) {
         super();
         this.name = name;
         this.templates = templates;
-        this.properties = properties;
         this.configuration = configuration;
     }
 
@@ -64,16 +59,6 @@ public class LayoutTypeDefinitionImpl implements LayoutTypeDefinition {
     @Override
     public String getTemplate(String mode) {
         return LayoutDefinitionImpl.getTemplate(templates, mode);
-    }
-
-    @Override
-    public Map<String, Map<String, Serializable>> getProperties() {
-        return properties;
-    }
-
-    @Override
-    public Map<String, Serializable> getProperties(String mode) {
-        return WidgetDefinitionImpl.getProperties(properties, mode);
     }
 
     @Override
