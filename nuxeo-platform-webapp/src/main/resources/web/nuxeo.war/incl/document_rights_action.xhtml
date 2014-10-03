@@ -2,23 +2,25 @@
   xmlns:nxthemes="http://nuxeo.org/nxthemes"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:h="http://java.sun.com/jsf/html">
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
 
 <table class="dataTableNoBorder">
 <tbody>
-  <tr>
-    <td class="labelColumn">
-      <h:outputText value="#{messages['label.action']}"/>
-    </td>
-    <td class="fieldColumn">
-      <h:selectOneMenu value="#{permissionActionListManager.selectedGrant}"
-       disabled="#{!permissionActionListManager.allowNegativeACE}"
-       id="rights_grant_select">
-      <f:selectItems
-      value="#{permissionActionListManager.permissionActionItems}" />
-      </h:selectOneMenu>
-    </td>
-  </tr>
+  <c:if test="#{permissionActionListManager.allowNegativeACL}">
+    <tr>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.action']}"/>
+      </td>
+      <td class="fieldColumn">
+        <h:selectOneMenu value="#{permissionActionListManager.selectedGrant}"
+         id="rights_grant_select">
+        <f:selectItems
+        value="#{permissionActionListManager.permissionActionItems}" />
+        </h:selectOneMenu>
+      </td>
+    </tr>
+  </c:if>
   <tr>
     <td class="labelColumn">
       <h:outputText value="#{messages['label.security.permission']}" />
@@ -34,7 +36,8 @@
     <td class="labelColumn"></td>
     <td class="fieldColumn">
       <h:commandButton
-      value="#{messages['command.security.addPerm']}"
+      value="#{permissionActionListManager.allowNegativeACL ?
+        messages['command.security.addPerm'] : messages['command.security.grantPerm']}"
       class="button"
       disabled="#{!securityActions.canAddSecurityRules}"
       action="#{securityActions.addPermissions}"
