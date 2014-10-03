@@ -24,23 +24,13 @@ Templating zone to define:
 </c:if>
 
 <c:if test="#{addForm}">
-  <c:if test="#{not useAjaxForm}">
 
-    <h:form id="#{formId}" enctype="#{disableMultipartForm?'':'multipart/form-data'}"
-      styleClass="#{formStyleClass}">
-      <ui:insert name="form_template_content" />
-    </h:form>
+  <h:form id="#{formId}"
+    enctype="#{useAjaxForm or disableMultipartForm?'':'multipart/form-data'}"
+    styleClass="#{formStyleClass}">
+    <ui:insert name="form_template_content" />
+  </h:form>
 
-  </c:if>
-  <c:if test="#{useAjaxForm}">
-
-    <h:form id="#{formId}"
-      styleClass="#{formStyleClass}"
-      onsubmit="removeAllTinyMCEEditors(); return true;">
-      <ui:insert name="form_template_content" />
-    </h:form>
-
-  </c:if>
 </c:if>
 
 <c:if test="#{not addForm}">
