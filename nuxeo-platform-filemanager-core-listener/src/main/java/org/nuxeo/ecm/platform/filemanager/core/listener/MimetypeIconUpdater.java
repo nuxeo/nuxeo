@@ -96,12 +96,20 @@ public class MimetypeIconUpdater implements EventListener {
                 // ensure the document main icon is not null
                 setDefaultIcon(doc);
 
-
                 // update mimetypes of blobs in the document
                 for (Property prop : blobExtractor.getBlobsProperties(doc)) {
                     if (prop.isDirty()) {
                       updateBlobProperty(doc, getMimetypeRegistry(), prop);
                     }
+                }
+
+                // update the document icon according to the main blob
+                if (doc.getProperty(MAIN_BLOB_FIELD).isDirty()) {
+                    updateIconAndSizeFields(
+                            doc,
+                            getMimetypeRegistry(),
+                            doc.getProperty(MAIN_BLOB_FIELD).getValue(
+                                    Blob.class));
                 }
             }
             catch (Exception e) {
@@ -152,24 +160,25 @@ public class MimetypeIconUpdater implements EventListener {
             blob = mimetypeService.updateMimetype(blob);
             doc.setPropertyValue(fieldPath, (Serializable) blob);
         }
+    }
 
-        if (MAIN_BLOB_FIELD.equals(fieldPath) && doc.getProperty(MAIN_BLOB_FIELD).isDirty()) {
-            // update the icon field of the document
-            if (blob != null && !doc.isFolder()) {
-                MimetypeEntry mimetypeEntry = mimetypeService
-                        .getMimetypeEntryByMimeType(blob.getMimeType());
-                updateIconField(mimetypeEntry, doc);
-            } else {
-                // reset to document type icon
-                updateIconField(null, doc);
-            }
 
-            // BBB: update the deprecated common:size field to preserver
-            // backward compatibility (we should only use
-            // file:content/length instead)
-            doc.setPropertyValue(SIZE_FIELD, blob != null ? blob.getLength()
-                    : 0);
+    private void updateIconAndSizeFields(DocumentModel doc,
+            MimetypeRegistry mimetypeService, Blob blob)
+            throws PropertyException, ClientException, Exception {
+        // update the icon field of the document
+        if (blob != null && !doc.isFolder()) {
+            MimetypeEntry mimetypeEntry = mimetypeService.getMimetypeEntryByMimeType(blob.getMimeType());
+            updateIconField(mimetypeEntry, doc);
+        } else {
+            // reset to document type icon
+            updateIconField(null, doc);
         }
+
+        // BBB: update the deprecated common:size field to preserver
+        // backward compatibility (we should only use
+        // file:content/length instead)
+        doc.setPropertyValue(SIZE_FIELD, blob != null ? blob.getLength() : 0);
     }
 
     /**
