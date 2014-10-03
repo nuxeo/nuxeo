@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,10 @@ import javax.faces.component.ContextCallback;
 import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
+import javax.faces.component.visit.VisitCallback;
+import javax.faces.component.visit.VisitContext;
+import javax.faces.component.visit.VisitHint;
+import javax.faces.component.visit.VisitResult;
 import javax.faces.context.FacesContext;
 import javax.faces.event.FacesEvent;
 import javax.faces.event.PhaseId;
@@ -64,8 +69,7 @@ import com.sun.faces.facelets.tag.jsf.ComponentSupport;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-// XXX AT: see if needs to manage row keys as Trinidad does in case multiple
-// user edit the same list concurrently.
+// XXX AT: review this completely in regards of JSF2
 public class UIEditableList extends UIInput implements NamingContainer,
         ResettableComponent {
 
@@ -513,7 +517,7 @@ public class UIEditableList extends UIInput implements NamingContainer,
      * total number of rows is not known.
      *
      * @see EditableModel#isRowAvailable
-     * @return true iff the current row is available.
+     * @return true if the current row is available.
      */
     public final boolean isRowAvailable() {
         return getEditableModel().isRowAvailable();
@@ -523,7 +527,7 @@ public class UIEditableList extends UIInput implements NamingContainer,
      * Checks to see if the current row is modified.
      *
      * @see EditableModel#isRowModified
-     * @return true iff the current row is modified.
+     * @return true if the current row is modified.
      */
     public final boolean isRowModified() {
         return getEditableModel().isRowModified();
@@ -854,9 +858,26 @@ public class UIEditableList extends UIInput implements NamingContainer,
             Integer old = getRowKey();
             Object requestMapValue = saveRequestMapModelValue();
             try {
+                FacesContext context = FacesContext.getCurrentInstance();
                 setRowKey(rowEvent.getKey());
+                UIComponent source = rowEvent.getComponent();
                 FacesEvent wrapped = rowEvent.getEvent();
-                wrapped.getComponent().broadcast(wrapped);
+                UIComponent compositeParent = null;
+                try {
+                    if (!UIComponent.isCompositeComponent(source)) {
+                        compositeParent = UIComponent.getCompositeComponentParent(source);
+                    }
+                    if (compositeParent != null) {
+                        compositeParent.pushComponentToEL(context, null);
+                    }
+                    source.pushComponentToEL(context, null);
+                    wrapped.getComponent().broadcast(wrapped);
+                } finally {
+                    source.popComponentFromEL(context);
+                    if (compositeParent != null) {
+                        compositeParent.popComponentFromEL(context);
+                    }
+                }
                 setRowKey(old);
             } finally {
                 restoreRequestMapModelValue(requestMapValue);
@@ -887,6 +908,131 @@ public class UIEditableList extends UIInput implements NamingContainer,
         super.queueEvent(event);
     }
 
+    private boolean requiresRowIteration(VisitContext ctx) {
+        return !ctx.getHints().contains(VisitHint.SKIP_ITERATION);
+    }
+
+    private boolean visitRows(VisitContext context, VisitCallback callback,
+            boolean visitRows) {
+        // Iterate over our children, once per row
+        int processed = 0;
+        int oldIndex = getRowIndex();
+        int rowIndex = getRowIndex();
+        int rows = 0;
+        if (visitRows) {
+            rowIndex = -1;
+            rows = getRowCount();
+        }
+
+        Exception exception = null;
+        Object requestMapValue = saveRequestMapModelValue();
+        try {
+
+            while (true) {
+
+                if (visitRows) {
+                    if ((rows > 0) && (++processed > rows)) {
+                        break;
+                    }
+                    // Expose the current row in the specified
+                    // request attribute
+                    setRowIndex(++rowIndex);
+                    if (!isRowAvailable()) {
+                        break; // Scrolled past the last row
+                    }
+                }
+
+                // Visit as required on the *children*
+                if (getChildCount() > 0) {
+                    for (UIComponent kid : getChildren()) {
+                        if (kid.getChildCount() > 0) {
+                            for (UIComponent grandkid : kid.getChildren()) {
+                                if (grandkid.visitTree(context, callback)) {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!visitRows) {
+                    break;
+                }
+
+            }
+        } catch (Exception e) {
+            exception = e;
+        } finally {
+            setRowIndex(oldIndex);
+            restoreRequestMapModelValue(requestMapValue);
+        }
+        if (exception != null) {
+            if (exception instanceof RuntimeException) {
+                throw (RuntimeException) exception;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean doVisitChildren(VisitContext context, boolean visitRows) {
+
+        // Just need to check whether there are any ids under this
+        // subtree. Make sure row index is cleared out since
+        // getSubtreeIdsToVisit() needs our row-less client id.
+        if (visitRows) {
+            setRowIndex(-1);
+        }
+        Collection<String> idsToVisit = context.getSubtreeIdsToVisit(this);
+        assert (idsToVisit != null);
+
+        // All ids or non-empty collection means we need to visit our children.
+        return (!idsToVisit.isEmpty());
+    }
+
+    /**
+     * Rough adapt of the UI data behaviour, some
+     */
+    @Override
+    public boolean visitTree(VisitContext context, VisitCallback callback) {
+        if (!isVisitable(context)) {
+            return false;
+        }
+
+        FacesContext facesContext = context.getFacesContext();
+        boolean visitRows = requiresRowIteration(context);
+
+        int oldRowIndex = -1;
+        if (visitRows) {
+            oldRowIndex = getRowIndex();
+            setRowIndex(-1);
+        }
+
+        pushComponentToEL(facesContext, null);
+
+        try {
+
+            VisitResult result = context.invokeVisitCallback(this, callback);
+            if (result == VisitResult.COMPLETE) {
+                return true;
+            }
+            if ((result == VisitResult.ACCEPT)
+                    && doVisitChildren(context, visitRows)) {
+                if (visitRows(context, callback, visitRows)) {
+                    return true;
+                }
+            }
+        } finally {
+            popComponentFromEL(facesContext);
+            if (visitRows) {
+                setRowIndex(oldRowIndex);
+            }
+        }
+
+        // return false to allow the visit to continue
+        return false;
+    }
+
     @Override
     public void processDecodes(FacesContext context) {
         if (!isRendered()) {
@@ -903,7 +1049,10 @@ public class UIEditableList extends UIInput implements NamingContainer,
         // Make sure _hasEvent is false.
         iState._hasEvent = false;
 
+        pushComponentToEL(context, this);
         processFacetsAndChildren(context, PhaseId.APPLY_REQUEST_VALUES);
+        popComponentFromEL(context);
+
         decode(context);
 
         // XXX AT: cannot validate values because model is not updated yet
@@ -920,7 +1069,9 @@ public class UIEditableList extends UIInput implements NamingContainer,
 
         initializeState(true);
 
+        pushComponentToEL(context, this);
         processFacetsAndChildren(context, PhaseId.PROCESS_VALIDATIONS);
+        popComponentFromEL(context);
 
         // XXX AT: cannot validate values because model is not updated yet
         // if (!isImmediate()) {
@@ -936,7 +1087,9 @@ public class UIEditableList extends UIInput implements NamingContainer,
 
         initializeState(true);
 
+        pushComponentToEL(context, this);
         processFacetsAndChildren(context, PhaseId.UPDATE_MODEL_VALUES);
+        popComponentFromEL(context);
 
         EditableModel model = getEditableModel();
         if (model.isDirty()) {
@@ -1072,10 +1225,14 @@ public class UIEditableList extends UIInput implements NamingContainer,
         String myId = super.getClientId(context);
         if (clientId.equals(myId)) {
             try {
+                this.pushComponentToEL(context,
+                        UIComponent.getCompositeComponentParent(this));
                 callback.invokeContextCallback(context, this);
                 return true;
             } catch (Exception e) {
                 throw new FacesException(e);
+            } finally {
+                this.popComponentFromEL(context);
             }
         }
 

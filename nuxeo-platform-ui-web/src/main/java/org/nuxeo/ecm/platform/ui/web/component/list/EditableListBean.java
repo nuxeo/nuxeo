@@ -35,6 +35,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.FacesEvent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -87,8 +89,18 @@ public class EditableListBean {
         performAction(binding, requestMap);
     }
 
-    // don't make it static so that jsf can call it
     public void performAction(ActionEvent event) {
+        performAction((FacesEvent) event);
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public void performAction(AjaxBehaviorEvent event) {
+        performAction((FacesEvent) event);
+    }
+
+    protected void performAction(FacesEvent event) {
         UIComponent component = event.getComponent();
         if (component == null) {
             return;
