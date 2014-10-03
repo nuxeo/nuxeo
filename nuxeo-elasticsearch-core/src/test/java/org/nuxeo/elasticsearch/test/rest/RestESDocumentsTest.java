@@ -59,7 +59,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @since 5.9.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, RestServerFeature.class, RepositoryElasticSearchFeature.class, RandomBug.Feature.class })
+@Features({ TransactionalFeature.class, RestServerFeature.class, RepositoryElasticSearchFeature.class/*, RandomBug.Feature.class*/ })
 @Jetty(port = 18090)
 @LocalDeploy({"org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml",
         "org.nuxeo.ecm.platform.restapi.test:elasticsearch-test-contrib.xml"})
