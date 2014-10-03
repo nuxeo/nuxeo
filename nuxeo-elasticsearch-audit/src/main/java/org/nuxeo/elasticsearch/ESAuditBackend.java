@@ -20,6 +20,7 @@ package org.nuxeo.elasticsearch;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,6 +46,8 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
@@ -180,14 +183,23 @@ public class ESAuditBackend extends AbstractAuditBackend implements
         if (params != null && params.size() > 0) {
             TextTemplate tmpl = new TextTemplate();
             for (String key : params.keySet()) {
-                tmpl.setVariable(key, params.get(key).toString());
+                Object val = params.get(key);
+                if (val==null) {
+                    continue; 
+                } else if (val instanceof Calendar) {                         
+                    tmpl.setVariable(key,ISODateTimeFormat.dateTime().print(
+                            new DateTime((Calendar)val)));
+                } else if (val instanceof Date) {                    
+                    tmpl.setVariable(key,ISODateTimeFormat.dateTime().print(
+                            new DateTime((Date)val)));
+                } else {
+                    tmpl.setVariable(key, val.toString());
+                }
             }
             query = tmpl.process(query);
-        }
-        
+        }       
         return query;
     }
-    
     
     @Override
     public List<?> nativeQuery(String query, Map<String, Object> params,

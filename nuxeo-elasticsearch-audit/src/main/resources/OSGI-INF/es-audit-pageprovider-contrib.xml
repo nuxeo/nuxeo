@@ -39,29 +39,24 @@
       <pageSize>5</pageSize>
     </genericPageProvider>
 
-<!--
+
     <genericPageProvider name="DOCUMENT_HISTORY_PROVIDER"
-      class="org.nuxeo.ecm.platform.audit.api.document.DocumentHistoryPageProvider">
+      class="org.nuxeo.elasticsearch.audit.pageprovider.ESDocumentHistoryPageProvider">
       <whereClause docType="BasicAuditSearch">
-        <predicate parameter="log.eventDate" operator="BETWEEN">
+        <predicate parameter="eventDate" operator="BETWEEN">
           <field schema="basicauditsearch" name="startDate" />
           <field schema="basicauditsearch" name="endDate" />
         </predicate>
-        <predicate parameter="log.category" operator="IN">
+        <predicate parameter="category" operator="IN">
           <field schema="basicauditsearch" name="eventCategories" />
         </predicate>
-        <predicate parameter="log.eventId" operator="IN">
-          <field schema="basicauditsearch" name="eventIds" />
-        </predicate>
-        <predicate parameter="log.principalName" operator="IN">
-          <field schema="basicauditsearch" name="principalNames" />
+        <predicate parameter="eventId" operator="=">
+          <field schema="basicauditsearch" name="eventId" />
         </predicate>
       </whereClause>
-      <sort column="log.eventDate" ascending="true" />
-      <sort column="log.id" ascending="true" />
-      <pageSize>10</pageSize>
+      <sort column="id" ascending="true" />
+      <pageSize>5</pageSize>
     </genericPageProvider>
--->
 
   </extension>
 
