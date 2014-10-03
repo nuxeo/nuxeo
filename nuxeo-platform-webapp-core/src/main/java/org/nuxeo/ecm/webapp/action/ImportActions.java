@@ -39,6 +39,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -73,6 +74,8 @@ public class ImportActions implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final Log log = getLog(ImportActions.class);
+
+    public static final String LABEL_IMPORT_PROBLEM = "label.bulk.import.documents.error";
 
     protected static Random random = new Random();
 
@@ -200,7 +203,7 @@ public class ImportActions implements Serializable {
         return false;
     }
 
-    public String importDocuments() throws ClientException {
+    public String importDocuments() {
         Map<String, Serializable> importOptionProperties = selectedImportOption.getProperties();
         String chainOrOperationId = null;
         if (importOptionProperties.containsKey("chainId")) {
@@ -237,15 +240,21 @@ public class ImportActions implements Serializable {
                 return navigationContext.navigateToRef(new IdRef(
                         selectedImportFolderId));
             }
-            return null;
+
+        } catch (ClientException e) {
+            log.debug(e, e);
+            facesMessages.addFromResourceBundle(StatusMessage.Severity.ERROR,
+                    LABEL_IMPORT_PROBLEM);
         } finally {
             // reset batch state
             cancel();
         }
+        return null;
     }
 
-    protected void importDocumentsThroughBatchManager(String chainOrOperationId,
-            Map<String, Object> contextParams) throws ClientException {
+    protected void importDocumentsThroughBatchManager(
+            String chainOrOperationId, Map<String, Object> contextParams)
+            throws ClientException {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
         bm.executeAndClean(currentBatchId, chainOrOperationId, documentManager,
                 contextParams, null);
