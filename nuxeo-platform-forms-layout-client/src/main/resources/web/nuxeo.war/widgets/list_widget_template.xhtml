@@ -79,7 +79,7 @@
               <nxu:inputList value="#{fieldOrValue}"
                 id="#{widget.id}_input" model="model"
                 template="#{templateValue}"
-                required="#{widget.required}" diff="#{widgetProperty_diff}"
+                required="#{widgetProperty_required}" diff="#{widgetProperty_diff}"
                 rendered="#{isEditMode or not empty fieldOrValue}">
                 <tr class="#{model.rowIndex % 2 == 0 ? 'dataRowEven': 'dataRowOdd'}">
                   <c:if test="#{showActions}">
@@ -105,7 +105,7 @@
               <nxu:inputList value="#{fieldOrValue}"
                 id="#{widget.id}_input" model="model"
                 template="#{templateValue}"
-                required="#{widget.required}" diff="#{widgetProperty_diff}"
+                required="#{widgetProperty_required}" diff="#{widgetProperty_diff}"
                 rendered="#{isEditMode or not empty fieldOrValue}">
                 <tr>
                   <c:if test="#{showActions}">
@@ -136,7 +136,7 @@
           <nxu:inputList value="#{fieldOrValue}"
             id="#{widget.id}_input" model="model"
             template="#{templateValue}"
-            required="#{widget.required}" diff="#{widgetProperty_diff}"
+            required="#{widgetProperty_required}" diff="#{widgetProperty_diff}"
             rendered="#{isEditMode or not empty fieldOrValue}">
             <h:panelGrid columns="#{isEditMode and showActions?2:1}">
               <c:if test="#{showActions}">
@@ -177,7 +177,7 @@
           <nxu:inputList value="#{fieldOrValue}"
             id="#{widget.id}_input" model="model"
             template="#{templateValue}"
-            required="#{widget.required}" diff="#{widgetProperty_diff}"
+            required="#{widgetProperty_required}" diff="#{widgetProperty_diff}"
             rendered="#{isEditMode or not empty fieldOrValue}">
             <h:panelGrid columns="#{isEditMode and showActions?2:1}">
               <c:if test="#{showActions}">

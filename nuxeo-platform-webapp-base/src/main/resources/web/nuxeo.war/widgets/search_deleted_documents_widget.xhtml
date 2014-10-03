@@ -12,7 +12,7 @@
 
   <c:if test="#{widget.mode == 'edit'}">
     <h:selectOneMenu value="#{field}" id="#{widget.id}"
-      required="#{widget.required}">
+      required="#{widgetProperty_required}">
       <f:selectItem itemValue="deleted" itemLabel="#{messages['label.no']}" />
       <f:selectItem itemValue=" " itemLabel="#{messages['label.yes']}" />
     </h:selectOneMenu>
