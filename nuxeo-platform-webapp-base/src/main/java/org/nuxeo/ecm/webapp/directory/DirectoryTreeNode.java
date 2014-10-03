@@ -72,7 +72,7 @@ public class DirectoryTreeNode {
 
     protected final int level;
 
-    protected boolean open = false;
+    protected Boolean open = null;
 
     protected final DirectoryTreeDescriptor config;
 
@@ -437,32 +437,35 @@ public class DirectoryTreeNode {
     }
 
     public boolean isOpen() {
-        final TreeActions treeActionBean = (TreeActionsBean) Component.getInstance("treeActions");
-        if (!treeActionBean.isNodeExpandEvent()) {
-            if (!config.isMultiselect() && config.hasContentViewSupport()) {
-                DocumentModel searchDoc = getContentViewSearchDocumentModel();
-                if (searchDoc != null) {
-                    String fieldName = config.getFieldName();
-                    String schemaName = config.getSchemaName();
-                    Object value = searchDoc.getProperty(schemaName, fieldName);
-                    if (value instanceof String) {
-                        open = ((String) value).startsWith(path);
+        if (open == null) {
+            final TreeActions treeActionBean = (TreeActionsBean) Component.getInstance("treeActions");
+            if (!treeActionBean.isNodeExpandEvent()) {
+                if (!config.isMultiselect() && config.hasContentViewSupport()) {
+                    DocumentModel searchDoc = getContentViewSearchDocumentModel();
+                    if (searchDoc != null) {
+                        String fieldName = config.getFieldName();
+                        String schemaName = config.getSchemaName();
+                        Object value = searchDoc.getProperty(schemaName,
+                                fieldName);
+                        if (value instanceof String) {
+                            open = Boolean.valueOf(((String) value).startsWith(path));
+                        }
+                    } else {
+                        log.error("Cannot check if node is opened: "
+                                + "search document model is null");
                     }
                 } else {
-                    log.error("Cannot check if node is opened: "
-                            + "search document model is null");
+                    log.error(String.format(
+                            "Cannot check if node is opened on tree '%s': no "
+                                    + "content view available", identifier));
                 }
-            } else {
-                log.error(String.format(
-                        "Cannot check if node is opened on tree '%s': no "
-                                + "content view available", identifier));
             }
         }
-        return open;
+        return Boolean.TRUE.equals(open);
     }
 
     public void setOpen(boolean open) {
-        this.open = open;
+        this.open = Boolean.valueOf(open);
     }
 
 }

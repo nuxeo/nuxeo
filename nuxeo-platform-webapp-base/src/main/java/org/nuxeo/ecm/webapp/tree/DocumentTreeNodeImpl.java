@@ -73,7 +73,7 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
 
     protected Map<Object, DocumentTreeNodeImpl> children;
 
-    protected boolean expanded = false;
+    protected Boolean expanded = null;
 
     public DocumentTreeNodeImpl(DocumentModel document, Filter filter,
             Filter leafFilter, Sorter sorter, String pageProviderName) {
@@ -259,24 +259,26 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
 
     @Override
     public boolean isExpanded() {
-        final TreeActions treeActionBean = (TreeActionsBean) Component.getInstance("treeActions");
-        if (!treeActionBean.isNodeExpandEvent()) {
-            String currentDocPath = treeActionBean.getCurrentDocumentPath();
-            if (currentDocPath != null && getPath() != null
-                    && currentDocPath.startsWith(getPath())) {
-                // additional slower check for strict path prefix
-                if ((currentDocPath + '/').startsWith(getPath() + '/')
-                        || "/".equals(getPath())) {
-                    expanded = true;
+        if (expanded == null) {
+            final TreeActions treeActionBean = (TreeActionsBean) Component.getInstance("treeActions");
+            if (!treeActionBean.isNodeExpandEvent()) {
+                String currentDocPath = treeActionBean.getCurrentDocumentPath();
+                if (currentDocPath != null && getPath() != null
+                        && currentDocPath.startsWith(getPath())) {
+                    // additional slower check for strict path prefix
+                    if ((currentDocPath + '/').startsWith(getPath() + '/')
+                            || "/".equals(getPath())) {
+                        expanded = Boolean.TRUE;
+                    }
                 }
             }
         }
-        return expanded;
+        return Boolean.TRUE.equals(expanded);
     }
 
     @Override
     public void setExpanded(boolean expanded) {
-        this.expanded = expanded;
+        this.expanded = Boolean.valueOf(expanded);
     }
 
 }
