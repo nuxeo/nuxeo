@@ -408,6 +408,10 @@ public class ESAuditBackend extends AbstractAuditBackend implements
     protected FilterBuilder buildFilter(PredicateDefinition[] predicates,
             DocumentModel searchDocumentModel) {        
         
+        if (searchDocumentModel==null) {
+            return FilterBuilders.matchAllFilter();
+        }
+        
         BoolFilterBuilder filterBuilder = FilterBuilders.boolFilter();
 
         int nbFilters = 0;
@@ -576,7 +580,10 @@ public class ESAuditBackend extends AbstractAuditBackend implements
                         pageIdx++;
                         nbEntriesMigrated+=entries.size();
                         log.info("migrated " + nbEntriesMigrated + " log entries on " + nbEntriesToMigrate);
-                        log.info("migration speed " + (nbEntriesMigrated/((System.currentTimeMillis()-t0)/1000)) + " entries/s");
+                        double dt = (System.currentTimeMillis()-t0)/1000.0;
+                        if (dt!=0) {
+                            log.info("migration speed " + (nbEntriesMigrated/dt) + " entries/s");
+                        }
                     }
                 } finally {
                     TransactionHelper.startTransaction();

@@ -231,7 +231,7 @@ public class TestESHistoryProvider {
             }
 
             assertNotNull(pp);
-            searchDoc.setPropertyValue("basicauditsearch:eventId", null);
+            searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
             searchDoc.setPropertyValue("basicauditsearch:eventCategories", null);
             searchDoc.setPropertyValue("basicauditsearch:startDate", null);
             searchDoc.setPropertyValue("basicauditsearch:endDate", null);
@@ -250,28 +250,28 @@ public class TestESHistoryProvider {
             //endIdx = entries.get(17).getId();
                         
             // filter on eventId            
-            searchDoc.setPropertyValue("basicauditsearch:eventId", "documentModified");
+            searchDoc.setPropertyValue("basicauditsearch:eventIds", new String[]{"documentModified"});
             searchDoc.setPropertyValue("basicauditsearch:eventCategories", null);
             pp.setSearchDocumentModel(searchDoc);            
             entries = (List<LogEntry>) pp.getCurrentPage();
             assertEquals(16, entries.size());
                         
             // filter on category            
-            searchDoc.setPropertyValue("basicauditsearch:eventId", null);
+            searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
             searchDoc.setPropertyValue("basicauditsearch:eventCategories", new String[]{"eventDocumentCategory"});
             pp.setSearchDocumentModel(searchDoc);            
             entries = (List<LogEntry>) pp.getCurrentPage();
             assertEquals(19, entries.size());
 
             // filter on category            
-            searchDoc.setPropertyValue("basicauditsearch:eventId", null);
+            searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
             searchDoc.setPropertyValue("basicauditsearch:eventCategories", new String[]{"eventDocumentCategory", "bonusCategory"});
             pp.setSearchDocumentModel(searchDoc);            
             entries = (List<LogEntry>) pp.getCurrentPage();
             assertEquals(20, entries.size());
             
             // filter on Date !
-            searchDoc.setPropertyValue("basicauditsearch:eventId", null);
+            searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
             searchDoc.setPropertyValue("basicauditsearch:eventCategories", null);
             searchDoc.setPropertyValue("basicauditsearch:startDate", t1);
             searchDoc.setPropertyValue("basicauditsearch:endDate", t2);
@@ -280,7 +280,7 @@ public class TestESHistoryProvider {
             assertEquals(5, entries.size());            
         }
         
-        searchDoc.setPropertyValue("basicauditsearch:eventId", null);
+        searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
         searchDoc.setPropertyValue("basicauditsearch:eventCategories", null);
         searchDoc.setPropertyValue("basicauditsearch:startDate", null);
         searchDoc.setPropertyValue("basicauditsearch:endDate", null);

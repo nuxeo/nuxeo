@@ -16,6 +16,8 @@
   <modules>
     <module>nuxeo-elasticsearch-core</module>
     <module>nuxeo-elasticsearch-web</module>
+    <module>nuxeo-elasticsearch-seqgen</module>
+    <module>nuxeo-elasticsearch-audit</module>
   </modules>
 
   <repositories>

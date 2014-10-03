@@ -156,4 +156,19 @@ public class TestAuditPageProviderWithElasticSearch {
         Assert.assertEquals(5, entries.size());
     }
 
+    @Test
+    public void testAdminPageProvider() throws Exception {
+
+        LogEntryGen.generate("uuid2", "aentry", "acategory", 10);
+        
+        PageProvider<?> pp = pps.getPageProvider("ADMIN_HISTORY", null, Long.valueOf(5), Long.valueOf(0),
+                new HashMap<String, Serializable>());                
+        assertNotNull(pp);
+
+        List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
+        Assert.assertEquals(5, entries.size());
+    }
+
+    
+
 }

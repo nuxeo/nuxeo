@@ -75,7 +75,6 @@
       <pageSize>5</pageSize>    
     </genericPageProvider>
 
-
     <genericPageProvider name="SearchById"
       class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
        <pattern>

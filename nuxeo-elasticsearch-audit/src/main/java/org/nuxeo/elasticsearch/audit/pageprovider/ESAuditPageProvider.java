@@ -47,6 +47,8 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry>
 
     public static final String UICOMMENTS_PROPERTY = "generateUIComments";
 
+    protected static String emptyQuery = "{ \"match_all\" : { }\n }";
+
     public String toString() {
         buildAuditQuery(true);
         StringBuffer sb = new StringBuffer();
@@ -56,12 +58,15 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry>
 
     protected void preprocessCommentsIfNeeded(List<LogEntry> entries) {
         Serializable preprocess = getProperties().get(UICOMMENTS_PROPERTY);
-        CoreSession session = (CoreSession) getProperties().get(
-                CORE_SESSION_PROPERTY);
-        if (session != null && preprocess != null
+        
+        if (preprocess != null
                 && "true".equalsIgnoreCase(preprocess.toString())) {
-            CommentProcessorHelper cph = new CommentProcessorHelper(session);
-            cph.processComments(entries);
+            Object session = (CoreSession) getProperties().get(
+                    CORE_SESSION_PROPERTY);
+            if (session != null  && CoreSession.class.isAssignableFrom(session.getClass())  ) {
+                CommentProcessorHelper cph = new CommentProcessorHelper((CoreSession)session);
+                cph.processComments(entries);
+            }    
         }
     }
 
@@ -117,12 +122,16 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry>
         }
         return false;
     }
-
+        
     protected String getFixedPart() {
         if (getDefinition().getWhereClause() == null) {
             return null;
         } else {
-            return getDefinition().getWhereClause().getFixedPart();
+            String fixedPart = getDefinition().getWhereClause().getFixedPart();
+            if (fixedPart==null || fixedPart.isEmpty()) {
+                fixedPart = emptyQuery;
+            }
+            return fixedPart;
         }
     }
 

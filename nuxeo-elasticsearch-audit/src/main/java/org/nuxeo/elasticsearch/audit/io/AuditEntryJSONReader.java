@@ -34,34 +34,36 @@ public class AuditEntryJSONReader {
         
         while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
-            jp.nextToken();
-            if ("category".equals(key)) {
-                entry.setCategory(jp.getText());
-            } else if ("principalName".equals(key)) {
-                entry.setPrincipalName(jp.getText());
-            } else if ("comment".equals(key)) {
-                entry.setComment(jp.getText());
-            } else if ("docLifeCycle".equals(key)) {
-                entry.setDocLifeCycle(jp.getText());
-            } else if ("docPath".equals(key)) {
-                entry.setDocPath(jp.getText());
-            } else if ("docType".equals(key)) {
-                entry.setDocType(jp.getText());
-            } else if ("docUUID".equals(key)) {
-                entry.setDocUUID(jp.getText());
-            } else if ("eventId".equals(key)) {
-                entry.setEventId(jp.getText());
-            } else if ("repositoryId".equals(key)) {
-                entry.setRepositoryId(jp.getText());
-            } else if ("id".equals(key)) {                
-                entry.setId(jp.getLongValue());
-            } else if ("eventDate".equals(key)) {
-                entry.setEventDate(ISODateTimeFormat.dateTime().parseDateTime(jp.getText()).toDate());
-            } else if ("logDate".equals(key)) {
-                entry.setLogDate(ISODateTimeFormat.dateTime().parseDateTime(jp.getText()).toDate());
-            } else if ("extended".equals(key)) {
-                entry.setExtendedInfos(readExtendedInfo(entry, jp));
-            };
+            JsonToken token = jp.nextToken();
+            if (token!=JsonToken.VALUE_NULL) {
+                if ("category".equals(key)) {
+                    entry.setCategory(token==JsonToken.VALUE_NULL?null:jp.getText());
+                } else if ("principalName".equals(key)) {
+                    entry.setPrincipalName(jp.getText());
+                } else if ("comment".equals(key)) {
+                    entry.setComment(jp.getText());
+                } else if ("docLifeCycle".equals(key)) {
+                    entry.setDocLifeCycle(jp.getText());
+                } else if ("docPath".equals(key)) {
+                    entry.setDocPath(jp.getText());
+                } else if ("docType".equals(key)) {
+                    entry.setDocType(jp.getText());
+                } else if ("docUUID".equals(key)) {
+                    entry.setDocUUID(jp.getText());
+                } else if ("eventId".equals(key)) {
+                    entry.setEventId(jp.getText());
+                } else if ("repositoryId".equals(key)) {
+                    entry.setRepositoryId(jp.getText());
+                } else if ("id".equals(key)) {                
+                    entry.setId(jp.getLongValue());
+                } else if ("eventDate".equals(key)) {
+                    entry.setEventDate(ISODateTimeFormat.dateTime().parseDateTime(jp.getText()).toDate());
+                } else if ("logDate".equals(key)) {
+                    entry.setLogDate(ISODateTimeFormat.dateTime().parseDateTime(jp.getText()).toDate());
+                } else if ("extended".equals(key)) {
+                    entry.setExtendedInfos(readExtendedInfo(entry, jp));
+                };
+            }
             tok = jp.nextToken();
         }        
         return entry;
@@ -79,9 +81,10 @@ public class AuditEntryJSONReader {
         
         while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
-            jp.nextToken();
-            info.put(key,  ExtendedInfoImpl.createExtendedInfo((Serializable)jp.getText()));
-            
+            tok = jp.nextToken();
+            if (tok != JsonToken.VALUE_NULL) {
+                info.put(key,  ExtendedInfoImpl.createExtendedInfo((Serializable)jp.getText()));
+            }            
             tok = jp.nextToken();
         }
         return info;        
