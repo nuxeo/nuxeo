@@ -74,21 +74,7 @@ final public class NxqlQueryConverter {
 
     public static QueryBuilder toESQueryBuilder(final String nxql) {
         final LinkedList<ExpressionBuilder> builders = new LinkedList<ExpressionBuilder>();
-        String query = (nxql == null) ? "" : nxql.trim();
-        if (query.isEmpty()) {
-            query = SELECT_ALL;
-        } else if (!query.toLowerCase().startsWith("select ")) {
-            query = SELECT_ALL_WHERE + nxql;
-        }
-        SQLQuery nxqlQuery;
-        try {
-            nxqlQuery = SQLQueryParser.parse(new StringReader(query));
-        } catch (QueryParseException e) {
-            if (log.isDebugEnabled()) {
-                log.debug(e.getMessage() + " for query:\n" + query);
-            }
-            throw e;
-        }
+        SQLQuery nxqlQuery = getSqlQuery(nxql);
         final ExpressionBuilder ret = new ExpressionBuilder(null);
         builders.add(ret);
         final ArrayList<String> fromList = new ArrayList<String>();
@@ -189,6 +175,30 @@ final public class NxqlQueryConverter {
         return queryBuilder;
     }
 
+    protected static SQLQuery getSqlQuery(String nxql) {
+        String query = completeQueryWithSelect(nxql);
+        SQLQuery nxqlQuery;
+        try {
+            nxqlQuery = SQLQueryParser.parse(new StringReader(query));
+        } catch (QueryParseException e) {
+            if (log.isDebugEnabled()) {
+                log.debug(e.getMessage() + " for query:\n" + query);
+            }
+            throw e;
+        }
+        return nxqlQuery;
+    }
+
+    protected static String completeQueryWithSelect(String nxql) {
+        String query = (nxql == null) ? "" : nxql.trim();
+        if (query.isEmpty()) {
+            query = SELECT_ALL;
+        } else if (!query.toLowerCase().startsWith("select ")) {
+            query = SELECT_ALL_WHERE + nxql;
+        }
+        return query;
+    }
+
     public static QueryAndFilter makeQueryFromSimpleExpression(String op,
             String name, Object value, Object[] values) {
         QueryBuilder query = null;
@@ -269,10 +279,8 @@ final public class NxqlQueryConverter {
     }
 
     public static List<SortInfo> getSortInfo(String nxql) {
-
         final List<SortInfo> sortInfos = new ArrayList<>();
-
-        SQLQuery nxqlQuery = SQLQueryParser.parse(new StringReader(nxql));
+        SQLQuery nxqlQuery = getSqlQuery(nxql);
         nxqlQuery.accept(new DefaultQueryVisitor() {
 
             private static final long serialVersionUID = 1L;
@@ -282,9 +290,7 @@ final public class NxqlQueryConverter {
                 sortInfos.add(new SortInfo(node.reference.name,
                         !node.isDescending));
             }
-
         });
-
         return sortInfos;
     }
 
