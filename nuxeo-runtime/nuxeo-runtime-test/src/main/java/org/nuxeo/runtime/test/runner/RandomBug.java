@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
 import javax.inject.Inject;
 
 import org.apache.log4j.MDC;
+import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -32,6 +33,8 @@ import org.junit.internal.AssumptionViolatedException;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
+import org.junit.runner.notification.Failure;
+import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
@@ -252,8 +255,17 @@ public class RandomBug {
             notifier = aNotifier;
         }
 
+        protected boolean gotFailure;
+
         @Override
         public void evaluate() throws Throwable {
+            notifier.addListener(new RunListener() {
+                @Override
+                public void testFailure(Failure failure) throws Exception {
+                    notifier.removeListener(this);
+                    Assert.fail("got a failure");
+                }
+            });
             Error error = new AssertionError(String.format(
                     "No failure after %d tries. Either the bug is fixed "
                             + "or you should increase the 'onSuccess' value.\n"
@@ -264,6 +276,9 @@ public class RandomBug {
                     statement.evaluate();
                 } finally {
                     MDC.remove("fRepeat");
+                }
+                if (gotFailure) {
+                    return;
                 }
             }
             throw error;
