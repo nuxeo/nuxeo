@@ -5,26 +5,26 @@
     "csv": "/layouts/layout_listing_csv_template.xhtml",
     "pdf": "/layouts/layout_listing_pdf_template.xhtml"
   },
-  "properties":   {
-    "any":     {
-      "showListingHeader": "true",
-      "showRowEvenOddClass": "true"
-    },
-    "edit_columns":     {
-      "availableElementsLabel": "label.selection.availableColumns",
-      "columnSelectionRequired": "true",
-      "displayAlwaysSelectedColumns": "false",
-      "selectSize": "10",
-      "selectedElementsHelp": "",
-      "selectedElementsLabel": "label.selection.selectedColumns"
-    },
-    "edit_sort_infos":     {
-      "newSortInfoTemplate": "#{documentSearchActions.newSortInfo}",
-      "sortInfoSelectionRequired": "false"
-    }
-  },
   "configuration":   {
     "title": "Test layout type for a custom type category",
-    "defaultPropertyValues": {"any": {"foo": "bar"}}
+    "sinceVersion": "6.0",
+    "defaultPropertyValues":     {
+      "any":       {
+        "showListingHeader": "true",
+        "showRowEvenOddClass": "true"
+      },
+      "edit_columns":       {
+        "availableElementsLabel": "label.selection.availableColumns",
+        "columnSelectionRequired": "true",
+        "displayAlwaysSelectedColumns": "false",
+        "selectSize": "10",
+        "selectedElementsHelp": "",
+        "selectedElementsLabel": "label.selection.selectedColumns"
+      },
+      "edit_sort_infos":       {
+        "newSortInfoTemplate": "#{documentSearchActions.newSortInfo}",
+        "sortInfoSelectionRequired": "false"
+      }
+    }
   }
 }

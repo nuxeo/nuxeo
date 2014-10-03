@@ -46,6 +46,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
@@ -532,9 +533,12 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             if (StringUtils.isEmpty(template)) {
                 template = layoutTypeDef.getTemplate(mode);
             }
-            Map<String, Serializable> typeProps = layoutTypeDef.getProperties(mode);
-            if (typeProps != null) {
-                props.putAll(typeProps);
+            LayoutTypeConfiguration conf = layoutTypeDef.getConfiguration();
+            if (conf != null) {
+                Map<String, Serializable> typeProps = conf.getDefaultPropertyValues(mode);
+                if (typeProps != null) {
+                    props.putAll(typeProps);
+                }
             }
         }
         Map<String, Serializable> lprops = layoutDef.getProperties(mode);

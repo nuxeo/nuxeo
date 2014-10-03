@@ -145,9 +145,6 @@ public class TestLayoutService extends NXRuntimeTestCase {
         Map<String, String> templates = lType.getTemplates();
         assertNotNull(templates);
         assertEquals(3, templates.size());
-        Map<String, Map<String, Serializable>> ltprops = lType.getProperties();
-        assertNotNull(ltprops);
-        assertEquals(1, ltprops.size());
         LayoutTypeConfiguration conf = lType.getConfiguration();
         assertNotNull(conf);
         Map<String, Map<String, Serializable>> defaultProps = conf.getDefaultPropertyValues();

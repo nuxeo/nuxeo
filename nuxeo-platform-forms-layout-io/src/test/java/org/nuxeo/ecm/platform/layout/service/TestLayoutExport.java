@@ -41,6 +41,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.RenderingInfo;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
@@ -99,6 +100,41 @@ public class TestLayoutExport extends NXRuntimeTestCase {
                 FileUtils.getResourcePathFromContext("layouttype-export.json"));
 
         checkEquals(expected, written);
+    }
+
+    @Test
+    public void testLayoutTypeImport() throws Exception {
+        checkLayoutTypeImport("layouttype-export.json", false);
+    }
+
+    protected void checkLayoutTypeImport(String filename, boolean isCompat)
+            throws Exception {
+        JSONObject json = null;
+        InputStream in = new FileInputStream(
+                FileUtils.getResourcePathFromContext(filename));
+        try {
+            byte[] bytes = FileUtils.readBytes(in);
+            if (bytes.length != 0) {
+                json = JSONObject.fromObject(new String(bytes, "UTF-8"));
+            }
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+        }
+
+        LayoutTypeDefinition def = JSONLayoutExporter.importLayoutTypeDefinition(json);
+        assertNotNull(def);
+        assertEquals("listing", def.getName());
+        assertNotNull(def.getTemplates());
+        assertEquals(3, def.getTemplates().size());
+        LayoutTypeConfiguration conf = def.getConfiguration();
+        assertNotNull(conf);
+        assertNotNull(conf.getDefaultPropertyValues());
+        assertEquals(3, conf.getDefaultPropertyValues().size());
+        assertEquals("Test layout type for a custom type category",
+                conf.getTitle());
+        assertEquals("6.0", conf.getSinceVersion());
     }
 
     @Test

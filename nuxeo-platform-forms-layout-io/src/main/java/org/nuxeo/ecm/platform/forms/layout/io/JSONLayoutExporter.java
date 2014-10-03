@@ -461,11 +461,6 @@ public class JSONLayoutExporter {
             json.element("templates", templates);
         }
 
-        JSONObject props = exportPropsByModeToJson(def.getProperties());
-        if (!props.isEmpty()) {
-            json.element("properties", props);
-        }
-
         LayoutTypeConfiguration conf = def.getConfiguration();
         if (conf != null) {
             json.element("configuration", exportToJson(conf));
@@ -480,9 +475,8 @@ public class JSONLayoutExporter {
             JSONObject jsonDef) {
         String name = jsonDef.optString("name");
         Map<String, String> templates = importStringProps(jsonDef.optJSONObject("templates"));
-        Map<String, Map<String, Serializable>> properties = importPropsByMode(jsonDef.optJSONObject("properties"));
         LayoutTypeConfiguration conf = importLayoutTypeConfiguration(jsonDef.optJSONObject("configuration"));
-        return new LayoutTypeDefinitionImpl(name, templates, properties, conf);
+        return new LayoutTypeDefinitionImpl(name, templates, conf);
     }
 
     /**
