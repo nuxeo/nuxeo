@@ -53,7 +53,7 @@
   <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
 
     <nxu:inputFile id="#{widget.id}_file" value="#{field_0}"
-      filename="#{field_1}" required="#{widget.required}" editFilename="false"
+      filename="#{field_1}" required="#{widgetProperty_required}" editFilename="false"
       onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}" />
     <h:message styleClass="errorMessage" for="#{widget.id}_file"
       id="#{widget.id}_message" />
