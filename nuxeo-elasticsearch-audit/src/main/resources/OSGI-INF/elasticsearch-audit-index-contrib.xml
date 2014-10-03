@@ -26,7 +26,7 @@
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
     point="backend">
     
-    <backend class="org.nuxeo.elasticsearch.ESAuditBackend"/>
+    <backend class="org.nuxeo.elasticsearch.audit.ESAuditBackend"/>
     
   </extension>
   

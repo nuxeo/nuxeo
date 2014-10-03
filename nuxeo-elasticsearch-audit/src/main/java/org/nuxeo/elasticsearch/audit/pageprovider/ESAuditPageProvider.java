@@ -32,8 +32,8 @@ import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
-import org.nuxeo.elasticsearch.ESAuditBackend;
-import org.nuxeo.elasticsearch.io.AuditEntryJSONReader;
+import org.nuxeo.elasticsearch.audit.ESAuditBackend;
+import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
 import org.nuxeo.runtime.api.Framework;
 
 public class ESAuditPageProvider extends AbstractPageProvider<LogEntry>

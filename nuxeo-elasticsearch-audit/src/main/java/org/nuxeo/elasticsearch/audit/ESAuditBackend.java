@@ -15,7 +15,7 @@
  *     Tiry
  * 
  */
-package org.nuxeo.elasticsearch;
+package org.nuxeo.elasticsearch.audit;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
@@ -63,8 +63,8 @@ import org.nuxeo.ecm.platform.audit.service.BaseLogEntryProvider;
 import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.io.AuditEntryJSONReader;
-import org.nuxeo.elasticsearch.io.AuditEntryJSONWriter;
+import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
+import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONWriter;
 import org.nuxeo.elasticsearch.seqgen.SequenceGenerator;
 import org.nuxeo.runtime.api.Framework;
 

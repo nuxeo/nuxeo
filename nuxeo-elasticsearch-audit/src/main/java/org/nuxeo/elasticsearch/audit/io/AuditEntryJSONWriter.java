@@ -1,4 +1,4 @@
-package org.nuxeo.elasticsearch.io;
+package org.nuxeo.elasticsearch.audit.io;
 
 import java.util.Map;
 
