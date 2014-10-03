@@ -45,10 +45,6 @@ public class AccessRightsSubPage extends AbstractPage {
     WebElement userSelectionSuggestInputText;*/
 
     @Required
-    @FindBy(id = "add_rights_form:rights_grant_select")
-    WebElement selectGrantElement;
-
-    @Required
     @FindBy(id = "add_rights_form:rights_permission_select")
     WebElement selectPermissionElement;
 
@@ -106,22 +102,24 @@ public class AccessRightsSubPage extends AbstractPage {
     }
 
     /**
-     * @deprecated use {@link #grantPermissionForUser} unless negative ACE are enabled.
+     * @deprecated use {@link #grantPermissionForUser} unless negative ACL are enabled.
      */
     @Deprecated
     public AccessRightsSubPage addPermissionForUser(String username,
         String permission, boolean grant) {
 
-        boolean allowNegativeACE = selectGrantElement.isEnabled();
+        boolean allowNegativeACL = hasElement(By.id("add_rights_form:rights_grant_select"));
 
-        if (!allowNegativeACE) {
+        if (!allowNegativeACL) {
             if (grant) {
-                log.warn("addPermissionForUser with negative ACE disabled is deprecated.");
+                log.warn("addPermissionForUser with negative ACL disabled is deprecated.");
                 return grantPermissionForUser(permission, username);
             } else {
-                throw new UnsupportedOperationException("Negative ACE are currently disabled!");
+                throw new UnsupportedOperationException("Negative ACL are currently disabled!");
             }
         }
+
+        WebElement selectGrantElement = driver.findElement(By.id("add_rights_form:rights_grant_select"));
 
         Select2WidgetElement userSelection = new Select2WidgetElement(
                 driver,
