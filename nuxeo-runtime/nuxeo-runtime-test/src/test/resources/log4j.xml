@@ -9,7 +9,7 @@
     <param name="Threshold" value="WARN" />
 
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p [%C{1}] %m%n" />
+      <param name="ConversionPattern" value="%t %d{HH:mm:ss,SSS} %-5p [%C{1}] %m%n" />
     </layout>
   </appender>
 
@@ -18,7 +18,7 @@
     <param name="File" value="target/trace.log" />
     <param name="Append" value="false" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p [%C{1}] %m%n" />
+      <param name="ConversionPattern" value="%t %d{HH:mm:ss,SSS} %-5p [%C{1}] %m%X%n" />
     </layout>
   </appender>
 

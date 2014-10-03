@@ -16,13 +16,13 @@
  */
 package org.nuxeo.runtime.management;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 
-import org.nuxeo.runtime.management.jvm.HeapDumper;
-
 import org.junit.Test;
-import static org.junit.Assert.*;
+import org.nuxeo.runtime.management.jvm.HeapDumper;
 
 /**
  * @since 5.5

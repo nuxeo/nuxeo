@@ -18,11 +18,11 @@
  */
 package org.nuxeo.runtime.test.runner.web;
 
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.junit.Assert.*;
-
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 

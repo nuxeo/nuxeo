@@ -16,10 +16,11 @@
  */
 package org.nuxeo.runtime.management;
 
+import static org.junit.Assert.assertEquals;
+
 import javax.management.ObjectName;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * @author matic

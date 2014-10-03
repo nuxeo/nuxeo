@@ -23,7 +23,8 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import  org.mortbay.jetty.Server;
+import org.mortbay.jetty.Server;
+
 import com.google.inject.Inject;
 
 

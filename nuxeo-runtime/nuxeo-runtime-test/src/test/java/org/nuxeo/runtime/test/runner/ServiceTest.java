@@ -18,10 +18,10 @@
  */
 package org.nuxeo.runtime.test.runner;
 
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.junit.Assert.*;
-
 import org.nuxeo.runtime.services.event.EventService;
 
 import com.google.inject.Inject;

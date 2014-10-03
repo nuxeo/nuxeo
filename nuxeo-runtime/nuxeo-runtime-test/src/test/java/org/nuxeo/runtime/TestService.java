@@ -21,9 +21,9 @@
 
 package org.nuxeo.runtime;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertSame;
 
+import org.junit.Test;
 import org.nuxeo.runtime.services.deployment.DeploymentService;
 import org.nuxeo.runtime.services.event.EventService;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;

@@ -23,7 +23,6 @@ package org.nuxeo.runtime;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventService;

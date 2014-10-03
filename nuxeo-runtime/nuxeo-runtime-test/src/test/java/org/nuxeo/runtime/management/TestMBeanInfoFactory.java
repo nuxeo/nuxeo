@@ -16,12 +16,12 @@
  */
 package org.nuxeo.runtime.management;
 
+import static org.junit.Assert.assertEquals;
+
 import javax.management.MBeanAttributeInfo;
 import javax.management.modelmbean.ModelMBeanInfo;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.runtime.management.inspector.ModelMBeanInfoFactory;
 
 /**

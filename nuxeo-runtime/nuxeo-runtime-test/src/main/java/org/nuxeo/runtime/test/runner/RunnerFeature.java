@@ -28,36 +28,6 @@ import com.google.inject.Binder;
  */
 public interface RunnerFeature {
 
-//    private final Class<T> type;
-//
-//    @SuppressWarnings("unchecked")
-//    protected RunnerFeature() {
-//        Type superclass = getClass().getGenericSuperclass();
-//        while (superclass instanceof Class<?>) {
-//            superclass = ((Class<?>)superclass).getGenericSuperclass();
-//        }
-//        if (superclass == null) {
-//            throw new RuntimeException("Missing type parameter.");
-//        }
-//        Type type = ((ParameterizedType) superclass).getActualTypeArguments()[0];
-//        if (!(type instanceof Class<?>)) {
-//            throw new RuntimeException("Invalid class parameter type. "+type);
-//        }
-//        this.type = (Class<T>)type;
-//    }
-//
-//    public <R extends FeaturesRunner> boolean acceptRunner(R runner) {
-//        return type.isAssignableFrom(runner.getClass());
-//    }
-//
-//    public Class<T> runnerType() {
-//        return type;
-//    }
-//
-//    public T castRunner(FeaturesRunner runner) {
-//        return null;
-//    }
-//
 
     /**
      * Called when preparing to run the test class. Framework is not started at this point.
@@ -103,13 +73,13 @@ public interface RunnerFeature {
 
     /**
      * Before entering in the @Before methods
-     * @param runner TODO
+     * @param runner
      */
     void beforeSetup(FeaturesRunner runner) throws Exception;
 
     /**
      * After the call of the @After methods
-     * @param runner TODO
+     * @param runner
      */
     void afterTeardown(FeaturesRunner runner) throws Exception;
 

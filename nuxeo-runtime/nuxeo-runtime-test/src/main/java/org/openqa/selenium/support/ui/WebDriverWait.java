@@ -18,13 +18,14 @@
 
 package org.openqa.selenium.support.ui;
 
-import com.google.common.base.Function;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.concurrent.TimeUnit.SECONDS;
+import com.google.common.base.Function;
 
 /**
  * An implementation of the Wait interface that makes use of WebDriver. The

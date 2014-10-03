@@ -21,12 +21,10 @@
 
 package org.nuxeo.runtime;
 
-import java.lang.AssertionError;
+import static org.junit.Assert.assertFalse;
 
-import org.junit.Test;
 import org.junit.Ignore;
-import static org.junit.Assert.*;
-
+import org.junit.Test;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
