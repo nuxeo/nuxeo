@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,6 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
@@ -31,9 +34,12 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("converter")
 public class ConverterDescriptor implements Serializable {
 
+    protected final Log log = LogFactory.getLog(ConverterDescriptor.class);
+
     private static final long serialVersionUID = 1L;
 
     public static final String CUSTOM_CONVERTER_TYPE = "Custom";
+
     public static final String CHAINED_CONVERTER_TYPE = "Chain";
 
     protected Converter instance;
@@ -42,7 +48,7 @@ public class ConverterDescriptor implements Serializable {
     protected String converterName;
 
     @XNodeList(value = "sourceMimeType", type = ArrayList.class, componentType = String.class)
-    protected List<String> sourceMimeTypes = new ArrayList<String>();
+    protected List<String> sourceMimeTypes = new ArrayList<>();
 
     @XNode("destinationMimeType")
     protected String destinationMimeType;
@@ -56,13 +62,13 @@ public class ConverterDescriptor implements Serializable {
     protected boolean wrappedTransformer = false;
 
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
-    protected Map<String, String> parameters = new HashMap<String, String>();
+    protected Map<String, String> parameters = new HashMap<>();
 
     @XNodeList(value = "conversionSteps/step", type = ArrayList.class, componentType = String.class)
-    protected List<String> steps = new ArrayList<String>();
+    protected List<String> steps = new ArrayList<>();
 
     @XNodeList(value = "conversionSteps/subconverter", type = ArrayList.class, componentType = String.class)
-    protected List<String> subConverters = new ArrayList<String>();
+    protected List<String> subConverters = new ArrayList<>();
 
     public String getConverterName() {
         return converterName;
@@ -104,6 +110,7 @@ public class ConverterDescriptor implements Serializable {
         try {
             initConverter();
         } catch (Exception e) {
+            log.debug(e.getMessage(), e);
             // TODO: handle exception
         }
         return instance;
@@ -121,7 +128,7 @@ public class ConverterDescriptor implements Serializable {
         }
 
         if (wrappedTransformer) {
-            // converter completly override wrapped transformers
+            // converter completely override wrapped transformers
             return other;
         }
 
