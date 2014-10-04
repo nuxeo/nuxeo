@@ -25,9 +25,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -64,9 +64,61 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
      */
     protected Injector injector;
 
-    protected final Set<Class<? extends RunnerFeature>> featureClasses = new LinkedHashSet<>();
+    protected class FeatureHolder {
+        protected final Class<? extends RunnerFeature> type;
 
-    protected final List<RunnerFeature> features = new ArrayList<>();
+        protected final TestClass testClass;
+
+        protected RunnerFeature feature;
+
+        FeatureHolder(Class<? extends RunnerFeature> aType)
+                throws InstantiationException, IllegalAccessException {
+            type = aType;
+            testClass = new TestClass(aType);
+            feature = aType.newInstance();
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + getOuterType().hashCode();
+            result = prime * result + ((type == null) ? 0 : type.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            FeatureHolder other = (FeatureHolder) obj;
+            if (!getOuterType().equals(other.getOuterType())) {
+                return false;
+            }
+            if (type == null) {
+                if (other.type != null) {
+                    return false;
+                }
+            } else if (!type.equals(other.type)) {
+                return false;
+            }
+            return true;
+        }
+
+        private FeaturesRunner getOuterType() {
+            return FeaturesRunner.this;
+        }
+
+    }
+
+    protected final List<FeatureHolder> holders = new LinkedList<>();
 
     protected final TargetResourceLocator locator;
 
@@ -105,9 +157,8 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void loadFeature(HashSet<Class<?>> cycles,
-            Set<Class<? extends RunnerFeature>> features,
             Class<? extends RunnerFeature> clazz) throws Exception {
-        if (features.contains(clazz)) {
+        if (holders.contains(clazz)) {
             return;
         }
         if (cycles.contains(clazz)) {
@@ -121,14 +172,11 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         if (annos != null) {
             for (Features anno : annos) {
                 for (Class<? extends RunnerFeature> cl : anno.value()) {
-                    if (!features.contains(cl)) {
-                        loadFeature(cycles, features, cl);
-                    }
+                    loadFeature(cycles, cl);
                 }
             }
         }
-        features.add(clazz); // add at the end to ensure requirements are added
-                             // first
+        holders.add(new FeatureHolder(clazz));
     }
 
     public void loadFeatures(Class<?> classToRun) throws Exception {
@@ -139,25 +187,44 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         if (annos != null) {
             for (Features anno : annos) {
                 for (Class<? extends RunnerFeature> cl : anno.value()) {
-                    if (!features.contains(cl)) {
-                        loadFeature(new HashSet<Class<?>>(), featureClasses, cl);
-                    }
+                    loadFeature(new HashSet<Class<?>>(), cl);
                 }
             }
         }
     }
 
     public <T extends RunnerFeature> T getFeature(Class<T> type) {
-        for (RunnerFeature rf : features) {
-            if (rf.getClass() == type) {
-                return type.cast(rf);
-            }
-        }
-        return null;
+        return type.cast(holders.get(holders.indexOf(type)).feature);
     }
 
-    public List<RunnerFeature> getFeatures() {
-        return features;
+    public Iterable<RunnerFeature> getFeatures() {
+        return new Iterable<RunnerFeature>() {
+
+            @Override
+            public Iterator<RunnerFeature> iterator() {
+                return new Iterator<RunnerFeature>() {
+
+                    Iterator<FeatureHolder> iterator = holders.iterator();
+
+                    @Override
+                    public boolean hasNext() {
+                        return iterator.hasNext();
+                    }
+
+                    @Override
+                    public RunnerFeature next() {
+                        return iterator.next().feature;
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+
+                };
+            }
+
+        };
     }
 
     /**
@@ -169,8 +236,8 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         if (annotation != null) {
             configs.add(annotation);
         }
-        for (RunnerFeature feature : Lists.reverse(features)) {
-            annotation = scanner.getAnnotation(feature.getClass(), type);
+        for (FeatureHolder each : Lists.reverse(holders)) {
+            annotation = scanner.getAnnotation(each.type, type);
             if (annotation != null) {
                 configs.add(annotation);
             }
@@ -196,17 +263,13 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void initialize() throws Exception {
-        for (Class<? extends RunnerFeature> each : featureClasses) {
-            RunnerFeature rf = each.newInstance();
-            features.add(rf);
-        }
-        for (RunnerFeature each : features) {
+        for (RunnerFeature each : getFeatures()) {
             each.initialize(this);
         }
     }
 
     protected void beforeRun() throws Exception {
-        invokeFeatures(features, new FeatureCallable() {
+        invokeFeatures(holders, new FeatureCallable() {
 
             @Override
             public void call(RunnerFeature feature) throws Exception {
@@ -217,7 +280,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     protected void beforeMethodRun(final FrameworkMethod method,
             final Object test) throws Exception {
-        invokeFeatures(features, new FeatureCallable() {
+        invokeFeatures(holders, new FeatureCallable() {
 
             @Override
             public void call(RunnerFeature feature) throws Exception {
@@ -229,7 +292,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     protected void afterMethodRun(final FrameworkMethod method,
             final Object test) throws Exception {
-        invokeFeatures(features, new FeatureCallable() {
+        invokeFeatures(holders, new FeatureCallable() {
 
             @Override
             public void call(RunnerFeature feature) throws Exception {
@@ -240,7 +303,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     protected void afterRun() throws Exception {
         injector = injector.getParent();
-        invokeFeatures(reversed(features), new FeatureCallable() {
+        invokeFeatures(reversed(holders), new FeatureCallable() {
 
             @Override
             public void call(RunnerFeature feature) throws Exception {
@@ -250,7 +313,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void testCreated(final Object test) throws Exception {
-        invokeFeatures(features, new FeatureCallable() {
+        invokeFeatures(holders, new FeatureCallable() {
 
             @Override
             public void call(RunnerFeature feature) throws Exception {
@@ -260,7 +323,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void start() throws Exception {
-        invokeFeatures(features, new FeatureCallable() {
+        invokeFeatures(holders, new FeatureCallable() {
 
             @Override
             public void call(RunnerFeature feature) throws Exception {
@@ -270,19 +333,19 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void stop() throws Exception {
-        invokeFeatures(reversed(features), new FeatureCallable() {
+        invokeFeatures(reversed(holders), new FeatureCallable() {
 
             @Override
             public void call(RunnerFeature feature) throws Exception {
                 feature.stop(FeaturesRunner.this);
             }
         });
-        features.clear();
+        holders.clear();
     }
 
     protected void beforeSetup() throws Exception {
 
-        invokeFeatures(features, new FeatureCallable() {
+        invokeFeatures(holders, new FeatureCallable() {
 
             @Override
             public void call(RunnerFeature feature) throws Exception {
@@ -296,7 +359,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void afterTeardown() {
-        invokeFeatures(reversed(features), new FeatureCallable() {
+        invokeFeatures(reversed(holders), new FeatureCallable() {
 
             @Override
             public void call(RunnerFeature feature) throws Exception {
@@ -308,8 +371,8 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     protected void configureBindings() {
         injector = injector.createChildInjector(new FeaturesModule());
-        for (RunnerFeature each:features) {
-            injector.injectMembers(each);
+        for (FeatureHolder each : holders) {
+            injector.injectMembers(each.feature);
         }
     }
 
@@ -342,8 +405,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
             aBinder.bind(FeaturesRunner.class).toInstance(FeaturesRunner.this);
             aBinder.bind(RunNotifier.class).toInstance(notifier);
-            aBinder.bind(TargetResourceLocator.class)
-                .toInstance(locator);
+            aBinder.bind(TargetResourceLocator.class).toInstance(locator);
             binder = aBinder;
         }
     }
@@ -352,8 +414,8 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
         @Override
         public void configure(Binder binder) {
-            for (RunnerFeature each:features) {
-                each.configure(FeaturesRunner.this, binder);
+            for (FeatureHolder each : holders) {
+                each.feature.configure(FeaturesRunner.this, binder);
             }
         }
 
@@ -411,12 +473,14 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         return actual;
     }
 
-    protected RulesFactory<ClassRule, TestRule> testRulesFactory = new RulesFactory<>(
+    protected RulesFactory<ClassRule, TestRule> classRulesFactory = new RulesFactory<>(
             ClassRule.class, TestRule.class);
 
-    protected RulesFactory<Rule, TestRule> methodRulesFactory = new RulesFactory<>(
+    protected RulesFactory<Rule, TestRule> testRulesFactory = new RulesFactory<>(
             Rule.class, TestRule.class);
 
+    protected RulesFactory<Rule, MethodRule> methodRulesFactory = new RulesFactory<>(
+            Rule.class, MethodRule.class);
 
     @Override
     protected Statement classBlock(final RunNotifier aNotifier) {
@@ -428,9 +492,8 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     protected List<TestRule> classRules() {
         List<TestRule> actual = new ArrayList<>();
 
-        for (Class<?> eachFeature : featureClasses) {
-            TestClass type = new TestClass(eachFeature);
-            actual.addAll(testRulesFactory.onRules(type, null));
+        for (FeatureHolder each : holders) {
+            actual.addAll(classRulesFactory.onRules(each.testClass, null));
         }
         actual.addAll(super.classRules());
         return actual;
@@ -542,23 +605,24 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     @Override
     protected List<TestRule> getTestRules(Object target) {
-        return methodRulesFactory.onRules(getTestClass(), target);
+        List<TestRule> actual = new ArrayList<TestRule>();
+        for (FeatureHolder each : holders) {
+            actual.addAll(testRulesFactory
+                .onRules(each.testClass, each.feature));
+        }
+        actual.addAll(testRulesFactory.onRules(getTestClass(), target));
+        return actual;
     }
 
     @Override
     protected List<MethodRule> rules(Object target) {
-        final List<MethodRule> rules = new ArrayList<>();
-        for (RunnerFeature each : features) {
-            final TestClass type = new TestClass(each.getClass());
-            rules.addAll(type.getAnnotatedMethodValues(each, Rule.class,
-                    org.junit.rules.MethodRule.class));
-            rules.addAll(type.getAnnotatedFieldValues(each, Rule.class,
-                    org.junit.rules.MethodRule.class));
+        final List<MethodRule> actual = new ArrayList<>();
+        for (FeatureHolder each : holders) {
+            actual.addAll(methodRulesFactory.onRules(each.testClass,
+                    each.feature));
         }
-        rules.addAll(super.rules(target));
-        rules.addAll(getTestClass().getAnnotatedMethodValues(target,
-                Rule.class, org.junit.rules.MethodRule.class));
-        return rules;
+        actual.addAll(methodRulesFactory.onRules(getTestClass(), target));
+        return actual;
     }
 
     protected Object underTest;
@@ -566,10 +630,10 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     @Override
     public Object createTest() throws Exception {
         underTest = super.createTest();
-// TODO replace underTest member with a binding
-//        Class<?> testType = underTest.getClass();
-//        injector.getInstance(Binder.class).bind(testType)
-//            .toInstance(testType.cast(underTest));
+        // TODO replace underTest member with a binding
+        // Class<?> testType = underTest.getClass();
+        // injector.getInstance(Binder.class).bind(testType)
+        // .toInstance(testType.cast(underTest));
         return underTest;
     }
 
@@ -614,13 +678,13 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         void call(RunnerFeature feature) throws Exception;
     }
 
-    protected void invokeFeatures(Iterable<RunnerFeature> features,
+    protected void invokeFeatures(Iterable<FeatureHolder> features,
             FeatureCallable callable) {
         AssertionError errors = new AssertionError("invoke on features error "
                 + features);
-        for (RunnerFeature feature : features) {
+        for (FeatureHolder each : features) {
             try {
-                callable.call(feature);
+                callable.call(each.feature);
                 ;
             } catch (AssumptionViolatedException cause) {
                 throw cause;
@@ -653,7 +717,9 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
             for (FrameworkMethod each : aType
                 .getAnnotatedMethods(annotationType)) {
-                actual.add(onRule(ruleType, each, aTest));
+                if (ruleType.isAssignableFrom(each.getMethod().getReturnType())) {
+                    actual.add(onRule(ruleType, each, aTest));
+                }
             }
 
             return actual;

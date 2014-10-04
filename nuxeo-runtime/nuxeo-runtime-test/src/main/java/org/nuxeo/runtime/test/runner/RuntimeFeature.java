@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -79,13 +78,8 @@ public class RuntimeFeature extends SimpleFeature {
         return deploy;
     }
 
-    private void scanDeployments(FeaturesRunner runner) {
-        List<RunnerFeature> features = runner.getFeatures();
-        if (features == null) {
-            throw new IllegalStateException(
-                    "Cannot call scanDeployments until features are not loaded");
-        }
-        for (RunnerFeature feature : features) {
+    protected void scanDeployments(FeaturesRunner runner) {
+        for (RunnerFeature feature : runner.getFeatures()) {
             deploy.load(FeaturesRunner.getScanner(), feature.getClass());
         }
         // load deployments from class to run
