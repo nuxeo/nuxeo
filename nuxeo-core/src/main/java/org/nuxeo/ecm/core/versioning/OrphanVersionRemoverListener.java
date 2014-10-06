@@ -78,8 +78,11 @@ public class OrphanVersionRemoverListener implements PostCommitEventListener {
         }
 
         for (String id : versionUUIDs) {
-            log.debug("Removing version: " + id);
-            session.removeDocument(new IdRef(id));
+            IdRef idRef = new IdRef(id);
+            if (session.exists(idRef)) {
+                log.debug("Removing version: " + id);
+                session.removeDocument(idRef);
+            }
         }
 
         session.save(); // send invalidations if no tx
