@@ -84,18 +84,13 @@ public class ElasticSearchNxqlPageProvider extends
                     "Cannot perform null query: check provider '%s'",
                     getName()));
         }
-        // Build the ES query
-        SortInfo[] sortArray = null;
-        if (sortInfos != null) {
-            sortArray = sortInfos.toArray(new SortInfo[sortInfos.size()]);
-        }
-        // Execute the ES query
+        // Build and execute the ES query
         ElasticSearchService ess = Framework
                 .getLocalService(ElasticSearchService.class);
         try {
             NxQueryBuilder nxQuery = new NxQueryBuilder(getCoreSession())
                     .nxql(query).offset((int) getCurrentPageOffset())
-                    .limit((int) getMinMaxPageSize()).addSort(sortArray)
+                    .limit((int) getMinMaxPageSize())
                     .addAggregates(buildAggregates());
             if (searchOnAllRepositories()) {
                 nxQuery.searchOnAllRepositories();
