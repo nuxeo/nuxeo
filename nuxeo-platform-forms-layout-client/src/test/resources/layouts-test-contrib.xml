@@ -220,12 +220,24 @@
       </controls>
     </widget>
 
+    <widget name="globalWidgetWithAliases" type="test">
+      <aliases>
+        <alias>oldGlobalWidgetWithAliases</alias>
+      </aliases>
+      <fields>
+        <field schema="foo">bar</field>
+      </fields>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
 
     <layout name="testLayout">
+      <aliases>
+        <alias>testLayoutAlias</alias>
+      </aliases>
       <rows>
         <row>
           <widget>testWidget</widget>

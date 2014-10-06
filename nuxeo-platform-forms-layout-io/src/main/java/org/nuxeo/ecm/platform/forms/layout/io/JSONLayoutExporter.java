@@ -735,6 +735,15 @@ public class JSONLayoutExporter {
             json.element("renderingInfos", renderingInfos);
         }
 
+        List<String> caliases = layoutDef.getAliases();
+        if (caliases != null && !caliases.isEmpty()) {
+            JSONArray aliases = new JSONArray();
+            for (String alias : caliases) {
+                aliases.add(alias);
+            }
+            json.element("aliases", aliases);
+        }
+
         return json;
     }
 
@@ -767,6 +776,7 @@ public class JSONLayoutExporter {
         return widgetDef;
     }
 
+    @SuppressWarnings("unchecked")
     public static LayoutDefinition importLayoutDefinition(JSONObject layoutDef) {
         String name = layoutDef.optString("name", null);
         String type = layoutDef.optString("type", null);
@@ -792,12 +802,18 @@ public class JSONLayoutExporter {
 
         Map<String, List<RenderingInfo>> renderingInfos = importRenderingInfosByMode(layoutDef.optJSONObject("renderingInfos"));
 
+        List<String> aliases = new ArrayList<String>();
+        JSONArray jaliases = layoutDef.optJSONArray("aliases");
+        if (jaliases != null) {
+            aliases.addAll(jaliases);
+        }
+
         LayoutDefinitionImpl res = new LayoutDefinitionImpl(name, properties,
                 templates, rows, widgets);
         res.setRenderingInfos(renderingInfos);
         res.setType(type);
         res.setTypeCategory(typeCat);
-
+        res.setAliases(aliases);
         return res;
     }
 
@@ -938,10 +954,19 @@ public class JSONLayoutExporter {
             json.element("renderingInfos", renderingInfos);
         }
 
+        List<String> caliases = widgetDef.getAliases();
+        if (caliases != null && !caliases.isEmpty()) {
+            JSONArray aliases = new JSONArray();
+            for (String alias : caliases) {
+                aliases.add(alias);
+            }
+            json.element("aliases", aliases);
+        }
+
         return json;
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({ "unchecked" })
     public static WidgetDefinition importWidgetDefinition(JSONObject widgetDef) {
         String name = widgetDef.getString("name");
         String type = widgetDef.getString("type");
@@ -991,7 +1016,13 @@ public class JSONLayoutExporter {
 
         Map<String, List<RenderingInfo>> renderingInfos = importRenderingInfosByMode(widgetDef.optJSONObject("renderingInfos"));
 
-        WidgetDefinition res = new WidgetDefinitionImpl(name, type, labels,
+        List<String> aliases = new ArrayList<String>();
+        JSONArray jaliases = widgetDef.optJSONArray("aliases");
+        if (jaliases != null) {
+            aliases.addAll(jaliases);
+        }
+
+        WidgetDefinitionImpl res = new WidgetDefinitionImpl(name, type, labels,
                 helpLabels, translated, modes,
                 fieldDefinitions.toArray(new FieldDefinition[] {}), properties,
                 widgetModeProperties,
@@ -1002,6 +1033,7 @@ public class JSONLayoutExporter {
         res.setHandlingLabels(handlingLabels);
         res.setControls(controls);
         res.setTypeCategory(typeCategory);
+        res.setAliases(aliases);
         return res;
     }
 
