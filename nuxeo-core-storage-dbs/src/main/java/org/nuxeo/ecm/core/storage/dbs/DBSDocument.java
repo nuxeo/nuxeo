@@ -936,7 +936,7 @@ public class DBSDocument implements Document {
             String xpath, int start, Map<String, Serializable> prefetch) {
         int i = xpath.indexOf('/', start);
         boolean last = i == -1;
-        String prop = last ? xpath : xpath.substring(start, i);
+        String prop = xpath.substring(start, last ? xpath.length() : i);
         Serializable v = state == null ? null : state.get(prop);
         Field propType = type.getField(prop);
         if (last) {
@@ -980,7 +980,6 @@ public class DBSDocument implements Document {
                             + " start=" + start + " not a Map");
                 }
                 State subMap = (State) v;
-                // XXX
                 readPrefetch((ComplexType) propType.getType(), subMap, xpath,
                         i + 1, prefetch);
             }

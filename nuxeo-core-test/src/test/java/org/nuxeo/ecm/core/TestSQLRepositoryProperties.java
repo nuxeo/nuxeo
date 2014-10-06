@@ -828,6 +828,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         // array mutability
         array[0] = "moo";
         // different mutable array returned each time
+        // TODO works because dc: is prefetched
         subjects = doc.getPropertyValue("dc:subjects");
         array = (String[]) subjects;
         assertEquals(Arrays.asList("bar"), Arrays.asList(array));
