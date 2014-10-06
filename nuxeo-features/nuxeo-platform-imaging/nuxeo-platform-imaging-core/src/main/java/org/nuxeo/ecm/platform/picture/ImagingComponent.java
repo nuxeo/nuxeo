@@ -313,7 +313,22 @@ public class ImagingComponent extends DefaultComponent implements
         }
     }
 
-    // TODO- Explain deprecation
+    /**
+     * Use
+     * {@link ImagingComponent#computeView(Blob, PictureTemplate, ImageInfo)}
+     * by passing the <b>Original</b> picture template.
+     *
+     * <br/>
+     * <br/>
+     *
+     * Retrieve the original picture template:
+     *
+     * <pre>
+     * PictureTemplate pictureTemplate = pictureTemplateRegistry.getById('Original');
+     * </pre>
+     *
+     * @deprecated since 5.9.6
+     */
     @Deprecated
     protected PictureView computeOriginalView(Blob blob,
             PictureTemplate pictureTemplate, ImageInfo imageInfo)
@@ -347,7 +362,22 @@ public class ImagingComponent extends DefaultComponent implements
         return new BlobWrapper(blob);
     }
 
-    // TODO- Explain deprecation
+    /**
+     * Use
+     * {@link ImagingComponent#computeView(Blob, PictureTemplate, ImageInfo)} by
+     * passing the <b>OriginalJpeg</b> picture template.
+     *
+     * <br/>
+     * <br/>
+     *
+     * Retrieve the original jpeg picture template:
+     *
+     * <pre>
+     * PictureTemplate pictureTemplate = pictureTemplateRegistry.getById('OriginalJpeg');
+     * </pre>
+     *
+     * @deprecated since 5.9.6
+     */
     @Deprecated
     protected PictureView computeOriginalJpegView(Blob blob,
             PictureTemplate pictureTemplate, ImageInfo imageInfo)
