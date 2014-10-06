@@ -219,9 +219,9 @@ public class CollectionManagerImpl extends DefaultComponent implements
         return doc;
     }
 
-    public DocumentModel getUserDefaultCollections(
-            final DocumentModel context, final CoreSession session)
-            throws ClientException {
+    @Override
+    public DocumentModel getUserDefaultCollections(final DocumentModel context,
+            final CoreSession session) throws ClientException {
         final UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
         final DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(
                 session, context);
