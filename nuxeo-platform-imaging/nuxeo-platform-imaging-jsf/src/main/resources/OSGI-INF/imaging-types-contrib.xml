@@ -10,7 +10,6 @@
       <description>PictureBook.description</description>
       <category>Collaborative</category>
       <default-view>view_documents</default-view>
-      <create-view>create_picturebook</create-view>
       <layouts mode="any">
         <layout>heading</layout>
         <layout>picturebook</layout>
@@ -50,25 +49,16 @@
     <type id="Folder">
       <subtypes>
         <type>Picture</type>
-        <type>PictureBook</type>
       </subtypes>
     </type>
     <type id="OrderedFolder">
       <subtypes>
         <type>Picture</type>
-        <type>PictureBook</type>
-      </subtypes>
-    </type>
-    <type id="PictureBook">
-      <subtypes>
-        <type>Picture</type>
-        <type>PictureBook</type>
       </subtypes>
     </type>
     <type id="Workspace">
       <subtypes>
         <type>Picture</type>
-        <type>PictureBook</type>
       </subtypes>
     </type>
 

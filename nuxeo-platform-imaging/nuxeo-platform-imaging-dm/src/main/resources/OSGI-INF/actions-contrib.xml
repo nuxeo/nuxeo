@@ -6,18 +6,6 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="tab_bookview" link="/incl/tabs/book_view.xhtml" enabled="true"
-      label="action.view.book" order="1" type="rest_document_link">
-      <category>VIEW_ACTION_LIST</category>
-      <filter-id>grantpicturebook</filter-id>
-    </action>
-
-    <action id="tab_slideshow" link="/incl/tabs/slide_view.xhtml"
-      enabled="true" label="action.view.slideshow" order="2" type="rest_document_link">
-      <category>VIEW_ACTION_LIST</category>
-      <filter-id>grantpicturebook</filter-id>
-    </action>
-
     <action id="tab_imageview" link="/incl/tabs/picture_view.xhtml"
       enabled="true" label="action.view.picture" order="22" type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
@@ -52,20 +40,6 @@
     <filter id="hasPictureFacet">
       <rule grant="true">
         <facet>Picture</facet>
-      </rule>
-    </filter>
-
-    <filter id="create" append="true">
-      <rule grant="true">
-        <permission>AddChildren</permission>
-        <type>PictureBook</type>
-      </rule>
-    </filter>
-
-    <filter id="importFile" append="true">
-      <rule grant="true">
-        <permission>AddChildren</permission>
-        <type>PictureBook</type>
       </rule>
     </filter>
 
