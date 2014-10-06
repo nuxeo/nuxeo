@@ -1,0 +1,19 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  class="hostInfos">
+
+  <h3> Index Operations </h3>
+
+  <h:form id="esAdmin">
+     Rebuild index for the whole repository: <h:commandButton action="#{esAdmin.startReindex}" value="ReIndex"/>
+     <br/><br/>
+     Rebuild Index from the root document id : <h:inputText name="j_docid" value="#{esAdmin.rootId}" size="36"/><h:commandButton action="#{esAdmin.startReindexFrom}" value="ReIndex"/>
+     <br/><br/>
+     Flush Index : <h:commandButton action="#{esAdmin.flush}" value="Flush"/>
+  </h:form>
+
+</div>
