@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,7 +22,7 @@ public class ContributableFeaturesRunner extends Suite {
             public Runner runnerForClass(Class<?> testClass) throws Throwable {
                 Runner runner = builder.runnerForClass(testClass);
                 if (runner instanceof FeaturesRunner) {
-                    ((FeaturesRunner)runner).loadFeatures(clazz);
+                    ((FeaturesRunner)runner).loader.loadFeatures(clazz);
                 }
                 return runner;
             }
