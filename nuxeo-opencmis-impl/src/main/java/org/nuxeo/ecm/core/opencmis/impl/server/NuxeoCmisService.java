@@ -453,7 +453,11 @@ public class NuxeoCmisService extends AbstractCmisService implements
         if (folder != null) {
             DocumentModel parentDoc;
             try {
-                parentDoc = coreSession.getDocument(new IdRef(folder.getId()));
+                DocumentRef parentRef = new IdRef(folder.getId());
+                if (!coreSession.exists(parentRef)) {
+                    throw new CmisInvalidArgumentException(parentRef.toString());
+                }
+                parentDoc = coreSession.getDocument(parentRef);
             } catch (ClientException e) {
                 throw new CmisRuntimeException("Cannot create object", e);
             }
