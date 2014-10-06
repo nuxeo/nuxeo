@@ -131,7 +131,7 @@ public class RandomBugTest {
 
     @RunWith(FeaturesRunner.class)
     @Features({ RandomBug.Feature.class })
-    @RandomBug.Repeat(issue = "testFailAfterTenRetry")
+    @RandomBug.Repeat(issue = "failingTest")
     public static class FailingTest {
 
         @Inject
@@ -141,13 +141,13 @@ public class RandomBugTest {
         public static final IgnoreInner ignoreInner = new IgnoreInner();
 
         @Test
-        @RandomBug.Repeat(issue = "testFailAfterTenRetry", bypass = true)
+        @RandomBug.Repeat(issue = "failingTest", bypass = true)
         public void other() throws Exception {
 
         }
 
         @Test
-        public void testFailThenSucceed() throws Exception {
+        public void failAfterThreeRetry() throws Exception {
             if (testRule.statement.serial < 3) {
                 return;
             }
@@ -171,8 +171,8 @@ public class RandomBugTest {
         }
 
         @Test
-        @RandomBug.Repeat(issue = "testFailAfterTenRetry")
-        public void testFailThenSucceed() throws Exception {
+        @RandomBug.Repeat(issue = "failinMethod")
+        public void failAterTenRetry() throws Exception {
             if (methodRule.statement.serial < 10) {
                 return;
             }
@@ -180,7 +180,6 @@ public class RandomBugTest {
         }
 
     }
-
 
     @Test
     public void testBypass() {
@@ -194,15 +193,16 @@ public class RandomBugTest {
     public void testStrict() {
         System.setProperty(RandomBug.MODE_PROPERTY,
                 RandomBug.Mode.STRICT.toString());
-        Result result = JUnitCore.runClasses(FailingTest.class);
-        assertThat(result.wasSuccessful()).isFalse();
-        assertThat(result.getIgnoreCount()).isEqualTo(0);
-
-        return;
-        // if (result.wasSuccessful() || result.getIgnoreCount() > 0
-        // || result.getFailureCount() != result.getRunCount()) {
-        // fail("Unexpected success: STRICT mode expects a failure");
-        // }
+        {
+            Result result = JUnitCore.runClasses(FailingTest.class);
+            assertThat(result.wasSuccessful()).isFalse();
+            assertThat(result.getIgnoreCount()).isEqualTo(0);
+        }
+        {
+            Result result = JUnitCore.runClasses(FailingMethod.class);
+            assertThat(result.wasSuccessful()).isFalse();
+            assertThat(result.getIgnoreCount()).isEqualTo(0);
+        }
     }
 
     @Test
