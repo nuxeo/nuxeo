@@ -75,12 +75,7 @@ public class ElasticSearchNxqlPageProvider extends
                             "Cannot perform null query: check provider '%s'",
                             getName()));
         }
-        // Build the ES query
-        SortInfo[] sortArray = null;
-        if (sortInfos != null) {
-            sortArray = sortInfos.toArray(new SortInfo[sortInfos.size()]);
-        }
-        // Execute the ES query
+        // Build and execute the ES query
         ElasticSearchService ess = Framework
                 .getLocalService(ElasticSearchService.class);
         try {
