@@ -164,6 +164,9 @@ public class ElasticSearchIndexConfig {
             + "      \"dc:modified\": {\n"
             + "         \"format\": \"dateOptionalTime\",\n"
             + "        \"type\": \"date\"\n"
+            + "      },\n"
+            + "      \"ecm:pos*\" : {\n"
+            + "         \"type\" : \"integer\"\n"
             + "      }\n"
             + "   }\n"
             + "}";
