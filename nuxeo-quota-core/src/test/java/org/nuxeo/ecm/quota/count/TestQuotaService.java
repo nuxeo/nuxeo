@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -40,7 +39,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
@@ -74,10 +72,7 @@ public class TestQuotaService {
     @Inject
     protected EventService eventService;
 
-    public static final String NXP14769 = "NXP-14769: NoSuchDocumentException";
-
     @Test
-    @RandomBug.Repeat(issue = NXP14769)
     public void testSetQuotaOnUserWorkspaces() throws Exception {
         DocumentRef uwRef1;
         DocumentRef uwRef2;
