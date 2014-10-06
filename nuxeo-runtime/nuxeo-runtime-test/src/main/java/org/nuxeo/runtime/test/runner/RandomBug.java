@@ -137,8 +137,8 @@ public class RandomBug {
          */
         int onFailure() default 10;
 
-        /*
-         * Skip ....
+        /**
+         * Bypass a method/suite ....
          */
         boolean bypass() default false;
     }
@@ -156,7 +156,7 @@ public class RandomBug {
         }
     }
 
-    public class RepeatTestRule implements TestRule {
+    public class RepeatRule implements TestRule, MethodRule {
 
         @Inject
         protected RunNotifier notifier;
@@ -171,15 +171,7 @@ public class RandomBug {
             }
             return statement = onRepeat(actual, notifier, base);
         }
-    }
-
-    public class RepeatMethodRule implements MethodRule {
-
-        @Inject
-        protected RunNotifier notifier;
-
-        public RepeatStatement statement;
-
+        
         @Override
         public Statement apply(Statement base, FrameworkMethod method,
                 Object target) {
@@ -191,12 +183,13 @@ public class RandomBug {
         }
     }
 
-    protected RepeatTestRule onTest() {
-        return new RepeatTestRule();
+
+    protected RepeatRule onTest() {
+        return new RepeatRule();
     }
 
-    protected RepeatMethodRule onMethod() {
-        return new RepeatMethodRule();
+    protected RepeatRule onMethod() {
+        return new RepeatRule();
     }
 
     public static final String MODE_PROPERTY = "nuxeo.tests.random.mode";

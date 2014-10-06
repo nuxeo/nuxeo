@@ -52,6 +52,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
+import com.google.inject.name.Names;
 
 /**
  * A Test Case runner that can be extended through features and provide
@@ -92,6 +93,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
                         public void configure(Binder binder) {
                             for (Object each : rules) {
                                 binder.bind((Class) each.getClass())
+                                    .annotatedWith(Names.named("test"))
                                     .toInstance(each);
                                 binder.requestInjection(each);
                             }
@@ -137,7 +139,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
                         public void configure(Binder binder) {
                             for (Object each : rules) {
                                 binder.bind((Class) each.getClass())
-                                    .toInstance(each);
+                                    .annotatedWith(Names.named("method")).toInstance(each);
                                 binder.requestInjection(each);
                             }
                         }
@@ -504,19 +506,17 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected Injector onInjector(final RunNotifier aNotifier) {
-        return Guice.createInjector(Stage.DEVELOPMENT,
-                new Module() {
+        return Guice.createInjector(Stage.DEVELOPMENT, new Module() {
 
-                    @Override
-                    public void configure(Binder aBinder) {
-                        aBinder.bind(FeaturesRunner.class).toInstance(
-                                FeaturesRunner.this);
-                        aBinder.bind(RunNotifier.class).toInstance(aNotifier);
-                        aBinder.bind(TargetResourceLocator.class).toInstance(
-                                locator);
-                    }
+            @Override
+            public void configure(Binder aBinder) {
+                aBinder.bind(FeaturesRunner.class).toInstance(
+                        FeaturesRunner.this);
+                aBinder.bind(RunNotifier.class).toInstance(aNotifier);
+                aBinder.bind(TargetResourceLocator.class).toInstance(locator);
+            }
 
-                });
+        });
     }
 
     protected class BeforeClassStatement extends Statement {

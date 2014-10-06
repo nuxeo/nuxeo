@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -38,8 +39,7 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 import org.nuxeo.runtime.test.Failures;
 import org.nuxeo.runtime.test.runner.RandomBug.Repeat;
-import org.nuxeo.runtime.test.runner.RandomBug.RepeatMethodRule;
-import org.nuxeo.runtime.test.runner.RandomBug.RepeatTestRule;
+import org.nuxeo.runtime.test.runner.RandomBug.RepeatRule;
 
 /**
  * Tests verifying that test fixtures ({@link Before} and {@link After}) and
@@ -135,7 +135,8 @@ public class RandomBugTest {
     public static class FailingTest {
 
         @Inject
-        RepeatTestRule testRule;
+        @Named("test")
+        RepeatRule repeatRule;
 
         @ClassRule
         public static final IgnoreInner ignoreInner = new IgnoreInner();
@@ -143,24 +144,30 @@ public class RandomBugTest {
         @Test
         @RandomBug.Repeat(issue = "failingTest", bypass = true)
         public void other() throws Exception {
-
+            return;
         }
 
         @Test
         public void failAfterThreeRetry() throws Exception {
-            if (testRule.statement.serial < 3) {
+            if (repeatRule.statement.serial < 3) {
                 return;
             }
-            fail("over");
+            fail("on third retry");
         }
 
     }
 
     @RunWith(FeaturesRunner.class)
+    @Features({ RandomBug.Feature.class })
     public static class FailingMethod {
 
         @Inject
-        RepeatMethodRule methodRule;
+        @Named("test")
+        RepeatRule testRule;
+
+        @Inject
+        @Named("method")
+        RepeatRule methodRule;
 
         @ClassRule
         public static final IgnoreInner ignoreInner = new IgnoreInner();
@@ -171,12 +178,12 @@ public class RandomBugTest {
         }
 
         @Test
-        @RandomBug.Repeat(issue = "failinMethod")
-        public void failAterTenRetry() throws Exception {
+        @RandomBug.Repeat(issue = "failingMethod")
+        public void failAfterTenRetry() throws Exception {
             if (methodRule.statement.serial < 10) {
                 return;
             }
-            fail("over");
+            fail("on tenth retry");
         }
 
     }
@@ -195,12 +202,14 @@ public class RandomBugTest {
                 RandomBug.Mode.STRICT.toString());
         {
             Result result = JUnitCore.runClasses(FailingTest.class);
-            assertThat(result.wasSuccessful()).isFalse();
+            assertThat(result.wasSuccessful()).as(
+                    "strict mode should reveal failure").isFalse();
             assertThat(result.getIgnoreCount()).isEqualTo(0);
         }
         {
             Result result = JUnitCore.runClasses(FailingMethod.class);
-            assertThat(result.wasSuccessful()).isFalse();
+            assertThat(result.wasSuccessful()).as(
+                    "strict mode should reveal failure").isFalse();
             assertThat(result.getIgnoreCount()).isEqualTo(0);
         }
     }
