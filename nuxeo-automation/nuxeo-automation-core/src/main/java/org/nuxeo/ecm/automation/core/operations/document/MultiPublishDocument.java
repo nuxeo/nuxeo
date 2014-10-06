@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = MultiPublishDocument.ID, category = Constants.CAT_DOCUMENT, label = "Multi-Publish", description = "Publish the input document(s) into several target sections. The target is evaluated to a document list (can be a path, UID or EL expression). Existing proxy is overrided if the override attribute is set. Returns a list with the created proxies.")
+@Operation(id = MultiPublishDocument.ID, category = Constants.CAT_DOCUMENT, label = "Multi-Publish", description = "Publish the input document(s) into several target sections. The target is evaluated to a document list (can be a path, UID or EL expression). Existing proxy is overridden if the override attribute is set. Returns a list with the created proxies.")
 public class MultiPublishDocument {
 
     public static final String ID = "Document.MultiPublish";
