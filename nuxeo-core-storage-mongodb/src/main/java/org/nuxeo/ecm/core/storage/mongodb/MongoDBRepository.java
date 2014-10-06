@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -568,9 +569,15 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected List<State> findAll(DBObject query, int sizeHint) {
         DBCursor cursor = coll.find(query);
+        Set<String> seen = new HashSet<>();
         try {
             List<State> list = new ArrayList<>(sizeHint);
             for (DBObject ob : cursor) {
+                if (!seen.add((String) ob.get(KEY_ID))) {
+                    // MongoDB cursors may return the same
+                    // object several times
+                    continue;
+                }
                 list.add(bsonToState(ob));
             }
             return list;
