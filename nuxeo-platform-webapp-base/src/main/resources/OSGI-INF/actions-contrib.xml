@@ -120,15 +120,6 @@
       <filter-id>restoreVersionDisplay</filter-id>
     </action>
 
-    <action id="editResultLayoutColumns" order="10"
-      label="label.contentview.edit.columns" type="fancybox" enabled="false">
-      <category>CONTENT_VIEW_TOP_ACTIONS</category>
-      <properties>
-        <property name="include">/incl/content_view_edit_columns.xhtml</property>
-        <property name="ajaxSupport">true</property>
-      </properties>
-    </action>
-
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
