@@ -36,7 +36,6 @@ import org.codehaus.jackson.JsonNode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.RemoteException;
@@ -70,9 +69,7 @@ import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.ResultSetPageProviderOperation;
 import org.nuxeo.ecm.automation.server.test.UploadFileSupport.DigestMockInputStream;
-
 import org.nuxeo.runtime.api.Framework;
-
 import com.google.inject.Inject;
 
 public abstract class AbstractAutomationClientTest {
@@ -526,6 +523,7 @@ public abstract class AbstractAutomationClientTest {
                     folder).set("type", "Note").set("name", "note" + i).set(
                     "properties", "dc:title=Note" + i).execute();
         }
+
 
         Documents docs = (Documents) session.newRequest(DocumentPaginatedQuery.ID).set("query",
                 "SELECT * from Document WHERE ecm:path STARTSWITH '/automation-test-folder/'").execute();

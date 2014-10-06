@@ -43,6 +43,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.common.base.Joiner;
 import com.sun.jersey.api.client.ClientResponse;
@@ -83,7 +84,8 @@ public class DocumentListTest extends BaseTest {
         note.setPropertyValue("dc:description",
                 "nuxeo one platform to rule them all");
         session.saveDocument(note);
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         // Waiting for all async events work for indexing content before
         // executing fulltext search

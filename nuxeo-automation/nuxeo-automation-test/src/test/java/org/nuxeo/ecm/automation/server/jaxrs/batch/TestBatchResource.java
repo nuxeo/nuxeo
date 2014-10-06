@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
@@ -69,7 +70,8 @@ public class TestBatchResource {
         DocumentModel file = session.createDocumentModel("/", "testFile",
                 "File");
         file = session.createDocument(file);
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         // Upload a blob and attach it to the document
         String uploadURL = "http://localhost:18080/automation/batch/upload";

@@ -47,6 +47,7 @@ import org.nuxeo.ecm.restapi.jaxrs.io.documents.ACPWriter;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.sun.jersey.api.client.ClientResponse;
 
@@ -98,7 +99,8 @@ public class DocumentBrowsingTest extends BaseTest {
         DocumentModel child = session.createDocumentModel(
                 folder.getPathAsString(), "note", "Note");
         child = session.createDocument(child);
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         // When i call a GET on the children for that doc
         ClientResponse response = getResponse(RequestType.GET,
@@ -397,7 +399,8 @@ public class DocumentBrowsingTest extends BaseTest {
         DocumentModel note = session.createDocumentModel(
                 folder.getPathAsString(), "doc with space", "Note");
         note = session.createDocument(note);
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         // When i do a GET Request on the note repository
         ClientResponse response = getResponse(RequestType.GET,

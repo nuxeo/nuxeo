@@ -18,6 +18,9 @@ package org.nuxeo.ecm.restapi.test;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -30,10 +33,12 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Repo init to test Rest API
@@ -91,7 +96,15 @@ public class RestServerInit implements RepositoryInit {
         DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
         session.saveDocument(doc);
 
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        try {
+            Framework.getService(WorkManager.class).awaitCompletion(10, TimeUnit.SECONDS);
+        } catch (InterruptedException  cause) {
+            LogFactory.getLog(RestServerInit.class).error("Cannot initialize the rest api test repo in 10 seconds", cause);
+            Thread.currentThread().interrupt();
+        }
 
         UserManager um = Framework.getLocalService(UserManager.class);
         // Create some users
