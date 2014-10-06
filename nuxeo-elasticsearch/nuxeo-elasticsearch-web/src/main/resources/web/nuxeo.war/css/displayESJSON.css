@@ -1,0 +1,77 @@
+.package {
+  margin-left: 10px;
+  padding: 3px;
+  border-radius: 2px;
+  margin-top: 2px;
+  padding:2px;
+}
+
+.esheader {
+  cursor: pointer;
+  padding:2px;
+}
+
+.esname {
+  color: black;
+  padding:2px;
+}
+
+.array {
+  background-color: #EEEEEE;
+  border: thin solid #777777;
+}
+
+.object {
+  background-color: #EEEEEE;
+  border: thin solid #777777;
+}
+
+.esstring {
+  color: #0000DD;
+  padding:2px;
+}
+
+.number {
+  color: blue;
+}
+
+.function {
+  color: green;
+}
+
+.open .children {
+  display: block;
+  padding:2px;
+}
+
+.closed .children {
+  display: none;
+  padding:2px;
+}
+
+.arrow {
+  background-image: url("img/d.png");
+  background-repeat: no-repeat;
+  background-color: transparent;
+  height: 15px;
+  width: 15px;
+  display: inline-block;
+}
+
+.open .arrow {
+  background-position: -20px 0;
+}
+
+.closed .arrow {
+  background-position: 0 0;
+}
+
+.type {
+  color: black;
+  font-size: 8pt;
+  float: right;
+}
+
+.hide {
+  display: none;
+}
