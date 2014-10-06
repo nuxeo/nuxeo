@@ -80,6 +80,12 @@ public class LayoutDescriptor {
     @XNodeList(value = "categories/category", type = String[].class, componentType = String.class)
     String[] categories = new String[0];
 
+    /**
+     * @since 5.9.6
+     */
+    @XNodeList(value = "aliases/alias", type = ArrayList.class, componentType = String.class)
+    List<String> aliases;
+
     Integer columns;
 
     public String getName() {
@@ -169,6 +175,13 @@ public class LayoutDescriptor {
         return categories;
     }
 
+    /**
+     * @since 5.9.6
+     */
+    public List<String> getAliases() {
+        return aliases;
+    }
+
     public LayoutDefinition getLayoutDefinition() {
         Map<String, String> ctemplates = null;
         if (templates != null) {
@@ -204,6 +217,9 @@ public class LayoutDescriptor {
         clone.setRenderingInfos(crenderingInfos);
         clone.setType(getType());
         clone.setTypeCategory(getTypeCategory());
+        if (aliases != null) {
+            clone.setAliases(new ArrayList<String>(aliases));
+        }
         return clone;
     }
 }

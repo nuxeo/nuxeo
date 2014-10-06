@@ -59,6 +59,8 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
 
     protected Integer columns;
 
+    protected List<String> aliases;
+
     // needed by GWT serialization
     protected LayoutDefinitionImpl() {
         super();
@@ -243,6 +245,33 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         return WidgetDefinitionImpl.getRenderingInfos(renderingInfos, mode);
     }
 
+    public boolean isEmpty() {
+        LayoutRowDefinition[] rows = getRows();
+        if (rows == null) {
+            return true;
+        }
+        for (LayoutRowDefinition row : rows) {
+            WidgetReference[] refs = row.getWidgetReferences();
+            if (refs != null) {
+                for (WidgetReference ref : refs) {
+                    if (ref.getName() != null && !ref.getName().isEmpty()) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public List<String> getAliases() {
+        return aliases;
+    }
+
+    public void setAliases(List<String> aliases) {
+        this.aliases = aliases;
+    }
+
     @Override
     public LayoutDefinition clone() {
         Map<String, Map<String, Serializable>> cprops = null;
@@ -301,25 +330,10 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         clone.setRenderingInfos(crenderingInfos);
         clone.setType(type);
         clone.setTypeCategory(typeCategory);
+        if (aliases != null) {
+            clone.setAliases(new ArrayList<String>(aliases));
+        }
         return clone;
-    }
-
-    public boolean isEmpty() {
-        LayoutRowDefinition[] rows = getRows();
-        if (rows == null) {
-            return true;
-        }
-        for (LayoutRowDefinition row : rows) {
-            WidgetReference[] refs = row.getWidgetReferences();
-            if (refs != null) {
-                for (WidgetReference ref : refs) {
-                    if (ref.getName() != null && !ref.getName().isEmpty()) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
     }
 
 }

@@ -150,12 +150,27 @@
       </selectOptions>
     </widget>
 
+    <widget name="globalTestWidgetWithAliases" type="test">
+      <aliases>
+        <alias>oldWidgetName</alias>
+      </aliases>
+      <categories>
+        <category>testCategory</category>
+      </categories>
+      <fields>
+        <field schema="foo">bar</field>
+      </fields>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
     point="layouts">
 
     <layout name="testLayout">
+      <aliases>
+        <alias>oldTestLayoutName</alias>
+      </aliases>
       <categories>
         <category>testCategory</category>
       </categories>

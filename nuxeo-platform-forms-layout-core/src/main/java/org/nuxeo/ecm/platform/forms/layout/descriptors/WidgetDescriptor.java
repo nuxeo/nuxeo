@@ -122,6 +122,12 @@ public class WidgetDescriptor {
     @XNodeList(value = "categories/category", type = String[].class, componentType = String.class)
     String[] categories = new String[0];
 
+    /**
+     * @since 5.9.6
+     */
+    @XNodeList(value = "aliases/alias", type = ArrayList.class, componentType = String.class)
+    List<String> aliases;
+
     public String getName() {
         return name;
     }
@@ -346,7 +352,13 @@ public class WidgetDescriptor {
         return categories;
     }
 
-    @SuppressWarnings("deprecation")
+    /**
+     * @since 5.9.6
+     */
+    public List<String> getAliases() {
+        return aliases;
+    }
+
     public WidgetDefinition getWidgetDefinition() {
         Map<String, String> clabels = null;
         if (labels != null) {
@@ -388,8 +400,8 @@ public class WidgetDescriptor {
                 crenderingInfos.put(item.getKey(), clonedInfos);
             }
         }
-        WidgetDefinition clone = new WidgetDefinitionImpl(name, type, clabels,
-                chelpLabels, translated, cmodes, cfieldDefinitions,
+        WidgetDefinitionImpl clone = new WidgetDefinitionImpl(name, type,
+                clabels, chelpLabels, translated, cmodes, cfieldDefinitions,
                 getProperties(), getWidgetModeProperties(), csubWidgets,
                 cselectOptions);
         clone.setRenderingInfos(crenderingInfos);
@@ -397,6 +409,9 @@ public class WidgetDescriptor {
         clone.setHandlingLabels(handlingLabels);
         clone.setControls(getControls());
         clone.setTypeCategory(typeCategory);
+        if (aliases != null) {
+            clone.setAliases(new ArrayList<String>(aliases));
+        }
         return clone;
     }
 }

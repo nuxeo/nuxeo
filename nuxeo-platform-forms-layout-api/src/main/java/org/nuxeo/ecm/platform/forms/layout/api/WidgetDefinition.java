@@ -295,6 +295,14 @@ public interface WidgetDefinition extends Serializable {
     void setRenderingInfos(Map<String, List<RenderingInfo>> renderingInfos);
 
     /**
+     * Return alias names for this widget definition (useful for compatibility
+     * on old widget names).
+     *
+     * @since 5.9.6
+     */
+    List<String> getAliases();
+
+    /**
      * Returns a clone instance of this widget definition.
      * <p>
      * Useful for conversion of widget definition during export.

@@ -77,6 +77,8 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
 
     protected Map<String, List<RenderingInfo>> renderingInfos;
 
+    protected List<String> aliases;
+
     // needed by GWT serialization
     protected WidgetDefinitionImpl() {
         super();
@@ -444,7 +446,15 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
+    public List<String> getAliases() {
+        return aliases;
+    }
+
+    public void setAliases(List<String> aliases) {
+        this.aliases = aliases;
+    }
+
+    @Override
     public WidgetDefinition clone() {
         Map<String, Map<String, Serializable>> cprops = null;
         if (properties != null) {
@@ -543,13 +553,16 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
                 crenderingInfos.put(item.getKey(), clonedInfos);
             }
         }
-        WidgetDefinition clone = new WidgetDefinitionImpl(name, type, clabels,
-                chelpLabels, translated, cmodes, cfieldDefinitions, cprops,
-                cwidgetProps, csubWidgets, cselectOptions);
+        WidgetDefinitionImpl clone = new WidgetDefinitionImpl(name, type,
+                clabels, chelpLabels, translated, cmodes, cfieldDefinitions,
+                cprops, cwidgetProps, csubWidgets, cselectOptions);
         clone.setRenderingInfos(crenderingInfos);
         clone.setSubWidgetReferences(csubWidgetRefs);
         clone.setHandlingLabels(handlingLabels);
         clone.setControls(ccontrols);
+        if (aliases != null) {
+            clone.setAliases(new ArrayList<String>(aliases));
+        }
         return clone;
     }
 

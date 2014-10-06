@@ -134,13 +134,12 @@ public interface LayoutDefinition extends Serializable {
     void setRenderingInfos(Map<String, List<RenderingInfo>> renderingInfos);
 
     /**
-     * Returns a clone instance of this layout definition.
-     * <p>
-     * Useful for conversion of layout definition during export.
+     * Return alias names for this layout definition (useful for compatibility
+     * on old layout names).
      *
-     * @since 5.5
+     * @since 5.9.6
      */
-    LayoutDefinition clone();
+    List<String> getAliases();
 
     /**
      * Returns true if all widget references in this layout are empty
@@ -148,5 +147,14 @@ public interface LayoutDefinition extends Serializable {
      * @since 5.6
      */
     boolean isEmpty();
+
+    /**
+     * Returns a clone instance of this layout definition.
+     * <p>
+     * Useful for conversion of layout definition during export.
+     *
+     * @since 5.5
+     */
+    LayoutDefinition clone();
 
 }

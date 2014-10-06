@@ -221,4 +221,28 @@ public class TestLayoutStoreComponent extends NXRuntimeTestCase {
         assertEquals("myLayoutType", layoutTypeDef.getName());
     }
 
+    @Test
+    public void testWidgetAliases() {
+        WidgetDefinition testWidget = service.getWidgetDefinition(
+                "testCategory", "globalTestWidgetWithAliases");
+        assertNotNull(testWidget);
+        assertEquals("globalTestWidgetWithAliases", testWidget.getName());
+        WidgetDefinition oldTestWidget = service.getWidgetDefinition(
+                "testCategory", "oldWidgetName");
+        assertNotNull(oldTestWidget);
+        assertEquals("globalTestWidgetWithAliases", oldTestWidget.getName());
+    }
+
+    @Test
+    public void testLayoutAliases() {
+        LayoutDefinition testLayout = service.getLayoutDefinition(
+                "testCategory", "testLayout");
+        assertNotNull(testLayout);
+        assertEquals("testLayout", testLayout.getName());
+        LayoutDefinition oldTestLayout = service.getLayoutDefinition(
+                "testCategory", "oldTestLayoutName");
+        assertNotNull(oldTestLayout);
+        assertEquals("testLayout", oldTestLayout.getName());
+    }
+
 }
