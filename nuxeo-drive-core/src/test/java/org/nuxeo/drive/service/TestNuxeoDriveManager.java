@@ -34,6 +34,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl;
+import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -72,7 +73,9 @@ import com.google.inject.Inject;
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.drive.core" })
+        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.drive.core",
+        "org.nuxeo.ecm.platform.collections.core",
+        "org.nuxeo.ecm.platform.web.common" })
 public class TestNuxeoDriveManager {
 
     @Inject
@@ -505,6 +508,53 @@ public class TestNuxeoDriveManager {
         assertEquals(2, syncRootrefs.size());
         assertTrue(syncRootrefs.contains(folder.getRef()));
         assertTrue(syncRootrefs.contains(folder1.getRef()));
+    }
+
+    @Test
+    public void testAddToLocallyEditedCollection() {
+        // Create a test document and add it to the "Locally Edited" collection
+        DocumentModel doc1 = session.createDocument(session.createDocumentModel(
+                workspace_1.getPathAsString(), "driveEditFile1", "File"));
+        nuxeoDriveManager.addToLocallyEditedCollection(session, doc1);
+
+        // Check that the "Locally Edited" collection has been created, the test
+        // document is member of it and the collection is registered as a
+        // synchronization root
+        CollectionManager cm = Framework.getService(CollectionManager.class);
+        DocumentModel userCollections = cm.getUserDefaultCollections(doc1,
+                session);
+        DocumentRef locallyEditedCollectionRef = new PathRef(
+                userCollections.getPath().toString(),
+                NuxeoDriveManager.LOCALLY_EDITED_COLLECTION_NAME);
+        assertTrue(session.exists(locallyEditedCollectionRef));
+        DocumentModel locallyEditedCollection = session.getDocument(locallyEditedCollectionRef);
+        assertTrue(cm.isCollection(locallyEditedCollection));
+        // Re-fetch document from session to refresh it
+        doc1 = session.getDocument(doc1.getRef());
+        assertTrue(cm.isInCollection(locallyEditedCollection, doc1, session));
+        assertTrue(nuxeoDriveManager.isSynchronizationRoot(
+                session.getPrincipal(), locallyEditedCollection));
+
+        // Add another document to the "Locally Edited" collection, check
+        // collection membership
+        DocumentModel doc2 = session.createDocument(session.createDocumentModel(
+                workspace_1.getPathAsString(), "driveEditFile2", "File"));
+        nuxeoDriveManager.addToLocallyEditedCollection(session, doc2);
+        doc2 = session.getDocument(doc2.getRef());
+        assertTrue(cm.isInCollection(locallyEditedCollection, doc2, session));
+
+        // Unregister the "Locally Edited" collection and add another document
+        // to it, check collection membership and the collection is registered
+        // as a synchronization root once again
+        nuxeoDriveManager.unregisterSynchronizationRoot(session.getPrincipal(),
+                locallyEditedCollection, session);
+        DocumentModel doc3 = session.createDocument(session.createDocumentModel(
+                workspace_1.getPathAsString(), "driveEditFile3", "File"));
+        nuxeoDriveManager.addToLocallyEditedCollection(session, doc3);
+        doc3 = session.getDocument(doc3.getRef());
+        assertTrue(cm.isInCollection(locallyEditedCollection, doc3, session));
+        assertTrue(nuxeoDriveManager.isSynchronizationRoot(
+                session.getPrincipal(), locallyEditedCollection));
     }
 
     protected DocumentModel doc(String path) throws ClientException {
