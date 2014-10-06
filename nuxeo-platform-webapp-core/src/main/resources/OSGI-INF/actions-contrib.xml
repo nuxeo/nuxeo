@@ -82,7 +82,8 @@
       <filter-id>create</filter-id>
     </action>
 
-    <action id="newFile" label="action.new.file" icon="/icons/action_add_file.gif"
+    <!-- disabled by default, see NXP-15369 -->
+    <action id="newFile" enabled="false" label="action.new.file" icon="/icons/action_add_file.gif"
       type="fancybox">
       <category>SUBVIEW_UPPER_LIST</category>
       <properties>
