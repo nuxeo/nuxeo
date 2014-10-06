@@ -777,7 +777,7 @@ public class DBSDocument implements Document {
 
     protected static Object[] typedArray(Type type, Object[] array) {
         if (array == null) {
-            return null;
+            array = EMPTY_STRING_ARRAY;
         }
         Class<?> klass;
         if (type instanceof StringType) {
