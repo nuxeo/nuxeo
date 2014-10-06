@@ -69,20 +69,3 @@ FULL_TEXT_WAIT = 10
 VERSIONABLE_TYPE_ID = 'cmis:document'
 #VERSIONABLE_TYPE_ID = 'cmisbook:pdf'
 #VERSIONABLE_TYPE_ID = 'VersionableType'
-
-# Nuxeo
-#REPOSITORY_URL = 'http://cmis.demo.nuxeo.org/nuxeo/site/cmis/repository'
-REPOSITORY_URL = 'http://localhost:8080/nuxeo/atom/cmis'
-USERNAME = 'Administrator'
-PASSWORD = 'Administrator'
-TEST_ROOT_PATH = '/default-domain/'
-EXT_ARGS = {}
-
-MAX_FULL_TEXT_TRIES = 2
-FULL_TEXT_WAIT = 2
-
-import os
-CMIS_BINDING = os.environ.get('CMIS_BINDING')
-if CMIS_BINDING == 'Browser':
-    REPOSITORY_URL = REPOSITORY_URL.replace('atom', 'json')
-    BINDING = BrowserBinding()

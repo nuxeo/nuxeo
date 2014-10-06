@@ -18,15 +18,15 @@
 #      under the License.
 #
 
-'''
+"""
 Unit tests for cmislib
-'''
+"""
 import unittest
 from unittest import TestSuite, TestLoader
-from cmislib.model import CmisClient, ACE
+from cmislib.model import CmisClient
+from cmislib.domain import ACE
 from cmislib.exceptions import \
                           ObjectNotFoundException, \
-                          PermissionDeniedException, \
                           CmisException, \
                           NotSupportedException
 from cmislib import messages
@@ -38,11 +38,11 @@ import settings
 my_dir = os.path.dirname(os.path.abspath(__file__))
 try:
     os.stat(settings.TEST_BINARY_1)
-except:
+except OSError:
     settings.TEST_BINARY_1 = os.path.join(my_dir, settings.TEST_BINARY_1)
 try:
     os.stat(settings.TEST_BINARY_2)
-except:
+except OSError:
     settings.TEST_BINARY_2 = os.path.join(my_dir, settings.TEST_BINARY_2)
 
 
@@ -52,7 +52,9 @@ class CmisTestBase(unittest.TestCase):
 
     def setUp(self):
         """ Create a root test folder for the test. """
-        self._cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD, **settings.EXT_ARGS)
+        self._cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD,
+                                      binding=settings.BINDING,
+                                      **settings.EXT_ARGS)
         self._repo = self._cmisClient.getDefaultRepository()
         self._rootFolder = self._repo.getObjectByPath(settings.TEST_ROOT_PATH)
         self._folderName = " ".join(['cmislib', self.__class__.__name__, str(time())])
@@ -60,7 +62,10 @@ class CmisTestBase(unittest.TestCase):
 
     def tearDown(self):
         """ Clean up after the test. """
-        self._testFolder.deleteTree()
+        try:
+            self._testFolder.deleteTree()
+        except NotSupportedException:
+            print "Couldn't delete test folder because deleteTree is not supported"
 
 
 class CmisClientTest(unittest.TestCase):
@@ -68,30 +73,38 @@ class CmisClientTest(unittest.TestCase):
     """ Tests for the :class:`CmisClient` class. """
 
     def testCmisClient(self):
-        '''Instantiate a CmisClient object'''
-        cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD, **settings.EXT_ARGS)
-        self.assert_(cmisClient != None)
+        """Instantiate a CmisClient object"""
+        cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD,
+                                binding=settings.BINDING,
+                                **settings.EXT_ARGS)
+        self.assert_(cmisClient is not None)
 
     def testGetRepositories(self):
-        '''Call getRepositories and make sure at least one comes back with
+        """Call getRepositories and make sure at least one comes back with
         an ID and a name
-        '''
-        cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD, **settings.EXT_ARGS)
+        """
+        cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD,
+                                binding=settings.BINDING,
+                                **settings.EXT_ARGS)
         repoInfo = cmisClient.getRepositories()
         self.assert_(len(repoInfo) >= 1)
         self.assert_('repositoryId' in repoInfo[0])
         self.assert_('repositoryName' in repoInfo[0])
 
     def testDefaultRepository(self):
-        '''Get the default repository by calling the repo's service URL'''
-        cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD, **settings.EXT_ARGS)
+        """Get the default repository by calling the repo's service URL"""
+        cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD,
+                                binding=settings.BINDING,
+                                **settings.EXT_ARGS)
         repo = cmisClient.getDefaultRepository()
-        self.assert_(repo != None)
-        self.assert_(repo.getRepositoryId() != None)
+        self.assert_(repo is not None)
+        self.assert_(repo.getRepositoryId() is not None)
 
     def testGetRepository(self):
-        '''Get a repository by repository ID'''
-        cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD, **settings.EXT_ARGS)
+        """Get a repository by repository ID"""
+        cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD,
+                                binding=settings.BINDING,
+                                **settings.EXT_ARGS)
         repo = cmisClient.getDefaultRepository()
         defaultRepoId = repo.getRepositoryId()
         defaultRepoName = repo.getRepositoryName()
@@ -101,19 +114,17 @@ class CmisClientTest(unittest.TestCase):
 
     # Error conditions
     def testCmisClientBadUrl(self):
-        '''Try to instantiate a CmisClient object with a known bad URL'''
-        cmisClient = CmisClient(settings.REPOSITORY_URL + 'foobar', settings.USERNAME, settings.PASSWORD, **settings.EXT_ARGS)
+        """Try to instantiate a CmisClient object with a known bad URL"""
+        cmisClient = CmisClient(settings.REPOSITORY_URL + 'foobar', settings.USERNAME, settings.PASSWORD,
+                                binding=settings.BINDING,
+                                **settings.EXT_ARGS)
         self.assertRaises(CmisException, cmisClient.getRepositories)
 
-    def testCmisClientBadAuth(self):
-        '''Try to instantiate a CmisClient object with bad creds'''
-        cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, 'BADPASS')
-        self.assertRaises(PermissionDeniedException,
-                          cmisClient.getRepositories)
-
     def testGetRepositoryBadId(self):
-        '''Try to get a repository with a bad repo ID'''
-        cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD, **settings.EXT_ARGS)
+        """Try to get a repository with a bad repo ID"""
+        cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD,
+                                binding=settings.BINDING,
+                                **settings.EXT_ARGS)
         self.assertRaises(ObjectNotFoundException,
                           cmisClient.getRepository,
                           '123FOO')
@@ -145,35 +156,36 @@ class QueryTest(CmisTestBase):
         # will create two documents and search for the second one which should
         # work in all repositories.
         testFile = open(settings.TEST_BINARY_2, 'rb')
-        self._testContent = self._testFolder.createDocument(testFile.name, contentFile=testFile)
+        testFileName = settings.TEST_BINARY_2.split('/')[-1]
+        self._testContent = self._testFolder.createDocument(testFileName, contentFile=testFile)
         testFile.close()
         testFile = open(settings.TEST_BINARY_2, 'rb')
-        self._testContent2 = self._testFolder.createDocument(settings.TEST_BINARY_2.replace('.', '2.'), contentFile=testFile)
+        self._testContent2 = self._testFolder.createDocument(testFileName.replace('.', '2.'), contentFile=testFile)
         testFile.close()
         self._maxFullTextTries = settings.MAX_FULL_TEXT_TRIES
 
     def testSimpleSelect(self):
-        '''Execute simple select star from cmis:document'''
+        """Execute simple select star from cmis:document"""
         querySimpleSelect = "SELECT * FROM cmis:document"
-        resultSet = self._repo.query(querySimpleSelect, searchAllVersions='true')
+        resultSet = self._repo.query(querySimpleSelect)
         self.assertTrue(isInResultSet(resultSet, self._testContent))
 
     def testWildcardPropertyMatch(self):
-        '''Find content w/wildcard match on cmis:name property'''
+        """Find content w/wildcard match on cmis:name property"""
         name = self._testContent.getProperties()['cmis:name']
         querySimpleSelect = "SELECT * FROM cmis:document where cmis:name like '" + name[:7] + "%'"
-        resultSet = self._repo.query(querySimpleSelect, searchAllVersions='true')
+        resultSet = self._repo.query(querySimpleSelect)
         self.assertTrue(isInResultSet(resultSet, self._testContent))
 
     def testPropertyMatch(self):
-        '''Find content matching cmis:name property'''
+        """Find content matching cmis:name property"""
         name = self._testContent2.getProperties()['cmis:name']
         querySimpleSelect = "SELECT * FROM cmis:document where cmis:name = '" + name + "'"
-        resultSet = self._repo.query(querySimpleSelect, searchAllVersions='true')
+        resultSet = self._repo.query(querySimpleSelect)
         self.assertTrue(isInResultSet(resultSet, self._testContent2))
 
     def testFullText(self):
-        '''Find content using a full-text query'''
+        """Find content using a full-text query"""
         queryFullText = "SELECT cmis:objectId, cmis:name FROM cmis:document " \
                         "WHERE contains('whitepaper')"
         # on the first full text search the indexer may need a chance to
@@ -181,7 +193,7 @@ class QueryTest(CmisTestBase):
         found = False
         maxTries = self._maxFullTextTries
         while not found and (maxTries > 0):
-            resultSet = self._repo.query(queryFullText, searchAllVersions='true')
+            resultSet = self._repo.query(queryFullText)
             found = isInResultSet(resultSet, self._testContent2)
             if not found:
                 maxTries -= 1
@@ -190,7 +202,7 @@ class QueryTest(CmisTestBase):
         self.assertTrue(found)
 
     def testScore(self):
-        '''Find content using FT, sorted by relevance score'''
+        """Find content using FT, sorted by relevance score"""
         queryScore = "SELECT cmis:objectId, cmis:name, Score() as relevance " \
                      "FROM cmis:document WHERE contains('sample') " \
                      "order by relevance DESC"
@@ -200,7 +212,7 @@ class QueryTest(CmisTestBase):
         found = False
         maxTries = self._maxFullTextTries
         while not found and (maxTries > 0):
-            resultSet = self._repo.query(queryScore, searchAllVersions='true')
+            resultSet = self._repo.query(queryScore)
             found = isInResultSet(resultSet, self._testContent2)
             if not found:
                 maxTries -= 1
@@ -214,7 +226,7 @@ class RepositoryTest(CmisTestBase):
     """ Tests for the :class:`Repository` class. """
 
     def testRepositoryInfo(self):
-        '''Retrieve repository info'''
+        """Retrieve repository info"""
         repoInfo = self._repo.getRepositoryInfo()
         self.assertTrue('repositoryId' in repoInfo)
         self.assertTrue('repositoryName' in repoInfo)
@@ -226,7 +238,7 @@ class RepositoryTest(CmisTestBase):
         self.assertTrue('cmisVersionSupported' in repoInfo)
 
     def testRepositoryCapabilities(self):
-        '''Retrieve repository capabilities'''
+        """Retrieve repository capabilities"""
         caps = self._repo.getCapabilities()
         self.assertTrue('ACL' in caps)
         self.assertTrue('AllVersionsSearchable' in caps)
@@ -244,26 +256,26 @@ class RepositoryTest(CmisTestBase):
         self.assertTrue('Join' in caps)
 
     def testGetRootFolder(self):
-        '''Get the root folder of the repository'''
+        """Get the root folder of the repository"""
         rootFolder = self._repo.getRootFolder()
-        self.assert_(rootFolder != None)
-        self.assert_(rootFolder.getObjectId() != None)
+        self.assert_(rootFolder is not None)
+        self.assert_(rootFolder.getObjectId() is not None)
 
     def testCreateFolder(self):
-        '''Create a new folder in the root folder'''
+        """Create a new folder in the root folder"""
         folderName = 'testCreateFolder folder'
         newFolder = self._repo.createFolder(self._rootFolder, folderName)
         self.assertEquals(folderName, newFolder.getName())
         newFolder.delete()
 
     def testCreateDocument(self):
-        '''Create a new 'content-less' document'''
+        """Create a new 'content-less' document"""
         documentName = 'testDocument'
         newDoc = self._repo.createDocument(documentName, parentFolder=self._testFolder)
         self.assertEquals(documentName, newDoc.getName())
 
     def testCreateDocumentFromString(self):
-        '''Create a new document from a string'''
+        """Create a new document from a string"""
         documentName = 'testDocument'
         contentString = 'Test content string'
         newDoc = self._repo.createDocumentFromString(documentName,
@@ -275,14 +287,14 @@ class RepositoryTest(CmisTestBase):
 
     # CMIS-279
     def testCreateDocumentUnicode(self):
-        '''Create a new doc with unicode characters in the name'''
+        """Create a new doc with unicode characters in the name"""
         documentName = u'abc cdeöäüß%§-_caféè.txt'
         newDoc = self._repo.createDocument(documentName, parentFolder=self._testFolder)
         self.assertEquals(documentName, newDoc.getName())
 
     def testGetObject(self):
-        '''Create a test folder then attempt to retrieve it as a
-        :class:`CmisObject` object using its object ID'''
+        """Create a test folder then attempt to retrieve it as a
+        :class:`CmisObject` object using its object ID"""
         folderName = 'testGetObject folder'
         newFolder = self._repo.createFolder(self._testFolder, folderName)
         objectId = newFolder.getObjectId()
@@ -291,15 +303,26 @@ class RepositoryTest(CmisTestBase):
         newFolder.delete()
 
     def testReturnVersion(self):
-        '''Get latest and latestmajor versions of an object'''
+        """Get latest and latestmajor versions of an object"""
         f = open(settings.TEST_BINARY_1, 'rb')
-        doc10 = self._testFolder.createDocument(settings.TEST_BINARY_1, contentFile=f)
+        fileName = settings.TEST_BINARY_1.split('/')[-1]
+        props = {'cmis:objectTypeId': settings.VERSIONABLE_TYPE_ID}
+        doc10 = self._testFolder.createDocument(fileName, contentFile=f, properties=props)
         doc10Id = doc10.getObjectId()
+        if not doc10.allowableActions['canCheckOut']:
+            print 'The test doc cannot be checked out...skipping'
+            return
         pwc = doc10.checkout()
         doc11 = pwc.checkin(major='false')  # checkin a minor version, 1.1
+        if not doc11.allowableActions['canCheckOut']:
+            print 'The test doc cannot be checked out...skipping'
+            return
         pwc = doc11.checkout()
         doc20 = pwc.checkin()  # checkin a major version, 2.0
         doc20Id = doc20.getObjectId()
+        if not doc20.allowableActions['canCheckOut']:
+            print 'The test doc cannot be checked out...skipping'
+            return
         pwc = doc20.checkout()
         doc21 = pwc.checkin(major='false')  # checkin a minor version, 2.1
         doc21Id = doc21.getObjectId()
@@ -311,8 +334,8 @@ class RepositoryTest(CmisTestBase):
         self.assertEquals(doc20Id, docLatestMajor.getObjectId())
 
     def testGetFolder(self):
-        '''Create a test folder then attempt to retrieve the Folder object
-        using its object ID'''
+        """Create a test folder then attempt to retrieve the Folder object
+        using its object ID"""
         folderName = 'testGetFolder folder'
         newFolder = self._repo.createFolder(self._testFolder, folderName)
         objectId = newFolder.getObjectId()
@@ -321,10 +344,9 @@ class RepositoryTest(CmisTestBase):
         newFolder.delete()
 
     def testGetObjectByPath(self):
-        '''Create test objects (one folder, one document) then try to get
-        them by path'''
+        """Create test objects (one folder, one document) then try to get
+        them by path"""
         # names of folders and test docs
-        testFolderName = self._testFolder.getName()
         parentFolderName = 'testGetObjectByPath folder'
         subFolderName = 'subfolder'
         docName = 'testdoc'
@@ -332,23 +354,31 @@ class RepositoryTest(CmisTestBase):
         # create the folder structure
         parentFolder = self._testFolder.createFolder(parentFolderName)
         subFolder = parentFolder.createFolder(subFolderName)
-        # name and path segment are not the same thing
+        # use the subfolder path to get the folder by path
         subFolderPath = subFolder.getProperties().get("cmis:path")
         searchFolder = self._repo.getObjectByPath(subFolderPath)
         self.assertEquals(subFolder.getObjectId(), searchFolder.getObjectId())
 
         # create a test doc
         doc = subFolder.createDocument(docName)
-        searchDocPath = subFolderPath + '/' + docName  # TODO use proper path segment
-        searchDoc = self._repo.getObjectByPath(searchDocPath)
-        self.assertEquals(doc.getObjectId(), searchDoc.getObjectId())
+        # ask the doc for its paths
+        searchDocPaths = doc.getPaths()
+        # for each path in the list, try to get the object by path
+        # this is better than building a path with the doc's name b/c the name
+        # isn't guaranteed to be used as the path segment (see CMIS-232)
+        for path in searchDocPaths:
+            searchDoc = self._repo.getObjectByPath(path)
+            self.assertEquals(doc.getObjectId(), searchDoc.getObjectId())
 
         # get the subfolder by path, then ask for its children
         subFolder = self._repo.getObjectByPath(subFolderPath)
         self.assertEquals(len(subFolder.getChildren().getResults()), 1)
 
+    # getting unfiled documents may work for the atom pub binding for some servers
+    # but it isn't part of the spec so removing this test for now
+    '''
     def testGetUnfiledDocs(self):
-        '''Tests the repository's unfiled collection'''
+        """Tests the repository's unfiled collection"""
 
         if not self._repo.getCapabilities()['Unfiling']:
             print 'Repo does not support unfiling, skipping'
@@ -359,7 +389,12 @@ class RepositoryTest(CmisTestBase):
         newDoc = testFolder.createDocument('testdoc')
 
         # make sure the new doc isn't in the unfiled collection
-        self.assertFalse(isInResultSet(self._repo.getUnfiledDocs(), newDoc))
+        try:
+            rs = self._repo.getUnfiledDocs()
+            self.assertFalse(isInResultSet(rs, newDoc))
+        except NotSupportedException:
+            print 'This repository does not support read access to the unfiled collection...skipping'
+            return
 
         # delete the test folder and tell it to unfile the testdoc
         objId = newDoc.getObjectId()
@@ -371,18 +406,20 @@ class RepositoryTest(CmisTestBase):
         # the doc should now be in the unfiled collection
         self.assertTrue(isInResultSet(self._repo.getUnfiledDocs(), newDoc))
         self.assertEquals('testdoc', newDoc.getTitle())
+    '''
 
-#    def testCreateUnfiledDocument(self):
-#        '''Create a new unfiled document'''
-#        if self._repo.getCapabilities()['Unfiling'] != True:
-#            print 'Repo does not support unfiling, skipping'
-#            return        
-#        documentName = 'testDocument'
-#        newDoc = self._repo.createDocument(documentName)
-#        self.assertEquals(documentName, newDoc.getName())
+    # Create document without a parent folder is not yet implemented
+    # def testCreateUnfiledDocument(self):
+    #     '''Create a new unfiled document'''
+    #     if self._repo.getCapabilities()['Unfiling'] != True:
+    #         print 'Repo does not support unfiling, skipping'
+    #         return
+    #     documentName = 'testDocument'
+    #     newDoc = self._repo.createDocument(documentName)
+    #     self.assertEquals(documentName, newDoc.getName())
 
     def testMoveDocument(self):
-        '''Move a Document from one folder to another folder'''
+        """Move a Document from one folder to another folder"""
         subFolder1 = self._testFolder.createFolder('sub1')
         doc = subFolder1.createDocument('testdoc1')
         self.assertEquals(len(subFolder1.getChildren()), 1)
@@ -396,7 +433,7 @@ class RepositoryTest(CmisTestBase):
     #Exceptions
 
     def testGetObjectBadId(self):
-        '''Attempt to get an object using a known bad ID'''
+        """Attempt to get an object using a known bad ID"""
         # this object ID is implementation specific (Alfresco) but is universally
         # bad so it should work for all repositories
         self.assertRaises(ObjectNotFoundException,
@@ -404,7 +441,7 @@ class RepositoryTest(CmisTestBase):
                           self._testFolder.getObjectId()[:-5] + 'BADID')
 
     def testGetObjectBadPath(self):
-        '''Attempt to get an object using a known bad path'''
+        """Attempt to get an object using a known bad path"""
         self.assertRaises(ObjectNotFoundException,
                           self._repo.getObjectByPath,
                           '/123foo/BAR.jtp')
@@ -415,7 +452,7 @@ class FolderTest(CmisTestBase):
     """ Tests for the :class:`Folder` class """
 
     def testGetChildren(self):
-        '''Get the children of the test folder'''
+        """Get the children of the test folder"""
         childFolderName1 = 'testchild1'
         childFolderName2 = 'testchild2'
         grandChildFolderName = 'testgrandchild'
@@ -423,14 +460,14 @@ class FolderTest(CmisTestBase):
         childFolder2 = self._testFolder.createFolder(childFolderName2)
         grandChild = childFolder2.createFolder(grandChildFolderName)
         resultSet = self._testFolder.getChildren()
-        self.assert_(resultSet != None)
+        self.assert_(resultSet is not None)
         self.assertEquals(2, len(resultSet.getResults()))
         self.assertTrue(isInResultSet(resultSet, childFolder1))
         self.assertTrue(isInResultSet(resultSet, childFolder2))
         self.assertFalse(isInResultSet(resultSet, grandChild))
 
     def testGetDescendants(self):
-        '''Get the descendants of the root folder'''
+        """Get the descendants of the root folder"""
         childFolderName1 = 'testchild1'
         childFolderName2 = 'testchild2'
         grandChildFolderName1 = 'testgrandchild'
@@ -440,7 +477,7 @@ class FolderTest(CmisTestBase):
 
         # test getting descendants with depth=1
         resultSet = self._testFolder.getDescendants(depth=1)
-        self.assert_(resultSet != None)
+        self.assert_(resultSet is not None)
         self.assertEquals(2, len(resultSet.getResults()))
         self.assertTrue(isInResultSet(resultSet, childFolder1))
         self.assertTrue(isInResultSet(resultSet, childFolder2))
@@ -448,7 +485,7 @@ class FolderTest(CmisTestBase):
 
         # test getting descendants with depth=2
         resultSet = self._testFolder.getDescendants(depth=2)
-        self.assert_(resultSet != None)
+        self.assert_(resultSet is not None)
         self.assertEquals(3, len(resultSet.getResults()))
         self.assertTrue(isInResultSet(resultSet, childFolder1))
         self.assertTrue(isInResultSet(resultSet, childFolder2))
@@ -456,14 +493,14 @@ class FolderTest(CmisTestBase):
 
         # test getting descendants with depth=-1
         resultSet = self._testFolder.getDescendants()  # -1 is the default depth
-        self.assert_(resultSet != None)
+        self.assert_(resultSet is not None)
         self.assertEquals(3, len(resultSet.getResults()))
         self.assertTrue(isInResultSet(resultSet, childFolder1))
         self.assertTrue(isInResultSet(resultSet, childFolder2))
         self.assertTrue(isInResultSet(resultSet, grandChild))
 
     def testGetTree(self):
-        '''Get the folder tree of the test folder'''
+        """Get the folder tree of the test folder"""
         childFolderName1 = 'testchild1'
         childFolderName2 = 'testchild2'
         grandChildFolderName1 = 'testgrandchild'
@@ -476,7 +513,7 @@ class FolderTest(CmisTestBase):
 
         # test getting tree with depth=1
         resultSet = self._testFolder.getTree(depth=1)
-        self.assert_(resultSet != None)
+        self.assert_(resultSet is not None)
         self.assertEquals(2, len(resultSet.getResults()))
         self.assertTrue(isInResultSet(resultSet, childFolder1))
         self.assertTrue(isInResultSet(resultSet, childFolder2))
@@ -484,14 +521,14 @@ class FolderTest(CmisTestBase):
 
         # test getting tree with depth=2
         resultSet = self._testFolder.getTree(depth=2)
-        self.assert_(resultSet != None)
+        self.assert_(resultSet is not None)
         self.assertEquals(3, len(resultSet.getResults()))
         self.assertTrue(isInResultSet(resultSet, childFolder1))
         self.assertTrue(isInResultSet(resultSet, childFolder2))
         self.assertTrue(isInResultSet(resultSet, grandChild))
 
     def testDeleteEmptyFolder(self):
-        '''Create a test folder, then delete it'''
+        """Create a test folder, then delete it"""
         folderName = 'testDeleteEmptyFolder folder'
         testFolder = self._testFolder.createFolder(folderName)
         self.assertEquals(folderName, testFolder.getName())
@@ -503,7 +540,7 @@ class FolderTest(CmisTestBase):
         self.assertEquals(0, len(testFolderChildren.getResults()))
 
     def testDeleteNonEmptyFolder(self):
-        '''Create a test folder with something in it, then delete it'''
+        """Create a test folder with something in it, then delete it"""
         folderName = 'testDeleteNonEmptyFolder folder'
         testFolder = self._testFolder.createFolder(folderName)
         self.assertEquals(folderName, testFolder.getName())
@@ -517,18 +554,18 @@ class FolderTest(CmisTestBase):
         self.assertEquals(0, len(testFolderChildren.getResults()))
 
     def testGetProperties(self):
-        '''Get the root folder, then get its properties'''
+        """Get the root folder, then get its properties"""
         props = self._testFolder.getProperties()
-        self.assert_(props != None)
+        self.assert_(props is not None)
         self.assert_('cmis:objectId' in props)
-        self.assert_(props['cmis:objectId'] != None)
+        self.assert_(props['cmis:objectId'] is not None)
         self.assert_('cmis:objectTypeId' in props)
-        self.assert_(props['cmis:objectTypeId'] != None)
+        self.assert_(props['cmis:objectTypeId'] is not None)
         self.assert_('cmis:name' in props)
-        self.assert_(props['cmis:name'] != None)
+        self.assert_(props['cmis:name'] is not None)
 
     def testPropertyFilter(self):
-        '''Test the properties filter'''
+        """Test the properties filter"""
         # names of folders and test docs
         parentFolderName = 'testGetObjectByPath folder'
         subFolderName = 'subfolder'
@@ -585,7 +622,7 @@ class FolderTest(CmisTestBase):
         self.assertTrue(searchFolder.getProperties().has_key('cmis:name'))
 
     def testUpdateProperties(self):
-        '''Create a test folder, then update its properties'''
+        """Create a test folder, then update its properties"""
         folderName = 'testUpdateProperties folder'
         newFolder = self._testFolder.createFolder(folderName)
         self.assertEquals(folderName, newFolder.getName())
@@ -595,26 +632,26 @@ class FolderTest(CmisTestBase):
         self.assertEquals(folderName2, newFolder.getName())
 
     def testSubFolder(self):
-        '''Create a test folder, then create a test folder within that.'''
+        """Create a test folder, then create a test folder within that."""
         parentFolder = self._testFolder.createFolder('testSubFolder folder')
         self.assert_('cmis:objectId' in parentFolder.getProperties())
         childFolder = parentFolder.createFolder('child folder')
         self.assert_('cmis:objectId' in childFolder.getProperties())
-        self.assert_(childFolder.getProperties()['cmis:objectId'] != None)
+        self.assert_(childFolder.getProperties()['cmis:objectId'] is not None)
 
     def testAllowableActions(self):
-        '''Create a test folder, then get its allowable actions'''
+        """Create a test folder, then get its allowable actions"""
         actions = self._testFolder.getAllowableActions()
         self.assert_(len(actions) > 0)
 
     def testGetParent(self):
-        '''Get a folder's parent using the getParent call'''
+        """Get a folder's parent using the getParent call"""
         childFolder = self._testFolder.createFolder('parentTest')
         parentFolder = childFolder.getParent()
         self.assertEquals(self._testFolder.getObjectId(), parentFolder.getObjectId())
 
     def testAddObject(self):
-        '''Add an existing object to another folder'''
+        """Add an existing object to another folder"""
         if not self._repo.getCapabilities()['Multifiling']:
             print 'This repository does not allow multifiling, skipping'
             return
@@ -629,7 +666,7 @@ class FolderTest(CmisTestBase):
         self.assertEquals(subFolder1.getChildren()[0].name, subFolder2.getChildren()[0].name)
 
     def testRemoveObject(self):
-        '''Remove an existing object from a secondary folder'''
+        """Remove an existing object from a secondary folder"""
         if not self._repo.getCapabilities()['Unfiling']:
             print 'This repository does not allow unfiling, skipping'
             return
@@ -647,25 +684,22 @@ class FolderTest(CmisTestBase):
         self.assertEquals(len(subFolder1.getChildren()), 1)
         self.assertEquals(doc.name, subFolder1.getChildren()[0].name)
 
-    def testFolderLeadingDot(self):
-        '''Create a folder with a leading dot in it's name'''
-        leadingDotFolder = self._testFolder.createFolder('.leadingDot')
-        resultSet = self._testFolder.getChildren()
-        self.assert_(resultSet != None)
-        self.assertTrue(leadingDotFolder.getName().startswith('.'))
+    def testGetPaths(self):
+        """Get a folder's paths"""
+        # ask the root for its path
+        root = self._repo.getRootFolder()
+        paths = root.getPaths()
+        self.assertTrue(len(paths) == 1)
+        self.assertTrue(paths[0] == '/')
+        # ask the test folder for its paths
+        paths = self._testFolder.getPaths()
+        self.assertTrue(len(paths) == 1)
 
-    def testFolderTrailingDot(self):
-        '''Create a folder with a trailing dot in it's name'''
-        trailingDotFolder = self._testFolder.createFolder('trailingDot.')
-        resultSet = self._testFolder.getChildren()
-        self.assert_(resultSet != None)
-        self.assertTrue(trailingDotFolder.getName().endswith('.'))
-        
     # Exceptions
 
     def testBadParentFolder(self):
-        '''Try to create a folder on a bad/bogus/deleted parent
-        folder object'''
+        """Try to create a folder on a bad/bogus/deleted parent
+        folder object"""
         firstFolder = self._testFolder.createFolder('testBadParentFolder folder')
         self.assert_('cmis:objectId' in firstFolder.getProperties())
         firstFolder.delete()
@@ -709,7 +743,7 @@ class ChangeEntryTest(CmisTestBase):
         self.assertTrue(len(rs) > 0)
         changeEntry = rs[0]
         self.assertTrue(changeEntry.id)
-        self.assertTrue(changeEntry.changeType in ['created', 'updated', 'deleted'])
+        self.assertTrue(changeEntry.changeType in ['created', 'updated', 'deleted', 'security'])
         self.assertTrue(changeEntry.changeTime)
 
     def testGetACL(self):
@@ -776,25 +810,49 @@ class DocumentTest(CmisTestBase):
     """ Tests for the :class:`Document` class """
 
     def testCheckout(self):
-        '''Create a document in a test folder, then check it out'''
-        newDoc = self._testFolder.createDocument('testDocument')
+        """Create a document in a test folder, then check it out"""
+        props = {'cmis:objectTypeId': settings.VERSIONABLE_TYPE_ID}        
+        newDoc = self._testFolder.createDocument('testDocument', properties=props)
+        if not newDoc.allowableActions['canCheckOut']:
+            print 'The test doc cannot be checked out...skipping'
+            return
         pwcDoc = newDoc.checkout()
         try:
             self.assertTrue(newDoc.isCheckedOut())
             self.assert_('cmis:objectId' in newDoc.getProperties())
             self.assert_('cmis:objectId' in pwcDoc.getProperties())
-            checkedOutDocs = self._repo.getCollection('checkedout')
-            self.assertTrue(isInResultSet(checkedOutDocs, pwcDoc))
+        finally:
+            pwcDoc.delete()
+
+    #CMIS-743
+    def testCheckoutAfterFetchByID(self):
+        """Create a test doc, fetch it by ID, then check it out"""
+        props = {'cmis:objectTypeId': settings.VERSIONABLE_TYPE_ID}
+        newDoc = self._testFolder.createDocument('testDocument', properties=props)
+        if not newDoc.allowableActions['canCheckOut']:
+            print 'The test doc cannot be checked out...skipping'
+            return
+        newDocIdStr = str(newDoc.id)
+        newDoc = self._repo.getObject(newDocIdStr)
+        pwcDoc = newDoc.checkout()
+        try:
+            self.assertTrue(newDoc.isCheckedOut())
+            self.assert_('cmis:objectId' in newDoc.getProperties())
+            self.assert_('cmis:objectId' in pwcDoc.getProperties())
         finally:
             pwcDoc.delete()
 
     def testCheckin(self):
-        '''Create a document in a test folder, check it out, then in'''
-        testFilename = settings.TEST_BINARY_1
+        """Create a document in a test folder, check it out, then in"""
+        testFilename = settings.TEST_BINARY_1.split('/')[-1]
         contentFile = open(testFilename, 'rb')
-        testDoc = self._testFolder.createDocument(testFilename, contentFile=contentFile)
+        props = {'cmis:objectTypeId': settings.VERSIONABLE_TYPE_ID}        
+        testDoc = self._testFolder.createDocument(testFilename, contentFile=contentFile, properties=props)
         contentFile.close()
         self.assertEquals(testFilename, testDoc.getName())
+        if not testDoc.allowableActions['canCheckOut']:
+            print 'The test doc cannot be checked out...skipping'
+            return
         pwcDoc = testDoc.checkout()
 
         try:
@@ -808,12 +866,16 @@ class DocumentTest(CmisTestBase):
                 pwcDoc.delete()
 
     def testCheckinComment(self):
-        '''Checkin a document with a comment'''
-        testFilename = settings.TEST_BINARY_1
+        """Checkin a document with a comment"""
+        testFilename = settings.TEST_BINARY_1.split('/')[-1]
         contentFile = open(testFilename, 'rb')
-        testDoc = self._testFolder.createDocument(testFilename, contentFile=contentFile)
+        props = {'cmis:objectTypeId': settings.VERSIONABLE_TYPE_ID}        
+        testDoc = self._testFolder.createDocument(testFilename, contentFile=contentFile, properties=props)
         contentFile.close()
         self.assertEquals(testFilename, testDoc.getName())
+        if not testDoc.allowableActions['canCheckOut']:
+            print 'The test doc cannot be checked out...skipping'
+            return
         pwcDoc = testDoc.checkout()
 
         try:
@@ -827,18 +889,22 @@ class DocumentTest(CmisTestBase):
                 pwcDoc.delete()
 
     def testCheckinAfterGetPWC(self):
-        '''Create a document in a test folder, check it out, call getPWC, then checkin'''
+        """Create a document in a test folder, check it out, call getPWC, then checkin"""
         if not self._repo.getCapabilities()['PWCUpdatable'] == True:
             print 'Repository does not support PWCUpdatable, skipping'
             return
 
-        testFilename = settings.TEST_BINARY_1
+        testFilename = settings.TEST_BINARY_1.split('/')[-1]
         contentFile = open(testFilename, 'rb')
-        testDoc = self._testFolder.createDocument(testFilename, contentFile=contentFile)
+        props = {'cmis:objectTypeId': settings.VERSIONABLE_TYPE_ID}        
+        testDoc = self._testFolder.createDocument(testFilename, contentFile=contentFile, properties=props)
         contentFile.close()
         self.assertEquals(testFilename, testDoc.getName())
         # Alfresco has a bug where if you get the PWC this way
         # the checkin will not be successful
+        if not testDoc.allowableActions['canCheckOut']:
+            print 'The test doc cannot be checked out...skipping'
+            return
         testDoc.checkout()
         pwcDoc = testDoc.getPrivateWorkingCopy()
         try:
@@ -852,24 +918,24 @@ class DocumentTest(CmisTestBase):
                 pwcDoc.delete()
 
     def testCancelCheckout(self):
-        '''Create a document in a test folder, check it out, then cancel
-        checkout'''
-        newDoc = self._testFolder.createDocument('testDocument')
+        """Create a document in a test folder, check it out, then cancel
+        checkout"""
+        props = {'cmis:objectTypeId': settings.VERSIONABLE_TYPE_ID}        
+        newDoc = self._testFolder.createDocument('testDocument', properties=props)
+        if not newDoc.allowableActions['canCheckOut']:
+            print 'The test doc cannot be checked out...skipping'
+            return
         pwcDoc = newDoc.checkout()
         try:
             self.assertTrue(newDoc.isCheckedOut())
             self.assert_('cmis:objectId' in newDoc.getProperties())
             self.assert_('cmis:objectId' in pwcDoc.getProperties())
-            checkedOutDocs = self._repo.getCollection('checkedout')
-            self.assertTrue(isInResultSet(checkedOutDocs, pwcDoc))
         finally:
-            pwcDoc.delete()
+            pwcDoc.cancelCheckout()
         self.assertFalse(newDoc.isCheckedOut())
-        checkedOutDocs = self._repo.getCollection('checkedout')
-        self.assertFalse(isInResultSet(checkedOutDocs, pwcDoc))
 
     def testDeleteDocument(self):
-        '''Create a document in a test folder, then delete it'''
+        """Create a document in a test folder, then delete it"""
         newDoc = self._testFolder.createDocument('testDocument')
         children = self._testFolder.getChildren()
         self.assertEquals(1, len(children.getResults()))
@@ -878,14 +944,25 @@ class DocumentTest(CmisTestBase):
         self.assertEquals(0, len(children.getResults()))
 
     def testGetLatestVersion(self):
-        '''Get latest version of an object'''
+        """Get latest version of an object"""
         f = open(settings.TEST_BINARY_1, 'rb')
-        doc10 = self._testFolder.createDocument(settings.TEST_BINARY_1, contentFile=f)
+        fileName = settings.TEST_BINARY_1.split('/')[-1]
+        props = {'cmis:objectTypeId': settings.VERSIONABLE_TYPE_ID}        
+        doc10 = self._testFolder.createDocument(fileName, contentFile=f, properties=props)
+        if not doc10.allowableActions['canCheckOut']:
+            print 'The test doc cannot be checked out...skipping'
+            return
         pwc = doc10.checkout()
         doc11 = pwc.checkin(major='false')  # checkin a minor version, 1.1
+        if not doc11.allowableActions['canCheckOut']:
+            print 'The test doc cannot be checked out...skipping'
+            return
         pwc = doc11.checkout()
         doc20 = pwc.checkin()  # checkin a major version, 2.0
         doc20Id = doc20.getObjectId()
+        if not doc20.allowableActions['canCheckOut']:
+            print 'The test doc cannot be checked out...skipping'
+            return
         pwc = doc20.checkout()
         doc21 = pwc.checkin(major='false')  # checkin a minor version, 2.1
         doc21Id = doc21.getObjectId()
@@ -897,16 +974,31 @@ class DocumentTest(CmisTestBase):
         self.assertEquals(doc20Id, docLatestMajor.getObjectId())
 
     def testGetPropertiesOfLatestVersion(self):
-        '''Get properties of latest version of an object'''
+        """Get properties of latest version of an object"""
         f = open(settings.TEST_BINARY_1, 'rb')
-        doc10 = self._testFolder.createDocument(settings.TEST_BINARY_1, contentFile=f)
+        fileName = settings.TEST_BINARY_1.split('/')[-1]
+        props = {'cmis:objectTypeId': settings.VERSIONABLE_TYPE_ID}        
+        doc10 = self._testFolder.createDocument(fileName, contentFile=f, properties=props)
+        if not doc10.allowableActions['canCheckOut']:
+            print 'The test doc cannot be checked out...skipping'
+            return
         pwc = doc10.checkout()
         doc11 = pwc.checkin(major='false')  # checkin a minor version, 1.1
+        if not doc11.allowableActions['canCheckOut']:
+            print 'The test doc cannot be checked out...skipping'
+            return
         pwc = doc11.checkout()
         doc20 = pwc.checkin()  # checkin a major version, 2.0
+        # what comes back from a checkin may not include all props, so reload
+        doc20.reload()
         doc20Label = doc20.getProperties()['cmis:versionLabel']
+        if not doc20.allowableActions['canCheckOut']:
+            print 'The test doc cannot be checked out...skipping'
+            return
         pwc = doc20.checkout()
         doc21 = pwc.checkin(major='false')  # checkin a minor version, 2.1
+        # what comes back from a checkin may not include all props, so reload
+        doc21.reload()
         doc21Label = doc21.getProperties()['cmis:versionLabel']
 
         propsLatest = doc10.getPropertiesOfLatestVersion()
@@ -916,28 +1008,28 @@ class DocumentTest(CmisTestBase):
         self.assertEquals(doc20Label, propsLatestMajor['cmis:versionLabel'])
 
     def testGetProperties(self):
-        '''Create a document in a test folder, then get its properties'''
+        """Create a document in a test folder, then get its properties"""
         newDoc = self._testFolder.createDocument('testDocument')
         self.assertEquals('testDocument', newDoc.getName())
         self.assertTrue('cmis:objectTypeId' in newDoc.getProperties())
         self.assertTrue('cmis:objectId' in newDoc.getProperties())
 
     def testAllowableActions(self):
-        '''Create document in a test folder, then get its allowable actions'''
+        """Create document in a test folder, then get its allowable actions"""
         newDoc = self._testFolder.createDocument('testDocument')
         actions = newDoc.getAllowableActions()
         self.assert_(len(actions) > 0)
 
     def testUpdateProperties(self):
-        '''Create a document in a test folder, then update its properties'''
+        """Create a document in a test folder, then update its properties"""
         newDoc = self._testFolder.createDocument('testDocument')
         self.assertEquals('testDocument', newDoc.getName())
-        props = {'cmis:name': 'testDocument2', 'cmis:versionLabel': 'foo'}
+        props = {'cmis:name': 'testDocument2'}
         newDoc.updateProperties(props)
         self.assertEquals('testDocument2', newDoc.getName())
 
     def testSetContentStreamPWC(self):
-        '''Set the content stream on the PWC'''
+        """Set the content stream on the PWC"""
         if self._repo.getCapabilities()['ContentStreamUpdatability'] == 'none':
             print 'This repository does not allow content stream updates, skipping'
             return
@@ -966,6 +1058,12 @@ class DocumentTest(CmisTestBase):
         self.assertEquals(testFile1Size, os.path.getsize(exportFile1))
 
         # checkout the file
+        if newDoc.allowableActions.has_key('canCheckOut') and \
+                newDoc.allowableActions['canCheckOut'] == True:
+            pass
+        else:
+            print 'The test doc cannot be checked out...skipping'
+            return
         pwc = newDoc.checkout()
 
         # update the PWC with a new file
@@ -989,20 +1087,25 @@ class DocumentTest(CmisTestBase):
         os.remove(exportFile2)
 
     def testSetContentStreamPWCMimeType(self):
-        '''Check the mimetype after the PWC checkin'''
+        """Check the mimetype after the PWC checkin"""
         if self._repo.getCapabilities()['ContentStreamUpdatability'] == 'none':
             print 'This repository does not allow content stream updates, skipping'
             return
 
         testFile1 = settings.TEST_BINARY_1
+        fileName = testFile1.split('/')[-1]
 
         # create a test document
         contentFile = open(testFile1, 'rb')
-        newDoc = self._testFolder.createDocument(testFile1, contentFile=contentFile)
+        props = {'cmis:objectTypeId': settings.VERSIONABLE_TYPE_ID}        
+        newDoc = self._testFolder.createDocument(fileName, contentFile=contentFile, properties=props)
         origMimeType = newDoc.properties['cmis:contentStreamMimeType']
         contentFile.close()
 
         # checkout the file
+        if not newDoc.allowableActions['canCheckOut']:
+            print 'The test doc cannot be checked out...skipping'
+            return
         pwc = newDoc.checkout()
 
         # update the PWC with a new file
@@ -1019,7 +1122,7 @@ class DocumentTest(CmisTestBase):
                           newDoc.properties['cmis:contentStreamMimeType'])
 
     def testSetContentStreamDoc(self):
-        '''Set the content stream on a doc that's not checked out'''
+        """Set the content stream on a doc that's not checked out"""
         if self._repo.getCapabilities()['ContentStreamUpdatability'] != 'anytime':
             print 'This repository does not allow content stream updates on the doc, skipping'
             return
@@ -1033,7 +1136,8 @@ class DocumentTest(CmisTestBase):
 
         # create a test document
         contentFile = open(testFile1, 'rb')
-        newDoc = self._testFolder.createDocument(testFile1, contentFile=contentFile)
+        fileName = testFile1.split('/')[-1]
+        newDoc = self._testFolder.createDocument(fileName, contentFile=contentFile)
         contentFile.close()
 
         # export the test document
@@ -1065,7 +1169,7 @@ class DocumentTest(CmisTestBase):
         os.remove(exportFile2)
 
     def testDeleteContentStreamPWC(self):
-        '''Delete the content stream of a PWC'''
+        """Delete the content stream of a PWC"""
         if self._repo.getCapabilities()['ContentStreamUpdatability'] == 'none':
             print 'This repository does not allow content stream updates, skipping'
             return
@@ -1075,16 +1179,20 @@ class DocumentTest(CmisTestBase):
 
         # create a test document
         contentFile = open(settings.TEST_BINARY_1, 'rb')
-        newDoc = self._testFolder.createDocument(settings.TEST_BINARY_1, contentFile=contentFile)
+        props = {'cmis:objectTypeId': settings.VERSIONABLE_TYPE_ID}
+        fileName = settings.TEST_BINARY_1.split('/')[-1]
+        newDoc = self._testFolder.createDocument(fileName, contentFile=contentFile, properties=props)
         contentFile.close()
-
+        if not newDoc.allowableActions['canCheckOut']:
+            print 'The test doc cannot be checked out...skipping'
+            return
         pwc = newDoc.checkout()
         pwc.deleteContentStream()
         self.assertRaises(CmisException, pwc.getContentStream)
         pwc.delete()
 
     def testCreateDocumentBinary(self):
-        '''Create a binary document using a file from the file system'''
+        """Create a binary document using a file from the file system"""
         testFilename = settings.TEST_BINARY_1
         contentFile = open(testFilename, 'rb')
         newDoc = self._testFolder.createDocument(testFilename, contentFile=contentFile)
@@ -1106,7 +1214,7 @@ class DocumentTest(CmisTestBase):
         os.remove(exportFilename)
 
     def testCreateDocumentFromString(self):
-        '''Create a new document from a string'''
+        """Create a new document from a string"""
         documentName = 'testDocument'
         contentString = 'Test content string'
         newDoc = self._testFolder.createDocumentFromString(documentName,
@@ -1115,7 +1223,7 @@ class DocumentTest(CmisTestBase):
         self.assertEquals(newDoc.getContentStream().read(), contentString)
 
     def testCreateDocumentPlain(self):
-        '''Create a plain document using a file from the file system'''
+        """Create a plain document using a file from the file system"""
         testFilename = 'plain.txt'
         testFile = open(testFilename, 'w')
         testFile.write('This is a sample text file line 1.\n')
@@ -1143,13 +1251,23 @@ class DocumentTest(CmisTestBase):
         os.remove(testFilename)
 
     def testGetAllVersions(self):
-        '''Get all versions of an object'''
-        testDoc = self._testFolder.createDocument('testdoc')
+        """Get all versions of an object"""
+        props = {'cmis:objectTypeId': settings.VERSIONABLE_TYPE_ID}        
+        testDoc = self._testFolder.createDocument('testdoc', properties=props)
+        if not testDoc.allowableActions['canCheckOut']:
+            print 'The test doc cannot be checked out...skipping'
+            return
         pwc = testDoc.checkout()
         doc = pwc.checkin()  # 2.0
+        if not doc.allowableActions['canCheckOut']:
+            print 'The test doc cannot be checked out...skipping'
+            return
         pwc = doc.checkout()
         doc = pwc.checkin()  # 3.0
-        self.assertEquals('3.0', doc.getProperties()['cmis:versionLabel'])
+        # what comes back from a checkin may not include all props, so reload
+        doc.reload()
+        # InMemory 0.9 is using 'V 3.0' so this test fails with that server
+        #self.assertEquals('3.0', doc.getProperties()['cmis:versionLabel'])
         rs = doc.getAllVersions()
         self.assertEquals(3, len(rs.getResults()))
 #        for count in range(0, 3):
@@ -1161,18 +1279,18 @@ class DocumentTest(CmisTestBase):
 #                             rs.getResults().values()[count].getProperties()['cmis:isLatestVersion'])
 
     def testGetObjectParents(self):
-        '''Gets all object parents of an CmisObject'''
+        """Gets all object parents of an CmisObject"""
         childFolder = self._testFolder.createFolder('parentTest')
         parentFolder = childFolder.getObjectParents().getResults()[0]
         self.assertEquals(self._testFolder.getObjectId(), parentFolder.getObjectId())
 
     def testGetObjectParentsWithinRootFolder(self):
-        '''Gets all object parents of a root folder'''
+        """Gets all object parents of a root folder"""
         rootFolder = self._repo.getRootFolder()
         self.assertRaises(NotSupportedException, rootFolder.getObjectParents)
 
     def testGetObjectParentsMultiple(self):
-        '''Gets all parents of a multi-filed object'''
+        """Gets all parents of a multi-filed object"""
         if not self._repo.getCapabilities()['Multifiling']:
             print 'This repository does not allow multifiling, skipping'
             return
@@ -1190,6 +1308,29 @@ class DocumentTest(CmisTestBase):
             parentNames.remove(parent.name)
         self.assertEquals(len(parentNames), 0)
 
+    def testGetPaths(self):
+        """Get the paths of a document"""
+        testDoc = self._testFolder.createDocument('testdoc')
+        # ask the test doc for its paths
+        paths = testDoc.getPaths()
+        self.assertTrue(len(paths) >= 1)
+
+    def testRenditions(self):
+        """Get the renditions for a document"""
+        if not self._repo.getCapabilities().has_key('Renditions'):
+            print 'Repo does not support unfiling, skipping'
+            return
+
+        testDoc = self._testFolder.createDocumentFromString('testdoc.txt', contentString='test', contentType='text/plain')
+        sleep(settings.FULL_TEXT_WAIT)
+        if (testDoc.getAllowableActions().has_key('canGetRenditions') and
+            testDoc.getAllowableActions()['canGetRenditions'] == True):
+            rends = testDoc.getRenditions()
+            self.assertTrue(len(rends) >= 1)
+        else:
+            print 'Test doc does not have rendition, skipping'
+            return
+
 
 class TypeTest(unittest.TestCase):
 
@@ -1199,9 +1340,11 @@ class TypeTest(unittest.TestCase):
     """
 
     def testTypeDescendants(self):
-        '''Get the descendant types of the repository.'''
+        """Get the descendant types of the repository."""
 
-        cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD, **settings.EXT_ARGS)
+        cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD,
+                                binding=settings.BINDING,
+                                **settings.EXT_ARGS)
         repo = cmisClient.getDefaultRepository()
         typeDefs = repo.getTypeDescendants()
         folderDef = None
@@ -1213,13 +1356,15 @@ class TypeTest(unittest.TestCase):
         self.assertTrue(folderDef.baseId)
 
     def testTypeChildren(self):
-        '''Get the child types for this repository and make sure cmis:folder
-        is in the list.'''
+        """Get the child types for this repository and make sure cmis:folder
+        is in the list."""
 
         #This test would be more interesting if there was a standard way to
         #deploy a custom model. Then we could look for custom types.
 
-        cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD, **settings.EXT_ARGS)
+        cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD,
+                                binding=settings.BINDING,
+                                **settings.EXT_ARGS)
         repo = cmisClient.getDefaultRepository()
         typeDefs = repo.getTypeChildren()
         folderDef = None
@@ -1231,16 +1376,20 @@ class TypeTest(unittest.TestCase):
         self.assertTrue(folderDef.baseId)
 
     def testTypeDefinition(self):
-        '''Get the cmis:document type and test a few props of the type.'''
-        cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD, **settings.EXT_ARGS)
+        """Get the cmis:document type and test a few props of the type."""
+        cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD,
+                                binding=settings.BINDING,
+                                **settings.EXT_ARGS)
         repo = cmisClient.getDefaultRepository()
         docTypeDef = repo.getTypeDefinition('cmis:document')
         self.assertEquals('cmis:document', docTypeDef.getTypeId())
         self.assertTrue(docTypeDef.baseId)
 
     def testTypeProperties(self):
-        '''Get the properties for a type.'''
-        cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD, **settings.EXT_ARGS)
+        """Get the properties for a type."""
+        cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD,
+                                binding=settings.BINDING,
+                                **settings.EXT_ARGS)
         repo = cmisClient.getDefaultRepository()
         docTypeDef = repo.getTypeDefinition('cmis:document')
         self.assertEquals('cmis:document', docTypeDef.getTypeId())
@@ -1259,14 +1408,14 @@ class ACLTest(CmisTestBase):
     """
 
     def testSupportedPermissions(self):
-        '''Test the value of supported permissions enum'''
+        """Test the value of supported permissions enum"""
         if not self._repo.getCapabilities()['ACL']:
             print messages.NO_ACL_SUPPORT
             return
         self.assertTrue(self._repo.getSupportedPermissions() in ['basic', 'repository', 'both'])
 
     def testPermissionDefinitions(self):
-        '''Test the list of permission definitions'''
+        """Test the list of permission definitions"""
         if not self._repo.getCapabilities()['ACL']:
             print messages.NO_ACL_SUPPORT
             return
@@ -1274,7 +1423,7 @@ class ACLTest(CmisTestBase):
         self.assertTrue(supportedPerms.has_key('cmis:write'))
 
     def testPermissionMap(self):
-        '''Test the permission mapping'''
+        """Test the permission mapping"""
         if not self._repo.getCapabilities()['ACL']:
             print messages.NO_ACL_SUPPORT
             return
@@ -1283,14 +1432,14 @@ class ACLTest(CmisTestBase):
         self.assertTrue(len(permMap['canGetProperties.Object']) > 0)
 
     def testPropagation(self):
-        '''Test the propagation setting'''
+        """Test the propagation setting"""
         if not self._repo.getCapabilities()['ACL']:
             print messages.NO_ACL_SUPPORT
             return
         self.assertTrue(self._repo.getPropagation() in ['objectonly', 'propagate', 'repositorydetermined'])
 
     def testGetObjectACL(self):
-        '''Test getting an object's ACL'''
+        """Test getting an object's ACL"""
         if not self._repo.getCapabilities()['ACL']:
             print messages.NO_ACL_SUPPORT
             return
@@ -1300,7 +1449,7 @@ class ACLTest(CmisTestBase):
             self.assertTrue(entry.permissions)
 
     def testApplyACL(self):
-        '''Test updating an object's ACL'''
+        """Test updating an object's ACL"""
         if not self._repo.getCapabilities()['ACL']:
             print messages.NO_ACL_SUPPORT
             return
@@ -1311,7 +1460,7 @@ class ACLTest(CmisTestBase):
             print 'Repository needs to support either both or basic permissions for this test'
             return
         acl = self._testFolder.getACL()
-        acl.addEntry(ACE(settings.TEST_PRINCIPAL_ID, 'cmis:write', 'true'))
+        acl.addEntry(settings.TEST_PRINCIPAL_ID, 'cmis:write')
         acl = self._testFolder.applyACL(acl)
         # would be good to check that the permission we get back is what we set
         # but at least one server (Alf) appears to map the basic perm to a
@@ -1320,10 +1469,10 @@ class ACLTest(CmisTestBase):
 
 
 def isInCollection(collection, targetDoc):
-    '''
+    """
     Util function that searches a list of objects for a matching target
     object.
-    '''
+    """
     for doc in collection:
         # hacking around a bizarre thing in Alfresco which is that when the
         # PWC comes back it has an object ID of say 123ABC but when you look
@@ -1375,10 +1524,10 @@ if __name__ == "__main__":
 #    tts.addTests(TestLoader().loadTestsFromName('testAddObject', FolderTest))
 #    tts.addTests(TestLoader().loadTestsFromName('testRemoveObject', FolderTest))
 #    tts.addTests(TestLoader().loadTestsFromName('testFolderLeadingDot', FolderTest))
-#    tts.addTests(TestLoader().loadTestsFromName('testFolderTrailingDot', FolderTest))
 #    tts.addTests(TestLoader().loadTestsFromName('testGetObjectParents', DocumentTest))
 #    tts.addTests(TestLoader().loadTestsFromName('testGetObjectParentsMultiple', DocumentTest))
-            
+#    tts.addTests(TestLoader().loadTestsFromName('testRenditions', DocumentTest))
+
     # WARNING: Potentially long-running tests
 
     # Query tests

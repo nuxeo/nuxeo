@@ -17,7 +17,9 @@
 #      under the License.
 #
 
-
+"""
+Module containing exceptions.
+"""
 class CmisException(Exception):
 
     """
