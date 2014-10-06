@@ -25,8 +25,6 @@ import java.util.UUID;
 
 import javax.faces.context.FacesContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,8 +44,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author Anahide Tchertchian
  */
 public class TestContentViewCache extends SQLRepositoryTestCase {
-
-    private static final Log log = LogFactory.getLog(TestDefaultPageProviders.class);
 
     ContentViewService service;
 

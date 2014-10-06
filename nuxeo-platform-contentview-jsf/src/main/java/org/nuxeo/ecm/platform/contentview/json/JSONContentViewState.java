@@ -165,8 +165,8 @@ public class JSONContentViewState {
         ContentViewState state = new ContentViewStateImpl();
 
         state.setContentViewName(jsonObject.getString("contentViewName"));
-        state.setPageSize(jsonObject.optLong("pageSize", -1));
-        state.setCurrentPage(jsonObject.optLong("currentPage", -1));
+        state.setPageSize(Long.valueOf(jsonObject.optLong("pageSize", -1)));
+        state.setCurrentPage(Long.valueOf(jsonObject.optLong("currentPage", -1)));
 
         JSONArray jsonQueryParams = jsonObject.getJSONArray("queryParameters");
 
