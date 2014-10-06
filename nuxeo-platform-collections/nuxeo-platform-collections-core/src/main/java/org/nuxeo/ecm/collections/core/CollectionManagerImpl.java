@@ -268,7 +268,7 @@ public class CollectionManagerImpl extends DefaultComponent implements
         List<DocumentModel> result = new ArrayList<DocumentModel>();
         CollectionMember collectionMemberAdapter = collectionMember.getAdapter(CollectionMember.class);
         List<String> collectionIds = collectionMemberAdapter.getCollectionIds();
-        for (int i = 0; i < collectionIds.size() && i < maxResult; i++) {
+        for (int i = 0; i < collectionIds.size() && result.size() < maxResult; i++) {
             final String collectionId = collectionIds.get(i);
             DocumentRef documentRef = new IdRef(collectionId);
             if (session.exists(documentRef)
