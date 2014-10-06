@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.nuxeo.runtime</groupId>
     <artifactId>nuxeo-runtime-parent</artifactId>
-    <version>5.8.0-HF23-SNAPSHOT</version>
+    <version>5.8.0-HF23</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.core</groupId>
   <artifactId>nuxeo-core-parent</artifactId>
-  <version>5.8.0-HF23-SNAPSHOT</version>
+  <version>5.8.0-HF23</version>
   <name>Nuxeo Core Parent</name>
   <packaging>pom</packaging>
   <description>
