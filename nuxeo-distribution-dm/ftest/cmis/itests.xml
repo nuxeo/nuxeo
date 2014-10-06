@@ -14,7 +14,7 @@
   <import file="${out.dir}/nuxeo-ftest.xml" />
 
   <target name="run-cmis-tests">
-    <for list="AtomPub,Browser" param="cmisBinding">
+    <for list="AtomPub" param="cmisBinding"> <!-- list="AtomPub,Browser" -->
       <sequential>
         <exec executable="python"
               output="${out.dir}/cmis_@{cmisBinding}.log"
