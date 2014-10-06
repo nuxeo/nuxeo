@@ -59,7 +59,7 @@ public class RestServerInit implements RepositoryInit {
     @Override
     public void populate(CoreSession session) throws ClientException {
         // try to prevent NXP-15404
-        clearRepositoryCaches(session.getRepositoryName());
+        // clearRepositoryCaches(session.getRepositoryName());
         // Create some docs
         for (int i = 0; i < 5; i++) {
             DocumentModel doc = session.createDocumentModel("/", "folder_" + i,
