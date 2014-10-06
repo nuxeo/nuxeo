@@ -81,7 +81,7 @@ public class ElasticSearchNxqlPageProvider extends
         try {
             NxQueryBuilder nxQuery = new NxQueryBuilder(getCoreSession())
                     .nxql(query).offset((int) getCurrentPageOffset())
-                    .limit((int) getMinMaxPageSize()).addSort(sortArray);
+                    .limit((int) getMinMaxPageSize());
             if (searchOnAllRepositories()) {
                 nxQuery.searchOnAllRepositories();
             }
