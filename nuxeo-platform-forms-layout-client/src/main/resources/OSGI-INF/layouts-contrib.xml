@@ -1219,9 +1219,6 @@
                   <widget category="widgetTypeConf">maxlength</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">size</widget>
-                </row>
-                <row>
                   <widget category="widgetTypeConf">style</widget>
                 </row>
                 <row>
@@ -1325,9 +1322,6 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">maxlength</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">size</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">style</widget>
@@ -1436,9 +1430,6 @@
                   <widget category="widgetTypeConf">maxlength</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">size</widget>
-                </row>
-                <row>
                   <widget category="widgetTypeConf">style</widget>
                 </row>
                 <row>
@@ -1521,9 +1512,6 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">maxlength</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">size</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">accesskey</widget>
