@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -273,7 +274,8 @@ public class CollectionManagerImpl extends DefaultComponent implements
             DocumentRef documentRef = new IdRef(collectionId);
             if (session.exists(documentRef)
                     && session.hasPermission(documentRef,
-                            SecurityConstants.READ)) {
+                            SecurityConstants.READ)
+                    && !LifeCycleConstants.DELETED_STATE.equals(session.getCurrentLifeCycleState(documentRef))) {
                 result.add(session.getDocument(documentRef));
             }
         }
