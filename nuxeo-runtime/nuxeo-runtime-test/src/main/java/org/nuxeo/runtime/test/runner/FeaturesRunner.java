@@ -36,6 +36,7 @@ import org.junit.Rule;
 import org.junit.internal.AssumptionViolatedException;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
+import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
@@ -66,6 +67,95 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
      * Guice injector.
      */
     protected Injector injector;
+
+    protected class BindTestRules implements TestRule {
+        private final List<TestRule> rules = new ArrayList<>();
+
+        protected BindTestRules(List<TestRule> actual) {
+            rules.addAll(actual);
+        }
+
+        @Override
+        public Statement apply(final Statement base, Description description) {
+            return onStatement(base);
+        }
+
+        protected Statement onStatement(final Statement base) {
+            return new Statement() {
+
+                @Override
+                public void evaluate() throws Throwable {
+                    injector = injector.createChildInjector(new Module() {
+
+                        @SuppressWarnings({ "unchecked", "rawtypes" })
+                        @Override
+                        public void configure(Binder binder) {
+                            for (Object each : rules) {
+                                binder.bind((Class) each.getClass())
+                                    .toInstance(each);
+                                binder.requestInjection(each);
+                            }
+                        }
+
+                    });
+
+                    try {
+                        base.evaluate();
+                    } finally {
+                        injector = injector.getParent();
+                    }
+
+                }
+
+            };
+        }
+
+    }
+
+    protected class BindMethodRules implements MethodRule {
+        private final List<MethodRule> rules = new ArrayList<>();
+
+        protected BindMethodRules(List<MethodRule> someRules) {
+            rules.addAll(someRules);
+        }
+
+        @Override
+        public Statement apply(Statement base, FrameworkMethod method,
+                Object target) {
+            return onStatement(base);
+        }
+
+        protected Statement onStatement(final Statement base) {
+            return new Statement() {
+
+                @Override
+                public void evaluate() throws Throwable {
+                    injector = injector.createChildInjector(new Module() {
+
+                        @SuppressWarnings({ "unchecked", "rawtypes" })
+                        @Override
+                        public void configure(Binder binder) {
+                            for (Object each : rules) {
+                                binder.bind((Class) each.getClass())
+                                    .toInstance(each);
+                                binder.requestInjection(each);
+                            }
+                        }
+
+                    });
+
+                    try {
+                        base.evaluate();
+                    } finally {
+                        injector = injector.getParent();
+                    }
+
+                }
+
+            };
+        }
+
+    }
 
     protected enum Direction {
         FORWARD, BACKWARD
@@ -344,7 +434,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void afterRun() throws Exception {
-        injector = injector.getParent();
         loader.apply(Direction.BACKWARD, new Callable() {
 
             @Override
@@ -382,7 +471,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
                 holder.feature.stop(FeaturesRunner.this);
             }
         });
-        injector = injector.getParent();
     }
 
     protected void beforeSetup() throws Exception {
@@ -411,16 +499,12 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         });
     }
 
-    protected void configureBindings() {
-        injector = injector.createChildInjector(loader.onModule());
-    }
-
     public Injector getInjector() {
         return injector;
     }
 
     protected Injector onInjector(final RunNotifier aNotifier) {
-        Injector injector = Guice.createInjector(Stage.DEVELOPMENT,
+        return Guice.createInjector(Stage.DEVELOPMENT,
                 new Module() {
 
                     @Override
@@ -433,25 +517,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
                     }
 
                 });
-        return injector;
-
-    }
-
-    protected <T extends Iterable<?>> T pushInjector(final T some) {
-        injector = injector.createChildInjector(new Module() {
-
-            @SuppressWarnings({ "unchecked", "rawtypes" })
-            @Override
-            public void configure(Binder binder) {
-                for (Object each : some) {
-                    binder.bind((Class) each.getClass()).toInstance(each);
-                    binder.requestInjection(each);
-                }
-            }
-
-        });
-
-        return some;
     }
 
     protected class BeforeClassStatement extends Statement {
@@ -465,7 +530,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         public void evaluate() throws Throwable {
             initialize();
             start();
-            configureBindings();
             beforeRun();
             next.evaluate();
         }
@@ -534,7 +598,8 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             }
         });
         actual.addAll(super.classRules());
-        return pushInjector(actual);
+        actual.add(new BindTestRules(actual));
+        return actual;
     }
 
     protected class BeforeMethodRunStatement extends Statement {
@@ -643,23 +708,35 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     @Override
     protected List<TestRule> getTestRules(Object target) {
-        List<TestRule> actual = new ArrayList<TestRule>();
-        for (Loader.Holder each : loader.holders) {
-            actual.addAll(testRulesFactory
-                .onRules(each.testClass, each.feature));
-        }
+        final List<TestRule> actual = new ArrayList<TestRule>();
+        loader.apply(Direction.FORWARD, new Callable() {
+
+            @Override
+            public void call(Holder holder) throws Exception {
+                actual.addAll(testRulesFactory.onRules(holder.testClass,
+                        holder.feature));
+            }
+
+        });
         actual.addAll(testRulesFactory.onRules(getTestClass(), target));
-        return pushInjector(actual);
+        actual.add(new BindTestRules(actual));
+        return actual;
     }
 
     @Override
     protected List<MethodRule> rules(Object target) {
         final List<MethodRule> actual = new ArrayList<>();
-        for (Loader.Holder each : loader.holders) {
-            actual.addAll(methodRulesFactory.onRules(each.testClass,
-                    each.feature));
-        }
+        loader.apply(Direction.FORWARD, new Callable() {
+
+            @Override
+            public void call(Holder holder) throws Exception {
+                actual.addAll(methodRulesFactory.onRules(holder.testClass,
+                        holder.feature));
+            }
+
+        });
         actual.addAll(methodRulesFactory.onRules(getTestClass(), target));
+        actual.add(new BindMethodRules(actual));
         return actual;
     }
 
@@ -679,6 +756,25 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     protected void validateZeroArgConstructor(List<Throwable> errors) {
         // Guice can inject constructors with parameters so we don't want this
         // method to trigger an error
+    }
+
+    @Override
+    protected Statement methodBlock(FrameworkMethod method) {
+        final Statement base = super.methodBlock(method);
+        return new Statement() {
+
+            @Override
+            public void evaluate() throws Throwable {
+                injector = injector.createChildInjector(loader.onModule());
+                try {
+                    base.evaluate();
+                } finally {
+                    injector = injector.getParent();
+                }
+
+            }
+
+        };
     }
 
     @Override
