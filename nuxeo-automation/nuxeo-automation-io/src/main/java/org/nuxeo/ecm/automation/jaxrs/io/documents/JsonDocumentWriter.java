@@ -331,6 +331,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         if (prop instanceof ArrayProperty) {
             Object[] ar = (Object[]) prop.getValue();
             if (ar == null) {
+                jg.writeEndArray();
                 return;
             }
             org.nuxeo.ecm.core.schema.types.Type type = ((ListType) prop.getType()).getFieldType();

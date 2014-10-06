@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.automation.test.service;
 
 import com.google.inject.Inject;
+
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
@@ -26,11 +27,11 @@ import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.io.services.enricher.ContentEnricher;
 import org.nuxeo.ecm.automation.io.services.enricher
         .ContentEnricherServiceImpl;
 import org.nuxeo.ecm.automation.io.services.enricher.HeaderDocEvaluationContext;
-
 import org.nuxeo.ecm.automation.io.services.enricher.ContentEnricherService;
 import org.nuxeo.ecm.automation.io.services.enricher.RestEvaluationContext;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentListWriter;
@@ -46,9 +47,12 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import javax.ws.rs.core.HttpHeaders;
+
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -73,6 +77,8 @@ public class RestServiceTest {
 
     private static final String[] NO_SCHEMA = new String[] {};
 
+    private static final String[] ALL_SCHEMAS = new String[] { "*" };
+
     @Inject
     ContentEnricherService rcs;
 
@@ -87,13 +93,39 @@ public class RestServiceTest {
         DocumentModel doc = session.createDocumentModel("/", "folder1",
                 "Folder");
         doc = session.createDocument(doc);
-        doc = session.saveDocument(doc);
         for (int i = 0; i < 3; i++) {
             doc = session.createDocumentModel("/folder1", "doc" + i, "Note");
+            doc.setPropertyValue("dc:title", "Note " + i);
             session.createDocument(doc);
-            doc = session.saveDocument(doc);
         }
         session.save();
+    }
+
+    protected void assertEqualsJson(String expected, String actual) throws Exception {
+        JSONAssert.assertEquals(expected, actual, true);
+    }
+
+    @Test
+    public void testDocumentJson() throws Exception {
+        DocumentModel doc = session.getDocument(new PathRef("/folder1/doc0"));
+        String json = getFullDocumentAsJson(doc, null);
+        json = json.replace(doc.getId(), "the-doc-id");
+        json = json.replace(doc.getParentRef().toString(), "the-parent-id");
+        File file = FileUtils.getResourceFileFromContext("test-expected-document1.json");
+        String expected = FileUtils.readFile(file);
+        assertEqualsJson(expected, json);
+    }
+
+    @Test
+    public void testDocumentJsonWithNullArray() throws Exception {
+        DocumentModel doc = session.getDocument(new PathRef("/folder1/doc0"));
+        doc.setPropertyValue("dc:subjects", null); // set array to null
+        String json = getFullDocumentAsJson(doc, null);
+        json = json.replace(doc.getId(), "the-doc-id");
+        json = json.replace(doc.getParentRef().toString(), "the-parent-id");
+        File file = FileUtils.getResourceFileFromContext("test-expected-document1.json");
+        String expected = FileUtils.readFile(file);
+        assertEqualsJson(expected, json);
     }
 
     @Test
@@ -241,27 +273,29 @@ public class RestServiceTest {
         return m.readTree(json);
     }
 
-    /**
-     * @param out
-     * @return
-     * @throws IOException
-     * @throws JsonProcessingException
-     *
-     */
     private JsonNode parseJson(ByteArrayOutputStream out)
             throws JsonProcessingException, IOException {
         return parseJson(out.toString());
     }
 
     /**
+     * Returns the JSON representation of the document with all schemas. A
+     * category may be passed to have impact on the Content Enrichers.
+     */
+    protected String getFullDocumentAsJson(DocumentModel doc, String category)
+            throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        JsonGenerator jg = getJsonGenerator(out);
+        // When it is written as Json with appropriate headers
+        JsonDocumentWriter.writeDocument(jg, doc, ALL_SCHEMAS, null,
+                getFakeHeaders(category), null);
+        jg.flush();
+        return out.toString();
+    }
+
+    /**
      * Returns the JSON representation of the document. A category may be passed
      * to have impact on the Content Enrichers
-     *
-     * @param doc
-     * @param category
-     * @return
-     * @throws Exception
-     *
      */
     protected String getDocumentAsJson(DocumentModel doc, String category)
             throws Exception {
@@ -277,12 +311,6 @@ public class RestServiceTest {
     /**
      * Returns the JSON representation of these docs. A category may be passed
      * to have impact on the Content Enrichers
-     *
-     * @param doc
-     * @param category
-     * @return
-     * @throws Exception
-     *
      */
     protected String getDocumentsAsJson(List<DocumentModel> docs,
             String category) throws Exception {
@@ -297,11 +325,6 @@ public class RestServiceTest {
 
     /**
      * Returns the JSON representation of the document.
-     *
-     * @param doc
-     * @return
-     * @throws Exception
-     *
      */
     protected String getDocumentAsJson(DocumentModel doc) throws Exception {
         return getDocumentAsJson(doc, null);
