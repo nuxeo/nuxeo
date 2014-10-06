@@ -844,7 +844,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         try {
             ((Document) cco).checkOut();
             fail("Cannot check out a locked document");
-        } catch (CmisInvalidArgumentException e) {
+        } catch (CmisConstraintException e) {
             // ok
         }
     }

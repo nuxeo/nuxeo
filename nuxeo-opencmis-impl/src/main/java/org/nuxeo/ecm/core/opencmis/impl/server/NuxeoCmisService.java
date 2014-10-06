@@ -2200,7 +2200,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
                         + objectId);
             }
             if (pwc.isLocked()) {
-                throw new CmisInvalidArgumentException(
+                throw new CmisConstraintException(
                         "Cannot check out since currently locked: " + objectId);
             }
             pwc.setLock();
@@ -2208,6 +2208,12 @@ public class NuxeoCmisService extends AbstractCmisService implements
             save();
             return pwc.getId();
         } catch (ClientException e) {
+            String message = e.getMessage();
+            if (message != null
+                    && message.startsWith("Document already locked")) {
+                throw new CmisConstraintException(
+                        "Cannot check out since currently locked: " + objectId);
+            }
             throw new CmisRuntimeException(e.toString(), e);
         }
     }
