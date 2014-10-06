@@ -18,9 +18,8 @@
 
 package org.nuxeo.runtime.test.runner;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import javax.inject.Inject;
 
@@ -39,6 +38,8 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 import org.nuxeo.runtime.test.Failures;
 import org.nuxeo.runtime.test.runner.RandomBug.Repeat;
+import org.nuxeo.runtime.test.runner.RandomBug.RepeatMethodRule;
+import org.nuxeo.runtime.test.runner.RandomBug.RepeatTestRule;
 
 /**
  * Tests verifying that test fixtures ({@link Before} and {@link After}) and
@@ -49,8 +50,6 @@ import org.nuxeo.runtime.test.runner.RandomBug.Repeat;
 public class RandomBugTest {
 
     protected static final String FAILURE_MESSAGE = "FAILURE";
-
-    protected static boolean fail = true;
 
     protected static boolean isRunningInners;
 
@@ -132,34 +131,62 @@ public class RandomBugTest {
 
     @RunWith(FeaturesRunner.class)
     @Features({ RandomBug.Feature.class })
-    public static class RandomlyFailingTest {
+    @RandomBug.Repeat(issue = "testFailAfterTenRetry")
+    public static class FailingTest {
+
+        @Inject
+        RepeatTestRule testRule;
 
         @ClassRule
         public static final IgnoreInner ignoreInner = new IgnoreInner();
 
         @Test
-        @RandomBug.Repeat(issue = "testSucceedThenFail")
-        public void testSucceedThenFail() throws Exception {
-            assertFalse("assert false: " + fail, fail);
+        @RandomBug.Repeat(issue = "testFailAfterTenRetry", bypass = true)
+        public void other() throws Exception {
+
         }
 
         @Test
-        @RandomBug.Repeat(issue = "testFailThenSucceed")
         public void testFailThenSucceed() throws Exception {
-            assertTrue("assert true: " + fail, fail);
+            if (testRule.statement.serial < 3) {
+                return;
+            }
+            fail("over");
         }
 
-        @After
-        public void tearDown() {
-            fail = !fail;
-        }
     }
+
+    @RunWith(FeaturesRunner.class)
+    public static class FailingMethod {
+
+        @Inject
+        RepeatMethodRule methodRule;
+
+        @ClassRule
+        public static final IgnoreInner ignoreInner = new IgnoreInner();
+
+        @Test
+        public void other() throws Exception {
+
+        }
+
+        @Test
+        @RandomBug.Repeat(issue = "testFailAfterTenRetry")
+        public void testFailThenSucceed() throws Exception {
+            if (methodRule.statement.serial < 10) {
+                return;
+            }
+            fail("over");
+        }
+
+    }
+
 
     @Test
     public void testBypass() {
         System.setProperty(RandomBug.MODE_PROPERTY,
                 RandomBug.Mode.BYPASS.toString());
-        runClassAndVerifyNoFailures(RandomlyFailingTest.class,
+        runClassAndVerifyNoFailures(FailingTest.class,
                 "Test should be ignored in BYPASS mode!");
     }
 
@@ -167,18 +194,22 @@ public class RandomBugTest {
     public void testStrict() {
         System.setProperty(RandomBug.MODE_PROPERTY,
                 RandomBug.Mode.STRICT.toString());
-        Result result = JUnitCore.runClasses(RandomlyFailingTest.class);
-        if (result.wasSuccessful() || result.getIgnoreCount() > 0
-                || result.getFailureCount() != result.getRunCount()) {
-            fail("Unexpected success: STRICT mode expects a failure");
-        }
+        Result result = JUnitCore.runClasses(FailingTest.class);
+        assertThat(result.wasSuccessful()).isFalse();
+        assertThat(result.getIgnoreCount()).isEqualTo(0);
+
+        return;
+        // if (result.wasSuccessful() || result.getIgnoreCount() > 0
+        // || result.getFailureCount() != result.getRunCount()) {
+        // fail("Unexpected success: STRICT mode expects a failure");
+        // }
     }
 
     @Test
     public void testRelax() {
         System.setProperty(RandomBug.MODE_PROPERTY,
                 RandomBug.Mode.RELAX.toString());
-        Result result = JUnitCore.runClasses(RandomlyFailingTest.class);
+        Result result = JUnitCore.runClasses(FailingTest.class);
         if (!result.wasSuccessful()) {
             Failures failures = new Failures(result.getFailures());
             fail("Unexpected failure: RELAX mode expects a success\n"
@@ -214,14 +245,13 @@ public class RandomBugTest {
         }
 
         @Test
-        @Repeat(issue="repeatedTest", onFailure=5)
+        @Repeat(issue = "repeatedTest", onFailure = 5)
         public void repeatedTest() {
-           if (feature.repeated < 5) {
-               fail("should fail");
-           }
+            if (feature.repeated < 5) {
+                fail("should fail");
+            }
         }
     }
-
 
     @Test
     public void shouldRepeatFeatures() {
@@ -230,8 +260,7 @@ public class RandomBugTest {
         Result result = JUnitCore.runClasses(RepeatFeaturesTest.class);
         if (!result.wasSuccessful()) {
             Failures failures = new Failures(result.getFailures());
-            fail("Unexpected failure\n"
-                    + failures.toString());
+            fail("Unexpected failure\n" + failures.toString());
         }
     }
 

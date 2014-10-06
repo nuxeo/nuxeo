@@ -25,7 +25,6 @@ import java.lang.annotation.Target;
 import javax.inject.Inject;
 
 import org.apache.log4j.MDC;
-import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -41,6 +40,7 @@ import org.junit.runners.model.Statement;
 
 /**
  * Define execution rules for an annotated random bug.
+ *
  * <p>
  * Principle is to increase consistency on tests which have a random behavior.
  * Such test is a headache because:
@@ -51,7 +51,9 @@ import org.junit.runners.model.Statement;
  * checking the non-random part of code it covers,</li>
  * <li>and, after all, there's a random bug which should be fixed!</li>
  * </ul>
+ * </p>
  *
+ * <p>
  * Compared to the @{@link Ignore} JUnit annotation, the advantage is to provide
  * different behaviors for different use cases. The wanted behavior depending on
  * whereas:
@@ -62,12 +64,11 @@ import org.junit.runners.model.Statement;
  * regression,</li>
  * <li>we are working on the random bug and want to reproduce it.</li>
  * </ul>
- * That means that a random bug cannot be removed, but must be ignorable or
- * executable with attempts to reproduce or hide its random aspect, depending on
- * its execution context.
- *
  * </p>
- * <p>
+ *
+ * That means that a random bug cannot be ignored. But must attempt to reproduce
+ * or hide its random aspect, depending on its execution context.
+ *
  * For instance: <blockquote>
  *
  * <pre>
@@ -84,38 +85,32 @@ import org.junit.runners.model.Statement;
  *     public void testWhichFailsSometimes() throws Exception {
  *         assertTrue(java.lang.Math.random() > 0.2);
  *     }
- * }
- * </code>
+ * }</code>
  * </pre>
  *
- * </blockquote> In the above example, the test fails sometimes.<br>
- * With the {@code @RandomBugRule.Repeat} annotation, it will be repeated in
- * case of failure up to 5 times until success. This is the default
- * {@link Mode#RELAX} mode.<br>
- * In order to reproduce the bug, use the {@link Mode#STRICT} mode. It will be
- * repeated in case of success up to 50 times until failure.<br>
- * In {@link Mode#BYPASS} mode, the test is ignored.
+ * </blockquote>
+ *
+ * <p>
+ * In the above example, the test fails sometimes. With the
+ * {@link RandomBug.Repeat} annotation, it will be repeated in case of failure
+ * up to 5 times until success. This is the default {@link Mode#RELAX} mode. In
+ * order to reproduce the bug, use the {@link Mode#STRICT} mode. It will be
+ * repeated in case of success up to 50 times until failure. In
+ * {@link Mode#BYPASS} mode, the test is ignored.
+ * </p>
+ *
+ * <p>
+ * You may also repeat a whole suite in the same way by annotating the class
+ * itself. You may want also want to skip some tests, then you should then
+ * annotate the tests method with the {@link NoRepeat} annotation.
  * </p>
  *
  * @see Mode
- * @see MODE_PROPERTY
  * @since 5.9.5
  */
 public class RandomBug {
 
     protected static final RandomBug self = new RandomBug();
-
-    public static class Feature extends SimpleFeature {
-        @ClassRule
-        public static TestRule onClass() {
-            return self.onClass();
-        }
-
-        @Rule
-        public MethodRule onMethod() {
-            return self.onMethod();
-        }
-    }
 
     /**
      * Repeat condition based on
@@ -141,6 +136,67 @@ public class RandomBug {
          * Times to repeat until success in case of failure
          */
         int onFailure() default 10;
+
+        /*
+         * Skip ....
+         */
+        boolean bypass() default false;
+    }
+
+    public static class Feature extends SimpleFeature {
+
+        @ClassRule
+        public static TestRule onClass() {
+            return self.onTest();
+        }
+
+        @Rule
+        public MethodRule onMethod() {
+            return self.onMethod();
+        }
+    }
+
+    public class RepeatTestRule implements TestRule {
+
+        @Inject
+        protected RunNotifier notifier;
+
+        public RepeatStatement statement;
+
+        @Override
+        public Statement apply(Statement base, Description description) {
+            final Repeat actual = description.getAnnotation(Repeat.class);
+            if (actual == null) {
+                return base;
+            }
+            return statement = onRepeat(actual, notifier, base);
+        }
+    }
+
+    public class RepeatMethodRule implements MethodRule {
+
+        @Inject
+        protected RunNotifier notifier;
+
+        public RepeatStatement statement;
+
+        @Override
+        public Statement apply(Statement base, FrameworkMethod method,
+                Object target) {
+            final Repeat actual = method.getAnnotation(Repeat.class);
+            if (actual == null) {
+                return base;
+            }
+            return statement = onRepeat(actual, notifier, base);
+        }
+    }
+
+    protected RepeatTestRule onTest() {
+        return new RepeatTestRule();
+    }
+
+    protected RepeatMethodRule onMethod() {
+        return new RepeatMethodRule();
     }
 
     public static final String MODE_PROPERTY = "nuxeo.tests.random.mode";
@@ -157,6 +213,9 @@ public class RandomBug {
      * success or the limit number of tries {@link Repeat#onFailure()} is
      * reached.</li>
      * </ul>
+     *
+     * Could be set by the environment using the
+     * <em>nuxeo.tests.random.mode</em>T system property.
      */
     public static enum Mode {
         BYPASS, STRICT, RELAX
@@ -172,145 +231,129 @@ public class RandomBug {
         return Mode.valueOf(mode.toUpperCase());
     }
 
-    protected TestRule onClass() {
-        return new TestRule() {
-
-            @Inject
-            RunNotifier notifier;
-
-            @Override
-            public Statement apply(Statement base, Description description) {
-                Repeat repeat = description.getTestClass().getAnnotation(
-                        Repeat.class);
-                return onRepeat(repeat, notifier, base);
-            }
-        };
-    }
-
-    protected MethodRule onMethod() {
-        return new MethodRule() {
-            @Inject
-            RunNotifier notifier;
-
-            @Override
-            public Statement apply(Statement statement, FrameworkMethod method,
-                    Object target) {
-                Repeat repeat = method.getAnnotation(Repeat.class);
-                return onRepeat(repeat, notifier, statement);
-            }
-
-        };
-    }
-
-    protected static class RepeatOnFailure extends Statement {
-
+    protected abstract class RepeatStatement extends Statement {
         protected final Repeat params;
 
         protected final RunNotifier notifier;
 
-        protected final Statement next;
+        protected final Statement base;
+
+        protected int serial;
+
+        protected RepeatStatement(Repeat someParams, RunNotifier aNotifier,
+                Statement aStatement) {
+            params = someParams;
+            notifier = aNotifier;
+            base = aStatement;
+        }
+
+        protected void onEnter(int aSerial) {
+            MDC.put("fRepeat", serial = aSerial);
+        }
+
+        protected void onLeave() {
+            MDC.remove("fRepeat");
+        }
+    }
+
+    protected class RepeatOnFailure extends RepeatStatement {
 
         protected String issue;
 
         protected RepeatOnFailure(Repeat someParams, RunNotifier aNotifier,
                 Statement aStatement) {
-            params = someParams;
-            notifier = aNotifier;
-            next = aStatement;
+            super(someParams, aNotifier, aStatement);
         }
 
         @Override
         public void evaluate() throws Throwable {
-            Error error = new AssertionError(String.format(
+            AssertionError error = new AssertionError(String.format(
                     "No success after %d tries. Either the bug is not random "
                             + "or you should increase the 'onFailure' value.\n"
                             + "Issue: %s", params.onFailure(), issue));
-            for (int i = 1; i <= params.onFailure(); i++) {
-                MDC.put("fRepeat", i);
+            for (int i = 0; i <= params.onFailure(); i++) {
+                onEnter(i);
                 try {
-                    next.evaluate();
+                    base.evaluate();
                     return;
-                } catch (Throwable t) {
-                    error.addSuppressed(t);
+                } catch (Throwable cause) {
+                    error.addSuppressed(cause);
                 } finally {
-                    MDC.remove("fRepeat");
+                    onLeave();
                 }
             }
             throw error;
         }
     }
 
-    protected static class RepeatOnSuccess extends Statement {
+    protected class RepeatOnSuccess extends RepeatStatement {
 
-        protected final Statement statement;
-
-        protected final RunNotifier notifier;
-
-        protected final Repeat params;
+        protected final RunListener listener = new RunListener() {
+            @Override
+            public void testFailure(Failure failure) throws Exception {
+                gotFailure = true;
+            }
+        };
 
         protected RepeatOnSuccess(Repeat someParams, RunNotifier aNotifier,
                 Statement aStatement) {
-            params = someParams;
-            statement = aStatement;
-            notifier = aNotifier;
+            super(someParams, aNotifier, aStatement);
         }
 
         protected boolean gotFailure;
 
         @Override
         public void evaluate() throws Throwable {
-            notifier.addListener(new RunListener() {
-                @Override
-                public void testFailure(Failure failure) throws Exception {
-                    notifier.removeListener(this);
-                    Assert.fail("got a failure");
-                }
-            });
             Error error = new AssertionError(String.format(
                     "No failure after %d tries. Either the bug is fixed "
                             + "or you should increase the 'onSuccess' value.\n"
                             + "Issue: %s", params.onSuccess(), params.issue()));
-            for (int i = 1; i <= params.onSuccess(); i++) {
-                MDC.put("fRepeat", i);
-                try {
-                    statement.evaluate();
-                } finally {
-                    MDC.remove("fRepeat");
+            notifier.addListener(listener);
+            try {
+                for (int i = 1; i <= params.onSuccess(); i++) {
+                    onEnter(i);
+                    try {
+                        base.evaluate();
+                    } finally {
+                        onLeave();
+                    }
+                    if (gotFailure) {
+                        return;
+                    }
                 }
-                if (gotFailure) {
-                    return;
-                }
+            } finally {
+                notifier.removeListener(listener);
             }
             throw error;
         }
     }
 
-    protected static class NoopStatement extends Statement {
-        protected String issue;
+    protected class Bypass extends RepeatStatement {
 
-        public NoopStatement(String issue) {
-            this.issue = issue;
+        public Bypass(Repeat someParams, RunNotifier aNotifier,
+                Statement aStatement) {
+            super(someParams, aNotifier, aStatement);
         }
 
         @Override
         public void evaluate() throws Throwable {
             throw new AssumptionViolatedException(
-                    "Random bug ignored (bypass mode): " + issue);
+                    "Random bug ignored (bypass mode): " + params.issue());
         }
     }
 
-    protected Statement onRepeat(Repeat aRepeat, RunNotifier aNotifier,
-            Statement aStatement) {
-        if (aRepeat == null) {
-            return aStatement;
+    protected RepeatStatement onRepeat(Repeat someParams,
+            RunNotifier aNotifier, Statement aStatement) {
+        if (someParams.bypass()) {
+            return new Bypass(someParams, aNotifier, aStatement);
         }
         switch (fetchMode()) {
         case BYPASS:
-            return new NoopStatement(aRepeat.issue());
+            return new Bypass(someParams, aNotifier, aStatement);
         case STRICT:
-            return new RepeatOnSuccess(aRepeat, aNotifier, aStatement);
+            return new RepeatOnSuccess(someParams, aNotifier, aStatement);
         case RELAX:
-            return new RepeatOnFailure(aRepeat, aNotifier, aStatement);
+            return new RepeatOnFailure(someParams, aNotifier, aStatement);
         }
         throw new IllegalArgumentException("no such mode");
     }
