@@ -136,7 +136,6 @@
     <module>nuxeo-box-api</module>
     <module>nuxeo-platform-importer</module>
     <module>nuxeo-easyshare</module>
-    <module>nuxeo-elasticsearch</module>
     <module>nuxeo-duoweb-authentication</module>
     <module>nuxeo-sample-project</module>
     <module>nuxeo-logs-viewer</module>
