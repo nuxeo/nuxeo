@@ -19,17 +19,17 @@ author: lkemen@nuxeo.com
 .nxSearchResults {
   background-color: "neutral.lighter (__FLAVOR__ background)";
   padding: 1em 3em 3em;
-  min-height: 650px;
+  min-height: 800px;
   width: 81% }
 
 .nxSearchResults .containerWidgetPanel {
   padding: 0 }
 
 .searchFilterActions .horizontalAction:first-child .button {
-  border-radius: 3px 0 0 3px }
+  border-radius: 3px 0 0 3px;
+  border-right: none }
 
 .searchFilterActions .horizontalAction:last-child .button {
-  border-left: none;
   border-radius: 0 3px 3px 0 }
 
 /* Search Column */
@@ -48,7 +48,8 @@ author: lkemen@nuxeo.com
 .bubbleBox {
   background-color: #fff;
   display: inline-block;
-  width: 20% }
+  margin: 0 .5em 1.2em;
+  width: 18.1em }
 
 div.detail {
   clear: both }
