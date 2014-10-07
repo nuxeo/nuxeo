@@ -71,6 +71,30 @@ public interface ContentViewLayout extends Serializable {
     boolean getShowSyndicationLinks();
 
     /**
+     * Returns true if 'slide show' link is enabled for this layout. Defaults
+     * to false.
+     *
+     * @since 5.9.6
+     */
+    boolean getShowSlideshow();
+
+    /**
+     * Returns true if 'edit columns' link is enabled for this layout. Defaults
+     * to false.
+     *
+     * @since 5.9.6
+     */
+    boolean getShowEditColumns();
+
+    /**
+     * Returns true if 'spreadsheet' link is enabled for this layout. Defaults
+     * to false.
+     *
+     * @since 5.9.6
+     */
+    boolean getShowSpreadsheet();
+
+    /**
      * Returns the filter display type to handle different kinds of filter
      * display.
      *

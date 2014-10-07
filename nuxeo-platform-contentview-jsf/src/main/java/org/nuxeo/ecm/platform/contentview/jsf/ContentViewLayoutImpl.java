@@ -49,6 +49,24 @@ public class ContentViewLayoutImpl implements ContentViewLayout {
     @XNode("@showSyndicationLinks")
     protected boolean showSyndicationLinks = false;
 
+    /**
+     * @since 5.9.6
+     */
+    @XNode("@showSlideshow")
+    protected boolean showSlideshow = false;
+
+    /**
+     * @since 5.9.6
+     */
+    @XNode("@showSpreadsheet")
+    protected boolean showSpreadsheet = false;
+
+    /**
+     * @since 5.9.6
+     */
+    @XNode("@showEditColumns")
+    protected boolean showEditColumns = false;
+
     @XNode("@filterDisplayType")
     protected String filterDisplayType;
 
@@ -101,6 +119,18 @@ public class ContentViewLayoutImpl implements ContentViewLayout {
         return showSyndicationLinks;
     }
 
+    public boolean getShowSlideshow() {
+        return showSlideshow;
+    }
+
+    public boolean getShowSpreadsheet() {
+        return showSpreadsheet;
+    }
+
+    public boolean getShowEditColumns() {
+        return showEditColumns;
+    }
+
     @Override
     public String getFilterDisplayType() {
         return filterDisplayType;
@@ -128,6 +158,9 @@ public class ContentViewLayoutImpl implements ContentViewLayout {
         clone.showCSVExport = getShowCSVExport();
         clone.showPDFExport = getShowPDFExport();
         clone.showSyndicationLinks = getShowSyndicationLinks();
+        clone.showSlideshow = getShowSlideshow();
+        clone.showSpreadsheet = getShowSpreadsheet();
+        clone.showEditColumns = getShowEditColumns();
         clone.filterDisplayType = getFilterDisplayType();
         clone.filterUnfolded = isFilterUnfolded();
         return clone;

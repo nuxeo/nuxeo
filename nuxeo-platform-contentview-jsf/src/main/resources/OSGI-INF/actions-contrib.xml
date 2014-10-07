@@ -95,13 +95,14 @@
       label="label.contentview.trigger.slideshow" type="template">
       <category>CONTENT_VIEW_ACTIONS</category>
       <properties>
-        <property name="include">
+        <property name="template">
           /incl/action/content_view_slideshow.xhtml
         </property>
       </properties>
+      <filter-id>contentViewShowSlideshow</filter-id>
     </action>
 
-    <action id="editResultLayoutColumns" order="80"
+    <action id="contentViewEditColumns" order="80"
       label="label.contentview.edit.columns" type="fancybox" icon="/icons/refresh.png">
       <category>CONTENT_VIEW_ACTIONS</category>
       <properties>
@@ -111,6 +112,7 @@
         <property name="addForm">true</property>
         <property name="ajaxSupport">true</property>
       </properties>
+      <filter-id>contentViewShowEditColumns</filter-id>
     </action>
 
   </extension>
@@ -161,6 +163,36 @@
           #{nxu:test(empty showSyndicationLinks,
           contentView.currentResultLayout.showSyndicationLinks,
           showSyndicationLinks)}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="contentViewShowSlideshow">
+      <rule grant="true">
+        <condition>
+          #{nxu:test(empty showSlideshow,
+          contentView.currentResultLayout.showSlideshow,
+          showSlideshow)}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="contentViewShowSpreadsheet">
+      <rule grant="true">
+        <condition>
+          #{nxu:test(empty showSpreadsheet,
+          contentView.currentResultLayout.showSpreadsheet,
+          showSpreadsheet)}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="contentViewShowEditColumns">
+      <rule grant="true">
+        <condition>
+          #{nxu:test(empty showEditColumns,
+          contentView.currentResultLayout.showEditColumns,
+          showEditColumns)}
         </condition>
       </rule>
     </filter>
