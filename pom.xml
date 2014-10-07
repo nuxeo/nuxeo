@@ -50,6 +50,7 @@
     <module>nuxeo-platform-collections</module>
     <module>rest-api</module>
     <module>nuxeo-search-ui</module>
+    <module>nuxeo-elasticsearch</module>
   </modules>
 
   <dependencies>
