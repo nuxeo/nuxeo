@@ -108,7 +108,7 @@ public class ITCopyPasteTest extends AbstractTest {
 
         DocumentBasePage documentBasePage;
 
-        // Log as test user and edit the created workdspace
+        // Log as test user and edit the created workspace
         documentBasePage = loginAsTestUser().getContentTab().goToDocument(
                 "Workspaces").getContentTab().goToDocument(WORKSPACE1_TITLE);
 
