@@ -1,18 +1,10 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.admin.audit.contentView.contrib">
 
-  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
-    point="contentViews">
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
 
-    <contentView name="EVENTS_VIEW">
-
-      <title>label.contentview.document.history</title>
-      <translateTitle>true</translateTitle>
-      <showTitle>true</showTitle>
-
-      <genericPageProvider class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider">
-        <property name="coreSession">#{documentManager}</property>
-        <property name="generateUIComments">false</property>
+    <genericPageProvider class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider" name="EVENTS_VIEW">
         <whereClause docType="BasicAuditSearch">
           <predicate parameter="log.eventDate" operator="BETWEEN">
             <field schema="basicauditsearch" name="startDate" />
@@ -32,6 +24,22 @@
         <pageSize>10</pageSize>
         <maxPageSize>1000</maxPageSize>
       </genericPageProvider>
+
+  </extension>
+  
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="EVENTS_VIEW">
+
+      <title>label.contentview.document.history</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>true</showTitle>
+
+      <pageProvider name="EVENTS_VIEW">
+        <property name="coreSession">#{documentManager}</property>
+        <property name="generateUIComments">false</property>
+      </pageProvider>
 
       <searchLayout name="fullauditsearch" filterDisplayType="quick" />
       <showFilterForm>true</showFilterForm>
