@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.contentview.jsf.layouts">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="contentViewActions" type="template">
+      <properties mode="view">
+        <property name="template">
+          /widgets/actions/content_view_actions_widget_template.xhtml
+        </property>
+        <property name="category">
+          CONTENT_VIEW_ACTIONS CONTENT_VIEW_EXPORT_ACTIONS
+        </property>
+        <property name="styleClass">contentViewUpperActions</property>
+        <property name="containerStyleClass">contentViewUpperAction</property>
+        <property name="actionsDisplay">icons</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="maxActionsNumber">10</property>
+      </properties>
+    </widget>
+
+  </extension>
+
+</component>

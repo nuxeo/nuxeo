@@ -1,0 +1,42 @@
+<c:if xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:a4j="http://richfaces.org/a4j"
+  test="#{contentView != null}">
+
+<c:if test="false">
+Needed parameters:
+ - contentView: the content view instance, mandatory
+ - contentViewRenderId the unique identifier used in main
+   content view template
+</c:if>
+
+  <c:if test="#{contentView.getResultLayouts().size() > 1}">
+    <c:forEach var="cvLayout" items="#{contentView.resultLayouts}">
+      <span class="resultLayoutSelection #{nxu:test(cvLayout.name == contentView.currentResultLayout.name, 'selected', '')}">
+        <c:if test="#{useAjaxForm}">
+          <a4j:commandLink action="#{contentView.setCurrentResultLayout(cvLayout)}"
+            render="#{contentIdToBeReRendered} #{contentViewRenderId}_contentViewActionsPanel"
+            execute="@this">
+            <c:set var="iconPath"
+              value="#{nxu:test(empty cvLayout.iconPath, '/icons/document_listing_icon.png', cvLayout.iconPath)}" />
+            <c:set var="title"
+              value="#{nxu:test(cvLayout.translateTitle, messages[cvLayout.title], cvLayout.title)}" />
+            <nxu:graphicImage value="#{iconPath}" title="#{title}" styleClass="tipsyShow tipsyGravitySE" />
+          </a4j:commandLink>
+        </c:if>
+        <c:if test="#{not useAjaxForm}">
+          <h:commandLink action="#{contentView.setCurrentResultLayout(cvLayout)}">
+            <c:set var="iconPath"
+              value="#{nxu:test(empty cvLayout.iconPath, '/icons/document_listing_icon.png', cvLayout.iconPath)}" />
+            <c:set var="title"
+              value="#{nxu:test(cvLayout.translateTitle, messages[cvLayout.title], cvLayout.title)}" />
+            <nxu:graphicImage value="#{iconPath}" title="#{title}" styleClass="tipsyShow tipsyGravitySE" />
+          </h:commandLink>
+        </c:if>
+      </span>
+    </c:forEach>
+  </c:if>
+
+</c:if>

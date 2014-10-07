@@ -4,14 +4,166 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="editResultLayoutColumns" order="10"
-      label="label.contentview.edit.columns" type="fancybox" enabled="false">
-      <category>CONTENT_VIEW_TOP_ACTIONS</category>
+    <action id="selectContentViewPageSize" order="0" type="template">
+      <category>CONTENT_VIEW_ACTIONS</category>
       <properties>
-        <property name="include">/incl/content_view_edit_columns.xhtml</property>
+        <property name="template">
+          /incl/action/content_view_page_size_selector.xhtml
+        </property>
+        <property name="addForm">false</property>
+      </properties>
+      <filter-id>contentViewShowPageSizeSelector</filter-id>
+    </action>
+
+    <action id="selectContentViewResultLayout" order="10" type="template">
+      <category>CONTENT_VIEW_ACTIONS</category>
+      <properties>
+        <property name="template">
+          /incl/action/content_view_result_layout_actions.xhtml
+        </property>
+        <property name="addForm">true</property>
+        <property name="useAjaxForm">true</property>
+        <property name="ajaxSupport">true</property>
+        <property name="ajaxReRender">#{contentIdToBeReRendered}</property>
+      </properties>
+    </action>
+
+    <action id="refreshContentView" order="20" type="template" label="label.refresh"
+      icon="/icons/refresh.png">
+      <category>CONTENT_VIEW_ACTIONS</category>
+      <properties>
+        <property name="template">
+          /incl/action/content_view_refresh.xhtml
+        </property>
+        <property name="addForm">true</property>
+        <property name="useAjaxForm">true</property>
+        <property name="ajaxSupport">true</property>
+        <property name="ajaxReRender">#{contentIdToBeReRendered}</property>
+      </properties>
+      <filter-id>contentViewShowRefreshCommand</filter-id>
+    </action>
+
+    <action id="contentViewCSVExport" order="30" type="template"
+      label="label.contentview.export.xl" icon="/icons/xls_export.png">
+      <category>CONTENT_VIEW_ACTIONS</category>
+      <properties>
+        <property name="template">
+          /incl/action/content_view_export.xhtml
+        </property>
+        <property name="view">xl</property>
+      </properties>
+      <filter-id>contentViewShowCSVExport</filter-id>
+    </action>
+
+    <action id="contentViewPDFExport" order="40" type="template"
+      label="label.contentview.export.pdf" icon="/icons/pdf_export.png">
+      <category>CONTENT_VIEW_ACTIONS</category>
+      <properties>
+        <property name="template">
+          /incl/action/content_view_export.xhtml
+        </property>
+        <property name="view">content_view_pdf</property>
+      </properties>
+      <filter-id>contentViewShowPDFExport</filter-id>
+    </action>
+
+    <action id="contentViewRSSExport" order="50" type="template"
+      label="label.syndication.rss">
+      <category>CONTENT_VIEW_ACTIONS</category>
+      <properties>
+        <property name="template">
+          /incl/action/content_view_export.xhtml
+        </property>
+        <property name="view">rss</property>
+      </properties>
+      <filter-id>contentViewShowSyndicationLinks</filter-id>
+    </action>
+
+    <action id="contentViewATOMExport" order="60" type="template"
+      label="label.syndication.atom">
+      <category>CONTENT_VIEW_ACTIONS</category>
+      <properties>
+        <property name="template">
+          /incl/action/content_view_export.xhtml
+        </property>
+        <property name="view">atom</property>
+      </properties>
+      <filter-id>contentViewShowSyndicationLinks</filter-id>
+    </action>
+
+    <action id="triggerContentViewSlideshow" order="70"
+      label="label.contentview.trigger.slideshow" type="template">
+      <category>CONTENT_VIEW_ACTIONS</category>
+      <properties>
+        <property name="include">
+          /incl/action/content_view_slideshow.xhtml
+        </property>
+      </properties>
+    </action>
+
+    <action id="editResultLayoutColumns" order="80"
+      label="label.contentview.edit.columns" type="fancybox" icon="/icons/refresh.png">
+      <category>CONTENT_VIEW_ACTIONS</category>
+      <properties>
+        <property name="include">
+          /incl/action/content_view_edit_columns.xhtml
+        </property>
+        <property name="addForm">true</property>
         <property name="ajaxSupport">true</property>
       </properties>
     </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="contentViewShowPageSizeSelector">
+      <rule grant="true">
+        <condition>
+          #{nxu:test(empty showPageSizeSelector,
+          contentView.showPageSizeSelector,
+          showPageSizeSelector)}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="contentViewShowRefreshCommand">
+      <rule grant="true">
+        <condition>
+          #{nxu:test(empty showRefreshCommand,
+          contentView.showRefreshCommand, showRefreshCommand)}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="contentViewShowCSVExport">
+      <rule grant="true">
+        <condition>
+          #{nxu:test(empty showCSVExport,
+          contentView.currentResultLayout.showCSVExport, showCSVExport)}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="contentViewShowShowPDFExport">
+      <rule grant="true">
+        <condition>
+          #{nxu:test(empty showPDFExport,
+          contentView.currentResultLayout.showPDFExport, showPDFExport)}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="contentViewShowSyndicationLinks">
+      <rule grant="true">
+        <condition>
+          #{nxu:test(empty showSyndicationLinks,
+          contentView.currentResultLayout.showSyndicationLinks,
+          showSyndicationLinks)}
+        </condition>
+      </rule>
+    </filter>
 
   </extension>
 

@@ -1,0 +1,17 @@
+<c:if xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  test="#{not empty widgetProperty_category}">
+
+<nxu:set var="actionContextDocument"
+  value="#{nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument)}"
+  cache="true">
+<nxu:set var="widgetProperty_actions"
+  value="#{contentViewActions.getActionsList(widgetProperty_category, actionContextDocument, contentView, showPageSizeSelector, showRefreshCommand, showCSVExport, showPDFExport, showSyndicationLinks)}"
+  cache="true">
+  <ui:include src="/widgets/actions/actions_widget_template.xhtml" />
+</nxu:set>
+</nxu:set>
+
+</c:if>

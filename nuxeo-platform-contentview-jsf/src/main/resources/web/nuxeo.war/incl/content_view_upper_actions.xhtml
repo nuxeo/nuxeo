@@ -1,44 +1,10 @@
-<c:if xmlns:c="http://java.sun.com/jstl/core"
-  xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:a4j="http://richfaces.org/a4j"
+<c:if xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
   test="#{contentView != null}">
 
-<c:if test="false">
-Needed parameters:
- - contentView: the content view instance, mandatory
- - contentViewRenderId the unique identifier used in main
-   content view template
-
-Optional parameters used to override the content view definition when not
-empty:
- - showPageSizeSelector
- - showRefreshCommand
- - showCSVExport
- - showPDFExport
-</c:if>
-
-<a4j:region id="#{contentViewRenderId}_contentViewActionsRegion">
-<a4j:outputPanel id="#{contentViewRenderId}_contentViewActionsPanel" layout="block">
-
-<div class="contentViewUpperActions">
-
-  <ui:include src="content_view_page_size_selector.xhtml" />
-
-  <span class="contentViewUpperAction">
-    <h:form id="contentViewLayoutSelectForm_#{contentViewRenderId}"
-      ajaxSubmit="true">
-      <ui:include src="content_view_result_layout_actions.xhtml" />
-      <ui:include src="content_view_special_actions.xhtml" />
-    </h:form>
-  </span>
-
-  <ui:include src="content_view_export_actions.xhtml" />
-
-</div>
-
-</a4j:outputPanel>
-</a4j:region>
+  <nxl:widget name="contentViewActions"
+    mode="view" value="#{currentDocument}" />
 
 </c:if>

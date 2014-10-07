@@ -213,16 +213,6 @@
               });
             </script>
 
-            <nxl:widgetType name="documentActionsWithForms"
-              widgetName="cvTopActions"
-              mode="view"
-              styleClass="contentViewUpperAction"
-              label=""
-              actionsDisplay="label"
-              overallDisplay="horizontal_block"
-              widgetProperty_category="CONTENT_VIEW_TOP_ACTIONS"
-              maxActionsNumber="5" />
-
             <ui:decorate template="/incl/documents_layout_table.xhtml">
               <ui:param name="providerId" value="#{contentViewId}" />
               <ui:param name="documents" value="#{provider.currentSelectPage}" />
@@ -260,23 +250,7 @@
                           <td>
                             <ui:insert name="content_view_actions_before" />
                             <ui:insert name="content_view_actions">
-                              <c:forEach var="actionCategory" items="#{contentView.actionsCategories}" varStatus="status">
-                                <nxu:set var="actions" value="#{documentContentViewActions.getSelectionActions(actionCategory, contentView, documentsListsManager.getWorkingList(contentView.selectionListName))}" cache="true">
-                                  <c:if test="#{not status.first and not empty actions}">
-                                    <br />
-                                  </c:if>
-                                  <nxl:widgetType name="actions"
-                                    mode="view"
-                                    widgetName="cvButton"
-                                    label=""
-                                    actions="#{actions}"
-                                    overallDisplay="horizontal_block"
-                                    actionStyleClass="button"
-                                    actionsDisplay="buttons"
-                                    ignoreTemplateProperty="true"
-                                    addForm="true" />
-                                </nxu:set>
-                              </c:forEach>
+                              <ui:include src="/widgets/actions/content_view_selection_actions_widget_template.xhtml" />
                             </ui:insert>
                             <ui:insert name="content_view_actions_after" />
                           </td>

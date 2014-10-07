@@ -1,6 +1,8 @@
 Manifest-Version: 1.0
 Bundle-Name: Nuxeo Platform Content View JSF Fragment
-Bundle-SymbolicName: org.nuxeo.ecm.platform.contentview.jsf;singleton:=true
-Nuxeo-Component: OSGI-INF/contentview-framework.xml,
-  OSGI-INF/widgettypes-contrib.xml,
-  OSGI-INF/actions-contrib.xml
+Nuxeo-Component: OSGI-INF/contentview-framework.xml, OSGI-INF/widgetty
+ pes-contrib.xml, OSGI-INF/layouts-contrib.xml, OSGI-INF/actions-contr
+ ib.xml
+Bundle-SymbolicName: org.nuxeo.ecm.platform.contentview.jsf;singleton:
+ =true
+

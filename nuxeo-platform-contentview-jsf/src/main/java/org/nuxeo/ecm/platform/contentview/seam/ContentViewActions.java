@@ -33,12 +33,20 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.actions.ActionContext;
+import org.nuxeo.ecm.platform.actions.jsf.JSFActionContext;
+import org.nuxeo.ecm.platform.actions.seam.SeamActionContext;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewCache;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 
 /**
  * Handles cache and refresh for named content views.
@@ -63,8 +71,14 @@ public class ContentViewActions implements Serializable {
 
     protected Long globalPageSize;
 
+    @In(create = true)
+    private transient NuxeoPrincipal currentNuxeoPrincipal;
+
     @In(create = true, required = false)
-    protected FacesContext facesContext;
+    private transient CoreSession documentManager;
+
+    @In(create = true, required = false)
+    protected transient WebActions webActions;
 
     protected ContentView currentContentView;
 
@@ -365,4 +379,44 @@ public class ContentViewActions implements Serializable {
         cache.refreshAndRewindAll();
     }
 
+    /**
+     * @since 5.9.6
+     */
+    public List<Action> getActionsList(String category,
+            DocumentModel currentDocument, ContentView contentView,
+            Object showPageSizeSelector, Object showRefreshCommand,
+            Object showCSVExport, Object showPDFExport,
+            Object showSyndicationLinks) {
+        return webActions.getActionsList(
+                category,
+                createContentViewActionContext(currentDocument, contentView,
+                        showPageSizeSelector, showRefreshCommand,
+                        showCSVExport, showPDFExport, showSyndicationLinks));
+    }
+
+    protected ActionContext createContentViewActionContext(
+            DocumentModel currentDocument, ContentView contentView,
+            Object showPageSizeSelector, Object showRefreshCommand,
+            Object showCSVExport, Object showPDFExport,
+            Object showSyndicationLinks) {
+        ActionContext ctx;
+        FacesContext faces = FacesContext.getCurrentInstance();
+        if (faces == null) {
+            ctx = new SeamActionContext();
+        } else {
+            ctx = new JSFActionContext(faces);
+        }
+        ctx.setCurrentPrincipal(currentNuxeoPrincipal);
+        ctx.setDocumentManager(documentManager);
+        ctx.setCurrentDocument(currentDocument);
+        ctx.putLocalVariable("SeamContext", new SeamContextHelper());
+        ctx.putLocalVariable("contentView", contentView);
+        // additional local variables for action filters
+        ctx.putLocalVariable("showPageSizeSelector", showPageSizeSelector);
+        ctx.putLocalVariable("showRefreshCommand", showRefreshCommand);
+        ctx.putLocalVariable("showCSVExport", showCSVExport);
+        ctx.putLocalVariable("showPDFExport", showPDFExport);
+        ctx.putLocalVariable("showSyndicationLinks", showSyndicationLinks);
+        return ctx;
+    }
 }

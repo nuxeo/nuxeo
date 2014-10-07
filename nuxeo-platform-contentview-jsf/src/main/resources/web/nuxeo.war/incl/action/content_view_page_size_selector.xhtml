@@ -19,10 +19,6 @@ empty:
  - showPageSizeSelector
 </c:if>
 
-<nxu:set var="finalShowPageSizeSelector"
-  value="#{nxu:test(empty showPageSizeSelector, contentView.showPageSizeSelector, showPageSizeSelector)}">
-  <c:if test="#{finalShowPageSizeSelector}">
-
     #{contentViewActions.setCurrentContentView(contentView)}
     <c:if test="#{contentView.useGlobalPageSize}">
       <c:set var="pageSizeBinding" value="#{contentViewActions.currentGlobalPageSize}" />
@@ -52,8 +48,5 @@ empty:
 
       </h:form>
     </span>
-
-  </c:if>
-</nxu:set>
 
 </c:if>

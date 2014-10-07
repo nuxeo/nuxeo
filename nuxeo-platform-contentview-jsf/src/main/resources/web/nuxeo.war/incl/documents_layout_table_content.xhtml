@@ -36,7 +36,6 @@
 
   <c:if test="#{not hideTopPaginationControls}">
     <ui:insert name="pageNavigationControls">
-      <ui:include src="/incl/content_view_lightbox.xhtml" />
       <c:if test="#{useAjaxPagination}">
         <ui:include src="/pagination/a4jPageNavigationControls.xhtml" />
       </c:if>
