@@ -19,7 +19,7 @@
       <configuration>
         <title>Layout listing displayed as table.</title>
         <properties>
-          <defaultValues name="any">
+          <defaultValues mode="any">
             <property name="showListingHeader">true</property>
             <property name="showRowEvenOddClass">true</property>
             <property name="display">table</property>

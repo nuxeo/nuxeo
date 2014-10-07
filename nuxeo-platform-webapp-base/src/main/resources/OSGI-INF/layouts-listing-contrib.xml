@@ -1467,6 +1467,10 @@
     </layout>
 
     <layout name="document_listing_table" type="listingTable">
+      <aliases>
+        <alias>search_listing_ajax</alias>
+        <alias>document_listing_ajax</alias>
+      </aliases>
       <columns>
         <column>
           <properties mode="any">
