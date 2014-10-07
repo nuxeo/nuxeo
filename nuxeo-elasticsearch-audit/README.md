@@ -39,11 +39,12 @@ The migration is done using a configurable batch size (default is 1000 entries).
 
 An Automation Operation is provided to trigger the migration Work.
 
+Sample call using curl :
 
-Sample call using wget :
-
-    XXX
+    curl -H 'Content-Type:application/json+nxrequest' -X POST -d '{"params":{"batchSize":5000}}' -u Administrator:Administrator http://ec2-54-160-201-9.compute-1.amazonaws.com:8080/nuxeo/api/v1/automation/Audit.StartMigration
     
+
+NB : Migration of 16 Millions entries on a C3.XLarge AWS instance with default PGSQL setup and default embedded Elasticsearch takes about 3h (1500 entries/s).
 
 ## Building
 

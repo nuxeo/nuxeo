@@ -27,6 +27,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.elasticsearch.action.bulk.BulkItemResponse;
@@ -94,10 +96,13 @@ public class ESAuditBackend extends AbstractAuditBackend implements
 
     protected Client esClient = null;
 
+    protected static final Log log = LogFactory.getLog(ESAuditBackend.class);
+    
     protected BaseLogEntryProvider provider = null;
 
     protected Client getClient() {
         if (esClient == null) {
+            log.info("Activate Elasticsearch backend for Audit");
             ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
             esClient = esa.getClient();
         }
@@ -331,7 +336,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements
                         "Wrong date range query. Query was " + dateRange, aqe);
             }
         }
-        return queryLogsByPage(eventIds, limit, categories, path, pageNb,
+        return queryLogsByPage(eventIds, limit, categories, path, pageNb,   
                 pageSize);
     }
 
