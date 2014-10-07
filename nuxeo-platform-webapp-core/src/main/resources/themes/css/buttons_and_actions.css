@@ -77,12 +77,6 @@ input[type="submit"]:disabled,
 input[type="submit"]:disabled:hover,
 input[type="button"]:disabled,
 input[type="button"]:disabled:hover {
-  /*background: none "button.disabled (__FLAVOR__ background)";
-  border: 1px solid;
-  box-shadow: none;
-  border-color: "button.disabled (__FLAVOR__ border)";
-  color: "link.disabled (__FLAVOR__ color)";
-  cursor: default*/
   display: none }
 
 .tinyButton,

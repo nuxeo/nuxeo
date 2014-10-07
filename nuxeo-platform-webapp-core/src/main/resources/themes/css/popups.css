@@ -41,6 +41,31 @@ author: lkemen@nuxeo.com
   margin: 0;
   padding: 1em 1.8em .5em }
 
+
+#fancybox-content .buttonsGadget button.disabled,
+#fancybox-content .buttonsGadget input.disabled,
+#fancybox-content .buttonsGadget button.disabled:hover,
+#fancybox-content .buttonsGadget input.disabled:hover,
+#fancybox-content .buttonsGadget .button[disabled],
+#fancybox-content .buttonsGadget .button[disabled]:hover,
+#fancybox-content .buttonsGadget .button[disabled=disabled],
+#fancybox-content .buttonsGadget .button[disabled=disabled]:hover,
+#fancybox-content .buttonsGadget button:disabled,
+#fancybox-content .buttonsGadget button:disabled:hover,
+#fancybox-content .buttonsGadget input[type="reset"]:disabled,
+#fancybox-content .buttonsGadget input[type="reset"]:disabled:hover,
+#fancybox-content .buttonsGadget input[type="submit"]:disabled,
+#fancybox-content .buttonsGadget input[type="submit"]:disabled:hover,
+#fancybox-content .buttonsGadget input[type="button"]:disabled,
+#fancybox-content .buttonsGadget input[type="button"]:disabled:hover {
+  background: none "button.disabled (__FLAVOR__ background)";
+  border: 1px solid;
+  box-shadow: none;
+  border-color: "button.disabled (__FLAVOR__ border)";
+  color: "link.disabled (__FLAVOR__ color)";
+  cursor: default;
+  display: initial }
+
 #fancybox-content .popUpDescription {
   padding: 0 0 1em }
 
