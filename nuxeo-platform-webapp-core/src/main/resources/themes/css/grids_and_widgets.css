@@ -156,6 +156,9 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   display: block;
   margin-left: -0.3em }
 
+.popupTarget.dropout > a {
+  font-weight: bold }
+
 /* =Specifics */
 .indicators {
   margin: 0 .2em .5em 0 }
