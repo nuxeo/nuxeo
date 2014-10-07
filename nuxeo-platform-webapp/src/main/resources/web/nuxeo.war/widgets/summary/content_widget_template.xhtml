@@ -52,7 +52,10 @@
               mimetype="#{currentDocumentAsBlobHolder.blob.mimeType}">
               <nxh:graphicImage value="#{nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}"
                 rendered="#{! empty nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}" />
-              <h:outputText value="#{currentDocumentAsBlobHolder.blob.filename}"/>
+              <nxh:outputLink
+                value="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}">
+                <h:outputText value="#{currentDocumentAsBlobHolder.blob.filename}"/>
+              </nxh:outputLink>
               <h:outputText styleClass="detail" value=" #{nxu:printFileSize(currentDocumentAsBlobHolder.blob.length)}"/>
             </div>
           </td>
@@ -78,12 +81,6 @@
               </nxh:commandLink>
               </h:panelGroup>
             </nxu:methodResult>
-            <nxh:outputLink
-              value="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}">
-              <nxh:graphicImage value="/icons/download.png"
-                title="#{messages['label.document.download']}"
-                alt="#{messages['label.document.download']}"/>
-            </nxh:outputLink>
           </td>
         </tr>
       </tbody>
@@ -105,7 +102,10 @@
               <nxh:graphicImage
                 value="#{nxd:fileIconPath(currentDocument.files.files[model.rowIndex].file)}"
                 rendered="#{! empty nxd:fileIconPath(currentDocument.files.files[model.rowIndex].file)}" />
-              <h:outputText value="#{currentDocument.files.files[model.rowIndex].filename}"/>
+              <nxh:outputLink
+                value="#{nxd:complexFileUrl('downloadFile', currentDocument, 'files:files', model.rowIndex, 'file', currentDocument.files.files[model.rowIndex].filename)}">
+                <h:outputText value="#{currentDocument.files.files[model.rowIndex].filename}"/>
+              </nxh:outputLink>
               <h:outputText styleClass="detail"
                 value=" #{nxu:printFileSize(currentDocument.files.files[model.rowIndex].file.length)}"/>
             </td>
@@ -130,12 +130,6 @@
                     alt="#{messages['label.document.preview']}"/>
                 </nxh:outputLink>
               </c:if>
-              <nxh:outputLink
-                value="#{nxd:complexFileUrl('downloadFile', currentDocument, 'files:files', model.rowIndex, 'file', currentDocument.files.files[model.rowIndex].filename)}">
-                <nxh:graphicImage value="/icons/download.png"
-                  title="#{messages['label.document.download']}"
-                  alt="#{messages['label.document.download']}"/>
-              </nxh:outputLink>
             </td>
           </tr>
         </nxu:inputList>
