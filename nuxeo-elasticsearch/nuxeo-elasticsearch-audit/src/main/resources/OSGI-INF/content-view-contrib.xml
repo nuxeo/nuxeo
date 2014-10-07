@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.platform.audit.es.contentView.contrib">
+
+  <require>org.nuxeo.platform.audit.contentView.contrib</require>
+ 
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="DOCUMENT_HISTORY">
+
+      <title>label.contentview.document.history</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>true</showTitle>
+
+    <genericPageProvider name="DOCUMENT_HISTORY_PROVIDER"
+      class="org.nuxeo.elasticsearch.audit.pageprovider.ESDocumentHistoryPageProvider">
+        <property name="coreSession">#{documentManager}</property>
+        <property name="generateUIComments">true</property>
+
+      <whereClause docType="BasicAuditSearch">
+        <predicate parameter="eventDate" operator="BETWEEN">
+          <field schema="basicauditsearch" name="startDate" />
+          <field schema="basicauditsearch" name="endDate" />
+        </predicate>
+        <predicate parameter="category" operator="IN">
+          <field schema="basicauditsearch" name="eventCategories" />
+        </predicate>
+        <predicate parameter="eventId" operator="IN">
+          <field schema="basicauditsearch" name="eventIds" />
+        </predicate>
+        <predicate parameter="principalName" operator="IN">
+          <field schema="basicauditsearch" name="principalNames" />
+        </predicate>        
+      </whereClause>
+        <parameter>#{currentDocument.id}</parameter>
+        <sort column="eventDate" ascending="false" />
+        <pageSize>10</pageSize>
+        <maxPageSize>1000</maxPageSize>
+     </genericPageProvider>
+
+      <searchLayout name="basicauditsearch" filterDisplayType="quick" />
+      <showFilterForm>true</showFilterForm>
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentCreated</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheSize>10</cacheSize>
+      <cacheKey>#{currentDocument.repositoryName}_#{currentDocument.id}</cacheKey>
+
+      <resultLayouts>
+        <layout name="history_listing" title="history_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" showPDFExport="false" />
+      </resultLayouts>
+
+    </contentView>
+
+  </extension>
+
+</component>

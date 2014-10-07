@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.test.contrib">
+
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
+    point="elasticSearchIndex">
+    <elasticSearchIndex name="nxutest" type="doc" repository="test" />
+  </extension>
+
+</component>

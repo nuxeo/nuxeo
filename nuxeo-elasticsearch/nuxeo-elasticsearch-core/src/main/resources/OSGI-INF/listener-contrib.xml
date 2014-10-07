@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.core.listener">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <listener name="elasticSearchInlineListener" async="false"
+      postCommit="false" priority="500"
+      class="org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener">
+      <event>beforeDocumentModification</event>
+      <event>documentCreated</event>
+      <event>documentCreatedByCopy</event>
+      <event>documentMoved</event>
+      <event>lifecycle_transition_event</event>
+      <event>documentSecurityUpdated</event>
+      <event>documentRemoved</event>
+      <event>sessionSaved</event>
+      <event>documentCheckedOut</event>
+      <event>documentCheckedIn</event>
+      <event>binaryTextUpdated</event>
+    </listener>
+
+    <listener name="elasticSearchPostCommitSyncListener" async="false"
+      postCommit="true" priority="500"
+      class="org.nuxeo.elasticsearch.listener.ElasticSearchPostCommitSyncListener">
+      <event>ESIndexSyncTrigger</event>
+    </listener>
+
+  </extension>
+</component>

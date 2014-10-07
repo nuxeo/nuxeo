@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.sequence.contrib">
+
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
+    point="elasticSearchIndex">
+
+    <elasticSearchIndex name="sequence" type="seqId" >
+    
+    <settings>
+      {
+      "number_of_shards"     : 1,           
+      "auto_expand_replicas" : "0-all"  
+      }
+    </settings>  
+    
+    <mapping>
+      {
+        "sequence" : {
+           "_source" : { "enabled" : 0 },
+           "_all"    : { "enabled" : 0 },
+           "_type"   : { "index" : "no" },
+           "enabled" : 0
+        }
+      }
+    </mapping>
+    
+    </elasticSearchIndex>
+
+  </extension>
+  
+</component>

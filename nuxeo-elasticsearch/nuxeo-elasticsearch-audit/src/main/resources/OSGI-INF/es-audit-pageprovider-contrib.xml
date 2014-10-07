@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.audit.PageProviderservice.es.contrib">
+
+  <require>org.nuxeo.ecm.platform.audit.PageProviderservice.contrib</require>
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <genericPageProvider name="DOCUMENT_HISTORY_PROVIDER_OLD"
+      class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
+      <whereClause docType="BasicAuditSearch">
+        <fixedPart>
+            {
+		        "bool" : {
+		          "must" : {
+		            "match" : {
+		              "docUUID" : {
+		                "query" : "?",
+		                "type" : "boolean"
+		              }
+		            }
+		          }
+		        }
+			  }          
+        </fixedPart>
+        <predicate parameter="eventDate" operator="BETWEEN">
+          <field schema="basicauditsearch" name="startDate" />
+          <field schema="basicauditsearch" name="endDate" />
+        </predicate>
+        <predicate parameter="category" operator="IN">
+          <field schema="basicauditsearch" name="eventCategories" />
+        </predicate>
+        <predicate parameter="eventId" operator="IN">
+          <field schema="basicauditsearch" name="eventIds" />
+        </predicate>
+        <predicate parameter="principalName" operator="IN">
+          <field schema="basicauditsearch" name="principalNames" />
+        </predicate>
+      </whereClause>
+      <sort column="id" ascending="true" />
+      <pageSize>5</pageSize>
+    </genericPageProvider>
+
+
+    <genericPageProvider name="DOCUMENT_HISTORY_PROVIDER"
+      class="org.nuxeo.elasticsearch.audit.pageprovider.ESDocumentHistoryPageProvider">
+      <whereClause docType="BasicAuditSearch">
+        <predicate parameter="eventDate" operator="BETWEEN">
+          <field schema="basicauditsearch" name="startDate" />
+          <field schema="basicauditsearch" name="endDate" />
+        </predicate>
+        <predicate parameter="category" operator="IN">
+          <field schema="basicauditsearch" name="eventCategories" />
+        </predicate>
+        <predicate parameter="eventId" operator="IN">
+          <field schema="basicauditsearch" name="eventIds" />
+        </predicate>
+        <predicate parameter="principalName" operator="IN">
+          <field schema="basicauditsearch" name="principalNames" />
+        </predicate>
+        
+      </whereClause>
+      <sort column="id" ascending="true" />
+      <pageSize>5</pageSize>
+    </genericPageProvider>
+
+      <genericPageProvider name="ADMIN_HISTORY" class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
+        <property name="coreSession"></property>
+        <property name="generateUIComments">false</property>
+        <whereClause docType="BasicAuditSearch">
+          <predicate parameter="log.eventDate" operator="BETWEEN">
+            <field schema="basicauditsearch" name="startDate" />
+            <field schema="basicauditsearch" name="endDate" />
+          </predicate>
+          <predicate parameter="log.category" operator="=">
+            <field schema="basicauditsearch" name="eventCategory" />
+          </predicate>
+          <predicate parameter="log.eventId" operator="IN">
+            <field schema="basicauditsearch" name="eventIds" />
+          </predicate>
+          <predicate parameter="log.principalName" operator="=">
+            <field schema="basicauditsearch" name="principalName" />
+          </predicate>
+        </whereClause>
+        <sort column="eventDate" ascending="false" />
+        <pageSize>10</pageSize>
+        <maxPageSize>1000</maxPageSize>
+      </genericPageProvider>
+
+
+  </extension>
+
+</component>
