@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.collections.api;
 
-
 /**
  * @since 5.9.3
  */
@@ -57,5 +56,31 @@ public class CollectionConstants {
     public static final int MAX_COLLECTION_RETURNED = 100;
 
     public static final String COLLECTION_CONTENT_PAGE_PROVIDER = "default_content_collection";
+
+    // Event names
+    /**
+     * @since 5.9.6
+     */
+    public static final String BEFORE_ADDED_TO_COLLECTION = "beforeAddedToCollection";
+
+    /**
+     * @since 5.9.6
+     */
+    public static final String ADDED_TO_COLLECTION = "addedToCollection";
+
+    /**
+     * @since 5.9.6
+     */
+    public static final String BEFORE_REMOVED_FROM_COLLECTION = "beforeRemovedFromCollection";
+
+    /**
+     * @since 5.9.6
+     */
+    public static final String REMOVED_FROM_COLLECTION = "removedFromCollection";
+
+    /**
+     * @since 5.9.6
+     */
+    public static final String COLLECTION_REF_EVENT_CTX_PROP = "collectionRef";
 
 }

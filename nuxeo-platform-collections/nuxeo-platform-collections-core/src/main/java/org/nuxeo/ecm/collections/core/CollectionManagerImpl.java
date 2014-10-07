@@ -16,9 +16,12 @@
  */
 package org.nuxeo.ecm.collections.core;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 
 import org.apache.commons.lang.StringUtils;
@@ -41,12 +44,17 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.event.CoreEventConstants;
+import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
@@ -79,6 +87,11 @@ public class CollectionManagerImpl extends DefaultComponent implements
             final DocumentModel documentToBeAdded, final CoreSession session)
             throws ClientException, DocumentSecurityException {
         checkCanAddToCollection(collection, documentToBeAdded, session);
+        final Map<String, Serializable> props = new HashMap<>();
+        props.put(CollectionConstants.COLLECTION_REF_EVENT_CTX_PROP,
+                collection.getRef());
+        fireEvent(documentToBeAdded, session,
+                CollectionConstants.BEFORE_ADDED_TO_COLLECTION, props);
         Collection colAdapter = collection.getAdapter(Collection.class);
         colAdapter.addDocument(documentToBeAdded.getId());
         collection.getCoreSession().saveDocument(colAdapter.getDocument());
@@ -102,7 +115,9 @@ public class CollectionManagerImpl extends DefaultComponent implements
 
                 CollectionMember docAdapter = temp.getAdapter(CollectionMember.class);
                 docAdapter.addToCollection(collection.getId());
-                session.saveDocument(docAdapter.getDocument());
+                DocumentModel addedDoc = session.saveDocument(docAdapter.getDocument());
+                fireEvent(addedDoc, session,
+                        CollectionConstants.ADDED_TO_COLLECTION, props);
             }
 
         }.runUnrestricted();
@@ -380,6 +395,11 @@ public class CollectionManagerImpl extends DefaultComponent implements
             final DocumentModel documentToBeRemoved, final CoreSession session)
             throws ClientException {
         checkCanAddToCollection(collection, documentToBeRemoved, session);
+        Map<String, Serializable> props = new HashMap<>();
+        props.put(CollectionConstants.COLLECTION_REF_EVENT_CTX_PROP, new IdRef(
+                collection.getId()));
+        fireEvent(documentToBeRemoved, session,
+                CollectionConstants.BEFORE_REMOVED_FROM_COLLECTION, props);
         Collection colAdapter = collection.getAdapter(Collection.class);
         colAdapter.removeDocument(documentToBeRemoved.getId());
         collection.getCoreSession().saveDocument(colAdapter.getDocument());
@@ -402,7 +422,12 @@ public class CollectionManagerImpl extends DefaultComponent implements
 
         CollectionMember docAdapter = documentToBeRemoved.getAdapter(CollectionMember.class);
         docAdapter.removeFromCollection(collectionId);
-        session.saveDocument(docAdapter.getDocument());
+        DocumentModel removedDoc = session.saveDocument(docAdapter.getDocument());
+        Map<String, Serializable> props = new HashMap<>();
+        props.put(CollectionConstants.COLLECTION_REF_EVENT_CTX_PROP, new IdRef(
+                collectionId));
+        fireEvent(removedDoc, session,
+                CollectionConstants.REMOVED_FROM_COLLECTION, props);
     }
 
     @Override
@@ -439,6 +464,22 @@ public class CollectionManagerImpl extends DefaultComponent implements
             locale = Locale.getDefault();
         }
         return new Locale(Locale.getDefault().getLanguage());
+    }
+
+    protected void fireEvent(DocumentModel doc, CoreSession session,
+            String eventName, Map<String, Serializable> props)
+            throws ClientException {
+        EventService eventService = Framework.getService(EventService.class);
+        DocumentEventContext ctx = new DocumentEventContext(session,
+                session.getPrincipal(), doc);
+        ctx.setProperty(CoreEventConstants.REPOSITORY_NAME,
+                session.getRepositoryName());
+        ctx.setProperty(CoreEventConstants.SESSION_ID, session.getSessionId());
+        ctx.setProperty("category",
+                DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
+        ctx.setProperties(props);
+        Event event = ctx.newEvent(eventName);
+        eventService.fireEvent(event);
     }
 
 }
