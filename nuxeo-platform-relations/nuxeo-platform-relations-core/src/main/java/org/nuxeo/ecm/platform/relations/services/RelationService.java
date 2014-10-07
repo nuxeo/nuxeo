@@ -44,8 +44,6 @@ import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.descriptors.GraphTypeDescriptor;
 import org.nuxeo.ecm.platform.relations.descriptors.ResourceAdapterDescriptor;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.datasource.DataSourceComponent;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -272,8 +270,8 @@ public class RelationService extends DefaultComponent implements
         } else {
             try {
                 // Thread context loader is not working in isolated EARs
-                ResourceAdapter adapter = (ResourceAdapter) RelationService.class
-                    .getClassLoader().loadClass(adapterClassName).newInstance();
+                ResourceAdapter adapter = (ResourceAdapter) RelationService.class.getClassLoader().loadClass(
+                        adapterClassName).newInstance();
                 adapter.setNamespace(namespace);
                 return adapter;
             } catch (Exception e) {
@@ -519,16 +517,6 @@ public class RelationService extends DefaultComponent implements
     }
 
     @Override
-    public int getApplicationStartedOrder() {
-        final DataSourceComponent ds = (DataSourceComponent) Framework.getRuntime().getComponent(
-                "org.nuxeo.runtime.datasource");
-        if (ds != null) {
-            return ds.getApplicationStartedOrder() + 1;
-        }
-        return super.getApplicationStartedOrder();
-    }
-
-    @Override
     public void applicationStarted(ComponentContext context) throws Exception {
         Thread t = new Thread("relation-service-init") {
             @Override
@@ -556,8 +544,7 @@ public class RelationService extends DefaultComponent implements
                 TransactionHelper.startTransaction();
                 try {
                     for (String graphName : graphDescriptions.keySet()) {
-                        GraphDescription desc = graphDescriptions
-                            .get(graphName);
+                        GraphDescription desc = graphDescriptions.get(graphName);
                         if (!desc.getGraphType().equalsIgnoreCase("jena")) {
                             log.info("create RDF Graph " + graphName);
                             try {
