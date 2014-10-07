@@ -39,7 +39,6 @@
     <dependency>
       <groupId>org.nuxeo.elasticsearch</groupId>
       <artifactId>nuxeo-elasticsearch-seqgen</artifactId>
-      <version>${nuxeo.addons.version}</version>
     </dependency>
 
     <dependency>
