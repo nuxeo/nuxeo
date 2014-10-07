@@ -30,6 +30,7 @@
     accesskey="#{action.accessKey}"
     id="#{widget.id}"
     target="#{nxu:test(empty action.properties.target, widgetProperty_target, action.properties.target)}"
+    styleClass="#{actionStyleClass} #{action.properties.styleClass}"
     onclick="#{onclick}">
     <ui:include src="/incl/action/action_icon_label_template.xhtml" />
     <ui:insert name="inside_action" />
@@ -53,6 +54,7 @@
       id="#{widget.id}"
       action="#{webActions.setCurrentTabIds(tabIds)}"
       onclick="history.pushState(null, '#{tabIds}', '#{nxu:javaScriptEscape(docUrl)}');#{onclick}"
+      styleClass="#{actionStyleClass} #{action.properties.styleClass}"
       accessKey="#{action.accessKey}">
       <f:ajax execute="@this" render="#{ajaxReRender}" />
       <ui:include src="/incl/action/action_icon_label_template.xhtml" />

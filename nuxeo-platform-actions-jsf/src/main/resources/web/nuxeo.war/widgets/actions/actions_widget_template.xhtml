@@ -33,7 +33,7 @@
               end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
               step="1"
               varStatus="status">
-              <span class="horizontalAction #{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
+              <span class="horizontalAction #{widgetProperty_containerStyleClass} #{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
                 <ui:decorate template="/incl/action/action_template.xhtml">
                   <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
                   <ui:param name="ajaxReRender" value="#{nxu:joinRender(actionsAjaxReRender, nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender))}" />
@@ -59,7 +59,7 @@
               begin="0"
               end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
               step="1">
-              <li class="#{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
+              <li class="#{widgetProperty_containerStyleClass} #{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
                 <ui:decorate template="/incl/action/action_template.xhtml">
                   <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
                   <ui:param name="ajaxReRender" value="#{nxu:joinRender(actionsAjaxReRender, nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender))}" />
@@ -84,7 +84,7 @@
               </ui:include>
               <ul class="actionSubList">
                 <nxu:repeat var="action" items="#{widgetProperty_actions}">
-                  <li class="#{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
+                  <li class="#{widgetProperty_containerStyleClass} #{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
                     <ui:decorate template="/incl/action/action_template.xhtml">
                       <ui:param name="actionsDisplay" value="#{nxu:test(widgetProperty_actionsDisplay == 'buttons', 'links', widgetProperty_actionsDisplay)}" />
                       <ui:param name="ajaxReRender" value="#{nxu:joinRender(actionsAjaxReRender, nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender))}" />
@@ -112,7 +112,7 @@
             begin="0"
             end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
             step="1">
-            <div class="widgetPanel actionsWidgetPanel #{action.properties.containerStyleClass}">
+            <div class="widgetPanel actionsWidgetPanel #{widgetProperty_containerStyleClass} #{action.properties.containerStyleClass}">
               <ui:decorate template="/incl/action/action_template.xhtml">
                 <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
                 <ui:param name="ajaxReRender" value="#{nxu:joinRender(actionsAjaxReRender, nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender))}" />
