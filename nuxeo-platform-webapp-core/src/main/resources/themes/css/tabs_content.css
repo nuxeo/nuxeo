@@ -110,6 +110,9 @@ author: lkemen@nuxeo.com
   font-size: 1.1em;
   font-weight: bold }
 
+.content_block .fieldColumn .detail {
+  white-space: nowrap }
+
 .textBlock,
 .note_content_block {
   border: 1px solid;
