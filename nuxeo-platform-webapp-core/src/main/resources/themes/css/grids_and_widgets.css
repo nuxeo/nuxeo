@@ -92,15 +92,11 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   border-color: "neutral.medium (__FLAVOR__ border)" }
 
 .thumbnailContainer {
+  background: none no-repeat scroll center center transparent;
   height: 11em;
-  max-width: 14em;
-  position: relative }
+  margin: 0 -0.8em .7em }
 
-.thumbnailContainer img {
-  max-height: 100%;
-  max-width: 100% }
-
-/* Lightbox on thumbnails */
+/* Lightbox on thumbnails
 .thumbnailContainer .image-popup {
   background: url("${basePath}/icons/lightbox_call.png") no-repeat scroll center center transparent;
   opacity: 0;
@@ -113,7 +109,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   transition: opacity 0.1s ease 0.01s }
 
 .thumbnailContainer:hover .image-popup {
-  opacity: 1 }
+  opacity: 1 }*/
 
 /* =Standard Widgets */
 /* Widgets styles, spacing between blocks in .gridBox containers */
@@ -342,6 +338,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   position: fixed }
 
 .infoViewRight {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
   bottom: 0;
   position: absolute;
   right: 0;
@@ -361,7 +358,6 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   margin: 0 }
 
 .infoViewRight .infoViewInfoLayout {
-  background-color: "neutral.lighter (__FLAVOR__ background)";
   box-sizing: border-box;
   overflow-y: auto;
   padding: 5.5em 0 5.5em;
