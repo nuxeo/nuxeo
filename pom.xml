@@ -103,7 +103,6 @@
         <module>nuxeo-distribution-dm/ftest/webdriver</module>
         <module>nuxeo-distribution-dm/ftest/selenium</module>
         <module>nuxeo-distribution-dm/ftest/funkload</module>
-        <module>nuxeo-distribution-dm/ftest/cmis</module>
         <module>nuxeo-distribution-social-collaboration/ftest/selenium</module>
         <module>nuxeo-marketplace-dam/ftest/webdriver</module>
       </modules>
@@ -120,7 +119,6 @@
         <module>nuxeo-distribution-cap/ftest/webdriver</module>
         <module>nuxeo-distribution-dm/ftest/webdriver</module>
         <module>nuxeo-distribution-dm/ftest/selenium</module>
-        <module>nuxeo-distribution-dm/ftest/cmis</module>
       </modules>
     </profile>
     <profile>
