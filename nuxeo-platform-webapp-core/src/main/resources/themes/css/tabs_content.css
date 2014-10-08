@@ -36,6 +36,13 @@ author: lkemen@nuxeo.com
   font-size: 1.3em;
   border: none; }
 
+.documentTitle {
+  display: inline-block;
+  max-width: 25em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word }
+
 .description_block {
   color: "gray.medium (__FLAVOR__ color)";
   line-height: 155% }
@@ -107,8 +114,7 @@ author: lkemen@nuxeo.com
   word-wrap: break-word }
 
 .content_block .fieldColumn {
-  font-size: 1.1em;
-  font-weight: bold }
+  font-size: 1.1em }
 
 .content_block .fieldColumn .detail {
   white-space: nowrap }
