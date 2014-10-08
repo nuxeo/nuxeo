@@ -19,6 +19,7 @@ author: lkemen@nuxeo.com
 
 .nxMainContainer .column {
   font-size: .85em;
+  min-width: 20em;
   padding: 1.2em .75em }
 
 .nxMainContainer .tabsContent {
