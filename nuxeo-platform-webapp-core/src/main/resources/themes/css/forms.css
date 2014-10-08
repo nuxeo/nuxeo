@@ -136,6 +136,13 @@ input.button.primary:hover {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 -30px 20px rgba(255, 255, 255, 0.2) inset;
   transition: all 150ms ease-in-out 0s }
 
+#document_create .buttonsGadget .horizontalAction:first-child .button:focus,
+.button.primary:focus,
+input.button.primary:focus {
+  border-color: #2e9cff;
+  box-shadow: 0 0 5px #b5dcff;
+  outline: none }
+
 /* in Tables */
 .dataTableNoBorder textarea,
 .dataTableNoBorder input[type="text"] {
