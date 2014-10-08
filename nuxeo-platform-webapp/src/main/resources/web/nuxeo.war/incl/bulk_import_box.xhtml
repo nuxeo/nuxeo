@@ -3,11 +3,14 @@
   xmlns:rich="http://richfaces.org/rich"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
   <h3><h:outputText value="#{messages['label.bulk.import.documents']}" /></h3>
 
+  <h:message styleClass="errorMessage" for="#{fancyboxFormId}"
+    id="#{fancyboxFormId}_message" />
   <h:form enctype="multipart/form-data" id="#{fancyboxFormId}" disableDoubleClickShield="#{!useHtml5DragAndDrop}">
 
     <nxu:set var="buttonsId" value="#{fancyboxFormId}_buttons">
@@ -127,7 +130,9 @@
             <nxh:commandButton value="#{messages['command.import']}"
               action="#{importActions.importDocuments()}"
               styleClass="button jsDocumentsImportButton #{disabledButtonStyleClass}"
-              data-selectedimportfolder="#{!empty importActions.selectedImportFolderId}"/>
+              data-selectedimportfolder="#{!empty importActions.selectedImportFolderId}">
+              <f:param name="fancyboxFormId" value="#{nxu:componentAbsoluteId(component, fancyboxFormId)}"/>
+            </nxh:commandButton>
             <nxh:commandButton value="#{messages['command.cancel']}"
               immediate="true"
               action="#{importActions.cancel()}"

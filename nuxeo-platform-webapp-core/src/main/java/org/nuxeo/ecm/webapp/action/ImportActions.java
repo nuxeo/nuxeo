@@ -32,12 +32,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -58,7 +63,9 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.platform.ui.web.rest.FancyNavigationHandler;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.webapp.dnd.DndConfigurationHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.richfaces.model.UploadedFile;
@@ -96,6 +103,9 @@ public class ImportActions implements Serializable {
 
     @In(create = true)
     protected Map<String, String> messages;
+
+    @RequestParameter
+    protected String fancyboxFormId;
 
     protected DocumentModel importDocumentModel;
 
@@ -225,30 +235,53 @@ public class ImportActions implements Serializable {
         contextParams.put("docMetaData", properties);
         contextParams.put("currentDocument", selectedImportFolderId);
 
+        boolean resetBatchState = true;
         try {
             if (dndConfigHelper.useHtml5DragAndDrop()) {
                 importDocumentsThroughBatchManager(chainOrOperationId,
                         contextParams);
+
             } else {
                 importDocumentsThroughUploadItems(chainOrOperationId,
                         contextParams);
             }
 
-            //
-
             if (selectedImportFolderId != null) {
                 return navigationContext.navigateToRef(new IdRef(
                         selectedImportFolderId));
             }
-
         } catch (ClientException e) {
             log.debug(e, e);
-            facesMessages.addFromResourceBundle(StatusMessage.Severity.ERROR,
-                    LABEL_IMPORT_PROBLEM);
+            Throwable t = ExceptionHelper.unwrapException(e);
+            // FIXME NXP-XXXXX
+            if (t.getMessage().contains("Cannot create")) {
+                // do not reset state
+                resetBatchState = false;
+                FacesMessage message = new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR, LABEL_IMPORT_PROBLEM, null);
+                FacesContext faces = FacesContext.getCurrentInstance();
+                if (fancyboxFormId != null && fancyboxFormId.startsWith(":")) {
+                    faces.addMessage(fancyboxFormId.substring(1), message);
+                } else {
+                    faces.addMessage(fancyboxFormId, message);
+                }
+                HttpServletRequest httpRequest = (HttpServletRequest) faces.getExternalContext().getRequest();
+                // avoid redirect for message to be displayed (and fancybox to
+                // be reopened)
+                httpRequest.setAttribute(
+                        FancyNavigationHandler.DISABLE_REDIRECT_FOR_URL_REWRITE,
+                        Boolean.TRUE);
+            } else {
+                facesMessages.addFromResourceBundle(
+                        StatusMessage.Severity.ERROR, LABEL_IMPORT_PROBLEM);
+            }
         } finally {
-            // reset batch state
-            cancel();
+            if (resetBatchState) {
+                // reset batch state
+                cancel();
+            }
         }
+
         return null;
     }
 
@@ -256,7 +289,7 @@ public class ImportActions implements Serializable {
             String chainOrOperationId, Map<String, Object> contextParams)
             throws ClientException {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
-        bm.executeAndClean(currentBatchId, chainOrOperationId, documentManager,
+        bm.execute(currentBatchId, chainOrOperationId, documentManager,
                 contextParams, null);
     }
 
