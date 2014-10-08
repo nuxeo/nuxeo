@@ -323,7 +323,11 @@ author: lkemen@nuxeo.com
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
   border-radius: 3px;
   text-align: center;
-  vertical-align: middle }
+  vertical-align: middle;
+  width: 100% }
+
+.summary .pictureContainer .fullMaxWidth {
+  width: 100% }
 
 .summary .note_content_block {
   margin: 0 }
