@@ -332,7 +332,14 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 
 /* InfoView Layout */
 .infoViewLeft {
-  position: fixed }
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  background-color: #000;
+  left: 0 }
+
+.infoViewLeft .actionsWidgetPanel {
+  padding: 0 }
 
 .infoViewRight {
   background-color: "neutral.lighter (__FLAVOR__ background)";
