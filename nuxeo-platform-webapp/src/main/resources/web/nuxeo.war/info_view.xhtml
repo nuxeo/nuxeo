@@ -10,6 +10,11 @@
     <ui:include src="/incl/message_banner.xhtml"/>
     <nxl:layout value="#{currentDocument}" name="gridInfoViewLayout" mode="view" />
 
+    <script type="text/javascript">
+      jQuery(document).ready(function() {
+        jQuery("#fancybox-frame", parent.document).attr("allowFullscreen", true);
+      });
+    </script>
   </ui:define>
 
 </nxthemes:composition>
