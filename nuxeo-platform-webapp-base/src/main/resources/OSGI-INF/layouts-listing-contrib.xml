@@ -1479,6 +1479,7 @@
             </property>
             <property name="useFirstWidgetLabelAsColumnHeader">false</property>
             <property name="columnStyleClass">iconColumn</property>
+            <property name="label">label.selection.column.checkbox</property>
           </properties>
           <properties mode="csv">
             <property name="isHidden">true</property>
@@ -1492,6 +1493,7 @@
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">false</property>
             <property name="columnStyleClass">iconColumn</property>
+            <property name="label">label.selection.column.icon_type</property>
           </properties>
           <widget>listing_icon_type</widget>
         </column>
@@ -1499,12 +1501,14 @@
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:title</property>
+            <property name="label">label.selection.column.title_link</property>
           </properties>
           <widget>listing_title_link</widget>
         </column>
         <column>
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
+            <property name="label">label.selection.column.lock</property>
           </properties>
           <properties mode="csv">
             <property name="isHidden">true</property>
@@ -1518,6 +1522,7 @@
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:modified</property>
+            <property name="label">label.dublincore.modificationDate</property>
           </properties>
           <widget>listing_modification_date</widget>
         </column>
@@ -1525,6 +1530,7 @@
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:lastContributor</property>
+            <property name="label">label.dublincore.lastContributor</property>
           </properties>
           <widget>listing_last_contributor</widget>
         </column>
@@ -1533,6 +1539,7 @@
             <property name="columnStyleClass">iconColumn</property>
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="isSortable">false</property>
+            <property name="label">label.version</property>
           </properties>
           <widget>listing_version</widget>
         </column>
@@ -1542,12 +1549,14 @@
             <property name="sortPropertyName">
               ecm:currentLifeCycleState
             </property>
+            <property name="label">label.lifecycle</property>
           </properties>
           <widget>listing_lifecycle</widget>
         </column>
         <column>
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
+            <property name="label">label.selection.column.livedit_link</property>
           </properties>
           <properties mode="csv">
             <property name="isHidden">true</property>

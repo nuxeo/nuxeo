@@ -15,6 +15,9 @@
         <template mode="pdf">
           /layouts/layout_listing_pdf_template.xhtml
         </template>
+        <template mode="edit_columns">
+          /layouts/layout_column_selection_template.xhtml
+        </template>
       </templates>
       <configuration>
         <title>Layout listing displayed as table.</title>
