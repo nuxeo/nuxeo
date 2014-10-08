@@ -54,6 +54,9 @@ public class FancyNavigationHandler extends ConfigurableNavigationHandler {
 
     private final NavigationHandler parent;
 
+    public static final String DISABLE_REDIRECT_FOR_URL_REWRITE = FancyNavigationHandler.class.getCanonicalName()
+            + ".DISABLE_REDIRECT_FOR_URL_REWRITE";
+
     public FancyNavigationHandler(NavigationHandler navigationHandler) {
         parent = navigationHandler;
     }
@@ -87,10 +90,13 @@ public class FancyNavigationHandler extends ConfigurableNavigationHandler {
             // TODO: check if still relevant in JSF2
             handleHotReloadNavigation(pservice, context, fromAction, outcome);
         }
-        // XXX AT: force redirect if outcome is null so that url can be
+        Object disable = httpRequest.getAttribute(DISABLE_REDIRECT_FOR_URL_REWRITE);
+        if (Boolean.TRUE.equals(disable)) {
+            // avoid redirect
+            return;
+        }
+        // force redirect if outcome is null so that url can be
         // re-written except in an ajax request
-        // TODO: check whether other criteria would be useful like a blacklist
-        // to avoid unnecessary redirects for third-party resources (seam pdf/xl export)
         boolean ajaxRequest = context.getPartialViewContext().isAjaxRequest();
         if (outcome == null && !ajaxRequest && !context.getResponseComplete()) {
             String url = httpRequest.getRequestURL().toString();
