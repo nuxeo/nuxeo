@@ -9,6 +9,8 @@
   <xs:element name="ecm_tags" type="nxs:stringList"/>
   <xs:element name="dc_created_min" type="xs:date" />
   <xs:element name="dc_created_max" type="xs:date" />
+  <xs:element name="dc_modified_min" type="xs:date" />
+  <xs:element name="dc_modified_max" type="xs:date" />
   <xs:element name="dc_creator" type="nxs:stringList" />
   <xs:element name="dc_nature" type="nxs:stringList" />
   <xs:element name="dc_coverage" type="nxs:stringList" />

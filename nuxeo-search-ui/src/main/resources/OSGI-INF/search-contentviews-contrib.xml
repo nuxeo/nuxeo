@@ -30,6 +30,10 @@
             <field schema="default_search" name="dc_created_min" />
             <field schema="default_search" name="dc_created_max" />
           </predicate>
+          <predicate parameter="dc:modified" operator="BETWEEN">
+            <field schema="default_search" name="dc_modified_min" />
+            <field schema="default_search" name="dc_modified_max" />
+          </predicate>
           <predicate parameter="dc:nature" operator="IN">
             <field schema="default_search" name="dc_nature" />
           </predicate>
@@ -257,10 +261,6 @@
       </properties>
       <subWidgets>
         <widget name="ecm_fulltext" type="text">
-          <labels>
-            <label mode="any"></label>
-          </labels>
-          <translated>false</translated>
           <fields>
             <field>defaults:ecm_fulltext</field>
           </fields>
@@ -273,18 +273,17 @@
       </subWidgets>
     </widget>
 
-    <widget name="default_date_search" type="container">
+    <widget name="default_created_search" type="container">
       <handlingLabels>true</handlingLabels>
       <labels>
-        <label mode="any">label.search.dateSearch</label>
+        <label mode="any">label.dublincore.creationDate</label>
       </labels>
       <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
       <subWidgets>
         <widget name="dc_creationDate" type="datetimeRange">
-          <labels>
-            <label mode="any">label.dublincore.creationDate</label>
-          </labels>
-          <translated>true</translated>
           <fields>
             <field>defaults:dc_created_min</field>
             <field>defaults:dc_created_max</field>
@@ -298,10 +297,6 @@
           </properties>
         </widget>
         <widget name="dc_created_agg" type="selectManyCheckboxDateHistogramAggregate">
-          <labels>
-            <label mode="any">label.aggregate.created.in</label>
-          </labels>
-          <translated>true</translated>
           <fields>
             <field>defaults:dc_created_agg</field>
           </fields>
@@ -315,11 +310,33 @@
             <control name="supportInsideInputWidgetEffects">true</control>
           </controls>
         </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="default_modified_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.dublincore.modificationDate</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="dc_modificationDate" type="datetimeRange">
+          <fields>
+            <field>defaults:dc_modified_min</field>
+            <field>defaults:dc_modified_max</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'hidden' : 'edit'}</mode>
+          </widgetModes>
+          <properties widgetMode="edit">
+            <property name="styleClass">dataInputTextDate</property>
+            <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
+          </properties>
+        </widget>
         <widget name="dc_modified_agg" type="selectManyCheckboxDateRangeAggregate">
-          <labels>
-            <label mode="any">label.aggregate.modified</label>
-          </labels>
-          <translated>true</translated>
           <fields>
             <field>defaults:dc_modified_agg</field>
           </fields>
@@ -350,17 +367,17 @@
       </subWidgets>
     </widget>
 
-    <widget name="default_user_search" type="container">
+    <widget name="default_creator_search" type="container">
       <handlingLabels>true</handlingLabels>
       <labels>
-        <label mode="any">label.search.userSearch</label>
+        <label mode="any">label.dublincore.creator</label>
       </labels>
       <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
       <subWidgets>
         <widget name="dc_creator" type="multipleUsersSuggestion">
-          <labels>
-            <label mode="any">label.dublincore.creator</label>
-          </labels>
           <fields>
             <field>defaults:dc_creator</field>
           </fields>
@@ -374,9 +391,6 @@
           </properties>
         </widget>
         <widget name="dc_creator_agg" type="selectManyListboxUserAggregate">
-          <labels>
-            <label mode="any">label.dublincore.creator</label>
-          </labels>
           <fields>
             <field>defaults:dc_creator_agg</field>
           </fields>
@@ -396,14 +410,14 @@
     <widget name="default_collection_search" type="container">
       <handlingLabels>true</handlingLabels>
       <labels>
-        <label mode="any">label.search.collectionSearch</label>
+        <label mode="any">label.collections</label>
       </labels>
       <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
       <subWidgets>
         <widget name="visible_collection" type="multipleDocumentsSuggestion">
-          <labels>
-            <label mode="any">label.collections</label>
-          </labels>
           <fields>
             <field>defaults:ecm_collections</field>
           </fields>
@@ -417,20 +431,17 @@
       </subWidgets>
     </widget>
 
-    <widget name="default_categorization_search" type="container">
+    <widget name="default_nature_search" type="container">
       <handlingLabels>true</handlingLabels>
       <labels>
-        <label mode="any">label.search.categorizationSearch</label>
+        <label mode="any">label.dublincore.nature</label>
       </labels>
       <translated>true</translated>
       <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
       </properties>
       <subWidgets>
         <widget name="dc_nature" type="suggestManyDirectory">
-          <labels>
-            <label mode="any">label.dublincore.nature</label>
-          </labels>
-          <translated>true</translated>
           <fields>
             <field>defaults:dc_nature</field>
           </fields>
@@ -445,51 +456,7 @@
             <property name="localize">true</property>
           </properties>
         </widget>
-        <widget name="dc_subjects" type="suggestManyDirectory">
-          <labels>
-            <label mode="any">label.dublincore.subject</label>
-          </labels>
-          <translated>true</translated>
-          <fields>
-            <field>defaults:dc_subjects</field>
-          </fields>
-          <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'hidden' : 'edit'}</mode>
-          </widgetModes>
-          <properties widgetMode="any">
-            <property name="directoryName">l10nsubjects</property>
-            <property name="dbl10n">true</property>
-            <property name="minChars">0</property>
-            <property name="hideHelpLabel">true</property>
-            <property name="filterParent">true</property>
-            <property name="canSelectParent">true</property>
-          </properties>
-        </widget>
-        <widget name="dc_coverage" type="suggestManyDirectory">
-          <labels>
-            <label mode="any">label.dublincore.coverage</label>
-          </labels>
-          <translated>true</translated>
-          <fields>
-            <field>defaults:dc_coverage</field>
-          </fields>
-          <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'hidden' : 'edit'}</mode>
-          </widgetModes>
-          <properties widgetMode="any">
-            <property name="directoryName">l10ncoverage</property>
-            <property name="dbl10n">true</property>
-            <property name="minChars">0</property>
-            <property name="hideHelpLabel">true</property>
-            <property name="filterParent">true</property>
-            <property name="canSelectParent">true</property>
-          </properties>
-        </widget>
         <widget name="dc_nature_agg" type="selectManyCheckboxDirectoryAggregate">
-          <labels>
-            <label mode="any">label.dublincore.nature</label>
-          </labels>
-          <translated>true</translated>
           <fields>
             <field>defaults:dc_nature_agg</field>
           </fields>
@@ -505,11 +472,36 @@
             <control name="supportInsideInputWidgetEffects">true</control>
           </controls>
         </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="default_subjects_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.dublincore.subject</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="dc_subjects" type="suggestManyDirectory">
+          <fields>
+            <field>defaults:dc_subjects</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'hidden' : 'edit'}</mode>
+          </widgetModes>
+          <properties widgetMode="any">
+            <property name="directoryName">l10nsubjects</property>
+            <property name="dbl10n">true</property>
+            <property name="minChars">0</property>
+            <property name="hideHelpLabel">true</property>
+            <property name="filterParent">true</property>
+            <property name="canSelectParent">true</property>
+          </properties>
+        </widget>
         <widget name="dc_subjects_agg" type="selectManyCheckboxDirectoryAggregate">
-          <labels>
-            <label mode="any">label.dublincore.subject</label>
-          </labels>
-          <translated>true</translated>
           <fields>
             <field>defaults:dc_subjects_agg</field>
           </fields>
@@ -526,11 +518,36 @@
             <control name="supportInsideInputWidgetEffects">true</control>
           </controls>
         </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="default_coverage_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.dublincore.coverage</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="dc_coverage" type="suggestManyDirectory">
+          <fields>
+            <field>defaults:dc_coverage</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'hidden' : 'edit'}</mode>
+          </widgetModes>
+          <properties widgetMode="any">
+            <property name="directoryName">l10ncoverage</property>
+            <property name="dbl10n">true</property>
+            <property name="minChars">0</property>
+            <property name="hideHelpLabel">true</property>
+            <property name="filterParent">true</property>
+            <property name="canSelectParent">true</property>
+          </properties>
+        </widget>
         <widget name="dc_coverage_agg" type="selectManyCheckboxDirectoryAggregate">
-          <labels>
-            <label mode="any">label.dublincore.coverage</label>
-          </labels>
-          <translated>true</translated>
           <fields>
             <field>defaults:dc_coverage_agg</field>
           </fields>
@@ -547,11 +564,23 @@
             <control name="supportInsideInputWidgetEffects">true</control>
           </controls>
         </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="default_size_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.common.size</label>
+      </labels>
+      <translated>true</translated>
+      <widgetModes>
+        <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
+      </widgetModes>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
         <widget name="common_size_agg" type="selectManyCheckboxRangeAggregate">
-          <labels>
-            <label mode="any">label.common.size</label>
-          </labels>
-          <translated>true</translated>
           <fields>
             <field>defaults:common_size_agg</field>
           </fields>
@@ -684,16 +713,28 @@
           <widget>default_tags_search</widget>
         </row>
         <row>
-          <widget>default_date_search</widget>
+          <widget>default_created_search</widget>
         </row>
         <row>
-          <widget>default_user_search</widget>
+          <widget>default_modified_search</widget>
+        </row>
+        <row>
+          <widget>default_creator_search</widget>
         </row>
         <row>
           <widget>default_collection_search</widget>
         </row>
         <row>
-          <widget>default_categorization_search</widget>
+          <widget>default_nature_search</widget>
+        </row>
+        <row>
+          <widget>default_subjects_search</widget>
+        </row>
+        <row>
+          <widget>default_coverage_search</widget>
+        </row>
+        <row>
+          <widget>default_size_search</widget>
         </row>
         <row>
           <widget>default_location_search</widget>
