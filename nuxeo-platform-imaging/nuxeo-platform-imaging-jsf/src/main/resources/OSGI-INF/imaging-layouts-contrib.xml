@@ -118,7 +118,17 @@
 
     <widget name="summary_picture_view" type="picture_view" />
 
-    <widget name="infoViewPictureView" type="picture_view" />
+    <widget name="infoViewPictureView" type="container">
+      <handlingLabels>false</handlingLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="styleClass">infoViewDocContainer</property>
+        <property name="display">block_top</property>
+      </properties>
+      <subWidgets>
+        <widget name="pictureView" type="picture_view" />
+      </subWidgets>
+    </widget>
 
   </extension>
 
