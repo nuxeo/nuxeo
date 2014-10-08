@@ -187,11 +187,21 @@
       </fields>
     </widget>
 
-    <widget name="infoViewAudioPlayer" type="audio_player">
-      <fields>
-        <field>#{value}</field>
-        <field>file:content</field>
-      </fields>
+    <widget name="infoViewAudioPlayer" type="container">
+      <handlingLabels>false</handlingLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="styleClass">infoViewDocContainer</property>
+        <property name="display">block_top</property>
+      </properties>
+      <subWidgets>
+        <widget name="audioPlayer" type="audio_player">
+          <fields>
+            <field>#{value}</field>
+            <field>file:content</field>
+          </fields>
+        </widget>
+      </subWidgets>
     </widget>
 
   </extension>
