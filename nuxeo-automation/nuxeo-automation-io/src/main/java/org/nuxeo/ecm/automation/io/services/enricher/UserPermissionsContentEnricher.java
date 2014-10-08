@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.automation.io.services.enricher;
 
 import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -26,11 +25,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.*;
-
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This enricher adds a list of the permissions granted to the user on the document
@@ -39,9 +37,11 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
  */
 public class UserPermissionsContentEnricher extends AbstractContentEnricher {
 
-    private static final List<String> PERMISSIONS = ImmutableList.of(READ, WRITE, EVERYTHING);
+    private static final String PERMISSIONS_PARAMETER = "permissions";
 
     public static final String PERMISSIONS_CONTENT_ID = "permissions";
+
+    private List<String> availablePermissions = new ArrayList<>();
 
     @Override
     public void enrich(JsonGenerator jg, RestEvaluationContext ec)
@@ -55,11 +55,19 @@ public class UserPermissionsContentEnricher extends AbstractContentEnricher {
         jg.flush();
     }
 
+    @Override
+    public void setParameters(Map<String, String> parameters) {
+        String permissionsList = parameters.get(PERMISSIONS_PARAMETER);
+        if (permissionsList != null) {
+            availablePermissions.addAll(Arrays.asList(permissionsList.split(",")));
+        }
+    }
+
     private Iterable<String> getPermissions(final DocumentModel doc) {
         final CoreSession session = doc.getCoreSession();
         final Principal principal = session.getPrincipal();
 
-        return Iterables.filter(PERMISSIONS, new Predicate<String>() {
+        return Iterables.filter(availablePermissions, new Predicate<String>() {
             public boolean apply(String permission) {
                 return session.hasPermission(principal, doc.getRef(), permission);
             }
