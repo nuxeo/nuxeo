@@ -235,8 +235,8 @@
 
     <widget name="summary_video_player" type="video_player">
       <properties widgetMode="any">
-        <property name="width">550</property>
-        <property name="height">310</property>
+        <property name="width">100%</property>
+        <property name="height">380</property>
       </properties>
     </widget>
 
@@ -377,7 +377,22 @@
       </fields>
     </widget>
 
-    <widget name="infoViewVideoPlayer" type="video_player" />
+    <widget name="infoViewVideoPlayer" type="container">
+      <handlingLabels>false</handlingLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="styleClass">infoViewDocContainer</property>
+        <property name="display">block_top</property>
+      </properties>
+      <subWidgets>
+        <widget name="videoPlayer" type="video_player">
+          <properties widgetMode="any">
+            <property name="width">100%</property>
+            <property name="height">600</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
 
   </extension>
 
