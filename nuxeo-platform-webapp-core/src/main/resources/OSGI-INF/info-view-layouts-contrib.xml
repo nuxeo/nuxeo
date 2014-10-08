@@ -22,11 +22,21 @@
       </controls>
     </widget>
 
-    <widget name="infoViewPreview" type="documentPreview">
-      <properties widgetMode="view">
-        <property name="width">100%</property>
-        <property name="height">600px</property>
+    <widget name="infoViewPreview" type="container">
+      <handlingLabels>false</handlingLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="styleClass">infoViewDocContainer</property>
+        <property name="display">block_top</property>
       </properties>
+      <subWidgets>
+        <widget name="preview" type="documentPreview">
+          <properties widgetMode="view">
+            <property name="width">100%</property>
+            <property name="height">600px</property>
+          </properties>
+        </widget>
+      </subWidgets>
     </widget>
 
     <widget name="infoViewTitleContainer" type="container">
