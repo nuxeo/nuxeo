@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
  *
  * @since 5.7.3
  */
-public class ChildrenEnricher implements ContentEnricher {
+public class ChildrenEnricher extends AbstractContentEnricher {
 
     @Override
     public void enrich(JsonGenerator jg, RestEvaluationContext ec)

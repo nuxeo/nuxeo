@@ -17,10 +17,13 @@
 package org.nuxeo.ecm.automation.io.services.enricher;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.actions.ActionFilter;
 import org.nuxeo.ecm.platform.actions.DefaultActionFilter;
@@ -50,7 +53,8 @@ public class ContentEnricherDescriptor {
     @XNodeList(value = "filter", type = ActionFilter[].class, componentType = DefaultActionFilter.class)
     protected ActionFilter[] filters;
 
-
+    @XNodeMap(value = "parameter", key = "@name", type = HashMap.class, componentType = String.class)
+    protected Map<String, String> parameters;
 
     /**
      * @return
@@ -58,7 +62,9 @@ public class ContentEnricherDescriptor {
      */
     public ContentEnricher getContentEnricher() {
         try {
-            return klass.newInstance();
+            ContentEnricher enricher = klass.newInstance();
+            enricher.setParameters(parameters);
+            return enricher;
         } catch (InstantiationException | IllegalAccessException e) {
             return null;
         }

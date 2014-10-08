@@ -12,31 +12,21 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     dmetzler
+ *     Nelson Silva <nelson.silva@inevo.pt>
  */
 package org.nuxeo.ecm.automation.io.services.enricher;
 
-import java.io.IOException;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.core.api.ClientException;
-
 /**
- * A Content Enricher knows how to enrich to some Json serialization.
+ * A base abstract class for Content Enrichers.
  *
- * @since 5.7.3
+ * @since 5.9.6
  */
-public interface ContentEnricher {
-    /**
-     *
-     * @param jg
-     * @param ec
-     * @throws ClientException
-     * @throws IOException
-     *
-     */
-    void enrich(JsonGenerator jg, RestEvaluationContext ec) throws ClientException, IOException;
+public abstract class AbstractContentEnricher implements ContentEnricher {
 
-    void setParameters(Map<String, String> parameters);
+    @Override
+    public void setParameters(Map<String, String> parameters) {
+        //
+    }
 }

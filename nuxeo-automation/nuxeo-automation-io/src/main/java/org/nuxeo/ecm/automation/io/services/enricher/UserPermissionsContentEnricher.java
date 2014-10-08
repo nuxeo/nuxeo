@@ -37,7 +37,7 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
  *
  * @since 5.9.6
  */
-public class UserPermissionsContentEnricher implements ContentEnricher {
+public class UserPermissionsContentEnricher extends AbstractContentEnricher {
 
     private static final List<String> PERMISSIONS = ImmutableList.of(READ, WRITE, EVERYTHING);
 

@@ -31,7 +31,7 @@ import java.io.IOException;
  *
  * @since 5.9.5
  */
-public class ThumbnailContentEnricher implements ContentEnricher {
+public class ThumbnailContentEnricher extends AbstractContentEnricher {
 
     public static final String THUMBNAIL_URL_LABEL = "url";
 

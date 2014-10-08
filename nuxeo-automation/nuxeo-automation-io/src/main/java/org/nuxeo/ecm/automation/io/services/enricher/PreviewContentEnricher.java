@@ -29,7 +29,7 @@ import java.io.IOException;
  *
  * @since 5.9.6
  */
-public class PreviewContentEnricher implements ContentEnricher {
+public class PreviewContentEnricher extends AbstractContentEnricher {
 
     public static final String PREVIEW_URL_LABEL = "url";
 

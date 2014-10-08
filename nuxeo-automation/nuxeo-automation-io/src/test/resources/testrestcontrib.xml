@@ -27,6 +27,11 @@
       <category>breadcrumb</category>
     </enricher>
 
+    <enricher name="parameters"
+              class="org.nuxeo.ecm.automation.test.service.MockEnricher">
+      <category>parameters</category>
+      <parameter name="param1">value1</parameter>
+    </enricher>
 
   </extension>
 

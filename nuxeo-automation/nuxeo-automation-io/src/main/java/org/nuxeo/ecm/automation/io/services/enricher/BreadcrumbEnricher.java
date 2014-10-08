@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
  *
  * @since 5.7.3
  */
-public class BreadcrumbEnricher implements ContentEnricher {
+public class BreadcrumbEnricher extends AbstractContentEnricher {
 
     @Override
     public void enrich(JsonGenerator jg, RestEvaluationContext ec)

@@ -58,10 +58,13 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -137,6 +140,22 @@ public class RestServiceTest {
     public void itCanGetEnrichersFromTheService() throws Exception {
         List<ContentEnricher> cts = rcs.getEnrichers("test", null);
         assertEquals(1, cts.size());
+    }
+
+    @Test
+    public void enrichersCanHaveParameters() throws Exception {
+        // Given a content enricher
+        List<ContentEnricher> cts = rcs.getEnrichers("parameters", null);
+        assertEquals(1, cts.size());
+
+        // When it has parameters
+        MockEnricher mock = (MockEnricher) cts.get(0);
+        Map<String, String> params = mock.getParameters();
+        assertNotNull(params);
+        assertFalse(params.isEmpty());
+
+        // Then these should be made available to the enricher
+        assertEquals("value1", params.get("param1"));
     }
 
     @Test

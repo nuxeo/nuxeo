@@ -30,7 +30,7 @@ import java.io.IOException;
  *
  * @since 5.9.5
  */
-public class ACLContentEnricher implements ContentEnricher {
+public class ACLContentEnricher extends AbstractContentEnricher {
 
     public static final String ACLS_CONTENT_ID= "acls";
 
