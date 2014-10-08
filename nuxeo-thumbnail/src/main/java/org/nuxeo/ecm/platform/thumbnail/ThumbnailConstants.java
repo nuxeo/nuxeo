@@ -32,7 +32,7 @@ public class ThumbnailConstants {
 
     public static final String THUMBNAIL_SIZE_PARAMETER_NAME = "size";
 
-    public static final String THUMBNAIL_DEFAULT_SIZE = "280x280";
+    public static final String THUMBNAIL_DEFAULT_SIZE = "350x350";
 
     public enum EventNames {
         /**

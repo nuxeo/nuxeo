@@ -132,11 +132,11 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
 
     public static final String SCHEMA_NAME = "picture";
 
-    public static final int MEDIUM_SIZE = 550;
+    public static final int MEDIUM_SIZE = 1200;
 
-    public static final int SMALL_SIZE = 280;
+    public static final int SMALL_SIZE = 350;
 
-    public static final int THUMB_SIZE = 100;
+    public static final int THUMB_SIZE = 150;
 
     protected DocumentModel doc;
 
