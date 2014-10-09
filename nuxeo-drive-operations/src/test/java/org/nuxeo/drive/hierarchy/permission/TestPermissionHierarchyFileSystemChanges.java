@@ -507,15 +507,18 @@ public class TestPermissionHierarchyFileSystemChanges {
     }
 
     protected void cleanUpAuditLog() {
-        NXAuditEventsService auditService = (NXAuditEventsService) Framework.getRuntime().getComponent(NXAuditEventsService.NAME);
-        ((DefaultAuditBackend)auditService.getBackend()).getOrCreatePersistenceProvider().run(true, new RunVoid() {
-            @Override
-            public void runWith(EntityManager em) throws ClientException {
-                em.createNativeQuery("delete from nxp_logs_mapextinfos").executeUpdate();
-                em.createNativeQuery("delete from nxp_logs_extinfo").executeUpdate();
-                em.createNativeQuery("delete from nxp_logs").executeUpdate();
-            }
-        });
+        NXAuditEventsService auditService = (NXAuditEventsService) Framework.getRuntime().getComponent(
+                NXAuditEventsService.NAME);
+        ((DefaultAuditBackend) auditService.getBackend()).getOrCreatePersistenceProvider().run(
+                true, new RunVoid() {
+                    @Override
+                    public void runWith(EntityManager em)
+                            throws ClientException {
+                        em.createNativeQuery("delete from nxp_logs_mapextinfos").executeUpdate();
+                        em.createNativeQuery("delete from nxp_logs_extinfo").executeUpdate();
+                        em.createNativeQuery("delete from nxp_logs").executeUpdate();
+                    }
+                });
     }
 
 }
