@@ -40,10 +40,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.service.impl.AuditChangeFinder;
 import org.nuxeo.drive.service.impl.RootDefinitionsHelper;
+import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -81,7 +85,11 @@ import com.google.inject.Inject;
 @Features(AuditFeature.class)
 // We handle transaction start and commit manually to make it possible to have
 // several consecutive transactions in a test method
-@Deploy("org.nuxeo.drive.core")
+@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
+        "org.nuxeo.ecm.platform.userworkspace.api",
+        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.drive.core",
+        "org.nuxeo.ecm.platform.collections.core",
+        "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.platform.query.api" })
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
 public class TestAuditFileSystemChangeFinder {
 
@@ -107,6 +115,9 @@ public class TestAuditFileSystemChangeFinder {
 
     @Inject
     protected WorkManager workManager;
+
+    @Inject
+    protected CollectionManager collectionManager;
 
     protected long lastEventLogId;
 
@@ -1039,6 +1050,188 @@ public class TestAuditFileSystemChangeFinder {
             change = changes.get(0);
             assertEquals("deleted", change.getEventId());
             assertEquals(subFolder.getId(), change.getDocUuid());
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+    }
+
+    @Test
+    public void testCollectionEvents() throws Exception {
+        DocumentModel doc1;
+        DocumentModel doc2;
+        DocumentModel doc3;
+        List<FileSystemItemChange> changes;
+        FileSystemItemChange change;
+        DocumentModel locallyEditedCollection;
+        try {
+            log.trace("Create 2 test docs and them to the 'Locally Edited' collection");
+            doc1 = session.createDocumentModel(folder1.getPathAsString(),
+                    "doc1", "File");
+            doc1.setPropertyValue("file:content", new StringBlob(
+                    "File content."));
+            doc1 = session.createDocument(doc1);
+            doc2 = session.createDocumentModel(folder1.getPathAsString(),
+                    "doc2", "File");
+            doc2.setPropertyValue("file:content", new StringBlob(
+                    "File content."));
+            doc2 = session.createDocument(doc2);
+            nuxeoDriveManager.addToLocallyEditedCollection(session, doc1);
+            nuxeoDriveManager.addToLocallyEditedCollection(session, doc2);
+            DocumentModel userCollections = collectionManager.getUserDefaultCollections(
+                    folder1, session);
+            DocumentRef locallyEditedCollectionRef = new PathRef(
+                    userCollections.getPath().toString(),
+                    NuxeoDriveManager.LOCALLY_EDITED_COLLECTION_NAME);
+            locallyEditedCollection = session.getDocument(locallyEditedCollectionRef);
+            // Re-fetch documents to get rid of the disabled events in context
+            // data
+            doc1 = session.getDocument(doc1.getRef());
+            doc2 = session.getDocument(doc2.getRef());
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Expecting 8 changes:
+            // - addedToCollection for doc2
+            // - documentModified for 'Locally Edited' collection
+            // - rootRegistered for 'Locally Edited' collection
+            // - addedToCollection for doc1
+            // - documentModified for 'Locally Edited' collection
+            // - documentCreated for 'Locally Edited' collection
+            // - documentCreated for doc2
+            // - documentCreated for doc1
+            changes = getChanges(session.getPrincipal());
+            assertEquals(8, changes.size());
+            change = changes.get(0);
+            assertEquals("addedToCollection", change.getEventId());
+            assertEquals(doc2.getId(), change.getDocUuid());
+            change = changes.get(1);
+            assertEquals("documentModified", change.getEventId());
+            assertEquals(locallyEditedCollection.getId(), change.getDocUuid());
+            change = changes.get(2);
+            assertEquals("rootRegistered", change.getEventId());
+            assertEquals(locallyEditedCollection.getId(), change.getDocUuid());
+            change = changes.get(3);
+            assertEquals("addedToCollection", change.getEventId());
+            assertEquals(doc1.getId(), change.getDocUuid());
+            change = changes.get(4);
+            assertEquals("documentModified", change.getEventId());
+            assertEquals(locallyEditedCollection.getId(), change.getDocUuid());
+            change = changes.get(5);
+            assertEquals("documentCreated", change.getEventId());
+            assertEquals(locallyEditedCollection.getId(), change.getDocUuid());
+            change = changes.get(6);
+            assertEquals("documentCreated", change.getEventId());
+            assertEquals(doc2.getId(), change.getDocUuid());
+            change = changes.get(7);
+            assertEquals("documentCreated", change.getEventId());
+            assertEquals(doc1.getId(), change.getDocUuid());
+
+            log.trace("Update doc1 member of the 'Locally Edited' collection");
+            doc1.setPropertyValue("file:content", new StringBlob(
+                    "Updated file content."));
+            session.saveDocument(doc1);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Expecting 1 change: documentModified for doc1
+            changes = getChanges(session.getPrincipal());
+            assertEquals(1, changes.size());
+            change = changes.get(0);
+            assertEquals("documentModified", change.getEventId());
+            assertEquals(doc1.getId(), change.getDocUuid());
+
+            log.trace("Remove doc1 from the 'Locally Edited' collection, delete doc2 and add doc 3 to the collection");
+            collectionManager.removeFromCollection(locallyEditedCollection,
+                    doc1, session);
+            doc2.followTransition(LifeCycleConstants.DELETE_TRANSITION);
+            doc3 = session.createDocumentModel(folder1.getPathAsString(),
+                    "doc3", "File");
+            doc3.setPropertyValue("file:content", new StringBlob(
+                    "File content."));
+            doc3 = session.createDocument(doc3);
+            collectionManager.addToCollection(locallyEditedCollection, doc3,
+                    session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Expecting 6 changes:
+            // - addedToCollection for doc3
+            // - documentModified for 'Locally Edited' collection
+            // - documentCreated for doc3
+            // - deleted for doc2
+            // - documentModified for 'Locally Edited' collection
+            // - deleted for doc1
+            changes = getChanges(session.getPrincipal());
+            assertEquals(6, changes.size());
+            change = changes.get(0);
+            assertEquals("addedToCollection", change.getEventId());
+            assertEquals(doc3.getId(), change.getDocUuid());
+            change = changes.get(1);
+            assertEquals("documentModified", change.getEventId());
+            assertEquals(locallyEditedCollection.getId(), change.getDocUuid());
+            change = changes.get(2);
+            assertEquals("documentCreated", change.getEventId());
+            assertEquals(doc3.getId(), change.getDocUuid());
+            change = changes.get(3);
+            assertEquals("deleted", change.getEventId());
+            assertEquals(doc2.getId(), change.getDocUuid());
+            change = changes.get(4);
+            assertEquals("documentModified", change.getEventId());
+            assertEquals(locallyEditedCollection.getId(), change.getDocUuid());
+            change = changes.get(5);
+            assertEquals("deleted", change.getEventId());
+            assertEquals(doc1.getId(), change.getDocUuid());
+
+            log.trace("Unregister the 'Locally Edited' collection as a sync root");
+            nuxeoDriveManager.unregisterSynchronizationRoot(
+                    session.getPrincipal(), locallyEditedCollection, session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Expecting 1 change: deleted for 'Locally Edited' collection
+            changes = getChanges(session.getPrincipal());
+            assertEquals(1, changes.size());
+            change = changes.get(0);
+            assertEquals("deleted", change.getEventId());
+            assertEquals(locallyEditedCollection.getId(), change.getDocUuid());
+
+            log.trace("Register the 'Locally Edited' collection back as a sync root");
+            nuxeoDriveManager.registerSynchronizationRoot(
+                    session.getPrincipal(), locallyEditedCollection, session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Expecting 1 change: rootRegistered for 'Locally Edited'
+            // collection
+            changes = getChanges(session.getPrincipal());
+            assertEquals(1, changes.size());
+            change = changes.get(0);
+            assertEquals("rootRegistered", change.getEventId());
+            assertEquals(locallyEditedCollection.getId(), change.getDocUuid());
+
+            log.trace("Delete the 'Locally Edited' collection");
+            locallyEditedCollection.followTransition(LifeCycleConstants.DELETE_TRANSITION);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Expecting 1 change: deleted for 'Locally Edited' collection
+            changes = getChanges(session.getPrincipal());
+            assertEquals(1, changes.size());
+            change = changes.get(0);
+            assertEquals("deleted", change.getEventId());
+            assertEquals(locallyEditedCollection.getId(), change.getDocUuid());
         } finally {
             commitAndWaitForAsyncCompletion();
         }

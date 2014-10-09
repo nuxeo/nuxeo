@@ -17,6 +17,7 @@
 package org.nuxeo.drive.listener;
 
 import org.nuxeo.drive.service.NuxeoDriveManager;
+import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
@@ -48,7 +49,12 @@ public class NuxeoDriveCacheInvalidationListener implements EventListener {
             return;
         }
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
-        driveManager.handleFolderDeletion((IdRef) docCtx.getSourceDocument().getRef());
+        if (CollectionConstants.ADDED_TO_COLLECTION.equals(event.getName())
+                || CollectionConstants.REMOVED_FROM_COLLECTION.equals(event.getName())) {
+            driveManager.invalidateCollectionSyncRootMemberCache();
+        } else {
+            driveManager.handleFolderDeletion((IdRef) docCtx.getSourceDocument().getRef());
+        }
     }
 
 }

@@ -88,8 +88,10 @@ public class MockChangeFinder implements FileSystemChangeFinder {
     @Override
     public List<FileSystemItemChange> getFileSystemChangesIntegerBounds(
             CoreSession session, Set<IdRef> lastActiveRootRefs,
-            SynchronizationRoots activeRoots, long lowerBound, long upperBound,
-            int limit) throws ClientException, TooManyChangesException {
+            SynchronizationRoots activeRoots,
+            Set<String> collectionSyncRootMemberIds, long lowerBound,
+            long upperBound, int limit) throws ClientException,
+            TooManyChangesException {
         throw new UnsupportedOperationException(
                 "Using MockChangeFinder with integer bounds is not implemented, please call #getFileSystemChanges.");
     }

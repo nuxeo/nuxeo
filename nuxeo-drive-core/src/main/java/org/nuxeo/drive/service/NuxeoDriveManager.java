@@ -85,6 +85,16 @@ public interface NuxeoDriveManager {
             Principal principal) throws ClientException;
 
     /**
+     * Fetch all the collection sync root member ids for a given user.
+     *
+     * @param principal the user to fetch the ids for
+     * @return the map keyed by repository names all collection sync root member
+     *         ids for the current user.
+     */
+    public Map<String, Set<String>> getCollectionSyncRootMemberIds(
+            Principal principal) throws ClientException;
+
+    /**
      * Checks if the given {@link DocumentModel} is a synchronization root for
      * the given user.
      */
@@ -192,6 +202,23 @@ public interface NuxeoDriveManager {
      *            for.
      */
     void invalidateSynchronizationRootsCache(String userName);
+
+    /**
+     * Invalidate the collection sync root member cache for a given user so as
+     * to query the repository next time
+     * {@link #getCollectionSyncRootMemberIds(Principal)} is called.
+     *
+     * @param userName the principal name of the user to invalidate the cache
+     *            for.
+     */
+    void invalidateCollectionSyncRootMemberCache(String userName);
+
+    /**
+     * Invalidate the collection sync root member cache for all users so as to
+     * query the repository next time
+     * {@link #getCollectionSyncRootMemberIds(Principal)} is called.
+     */
+    void invalidateCollectionSyncRootMemberCache();
 
     /**
      * Adds the given {@link DocumentModel} to the

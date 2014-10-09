@@ -18,6 +18,8 @@
       <event>lifecycle_transition_event</event>
       <event>documentRemoved</event>
       <event>documentSecurityUpdated</event>
+      <event>addedToCollection</event>
+      <event>removedFromCollection</event>
     </listener>
 
     <documentation>
@@ -37,6 +39,7 @@
       <event>aboutToRemove</event>
       <event>beforeDocumentSecurityModification</event>
       <event>aboutToUnRegisterRoot</event>
+      <event>beforeRemovedFromCollection</event>
     </listener>
 
   </extension>

@@ -65,7 +65,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
      *
      * @see https://jira.nuxeo.com/browse/NXP-14826
      * @see #getFileSystemChangesIntegerBounds(CoreSession, Set,
-     *      SynchronizationRoots, long, long, int)
+     *      SynchronizationRoots, Set, long, long, int)
      */
     @Override
     public List<FileSystemItemChange> getFileSystemChanges(CoreSession session,
@@ -73,23 +73,27 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             long lastSuccessfulSyncDate, long syncDate, int limit)
             throws ClientException, TooManyChangesException {
         return getFileSystemChanges(session, lastActiveRootRefs, activeRoots,
-                lastSuccessfulSyncDate, syncDate, false, limit);
+                null, lastSuccessfulSyncDate, syncDate, false, limit);
     }
 
     @Override
     public List<FileSystemItemChange> getFileSystemChangesIntegerBounds(
             CoreSession session, Set<IdRef> lastActiveRootRefs,
-            SynchronizationRoots activeRoots, long lowerBound, long upperBound,
-            int limit) throws ClientException, TooManyChangesException {
+            SynchronizationRoots activeRoots,
+            Set<String> collectionSyncRootMemberIds, long lowerBound,
+            long upperBound, int limit) throws ClientException,
+            TooManyChangesException {
         return getFileSystemChanges(session, lastActiveRootRefs, activeRoots,
-                lowerBound, upperBound, true, limit);
+                collectionSyncRootMemberIds, lowerBound, upperBound, true,
+                limit);
     }
 
     protected List<FileSystemItemChange> getFileSystemChanges(
             CoreSession session, Set<IdRef> lastActiveRootRefs,
-            SynchronizationRoots activeRoots, long lowerBound, long upperBound,
-            boolean integerBounds, int limit) throws ClientException,
-            TooManyChangesException {
+            SynchronizationRoots activeRoots,
+            Set<String> collectionSyncRootMemberIds, long lowerBound,
+            long upperBound, boolean integerBounds, int limit)
+            throws ClientException, TooManyChangesException {
         String principalName = session.getPrincipal().getName();
         List<FileSystemItemChange> changes = new ArrayList<FileSystemItemChange>();
 
@@ -104,7 +108,8 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         // linked to the un-registration or deletion of formerly synchronized
         // roots
         List<LogEntry> entries = queryAuditEntries(session, activeRoots,
-                lowerBound, upperBound, integerBounds, limit);
+                collectionSyncRootMemberIds, lowerBound, upperBound,
+                integerBounds, limit);
 
         // First pass over the entries to check if a "NuxeoDrive" event has
         // occurred during that period.
@@ -127,10 +132,14 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                         principalName));
                 NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
                 driveManager.invalidateSynchronizationRootsCache(principalName);
+                driveManager.invalidateCollectionSyncRootMemberCache(principalName);
                 Map<String, SynchronizationRoots> synchronizationRoots = driveManager.getSynchronizationRoots(session.getPrincipal());
                 SynchronizationRoots updatedActiveRoots = synchronizationRoots.get(session.getRepositoryName());
+                Set<String> updatedCollectionSyncRootMemberIds = driveManager.getCollectionSyncRootMemberIds(
+                        session.getPrincipal()).get(session.getRepositoryName());
                 entries = queryAuditEntries(session, updatedActiveRoots,
-                        lowerBound, upperBound, integerBounds, limit);
+                        updatedCollectionSyncRootMemberIds, lowerBound,
+                        upperBound, integerBounds, limit);
                 break;
             }
         }
@@ -270,8 +279,9 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
 
     @SuppressWarnings("unchecked")
     protected List<LogEntry> queryAuditEntries(CoreSession session,
-            SynchronizationRoots activeRoots, long lowerBound, long upperBound,
-            boolean integerBounds, int limit) {
+            SynchronizationRoots activeRoots,
+            Set<String> collectionSyncRootMemberIds, long lowerBound,
+            long upperBound, boolean integerBounds, int limit) {
         AuditReader auditService = Framework.getLocalService(AuditReader.class);
         // Set fixed query parameters
         Map<String, Object> params = new HashMap<String, Object>();
@@ -289,13 +299,22 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             auditQuerySb.append("(");
             auditQuerySb.append("log.category = 'eventDocumentCategory'");
             // TODO: don't hardcode event ids (contribute them?)
-            auditQuerySb.append(" and (log.eventId = 'documentCreated' or log.eventId = 'documentModified' or log.eventId = 'documentMoved' or log.eventId = 'documentCreatedByCopy' or log.eventId = 'documentRestored')");
+            auditQuerySb.append(" and (log.eventId = 'documentCreated' or log.eventId = 'documentModified' or log.eventId = 'documentMoved' or log.eventId = 'documentCreatedByCopy' or log.eventId = 'documentRestored' or log.eventId = 'addedToCollection')");
             auditQuerySb.append(" or ");
             auditQuerySb.append("log.category = 'eventLifeCycleCategory'");
             auditQuerySb.append(" and log.eventId = 'lifecycle_transition_event' and log.docLifeCycle != 'deleted' ");
             auditQuerySb.append(") and (");
+            auditQuerySb.append("(");
             auditQuerySb.append(getCurrentRootFilteringClause(
                     activeRoots.getPaths(), params));
+            auditQuerySb.append(")");
+            if (collectionSyncRootMemberIds != null
+                    && !collectionSyncRootMemberIds.isEmpty()) {
+                auditQuerySb.append(" or (");
+                auditQuerySb.append(getCollectionSyncRootFilteringClause(
+                        collectionSyncRootMemberIds, params));
+                auditQuerySb.append(")");
+            }
             auditQuerySb.append(") or ");
         }
         // Detect any root (un-)registration changes for the roots previously
@@ -366,6 +385,13 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
 
         }
         return rootPathClause.toString();
+    }
+
+    protected String getCollectionSyncRootFilteringClause(
+            Set<String> collectionSyncRootMemberIds, Map<String, Object> params) {
+        String paramName = "collectionMemberIds";
+        params.put(paramName, collectionSyncRootMemberIds);
+        return String.format("log.docUUID in (:%s)", paramName);
     }
 
     /**

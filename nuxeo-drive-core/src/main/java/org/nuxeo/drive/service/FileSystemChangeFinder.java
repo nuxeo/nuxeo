@@ -76,6 +76,7 @@ public interface FileSystemChangeFinder extends Serializable {
      * @param lastActiveRootRefs docrefs of the roots as reported by the last
      *            successful synchronization (can be empty or null)
      * @param activeRoots the currently active synchronization roots
+     * @param collectionSyncRootMemberIds the collection sync root member ids
      * @param lowerBound the lower integer bound of the range clause in the
      *            change query
      * @param upperBound the upper integer bound of the range clause in the
@@ -90,8 +91,10 @@ public interface FileSystemChangeFinder extends Serializable {
      */
     List<FileSystemItemChange> getFileSystemChangesIntegerBounds(
             CoreSession session, Set<IdRef> lastActiveRootRefs,
-            SynchronizationRoots activeRoots, long lowerBound, long upperBound,
-            int limit) throws ClientException, TooManyChangesException;
+            SynchronizationRoots activeRoots,
+            Set<String> collectionSyncRootMemberIds, long lowerBound,
+            long upperBound, int limit) throws ClientException,
+            TooManyChangesException;
 
     /**
      * Read the current time code to query for changes. The time is truncated to
