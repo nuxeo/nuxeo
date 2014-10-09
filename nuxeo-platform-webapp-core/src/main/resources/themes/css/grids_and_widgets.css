@@ -96,6 +96,13 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   height: 11em;
   margin: 0 -0.8em .7em }
 
+.folderishThumbnail:after {
+  background-color: rgba(255, 255, 255, 0.7);
+  content: url(${basePath}/icons/workspace.gif);
+  display: inline-block;
+  margin: .2em;
+  padding: .2em .4em .1em }
+
 /* Lightbox on thumbnails
 .thumbnailContainer .image-popup {
   background: url("${basePath}/icons/lightbox_call.png") no-repeat scroll center center transparent;
@@ -232,11 +239,6 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   padding: .1em .4em .2em;
   width: auto }
 
-.compactLayout .fieldColumn .smallButton,
-.compactLayout .actionsWidgetPanel .containerField a.button {
-  margin: .4em .5em .5em 0;
-  padding: 0 .4em }
-
 .compactLayout .sticker {
   margin: .1em .2em .1em 0 }
 
@@ -271,7 +273,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .compactLayout .searchFilterActions .widgetPanel input.button {
   float: left;
   font-weight: bold;
-  margin: 0;
+  margin: .5em 0 1em;
   padding: .4em .2em .6em;
   width: 50% }
 
