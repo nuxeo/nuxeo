@@ -92,7 +92,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   border-color: "neutral.medium (__FLAVOR__ border)" }
 
 .thumbnailContainer {
-  background: none no-repeat scroll center center / contain transparent;
+  background: none no-repeat scroll center center transparent;
   height: 11em;
   margin: 0 -0.8em .7em }
 
@@ -338,13 +338,14 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   background-color: #000;
   left: 0 }
 
-.infoViewLeft div {
-  height: 100% }
-
 .infoViewLeft .actionsWidgetPanel {
   padding: 0 }
 
 .infoViewLeft .pictureContainer {
+  height: 100%;
+  left: 0;
+  position: absolute;
+  right: 0;
   text-align: center }
 
 .infoViewLeft .pictureContainer:before {
@@ -373,9 +374,9 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   top: 45% }
 
 .infoViewLeft #nxw_infoViewAudioPlayer {
-  left: 0;
+  left: 2em;
   position: absolute;
-  right: 0;
+  right: 2em;
   top: 50% }
 
 .infoViewRight {
