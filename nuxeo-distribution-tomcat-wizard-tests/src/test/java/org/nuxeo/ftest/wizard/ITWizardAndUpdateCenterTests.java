@@ -24,7 +24,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -80,7 +79,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
     }
 
     protected String getTestPassword() {
-        return  System.getProperty("connectPassword");
+        return System.getProperty("connectPassword");
     }
 
     public void runWizardAndRestart() throws Exception {
@@ -183,13 +182,15 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         WizardPage connectSkip = connectPage1.navByLink(WizardPage.class,
                 "Or skip and don't register", true);
         assertNotNull(connectSkip);
-        assertEquals("You have not signed up for a free trial of Nuxeo Connect.",
+        assertEquals(
+                "You have not signed up for a free trial of Nuxeo Connect.",
                 connectSkip.getTitle2());
 
         // ok, let's register
         connectWizardPage = connectSkip.navById(WizardPage.class, "btnRetry",
                 true);
-        connectPage1 = connectWizardPage.getConnectPage(); // enter iframe again
+        connectPage1 = connectWizardPage.getConnectPage(); // enter iframe
+                                                           // again
         assertNotNull(connectPage1);
 
         // Register with a existing account
@@ -211,14 +212,13 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
                 connectSignIn.getTitle());
 
         // select the associated project
-        connectSignIn.selectOption("project",
-                CONNECT_PROJECT_SELECTOR_UUID);
+        connectSignIn.selectOption("project", CONNECT_PROJECT_SELECTOR_UUID);
         // connectProjectPage.fillInput("project", CONNECT_PROJECT_SELECTOR);
 
         // **********************
         // Exit Connect Form and Display Packages selection
-        WizardPage packageSelectiondPage = connectSignIn.nav(
-                WizardPage.class, "Continue");
+        WizardPage packageSelectiondPage = connectSignIn.nav(WizardPage.class,
+                "Continue");
 
         assertNotNull(packageSelectiondPage);
         assertEquals("Select Modules", packageSelectiondPage.getTitle());
