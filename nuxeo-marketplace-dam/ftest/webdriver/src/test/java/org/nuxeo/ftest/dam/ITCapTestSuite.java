@@ -21,15 +21,15 @@ package org.nuxeo.ftest.dam;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import org.nuxeo.ftest.dm.AbstractDmITSuite;
+import org.nuxeo.ftest.cap.AbstractCapITSuite;
 
 /**
- * Tests from DM package
+ * Tests from CAP package
  *
  * @since 5.9.6
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ AbstractDmITSuite.class })
-public class ITDmTestSuite {
+@Suite.SuiteClasses({ AbstractCapITSuite.class })
+public class ITCapTestSuite {
 
 }

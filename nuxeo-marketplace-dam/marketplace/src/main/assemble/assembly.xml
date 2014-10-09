@@ -34,7 +34,7 @@
 
     <!-- Base distribution NXR -->
     <copy todir="${outdir}">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm::zip" />
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-cap::zip" />
     </copy>
 
     <!-- Nuxeo bundles -->
@@ -67,15 +67,15 @@
 
     <!-- Only include files not already provided by the base distribution -->
     <nx:zipdiff file1="${outdir}/nxr-${nuxeo.distribution.version}.zip"
-                file2="${outdir}/nuxeo-distribution-dm-${nuxeo.distribution.version}.zip"
+                file2="${outdir}/nuxeo-distribution-cap-${nuxeo.distribution.version}.zip"
                 includesfile="${outdir}/includes"
                 excludesfile="${outdir}/excludesfile"
-                patternsetid="dam.versus.dm"
+                patternsetid="dam.versus.cap"
                 ignoreContentPattern=".*jar$">
     </nx:zipdiff>
     <unzip src="${outdir}/nxr-${nuxeo.distribution.version}.zip"
            dest="${outdir}/marketplace/install">
-      <patternset refid="dam.versus.dm" />
+      <patternset refid="dam.versus.cap" />
     </unzip>
 
     <var name="install.bundles" value="" />

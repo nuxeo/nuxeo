@@ -14,7 +14,7 @@
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-dm</artifactId>
+      <artifactId>nuxeo-distribution-cap</artifactId>
       <type>pom</type>
     </dependency>
 
