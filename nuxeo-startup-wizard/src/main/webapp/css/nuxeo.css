@@ -424,3 +424,27 @@ ul#treeul li {
   height: 600px;
   width: 250px;
   background-color: #fff;}
+
+/* User form */
+
+.required:after {
+  content: '*';
+  padding-left:0.2em;
+  color:red;
+  font-size:133%;
+}
+
+#checkNetwork, #checkAuth, #testUserLdapParam, #testGroupLdapParam {
+  background-color: #5c99bd;
+  border-radius: 0.2em;
+  color: white;
+  display: inline-block;
+  font-size: 80%;
+  line-height: 2em;
+  margin: 0.5em 0.2em;
+  padding: 0.2em 0.7em 0;
+}
+
+#checkNetwork:hover, #checkAuth:hover, #testUserLdapParam:hover, #testGroupLdapParam:hover {
+  background-color: #1ca3c9;
+}
