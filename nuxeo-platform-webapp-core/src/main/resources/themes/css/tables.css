@@ -68,6 +68,12 @@ table td {
   border-width: 1px;
   padding: .6em .4em }
 
+.dataOutput th:first-child,
+.dataOutput td:first-child,
+.dataTableLine th:first-child,
+.dataTableLine td:first-child {
+  padding-left: .4em }
+
 .dataTableLine th,
 .dataOutput th,
 .dataList th {
