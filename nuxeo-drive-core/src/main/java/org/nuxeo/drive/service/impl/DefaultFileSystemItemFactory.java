@@ -30,6 +30,7 @@ import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
+import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -111,6 +112,14 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
             log.debug(String.format(
                     "Document %s is a rendition, it cannot be adapted as a FileSystemItem.",
                     doc.getId()));
+            return false;
+        }
+        // Check Collections
+        if (CollectionConstants.COLLECTIONS_TYPE.equals(doc.getType())) {
+            log.debug(String.format(
+                    "Document %s is the collection root folder (type=%s, path=%s), it cannot be adapted as a FileSystemItem.",
+                    doc.getId(), CollectionConstants.COLLECTIONS_TYPE,
+                    doc.getPathAsString()));
             return false;
         }
         // Check HiddenInNavigation
