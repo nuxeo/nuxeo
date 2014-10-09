@@ -57,6 +57,11 @@ public class CollectionConstants {
 
     public static final String COLLECTION_CONTENT_PAGE_PROVIDER = "default_content_collection";
 
+    /**
+     * @since 5.9.6
+     */
+    public static final String ALL_COLLECTIONS_PAGE_PROVIDER = "all_collections";
+
     // Event names
     /**
      * @since 5.9.6
