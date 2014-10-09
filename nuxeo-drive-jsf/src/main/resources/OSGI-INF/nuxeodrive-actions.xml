@@ -83,6 +83,9 @@
       <rule grant="true">
         <condition>#{canEditCurrentDocument}</condition>
       </rule>
+      <rule grant="false">
+        <facet>Collection</facet>
+      </rule>
     </filter>
   </extension>
 
