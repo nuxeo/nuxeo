@@ -27,6 +27,7 @@ import java.util.Map;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -46,8 +47,6 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem
 
     private static final long serialVersionUID = 1L;
 
-    protected static final String DEFAULT_CONTENT_COLLECTION = "default_content_collection";
-
     public CollectionSyncRootFolderItem(String factoryName,
             FolderItem parentItem, DocumentModel doc) throws ClientException {
         super(factoryName, parentItem, doc);
@@ -65,7 +64,8 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CORE_SESSION_PROPERTY, (Serializable) getSession());
         PageProvider<DocumentModel> childrenPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                DEFAULT_CONTENT_COLLECTION, null, null, 0L, props, docId);
+                CollectionConstants.COLLECTION_CONTENT_PAGE_PROVIDER, null,
+                null, 0L, props, docId);
         List<DocumentModel> dmChildren = childrenPageProvider.getCurrentPage();
 
         List<FileSystemItem> children = new ArrayList<FileSystemItem>(
