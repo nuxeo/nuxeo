@@ -400,7 +400,6 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   z-index: 60 }
 
 .infoViewRight .documentTitle {
-  display: inline;
   width: 22em;
   word-wrap: normal }
 

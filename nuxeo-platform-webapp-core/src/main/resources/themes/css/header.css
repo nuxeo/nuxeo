@@ -102,6 +102,24 @@ author: lkemen@nuxeo.com
 .userSearchBlock input.button:hover {
   cursor:pointer }
 
+/* select2 search input */
+.userSearchBlock .select2-container {
+  margin-bottom: 0;
+  width: 260px!important;
+  transition: width 0.2s ease 0.1s }
+
+.userSearchBlock .select2-container-multi .select2-choices {
+  background: #eee url('${basePath}/icons/search.png') no-repeat 98% center;
+  box-shadow: none;
+  border-color: transparent }
+
+.userSearchBlock .select2-container-multi .select2-choices .select2-search-field input {
+  box-shadow: none;
+  margin: 0 }
+
+.userSearchBlock .select2-container-multi.select2-container-active {
+  width: 350px !important }
+
 /* =UserServices */
 .userServicesBlock {
   float: left }
