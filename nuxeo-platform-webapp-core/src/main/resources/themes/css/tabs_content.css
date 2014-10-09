@@ -426,7 +426,12 @@ author: lkemen@nuxeo.com
   border-radius: none }
 
 .mce-tinymce .mce-btn button {
-	padding: 0 }
+  border: medium none;
+  margin: 0;
+  padding: .3em }
+
+.mce-tinymce .mce-btn button:hover {
+  background-color: "neutral.lighter (__FLAVOR__ background)" }
 
 .mce-toolbar .mce-btn i {
   color: "default (__FLAVOR__ color)";
@@ -439,7 +444,7 @@ author: lkemen@nuxeo.com
 .mce-toolbar .mce-btn,
 .mce-toolbar .mce-btn.mce-disabled {
   background: none 0;
-  padding: 4px }
+  padding: 0 }
 
 .mce-toolbar .mce-btn.mce-disabled {
   opacity: .3;
