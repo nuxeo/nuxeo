@@ -352,7 +352,7 @@ input.tinyButton {
 /* =MainActions in Document Title Area */
 .titleBlock {
   float: left;
-  max-width: 60% }
+  max-width: 50em }
 
 .globalActions {
   float: right }
