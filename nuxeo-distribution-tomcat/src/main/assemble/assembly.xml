@@ -11,6 +11,7 @@
     <condition property="build.all">
       <or>
         <isset property="maven.profile.all" />
+        <!-- NXP-15473: Deprecated profile all-distributions -->
         <isset property="maven.profile.all-distributions" />
         <not>
           <or>

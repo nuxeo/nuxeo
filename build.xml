@@ -20,7 +20,7 @@
       <arg value="./pom.xml" />
       <arg value="clean" />
       <arg value="package" />
-      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-DskipTests=true" />
       <arg value="-Pall-distributions" />
       <arg value="${mvn.opts}" />
     </exec>
@@ -33,7 +33,7 @@
       <arg value="pom.xml" />
       <arg value="clean" />
       <arg value="package" />
-      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-DskipTests=true" />
       <arg value="-Pall-distributions" />
       <arg value="${mvn.opts}" />
     </exec>
@@ -57,7 +57,7 @@
       <arg value="clean" />
       <arg value="install" />
       <arg value="package" />
-      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-DskipTests=true" />
       <arg value="-P" />
       <arg value="${distrib}" />
       <arg value="${mvn.opts}" />
@@ -70,7 +70,7 @@
       <arg value="clean" />
       <arg value="install" />
       <arg value="package" />
-      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-DskipTests=true" />
       <arg value="-P" />
       <arg value="${distrib}" />
       <arg value="${mvn.opts}" />

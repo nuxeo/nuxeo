@@ -154,12 +154,6 @@
     <profile>
       <id>mysql</id>
     </profile>
-    <profile>
-      <id>all-tests</id>
-      <properties>
-        <skipTests>false</skipTests>
-      </properties>
-    </profile>
   </profiles>
 
 </project>
