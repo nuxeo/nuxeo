@@ -196,7 +196,8 @@ public interface NuxeoDriveManager {
 
     /**
      * Invalidate the synchronization roots cache for a given user so as to
-     * query the repository next time {@code getSynchronizationRoots} is called.
+     * query the repository next time
+     * {@link #getSynchronizationRoots(Principal)} is called.
      *
      * @param userName the principal name of the user to invalidate the cache
      *            for.
