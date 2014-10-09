@@ -92,7 +92,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   border-color: "neutral.medium (__FLAVOR__ border)" }
 
 .thumbnailContainer {
-  background: none no-repeat scroll center center transparent;
+  background: none no-repeat scroll center center / contain transparent;
   height: 11em;
   margin: 0 -0.8em .7em }
 
@@ -338,12 +338,50 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   background-color: #000;
   left: 0 }
 
+.infoViewLeft div {
+  height: 100% }
+
 .infoViewLeft .actionsWidgetPanel {
   padding: 0 }
+
+.infoViewLeft .pictureContainer {
+  text-align: center }
+
+.infoViewLeft .pictureContainer:before {
+  content: "";
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle }
+
+.infoViewLeft .pictureContainer img {
+  max-height: 100%;
+  max-width: 100%;
+  padding: 0;
+  vertical-align: middle }
+
+.infoViewLeft .video-js {
+  bottom: 0;
+  height: 100% !important;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100% !important }
+
+.infoViewLeft .vjs-default-skin .vjs-big-play-button {
+  left: 45%;
+  top: 45% }
+
+.infoViewLeft #nxw_infoViewAudioPlayer {
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 50% }
 
 .infoViewRight {
   background-color: "neutral.lighter (__FLAVOR__ background)";
   bottom: 0;
+  box-shadow: -1px 0 1px rgba(0, 0, 0, 0.1);
   position: absolute;
   right: 0;
   top: 0 }
@@ -356,8 +394,14 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   padding: 1em;
   position: fixed;
   width: 100%;
-  z-index: 60; }
+  z-index: 60 }
 
+.infoViewRight .documentTitle {
+  display: inline;
+  width: 22em;
+  word-wrap: normal }
+
+.infoViewLeft .containerSubWidget,
 .infoViewRight .containerSubWidget {
   margin: 0 }
 
@@ -375,6 +419,10 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   background-color: #fff;
   margin: 0 1em 1em;
   padding: .5em }
+
+.infoViewRight .containerWidgetPanel .labelColumn {
+  color: #999;
+  width: 30% }
 
 .compactLayout .infoViewInfoLayout .widgetHeader.foldedDisabled {
   border: medium none;
@@ -394,3 +442,6 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 
 .infoViewActions .horizontalAction {
   padding-right: 1em }
+
+.infoViewDocContainer iframe {
+  border: none }
