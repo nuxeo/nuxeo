@@ -27,6 +27,7 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.impl.CollectionSyncRootFolderItemFactory;
+import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
@@ -83,27 +84,67 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
                     "User %s has no READ access on parent of document %s (%s), will throw RootlessItemException.",
                     principal.getName(), doc.getPathAsString(), doc.getId()));
         }
-        if (parentDoc == null) {
-            // We either reached the root of the repository or a document for
-            // which the current user doesn't have read access to its parent,
-            // without being adapted to a (possibly virtual) descendant of the
-            // top level folder item.
-            // Let's raise a marker exception and let the caller give more
-            // information on the source document.
-            throw new RootlessItemException();
-        } else {
-            FileSystemItem parent = getFileSystemItemAdapterService().getFileSystemItem(
-                    parentDoc, true, relaxSyncRootConstraint);
-            if (parent == null) {
-                // We reached a document for which the parent document cannot be
-                // adapted to a (possibly virtual) descendant of the top level
-                // folder item.
-                // Let's raise a marker exception and let the caller give more
-                // information on the source document.
+        try {
+            if (parentDoc == null) {
+                log.trace("We either reached the root of the repository or a document for which the current user doesn't have read access to its parent,"
+                        + " without being adapted to a (possibly virtual) descendant of the top level folder item."
+                        + " Let's raise a marker exception and let the caller give more information on the source document.");
+                throw new RootlessItemException();
+            } else {
+                FileSystemItem parent = getFileSystemItemAdapterService().getFileSystemItem(
+                        parentDoc, true, relaxSyncRootConstraint);
+                if (parent == null) {
+                    log.trace("We reached a document for which the parent document cannot be  adapted to a (possibly virtual) descendant of the top level folder item."
+                            + " Let's raise a marker exception and let the caller give more information on the source document.");
+                    throw new RootlessItemException();
+                }
+                parentId = parent.getId();
+                path = parent.getPath() + '/' + id;
+            }
+        } catch (RootlessItemException e) {
+            log.trace("Let's try to adapt the document as a member of a collection sync root, if not the case let's raise a marker exception and let the caller give more information on the source document.");
+            if (!handleCollectionMember(doc, docSession,
+                    relaxSyncRootConstraint)) {
                 throw new RootlessItemException();
             }
+        }
+    }
+
+    protected boolean handleCollectionMember(DocumentModel doc,
+            CoreSession session, boolean relaxSyncRootConstraint) {
+        if (!doc.hasSchema(CollectionConstants.COLLECTION_MEMBER_SCHEMA_NAME)) {
+            return false;
+        }
+        CollectionManager cm = Framework.getService(CollectionManager.class);
+        List<DocumentModel> docCollections = cm.getVisibleCollection(doc,
+                session);
+        if (docCollections.isEmpty()) {
+            log.trace(String.format(
+                    "Doc %s (%s) is not member of any collection",
+                    doc.getPathAsString(), doc.getId()));
+            return false;
+        } else {
+            FileSystemItem parent = null;
+            DocumentModel collection = null;
+            while (docCollections.iterator().hasNext() && parent == null) {
+                collection = docCollections.iterator().next();
+                parent = getFileSystemItemAdapterService().getFileSystemItem(
+                        collection, false, relaxSyncRootConstraint);
+            }
+            if (parent == null) {
+                log.trace(String.format(
+                        "None of the collections of which doc %s (%s) is a member can be adapted as a FileSystemItem.",
+                        doc.getPathAsString(), doc.getId()));
+                return false;
+            }
+            log.trace(String.format(
+                    "Using first collection %s (%s) of which doc %s (%s) is a member and that is adaptable as a FileSystemItem as a parent FileSystemItem.",
+                    collection.getPathAsString(), collection.getId(),
+                    doc.getPathAsString(), doc.getId()));
+
             parentId = parent.getId();
             path = parent.getPath() + '/' + id;
+            return true;
         }
     }
 
