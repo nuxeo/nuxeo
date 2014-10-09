@@ -40,6 +40,16 @@
       <pageSize>50</pageSize>
     </coreQueryPageProvider>
 
+    <coreQueryPageProvider name="all_collections">
+      <property name="maxResults">PAGE_SIZE</property>
+      <pattern>
+        SELECT * FROM Document WHERE ecm:mixinType = 'Collection' AND
+        ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <pageSize>1000</pageSize>
+    </coreQueryPageProvider>
+
   </extension>
 
 </component>

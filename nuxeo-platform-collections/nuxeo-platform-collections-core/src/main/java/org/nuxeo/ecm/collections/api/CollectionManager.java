@@ -285,4 +285,13 @@ public interface CollectionManager {
     DocumentModel getUserDefaultCollections(final DocumentModel context,
             final CoreSession session) throws ClientException;
 
+    /**
+     * @param documentToBeRemoved
+     * @param collectionId
+     * @param session
+     *
+     * @since 5.9.6
+     */
+    void doRemoveFromCollection(DocumentModel documentToBeRemoved,
+            String collectionId, CoreSession session);
 }
