@@ -90,6 +90,8 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core",
         "org.nuxeo.runtime.reload", "org.nuxeo.drive.core",
+        "org.nuxeo.ecm.platform.collections.core",
+        "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml" })
 public class TestPermissionHierarchyFileSystemChanges {
 
