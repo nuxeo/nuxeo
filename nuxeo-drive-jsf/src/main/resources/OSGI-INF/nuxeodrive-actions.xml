@@ -56,7 +56,7 @@
         <type>TemplateRoot</type>
         <type>WorkspaceRoot</type>
         <type>Forum</type>
-
+        <type>Collections</type>
         <!-- Section sync is disabled until we implement proper support for 
           proxies sync -->
         <type>Section</type>
