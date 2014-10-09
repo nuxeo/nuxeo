@@ -143,8 +143,7 @@ public class RestESDocumentsTest extends BaseTest {
         assertEquals(2685, content.length());
     }
 
-    // Skip test while refactoring aggregates
-    // @Test
+    @Test
     public void iCanPerformESQLPageProviderOnRepository() throws IOException,
             InterruptedException {
         // wait for async jobs
