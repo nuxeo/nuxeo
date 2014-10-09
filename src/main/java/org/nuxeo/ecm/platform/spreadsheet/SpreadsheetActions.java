@@ -14,7 +14,7 @@
  * Contributors:
  *     Nelson Silva <nelson.silva@inevo.pt>
  */
-package org.nuxeo.ecm.dataGrid.seam;
+package org.nuxeo.ecm.platform.spreadsheet;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
@@ -43,13 +43,13 @@ import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
 /**
- * Restful actions for Nuxeo DataGrid
+ * Restful actions for Nuxeo Spreadsheet
  *
  * @since 5.9.6
  */
-@Name("dataGridActions")
+@Name("spreadsheetActions")
 @Scope(EVENT)
-public class DataGridActions implements Serializable {
+public class SpreadsheetActions implements Serializable {
 
     @In(create = true)
     protected ContentViewService contentViewService;
@@ -70,7 +70,7 @@ public class DataGridActions implements Serializable {
         // Set the pageprovider name
         params.put("provider", contentView.getPageProvider().getName());
 
-        // Set the quesy
+        // Set the query
         String query = getQuery(contentView);
         if (query != null) {
             query = URLEncoder.encode(query, "UTF-8");
@@ -78,7 +78,7 @@ public class DataGridActions implements Serializable {
         }
         params.put("query", query);
 
-        return VirtualHostHelper.getContextPathProperty() + "/dataGrid?" +
+        return VirtualHostHelper.getContextPathProperty() + "/spreadsheet?" +
                 Joiner.on('&').withKeyValueSeparator("=").join(params);
     }
 

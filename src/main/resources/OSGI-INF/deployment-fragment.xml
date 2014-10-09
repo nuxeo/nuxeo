@@ -11,7 +11,7 @@
   <extension target="web#STD-AUTH-FILTER">
     <filter-mapping>
       <filter-name>NuxeoAuthenticationFilter</filter-name>
-      <url-pattern>/dataGrid/*</url-pattern>
+      <url-pattern>/spreadsheet/*</url-pattern>
       <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>
     </filter-mapping>

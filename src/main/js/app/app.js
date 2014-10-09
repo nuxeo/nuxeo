@@ -15,7 +15,7 @@
  *     Nelson Silva <nelson.silva@inevo.pt>
  */
 import {Connection} from './nuxeo/connection';
-import {DataGrid} from './ui/dataGrid';
+import {Spreadsheet} from './ui/spreadsheet';
 
 var {layout, query, columns} = parseParams();
 
@@ -31,12 +31,12 @@ function run() {
     var console = $('#console');
 
     // Setup the SpreadSheet
-    var grid = new DataGrid($('#grid'), nx, layout, (columns) ? columns.split(',') : null);
-    grid.query.nxql = query;
+    var sheet = new Spreadsheet($('#grid'), nx, layout, (columns) ? columns.split(',') : null);
+    sheet.query.nxql = query;
 
     var doQuery = () => {
-      grid.query.nxql = $('#query').val();
-      grid.update();
+      sheet.query.nxql = $('#query').val();
+      sheet.update();
     };
 
     if (query) {
@@ -47,12 +47,12 @@ function run() {
 
     $('#save').click(() => {
       console.text('Saving...');
-      grid.save().then(() => console.text(''));
+      sheet.save().then(() => console.text(''));
     });
 
     $('input[name=autosave]').click(function() {
-      grid.autosave = $(this).is(':checked');
-      if (grid.autosave) {
+      sheet.autosave = $(this).is(':checked');
+      if (sheet.autosave) {
         console.text('Changes will be automatically saved!');
       } else {
         console.text('');

@@ -1,11 +1,11 @@
-<component name="org.nuxeo.ecm.dataGrid.authentication">
+<component name="org.nuxeo.ecm.platform.spreadsheet.authentication">
   <extension
       target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
       point="startURL">
 
     <startURLPattern>
       <patterns>
-        <pattern>dataGrid/</pattern>
+        <pattern>spreadsheet/</pattern>
       </patterns>
     </startURLPattern>
 

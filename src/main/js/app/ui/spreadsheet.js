@@ -20,11 +20,11 @@ import {Directory} from '../nuxeo/rpc/directory';
 import {Query} from '../nuxeo/rpc/query';
 
 /**
- * DataGrid backed by Hansontable
+ * Spreadsheet backed by Hansontable
  */
-class DataGrid {
+class Spreadsheet {
 
-  constructor(container, connection, layout = 'datagrid_listing', columns = null) {
+  constructor(container, connection, layout = 'spreadsheet_listing', columns = null) {
     this.container = container;
     this.connection = connection;
 
@@ -218,4 +218,4 @@ function hasProp(obj, prop) {
   }
 }
 
-export {DataGrid};
+export {Spreadsheet};

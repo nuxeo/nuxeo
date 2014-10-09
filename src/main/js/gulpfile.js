@@ -44,7 +44,7 @@ gulp.task('html', function () {
     .pipe(cssFilter.restore())
     .pipe($.useref.restore())
     .pipe($.useref())
-    .pipe(gulp.dest('../../../target/classes/web/nuxeo.war/dataGrid'))
+    .pipe(gulp.dest('../../../target/classes/web/nuxeo.war/spreadsheet'))
     .pipe($.size());
 });
 
@@ -60,7 +60,6 @@ gulp.task('browser-sync', function () {
 
 gulp.task('watch', ['browser-sync'], function () {
   gulp.watch(sources, ['jshint', 'transpile', browserSync.reload]);
-  gulp.watch('app/*.html', [browserSync.reload]);
 });
 
 gulp.task('default', ['clean'], function () {

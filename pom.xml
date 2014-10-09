@@ -1,18 +1,16 @@
-<?xml version="1.0"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.nuxeo</groupId>
-    <artifactId>nuxeo-ecm</artifactId>
+    <artifactId>nuxeo-addons-parent</artifactId>
     <version>5.9.6-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.ecm.dataGrid</groupId>
-  <artifactId>nuxeo-datagrid</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <name>Nuxeo DataGrid</name>
-  <description></description>
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-platform-spreadsheet</artifactId>
+  <name>Nuxeo Platform Spreadsheet</name>
+  <description>Nuxeo Platform Spreadsheet</description>
 
   <dependencies>
     <dependency>
@@ -24,15 +22,15 @@
       <artifactId>nuxeo-platform-contentview-jsf</artifactId>
     </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.7</version>
         <executions>
           <execution>
-            <id>grunt-build</id>
+            <id>gulp-build</id>
             <phase>process-resources</phase>
             <configuration>
               <target>
@@ -47,6 +45,7 @@
       </plugin>
     </plugins>
   </build>
+
   <repositories>
     <repository>
       <id>public</id>
@@ -69,4 +68,5 @@
       </snapshots>
     </repository>
   </repositories>
+
 </project>

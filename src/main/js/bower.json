@@ -1,5 +1,5 @@
 {
-  "name": "nuxeo-datagrid",
+  "name": "nuxeo-spreadsheet",
   "private": true,
   "dependencies": {
     "es6-module-loader": "~0.8.2",
