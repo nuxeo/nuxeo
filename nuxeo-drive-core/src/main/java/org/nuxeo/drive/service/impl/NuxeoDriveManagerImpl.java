@@ -583,7 +583,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     public void addToLocallyEditedCollection(CoreSession session,
             DocumentModel doc) throws ClientException {
 
-        // Create "Locally Edited" collection if not exists
+        // Add document to "Locally Edited" collection, creating if if not
+        // exists
         CollectionManager cm = Framework.getService(CollectionManager.class);
         DocumentModel userCollections = cm.getUserDefaultCollections(doc,
                 session);
