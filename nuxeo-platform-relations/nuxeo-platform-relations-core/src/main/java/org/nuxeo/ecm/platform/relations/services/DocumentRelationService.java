@@ -50,8 +50,8 @@ import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * 
- * 
+ *
+ *
  * @since 5.9.2
  */
 public class DocumentRelationService implements DocumentRelationManager {
@@ -121,8 +121,8 @@ public class DocumentRelationService implements DocumentRelationManager {
             Node toResource, String predicate, boolean inverse,
             boolean includeStatementsInEvents, String comment)
             throws ClientException {
-        Graph graph = getRelationManager().getGraphByName(
-                RelationConstants.GRAPH_NAME);
+        Graph graph = getRelationManager().getGraph(
+                RelationConstants.GRAPH_NAME, session);
         QNameResource fromResource = getNodeFromDocumentModel(from);
 
         Resource predicateResource = new ResourceImpl(predicate);
@@ -160,7 +160,7 @@ public class DocumentRelationService implements DocumentRelationManager {
         }
 
         if (session.getPrincipal() != null
-                && stmt.getProperty(RelationConstants.AUTHOR) != null) {
+                && stmt.getProperty(RelationConstants.AUTHOR) == null) {
             stmt.addProperty(RelationConstants.AUTHOR, new LiteralImpl(
                     session.getPrincipal().getName()));
         }
