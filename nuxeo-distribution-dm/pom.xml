@@ -12,111 +12,13 @@
   <artifactId>nuxeo-distribution-dm</artifactId>
   <packaging>zip</packaging>
   <name>Nuxeo DM</name>
-  <description>
-    Nuxeo Enterprise Platform: The Nuxeo Document Management application.
-  </description>
+  <description>Deprecated Nuxeo Document Management NXR.</description>
 
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-distribution-cap</artifactId>
       <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.annot</groupId>
-      <artifactId>nuxeo-annot-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.annot</groupId>
-      <artifactId>nuxeo-annot-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.annot</groupId>
-      <artifactId>nuxeo-annot-http</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.annot</groupId>
-      <artifactId>nuxeo-annot-repo</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.annot</groupId>
-      <artifactId>nuxeo-annot-gwt</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.annot</groupId>
-      <artifactId>nuxeo-annot-contrib</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-convert</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-preview</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-jsf</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-dm</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-tiling</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-tiling-preview</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-mail-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-mail-types</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-mail-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-virtualnavigation-core-contrib</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-virtualnavigation-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-userworkspace-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-userworkspace-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-userworkspace-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-userworkspace-types</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-login-digest</artifactId>
     </dependency>
 
     <!-- OpenSocial -->
@@ -166,10 +68,6 @@
       <groupId>org.nuxeo.ecm.opensocial</groupId>
       <artifactId>nuxeo-webengine-gadgets</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.webengine</groupId>
-      <artifactId>nuxeo-webengine-core</artifactId>
-    </dependency>
 
     <!-- User Center -->
     <dependency>
@@ -179,20 +77,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-user-oauth</artifactId>
-    </dependency>
-
-    <!-- Nuxeo DIFF -->
-    <dependency>
-      <groupId>org.nuxeo.ecm</groupId>
-      <artifactId>nuxeo-diff-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm</groupId>
-      <artifactId>nuxeo-diff-content</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm</groupId>
-      <artifactId>nuxeo-diff-jsf</artifactId>
     </dependency>
 
     <!-- Scope test -->

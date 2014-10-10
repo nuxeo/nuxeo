@@ -11,7 +11,7 @@
   <artifactId>nuxeo-distribution-cap</artifactId>
   <packaging>zip</packaging>
   <name>Nuxeo CAP</name>
-  <description>Nuxeo Content Application Platform EAR.</description>
+  <description>Nuxeo Content Application Platform NXR.</description>
 
   <dependencies>
     <dependency>
