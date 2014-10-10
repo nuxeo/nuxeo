@@ -225,9 +225,8 @@ public final class ComponentUtils {
                         response.flushBuffer();
                     }
                 } catch (IOException e) {
-                    // XXX: better throw the exception instead of hiding the
-                    // root cause of a potential error
-                    log.error("Error while downloading the file: " + filename);
+                    log.error("Error while downloading the file: " + filename,
+                            e);
                 }
                 faces.responseComplete();
             }
