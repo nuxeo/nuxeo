@@ -20,10 +20,10 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -89,6 +89,11 @@ public class TestDocumentDiff extends DiffTestCase {
             throw new ClientException(
                     "Error while initializing binary manager", ioe);
         }
+    }
+
+    @After
+    public void tearDown() {
+        binaryManager.close();
     }
 
     /**
