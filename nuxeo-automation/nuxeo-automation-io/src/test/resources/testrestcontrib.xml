@@ -28,7 +28,7 @@
     </enricher>
 
     <enricher name="parameters"
-              class="org.nuxeo.ecm.automation.test.service.MockEnricher">
+              class="org.nuxeo.ecm.automation.test.service.enrichers.MockEnricher">
       <category>parameters</category>
       <parameter name="param1">value1</parameter>
     </enricher>

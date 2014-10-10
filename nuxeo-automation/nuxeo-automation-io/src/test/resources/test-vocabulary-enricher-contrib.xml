@@ -1,0 +1,56 @@
+<component name="test-vocabulary-enricher-contrib">
+
+  <extension
+          target="org.nuxeo.ecm.automation.io.services.enricher.ContentEnricherService"
+          point="enricher">
+
+    <enricher name="vocabularies_no_params"
+              class="org.nuxeo.ecm.automation.io.services.enricher.VocabularyEnricher">
+      <category>vocabularies_no_params</category>
+    </enricher>
+
+    <enricher name="vocabularies_invalid_directory"
+              class="org.nuxeo.ecm.automation.io.services.enricher.VocabularyEnricher">
+      <category>vocabularies_invalid_directory</category>
+      <parameter name="field">dc:subjects</parameter>
+      <parameter name="directoryName">void</parameter>
+    </enricher>
+
+    <enricher name="vocabularies_invalid_field"
+              class="org.nuxeo.ecm.automation.io.services.enricher.VocabularyEnricher">
+      <category>vocabularies_invalid_field</category>
+      <parameter name="field">dc:void</parameter>
+      <parameter name="directoryName">l10nsubjects</parameter>
+    </enricher>
+
+    <enricher name="l10nsubjects"
+              class="org.nuxeo.ecm.automation.io.services.enricher.VocabularyEnricher">
+      <category>vocabularies</category>
+      <parameter name="field">dc:subjects</parameter>
+      <parameter name="directoryName">l10nsubjects</parameter>
+    </enricher>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+             point="directories">
+
+    <directory name="l10nsubjects">
+      <schema>l10nxvocabulary</schema>
+      <parentDirectory>l10nsubjects</parentDirectory>
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>l10nsubjects</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>always</createTablePolicy>
+      <dataFile>testl10n.csv</dataFile>
+    </directory>
+
+  </extension>
+
+</component>

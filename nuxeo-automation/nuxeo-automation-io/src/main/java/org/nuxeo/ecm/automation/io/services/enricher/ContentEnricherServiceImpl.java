@@ -122,8 +122,11 @@ public class ContentEnricherServiceImpl extends DefaultComponent implements
             for (ContentEnricherDescriptor descriptor : getEnricherDescriptors(
                     category, ec)) {
                 if (evaluateFilter(ec, descriptor)) {
-                    jg.writeFieldName(descriptor.name);
-                    descriptor.getContentEnricher().enrich(jg, ec);
+                    ContentEnricher enricher = descriptor.getContentEnricher();
+                    if (enricher != null) {
+                        jg.writeFieldName(descriptor.name);
+                        enricher.enrich(jg, ec);
+                    }
                 }
             }
         }

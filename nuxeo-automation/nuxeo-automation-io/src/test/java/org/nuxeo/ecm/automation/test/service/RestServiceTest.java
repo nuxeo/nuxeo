@@ -16,27 +16,18 @@
  */
 package org.nuxeo.ecm.automation.test.service;
 
-import com.google.inject.Inject;
-
-import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.io.services.enricher.ContentEnricher;
-import org.nuxeo.ecm.automation.io.services.enricher
-        .ContentEnricherServiceImpl;
 import org.nuxeo.ecm.automation.io.services.enricher.HeaderDocEvaluationContext;
-import org.nuxeo.ecm.automation.io.services.enricher.ContentEnricherService;
 import org.nuxeo.ecm.automation.io.services.enricher.RestEvaluationContext;
-import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentListWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentWriter;
-import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.automation.test.service.enrichers.MockEnricher;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -47,15 +38,9 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.skyscreamer.jsonassert.JSONAssert;
-
-import javax.ws.rs.core.HttpHeaders;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,9 +49,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * @since 5.7.3
@@ -76,20 +58,7 @@ import static org.mockito.Mockito.when;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.actions" })
 @LocalDeploy("org.nuxeo.ecm.automation.io:testrestcontrib.xml")
-public class RestServiceTest {
-
-    private static final String[] NO_SCHEMA = new String[] {};
-
-    private static final String[] ALL_SCHEMAS = new String[] { "*" };
-
-    @Inject
-    ContentEnricherService rcs;
-
-    @Inject
-    CoreSession session;
-
-    @Inject
-    JsonFactory factory;
+public class RestServiceTest extends BaseRestTest {
 
     @Before
     public void doBefore() throws Exception {
@@ -102,10 +71,6 @@ public class RestServiceTest {
             session.createDocument(doc);
         }
         session.save();
-    }
-
-    protected void assertEqualsJson(String expected, String actual) throws Exception {
-        JSONAssert.assertEquals(expected, actual, true);
     }
 
     @Test
@@ -275,100 +240,6 @@ public class RestServiceTest {
         children = node.get("contextParameters").get("children");
         assertNull(children);
 
-    }
-
-    /**
-     * Parses a JSON string into a JsonNode
-     *
-     * @param json
-     * @return
-     * @throws IOException
-     * @throws JsonProcessingException
-     *
-     */
-    private JsonNode parseJson(String json) throws JsonProcessingException,
-            IOException {
-        ObjectMapper m = new ObjectMapper();
-        return m.readTree(json);
-    }
-
-    private JsonNode parseJson(ByteArrayOutputStream out)
-            throws JsonProcessingException, IOException {
-        return parseJson(out.toString());
-    }
-
-    /**
-     * Returns the JSON representation of the document with all schemas. A
-     * category may be passed to have impact on the Content Enrichers.
-     */
-    protected String getFullDocumentAsJson(DocumentModel doc, String category)
-            throws Exception {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        JsonGenerator jg = getJsonGenerator(out);
-        // When it is written as Json with appropriate headers
-        JsonDocumentWriter.writeDocument(jg, doc, ALL_SCHEMAS, null,
-                getFakeHeaders(category), null);
-        jg.flush();
-        return out.toString();
-    }
-
-    /**
-     * Returns the JSON representation of the document. A category may be passed
-     * to have impact on the Content Enrichers
-     */
-    protected String getDocumentAsJson(DocumentModel doc, String category)
-            throws Exception {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        JsonGenerator jg = getJsonGenerator(out);
-        // When it is written as Json with appropriate headers
-        JsonDocumentWriter.writeDocument(jg, doc, NO_SCHEMA,
-                new HashMap<String, String>(), getFakeHeaders(category), null);
-        jg.flush();
-        return out.toString();
-    }
-
-    /**
-     * Returns the JSON representation of these docs. A category may be passed
-     * to have impact on the Content Enrichers
-     */
-    protected String getDocumentsAsJson(List<DocumentModel> docs,
-            String category) throws Exception {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        JsonGenerator jg = getJsonGenerator(out);
-        // When it is written as Json with appropriate headers
-        JsonDocumentListWriter.writeDocuments(jg, docs, NO_SCHEMA,
-                getFakeHeaders(category), null);
-        jg.flush();
-        return out.toString();
-    }
-
-    /**
-     * Returns the JSON representation of the document.
-     */
-    protected String getDocumentAsJson(DocumentModel doc) throws Exception {
-        return getDocumentAsJson(doc, null);
-    }
-
-    private JsonGenerator getJsonGenerator(OutputStream out) throws IOException {
-        return factory.createJsonGenerator(out);
-    }
-
-    protected HttpHeaders getFakeHeaders() {
-        return getFakeHeaders(null);
-    }
-
-    protected HttpHeaders getFakeHeaders(String category) {
-        HttpHeaders headers = mock(HttpHeaders.class);
-
-        when(
-                headers.getRequestHeader(JsonDocumentWriter.DOCUMENT_PROPERTIES_HEADER)).thenReturn(
-                Arrays.asList(NO_SCHEMA));
-
-        when(
-                headers.getRequestHeader(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER)).thenReturn(
-                Arrays.asList(new String[] { category == null ? "test"
-                        : category }));
-        return headers;
     }
 
 }

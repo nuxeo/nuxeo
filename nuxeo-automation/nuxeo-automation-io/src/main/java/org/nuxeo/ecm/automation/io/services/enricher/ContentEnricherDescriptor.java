@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
@@ -36,6 +38,8 @@ import org.nuxeo.ecm.platform.actions.DefaultActionFilter;
  */
 @XObject("enricher")
 public class ContentEnricherDescriptor {
+
+    protected static final Log log = LogFactory.getLog(ContentEnricherDescriptor.class);
 
     @XNode("@name")
     public String name;
@@ -65,7 +69,11 @@ public class ContentEnricherDescriptor {
             ContentEnricher enricher = klass.newInstance();
             enricher.setParameters(parameters);
             return enricher;
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException
+            | IllegalAccessException
+            | IllegalArgumentException e) {
+            log.error(String.format("Failed to create %s content enricher: %s",
+                    name, e.getMessage()));
             return null;
         }
     }

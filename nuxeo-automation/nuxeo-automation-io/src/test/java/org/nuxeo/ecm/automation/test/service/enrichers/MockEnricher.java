@@ -14,7 +14,7 @@
  * Contributors:
  *     Nelson Silva <nelson.silva@inevo.pt>
  */
-package org.nuxeo.ecm.automation.test.service;
+package org.nuxeo.ecm.automation.test.service.enrichers;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.io.services.enricher.AbstractContentEnricher;
