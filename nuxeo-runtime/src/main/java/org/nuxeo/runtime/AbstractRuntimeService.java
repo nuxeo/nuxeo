@@ -113,7 +113,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     @Override
     public synchronized void start() throws Exception {
         if (!isStarted) {
-            if (Boolean.parseBoolean(getProperty(REDIRECT_JUL, "true"))) {
+            if (Boolean.parseBoolean(getProperty(REDIRECT_JUL, "false"))) {
                 Level threshold = Level.parse(getProperty(
                         REDIRECT_JUL_THRESHOLD, "INFO").toUpperCase());
                 JavaUtilLoggingHelper.redirectToApacheCommons(threshold);
@@ -301,6 +301,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
      * @param msg summary message about all components loading status
      * @return true if there was no detected error, else return false
      */
+    @Override
     public boolean getStatusMessage(StringBuilder msg) {
         String hr = "======================================================================";
         if (!warnings.isEmpty()) {
