@@ -31,6 +31,7 @@
             <property name="layout">pageDirection</property>
             <property name="notDisplayDefaultOption">true</property>
             <property name="moreLessLimit">6</property>
+            <property name="emptyChoiceMessage">label.aggregate.emptyChoice</property>
           </defaultValues>
           <layouts mode="edit">
             <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
@@ -135,6 +136,7 @@
             <property name="layout">pageDirection</property>
             <property name="notDisplayDefaultOption">true</property>
             <property name="moreLessLimit">6</property>
+            <property name="emptyChoiceMessage">label.aggregate.emptyChoice</property>
           </defaultValues>
           <layouts mode="any">
             <layout
@@ -364,6 +366,7 @@
             <property name="itemLabel">#{nxu:userDisplayName(itemEntry.user.username, itemEntry.user.firstName, itemEntry.user.lastName)}</property>
             <property name="directoryName">userDirectory</property>
             <property name="moreLessLimit">6</property>
+            <property name="emptyChoiceMessage">label.aggregate.emptyChoice</property>
           </defaultValues>
           <layouts mode="edit">
             <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
@@ -475,6 +478,7 @@
             <property name="notDisplayDefaultOption">true</property>
             <property name="itemLabel">#{item.key}</property>
             <property name="moreLessLimit">6</property>
+            <property name="emptyChoiceMessage">label.aggregate.emptyChoice</property>
             <property name="order">key desc</property>
           </defaultValues>
           <layouts mode="edit">
@@ -587,6 +591,7 @@
             <property name="notDisplayDefaultOption">true</property>
             <property name="itemLabel">#{item.key}</property>
             <property name="moreLessLimit">6</property>
+            <property name="emptyChoiceMessage">label.aggregate.emptyChoice</property>
           </defaultValues>
           <layouts mode="edit">
             <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
@@ -697,6 +702,7 @@
             <property name="itemLabel">#{item.key}</property>
             <property name="itemCount">(#{item.docCount})</property>
             <property name="moreLessLimit">6</property>
+            <property name="emptyChoiceMessage">label.aggregate.emptyChoice</property>
           </defaultValues>
           <layouts mode="edit">
             <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
