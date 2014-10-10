@@ -84,6 +84,8 @@ public class ImportActions implements Serializable {
 
     public static final String LABEL_IMPORT_PROBLEM = "label.bulk.import.documents.error";
 
+    public static final String LABEL_IMPORT_CANNOT_CREATE_ERROR = "label.bulk.import.documents.cannotCreateError";
+
     protected static Random random = new Random();
 
     @In(create = true, required = false)
@@ -258,7 +260,7 @@ public class ImportActions implements Serializable {
                 // do not reset state
                 resetBatchState = false;
                 FacesMessage message = new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR, LABEL_IMPORT_PROBLEM, null);
+                        FacesMessage.SEVERITY_ERROR, LABEL_IMPORT_CANNOT_CREATE_ERROR, null);
                 FacesContext faces = FacesContext.getCurrentInstance();
                 if (fancyboxFormId != null && fancyboxFormId.startsWith(":")) {
                     faces.addMessage(fancyboxFormId.substring(1), message);

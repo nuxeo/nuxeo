@@ -9,8 +9,6 @@
 
   <h3><h:outputText value="#{messages['label.bulk.import.documents']}" /></h3>
 
-  <h:message styleClass="errorMessage" for="#{fancyboxFormId}"
-    id="#{fancyboxFormId}_message" />
   <h:form enctype="multipart/form-data" id="#{fancyboxFormId}" disableDoubleClickShield="#{!useHtml5DragAndDrop}">
 
     <nxu:set var="buttonsId" value="#{fancyboxFormId}_buttons">
@@ -36,6 +34,9 @@
               pageProviderName="importFolders"
               documentSchemas="dublincore,common">
             </nxl:widgetType>
+
+            <h:message styleClass="errorMessage" for="#{fancyboxFormId}"
+              id="#{fancyboxFormId}_message" />
           </td>
         </tr>
         </tbody>
