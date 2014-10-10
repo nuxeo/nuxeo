@@ -22,6 +22,17 @@
           }
           window.location.replace(docUrl);
 	    }
+
+	    function focus_searchbox(event) {
+          event.preventDefault();
+          jQuery('##{widget.id}_form\\:#{widget.id}_panel input.select2-input').focus();
+          return false;
+        }
+	    // bind the '/' key to focus the searchbox
+	    jQuery(document).bind('keydown', '/', focus_searchbox);
+	    // handle keyboard layouts such as French where the '/' char is
+	    // accessed through the Shift modifier
+	    jQuery(document).bind('keydown', 'Shift+/', focus_searchbox);
 	  </script>
 	  <ui:include src="/incl/select2_js.xhtml" />
 
