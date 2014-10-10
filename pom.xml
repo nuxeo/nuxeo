@@ -140,7 +140,6 @@
     <module>nuxeo-duoweb-authentication</module>
     <module>nuxeo-sample-project</module>
     <module>nuxeo-logs-viewer</module>
-    <module>nuxeo-platform-spreadsheet</module>
   </modules>
 
   <dependencyManagement>
