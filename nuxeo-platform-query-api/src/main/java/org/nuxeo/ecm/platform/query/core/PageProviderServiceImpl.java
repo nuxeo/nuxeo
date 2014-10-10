@@ -21,15 +21,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderClassReplacerDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+
 
 /**
  * @author Anahide Tchertchian
@@ -42,9 +47,16 @@ public class PageProviderServiceImpl extends DefaultComponent implements
 
     public static final String PROVIDER_EP = "providers";
 
+    public static final String REPLACER_EP = "classReplacer";
+
     public static final String NAMED_PARAMETERS = "namedParameters";
 
     protected PageProviderRegistry providerReg = new PageProviderRegistry();
+
+    // @since 5.9.6
+    protected Map<String, Class<? extends PageProvider>> replacerMap = new HashMap<>();
+
+    private static final Log log = LogFactory.getLog(PageProviderServiceImpl.class);
 
     public PageProviderDefinition getPageProviderDefinition(String name) {
         PageProviderDefinition def = providerReg.getPageProvider(name);
@@ -62,30 +74,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements
         if (desc == null) {
             return null;
         }
-        PageProvider<?> pageProvider;
-        if (desc instanceof CoreQueryPageProviderDescriptor) {
-            pageProvider = new CoreQueryDocumentPageProvider();
-        } else if (desc instanceof GenericPageProviderDescriptor) {
-            Class<PageProvider<?>> klass = ((GenericPageProviderDescriptor) desc).getPageProviderClass();
-            if (klass == null) {
-                throw new ClientException(String.format(
-                        "Cannot find class for page provider "
-                                + "definition with name '%s': check"
-                                + " ERROR logs at startup", name));
-            }
-            try {
-                pageProvider = klass.newInstance();
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
-        } else {
-            throw new ClientException(String.format(
-                    "Invalid page provider definition with name '%s'", name));
-        }
-
-        pageProvider.setName(name);
-        // set descriptor, used to build the query
-        pageProvider.setDefinition(desc);
+        PageProvider<?> pageProvider = newPageProviderInstance(name, desc);
         // XXX: set local properties without resolving, and merge with given
         // properties.
         Map<String, Serializable> allProps = new HashMap<String, Serializable>();
@@ -123,6 +112,56 @@ public class PageProviderServiceImpl extends DefaultComponent implements
         }
 
         return pageProvider;
+    }
+
+    protected PageProvider<?> newPageProviderInstance(String name, PageProviderDefinition desc)
+            throws ClientException {
+        PageProvider<?> ret;
+        if (desc instanceof CoreQueryPageProviderDescriptor) {
+            ret = newCoreQueryPageProviderInstance(name);
+        } else if (desc instanceof GenericPageProviderDescriptor) {
+            Class<PageProvider<?>> klass = ((GenericPageProviderDescriptor) desc).getPageProviderClass();
+            ret = newPageProviderInstance(name, klass);
+        } else {
+            throw new ClientException(String.format(
+                    "Invalid page provider definition with name '%s'", name));
+        }
+        ret.setName(name);
+        ret.setDefinition(desc);
+        return ret;
+    }
+
+    protected PageProvider<?> newCoreQueryPageProviderInstance(String name) throws ClientException {
+        PageProvider<?> ret;
+        Class<? extends PageProvider> klass = getClassForPageProvider(name);
+        if (klass == null) {
+            ret = new CoreQueryDocumentPageProvider();
+        } else {
+            ret = newPageProviderInstance(name, klass);
+        }
+        return ret;
+    }
+
+    protected Class<? extends PageProvider> getClassForPageProvider(String name) {
+        return replacerMap.get(name);
+    }
+
+    protected PageProvider newPageProviderInstance(String name, Class<? extends PageProvider> klass)
+            throws ClientException {
+        PageProvider<?> ret;
+        if (klass == null) {
+            throw new ClientException(String.format(
+                    "Cannot find class for page provider definition with name '%s': check"
+                            + " ERROR logs at startup", name));
+        }
+        try {
+            ret = klass.newInstance();
+        } catch (Exception e) {
+            throw new ClientException(String.format(
+                    "Cannot create an instance of class %s for page provider definition"
+                            + " with name '%s'", klass.getName(), name), e);
+        }
+        return ret;
     }
 
     @Deprecated
@@ -167,7 +206,30 @@ public class PageProviderServiceImpl extends DefaultComponent implements
         if (PROVIDER_EP.equals(extensionPoint)) {
             PageProviderDefinition desc = (PageProviderDefinition) contribution;
             providerReg.addContribution(desc);
+        } else if (REPLACER_EP.equals(extensionPoint)) {
+            PageProviderClassReplacerDefinition desc = (PageProviderClassReplacerDefinition) contribution;
+            if (desc.isEnabled()) {
+                Map<String, List<String>> map = desc.getReplacerMap();
+                for (String className : map.keySet()) {
+                    Class<? extends PageProvider> klass = getPageProviderClass(className);
+                    for (String providerName : map.get(className)) {
+                        replacerMap.put(providerName, klass);
+                    }
+                }
+            }
         }
+    }
+
+    protected Class<? extends PageProvider> getPageProviderClass(
+            final String className) throws Exception {
+        Class<? extends PageProvider> ret = (Class<? extends PageProvider>) Class
+                .forName(className);
+        if (!PageProvider.class.isAssignableFrom(ret)) {
+            throw new IllegalStateException(String.format(
+                    "Class %s does not implement PageProvider interface",
+                    className));
+        }
+        return ret;
     }
 
     @Override
@@ -179,4 +241,23 @@ public class PageProviderServiceImpl extends DefaultComponent implements
             providerReg.removeContribution(desc);
         }
     }
+
+    @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+        super.applicationStarted(context);
+        dumpReplacerMap();
+    }
+
+    protected void dumpReplacerMap() {
+        if (replacerMap.isEmpty()) {
+            return;
+        }
+        StringBuffer out = new StringBuffer();
+        out.append("List of page provider names that are superseded: \n");
+        for (String name: replacerMap.keySet()) {
+            out.append(String.format("%s: %s\n", name, replacerMap.get(name).getName()));
+        }
+        log.info(out.toString());
+    }
+
 }
