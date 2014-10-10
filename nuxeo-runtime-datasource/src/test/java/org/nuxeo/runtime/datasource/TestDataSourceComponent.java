@@ -74,6 +74,7 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
         FileUtils.deleteQuietly(dir);
         dir.mkdirs();
         Framework.getProperties().put(PROP_NAME, dir.getPath());
+        deployBundle("org.nuxeo.runtime.jtajca");
         deployBundle("org.nuxeo.runtime.datasource");
         fireFrameworkStarted();
     }

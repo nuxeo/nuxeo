@@ -101,6 +101,14 @@ public class DataSourceDescriptor {
         return Framework.expandVars(xaDataSource);
     }
 
+    @XNode("@dataSource")
+    protected String dataSource;
+
+
+    public String getDataSource() {
+        return Framework.expandVars(dataSource);
+    }
+
     @XNode("@driverClassName")
     protected String driverClasssName;
 
@@ -162,6 +170,14 @@ public class DataSourceDescriptor {
             initialContext.bind(
                     DataSourceHelper.getDataSourceJNDIName(xaName),
                     xaReference);
+        } else if (dataSource != null) {
+            poolReference = new Reference(
+                    DataSource.class.getName(),
+                    PoolFactory.class.getName(),
+                    null);
+            final String name = Framework.expandVars(dataSource);
+            poolReference.add(new StringRefAddr("dataSourceJNDI",
+                    DataSourceHelper.getDataSourceJNDIName(name)));
         } else if (driverClasssName != null) {
             poolReference = new Reference(
                     DataSource.class.getName(),

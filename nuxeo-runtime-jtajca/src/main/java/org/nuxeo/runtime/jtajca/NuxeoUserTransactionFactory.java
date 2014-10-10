@@ -20,6 +20,8 @@ import javax.naming.Reference;
 import javax.naming.spi.ObjectFactory;
 import javax.transaction.UserTransaction;
 
+import org.nuxeo.runtime.transaction.TransactionHelper;
+
 /**
  * Factory for the UserTransaction.
  */
@@ -34,7 +36,7 @@ public class NuxeoUserTransactionFactory implements ObjectFactory {
         }
         if (NuxeoContainer.transactionManager == null) {
             // initialize tx manager through the factory
-            NuxeoContainer.lookupTransactionManager();
+            return TransactionHelper.lookupTransactionManager();
         }
         return NuxeoContainer.userTransaction;
     }

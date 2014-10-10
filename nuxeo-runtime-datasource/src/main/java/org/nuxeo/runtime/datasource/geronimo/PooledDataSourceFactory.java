@@ -25,6 +25,7 @@ import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerFactory;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.jtajca.NuxeoContainer.ConnectionManagerWrapper;
 import org.tranql.connector.jdbc.JDBCDriverMCF;
+import org.tranql.connector.jdbc.LocalDataSourceWrapper;
 import org.tranql.connector.jdbc.TranqlDataSource;
 import org.tranql.connector.jdbc.XADataSourceWrapper;
 
@@ -105,6 +106,14 @@ public class PooledDataSourceFactory implements
                 }
             }
             String password = refAttribute(ref, "password", "");
+            String dsname = refAttribute(ref,  "dataSourceJNDI", "");
+            if (!dsname.isEmpty()) {
+                javax.sql.DataSource ds = (javax.sql.DataSource)new InitialContext().lookup(dsname);
+                LocalDataSourceWrapper wrapper = new LocalDataSourceWrapper(ds);
+                wrapper.setUserName(user);
+                wrapper.setPassword(password);
+                return wrapper;
+            }
             String name = refAttribute(ref, "driverClassName", null);
             String url = refAttribute(ref, "url", null);
             boolean commitBeforeAutocommit = Boolean.valueOf(

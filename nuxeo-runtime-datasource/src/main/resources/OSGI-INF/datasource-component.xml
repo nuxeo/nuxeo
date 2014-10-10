@@ -88,6 +88,8 @@
 		JDBC driver for more.
 	</documentation>
 
+    <require>org.nuxeo.runtime.jtajca.JtaActivator</require>
+    
 	<service>
 		<provide interface="org.nuxeo.runtime.datasource.PooledDataSourceRegistry" />
 	</service>
