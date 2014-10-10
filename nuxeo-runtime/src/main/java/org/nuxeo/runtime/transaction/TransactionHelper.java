@@ -24,6 +24,7 @@ import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
+import javax.transaction.TransactionSynchronizationRegistry;
 import javax.transaction.UserTransaction;
 
 import org.apache.commons.logging.Log;
@@ -46,7 +47,7 @@ public class TransactionHelper {
      */
     public static final String[] UT_NAMES = { "java:comp/UserTransaction", // standard
             "java:comp/env/UserTransaction", // manual binding outside appserver
-            "UserTransaction" // jboss
+            "java:jboss/UserTransaction"// jboss
     };
 
     /**
@@ -55,7 +56,16 @@ public class TransactionHelper {
      */
     public static final String[] TM_NAMES = { "java:comp/TransactionManager", // common
             "java:comp/env/TransactionManager", // manual binding
-            "java:TransactionManager" //
+            "java:jboss/TransactionManager" // jboss
+    };
+
+    /**
+     * Various binding names for the TransactionManager. They depend on the
+     * application server used and how the configuration is done.
+     */
+    public static final String[] SYNCH_NAMES = { "java:comp/TransactionManager", // common
+            "java:comp/env/TransactionSynchronizationRegistry", // manual binding
+            "java:jboss/TransactionSynchronizationRegistry" // jboss
     };
 
     /**
@@ -126,6 +136,35 @@ public class TransactionHelper {
         throw new NamingException("TransactionManager not found in JNDI");
     }
 
+
+    /**
+     * Looks up the TransactionSynchronizationRegistry in JNDI.
+     *
+     * @return the TransactionSynchronizationRegistry
+     * @throws NamingException if not found
+     */
+    public static TransactionSynchronizationRegistry lookupSynchronizationRegistry()
+            throws NamingException {
+        InitialContext context = new InitialContext();
+        int i = 0;
+        for (String name : SYNCH_NAMES) {
+            try {
+                TransactionSynchronizationRegistry synch = (TransactionSynchronizationRegistry) context.lookup(name);
+                if (synch != null) {
+                    if (i != 0) {
+                        // put successful name first for next time
+                        SYNCH_NAMES[i] = SYNCH_NAMES[0];
+                        SYNCH_NAMES[0] = name;
+                    }
+                    return synch;
+                }
+            } catch (NamingException e) {
+                // try next one
+            }
+            i++;
+        }
+        throw new NamingException("SynchronizationRegistry not found in JNDI");
+    }
     /**
      * Checks if the current User Transaction is active.
      */

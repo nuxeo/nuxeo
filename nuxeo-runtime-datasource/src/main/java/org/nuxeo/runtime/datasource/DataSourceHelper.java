@@ -57,6 +57,8 @@ public class DataSourceHelper {
         String name = ctx == null ? null : ctx.getClass().getName();
         if ("org.jnp.interfaces.NamingContext".equals(name)) { // JBoss
             prefix = "java:";
+        } else if ("org.jboss.as.naming.InitialContext".equals(name)) {  // Wildfly
+            prefix = "java:jboss";
         } else if ("org.mortbay.naming.local.localContextRoot".equals(name)) { // Jetty
             prefix = "jdbc";
         } else {
