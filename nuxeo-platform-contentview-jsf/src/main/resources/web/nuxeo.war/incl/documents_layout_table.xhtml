@@ -55,8 +55,7 @@
         </f:subview>
       </c:if>
       <c:if test="#{useAjaxForm}">
-        <h:form id="#{formId}" ajaxSubmit="true"
-          render="#{contentIdToBeReRendered}">
+        <h:form id="#{formId}">
           <ui:include src="documents_layout_table_content.xhtml" />
         </h:form>
         <f:subview id="#{formId}_buttons">

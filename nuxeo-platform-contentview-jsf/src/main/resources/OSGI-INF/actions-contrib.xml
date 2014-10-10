@@ -24,7 +24,6 @@
         <property name="addForm">true</property>
         <property name="useAjaxForm">true</property>
         <property name="ajaxSupport">true</property>
-        <property name="ajaxReRender">#{contentIdToBeReRendered}</property>
       </properties>
     </action>
 
@@ -38,7 +37,6 @@
         <property name="addForm">true</property>
         <property name="useAjaxForm">true</property>
         <property name="ajaxSupport">true</property>
-        <property name="ajaxReRender">#{contentIdToBeReRendered}</property>
       </properties>
       <filter-id>contentViewShowRefreshCommand</filter-id>
     </action>
