@@ -17,15 +17,19 @@
 package org.nuxeo.ecm.platform.ui.web.renderer;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import javax.faces.application.ResourceDependencies;
 import javax.faces.application.ResourceDependency;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
+import javax.faces.model.SelectItem;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
+import com.sun.faces.renderkit.RenderKitUtils;
 import com.sun.faces.renderkit.html_basic.SelectManyCheckboxListRenderer;
 
 /**
@@ -38,6 +42,8 @@ public class NxSelectManyCheckboxListRenderer extends
         SelectManyCheckboxListRenderer {
 
     final String MORE_LESS_LIMIT_PROPERTY = "moreLessLimit";
+
+    final String EMPTY_CHOICE_PROPERTY = "emptyChoiceMessage";
 
     public static final String RENDERER_TYPE = "org.nuxeo.NxSelectManyCheckboxList";
 
@@ -83,6 +89,19 @@ public class NxSelectManyCheckboxListRenderer extends
             writer.endElement("script");
         }
 
+        Iterator<SelectItem> items =
+                RenderKitUtils.getSelectItems(context, component);
+        if (!items.hasNext()) {
+            final String emptyChoiceMessage = (String) component.getAttributes().get(
+                    EMPTY_CHOICE_PROPERTY);
+            if (StringUtils.isNotBlank(emptyChoiceMessage)) {
+                ResponseWriter writer = context.getResponseWriter();
+                writer.startElement("div", component);
+                writer.writeAttribute("class", "emptyResult", null);
+                writer.write(ComponentUtils.translate(context, emptyChoiceMessage));
+                writer.endElement("div");
+            }
+        }
     }
 
 }
