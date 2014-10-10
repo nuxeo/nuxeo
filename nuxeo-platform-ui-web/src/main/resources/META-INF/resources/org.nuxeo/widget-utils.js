@@ -29,7 +29,7 @@ nuxeo.utils = (function(m) {
       lessLink.css("display", "none");
       return;
     } else {
-      var itemsToHideDisplay = itemTable.find("tr:gt(" + displayLimit + ")");
+      var itemsToHideDisplay = itemTable.find("tr:gt(" + (displayLimit - 1) + ")");
       if (displayAll) {
         moreLink.css("display", "none");
         lessLink.css("display", "");
