@@ -69,6 +69,7 @@
       <resource>nuxeo-lightbox.js</resource>
       <resource>jquery.nuxeo.cv-lightbox.js</resource>
       <resource>nuxeo-documents-import.js</resource>
+      <resource>fixmultipartajax.js</resource>
     </view>
 
     <view name="Nuxeo header" template-engine="jsf-facelets">
@@ -255,6 +256,9 @@
     </resource>
     <resource name="nuxeo-documents-import.js">
       <path>scripts/nuxeo-documents-import.js</path>
+    </resource>
+    <resource name="fixmultipartajax.js">
+      <path>scripts/fixmultipartajax.js</path>
     </resource>
   </extension>
 
