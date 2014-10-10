@@ -24,13 +24,12 @@ import java.util.Date;
 
 import org.junit.After;
 import org.junit.Test;
-
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
-
 import org.openqa.selenium.By;
 
 /**
@@ -42,6 +41,8 @@ public class ITTaggingTest extends AbstractTest {
 
     private final static String WORKSPACE_TITLE = "WorkspaceTitle_"
             + new Date().getTime();
+
+    public final static String SELECT2_TAG_ELT_ID = "s2id_nxl_grid_summary_layout:nxw_summary_current_document_tagging_form:nxw_summary_current_document_tagging_select2";
 
     @Test
     public void testAddAndRemoveTagOnDocument()
@@ -57,7 +58,7 @@ public class ITTaggingTest extends AbstractTest {
 
         Select2WidgetElement tagWidget = new Select2WidgetElement(
                 driver,
-                driver.findElement(By.xpath("//*[@id='s2id_nxl_grid_summary_layout:nxw_summary_current_document_tagging_form:nxw_summary_current_document_tagging_select2']")),
+                Locator.findElementWithTimeout(By.id(SELECT2_TAG_ELT_ID)),
                 true);
         assertTrue(tagWidget.getSelectedValues().isEmpty());
         tagWidget.selectValue("first_tag");
@@ -68,7 +69,7 @@ public class ITTaggingTest extends AbstractTest {
         fileDocumentBasePage.getSummaryTab();
         tagWidget = new Select2WidgetElement(
                 driver,
-                driver.findElement(By.xpath("//*[@id='s2id_nxl_grid_summary_layout:nxw_summary_current_document_tagging_form:nxw_summary_current_document_tagging_select2']")),
+                Locator.findElementWithTimeout(By.id(SELECT2_TAG_ELT_ID)),
                 true);
         assertEquals(2, tagWidget.getSelectedValues().size());
         tagWidget.removeFromSelection("first_tag");
@@ -77,7 +78,7 @@ public class ITTaggingTest extends AbstractTest {
         fileDocumentBasePage.getSummaryTab();
         tagWidget = new Select2WidgetElement(
                 driver,
-                driver.findElement(By.xpath("//*[@id='s2id_nxl_grid_summary_layout:nxw_summary_current_document_tagging_form:nxw_summary_current_document_tagging_select2']")),
+                Locator.findElementWithTimeout(By.id(SELECT2_TAG_ELT_ID)),
                 true);
         assertEquals(1, tagWidget.getSelectedValues().size());
     }
