@@ -380,25 +380,33 @@ public class ContentViewActions implements Serializable {
     }
 
     /**
+     * Returns actions filtered depending on given custom context.
+     * <p>
+     * Boolean values are declared as objects to avoid conversion to "false"
+     * when variable is not defined, and keep "null" value.
+     *
      * @since 5.9.6
      */
     public List<Action> getActionsList(String category,
             DocumentModel currentDocument, ContentView contentView,
             Object showPageSizeSelector, Object showRefreshCommand,
             Object showCSVExport, Object showPDFExport,
-            Object showSyndicationLinks) {
+            Object showSyndicationLinks, Boolean showSlideshow,
+            Boolean showEditColumns, Boolean showSpreadsheet) {
         return webActions.getActionsList(
                 category,
                 createContentViewActionContext(currentDocument, contentView,
                         showPageSizeSelector, showRefreshCommand,
-                        showCSVExport, showPDFExport, showSyndicationLinks));
+                        showCSVExport, showPDFExport, showSyndicationLinks,
+                        showSlideshow, showEditColumns, showSpreadsheet));
     }
 
     protected ActionContext createContentViewActionContext(
             DocumentModel currentDocument, ContentView contentView,
             Object showPageSizeSelector, Object showRefreshCommand,
             Object showCSVExport, Object showPDFExport,
-            Object showSyndicationLinks) {
+            Object showSyndicationLinks, Boolean showSlideshow,
+            Boolean showEditColumns, Boolean showSpreadsheet) {
         ActionContext ctx;
         FacesContext faces = FacesContext.getCurrentInstance();
         if (faces == null) {
@@ -417,6 +425,9 @@ public class ContentViewActions implements Serializable {
         ctx.putLocalVariable("showCSVExport", showCSVExport);
         ctx.putLocalVariable("showPDFExport", showPDFExport);
         ctx.putLocalVariable("showSyndicationLinks", showSyndicationLinks);
+        ctx.putLocalVariable("showSlideshow", showSlideshow);
+        ctx.putLocalVariable("showEditColumns", showEditColumns);
+        ctx.putLocalVariable("showSpreadsheet", showSpreadsheet);
         return ctx;
     }
 }
