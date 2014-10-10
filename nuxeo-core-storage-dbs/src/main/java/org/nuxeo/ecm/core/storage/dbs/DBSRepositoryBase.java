@@ -72,6 +72,11 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     }
 
     @Override
+    public void shutdown() {
+        binaryManager.close();
+    }
+
+    @Override
     public String getName() {
         return repositoryName;
     }

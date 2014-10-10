@@ -48,6 +48,12 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
 
     private static final Log log = LogFactory.getLog(CachingBinaryManager.class);
 
+    protected static final String LEN_DIGEST_SUFFIX = "-len";
+
+    public FileCache fileCache;
+
+    protected FileStorage fileStorage;
+
     @Override
     public void initialize(BinaryManagerDescriptor binaryManagerDescriptor)
             throws IOException {
@@ -58,11 +64,10 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
                 + getClass().getSimpleName());
     }
 
-    protected static final String LEN_DIGEST_SUFFIX = "-len";
-
-    public FileCache fileCache;
-
-    protected FileStorage fileStorage;
+    @Override
+    public void close() {
+        fileCache.clear();
+    }
 
     /**
      * Initialize the cache.

@@ -20,10 +20,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -103,6 +105,17 @@ public class LocalBinaryManager extends AbstractBinaryManager {
         tmpDir.mkdirs();
         descriptor = getDescriptor(new File(base, CONFIG_FILE));
         createGarbageCollector();
+    }
+
+    @Override
+    public void close() {
+        if (tmpDir != null) {
+            try {
+                FileUtils.deleteDirectory(tmpDir);
+            } catch (IOException e) {
+                throw new NuxeoException(e);
+            }
+        }
     }
 
     public File getStorageDir() {

@@ -12,13 +12,14 @@
 
 package org.nuxeo.ecm.core.storage.binary;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 
 /**
  * A binary manager stores binaries according to their digest.
  */
-public interface BinaryManager {
+public interface BinaryManager extends Closeable {
 
     /**
      * Initializer.
@@ -59,5 +60,12 @@ public interface BinaryManager {
      * @return the binary GC
      */
     BinaryGarbageCollector getGarbageCollector();
+
+    /**
+     * Closes the binary manager and releases all resources and temporary
+     * objects held by it.
+     */
+    @Override
+    void close();
 
 }

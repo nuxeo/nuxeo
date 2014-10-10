@@ -80,6 +80,7 @@ public class MemRepository extends DBSRepositoryBase {
 
     @Override
     public void shutdown() {
+        super.shutdown();
         states = null;
     }
 

@@ -411,6 +411,7 @@ public class RepositoryImpl implements Repository {
         closeAllSessions();
         model = null;
         backend.shutdown();
+        binaryManager.close();
         BinaryManagerService bms = Framework.getLocalService(BinaryManagerService.class);
         bms.removeBinaryManager(repositoryDescriptor.name);
 

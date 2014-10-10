@@ -112,9 +112,7 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
         BinaryManager binaryManager = new DefaultBinaryManager();
         binaryManager.initialize(new BinaryManagerDescriptor());
         Binary binary = binaryManager.getBinary(digest);
-        if (binary == null) {
-            throw new RuntimeException("Missing file for digest: " + digest);
-        }
+        assertNotNull("Missing file for digest: " + digest, binary);
         String filename = "doc.txt";
         Blob blob = new StorageBlob(binary, filename, "text/plain", "utf-8",
                 binary.getDigest(), binary.getLength());
@@ -143,6 +141,7 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
         session.save();
         assertNull(file.getProperty("file", "content"));
 
+        binaryManager.close();
     }
 
     @Test
@@ -159,9 +158,7 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
         BinaryManager binaryManager = new DefaultBinaryManager();
         binaryManager.initialize(new BinaryManagerDescriptor());
         Binary binary = binaryManager.getBinary(digest);
-        if (binary == null) {
-            throw new RuntimeException("Missing file for digest: " + digest);
-        }
+        assertNotNull("Missing file for digest: " + digest, binary);
 
         String expected = "this is a file";
         byte[] observedContent = new byte[expected.length()];
@@ -190,6 +187,8 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
         assertEquals(expected.length(), binaryCopy.getStream().read(
                 observedContent));
         assertEquals(expected, new String(observedContent));
+
+        binaryManager.close();
     }
 
     protected static class TmpStreamingBlob extends StreamingBlob {

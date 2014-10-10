@@ -110,6 +110,8 @@ public class TestDefaultBinaryManager extends NXRuntimeTestCase {
         assertEquals(3, status.sizeBinariesGC);
         // one file gone
         assertEquals(2, countFiles(binaryManager.getStorageDir()));
+
+        binaryManager.close();
     }
 
     @Test
@@ -123,6 +125,8 @@ public class TestDefaultBinaryManager extends NXRuntimeTestCase {
         binaryManager.storeAndDigest(source);
         assertFalse(file.exists());
         assertTrue(source.getFile().exists());
+
+        binaryManager.close();
     }
 
     protected static int countFiles(File dir) {

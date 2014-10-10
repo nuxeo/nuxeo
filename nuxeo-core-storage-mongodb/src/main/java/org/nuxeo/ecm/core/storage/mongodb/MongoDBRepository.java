@@ -130,6 +130,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public void shutdown() {
+        super.shutdown();
         mongoClient.close();
     }
 
