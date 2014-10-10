@@ -101,7 +101,7 @@ input.tinyButton {
 .dropdown:hover {
   background: url("${basePath}/icons/dropdown.png") no-repeat scroll right center;
   background-color: "button (__FLAVOR__ background)";
-  padding: .4em 1.5em .4em .8em !important }
+  padding: .4em 1.5em .43em .8em !important }
 
 /* =Action Bar */
 .action_bar {
@@ -250,12 +250,13 @@ input.tinyButton {
 
 .horizontalAction ~ .actionList li {
   border-left: 0 none;
+  border-radius: 0 3px 3px 0;
   line-height: 1.75em;
   color: #555;
   font-weight: bold;
   margin: 0 }
 
-.contextActions .button  {
+.globalActions .horizontalAction .button {
   border-radius: 0;
   margin: 0;
   padding: .5em .6em;
@@ -265,9 +266,6 @@ input.tinyButton {
 .globalActions .horizontalAction:first-child {
   border-left: 1px solid "neutral.light (__FLAVOR__ border)";
   border-radius: 2px 0 0 2px; }
-
-.globalActions .actionList:only-of-type .button {
-  border: 1px solid "neutral.light (__FLAVOR__ border)"}
 
 /* =Kept for social collab custom actions */
 .headerTitleAndTools h1 {
