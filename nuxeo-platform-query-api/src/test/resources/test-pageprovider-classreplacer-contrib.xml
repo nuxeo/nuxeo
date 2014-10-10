@@ -13,7 +13,7 @@
       <provider>bar</provider>
     </replacer>
 
-    <replacer withClass="org.nuxeo.ecm.platform.query.nxql..CoreQueryAndFetchPageProvider">
+    <replacer withClass="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
       <provider>foo</provider>
     </replacer>
 
