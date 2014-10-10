@@ -1212,7 +1212,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-spreadsheet</artifactId>
-        <version>${nuxeo.logs.viewer.version}</version>
+        <version>${nuxeo.spreadsheet.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
