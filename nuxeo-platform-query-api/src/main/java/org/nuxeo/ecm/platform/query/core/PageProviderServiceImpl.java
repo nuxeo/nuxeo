@@ -47,14 +47,15 @@ public class PageProviderServiceImpl extends DefaultComponent implements
 
     public static final String PROVIDER_EP = "providers";
 
-    public static final String REPLACER_EP = "classReplacer";
+    // @since 5.9.6
+    public static final String REPLACER_EP = "replacers";
 
     public static final String NAMED_PARAMETERS = "namedParameters";
 
     protected PageProviderRegistry providerReg = new PageProviderRegistry();
 
     // @since 5.9.6
-    protected Map<String, Class<? extends PageProvider>> replacerMap = new HashMap<>();
+    protected PageProviderClassReplacerRegistry replacersReg = new PageProviderClassReplacerRegistry();
 
     private static final Log log = LogFactory.getLog(PageProviderServiceImpl.class);
 
@@ -133,17 +134,13 @@ public class PageProviderServiceImpl extends DefaultComponent implements
 
     protected PageProvider<?> newCoreQueryPageProviderInstance(String name) throws ClientException {
         PageProvider<?> ret;
-        Class<? extends PageProvider> klass = getClassForPageProvider(name);
+        Class<? extends PageProvider> klass = replacersReg.getClassForPageProvider(name);
         if (klass == null) {
             ret = new CoreQueryDocumentPageProvider();
         } else {
             ret = newPageProviderInstance(name, klass);
         }
         return ret;
-    }
-
-    protected Class<? extends PageProvider> getClassForPageProvider(String name) {
-        return replacerMap.get(name);
     }
 
     protected PageProvider newPageProviderInstance(String name, Class<? extends PageProvider> klass)
@@ -208,28 +205,8 @@ public class PageProviderServiceImpl extends DefaultComponent implements
             providerReg.addContribution(desc);
         } else if (REPLACER_EP.equals(extensionPoint)) {
             PageProviderClassReplacerDefinition desc = (PageProviderClassReplacerDefinition) contribution;
-            if (desc.isEnabled()) {
-                Map<String, List<String>> map = desc.getReplacerMap();
-                for (String className : map.keySet()) {
-                    Class<? extends PageProvider> klass = getPageProviderClass(className);
-                    for (String providerName : map.get(className)) {
-                        replacerMap.put(providerName, klass);
-                    }
-                }
-            }
+            replacersReg.addContribution(desc);
         }
-    }
-
-    protected Class<? extends PageProvider> getPageProviderClass(
-            final String className) throws Exception {
-        Class<? extends PageProvider> ret = (Class<? extends PageProvider>) Class
-                .forName(className);
-        if (!PageProvider.class.isAssignableFrom(ret)) {
-            throw new IllegalStateException(String.format(
-                    "Class %s does not implement PageProvider interface",
-                    className));
-        }
-        return ret;
     }
 
     @Override
@@ -245,19 +222,8 @@ public class PageProviderServiceImpl extends DefaultComponent implements
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
         super.applicationStarted(context);
-        dumpReplacerMap();
+        replacersReg.dumpReplacerMap();
     }
 
-    protected void dumpReplacerMap() {
-        if (replacerMap.isEmpty()) {
-            return;
-        }
-        StringBuffer out = new StringBuffer();
-        out.append("List of page provider names that are superseded: \n");
-        for (String name: replacerMap.keySet()) {
-            out.append(String.format("%s: %s\n", name, replacerMap.get(name).getName()));
-        }
-        log.info(out.toString());
-    }
 
 }

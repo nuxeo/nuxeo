@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.query.api;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Class replacer descriptor interface enable to supersede a class of an
@@ -31,13 +30,7 @@ public interface PageProviderClassReplacerDefinition extends Serializable {
 
     boolean isEnabled();
 
-    void setEnabled(boolean enabled);
+    String getPageProviderClassName();
 
-    /**
-     * Get the map where the key is the class name, the value a list of page
-     * provider names.
-     */
-    Map<String, List<String>> getReplacerMap();
-
-    void setReplacerMap(Map<String, List<String>> map);
+    List<String> getPageProviderNames();
 }

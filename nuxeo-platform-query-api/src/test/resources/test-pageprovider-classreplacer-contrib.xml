@@ -2,21 +2,20 @@
 
 <component name="org.nuxeo.ecm.platform.query.api.PageProviderservice.testReplacerContrib">
 
-  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
-    point="classReplacer">
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService" point="replacers">
 
-    <replacers>
+    <replacer withClass="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <provider>CURRENT_DOCUMENT_CHILDREN</provider>
+      <provider>nxql_search</provider>
+    </replacer>
 
-      <replacer withClass="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
-        CURRENT_DOCUMENT_CHILDREN,
-        nxql_search,  foo
-      </replacer>
+    <replacer withClass="org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider">
+      <provider>bar</provider>
+    </replacer>
 
-      <replacer withClass="org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider">
-        bar
-      </replacer>
+    <replacer withClass="org.nuxeo.ecm.platform.query.nxql..CoreQueryAndFetchPageProvider">
+      <provider>foo</provider>
+    </replacer>
 
-    </replacers>
   </extension>
-
 </component>

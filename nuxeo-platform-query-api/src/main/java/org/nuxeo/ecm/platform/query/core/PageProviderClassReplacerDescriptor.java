@@ -19,27 +19,23 @@
 package org.nuxeo.ecm.platform.query.core;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XNodeMap;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.query.api.PageProviderClassReplacerDefinition;
 
 /**
  * @since 5.9.6
  */
-@XObject(value = "replacers")
+@XObject(value = "replacer")
 public class PageProviderClassReplacerDescriptor implements
         PageProviderClassReplacerDefinition {
+    private static final long serialVersionUID = 1L;
 
-    @XNodeMap(value = "replacer", key = "@withClass", type = HashMap.class, componentType = String.class)
-    Map<String, String> replacers = new HashMap<String, String>();
-
-    Map<String, List<String>> replacerMap;
+    @XNode("@withClass")
+    public String className;
 
     @XNode("@enabled")
     protected boolean enabled = true;
@@ -49,25 +45,20 @@ public class PageProviderClassReplacerDescriptor implements
         return enabled;
     }
 
-    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
+    @XNodeList(value = "provider", type = String[].class, componentType = String.class)
+    String[] names = new String[0];
+
     @Override
-    public Map<String, List<String>> getReplacerMap() {
-        if (replacerMap == null) {
-            replacerMap = new HashMap<>(replacers.size());
-            for (String className: replacers.keySet()) {
-                String providers = replacers.get(className).replace("," ," ").replace("\n", " ");
-                replacerMap.put(className, Arrays.asList(StringUtils.split(providers)));
-            }
-        }
-        return replacerMap;
+    public List<String> getPageProviderNames() {
+        return Arrays.asList(names);
     }
 
     @Override
-    public void setReplacerMap(Map<String, List<String>> map) {
-        replacerMap = map;
+    public String getPageProviderClassName() {
+        return className;
     }
 }

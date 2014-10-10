@@ -23,7 +23,7 @@
       class="org.nuxeo.ecm.platform.query.core.GenericPageProviderDescriptor" />
   </extension-point>
 
-  <extension-point name="classReplacer">
+  <extension-point name="replacers">
     <object
       class="org.nuxeo.ecm.platform.query.core.PageProviderClassReplacerDescriptor" />
   </extension-point>
