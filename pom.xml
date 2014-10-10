@@ -67,6 +67,7 @@
     <nuxeo.box.version>5.9.6-SNAPSHOT</nuxeo.box.version>
     <nuxeo.easyshare.version>5.9.6-SNAPSHOT</nuxeo.easyshare.version>
     <nuxeo.logs.viewer.version>5.9.6-SNAPSHOT</nuxeo.logs.viewer.version>
+    <nuxeo.spreadsheet.version>5.9.6-SNAPSHOT</nuxeo.spreadsheet.version>
 
     <!-- optional addons -->
     <nuxeo.jbpm.version>5.9.6-SNAPSHOT</nuxeo.jbpm.version>
@@ -139,6 +140,7 @@
     <module>nuxeo-duoweb-authentication</module>
     <module>nuxeo-sample-project</module>
     <module>nuxeo-logs-viewer</module>
+    <module>nuxeo-platform-spreadsheet</module>
   </modules>
 
   <dependencyManagement>
@@ -1203,6 +1205,13 @@
       <dependency>
         <groupId>org.nuxeo.logs.viewer</groupId>
         <artifactId>nuxeo-logs-viewer</artifactId>
+        <version>${nuxeo.logs.viewer.version}</version>
+      </dependency>
+
+      <!-- Spreadsheet -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-spreadsheet</artifactId>
         <version>${nuxeo.logs.viewer.version}</version>
       </dependency>
     </dependencies>
