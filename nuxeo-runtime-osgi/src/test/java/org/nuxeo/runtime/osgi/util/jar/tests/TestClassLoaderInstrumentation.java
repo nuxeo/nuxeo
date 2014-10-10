@@ -20,7 +20,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.nuxeo.osgi.util.jar.JarFileCloser;
+import org.nuxeo.osgi.util.jar.URLJarFileIntrospectionError;
+import org.nuxeo.osgi.util.jar.URLJarFileIntrospector;
 import org.nuxeo.runtime.osgi.util.jar.index.BuildMetaIndex;
 
 import sun.misc.MetaIndex;
@@ -97,8 +98,7 @@ public class TestClassLoaderInstrumentation {
 
 
     @Test
-    @Ignore
-    public void canDeleteJar() throws FileNotFoundException, IOException, ClassNotFoundException {
+    public void canDeleteJar() throws FileNotFoundException, IOException, ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalAccessException, NoSuchMethodException, URLJarFileIntrospectionError {
         URL firstURL = jarBuilder.buildFirst();
         URL otherURL = jarBuilder.buildOther();
         URL[] jarURLs = new URL[] { firstURL, otherURL };
@@ -106,7 +106,7 @@ public class TestClassLoaderInstrumentation {
         assertThat(ucl.loadClass(JarBuilder.First.class.getName()), notNullValue());
         JarFile jarFile = new JarFile(jarURLs[1].getFile());
         jarFile.getManifest();
-        new JarFileCloser(new URLClassLoader(new URL[] {}), ucl).close(jarFile);
+        new URLJarFileIntrospector().newJarFileCloser(ucl).close(jarFile);
         File file = new File(jarFile.getName());
         assertThat(file.delete(), is(true));
         assertThat(ucl.findResource("first.marker"), notNullValue());

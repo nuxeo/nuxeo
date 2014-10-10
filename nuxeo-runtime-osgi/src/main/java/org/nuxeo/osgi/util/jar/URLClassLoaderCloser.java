@@ -17,12 +17,9 @@
 package org.nuxeo.osgi.util.jar;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.jar.JarFile;
 
 /**
@@ -31,65 +28,18 @@ import java.util.jar.JarFile;
  */
 public class URLClassLoaderCloser  {
 
-    protected  URLClassLoader loader;
+    protected  List<?> loaders;
 
-    protected  ArrayList<?> loaders;
+    protected final URLJarFileIntrospector introspector;
 
-    protected  Field jarField;
+    protected  final Map<?, ?> index;
 
-    protected  Method getJarFileMethod;
-
-    protected  HashMap<?, ?> lmap;
-
-    public URLClassLoaderCloser(URLClassLoader loader) {
-        try {
-            introspectClassLoader(loader);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException("Cannot introspect url class loader "
-                    + loader, e);
-        } catch (SecurityException e) {
-            throw new RuntimeException("Cannot introspect url class loader "
-                    + loader, e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Cannot introspect url class loader "
-                    + loader, e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Cannot introspect url class loader "
-                    + loader, e);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException("Cannot introspect url class loader "
-                    + loader, e);
-        }
+    public URLClassLoaderCloser(URLJarFileIntrospector anIntrospector, Map<?,?> anIndex, List<?> someLoaders) {
+        introspector = anIntrospector;
+        index = anIndex;
+        loaders = someLoaders;
     }
 
-    protected void introspectClassLoader(URLClassLoader loader)
-            throws NoSuchFieldException, SecurityException,
-            IllegalAccessException, ClassNotFoundException,
-            NoSuchMethodException {
-        this.loader = loader;
-        Field ucpField = URLClassLoader.class.getDeclaredField("ucp");
-        ucpField.setAccessible(true);
-
-        Object ucp = ucpField.get(loader);
-        Class<?> ucpClass = ucp.getClass();
-        Field lmapField = ucpClass.getDeclaredField("lmap");
-        lmapField.setAccessible(true);
-        lmap = (HashMap<?, ?>) lmapField.get(ucp);
-        Field loadersField = ucpClass.getDeclaredField("loaders");
-        loadersField.setAccessible(true);
-        loaders = (ArrayList<?>) loadersField.get(ucp);
-        Class<?> jarLoaderClass = getJarLoaderClass();
-        jarField = jarLoaderClass.getDeclaredField("jar");
-        jarField.setAccessible(true);
-        getJarFileMethod = jarLoaderClass.getDeclaredMethod("getJarFile",
-                new Class<?>[] { URL.class });
-        getJarFileMethod.setAccessible(true);
-
-    }
-
-    protected static Class<?> getJarLoaderClass() throws ClassNotFoundException {
-        return URLClassLoaderCloser.class.getClassLoader().loadClass("sun.misc.URLClassPath$JarLoader");
-    }
 
     protected static String serializeURL(URL location) {
         StringBuilder localStringBuilder = new StringBuilder(128);
@@ -104,32 +54,35 @@ public class URLClassLoaderCloser  {
             str2 = str2.toLowerCase();
             localStringBuilder.append(str2);
             int i = location.getPort();
-            if (i == -1)
+            if (i == -1) {
                 i = location.getDefaultPort();
-            if (i != -1)
+            }
+            if (i != -1) {
                 localStringBuilder.append(":").append(i);
+            }
         }
         String str3 = location.getFile();
-        if (str3 != null)
+        if (str3 != null) {
             localStringBuilder.append(str3);
+        }
         return localStringBuilder.toString();
     }
 
     public boolean close(URL location) throws IOException {
-        if (lmap.isEmpty()) {
+        if (index.isEmpty()) {
             return false;
         }
-        Object firstKey = lmap.keySet().iterator().next();
-        Object loader = firstKey instanceof URL ? lmap.remove(location)
-                : lmap.remove(serializeURL(location));
+        Object firstKey = index.keySet().iterator().next();
+        Object loader = firstKey instanceof URL ? index.remove(location)
+                : index.remove(serializeURL(location));
         if (loader == null) {
             return false;
         }
         loaders.remove(loader);
         JarFile jar = null;
         try {
-            jar = (JarFile) jarField.get(loader);
-            jarField.set(loader, null);
+            jar = (JarFile) introspector.jarField.get(loader);
+            introspector.jarField.set(loader, null);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(
                     "Cannot use reflection on url class path", e);

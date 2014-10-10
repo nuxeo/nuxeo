@@ -310,7 +310,7 @@ public class JarBundleFile implements BundleFile {
             return;
         }
         try {
-            osgi.getJarFileCloser().close(jarFile);
+            osgi.getURLJarFileCloser().close(jarFile);
         } finally {
             jarFile = null;
         }

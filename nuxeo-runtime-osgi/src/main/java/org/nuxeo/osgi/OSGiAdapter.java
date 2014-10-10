@@ -32,7 +32,8 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.osgi.services.PackageAdminImpl;
 import org.nuxeo.osgi.util.jar.JarFileCloser;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.osgi.util.jar.URLJarFileIntrospector;
+import org.nuxeo.osgi.util.jar.URLJarFileIntrospectionError;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
@@ -76,7 +77,7 @@ public class OSGiAdapter {
 
     protected SystemBundle systemBundle;
 
-    protected JarFileCloser jarFileCloser;
+    protected JarFileCloser uRLJarFileCloser;
 
     public OSGiAdapter(File workingDir) {
         this(workingDir, new File(System.getProperty(
@@ -161,7 +162,7 @@ public class OSGiAdapter {
         bundleListeners = null;
         serviceListeners = null;
         properties = null;
-        jarFileCloser = null;
+        uRLJarFileCloser = null;
     }
 
     public long getBundleId(String symbolicName) {
@@ -228,7 +229,7 @@ public class OSGiAdapter {
         log.debug("Firing FrameworkEvent on " + frameworkListeners.size()
                 + " listeners");
         if (event.getType() == FrameworkEvent.STARTED) {
-            jarFileCloser = newJarFileCloser();
+            uRLJarFileCloser = newJarFileCloser();
         }
         Object[] listeners = frameworkListeners.getListeners();
         for (Object listener : listeners) {
@@ -245,8 +246,13 @@ public class OSGiAdapter {
     }
 
     protected JarFileCloser newJarFileCloser() {
-        return new JarFileCloser(Framework.getResourceLoader(),
-                systemBundle.loader);
+        try {
+            URLJarFileIntrospector introspector = new URLJarFileIntrospector();
+            return introspector.newJarFileCloser(systemBundle.loader);
+        } catch (URLJarFileIntrospectionError cause) {
+            log.warn("Cannot put URL jar file closer in place", cause);
+            return JarFileCloser.NOOP;
+        }
     }
 
     public void fireServiceEvent(ServiceEvent event) {
@@ -271,10 +277,10 @@ public class OSGiAdapter {
      * helper for closing jar files during bundle uninstall
      * @since 5.6
      */
-    public JarFileCloser getJarFileCloser() {
-        if (jarFileCloser == null) {
-            jarFileCloser = newJarFileCloser();
+    public JarFileCloser getURLJarFileCloser() {
+        if (uRLJarFileCloser == null) {
+            uRLJarFileCloser = newJarFileCloser();
         }
-        return jarFileCloser;
+        return uRLJarFileCloser;
     }
 }
