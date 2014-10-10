@@ -129,30 +129,23 @@ public class NuxeoStarter implements ServletContextListener {
         InputStream bundlesListStream = servletContext.getResourceAsStream("/WEB-INF/"
                 + NUXEO_BUNDLES_LIST);
         if (bundlesListStream != null) {
+            File lib = new File(servletContext.getRealPath("/WEB-INF/lib/"));
             try (BufferedReader reader = new BufferedReader(
                     new InputStreamReader(bundlesListStream))) {
                 String bundleName;
                 while ((bundleName = reader.readLine()) != null) {
-                    String path = servletContext.getRealPath("/WEB-INF/lib/"
-                            + bundleName);
-                    if (path == null) {
-                        continue;
-                    }
-                    bundleFiles.add(new File(path));
+                    bundleFiles.add(new File(lib, bundleName));
                 }
             }
         }
         if (bundleFiles.isEmpty()) { // Fallback on directory scan
+            File root = new File(servletContext.getRealPath("/"));
             Set<String> ctxpaths = servletContext.getResourcePaths("/WEB-INF/lib/");
             for (String ctxpath : ctxpaths) {
                 if (!ctxpath.endsWith(".jar")) {
                     continue;
                 }
-                String path = servletContext.getRealPath(ctxpath);
-                if (path == null) {
-                    continue;
-                }
-                bundleFiles.add(new File(path));
+                bundleFiles.add(new File(root, ctxpath));
             }
         }
     }
