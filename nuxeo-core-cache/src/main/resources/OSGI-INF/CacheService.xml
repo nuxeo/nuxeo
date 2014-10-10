@@ -28,7 +28,7 @@
       Google Guava
       implementation that does not support distributed
       cache
-      You can use the 'org.nuxeo.ecm.core.redis.RedisCacheImpl' for the
+      You can use the 'org.nuxeo.ecm.core.redis.contribs.RedisCache' for the
       implementation on top of redis that allow distributed cache (make sure
       that a contrib to RedisService define a redis server)
       You can also create
