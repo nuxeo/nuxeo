@@ -38,4 +38,5 @@ mail.debug=false
 mail.from=noreply@nuxeo.com
 
 nuxeo.core.binarymanager=
+nuxeo.core.binarymanager_key=
 nuxeo.quartz.enable=false
