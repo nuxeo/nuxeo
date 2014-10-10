@@ -32,7 +32,7 @@
     </action>
 
     <action id="submitSearch" link="#{searchUIActions.refreshAndRewind()}"
-      label="label.search.filter" order="20">
+      label="label.search.filter" order="10">
       <category>SEARCH_FILTER_ACTIONS</category>
       <properties>
         <property name="ajaxSupport">true</property>
@@ -44,7 +44,7 @@
     </action>
 
     <action id="clearSearch" link="#{searchUIActions.clearSearch()}"
-      label="label.search.clear" order="10" immediate="true">
+      label="label.search.clear" order="20" immediate="true">
       <category>SEARCH_FILTER_ACTIONS</category>
       <properties>
         <property name="ajaxSupport">true</property>
