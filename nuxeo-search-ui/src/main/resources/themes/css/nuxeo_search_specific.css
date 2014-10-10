@@ -6,7 +6,7 @@ author: lkemen@nuxeo.com
 
 /* =Grid */
 .gridBox {
-  padding: .5em }
+  padding: .5em 1.5em 1em }
 
 .nxSearchForm {
   font-size: .8em;
@@ -25,6 +25,12 @@ author: lkemen@nuxeo.com
 .nxSearchResults .containerWidgetPanel {
   padding: 0 }
 
+.nxSearchResults .contentViewUpperActions {
+  background: #fff;
+  padding: .7em 1em .6em;
+  border-radius: .3em;
+  float: none }
+
 .searchFilterActions .horizontalAction:first-child .button {
   border-radius: 3px 0 0 3px;
   border-right: none }
@@ -37,9 +43,41 @@ author: lkemen@nuxeo.com
   border: none }
 
 .searchesSelector {
-  margin: 0 -0.5em;
-  padding: 1em .5em;
+  margin: 0 -1.5em;
+  padding: 1em;
   background-color: #213f7d }
+
+.nxSearchForm.compactLayout .containerWidgetPanel {
+  padding: 0 0 1em }
+
+.nxSearchForm.compactLayout .fieldColumnn input[type="text"] {
+  margin-bottom: 0 }
+
+.nxSearchForm.compactLayout .fieldColumnn .dataInputTextDate input {
+  margin-bottom: .3em }
+
+.nxSearchForm.compactLayout .containerWidgetPanel h3 {
+  border: none;
+  margin: 0;
+  padding: 0 0 .5em }
+
+.nxSearchForm.compactLayout h3 .widgetLabel {
+  padding: 0 }
+
+.nxSearchForm .containerField label:hover {
+  cursor: pointer }
+
+.nxSearchForm .emptyResult {
+  padding: 0 0 .2em;
+  text-align: left }
+
+.nxSearchForm .nx-less-more-ctrl {
+  display: block;
+  margin: .3em 0 .1em;
+  padding: 0 }
+
+.nxSearchForm .nx-less-more-ctrl:before {
+  content: "+ ";}
 
 /* Main content */
 .contentViewTitle {
@@ -49,7 +87,27 @@ author: lkemen@nuxeo.com
   background-color: #fff;
   display: inline-block;
   margin: 0 .5em 1.2em;
+  transition: box-shadow 0.3s ease 0.01s;
+  vertical-align: top;
   width: 18.1em }
+
+.bubbleBox:hover {
+  box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.2);
+  cursor: pointer; }
+
+.bubbleBox .documentTitle {
+  display: block;
+  padding-bottom: .3em }
+
+.bubbleBox span:not(.documentTitle) {
+  font-size: .95em }
+
+.bubbleBox input[type="checkbox"] {
+  float: right;
+  margin: .5em 0 }
+
+.bubbleBox .documentDownloadLink img {
+  float: right }
 
 div.detail {
   clear: both }
