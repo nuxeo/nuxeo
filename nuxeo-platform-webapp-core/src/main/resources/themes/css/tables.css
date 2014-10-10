@@ -26,6 +26,7 @@ table td {
 .dataList,
 .dataTableNoBorder,
 .dataInput {
+  background-color: #fff;
   border-color: "neutral.lighter (__FLAVOR__ border)";
   clear: both;
   line-height: 1.3em;

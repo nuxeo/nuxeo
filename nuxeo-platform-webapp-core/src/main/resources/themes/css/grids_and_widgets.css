@@ -271,7 +271,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .compactLayout .searchFilterActions .widgetPanel .button,
 .compactLayout .searchFilterActions .widgetPanel a.button,
 .compactLayout .searchFilterActions .widgetPanel input.button {
-  float: left;
+  float: right;
   font-weight: bold;
   margin: .5em 0 1em;
   padding: .4em .2em .6em;
