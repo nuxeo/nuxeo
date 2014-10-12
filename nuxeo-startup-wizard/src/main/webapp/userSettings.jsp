@@ -334,11 +334,11 @@ if (ctx.hasInfos()) {%>
           <td><input type="text" name="nuxeo.ldap.user.mapping.password" value="<%=collector.getConfigurationParam("nuxeo.ldap.user.mapping.password") %>"/></td>
         </tr>
         <tr>
-          <td class="labelCell"><fmt:message key="label.nuxeo.ldap.user.mapping.firstname"/></td>
+          <td class="labelCell required"><fmt:message key="label.nuxeo.ldap.user.mapping.firstname"/></td>
           <td><input type="text" name="nuxeo.ldap.user.mapping.firstname" value="<%=collector.getConfigurationParam("nuxeo.ldap.user.mapping.firstname") %>"/></td>
         </tr>
         <tr>
-          <td class="labelCell"><fmt:message key="label.nuxeo.ldap.user.mapping.lastname"/></td>
+          <td class="labelCell required"><fmt:message key="label.nuxeo.ldap.user.mapping.lastname"/></td>
           <td><input type="text" name="nuxeo.ldap.user.mapping.lastname" value="<%=collector.getConfigurationParam("nuxeo.ldap.user.mapping.lastname") %>"/></td>
         </tr>
         <tr>

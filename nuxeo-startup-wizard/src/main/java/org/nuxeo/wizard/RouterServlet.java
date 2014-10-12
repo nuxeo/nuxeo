@@ -463,6 +463,16 @@ public class RouterServlet extends HttpServlet {
                 ctx.trackError("nuxeo.ldap.user.mapping.password",
                         "error.user.password.required");
             }
+            if (collector.getConfigurationParam(
+                    "nuxeo.ldap.user.mapping.firstname").isEmpty()) {
+                ctx.trackError("nuxeo.ldap.user.mapping.firstname",
+                        "error.user.firstname.required");
+            }
+            if (collector.getConfigurationParam(
+                    "nuxeo.ldap.user.mapping.lastname").isEmpty()) {
+                ctx.trackError("nuxeo.ldap.user.mapping.lastname",
+                        "error.user.lastname.required");
+            }
             String userGroupStorage = collector.getConfigurationParam("nuxeo.user.group.storage");
             if (!"userLdapOnly".equals(userGroupStorage)
                     && !"multiUserSqlGroup".equals(userGroupStorage)) {
@@ -475,6 +485,11 @@ public class RouterServlet extends HttpServlet {
                         "nuxeo.ldap.group.mapping.rdn").isEmpty()) {
                     ctx.trackError("nuxeo.ldap.group.mapping.rdn",
                             "error.group.rdn.required");
+                }
+                if (collector.getConfigurationParam(
+                        "nuxeo.ldap.group.mapping.name").isEmpty()) {
+                    ctx.trackError("nuxeo.ldap.group.mapping.name",
+                            "error.group.name.required");
                 }
             }
             if ("true".equals(collector.getConfigurationParam("nuxeo.user.emergency.enable"))) {
