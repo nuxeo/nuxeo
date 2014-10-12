@@ -82,11 +82,8 @@
       <readOnly>${nuxeo.ldap.user.readonly}</readOnly>
 
       <!-- comment <cache* /> tags to disable the cache -->
-      <!-- cache timeout in seconds -->
-      <cacheTimeout>${nuxeo.ldap.cache.timeout}</cacheTimeout>
-
-      <!-- maximum number of cached entries before global invalidation -->
-      <cacheMaxSize>${nuxeo.ldap.cache.size}</cacheMaxSize>
+      <cacheEntryName>ldap-user-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>ldap-user-entry-cache-without-references</cacheEntryWithoutReferencesName>
 
       <!--
            If the id field is not returned by the search, we set it with the searched entry, probably the login.
@@ -150,11 +147,8 @@
       <readOnly>${nuxeo.ldap.group.readonly}</readOnly>
 
       <!-- comment <cache* /> tags to disable the cache -->
-      <!-- cache timeout in seconds -->
-      <cacheTimeout>${nuxeo.ldap.cache.timeout}</cacheTimeout>
-
-      <!-- maximum number of cached entries before global invalidation -->
-      <cacheMaxSize>${nuxeo.ldap.cache.size}</cacheMaxSize>
+      <cacheEntryName>ldap-group-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>ldap-group-entry-cache-without-references</cacheEntryWithoutReferencesName>
 
       <creationBaseDn>ou=groups,dc=example,dc=com</creationBaseDn>
       <creationClass>top</creationClass>
@@ -242,6 +236,9 @@
       <createTablePolicy>on_missing_columns</createTablePolicy>
       <querySizeLimit>50</querySizeLimit>
 
+      <cacheEntryName>sql-user-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>sql-user-entry-cache-without-references</cacheEntryWithoutReferencesName>
+
       <references>
         <inverseReference field="groups" directory="sqlGroupDirectory"
           dualReferenceField="members" />
@@ -260,9 +257,8 @@
       <createTablePolicy>on_missing_columns</createTablePolicy>
       <autoincrementIdField>false</autoincrementIdField>
 
-      <!-- Add 10 min cache to avoid refetching the groups during login --> 
-      <cacheTimeout>360</cacheTimeout>
-      <cacheMaxSize>${nuxeo.ldap.cache.size}</cacheMaxSize>
+      <cacheEntryName>sql-group-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>sql-group-entry-cache-without-references</cacheEntryWithoutReferencesName>
 
       <references>
 <#if "${nuxeo.user.group.storage}" == "userLdapOnly" || "${nuxeo.user.group.storage}" == "ldapUserMultiGroup">
@@ -326,9 +322,13 @@
   <extension target="org.nuxeo.ecm.platform.usermanager.UserService" point="userManager">
 
     <userManager>
-
+      <userCacheName>default-cache</userCacheName>
+<#if "${nuxeo.ldap.defaultAdministratorId}" != "">
       <defaultAdministratorId>${nuxeo.ldap.defaultAdministratorId}</defaultAdministratorId>
+</#if>
+<#if "${nuxeo.ldap.defaultMembersGroup}" != "">
       <defaultGroup>${nuxeo.ldap.defaultMembersGroup}</defaultGroup>
+</#if>
       <users>
 <#if "${nuxeo.directory.type}" == "ldap" || "${nuxeo.user.group.storage}" == "ldapUserMultiGroup">
         <directory>ldapUserDirectory</directory>

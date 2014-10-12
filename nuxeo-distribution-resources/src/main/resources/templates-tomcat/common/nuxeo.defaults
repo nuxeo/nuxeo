@@ -18,8 +18,6 @@ nuxeo.ldap.url=
 nuxeo.ldap.binddn=
 nuxeo.ldap.bindpassword=
 nuxeo.ldap.retries=5
-nuxeo.ldap.cache.timeout=3600
-nuxeo.ldap.cache.size=1000
 nuxeo.ldap.query.sizeLimit=200
 nuxeo.ldap.query.timeLimit=0
 nuxeo.ldap.user.searchBaseDn=
@@ -52,3 +50,8 @@ nuxeo.user.emergency.username=MyAdministrator
 nuxeo.user.emergency.password=secret
 nuxeo.user.emergency.firstname=
 nuxeo.user.emergency.lastname=
+
+nuxeo.cache.type=default
+nuxeo.cache.ttl=20
+nuxeo.cache.maxsize=100
+nuxeo.cache.concurrencylevel=500
