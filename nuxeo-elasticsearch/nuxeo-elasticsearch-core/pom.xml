@@ -85,6 +85,7 @@
     <dependency>
       <groupId>org.elasticsearch</groupId>
       <artifactId>elasticsearch</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>

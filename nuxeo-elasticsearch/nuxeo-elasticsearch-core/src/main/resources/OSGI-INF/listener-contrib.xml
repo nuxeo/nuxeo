@@ -5,6 +5,7 @@
     point="listener">
 
     <listener name="elasticSearchInlineListener" async="false"
+      enabled="${elasticsearch.enabled:=true}"
       postCommit="false" priority="500"
       class="org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener">
       <event>beforeDocumentModification</event>
@@ -21,6 +22,7 @@
     </listener>
 
     <listener name="elasticSearchPostCommitSyncListener" async="false"
+      enabled="${elasticsearch.enabled:=true}"
       postCommit="true" priority="500"
       class="org.nuxeo.elasticsearch.listener.ElasticSearchPostCommitSyncListener">
       <event>ESIndexSyncTrigger</event>
