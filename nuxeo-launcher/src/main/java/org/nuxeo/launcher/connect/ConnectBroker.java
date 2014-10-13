@@ -713,9 +713,10 @@ public class ConnectBroker {
                                     "Could not add package: " + pkgToAdd);
                         } else {
                             throw new PackageException(
-                                "Could not find a remote or local (relative to "
-                                        + "current directory or to NUXEO_HOME) "
-                                        + "package with name or ID " + pkgToAdd);
+                                    "Could not find a remote or local (relative to "
+                                            + "current directory or to NUXEO_HOME) "
+                                            + "package with name or ID "
+                                            + pkgToAdd);
                         }
                     } else {
                         cmdInfo.newMessage(SimpleLog.LOG_LEVEL_INFO,
@@ -771,10 +772,10 @@ public class ConnectBroker {
                         return null;
                     } else {
                         throw new PackageException(
-                            "Could not find a remote or local (relative to "
-                                    + "current directory or to NUXEO_HOME) "
-                                    + "package with name or ID "
-                                    + packageFileName);
+                                "Could not find a remote or local (relative to "
+                                        + "current directory or to NUXEO_HOME) "
+                                        + "package with name or ID "
+                                        + packageFileName);
                     }
                 } else if (!downloadPackages(Arrays.asList(new String[] { pkgId }))) {
                     throw new PackageException("Could not download package "
@@ -817,10 +818,12 @@ public class ConnectBroker {
      *
      * @since 5.9.6
      * @param packageIdsToInstall The list can contain package IDs and names
-     * @param ignoreMissing If true, doesn't throw an exception on unkown packages
+     * @param ignoreMissing If true, doesn't throw an exception on unkown
+     *            packages
      * @see #pkgInstall(String)
      */
-    public boolean pkgInstall(List<String> packageIdsToInstall, boolean ignoreMissing) {
+    public boolean pkgInstall(List<String> packageIdsToInstall,
+            boolean ignoreMissing) {
         log.debug("Installing: " + packageIdsToInstall);
         for (String pkgId : packageIdsToInstall) {
             if (pkgInstall(pkgId, ignoreMissing) == null) {
@@ -848,7 +851,8 @@ public class ConnectBroker {
      *
      * @since 5.9.6
      * @param pkgId Package ID or Name
-     * @param ignoreMissing If true, doesn't throw an exception on unkown packages
+     * @param ignoreMissing If true, doesn't throw an exception on unkown
+     *            packages
      * @return The installed LocalPackage or null if failed
      */
     public LocalPackage pkgInstall(String pkgId, boolean ignoreMissing) {
@@ -1179,12 +1183,14 @@ public class ConnectBroker {
     /**
      * @param keepExisting If false, the request will remove existing packages
      *            that are not part of the resolution
-     * @param ignoreMissing Do not error out on missing packages, just handle the rest
+     * @param ignoreMissing Do not error out on missing packages, just handle
+     *            the rest
      * @since 5.9.2
      */
     public boolean pkgRequest(List<String> pkgsToAdd,
             List<String> pkgsToInstall, List<String> pkgsToUninstall,
-            List<String> pkgsToRemove, boolean keepExisting, boolean ignoreMissing) {
+            List<String> pkgsToRemove, boolean keepExisting,
+            boolean ignoreMissing) {
         try {
             boolean cmdOk = true;
             // Add local files
@@ -1254,10 +1260,12 @@ public class ConnectBroker {
                 if (ignoreMissing) {
                     // Remove unkown packages from the list
                     Map<String, List<DownloadablePackage>> knownNames = getPackageManager().getAllPackagesByName();
-                    List<String> solverInstallCopy = new ArrayList<String>(solverInstall);
+                    List<String> solverInstallCopy = new ArrayList<String>(
+                            solverInstall);
                     for (String pkgToInstall : solverInstallCopy) {
                         if (!knownNames.containsKey(pkgToInstall)) {
-                            log.warn("Unable to install pacakge: " + pkgToInstall);
+                            log.warn("Unable to install pacakge: "
+                                    + pkgToInstall);
                             solverInstall.remove(pkgToInstall);
                             requestPackages.remove(pkgToInstall);
                         }
@@ -1265,30 +1273,34 @@ public class ConnectBroker {
                 }
                 List<String> nonCompliantPkg = getPackageManager().getNonCompliantList(
                         requestPackages, targetPlatform);
-                if (nonCompliantPkg.size()>0) {
+                if (nonCompliantPkg.size() > 0) {
                     requestPlatform = null;
                     if ("ask".equalsIgnoreCase(relax)) {
                         relax = readConsole(
                                 "Package %s not available on platform version %s.\n"
                                         + "Do you want to relax the constraint (yes/no)? [no] ",
-                                "no", StringUtils.join(nonCompliantPkg, ", "), targetPlatform);
+                                "no", StringUtils.join(nonCompliantPkg, ", "),
+                                targetPlatform);
                     }
 
                     if (Boolean.parseBoolean(relax)) {
                         log.warn(String.format(
                                 "Relax restriction to target platform %s because of package(s) %s",
-                                targetPlatform, StringUtils.join(nonCompliantPkg, ", ")));
+                                targetPlatform,
+                                StringUtils.join(nonCompliantPkg, ", ")));
                     } else {
                         if (ignoreMissing) {
                             for (String pkgToInstall : nonCompliantPkg) {
-                                log.warn("Unable to install pacakge: " + pkgToInstall);
+                                log.warn("Unable to install pacakge: "
+                                        + pkgToInstall);
                                 solverInstall.remove(pkgToInstall);
                             }
                         } else {
                             throw new PackageException(
                                     String.format(
-                                        "Package %s not available on platform version %s (relax is not allowed)",
-                                        StringUtils.join(nonCompliantPkg, ", "), targetPlatform));
+                                            "Package %s not available on platform version %s (relax is not allowed)",
+                                            StringUtils.join(nonCompliantPkg,
+                                                    ", "), targetPlatform));
                         }
                     }
                 }
