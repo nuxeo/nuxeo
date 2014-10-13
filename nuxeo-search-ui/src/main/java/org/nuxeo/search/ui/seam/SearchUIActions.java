@@ -58,6 +58,7 @@ import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewState;
+import org.nuxeo.ecm.platform.contentview.jsf.ContentViewStateImpl;
 import org.nuxeo.ecm.platform.contentview.json.JSONContentViewState;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -118,6 +119,8 @@ public class SearchUIActions implements Serializable {
 
     public static final String CONTENT_VIEW_STATE_PARAMETER = "state";
 
+    public static final String SEARCH_TERM_PARAMETER = "searchTerm";
+
     @In(create = true)
     protected transient NavigationContext navigationContext;
 
@@ -135,6 +138,9 @@ public class SearchUIActions implements Serializable {
 
     @In(create = true)
     protected ContentViewActions contentViewActions;
+
+    @In(create = true)
+    protected ContentViewService contentViewService;
 
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
@@ -155,6 +161,8 @@ public class SearchUIActions implements Serializable {
     protected String currentPage;
 
     protected String pageSize;
+
+    protected String searchTerm;
 
     protected String savedSearchTitle;
 
@@ -421,10 +429,22 @@ public class SearchUIActions implements Serializable {
         this.pageSize = pageSize;
     }
 
+    public void setSearchTerm(String searchTerm) throws ClientException,
+        UnsupportedEncodingException {
+
+        ContentView cv = contentViewService.getContentView(getCurrentContentViewName());
+        DocumentModel searchDocumentModel = cv.getSearchDocumentModel();
+        // set the search term
+        searchDocumentModel.setPropertyValue("default_search:ecm_fulltext", searchTerm);
+        ContentViewState state = new ContentViewStateImpl();
+        state.setSearchDocumentModel(searchDocumentModel);
+        state.setContentViewName(getCurrentContentViewName());
+        contentViewActions.restoreContentView(state);
+    }
+
     /**
      * Compute a permanent link for the current search.
      */
-    @SuppressWarnings("unchecked")
     public String getSearchPermanentLinkUrl() throws ClientException,
             UnsupportedEncodingException {
         // do not try to compute an URL if we don't have any CoreSession
@@ -432,17 +452,60 @@ public class SearchUIActions implements Serializable {
             return null;
         }
 
+        return generateSearchUrl(true);
+    }
+
+    /**
+     * @return the URL of the search tab with the search term defined.
+     * @throws UnsupportedEncodingException
+     * @throws ClientException
+     */
+    public String getSearchTabUrl(
+            String searchTerm)
+            throws ClientException,
+            UnsupportedEncodingException {
+        // do not try to compute an URL if we don't have any CoreSession
+        if (documentManager == null) {
+            return null;
+        }
+        // Set the value of the searched term
+        this.searchTerm = searchTerm;
+
+        return generateSearchUrl(false);
+    }
+
+    /**
+     * Create the url to access the Search tab.
+     *
+     * @param withState If set to true, the state is added in the parameters.
+     * @return
+     * @throws UnsupportedEncodingException
+     * @throws ClientException
+     */
+    protected String generateSearchUrl(
+            boolean withState)
+            throws ClientException,
+            UnsupportedEncodingException {
         String currentContentViewName = getCurrentContentViewName();
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentView docView = computeDocumentView(currentDocument);
         docView.setViewId("search");
-        docView.addParameter(CONTENT_VIEW_NAME_PARAMETER,
+        docView.addParameter(
+                CONTENT_VIEW_NAME_PARAMETER,
                 currentContentViewName);
-        docView.addParameter(CONTENT_VIEW_STATE_PARAMETER,
-                getJSONContentViewState());
+        // Add the state if needed
+        if (withState) {
+            docView.addParameter(
+                    CONTENT_VIEW_STATE_PARAMETER,
+                    getJSONContentViewState());
+        }
+
         DocumentViewCodecManager documentViewCodecManager = Framework.getService(DocumentViewCodecManager.class);
         String url = documentViewCodecManager.getUrlFromDocumentView(
-                SEARCH_CODEC, docView, true, BaseURL.getBaseURL());
+                SEARCH_CODEC, docView,
+                true,
+                BaseURL.getBaseURL());
+
         return RestHelper.addCurrentConversationParameters(url);
     }
 
@@ -554,4 +617,7 @@ public class SearchUIActions implements Serializable {
         simpleSearchKeywords = "";
     }
 
+    public String getSearchTermParameter() {
+        return SEARCH_TERM_PARAMETER;
+    }
 }

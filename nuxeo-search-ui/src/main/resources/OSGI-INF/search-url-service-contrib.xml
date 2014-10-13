@@ -47,6 +47,9 @@
         <binding name="state" callGetter="false">
           #{searchUIActions.state}
         </binding>
+        <binding name="searchTerm" callGetter="false">
+          #{searchUIActions.searchTerm}
+        </binding>
       </bindings>
     </urlPattern>
 
