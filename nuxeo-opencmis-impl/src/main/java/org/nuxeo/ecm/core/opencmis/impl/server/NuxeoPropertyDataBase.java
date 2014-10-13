@@ -11,6 +11,7 @@
 package org.nuxeo.ecm.core.opencmis.impl.server;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import org.apache.chemistry.opencmis.commons.data.CmisExtensionElement;
 import org.apache.chemistry.opencmis.commons.data.PropertyBoolean;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.data.PropertyId;
+import org.apache.chemistry.opencmis.commons.data.PropertyInteger;
 import org.apache.chemistry.opencmis.commons.data.PropertyString;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
@@ -190,7 +192,6 @@ public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
                 PropertyDefinition<String> propertyDefinition, String value) {
             super(propertyDefinition, value);
         }
-
     }
 
     /**
@@ -203,6 +204,19 @@ public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
                 PropertyDefinition<Boolean> propertyDefinition, Boolean value) {
             super(propertyDefinition, value);
         }
-
     }
+
+    /**
+     * A fixed Integer property.
+     */
+    public static class NuxeoPropertyIntegerDataFixed extends
+            NuxeoPropertyDataFixed<BigInteger> implements PropertyInteger {
+
+        protected NuxeoPropertyIntegerDataFixed(
+                PropertyDefinition<BigInteger> propertyDefinition, Long value) {
+            super(propertyDefinition, value == null ? null
+                    : BigInteger.valueOf(value.longValue()));
+        }
+    }
+
 }

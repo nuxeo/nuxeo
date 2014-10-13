@@ -1637,6 +1637,34 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
+    public void testQueryPos() throws Exception {
+        String statement;
+        ObjectList res;
+        List<ObjectData> objects;
+
+        CoreSession session = nuxeotc.session;
+        DocumentModel ofolder = session.createDocumentModel("/", "ordered",
+                "OrderedFolder");
+        session.createDocument(ofolder);
+        DocumentModel odoc1 = session.createDocumentModel("/ordered", "odoc1",
+                "File");
+        session.createDocument(odoc1);
+        DocumentModel odoc2 = session.createDocumentModel("/ordered", "odoc2",
+                "File");
+        session.createDocument(odoc2);
+        session.save();
+
+        statement = "SELECT nuxeo:pos FROM File WHERE nuxeo:pos >= 0 ORDER BY nuxeo:pos";
+        res = query(statement);
+        objects = res.getObjects();
+        assertEquals(2, res.getNumItems().intValue());
+        assertEquals(BigInteger.valueOf(0),
+                getValue(objects.get(0), NuxeoTypeHelper.NX_POS));
+        assertEquals(BigInteger.valueOf(1),
+                getValue(objects.get(1), NuxeoTypeHelper.NX_POS));
+    }
+
+    @Test
     public void testQueryVersions() throws Exception {
         String statement;
         ObjectList res;

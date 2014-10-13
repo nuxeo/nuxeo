@@ -117,6 +117,8 @@ public class NuxeoTypeHelper {
 
     public static final String NX_PATH_SEGMENT = "nuxeo:pathSegment";
 
+    public static final String NX_POS = "nuxeo:pos";
+
     private static final String NAMESPACE = "http://ns.nuxeo.org/cmis/type/";
 
     protected AbstractTypeDefinition t;
@@ -349,6 +351,9 @@ public class NuxeoTypeHelper {
                 Updatability.READONLY, false, false, true, true));
         t.addPropertyDefinition(newPropertyDefinition(NX_PATH_SEGMENT,
                 "Path Segment", PropertyType.STRING, Cardinality.SINGLE,
+                Updatability.READONLY, false, false, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(NX_POS,
+                "Position", PropertyType.INTEGER, Cardinality.SINGLE,
                 Updatability.READONLY, false, false, true, true));
     }
 

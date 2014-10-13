@@ -423,6 +423,8 @@ public class CMISQLtoNXQL {
             return NXQL.ECM_PARENTID;
         case NuxeoTypeHelper.NX_PATH_SEGMENT:
             return NXQL.ECM_NAME;
+        case NuxeoTypeHelper.NX_POS:
+            return NXQL.ECM_POS;
         case PropertyIds.OBJECT_TYPE_ID:
             return NXQL.ECM_PRIMARYTYPE;
         case NuxeoTypeHelper.NX_FACETS:
