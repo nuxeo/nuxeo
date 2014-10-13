@@ -50,6 +50,7 @@ public abstract class SelectAggregateWidgetTypeHandler extends
         AbstractSelectWidgetTypeHandler {
 
     private static final String LABELS = "labels";
+
     private static final long serialVersionUID = 1L;
 
     protected enum AggregatePropertyMappings {
@@ -63,7 +64,8 @@ public abstract class SelectAggregateWidgetTypeHandler extends
         FaceletHandler leaf = new LeafFaceletHandler();
         List<FaceletHandler> selectItems = new ArrayList<FaceletHandler>();
         FaceletHandler firstItem = getFirstHandler(ctx, helper, widget, leaf);
-        final boolean hasOtherOptions = selectOptions != null && selectOptions.length > 0;
+        final boolean hasOtherOptions = selectOptions != null
+                && selectOptions.length > 0;
         if (firstItem != null) {
             selectItems.add(firstItem);
         }
@@ -173,7 +175,8 @@ public abstract class SelectAggregateWidgetTypeHandler extends
                                 ArrayList.class.getName()));
             }
             ComponentHandler input = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, leaf, componentType, rendererType);
+                    widgetTagConfigId, attributes, leaf, componentType,
+                    rendererType);
 
             FaceletHandler faceletHandler = null;
             if (hasOtherOptions && optionsHandler != null) {
@@ -184,27 +187,29 @@ public abstract class SelectAggregateWidgetTypeHandler extends
                     if (selectOption == null) {
                         continue;
                     }
-                    labels.put(
-                            selectOption.getItemValue(),
-                                    selectOption.getItemLabel());
+                    labels.put(selectOption.getItemValue(),
+                            selectOption.getItemLabel());
                 }
                 Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
-                variables.put(LABELS, ctx.getExpressionFactory().createValueExpression(labels, HashMap.class));
+                variables.put(
+                        LABELS,
+                        ctx.getExpressionFactory().createValueExpression(
+                                labels, HashMap.class));
                 faceletHandler = helper.getAliasTagHandler(
-                        widget.getTagConfigId(), variables , blockedPatterns,
+                        widget.getTagConfigId(), variables, blockedPatterns,
                         input);
             }
 
             String msgId = helper.generateMessageId(widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(
                     widgetTagConfigId, msgId, widgetId, null);
-            FaceletHandler[] handlers = { faceletHandler != null ? faceletHandler: input, message };
+            FaceletHandler[] handlers = {
+                    faceletHandler != null ? faceletHandler : input, message };
             return new CompositeFaceletHandler(handlers);
         } else {
             // TODO
             return null;
         }
     }
-
 
 }
