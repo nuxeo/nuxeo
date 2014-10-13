@@ -54,7 +54,6 @@ import org.nuxeo.ecm.platform.query.api.PageSelection;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
 import org.nuxeo.ecm.platform.query.core.AggregateBase;
 import org.nuxeo.ecm.platform.query.core.AggregateDescriptor;
-
 import org.nuxeo.ecm.platform.query.core.BucketTerm;
 
 /**
@@ -92,7 +91,7 @@ public class LayoutDemoContext implements Serializable {
 
     protected List<Action> layoutDemoCustomActions;
 
-    protected Map<String, Aggregate> layoutDemoAggregates;
+    protected Map<String, Aggregate<Bucket>> layoutDemoAggregates;
 
     @Create
     public void openCoreSession() throws Exception {
@@ -347,7 +346,7 @@ public class LayoutDemoContext implements Serializable {
      * @since 5.9.6
      */
     @Factory(value = "layoutDemoAggregates", scope = EVENT)
-    public Map<String, Aggregate> getLayoutDemoAggregates()
+    public Map<String, Aggregate<Bucket>> getLayoutDemoAggregates()
             throws ClientException, Exception {
         if (layoutDemoAggregates == null) {
             layoutDemoAggregates = new HashMap<>();
@@ -360,7 +359,7 @@ public class LayoutDemoContext implements Serializable {
             buckets.add(new BucketTerm("eric", 10));
             buckets.add(new BucketTerm("stan", 5));
             buckets.add(new BucketTerm("kyle", 2));
-            Aggregate stringTerms = new AggregateBase(mockDef, null);
+            Aggregate<Bucket> stringTerms = new AggregateBase<Bucket>(mockDef, null);
             stringTerms.setBuckets(buckets);
             layoutDemoAggregates.put("string_terms", stringTerms);
 
@@ -368,7 +367,7 @@ public class LayoutDemoContext implements Serializable {
             buckets.add(new BucketTerm("cartman", 10));
             buckets.add(new BucketTerm("marsh", 5));
             buckets.add(new BucketTerm("broflovski", 2));
-            Aggregate dirTerms = new AggregateBase(mockDef, null);
+            Aggregate<Bucket> dirTerms = new AggregateBase<Bucket>(mockDef, null);
             dirTerms.setBuckets(buckets);
             layoutDemoAggregates.put("dir_terms", dirTerms);
 
@@ -376,7 +375,7 @@ public class LayoutDemoContext implements Serializable {
             buckets.add(new BucketTerm("oceania", 10));
             buckets.add(new BucketTerm("antarctica", 5));
             buckets.add(new BucketTerm("europe", 2));
-            Aggregate dirTermsL10n = new AggregateBase(mockDef, null);
+            Aggregate<Bucket> dirTermsL10n = new AggregateBase<Bucket>(mockDef, null);
             dirTermsL10n.setBuckets(buckets);
             layoutDemoAggregates.put("dir_terms_translated", dirTermsL10n);
 
@@ -384,7 +383,7 @@ public class LayoutDemoContext implements Serializable {
             buckets.add(new BucketTerm("oceania/Australia", 10));
             buckets.add(new BucketTerm("antarctica", 5));
             buckets.add(new BucketTerm("europe/France", 2));
-            Aggregate dirTermsL10nHier = new AggregateBase(mockDef, null);
+            Aggregate<Bucket> dirTermsL10nHier = new AggregateBase<Bucket>(mockDef, null);
             dirTermsL10nHier.setBuckets(buckets);
             layoutDemoAggregates.put("dir_terms_l10n", dirTermsL10nHier);
         }

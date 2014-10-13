@@ -704,6 +704,8 @@
       <layouts>
         <layout name="selectManyCheckboxAggregate" hideViewMode="true"
           src="sources/OSGI-INF/demo/layout-demo-agg-checkbox-widget.xml" />
+        <layout name="selectManyCheckboxAggregateOptions" hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-checkbox-options-widget.xml" />
       </layouts>
     </widgetType>
 
