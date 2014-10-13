@@ -142,51 +142,61 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
             DocumentModel newRootContainer, CoreSession session)
             throws ClientException {
         String userName = principal.getName();
-        // If new root is child of a sync root, ignore registration
+        // If new root is child of a sync root, ignore registration, except for
+        // the 'Locally Edited' collection: it is under the personal workspace
+        // and we want to allow both the personal workspace and the 'Locally
+        // Edited' collection to be registered as sync roots
         Map<String, SynchronizationRoots> syncRoots = getSynchronizationRoots(principal);
         SynchronizationRoots synchronizationRoots = syncRoots.get(session.getRepositoryName());
-        for (String syncRootPath : synchronizationRoots.getPaths()) {
-            String syncRootPrefixedPath = syncRootPath + "/";
+        if (!NuxeoDriveManager.LOCALLY_EDITED_COLLECTION_NAME.equals(newRootContainer.getName())) {
+            for (String syncRootPath : synchronizationRoots.getPaths()) {
+                String syncRootPrefixedPath = syncRootPath + "/";
 
-            if (newRootContainer.getPathAsString().startsWith(
-                    syncRootPrefixedPath)) {
-                // the only exception is when the right inheritance is blocked
-                // in the hierarchy
-                boolean rightInheritanceBlockedInTheHierarchy = false;
-                // should get only parents up to the sync root
+                if (newRootContainer.getPathAsString().startsWith(
+                        syncRootPrefixedPath)) {
+                    // the only exception is when the right inheritance is
+                    // blocked
+                    // in the hierarchy
+                    boolean rightInheritanceBlockedInTheHierarchy = false;
+                    // should get only parents up to the sync root
 
-                Path parentPath = newRootContainer.getPath().removeLastSegments(
-                        1);
-                while (!"/".equals(parentPath.toString())) {
-                    String parentPathAsString = parentPath.toString() + "/";
-                    if (!parentPathAsString.startsWith(syncRootPrefixedPath)) {
-                        break;
+                    Path parentPath = newRootContainer.getPath().removeLastSegments(
+                            1);
+                    while (!"/".equals(parentPath.toString())) {
+                        String parentPathAsString = parentPath.toString() + "/";
+                        if (!parentPathAsString.startsWith(syncRootPrefixedPath)) {
+                            break;
+                        }
+                        PathRef parentRef = new PathRef(parentPathAsString);
+                        if (!session.hasPermission(principal, parentRef,
+                                SecurityConstants.READ)) {
+                            rightInheritanceBlockedInTheHierarchy = true;
+                            break;
+                        }
+                        parentPath = parentPath.removeLastSegments(1);
                     }
-                    PathRef parentRef = new PathRef(parentPathAsString);
-                    if (!session.hasPermission(principal, parentRef,
-                            SecurityConstants.READ)) {
-                        rightInheritanceBlockedInTheHierarchy = true;
-                        break;
+                    if (!rightInheritanceBlockedInTheHierarchy) {
+                        return;
                     }
-                    parentPath = parentPath.removeLastSegments(1);
-                }
-                if (!rightInheritanceBlockedInTheHierarchy) {
-                    return;
                 }
             }
         }
 
         checkCanUpdateSynchronizationRoot(newRootContainer, session);
 
-        // Unregister any sub-folder of the new root
+        // Unregister any sub-folder of the new root, except for the 'Locally
+        // Edited' collection
         String newRootPrefixedPath = newRootContainer.getPathAsString() + "/";
         for (String existingRootPath : synchronizationRoots.getPaths()) {
-            if (existingRootPath.startsWith(newRootPrefixedPath)) {
-                // Unregister the nested root sub-folder first
-                PathRef ref = new PathRef(existingRootPath);
-                if (session.exists(ref)) {
-                    DocumentModel subFolder = session.getDocument(ref);
-                    unregisterSynchronizationRoot(principal, subFolder, session);
+            if (!existingRootPath.endsWith(NuxeoDriveManager.LOCALLY_EDITED_COLLECTION_NAME)) {
+                if (existingRootPath.startsWith(newRootPrefixedPath)) {
+                    // Unregister the nested root sub-folder first
+                    PathRef ref = new PathRef(existingRootPath);
+                    if (session.exists(ref)) {
+                        DocumentModel subFolder = session.getDocument(ref);
+                        unregisterSynchronizationRoot(principal, subFolder,
+                                session);
+                    }
                 }
             }
         }

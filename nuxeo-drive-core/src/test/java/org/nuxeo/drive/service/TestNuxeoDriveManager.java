@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,6 +79,8 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.collections.core",
         "org.nuxeo.ecm.platform.web.common" })
 public class TestNuxeoDriveManager {
+
+    private static final Log log = LogFactory.getLog(TestNuxeoDriveManager.class);
 
     @Inject
     CoreSession session;
@@ -553,6 +557,51 @@ public class TestNuxeoDriveManager {
         nuxeoDriveManager.addToLocallyEditedCollection(session, doc3);
         doc3 = session.getDocument(doc3.getRef());
         assertTrue(cm.isInCollection(locallyEditedCollection, doc3, session));
+        assertTrue(nuxeoDriveManager.isSynchronizationRoot(
+                session.getPrincipal(), locallyEditedCollection));
+    }
+
+    @Test
+    public void testChildRootRegistration() {
+        log.trace("Register a folder as a sync root");
+        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(),
+                folder_1_1, session);
+        assertTrue(nuxeoDriveManager.isSynchronizationRoot(
+                session.getPrincipal(), folder_1_1));
+
+        log.trace("Create 'Locally Edited' collection and register it as a sync root");
+        CollectionManager cm = Framework.getService(CollectionManager.class);
+        DocumentModel locallyEditedCollection = cm.createCollection(session,
+                NuxeoDriveManager.LOCALLY_EDITED_COLLECTION_NAME,
+                "Locally Edited collection", workspace_1.getPathAsString());
+        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(),
+                locallyEditedCollection, session);
+        assertTrue(nuxeoDriveManager.isSynchronizationRoot(
+                session.getPrincipal(), locallyEditedCollection));
+
+        log.trace("Register a parent as a sync root, should unregister children sync roots, except for 'Locally Edited'");
+        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(),
+                workspace_1, session);
+        assertFalse(nuxeoDriveManager.isSynchronizationRoot(
+                session.getPrincipal(), folder_1_1));
+        assertTrue(nuxeoDriveManager.isSynchronizationRoot(
+                session.getPrincipal(), locallyEditedCollection));
+
+        log.trace("Register child folder as a sync root, should have no effect");
+        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(),
+                folder_1_1, session);
+        assertFalse(nuxeoDriveManager.isSynchronizationRoot(
+                session.getPrincipal(), folder_1_1));
+
+        log.trace("Unregister 'Locally Edited' collection");
+        nuxeoDriveManager.unregisterSynchronizationRoot(session.getPrincipal(),
+                locallyEditedCollection, session);
+        assertFalse(nuxeoDriveManager.isSynchronizationRoot(
+                session.getPrincipal(), locallyEditedCollection));
+
+        log.trace("Register 'Locally Edited' collection as a sync root, should be registered");
+        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(),
+                locallyEditedCollection, session);
         assertTrue(nuxeoDriveManager.isSynchronizationRoot(
                 session.getPrincipal(), locallyEditedCollection));
     }
