@@ -74,10 +74,11 @@
         <layout name="thumbnail_listing" title="document_thumbnail_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
           showCSVExport="true" showPDFExport="false" showSyndicationLinks="true"
-          showSlideshow="true" showSpreadsheet="false" showEditRows="true" />
+          showSlideshow="true" showSpreadsheet="true" showEditRows="true" />
         <layout name="search_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+          showCSVExport="true" showPDFExport="false" showSpreadsheet="true"
+          showSyndicationLinks="true" />
       </resultLayouts>
 
       <selectionList>CURRENT_SELECTION</selectionList>
@@ -138,10 +139,12 @@
       <resultLayouts>
         <layout name="thumbnail_listing" title="document_thumbnail_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
-          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+          showCSVExport="true" showPDFExport="false" showSpreadsheet="true"
+          showSyndicationLinks="true" />
         <layout name="search_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+          showCSVExport="true" showPDFExport="false" showSpreadsheet="true"
+          showSyndicationLinks="true" />
       </resultLayouts>
 
       <resultColumns>
@@ -183,10 +186,12 @@
       <resultLayouts>
         <layout name="thumbnail_listing" title="document_thumbnail_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
-          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+          showCSVExport="true" showPDFExport="false" showSpreadsheet="true"
+          showSyndicationLinks="true" />
         <layout name="search_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+          showCSVExport="true" showPDFExport="false" showSpreadsheet="true"
+          showSyndicationLinks="true" />
       </resultLayouts>
 
       <selectionList>CURRENT_SELECTION</selectionList>
