@@ -38,8 +38,7 @@
           </div>
         </c:if>
         <div class="gridBox verticalTabsContent #{showTabsBar?'gridStyle10':'gridStyle12'}">
-          <a4j:outputPanel id="#{tabContentPanelId}" layout="block"
-            styleClass="#{nxu:test(showTabsBar, 'tabsContent', '')}">
+          <a4j:outputPanel id="#{tabContentPanelId}" layout="block">
             <ui:include src="/widgets/actions/tabs_widget_content_template.xhtml" />
           </a4j:outputPanel>
         </div>
