@@ -354,17 +354,18 @@
           </widgetModes>
           <properties widgetMode="any">
             <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_modified_agg'].buckets}</property>
+            <property name="localize">true</property>
           </properties>
           <selectOptions>
-            <option itemLabel="#{messages['label.aggregate.modified.last24h']}"
+            <option itemLabel="label.aggregate.modified.last24h"
               itemValue="last24h" />
-            <option itemLabel="#{messages['label.aggregate.modified.lastWeek']}"
+            <option itemLabel="label.aggregate.modified.lastWeek"
               itemValue="lastWeek" />
-            <option itemLabel="#{messages['label.aggregate.modified.lastMonth']}"
-              itemValue="lastMonth"/>
-            <option itemLabel="#{messages['label.aggregate.modified.lastYear']}"
+            <option itemLabel="label.aggregate.modified.lastMonth"
+              itemValue="lastMonth" />
+            <option itemLabel="label.aggregate.modified.lastYear"
               itemValue="lastYear" />
-            <option itemLabel="#{messages['label.aggregate.modified.priorToLastYear']}"
+            <option itemLabel="label.aggregate.modified.priorToLastYear"
               itemValue="priorToLastYear" />
           </selectOptions>
           <controls mode="any">
@@ -604,22 +605,16 @@
             <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
               'edit' : 'hidden'}</mode>
           </widgetModes>
+          <properties widgetMode="any">
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['common_size_agg'].buckets}</property>
+            <property name="localize">true</property>
+          </properties>
           <selectOptions>
-            <option itemLabel="#{messages['label.aggregate.size.tiny']} (#{contentView.pageProvider.aggregates['common_size_agg'].getBucket('tiny').docCount})"
-              itemValue="tiny"
-              itemRendered="#{contentView.pageProvider.aggregates['common_size_agg'].hasBucket('tiny')}" />
-            <option itemLabel="#{messages['label.aggregate.size.small']} (#{contentView.pageProvider.aggregates['common_size_agg'].getBucket('small').docCount})"
-              itemValue="small"
-              itemRendered="#{contentView.pageProvider.aggregates['common_size_agg'].hasBucket('small')}" />
-            <option itemLabel="#{messages['label.aggregate.size.medium']} (#{contentView.pageProvider.aggregates['common_size_agg'].getBucket('medium').docCount})"
-              itemValue="medium"
-              itemRendered="#{contentView.pageProvider.aggregates['common_size_agg'].hasBucket('medium')}" />
-            <option itemLabel="#{messages['label.aggregate.size.big']} (#{contentView.pageProvider.aggregates['common_size_agg'].getBucket('big').docCount})"
-              itemValue="big"
-              itemRendered="#{contentView.pageProvider.aggregates['common_size_agg'].hasBucket('big')}" />
-            <option itemLabel="#{messages['label.aggregate.size.huge']} (#{contentView.pageProvider.aggregates['common_size_agg'].getBucket('huge').docCount})"
-              itemValue="huge"
-              itemRendered="#{contentView.pageProvider.aggregates['common_size_agg'].hasBucket('huge')}" />
+            <option itemLabel="label.aggregate.size.tiny" itemValue="tiny" />
+            <option itemLabel="label.aggregate.size.small" itemValue="small" />
+            <option itemLabel="label.aggregate.size.medium" itemValue="medium" />
+            <option itemLabel="label.aggregate.size.big" itemValue="big" />
+            <option itemLabel="label.aggregate.size.huge" itemValue="huge" />
           </selectOptions>
           <controls mode="any">
             <control name="supportInsideInputWidgetEffects">true</control>
