@@ -78,7 +78,12 @@ public final class DocumentPermissionHelper {
             securityHasChanged = true;
         } else {
             if (shouldAddACEToACL(aceList, aceToAdd)) {
-                aceList.add(aceToAdd);
+                int pos = aceList.indexOf(getBlockInheritanceACE());
+                if (pos >= 0) {
+                    aceList.add(pos, aceToAdd);
+                } else {
+                    aceList.add(aceToAdd);
+                }
                 securityHasChanged = true;
             }
         }
@@ -143,7 +148,6 @@ public final class DocumentPermissionHelper {
      * @param acp The ACP to modify
      * @param aclName the name of the ACL to target
      * @param principalName the name of the principal (user or group)
-     * @param permissionName
      * @return true if something has changed on the document security
      *
      */

@@ -203,6 +203,35 @@ public class PermissionTest {
 
     }
 
+    @Test
+    public void testMultipleNewPermissionsWithBlockInheritance() {
+        // Given an ACP
+        ACP acp = getInheritedReadWriteACP();
+
+        // Make a first call to fill cache
+        assertEquals(Access.UNKNOWN, acp.getAccess("john", "comment"));
+
+        // When i set Permission to a user with inheritance block
+        DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL, "john",
+                READ_WRITE, true, "john");
+
+        // only john have Permission
+        assertEquals(Access.GRANT, acp.getAccess("john", "ReadWrite"));
+        assertEquals(Access.DENY, acp.getAccess("jack", "ReadWrite"));
+        assertEquals(Access.DENY, acp.getAccess("jerry", "ReadWrite"));
+
+        DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL, "jack",
+                READ_WRITE, false, "john");
+        DocumentPermissionHelper.addPermission(acp, ACL.LOCAL_ACL, "jerry",
+                READ_WRITE, false, "john");
+
+        // Check jack and jerry have permission, even with inheritance block
+        assertEquals(Access.GRANT, acp.getAccess("john", "ReadWrite"));
+        assertEquals(Access.GRANT, acp.getAccess("jack", "ReadWrite"));
+        assertEquals(Access.GRANT, acp.getAccess("jerry", "ReadWrite"));
+
+    }
+
     /**
      * @return
      *
