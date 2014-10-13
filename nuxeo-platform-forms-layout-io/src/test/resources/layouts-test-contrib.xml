@@ -176,7 +176,10 @@
                   <options value="#{documentList}" var="doc" itemValue="#{doc.id}"
                     itemLabel="#{doc.dc.title}" itemDisabled="false"
                     itemRendered="true" ordering="label" caseSensitive="true" />
-                  <option itemLabel="foo2" itemValue="bar2" />
+                  <option itemLabel="foo2" itemValue="bar2">
+                    <itemLabel locale="en">foo2_eng</itemLabel>
+                    <itemLabel locale="fr">foo2_fr</itemLabel>
+                  </option>
                 </selectOptions>
               </widget>
               <widget name="subwidgets" type="test">

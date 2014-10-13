@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.el.ValueExpression;
@@ -85,10 +86,6 @@ public abstract class SelectAggregateWidgetTypeHandler extends
                 widget, selectOption);
         props.put(SelectPropertyMappings.itemLabelSuffix.name(),
                 widget.getProperty(AggregatePropertyMappings.itemCount.name()));
-        if (!props.containsKey(SelectPropertyMappings.resolveItemLabelTwice.name())) {
-            props.put(SelectPropertyMappings.resolveItemLabelTwice.name(),
-                    Boolean.TRUE);
-        }
         return props;
     }
 
@@ -132,8 +129,26 @@ public abstract class SelectAggregateWidgetTypeHandler extends
                 if (selectOption == null) {
                     continue;
                 }
-                labels.put(selectOption.getItemValue(),
-                        selectOption.getItemLabel());
+                Map<String, String> l10n_labels = selectOption.getItemLabels();
+                boolean done = false;
+                if (l10n_labels != null && !l10n_labels.isEmpty()) {
+                    Locale locale = ctx.getFacesContext().getViewRoot().getLocale();
+                    if (l10n_labels.containsKey(locale.getLanguage())
+                            | l10n_labels.containsKey("en")) {
+                        if (l10n_labels.containsKey(locale.getLanguage())) {
+                            labels.put(selectOption.getItemValue(),
+                                    l10n_labels.get(locale.getLanguage()));
+                        } else {
+                            labels.put(selectOption.getItemValue(),
+                                    l10n_labels.get("en"));
+                        }
+                        done = true;
+                    }
+                }
+                if (!done) {
+                    labels.put(selectOption.getItemValue(),
+                            selectOption.getItemLabel());
+                }
             }
             Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
             variables.put(

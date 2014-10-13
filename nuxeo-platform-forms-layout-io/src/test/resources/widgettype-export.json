@@ -174,6 +174,10 @@
                             {
                 "multiple": false,
                 "itemLabel": "foo2",
+                "itemLabels":                 {
+                  "fr": "foo2_fr",
+                  "en": "foo2_eng"
+                },
                 "itemValue": "bar2"
               }
             ]

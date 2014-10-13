@@ -444,6 +444,13 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertFalse(options[4] instanceof WidgetSelectOptions);
         checkCommonSelectOption(options[4], null, null, "bar2", "foo2", null,
                 null);
+        if (!isCompat) {
+            Map<String, String> itemLabels = options[4].getItemLabels();
+            assertNotNull(itemLabels);
+            assertEquals(2, itemLabels.size());
+            assertEquals("foo2_eng", options[4].getItemLabel("en"));
+            assertEquals("foo2_fr", options[4].getItemLabel("fr"));
+        }
         assertEquals(0, selectionWidget.getSubWidgetDefinitions().length);
 
         if (isCompat) {

@@ -63,7 +63,9 @@ public abstract class AbstractSelectWidgetTypeHandler extends
         //
         itemRendered, itemDisabled, itemEscaped, ordering, caseSensitive,
         //
-        displayIdAndLabel, displayIdAndLabelSeparator, notDisplayDefaultOption;
+        displayIdAndLabel, displayIdAndLabelSeparator, notDisplayDefaultOption,
+        //
+        localize, dbl10n;
     }
 
     // ease up override of behavior without impacting default options
@@ -168,7 +170,7 @@ public abstract class AbstractSelectWidgetTypeHandler extends
             FaceletHandlerHelper helper, Widget widget,
             FaceletHandler nextHandler) {
         if (shouldAddWidgetPropsHandler(widget)) {
-            WidgetSelectOption selectOption = new WidgetSelectOptionsImpl(
+            WidgetSelectOptionsImpl selectOption = new WidgetSelectOptionsImpl(
                     widget.getProperty(SelectPropertyMappings.selectOptions.name()),
                     (String) widget.getProperty(SelectPropertyMappings.var.name()),
                     (String) widget.getProperty(SelectPropertyMappings.itemLabel.name()),

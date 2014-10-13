@@ -263,7 +263,7 @@ public class UIDirectorySelectItems extends UISelectItems {
                 // lookup label property, hardcode the "label_" prefix for
                 // now
                 String defaultPattern = "label_en";
-                String pattern = "label_" + locale.getCountry();
+                String pattern = "label_" + locale.getLanguage();
                 if (docEntry.getProperties(schema).containsKey(pattern)) {
                     label = (String) docEntry.getProperties(schema).get(pattern);
                 } else {

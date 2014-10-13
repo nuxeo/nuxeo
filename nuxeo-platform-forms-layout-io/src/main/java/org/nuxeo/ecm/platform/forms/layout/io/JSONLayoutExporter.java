@@ -1086,6 +1086,14 @@ public class JSONLayoutExporter {
         if (itemLabel != null) {
             json.element("itemLabel", itemLabel);
         }
+        Map<String, String> labels = selectOption.getItemLabels();
+        if (labels != null && !labels.isEmpty()) {
+            JSONObject jsonLabels = new JSONObject();
+            for (Map.Entry<String, String> entry : labels.entrySet()) {
+                jsonLabels.put(entry.getKey(), entry.getValue());
+            }
+            json.element("itemLabels", jsonLabels);
+        }
         String itemValue = selectOption.getItemValue();
         if (itemValue != null) {
             json.element("itemValue", itemValue);
@@ -1112,12 +1120,20 @@ public class JSONLayoutExporter {
         return json;
     }
 
+    @SuppressWarnings("unchecked")
     public static WidgetSelectOption importWidgetSelectionOption(
             JSONObject selectOption) {
         boolean isMulti = selectOption.getBoolean("multiple");
         Serializable value = selectOption.optString("value", null);
         String var = selectOption.optString("var", null);
         String itemLabel = selectOption.optString("itemLabel", null);
+
+        Map<String, String> labels = new HashMap<String, String>();
+        JSONObject jsonLabels = selectOption.optJSONObject("itemLabels");
+        if (jsonLabels != null && !jsonLabels.isNullObject()) {
+            labels.putAll(jsonLabels);
+        }
+
         String itemValue = selectOption.optString("itemValue", null);
         Serializable itemDisabled = selectOption.optString("itemDisabled", null);
         Serializable itemRendered = selectOption.optString("itemRendered", null);
@@ -1128,12 +1144,16 @@ public class JSONLayoutExporter {
                 caseSensitive = new Boolean(
                         selectOption.getBoolean("caseSensitive"));
             }
-            return new WidgetSelectOptionsImpl(value, var, itemLabel,
-                    itemValue, itemDisabled, itemRendered, ordering,
-                    caseSensitive);
+            WidgetSelectOptionsImpl res = new WidgetSelectOptionsImpl(value,
+                    var, itemLabel, itemValue, itemDisabled, itemRendered,
+                    ordering, caseSensitive);
+            res.setItemLabels(labels);
+            return res;
         } else {
-            return new WidgetSelectOptionImpl(value, var, itemLabel, itemValue,
-                    itemDisabled, itemRendered);
+            WidgetSelectOptionImpl res = new WidgetSelectOptionImpl(value, var,
+                    itemLabel, itemValue, itemDisabled, itemRendered);
+            res.setItemLabels(labels);
+            return res;
         }
     }
 

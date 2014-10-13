@@ -15,9 +15,16 @@
  */
 package org.nuxeo.ecm.platform.ui.web.component;
 
+import java.util.Locale;
+import java.util.Map;
+
+import javax.el.ValueExpression;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.utils.i18n.I18NUtils;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 /**
  * EasySelectItem from
@@ -32,7 +39,9 @@ public class UISelectItem extends javax.faces.component.UISelectItem {
     public static final String COMPONENT_TYPE = UISelectItem.class.getName();
 
     enum PropertyKeys {
-        var, itemRendered,
+        var, itemRendered, itemLabels, resolveItemLabelTwice,
+        //
+        localize, dbl10n;
     }
 
     public String getVar() {
@@ -53,6 +62,49 @@ public class UISelectItem extends javax.faces.component.UISelectItem {
         getStateHelper().put(PropertyKeys.itemRendered, itemRendered);
     }
 
+    public boolean isResolveItemLabelTwice() {
+        return Boolean.TRUE.equals(getStateHelper().eval(
+                PropertyKeys.resolveItemLabelTwice, Boolean.FALSE));
+    }
+
+    @SuppressWarnings("boxing")
+    public void setResolveItemLabelTwice(boolean resolveItemLabelTwice) {
+        getStateHelper().put(PropertyKeys.resolveItemLabelTwice,
+                resolveItemLabelTwice);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, String> getItemLabels() {
+        return (Map<String, String>) getStateHelper().eval(
+                PropertyKeys.itemLabels);
+    }
+
+    public void setItemLabels(Map<String, String> itemLabels) {
+        getStateHelper().put(PropertyKeys.itemLabels, itemLabels);
+    }
+
+    @SuppressWarnings("boxing")
+    public boolean isLocalize() {
+        return (Boolean) getStateHelper().eval(PropertyKeys.localize,
+                Boolean.FALSE);
+    }
+
+    @SuppressWarnings("boxing")
+    public void setLocalize(boolean localize) {
+        getStateHelper().put(PropertyKeys.localize, localize);
+    }
+
+    @SuppressWarnings("boxing")
+    public boolean isdbl10n() {
+        return (Boolean) getStateHelper().eval(PropertyKeys.dbl10n,
+                Boolean.FALSE);
+    }
+
+    @SuppressWarnings("boxing")
+    public void setdbl10n(boolean dbl10n) {
+        getStateHelper().put(PropertyKeys.dbl10n, dbl10n);
+    }
+
     @Override
     public Object getValue() {
         Object value = super.getValue();
@@ -69,6 +121,51 @@ public class UISelectItem extends javax.faces.component.UISelectItem {
             }
 
         }.createSelectItem(value);
+    }
+
+    protected String translate(FacesContext context, Locale locale, String label) {
+        if (StringUtils.isBlank(label)) {
+            return label;
+        }
+        String bundleName = context.getApplication().getMessageBundle();
+        label = I18NUtils.getMessageString(bundleName, label, null, locale);
+        return label;
+    }
+
+    protected String retrieveItemLabel() {
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        Locale locale = ctx.getViewRoot().getLocale();
+        String label = null;
+        if (isdbl10n()) {
+            Map<String, String> labels = getItemLabels();
+            if (labels != null) {
+                if (labels.containsKey(locale.getLanguage())) {
+                    label = labels.get(locale.getLanguage());
+                } else {
+                    // fallback on en
+                    label = labels.get("en");
+                }
+            }
+        }
+        if (StringUtils.isBlank(label)) {
+            Object labelObject = getItemLabel();
+            label = labelObject != null ? labelObject.toString() : null;
+        }
+        if (isResolveItemLabelTwice()
+                && ComponentTagUtils.isValueReference(label)) {
+            ValueExpression ve = ctx.getApplication().getExpressionFactory().createValueExpression(
+                    ctx.getELContext(), label, Object.class);
+            if (ve != null) {
+                Object newLabel = ve.getValue(ctx.getELContext());
+                if (newLabel instanceof String) {
+                    label = (String) newLabel;
+                }
+            }
+        }
+        if (isLocalize()) {
+            label = translate(ctx, locale, label);
+        }
+        return label;
     }
 
     protected SelectItem createSelectItem() {

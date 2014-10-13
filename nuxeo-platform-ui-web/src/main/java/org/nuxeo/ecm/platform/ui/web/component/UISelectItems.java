@@ -17,12 +17,15 @@ package org.nuxeo.ecm.platform.ui.web.component;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.el.ValueExpression;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.platform.ui.web.directory.SelectItemComparator;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
@@ -42,13 +45,19 @@ public class UISelectItems extends javax.faces.component.UISelectItems
     public static final String COMPONENT_TYPE = UISelectItems.class.getName();
 
     protected enum PropertyKeys {
-        value, var, itemLabel, resolveItemLabelTwice, itemLabelPrefix, itemLabelPrefixSeparator,
+        value, var, itemLabel, itemLabels, resolveItemLabelTwice,
         //
-        itemLabelSuffix, itemLabelSuffixSeparator, itemValue,
+        itemLabelPrefix, itemLabelPrefixSeparator,
         //
-        itemRendered, itemDisabled, itemEscaped, ordering, caseSensitive,
+        itemLabelSuffix, itemLabelSuffixSeparator,
         //
-        displayIdAndLabel, displayIdAndLabelSeparator;
+        itemValue, itemRendered, itemDisabled, itemEscaped,
+        //
+        ordering, caseSensitive,
+        //
+        displayIdAndLabel, displayIdAndLabelSeparator,
+        //
+        localize, dbl10n;
     }
 
     public String getVar() {
@@ -65,6 +74,16 @@ public class UISelectItems extends javax.faces.component.UISelectItems
 
     public void setItemLabel(Object itemLabel) {
         getStateHelper().put(PropertyKeys.itemLabel, itemLabel);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, String> getItemLabels() {
+        return (Map<String, String>) getStateHelper().eval(
+                PropertyKeys.itemLabels);
+    }
+
+    public void setItemLabels(Map<String, String> itemLabels) {
+        getStateHelper().put(PropertyKeys.itemLabels, itemLabels);
     }
 
     public String getItemLabelPrefix() {
@@ -190,6 +209,28 @@ public class UISelectItems extends javax.faces.component.UISelectItems
                 idAndLabelSeparator);
     }
 
+    @SuppressWarnings("boxing")
+    public boolean isLocalize() {
+        return (Boolean) getStateHelper().eval(PropertyKeys.localize,
+                Boolean.FALSE);
+    }
+
+    @SuppressWarnings("boxing")
+    public void setLocalize(boolean localize) {
+        getStateHelper().put(PropertyKeys.localize, localize);
+    }
+
+    @SuppressWarnings("boxing")
+    public boolean isdbl10n() {
+        return (Boolean) getStateHelper().eval(PropertyKeys.dbl10n,
+                Boolean.FALSE);
+    }
+
+    @SuppressWarnings("boxing")
+    public void setdbl10n(boolean dbl10n) {
+        getStateHelper().put(PropertyKeys.dbl10n, dbl10n);
+    }
+
     @Override
     public Object getValue() {
         Object value = super.getValue();
@@ -217,16 +258,36 @@ public class UISelectItems extends javax.faces.component.UISelectItems
         return items.toArray(new SelectItem[0]);
     }
 
-    protected SelectItem createSelectItem() {
-        if (!isItemRendered()) {
-            return null;
+    protected String translate(FacesContext context, Locale locale, String label) {
+        if (StringUtils.isBlank(label)) {
+            return label;
         }
-        Object value = getItemValue();
-        Object labelObject = getItemLabel();
-        String label = labelObject != null ? labelObject.toString() : null;
+        String bundleName = context.getApplication().getMessageBundle();
+        label = I18NUtils.getMessageString(bundleName, label, null, locale);
+        return label;
+    }
+
+    protected String retrieveItemLabel() {
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        Locale locale = ctx.getViewRoot().getLocale();
+        String label = null;
+        if (isdbl10n()) {
+            Map<String, String> labels = getItemLabels();
+            if (labels != null) {
+                if (labels.containsKey(locale.getLanguage())) {
+                    label = labels.get(locale.getLanguage());
+                } else {
+                    // fallback on en
+                    label = labels.get("en");
+                }
+            }
+        }
+        if (StringUtils.isBlank(label)) {
+            Object labelObject = getItemLabel();
+            label = labelObject != null ? labelObject.toString() : null;
+        }
         if (isResolveItemLabelTwice()
                 && ComponentTagUtils.isValueReference(label)) {
-            FacesContext ctx = getFacesContext();
             ValueExpression ve = ctx.getApplication().getExpressionFactory().createValueExpression(
                     ctx.getELContext(), label, Object.class);
             if (ve != null) {
@@ -236,6 +297,18 @@ public class UISelectItems extends javax.faces.component.UISelectItems
                 }
             }
         }
+        if (isLocalize()) {
+            label = translate(ctx, locale, label);
+        }
+        return label;
+    }
+
+    protected SelectItem createSelectItem() {
+        if (!isItemRendered()) {
+            return null;
+        }
+        Object value = getItemValue();
+        String label = retrieveItemLabel();
         if (isDisplayIdAndLabel() && label != null) {
             label = value + getDisplayIdAndLabelSeparator() + label;
         }
