@@ -17,8 +17,9 @@
 package org.nuxeo.ecm.platform.forms.layout.api.impl;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
 
 /**
@@ -34,6 +35,8 @@ public class WidgetSelectOptionsImpl implements WidgetSelectOptions {
     protected String var;
 
     protected String itemLabel;
+
+    protected Map<String, String> labels;
 
     protected String itemValue;
 
@@ -88,6 +91,20 @@ public class WidgetSelectOptionsImpl implements WidgetSelectOptions {
         return itemLabel;
     }
 
+    @Override
+    public String getItemLabel(String locale) {
+        return labels.get(locale);
+    }
+
+    @Override
+    public Map<String, String> getItemLabels() {
+        return labels;
+    }
+
+    public void setItemLabels(Map<String, String> labels) {
+        this.labels = labels;
+    }
+
     public String getItemValue() {
         return itemValue;
     }
@@ -114,13 +131,19 @@ public class WidgetSelectOptionsImpl implements WidgetSelectOptions {
         builder.append(value).append(";");
         builder.append(var).append(";");
         builder.append(itemLabel).append(";");
+        if (labels != null) {
+            builder.append(labels.toString());
+        }
+        builder.append(";");
         builder.append(itemValue).append(";");
         if (itemDisabled != null) {
             builder.append(itemDisabled.toString());
         }
+        builder.append(";");
         if (itemRendered != null) {
             builder.append(itemRendered.toString());
         }
+        builder.append(";");
         builder.append(ordering).append(";");
         builder.append(caseSensitive).append(";");
 
@@ -129,9 +152,14 @@ public class WidgetSelectOptionsImpl implements WidgetSelectOptions {
     }
 
     @Override
-    public WidgetSelectOption clone() {
-        return new WidgetSelectOptionsImpl(value, var, itemLabel, itemValue,
-                itemDisabled, itemRendered, ordering, caseSensitive);
+    public WidgetSelectOptions clone() {
+        WidgetSelectOptionsImpl clone = new WidgetSelectOptionsImpl(value, var,
+                itemLabel, itemValue, itemDisabled, itemRendered, ordering,
+                caseSensitive);
+        if (labels != null) {
+            clone.setItemLabels(new HashMap<String, String>(labels));
+        }
+        return clone;
     }
 
 }

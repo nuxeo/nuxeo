@@ -17,6 +17,8 @@
 package org.nuxeo.ecm.platform.forms.layout.api.impl;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 
@@ -33,6 +35,8 @@ public class WidgetSelectOptionImpl implements WidgetSelectOption {
     protected String var;
 
     protected String itemLabel;
+
+    protected Map<String, String> labels;
 
     protected String itemValue;
 
@@ -78,6 +82,20 @@ public class WidgetSelectOptionImpl implements WidgetSelectOption {
         return itemLabel;
     }
 
+    @Override
+    public String getItemLabel(String locale) {
+        return labels.get(locale);
+    }
+
+    @Override
+    public Map<String, String> getItemLabels() {
+        return labels;
+    }
+
+    public void setItemLabels(Map<String, String> labels) {
+        this.labels = labels;
+    }
+
     public String getItemValue() {
         return itemValue;
     }
@@ -96,10 +114,15 @@ public class WidgetSelectOptionImpl implements WidgetSelectOption {
         builder.append(value).append(";");
         builder.append(var).append(";");
         builder.append(itemLabel).append(";");
+        if (labels != null) {
+            builder.append(labels.toString());
+        }
+        builder.append(";");
         builder.append(itemValue).append(";");
         if (itemDisabled != null) {
             builder.append(itemDisabled.toString());
         }
+        builder.append(";");
         if (itemRendered != null) {
             builder.append(itemRendered.toString());
         }
@@ -111,8 +134,11 @@ public class WidgetSelectOptionImpl implements WidgetSelectOption {
 
     @Override
     public WidgetSelectOption clone() {
-        return new WidgetSelectOptionImpl(value, var, itemLabel, itemValue,
-                itemDisabled, itemRendered);
+        WidgetSelectOptionImpl clone = new WidgetSelectOptionImpl(value, var,
+                itemLabel, itemValue, itemDisabled, itemRendered);
+        if (labels != null) {
+            clone.setItemLabels(new HashMap<String, String>(labels));
+        }
+        return clone;
     }
-
 }

@@ -17,8 +17,11 @@
 package org.nuxeo.ecm.platform.forms.layout.descriptors;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetSelectOptionsImpl;
@@ -38,6 +41,9 @@ public class WidgetSelectOptionsDescriptor {
 
     @XNode("@itemLabel")
     protected String itemLabel;
+
+    @XNodeMap(value = "itemLabel", key = "@locale", type = HashMap.class, componentType = String.class)
+    protected Map<String, String> itemLabels = new HashMap<String, String>();
 
     @XNode("@itemValue")
     protected String itemValue;
@@ -87,8 +93,11 @@ public class WidgetSelectOptionsDescriptor {
     }
 
     public WidgetSelectOption getWidgetSelectOption() {
-        return new WidgetSelectOptionsImpl(value, var, itemLabel, itemValue,
-                itemDisabled, itemRendered, ordering, caseSensitive);
+        WidgetSelectOptionsImpl res = new WidgetSelectOptionsImpl(value, var,
+                itemLabel, itemValue, itemDisabled, itemRendered, ordering,
+                caseSensitive);
+        res.setItemLabels(itemLabels);
+        return res;
     }
 
 }

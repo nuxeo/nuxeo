@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.forms.layout.api;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Single select option top be held by the {@link WidgetDefinition} and
@@ -53,6 +54,20 @@ public interface WidgetSelectOption extends Serializable {
      * {@link #getVar()} return a non-null value.
      */
     String getItemLabel();
+
+    /**
+     * Getter to handle l10n localization of select options.
+     *
+     * @since 5.9.6
+     */
+    String getItemLabel(String locale);
+
+    /**
+     * Getter to handle l10n localization of select options.
+     *
+     * @since 5.9.6
+     */
+    Map<String, String> getItemLabels();
 
     /**
      * Returns the item value for the select option.
