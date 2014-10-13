@@ -452,6 +452,7 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-suggestbox-jsf</artifactId>
+    </dependency>
 
     <!-- Nuxeo elasticsearch -->
     <dependency>
