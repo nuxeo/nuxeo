@@ -182,7 +182,7 @@ public class NXQLQueryBuilder {
         } else {
             sortedColumn = sortInfos[0].getSortColumn();
         }
-        if (pattern.contains(SORTED_COLUMN)) {
+        if (pattern != null && pattern.contains(SORTED_COLUMN)) {
             pattern = pattern.replace(SORTED_COLUMN, sortedColumn);
         }
         StringBuilder queryBuilder;
