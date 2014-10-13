@@ -38,7 +38,7 @@
   </c:if>
 
   <c:set var="boxSelectedStyleClass" value="#{nxu:test(value.data.id == currentDocument.id, 'selectedItem', '')}" />
-  <c:set var="infoViewUrl" value="#{nxd:complexDocumentUrl('id', value.data, 'info_view', null, false)}" />
+  <c:set var="infoViewUrl" value="#{nxd:complexDocumentUrl('id', value.data, 'info_view', null, true)}" />
   <div data-docref="#{value.data.id}" class="bubbleBox #{boxSelectedStyleClass}"
     onclick="openFancyBox('#{infoViewUrl}', {
       'autoDimensions': false,
