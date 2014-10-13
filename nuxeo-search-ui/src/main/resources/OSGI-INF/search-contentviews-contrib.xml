@@ -72,7 +72,7 @@
         <layout name="thumbnail_listing" title="document_thumbnail_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
           showCSVExport="true" showPDFExport="false" showSyndicationLinks="true"
-          showSlideshow="true" showSpreadsheet="false" showEditColumns="true" />
+          showSlideshow="true" showSpreadsheet="false" showEditRows="true" />
         <layout name="search_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
           showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
