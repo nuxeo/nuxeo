@@ -29,6 +29,9 @@
     point="widgettypes">
 
     <widgetType name="test">
+      <aliases>
+        <alias>testAlias</alias>
+      </aliases>
       <handler-class>
         org.nuxeo.ecm.platform.layout.facelets.DummyWidgetTypeHandler
       </handler-class>
@@ -225,6 +228,9 @@
     point="layouttypes">
 
     <layoutType name="listing">
+      <aliases>
+        <alias>listingAlias</alias>
+      </aliases>
       <categories>
         <category>jsf</category>
       </categories>

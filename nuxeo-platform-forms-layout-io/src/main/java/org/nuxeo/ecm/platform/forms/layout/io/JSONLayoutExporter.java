@@ -153,6 +153,14 @@ public class JSONLayoutExporter {
     public static JSONObject exportToJson(WidgetTypeDefinition def) {
         JSONObject json = new JSONObject();
         json.element("name", def.getName());
+        List<String> caliases = def.getAliases();
+        if (caliases != null && !caliases.isEmpty()) {
+            JSONArray aliases = new JSONArray();
+            for (String alias : caliases) {
+                aliases.add(alias);
+            }
+            json.element("aliases", aliases);
+        }
         json.element("handlerClassName", def.getHandlerClassName());
         JSONObject props = exportStringPropsToJson(def.getProperties());
         if (!props.isEmpty()) {
@@ -165,14 +173,22 @@ public class JSONLayoutExporter {
         return json;
     }
 
+    @SuppressWarnings("unchecked")
     public static WidgetTypeDefinition importWidgetTypeDefinition(
             JSONObject jsonDef) {
         String name = jsonDef.optString("name");
         String handlerClass = jsonDef.optString("handlerClassName");
         Map<String, String> properties = importStringProps(jsonDef.optJSONObject("properties"));
         WidgetTypeConfiguration conf = importWidgetTypeConfiguration(jsonDef.optJSONObject("configuration"));
-        return new WidgetTypeDefinitionImpl(name, handlerClass, properties,
-                conf);
+        List<String> aliases = new ArrayList<String>();
+        JSONArray jaliases = jsonDef.optJSONArray("aliases");
+        if (jaliases != null) {
+            aliases.addAll(jaliases);
+        }
+        WidgetTypeDefinitionImpl res = new WidgetTypeDefinitionImpl(name,
+                handlerClass, properties, conf);
+        res.setAliases(aliases);
+        return res;
     }
 
     public static JSONObject exportToJson(WidgetTypeConfiguration conf) {
@@ -456,6 +472,15 @@ public class JSONLayoutExporter {
         JSONObject json = new JSONObject();
         json.element("name", def.getName());
 
+        List<String> caliases = def.getAliases();
+        if (caliases != null && !caliases.isEmpty()) {
+            JSONArray aliases = new JSONArray();
+            for (String alias : caliases) {
+                aliases.add(alias);
+            }
+            json.element("aliases", aliases);
+        }
+
         JSONObject templates = exportStringPropsToJson(def.getTemplates());
         if (!templates.isEmpty()) {
             json.element("templates", templates);
@@ -471,12 +496,21 @@ public class JSONLayoutExporter {
     /**
      * @since 5.9.6
      */
+    @SuppressWarnings("unchecked")
     public static LayoutTypeDefinition importLayoutTypeDefinition(
             JSONObject jsonDef) {
         String name = jsonDef.optString("name");
         Map<String, String> templates = importStringProps(jsonDef.optJSONObject("templates"));
         LayoutTypeConfiguration conf = importLayoutTypeConfiguration(jsonDef.optJSONObject("configuration"));
-        return new LayoutTypeDefinitionImpl(name, templates, conf);
+        List<String> aliases = new ArrayList<String>();
+        JSONArray jaliases = jsonDef.optJSONArray("aliases");
+        if (jaliases != null) {
+            aliases.addAll(jaliases);
+        }
+        LayoutTypeDefinitionImpl res = new LayoutTypeDefinitionImpl(name,
+                templates, conf);
+        res.setAliases(aliases);
+        return res;
     }
 
     /**

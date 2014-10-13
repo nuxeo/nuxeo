@@ -1,5 +1,6 @@
 {"test": {
   "name": "test",
+  "aliases": ["testAlias"],
   "handlerClassName": "org.nuxeo.ecm.platform.layout.facelets.DummyWidgetTypeHandler",
   "properties":   {
     "foo1": "bar1",

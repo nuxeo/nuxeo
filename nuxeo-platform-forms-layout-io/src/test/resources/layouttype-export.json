@@ -1,5 +1,6 @@
 {
   "name": "listing",
+  "aliases": ["listingAlias"],
   "templates":   {
     "any": "/layouts/layout_listing_template.xhtml",
     "csv": "/layouts/layout_listing_csv_template.xhtml",
