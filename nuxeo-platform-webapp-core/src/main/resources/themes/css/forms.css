@@ -128,12 +128,12 @@ input.button.primary {
   color: #fff;
   border: 1px solid #00adff;
   background-color: #00adff;
-  box-shadow: none }
+  box-shadow: inset 0px 1px 0px rgba(255,255,255,0.3) }
 
 #document_create .buttonsGadget .horizontalAction:first-child .button:hover,
 .button.primary:hover,
 input.button.primary:hover {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 -30px 20px rgba(255, 255, 255, 0.2) inset;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 -30px 20px rgba(255, 255, 255, 0.2) inset, inset 0px 1px 0px rgba(255,255,255,0.4);
   transition: all 150ms ease-in-out 0s }
 
 #document_create .buttonsGadget .horizontalAction:first-child .button:focus,

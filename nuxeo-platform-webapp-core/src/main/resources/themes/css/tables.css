@@ -152,7 +152,6 @@ table.smallTable td {
   padding: .2em .4em .3em 0 }
 
 th:first-child input[type="checkbox"] {
-  margin: 0 auto;
   width: 1.9em }
 
 .fieldColumn .dataTable.widgetTable {
