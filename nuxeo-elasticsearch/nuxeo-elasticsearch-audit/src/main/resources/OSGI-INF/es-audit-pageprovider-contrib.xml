@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.ecm.platform.audit.PageProviderservice.es.contrib">
 
   <require>org.nuxeo.ecm.platform.audit.PageProviderservice.contrib</require>
@@ -58,11 +57,11 @@
         </predicate>
         <predicate parameter="principalName" operator="IN">
           <field schema="basicauditsearch" name="principalNames" />
-        </predicate>
-        
+        </predicate>                
       </whereClause>
-      <sort column="id" ascending="true" />
-      <pageSize>5</pageSize>
+      <sort column="eventDate" ascending="false" />
+        <pageSize>10</pageSize>
+        <maxPageSize>1000</maxPageSize>
     </genericPageProvider>
 
       <genericPageProvider name="ADMIN_HISTORY" class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
@@ -87,7 +86,6 @@
         <pageSize>10</pageSize>
         <maxPageSize>1000</maxPageSize>
       </genericPageProvider>
-
 
   </extension>
 

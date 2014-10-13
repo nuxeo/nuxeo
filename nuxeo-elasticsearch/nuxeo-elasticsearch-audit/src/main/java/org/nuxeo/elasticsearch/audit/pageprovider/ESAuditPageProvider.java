@@ -58,15 +58,17 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry>
 
     protected void preprocessCommentsIfNeeded(List<LogEntry> entries) {
         Serializable preprocess = getProperties().get(UICOMMENTS_PROPERTY);
-        
+
         if (preprocess != null
                 && "true".equalsIgnoreCase(preprocess.toString())) {
             Object session = (CoreSession) getProperties().get(
                     CORE_SESSION_PROPERTY);
-            if (session != null  && CoreSession.class.isAssignableFrom(session.getClass())  ) {
-                CommentProcessorHelper cph = new CommentProcessorHelper((CoreSession)session);
+            if (session != null
+                    && CoreSession.class.isAssignableFrom(session.getClass())) {
+                CommentProcessorHelper cph = new CommentProcessorHelper(
+                        (CoreSession) session);
                 cph.processComments(entries);
-            }    
+            }
         }
     }
 
@@ -122,13 +124,13 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry>
         }
         return false;
     }
-        
+
     protected String getFixedPart() {
         if (getDefinition().getWhereClause() == null) {
             return null;
         } else {
             String fixedPart = getDefinition().getWhereClause().getFixedPart();
-            if (fixedPart==null || fixedPart.isEmpty()) {
+            if (fixedPart == null || fixedPart.isEmpty()) {
                 fixedPart = emptyQuery;
             }
             return fixedPart;
@@ -182,6 +184,20 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry>
     @Override
     public long getResultsCount() {
         return resultsCount;
+    }
+
+    @Override
+    public List<SortInfo> getSortInfos() {
+
+        // because ContentView can reuse PageProVider without redefining columns
+        // ensure compat for ContentView configured with JPA log.* sort syntax
+        List<SortInfo> sortInfos = super.getSortInfos();
+        for (SortInfo si : sortInfos) {
+            if (si.getSortColumn().startsWith("log.")) {
+                si.setSortColumn(si.getSortColumn().substring(4));
+            }
+        }
+        return sortInfos;
     }
 
 }

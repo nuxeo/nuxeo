@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
@@ -214,6 +216,8 @@ public class TestESHistoryProvider {
         long startIdx=0;
         long endIdx;
         
+        List<SortInfo> si = Arrays.asList(new SortInfo("id", true));
+        
         DocumentModel searchDoc = session.createDocumentModel("BasicAuditSearch");
         searchDoc.setPathInfo("/", "auditsearch");
         searchDoc = session.createDocument(searchDoc);
@@ -222,11 +226,11 @@ public class TestESHistoryProvider {
             
             if (ppName.endsWith("OLD")) {
                 pp = pps.getPageProvider(ppName,
-                        null, Long.valueOf(20), Long.valueOf(0),
+                        si, Long.valueOf(20), Long.valueOf(0),
                         new HashMap<String, Serializable>(), doc.getId());
             } else {
                 pp = pps.getPageProvider(ppName,
-                        null, Long.valueOf(20), Long.valueOf(0),
+                        si, Long.valueOf(20), Long.valueOf(0),
                         new HashMap<String, Serializable>(), doc);
             }
 
@@ -286,13 +290,14 @@ public class TestESHistoryProvider {
         searchDoc.setPropertyValue("basicauditsearch:endDate", null);
         
         // Get Proxy history
-        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,
-                Long.valueOf(20), Long.valueOf(0),
+        
+        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", si,
+                Long.valueOf(30), Long.valueOf(0),
                 new HashMap<String, Serializable>(), proxy);
         pp.setSearchDocumentModel(searchDoc);
 
         entries = (List<LogEntry>) pp.getCurrentPage();
-        if (verbose) {
+        if (true) {
             System.out.println("Proxy doc history");
             dump(entries);
         }
@@ -307,7 +312,7 @@ public class TestESHistoryProvider {
                 entries.get(proxyEntriesCount - 1).getId());
 
         // Get version 1 history
-        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,
+        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", si,
                 Long.valueOf(20), Long.valueOf(0),
                 new HashMap<String, Serializable>(), versions.get(0));
         pp.setSearchDocumentModel(searchDoc);
@@ -333,7 +338,7 @@ public class TestESHistoryProvider {
         }
 
         // get version 2 history
-        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,
+        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", si,
                 Long.valueOf(20), Long.valueOf(0),
                 new HashMap<String, Serializable>(), versions.get(1));
         pp.setSearchDocumentModel(searchDoc);

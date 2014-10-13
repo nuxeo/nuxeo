@@ -3,16 +3,10 @@
 
   <require>org.nuxeo.admin.audit.contentView.contrib</require>
   
-  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
-    point="contentViews">
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
 
-    <contentView name="EVENTS_VIEW">
-
-      <title>label.contentview.document.history</title>
-      <translateTitle>true</translateTitle>
-      <showTitle>true</showTitle>
-
-      <genericPageProvider class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
+      <genericPageProvider name="EVENTS_VIEW" class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
         <property name="coreSession">#{documentManager}</property>
         <property name="generateUIComments">false</property>
         <whereClause docType="BasicAuditSearch">
@@ -35,24 +29,6 @@
         <maxPageSize>1000</maxPageSize>
       </genericPageProvider>
 
-      <searchLayout name="fullauditsearch" filterDisplayType="quick" />
-      <showFilterForm>true</showFilterForm>
-
-      <showPageSizeSelector>true</showPageSizeSelector>
-      <useGlobalPageSize>true</useGlobalPageSize>
-      <refresh>
-        <event>documentChanged</event>
-        <event>documentCreated</event>
-      </refresh>
-      <cacheSize>10</cacheSize>
-      <cacheKey>#{org.jboss.seam.core.manager.currentConversationId}</cacheKey>
-
-      <resultLayouts>
-        <layout name="event_listing" title="history_listing"
-          translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showPDFExport="false" />
-      </resultLayouts>
-
-    </contentView>
   </extension>
+
 </component>

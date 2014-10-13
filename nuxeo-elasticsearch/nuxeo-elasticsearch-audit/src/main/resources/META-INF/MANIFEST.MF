@@ -6,5 +6,4 @@ Bundle-Version: 1.0.0
 Nuxeo-Component: OSGI-INF/elasticsearch-audit-index-contrib.xml,
  OSGI-INF/es-audit-pageprovider-contrib.xml,
  OSGI-INF/migration-operation.xml,
- OSGI-INF/content-view-contrib.xml,
- OSGI-INF/admin-content-view-contrib.xml
+ OSGI-INF/admin-pageprovider-contrib.xml
