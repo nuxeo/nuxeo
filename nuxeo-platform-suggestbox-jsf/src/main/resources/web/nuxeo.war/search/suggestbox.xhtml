@@ -5,23 +5,11 @@
   style="display: inline; float: left">
 
   <a4j:outputPanel id="#{widget.id}_panel" layout="block">
+
+    <h:outputScript library="js" name="nuxeo-suggestbox.js" />
+
     <span id="#{widget.id}_suggestDiv">
       <script type="text/javascript">
-	    function nxSelectedSuggestBoxFormatter(item) {
-	      return '';
-	    }
-
-	    function nxSuggestedSuggestBoxFormatter(item) {
-	      return '&lt;span&gt;&lt;img src="/nuxeo'+ item.icon +'" /&gt;'+ item.label + '&lt;/span&gt;'
-	    }
-
-	    function nxSuggestionEntryHandler(item) {
-          var docUrl = item.url;
-          if (typeof currentConversationId != 'undefined') {
-            docUrl += "?conversationId=" + currentConversationId;
-          }
-          window.location.replace(docUrl);
-	    }
 
 	    function focus_searchbox(event) {
           event.preventDefault();

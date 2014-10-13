@@ -24,9 +24,9 @@
         <property name="operationId">Search.SuggestersLauncher</property>
         <property name="placeholder">label.suggestion.placeholder</property>
         <property name="readonly">false</property>
-        <property name="selectionFormatter">nxSelectedSuggestBoxFormatter</property>
-        <property name="suggestionFormatter">nxSuggestedSuggestBoxFormatter</property>
-        <property name="onAddEntryHandler">nxSuggestionEntryHandler</property>
+        <property name="selectionFormatter">nuxeo.suggestbox.selectedFormatter</property>
+        <property name="suggestionFormatter">nuxeo.suggestbox.suggestedFormatter</property>
+        <property name="onAddEntryHandler">nuxeo.suggestbox.entryHandler</property>
         <property name="autocomplete">true</property>
         <property name="dropdownCssClass">nx-header-s2-dd</property>
         <property name="containerCssClass">nx-header-s2-ct</property>
