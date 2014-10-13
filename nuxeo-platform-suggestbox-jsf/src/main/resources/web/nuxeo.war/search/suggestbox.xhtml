@@ -10,6 +10,11 @@
 
     <span id="#{widget.id}_suggestDiv">
       <script type="text/javascript">
+        function nxSuggestHandleEnterKey(search) {
+            var searchUrl = '#{searchUIActions.getSearchTabUrl(search)}';
+            searchUrl += '&amp;#{searchUIActions.searchTermParameter}=' + search;
+            window.location.replace(searchUrl);
+        }
 
 	    function focus_searchbox(event) {
           event.preventDefault();

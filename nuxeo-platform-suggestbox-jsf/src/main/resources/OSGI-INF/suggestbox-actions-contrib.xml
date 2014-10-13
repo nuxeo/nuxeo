@@ -32,6 +32,7 @@
         <property name="containerCssClass">nx-header-s2-ct</property>
         <property name="width">200px</property>
         <property name="translatePlaceholder">true</property>
+        <property name="onEnterKeyHandler">nxSuggestHandleEnterKey</property>
       </properties>
     </action>
 
