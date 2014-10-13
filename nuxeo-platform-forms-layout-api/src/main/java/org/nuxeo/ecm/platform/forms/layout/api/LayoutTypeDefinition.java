@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.forms.layout.api;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,6 +26,12 @@ import java.util.Map;
 public interface LayoutTypeDefinition extends Serializable {
 
     String getName();
+
+    /**
+     * Return alias names for this layout type definition (useful for
+     * compatibility on old layout type names).
+     */
+    List<String> getAliases();
 
     /**
      * Returns templates by mode

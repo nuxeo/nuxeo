@@ -35,6 +35,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -234,6 +235,18 @@ public class TestLayoutStoreComponent extends NXRuntimeTestCase {
     }
 
     @Test
+    public void testWidgetTypeAliases() {
+        WidgetType testWidgetType = service.getWidgetType("testCategory",
+                "test");
+        assertNotNull(testWidgetType);
+        assertEquals("test", testWidgetType.getName());
+        WidgetType oldTestWidgetType = service.getWidgetType("testCategory",
+                "testAlias");
+        assertNotNull(oldTestWidgetType);
+        assertEquals("test", oldTestWidgetType.getName());
+    }
+
+    @Test
     public void testLayoutAliases() {
         LayoutDefinition testLayout = service.getLayoutDefinition(
                 "testCategory", "testLayout");
@@ -243,6 +256,18 @@ public class TestLayoutStoreComponent extends NXRuntimeTestCase {
                 "testCategory", "oldTestLayoutName");
         assertNotNull(oldTestLayout);
         assertEquals("testLayout", oldTestLayout.getName());
+    }
+
+    @Test
+    public void testLayoutTypeAliases() {
+        LayoutTypeDefinition testLayoutType = service.getLayoutTypeDefinition(
+                "testCategory", "myLayoutType");
+        assertNotNull(testLayoutType);
+        assertEquals("myLayoutType", testLayoutType.getName());
+        LayoutTypeDefinition oldTestLayoutType = service.getLayoutTypeDefinition(
+                "testCategory", "myLayoutTypeAlias");
+        assertNotNull(oldTestLayoutType);
+        assertEquals("myLayoutType", oldTestLayoutType.getName());
     }
 
 }

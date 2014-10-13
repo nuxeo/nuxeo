@@ -8,6 +8,7 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.api.impl;
 
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
@@ -24,6 +25,11 @@ public class WidgetTypeDefinitionImpl implements WidgetTypeDefinition {
     private static final long serialVersionUID = 1L;
 
     protected String name;
+
+    /**
+     * @since 5.9.6
+     */
+    protected List<String> aliases;
 
     protected String handlerClassName;
 
@@ -64,6 +70,15 @@ public class WidgetTypeDefinitionImpl implements WidgetTypeDefinition {
     @Override
     public Map<String, String> getProperties() {
         return properties;
+    }
+
+    @Override
+    public List<String> getAliases() {
+        return aliases;
+    }
+
+    public void setAliases(List<String> aliases) {
+        this.aliases = aliases;
     }
 
 }

@@ -16,7 +16,9 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.descriptors;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -36,6 +38,9 @@ public class LayoutTypeDescriptor {
     @XNode("@name")
     String name;
 
+    @XNodeList(value = "aliases/alias", type = ArrayList.class, componentType = String.class)
+    List<String> aliases;
+
     @XNodeMap(value = "templates/template", key = "@mode", type = HashMap.class, componentType = String.class)
     Map<String, String> templates = new HashMap<String, String>();
 
@@ -47,6 +52,10 @@ public class LayoutTypeDescriptor {
 
     public String getName() {
         return name;
+    }
+
+    public List<String> getAliases() {
+        return aliases;
     }
 
     public Map<String, String> getTemplates() {
@@ -65,7 +74,10 @@ public class LayoutTypeDescriptor {
     }
 
     public LayoutTypeDefinition getLayoutTypeDefinition() {
-        return new LayoutTypeDefinitionImpl(name, templates, getConfiguration());
+        LayoutTypeDefinitionImpl res = new LayoutTypeDefinitionImpl(name,
+                templates, getConfiguration());
+        res.setAliases(getAliases());
+        return res;
     }
 
 }

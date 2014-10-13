@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.core.registries;
 
+import java.util.List;
+
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
@@ -44,6 +46,41 @@ public class WidgetTypeRegistry extends SimpleContributionRegistry<WidgetType> {
 
     public WidgetType getWidgetType(String id) {
         return getCurrentContribution(id);
+    }
+
+    @Override
+    // overridden to handle aliases
+    public synchronized void addContribution(WidgetType contrib) {
+        super.addContribution(contrib);
+        List<String> aliases = contrib.getAliases();
+        if (aliases != null) {
+            for (String alias : aliases) {
+                FragmentList<WidgetType> head = addFragment(alias, contrib);
+                contributionUpdated(alias, head.merge(this), contrib);
+            }
+        }
+    }
+
+    @Override
+    // overridden to handle aliases
+    public synchronized void removeContribution(WidgetType contrib,
+            boolean useEqualsMethod) {
+        super.removeContribution(contrib, useEqualsMethod);
+        List<String> aliases = contrib.getAliases();
+        if (aliases != null) {
+            for (String alias : aliases) {
+                FragmentList<WidgetType> head = removeFragment(alias, contrib,
+                        useEqualsMethod);
+                if (head != null) {
+                    WidgetType result = head.merge(this);
+                    if (result != null) {
+                        contributionUpdated(alias, result, contrib);
+                    } else {
+                        contributionRemoved(alias, contrib);
+                    }
+                }
+            }
+        }
     }
 
 }

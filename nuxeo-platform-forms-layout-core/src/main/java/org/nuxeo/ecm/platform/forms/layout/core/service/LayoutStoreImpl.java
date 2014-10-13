@@ -308,8 +308,9 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             widgetTypesByCat.remove(name);
             widgetTypeDefsByCat.remove(name);
         }
-        WidgetType widgetType = new WidgetTypeImpl(name, widgetTypeClass,
+        WidgetTypeImpl widgetType = new WidgetTypeImpl(name, widgetTypeClass,
                 desc.getProperties());
+        widgetType.setAliases(desc.getAliases());
         WidgetTypeRegistry typeReg = widgetTypesByCat.get(category);
         if (typeReg == null) {
             typeReg = new WidgetTypeRegistry(category);

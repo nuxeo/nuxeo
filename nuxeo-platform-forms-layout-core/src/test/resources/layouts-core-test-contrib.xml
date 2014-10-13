@@ -6,6 +6,9 @@
     point="widgettypes">
 
     <widgetType name="test">
+      <aliases>
+        <alias>testAlias</alias>
+      </aliases>
       <categories>
         <category>testCategory</category>
       </categories>
@@ -114,6 +117,9 @@
       <categories>
         <category>testCategory</category>
       </categories>
+      <aliases>
+        <alias>myLayoutTypeAlias</alias>
+      </aliases>
     </layoutType>
 
   </extension>

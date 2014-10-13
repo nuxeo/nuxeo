@@ -19,7 +19,9 @@
 
 package org.nuxeo.ecm.platform.forms.layout.descriptors;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -41,6 +43,12 @@ public class WidgetTypeDescriptor {
     @XNode("@name")
     String name;
 
+    /**
+     * @since 5.9.6
+     */
+    @XNodeList(value = "aliases/alias", type = ArrayList.class, componentType = String.class)
+    List<String> aliases;
+
     @XNode("handler-class")
     String handlerClassName;
 
@@ -55,6 +63,10 @@ public class WidgetTypeDescriptor {
 
     public String getName() {
         return name;
+    }
+
+    public List<String> getAliases() {
+        return aliases;
     }
 
     public String getHandlerClassName() {
@@ -83,8 +95,11 @@ public class WidgetTypeDescriptor {
     }
 
     public WidgetTypeDefinition getWidgetTypeDefinition() {
-        return new WidgetTypeDefinitionImpl(name, handlerClassName, properties,
-                getConfiguration());
+        WidgetTypeDefinitionImpl res = new WidgetTypeDefinitionImpl(name,
+                handlerClassName, properties, getConfiguration());
+        res.setAliases(getAliases());
+        return res;
+
     }
 
 }

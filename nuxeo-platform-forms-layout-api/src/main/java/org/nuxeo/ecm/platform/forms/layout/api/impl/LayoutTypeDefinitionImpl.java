@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.api.impl;
 
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeConfiguration;
@@ -29,6 +30,8 @@ public class LayoutTypeDefinitionImpl implements LayoutTypeDefinition {
     private static final long serialVersionUID = 1L;
 
     protected String name;
+
+    protected List<String> aliases;
 
     protected Map<String, String> templates;
 
@@ -64,6 +67,15 @@ public class LayoutTypeDefinitionImpl implements LayoutTypeDefinition {
     @Override
     public LayoutTypeConfiguration getConfiguration() {
         return configuration;
+    }
+
+    @Override
+    public List<String> getAliases() {
+        return aliases;
+    }
+
+    public void setAliases(List<String> aliases) {
+        this.aliases = aliases;
     }
 
 }

@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.forms.layout.api;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,9 +33,18 @@ import java.util.Map;
 public interface WidgetType extends Serializable {
 
     /**
-     * Returns the name of this widget type, used to identify it in the service.
+     * Returns the name of this widget type, used to identify it in the
+     * service.
      */
     String getName();
+
+    /**
+     * Return alias names for this widget type (useful for compatibility
+     * on old widget types).
+     *
+     * @since 5.9.6
+     */
+    List<String> getAliases();
 
     /**
      * Returns the class defining this widget type behaviour.

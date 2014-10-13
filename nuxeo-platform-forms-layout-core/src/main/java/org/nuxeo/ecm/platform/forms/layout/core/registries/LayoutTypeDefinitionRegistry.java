@@ -60,4 +60,40 @@ public class LayoutTypeDefinitionRegistry extends
         return getCurrentContribution(id);
     }
 
+    @Override
+    // overridden to handle aliases
+    public synchronized void addContribution(LayoutTypeDefinition contrib) {
+        super.addContribution(contrib);
+        List<String> aliases = contrib.getAliases();
+        if (aliases != null) {
+            for (String alias : aliases) {
+                FragmentList<LayoutTypeDefinition> head = addFragment(alias,
+                        contrib);
+                contributionUpdated(alias, head.merge(this), contrib);
+            }
+        }
+    }
+
+    @Override
+    // overridden to handle aliases
+    public synchronized void removeContribution(LayoutTypeDefinition contrib,
+            boolean useEqualsMethod) {
+        super.removeContribution(contrib, useEqualsMethod);
+        List<String> aliases = contrib.getAliases();
+        if (aliases != null) {
+            for (String alias : aliases) {
+                FragmentList<LayoutTypeDefinition> head = removeFragment(alias,
+                        contrib, useEqualsMethod);
+                if (head != null) {
+                    LayoutTypeDefinition result = head.merge(this);
+                    if (result != null) {
+                        contributionUpdated(alias, result, contrib);
+                    } else {
+                        contributionRemoved(alias, contrib);
+                    }
+                }
+            }
+        }
+    }
+
 }

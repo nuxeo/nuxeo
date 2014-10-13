@@ -60,4 +60,40 @@ public class WidgetTypeDefinitionRegistry extends
         return getCurrentContribution(id);
     }
 
+    @Override
+    // overridden to handle aliases
+    public synchronized void addContribution(WidgetTypeDefinition contrib) {
+        super.addContribution(contrib);
+        List<String> aliases = contrib.getAliases();
+        if (aliases != null) {
+            for (String alias : aliases) {
+                FragmentList<WidgetTypeDefinition> head = addFragment(alias,
+                        contrib);
+                contributionUpdated(alias, head.merge(this), contrib);
+            }
+        }
+    }
+
+    @Override
+    // overridden to handle aliases
+    public synchronized void removeContribution(WidgetTypeDefinition contrib,
+            boolean useEqualsMethod) {
+        super.removeContribution(contrib, useEqualsMethod);
+        List<String> aliases = contrib.getAliases();
+        if (aliases != null) {
+            for (String alias : aliases) {
+                FragmentList<WidgetTypeDefinition> head = removeFragment(alias,
+                        contrib, useEqualsMethod);
+                if (head != null) {
+                    WidgetTypeDefinition result = head.merge(this);
+                    if (result != null) {
+                        contributionUpdated(alias, result, contrib);
+                    } else {
+                        contributionRemoved(alias, contrib);
+                    }
+                }
+            }
+        }
+    }
+
 }

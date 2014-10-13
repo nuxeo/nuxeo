@@ -124,8 +124,10 @@ public class TestLayoutStoreService extends NXRuntimeTestCase {
 
         List<WidgetTypeDefinition> wTypeDefs = service.getWidgetTypeDefinitions("testCategory");
         assertNotNull(wTypeDefs);
-        assertEquals(1, wTypeDefs.size());
+        assertEquals(2, wTypeDefs.size());
         assertEquals(wTypeDef, wTypeDefs.get(0));
+        // same contribs (aliases)
+        assertEquals(wTypeDef, wTypeDefs.get(1));
     }
 
 }
