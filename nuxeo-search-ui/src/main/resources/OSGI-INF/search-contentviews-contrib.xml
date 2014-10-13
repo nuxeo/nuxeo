@@ -17,7 +17,8 @@
         <whereClause docType="DefaultSearch">
           <fixedPart>
             ecm:mixinType != 'HiddenInNavigation' AND ecm:isProxy = 0
-            AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
+            AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
+            'deleted'
             AND SORTED_COLUMN IS NOT NULL
           </fixedPart>
           <predicate parameter="ecm:fulltext" operator="FULLTEXT">
@@ -49,7 +50,8 @@
           <predicate parameter="ecm:tag" operator="IN">
             <field schema="default_search" name="ecm_tags" />
           </predicate>
-          <predicate parameter="collectionMember:collectionIds" operator="IN">
+          <predicate parameter="collectionMember:collectionIds"
+            operator="IN">
             <field schema="default_search" name="ecm_collections" />
           </predicate>
         </whereClause>
@@ -109,7 +111,8 @@
         <property name="coreSession">#{documentManager}</property>
         <whereClause docType="DefaultSearch">
           <fixedPart>
-            ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0
+            ecm:mixinType != 'HiddenInNavigation' AND
+            ecm:isCheckedInVersion = 0
             AND ecm:currentLifeCycleState != 'deleted'
             AND SORTED_COLUMN IS NOT NULL
           </fixedPart>
@@ -210,7 +213,8 @@
           </predicate>
           <fixedPart>
             ecm:mixinType = 'SavedSearch'
-            AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0
+            AND ecm:isProxy = 0 AND
+            ecm:isCheckedInVersion = 0
             AND ecm:currentLifeCycleState != 'deleted'
             AND ecm:parentId = ?
             AND SORTED_COLUMN IS NOT NULL
@@ -290,7 +294,8 @@
             <field>defaults:dc_created_max</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'hidden' : 'edit'}</mode>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'hidden' : 'edit'}</mode>
           </widgetModes>
           <properties widgetMode="edit">
             <property name="styleClass">dataInputTextDate</property>
@@ -302,7 +307,8 @@
             <field>defaults:dc_created_agg</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="any">
             <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_created_agg'].buckets}</property>
@@ -330,7 +336,8 @@
             <field>defaults:dc_modified_max</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'hidden' : 'edit'}</mode>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'hidden' : 'edit'}</mode>
           </widgetModes>
           <properties widgetMode="edit">
             <property name="styleClass">dataInputTextDate</property>
@@ -342,7 +349,8 @@
             <field>defaults:dc_modified_agg</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="any">
             <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_modified_agg'].buckets}</property>
@@ -381,7 +389,8 @@
             <field>defaults:dc_creator</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'hidden' : 'edit'}</mode>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'hidden' : 'edit'}</mode>
           </widgetModes>
           <properties widgetMode="edit">
             <property name="searchType">USER_TYPE</property>
@@ -394,7 +403,8 @@
             <field>defaults:dc_creator_agg</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="edit">
             <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_creator_agg'].buckets}</property>
@@ -445,7 +455,8 @@
             <field>defaults:dc_nature</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'hidden' : 'edit'}</mode>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'hidden' : 'edit'}</mode>
           </widgetModes>
           <properties widgetMode="any">
             <property name="width">100%</property>
@@ -460,7 +471,8 @@
             <field>defaults:dc_nature_agg</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="any">
             <property name="directoryName">nature</property>
@@ -489,7 +501,8 @@
             <field>defaults:dc_subjects</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'hidden' : 'edit'}</mode>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'hidden' : 'edit'}</mode>
           </widgetModes>
           <properties widgetMode="any">
             <property name="directoryName">l10nsubjects</property>
@@ -505,7 +518,8 @@
             <field>defaults:dc_subjects_agg</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="any">
             <property name="directoryName">l10nsubjects</property>
@@ -535,7 +549,8 @@
             <field>defaults:dc_coverage</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'hidden' : 'edit'}</mode>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'hidden' : 'edit'}</mode>
           </widgetModes>
           <properties widgetMode="any">
             <property name="directoryName">l10ncoverage</property>
@@ -551,7 +566,8 @@
             <field>defaults:dc_coverage_agg</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="any">
             <property name="directoryName">l10ncoverage</property>
@@ -573,7 +589,8 @@
       </labels>
       <translated>true</translated>
       <widgetModes>
-        <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
+        <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+          'edit' : 'hidden'}</mode>
       </widgetModes>
       <properties widgetMode="any">
         <property name="hideSubLabels">true</property>
@@ -584,7 +601,8 @@
             <field>defaults:common_size_agg</field>
           </fields>
           <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ? 'edit' : 'hidden'}</mode>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'edit' : 'hidden'}</mode>
           </widgetModes>
           <selectOptions>
             <option itemLabel="#{messages['label.aggregate.size.tiny']} (#{contentView.pageProvider.aggregates['common_size_agg'].getBucket('tiny').docCount})"
