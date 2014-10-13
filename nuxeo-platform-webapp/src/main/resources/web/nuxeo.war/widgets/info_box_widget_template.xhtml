@@ -1,0 +1,72 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <c:if test="#{!empty fieldOrValue.dc.description}">
+    <nxl:widgetType name="textarea" mode="view"
+      value="#{fieldOrValue.dc.description}"
+      styleClass="documentDescription quote" />
+  </c:if>
+
+  <table>
+    <c:if test="#{!empty fieldOrValue.dc.created}">
+      <tr>
+        <td class="labelColumn">#{messages['label.dublincore.creationDate']}</td>
+        <td class="fieldColumn"><h:outputText value="#{fieldOrValue.dc.created}" /></td>
+      </tr>
+    </c:if>
+    <c:if test="#{!empty fieldOrValue.dc.creator}">
+      <tr>
+        <td class="labelColumn">#{messages['label.summary.createdBy']}</td>
+        <td class="fieldColumn">
+          <span class="user creator">
+            <a href="#{baseURL}user/#{fieldOrValue.dc.creator}">
+              #{nxu:userFullName(fieldOrValue.dc.creator)}
+            </a>
+          </span>
+        </td>
+      </tr>
+    </c:if>
+    <tr>
+      <td class="labelColumn">#{messages['label.version']}</td>
+      <td class="fieldColumn">
+        <nxu:set var="versionLabel" value="#{documentVersioning.getVersionLabel(fieldOrValue)}"
+          cache="true">
+          <h:outputText value="#{versionLabel}"/>
+        </nxu:set>
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumn">#{messages['label.content.header.currentLifecycleState']}</td>
+      <td class="fieldColumn">
+        <h:outputText value="#{messages[fieldOrValue.currentLifeCycleState]}"
+          styleClass="sticker"/>
+        <nxu:set var="lockDetails" value="#{lockActions.getLockDetails(fieldOrValue)}"
+          cache="true">
+          <h:outputText value="#{messages['label.document.lock']}"
+            title="#{messages['label.summary.by']} #{nxu:userFullName(lockDetails['document.locker'])}, #{messages['label.summary.the']} #{lockDetails['document.lock.created'].time}"
+            styleClass="sticker warningLabel tipsyShow tipsyGravityS"
+            rendered="#{!empty lockDetails}" />
+        </nxu:set>
+      </td>
+    </tr>
+    <c:if test="#{!empty fieldOrValue.dc.contributors}">
+      <tr>
+        <td class="labelColumn">#{messages['label.dublincore.contributors']}</td>
+        <td class="fieldColumn">
+          <c:forEach var="contributor"
+            items="#{fieldOrValue.dc.contributors}">
+            <span class="user creator">
+              <a href="#{baseURL}user/#{contributor}">
+                <h:outputText value="#{nxu:userFullName(contributor)}" />
+              </a>
+            </span>
+          </c:forEach>
+        </td>
+      </tr>
+    </c:if>
+  </table>
+
+</div>

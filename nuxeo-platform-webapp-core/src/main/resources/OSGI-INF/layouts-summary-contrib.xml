@@ -262,12 +262,13 @@
     <widgetType name="summary_current_document_description">
       <configuration>
         <sinceVersion>5.3.1</sinceVersion>
+        <deprecatedVersion>5.9.6</deprecatedVersion>
         <title>Description</title>
         <description>
           <p>This widget displays the description of the currentDocument.</p>
           <p>
             Since 5.6, it also displays the creation date, author and version
-            beneath the descrption.
+            beneath the description.
           </p>
           <p>
             It requires the following variables to be present in the EL context:

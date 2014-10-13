@@ -234,6 +234,9 @@
       </templates>
       <rows>
         <row>
+          <widget>infoViewInfoBox</widget>
+        </row>
+        <row>
           <widget>infoViewMetadata</widget>
         </row>
         <row>
@@ -249,6 +252,14 @@
           <widget>infoViewComments</widget>
         </row>
       </rows>
+      <widget name="infoViewInfoBox" type="container">
+        <subWidgets>
+          <widget name="infoBox" type="info_box" />
+        </subWidgets>
+        <properties widgetMode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
+      </widget>
       <widget name="infoViewMetadata" type="container">
         <labels>
           <label mode="any">action.view.metadata</label>

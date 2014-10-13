@@ -3,6 +3,37 @@
 <component name="org.nuxeo.ecm.platform.forms.layouts.webapp">
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="info_box">
+      <configuration>
+        <sinceVersion>5.9.6</sinceVersion>
+        <title>Info box</title>
+        <description>
+          <p>
+            This widget displays common information about the document, like
+            creation date, creator, version, state, contributors, ...
+          </p>
+        </description>
+        <categories>
+          <category>configuration_not_ready</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets//info_box_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
     <widget name="nature" type="suggestOneDirectory">

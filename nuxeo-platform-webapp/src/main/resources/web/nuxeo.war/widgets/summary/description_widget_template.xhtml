@@ -5,6 +5,10 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
+  <c:if test="false">
+    Deprecated since 5.9.6.
+  </c:if>
+
   <c:if test="#{!empty currentDocument.dc.description}">
     <nxl:widgetType name="textarea" mode="view"
       value="#{currentDocument.dc.description}"
