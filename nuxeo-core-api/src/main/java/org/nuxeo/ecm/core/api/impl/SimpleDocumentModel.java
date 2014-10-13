@@ -346,6 +346,11 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
+    public Long getPos() {
+        return null;
+    }
+
+    @Override
     public String getPathAsString() {
         return path == null ? null : path.toString();
     }

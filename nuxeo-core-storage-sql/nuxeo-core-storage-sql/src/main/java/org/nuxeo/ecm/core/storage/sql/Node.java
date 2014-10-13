@@ -99,6 +99,15 @@ public class Node {
         }
     }
 
+    public Long getPos() {
+        try {
+            return (Long) getHierFragment().get(model.HIER_CHILD_POS_KEY);
+        } catch (StorageException e) {
+            // do not propagate this unlikely exception as a checked one
+            throw new RuntimeException(e);
+        }
+    }
+
     public String getPrimaryType() {
         try {
             return hierFragment.getString(model.MAIN_PRIMARY_TYPE_KEY);

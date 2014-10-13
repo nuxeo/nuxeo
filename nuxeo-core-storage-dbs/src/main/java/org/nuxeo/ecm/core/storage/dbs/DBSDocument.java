@@ -247,6 +247,11 @@ public class DBSDocument implements Document {
     }
 
     @Override
+    public Long getPos() {
+        return (Long) docState.get(KEY_POS);
+    }
+
+    @Override
     public Document getParent() throws DocumentException {
         String parentId = docState.getParentId();
         return parentId == null ? null : session.getDocument(parentId);

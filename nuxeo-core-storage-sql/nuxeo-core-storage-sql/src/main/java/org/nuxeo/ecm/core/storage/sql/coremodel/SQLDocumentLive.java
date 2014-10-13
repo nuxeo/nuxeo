@@ -95,6 +95,11 @@ public class SQLDocumentLive implements SQLDocument {
         return getNode() == null ? null : getNode().getName();
     }
 
+    @Override
+    public Long getPos() {
+        return getNode().getPos();
+    }
+
     /*
      * ----- org.nuxeo.ecm.core.model.Document -----
      */

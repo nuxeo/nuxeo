@@ -180,6 +180,15 @@ public interface DocumentModel extends Serializable {
     String getName();
 
     /**
+     * Gets the document's position in its containing folder (if ordered).
+     *
+     * @return the position, or {@code null} if the containing folder is not
+     *         ordered
+     * @since 6.0
+     */
+    Long getPos();
+
+    /**
      * Get a text suitable to be shown in a UI for this document.
      *
      * @return the title or the internal name if no title could be found

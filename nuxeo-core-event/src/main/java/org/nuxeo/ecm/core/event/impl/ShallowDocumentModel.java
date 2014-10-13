@@ -123,6 +123,11 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
+    public Long getPos() {
+        return null;
+    }
+
+    @Override
     public Path getPath() {
         return path;
     }

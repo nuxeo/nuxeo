@@ -121,6 +121,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     protected Path path;
 
+    protected Long pos;
+
     protected DataModelMap dataModels;
 
     protected DocumentRef parentRef;
@@ -614,6 +616,22 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             return path.lastSegment();
         }
         return null;
+    }
+
+    @Override
+    public Long getPos() {
+        return pos;
+    }
+
+    /**
+     * Sets the document's position in its containing folder (if ordered). Used
+     * internally during construction.
+     *
+     * @param pos the position
+     * @since 6.0
+     */
+    public void setPosInternal(Long pos) {
+        this.pos = pos;
     }
 
     @Override
