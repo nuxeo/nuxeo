@@ -158,8 +158,9 @@ public class TestAESBinaryManager extends NXRuntimeTestCase {
         binary = binaryManager.getBinary(CONTENT_MD5);
         assertNotNull(binary);
         assertEquals(bytes.length, binary.getLength());
-        InputStream stream = binary.getStream();
-        assertEquals(CONTENT, IOUtils.toString(stream, UTF8));
+        try (InputStream stream = binary.getStream()) {
+            assertEquals(CONTENT, IOUtils.toString(stream, UTF8));
+        }
 
         binaryManager.close();
     }
