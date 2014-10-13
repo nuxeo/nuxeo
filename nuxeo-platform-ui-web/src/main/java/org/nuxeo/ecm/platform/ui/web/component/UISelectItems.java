@@ -18,10 +18,13 @@ package org.nuxeo.ecm.platform.ui.web.component;
 import java.util.Collections;
 import java.util.List;
 
+import javax.el.ValueExpression;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.ui.web.directory.SelectItemComparator;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 /**
  * EasySelectItems from
@@ -39,7 +42,7 @@ public class UISelectItems extends javax.faces.component.UISelectItems
     public static final String COMPONENT_TYPE = UISelectItems.class.getName();
 
     protected enum PropertyKeys {
-        value, var, itemLabel, itemLabelPrefix, itemLabelPrefixSeparator,
+        value, var, itemLabel, resolveItemLabelTwice, itemLabelPrefix, itemLabelPrefixSeparator,
         //
         itemLabelSuffix, itemLabelSuffixSeparator, itemValue,
         //
@@ -116,6 +119,17 @@ public class UISelectItems extends javax.faces.component.UISelectItems
     @SuppressWarnings("boxing")
     public void setItemDisabled(boolean itemDisabled) {
         getStateHelper().put(PropertyKeys.itemDisabled, itemDisabled);
+    }
+
+    public boolean isResolveItemLabelTwice() {
+        return Boolean.TRUE.equals(getStateHelper().eval(
+                PropertyKeys.resolveItemLabelTwice, Boolean.FALSE));
+    }
+
+    @SuppressWarnings("boxing")
+    public void setResolveItemLabelTwice(boolean resolveItemLabelTwice) {
+        getStateHelper().put(PropertyKeys.resolveItemLabelTwice,
+                resolveItemLabelTwice);
     }
 
     public boolean isItemRendered() {
@@ -210,6 +224,18 @@ public class UISelectItems extends javax.faces.component.UISelectItems
         Object value = getItemValue();
         Object labelObject = getItemLabel();
         String label = labelObject != null ? labelObject.toString() : null;
+        if (isResolveItemLabelTwice()
+                && ComponentTagUtils.isValueReference(label)) {
+            FacesContext ctx = getFacesContext();
+            ValueExpression ve = ctx.getApplication().getExpressionFactory().createValueExpression(
+                    ctx.getELContext(), label, Object.class);
+            if (ve != null) {
+                Object newLabel = ve.getValue(ctx.getELContext());
+                if (newLabel instanceof String) {
+                    label = (String) newLabel;
+                }
+            }
+        }
         if (isDisplayIdAndLabel() && label != null) {
             label = value + getDisplayIdAndLabelSeparator() + label;
         }

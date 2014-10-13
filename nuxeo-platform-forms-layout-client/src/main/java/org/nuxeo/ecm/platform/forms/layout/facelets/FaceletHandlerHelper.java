@@ -361,8 +361,8 @@ public final class FaceletHandlerHelper {
         }
         // fill with widget properties
         List<TagAttribute> propertyAttrs = getTagAttributes(
-                widget.getProperties(), null, true, widget.getType(),
-                widget.getTypeCategory(), widget.getMode());
+                widget.getProperties(), excludedProperties, true,
+                widget.getType(), widget.getTypeCategory(), widget.getMode());
         if (propertyAttrs != null) {
             attrs.addAll(propertyAttrs);
         }

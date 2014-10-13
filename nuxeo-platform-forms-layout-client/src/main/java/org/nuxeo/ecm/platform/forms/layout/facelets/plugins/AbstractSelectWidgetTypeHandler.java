@@ -57,7 +57,7 @@ public abstract class AbstractSelectWidgetTypeHandler extends
     private static final long serialVersionUID = 1L;
 
     protected enum SelectPropertyMappings {
-        selectOptions, var, itemLabel, itemLabelPrefix, itemLabelPrefixSeparator,
+        selectOptions, var, itemLabel, resolveItemLabelTwice, itemLabelPrefix, itemLabelPrefixSeparator,
         //
         itemLabelSuffix, itemLabelSuffixSeparator, itemValue,
         //
@@ -235,7 +235,14 @@ public abstract class AbstractSelectWidgetTypeHandler extends
     protected FaceletHandler getFaceletHandler(FaceletContext ctx,
             TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers,
             String componentType) throws WidgetException {
-        return getFaceletHandler(ctx, tagConfig, widget, subHandlers, componentType, null);
+        return getFaceletHandler(ctx, tagConfig, widget, subHandlers,
+                componentType, null);
+    }
+
+    protected FaceletHandler getComponentFaceletHandler(FaceletContext ctx,
+            FaceletHandlerHelper helper, Widget widget,
+            FaceletHandler componentHandler) {
+        return componentHandler;
     }
 
     protected FaceletHandler getFaceletHandler(FaceletContext ctx,
@@ -288,12 +295,16 @@ public abstract class AbstractSelectWidgetTypeHandler extends
                         helper.createAttribute("collectionType",
                                 ArrayList.class.getName()));
             }
+
             ComponentHandler input = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, leaf, componentType, rendererType);
+                    widgetTagConfigId, attributes, leaf, componentType,
+                    rendererType);
             String msgId = helper.generateMessageId(widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(
                     widgetTagConfigId, msgId, widgetId, null);
-            FaceletHandler[] handlers = { input, message };
+            FaceletHandler[] handlers = {
+                    getComponentFaceletHandler(ctx, helper, widget, input),
+                    message };
             return new CompositeFaceletHandler(handlers);
         } else {
             // TODO
