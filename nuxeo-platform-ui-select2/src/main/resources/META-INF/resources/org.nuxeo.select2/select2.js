@@ -23,6 +23,7 @@ the specific language governing permissions and limitations under the Apache Lic
  *   - https://jira.nuxeo.com/browse/NXP-13149
  *   - https://jira.nuxeo.com/browse/NXP-13715
  *   - https://jira.nuxeo.com/browse/NXP-15313
+ *   - https://jira.nuxeo.com/browse/NXP-15452
  *
  * Please re-apply any patch when upgrading this script.
  */
@@ -2470,8 +2471,14 @@ the specific language governing permissions and limitations under the Apache Lic
                         killEvent(e);
                         return;
                     case KEY.ENTER:
-                        this.selectHighlighted();
-                        killEvent(e);
+                        // NXP-15452
+                        if (this.opts.enterKeyHandler != null) {
+                            eval(this.opts.enterKeyHandler)(this.search.val());
+                            killEvent(e);
+                        } else {
+                            this.selectHighlighted();
+                            killEvent(e);
+                        }
                         return;
                     case KEY.TAB:
                         this.selectHighlighted({noFocus:true});

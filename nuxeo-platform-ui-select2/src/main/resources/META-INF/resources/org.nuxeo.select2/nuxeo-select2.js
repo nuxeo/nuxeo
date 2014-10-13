@@ -225,6 +225,11 @@
     if (params.suggestionFormatter && params.suggestionFormatter.length > 0) {
       suggestionFormatterFunction = eval(params.suggestionFormatter);
     }
+    // detect if we need custom enter key management
+    var enterKeyHandlerFunction = null;
+    if (params.onEnterKeyHandler && params.onEnterKeyHandler.length > 0) {
+      enterKeyHandlerFunction = eval(params.onEnterKeyHandler);
+    }
 
     // build select2 parameters
     var requestInProgress = false;
@@ -283,6 +288,10 @@
       select2_params.formatResult = suggestionFormatterFunction;
     } else {
       select2_params.formatResult = getDefaultLabel;
+    }
+    // append custom enter key handler if needed
+    if (enterKeyHandlerFunction != null) {
+      select2_params.enterKeyHandler = enterKeyHandlerFunction;
     }
 
     // append id formatter if needed
@@ -378,7 +387,7 @@
             }
             initHolder.val(newValue);
             if (params.onAddEntryHandler) {
-              window[params.onAddEntryHandler](e.added);
+              eval(params.onAddEntryHandler)(e.added);
             }
           }
 
