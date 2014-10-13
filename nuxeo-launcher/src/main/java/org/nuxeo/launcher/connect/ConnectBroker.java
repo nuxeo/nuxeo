@@ -905,6 +905,7 @@ public class ConnectBroker {
         } catch (Exception e) {
             log.error(String.format("Failed to install package: %s (%s)",
                     pkgId, e.getMessage()));
+            log.debug(e, e);
             cmdInfo.exitCode = 1;
             cmdInfo.newMessage(e);
             return null;
