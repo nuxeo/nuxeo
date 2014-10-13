@@ -167,6 +167,18 @@ public class SearchUIActions implements Serializable {
                 : MAIN_TABS_SEARCH);
     }
 
+    public String getSearchViewTitle() {
+        if (currentSelectedSavedSearchId != null) {
+            DocumentModel savedSearch = documentManager.getDocument(new IdRef(
+                    currentSelectedSavedSearchId));
+            return savedSearch.getTitle();
+        } else if (currentContentViewName != null) {
+            ContentView cv = contentViewActions.getContentView(currentContentViewName);
+            return cv.getTranslateTitle() ? messages.get(cv.getTitle()) : cv.getTitle();
+        }
+        return null;
+    }
+
     /**
      * Returns true if the user is viewing SEARCH.
      */

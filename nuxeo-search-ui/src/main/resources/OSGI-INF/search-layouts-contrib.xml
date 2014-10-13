@@ -2,6 +2,32 @@
 <component name="org.nuxeo.search.ui.layouts">
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="search_view_title">
+      <configuration>
+        <sinceVersion>5.9.6</sinceVersion>
+        <title>Search View Title</title>
+        <description>
+          <p>
+            This widget type displays the title of the search view: the title of
+            the selected saved search, or the title of the selected content view.
+          </p>
+          <p>
+          </p>
+        </description>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /search/widgets/search_view_title_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
     <!-- Grid layout widgets -->
@@ -102,6 +128,8 @@
 
     <!-- Search results widgets -->
 
+    <widget name="searchViewTitle" type="search_view_title" />
+
     <widget name="searchResultsActions" type="documentActionsWithForms">
       <properties widgetMode="view">
         <property name="category">SEARCH_RESULTS_ACTIONS</property>
@@ -167,14 +195,23 @@
 
     <!-- Search results -->
 
-    <action id="searchResultsActions" type="widget" order="100">
+    <action id="searchViewTitle" type="widget" order="100">
       <category>SEARCH_PANEL_RIGHT</category>
       <properties>
-        <property name="widgetName">searchResultsActions</property>
+        <property name="widgetName">searchViewTitle</property>
+        <property name="containerStyleClass">searchViewTitle</property>
       </properties>
     </action>
 
-    <action id="searchNxqlInput" type="widget" order="200">
+    <action id="searchResultsActions" type="widget" order="200">
+      <category>SEARCH_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">searchResultsActions</property>
+        <property name="containerStyleClass">searchResultsActions</property>
+      </properties>
+    </action>
+
+    <action id="searchNxqlInput" type="widget" order="300">
       <category>SEARCH_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">searchNxqlInput</property>
@@ -182,7 +219,7 @@
       <filter-id>nxqlSearchSelected</filter-id>
     </action>
 
-    <action id="searchContentView" type="widget" order="300">
+    <action id="searchContentView" type="widget" order="400">
       <category>SEARCH_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">searchContentView</property>

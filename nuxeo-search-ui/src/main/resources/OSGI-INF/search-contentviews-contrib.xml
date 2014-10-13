@@ -7,7 +7,7 @@
     <contentView name="default_search">
       <title>label.search.default</title>
       <translateTitle>true</translateTitle>
-      <showTitle>true</showTitle>
+      <showTitle>false</showTitle>
       <emptySentence>label.content.empty.search</emptySentence>
       <translateEmptySentence>true</translateEmptySentence>
 
@@ -98,8 +98,8 @@
 
       <title>label.search.form.simple</title>
       <translateTitle>true</translateTitle>
+      <showTitle>false</showTitle>
       <iconPath>/icons/document_listing_icon.png</iconPath>
-      <showTitle>true</showTitle>
 
       <emptySentence>label.content.empty.search</emptySentence>
       <translateEmptySentence>true</translateEmptySentence>
@@ -154,6 +154,7 @@
 
       <title>label.search.nxql</title>
       <translateTitle>true</translateTitle>
+      <showTitle>false</showTitle>
       <emptySentence>label.content.empty.search</emptySentence>
       <translateEmptySentence>true</translateEmptySentence>
 
