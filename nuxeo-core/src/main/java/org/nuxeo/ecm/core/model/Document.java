@@ -55,6 +55,14 @@ public interface Document extends DocumentContainer, PropertyContainer,
     String getName() throws DocumentException;
 
     /**
+     * Gets the document's position in its containing folder (if ordered).
+     *
+     * @return the position
+     * @since 6.0
+     */
+    Long getPos();
+
+    /**
      * Gets this document's UUID.
      *
      * @return the document UUID (cannot be null)

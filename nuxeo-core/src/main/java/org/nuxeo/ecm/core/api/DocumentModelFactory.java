@@ -123,6 +123,8 @@ public class DocumentModelFactory {
                 doc.getUUID(), path, docRef, parentRef, null, facets, sourceId,
                 repositoryName, doc.isProxy());
 
+        docModel.setPosInternal(doc.getPos());
+
         if (doc.isVersion()) {
             docModel.setIsVersion(true);
         }

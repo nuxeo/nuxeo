@@ -2996,6 +2996,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(2, children.size());
         assertEquals(name1, children.get(0).getName());
         assertEquals(name2, children.get(1).getName());
+        assertEquals(Long.valueOf(0), children.get(0).getPos());
+        assertEquals(Long.valueOf(1), children.get(1).getPos());
 
         session.orderBefore(parent.getRef(), name2, name1);
 
@@ -3003,6 +3005,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(2, children.size());
         assertEquals(name2, children.get(0).getName());
         assertEquals(name1, children.get(1).getName());
+        assertEquals(Long.valueOf(0), children.get(0).getPos());
+        assertEquals(Long.valueOf(1), children.get(1).getPos());
 
         session.orderBefore(parent.getRef(), name2, null);
 
@@ -3010,6 +3014,19 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(2, children.size());
         assertEquals(name1, children.get(0).getName());
         assertEquals(name2, children.get(1).getName());
+        assertEquals(Long.valueOf(0), children.get(0).getPos());
+        assertEquals(Long.valueOf(1), children.get(1).getPos());
+
+        // check in a non-ordered folder
+        DocumentModel parent2 = session.createDocumentModel("/", "folder",
+                "Folder");
+        parent2 = session.createDocument(parent2);
+        DocumentModel doc3 = session.createDocumentModel("/folder", "doc3",
+                "MyDocType");
+        doc3 = session.createDocument(doc3);
+        session.save();
+        doc3 = session.getDocument(doc3.getRef());
+        assertNull(doc3.getPos());
     }
 
     @Test

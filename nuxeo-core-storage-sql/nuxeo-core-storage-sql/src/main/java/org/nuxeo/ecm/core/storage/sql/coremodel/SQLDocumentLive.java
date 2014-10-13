@@ -150,6 +150,11 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
                 || name.startsWith(Model.FULLTEXT_SIMPLETEXT_PROP);
     }
 
+    @Override
+    public Long getPos() {
+        return getNode().getPos();
+    }
+
     /*
      * ----- org.nuxeo.ecm.core.model.Document -----
      */

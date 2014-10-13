@@ -132,6 +132,11 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     }
 
     @Override
+    public Long getPos() {
+        return proxy.getPos();
+    }
+
+    @Override
     public Document getParent() throws DocumentException {
         return proxy.getParent();
     }
