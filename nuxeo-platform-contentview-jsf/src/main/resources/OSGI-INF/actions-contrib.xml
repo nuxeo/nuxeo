@@ -113,6 +113,19 @@
       <filter-id>contentViewShowEditColumns</filter-id>
     </action>
 
+    <action id="contentViewEditRows" order="80"
+      label="label.contentview.edit.rows" type="fancybox" icon="/icons/refresh.png">
+      <category>CONTENT_VIEW_ACTIONS</category>
+      <properties>
+        <property name="include">
+          /incl/action/content_view_edit_rows.xhtml
+        </property>
+        <property name="addForm">true</property>
+        <property name="ajaxSupport">true</property>
+      </properties>
+      <filter-id>contentViewShowEditRows</filter-id>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -175,22 +188,32 @@
       </rule>
     </filter>
 
-    <filter id="contentViewShowSpreadsheet">
-      <rule grant="true">
-        <condition>
-          #{nxu:test(empty showSpreadsheet,
-          contentView.currentResultLayout.showSpreadsheet,
-          showSpreadsheet)}
-        </condition>
-      </rule>
-    </filter>
-
     <filter id="contentViewShowEditColumns">
       <rule grant="true">
         <condition>
           #{nxu:test(empty showEditColumns,
           contentView.currentResultLayout.showEditColumns,
           showEditColumns)}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="contentViewShowEditRows">
+      <rule grant="true">
+        <condition>
+          #{nxu:test(empty showEditRows,
+          contentView.currentResultLayout.showEditRows,
+          showEditRows)}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="contentViewShowSpreadsheet">
+      <rule grant="true">
+        <condition>
+          #{nxu:test(empty showSpreadsheet,
+          contentView.currentResultLayout.showSpreadsheet,
+          showSpreadsheet)}
         </condition>
       </rule>
     </filter>

@@ -391,22 +391,23 @@ public class ContentViewActions implements Serializable {
             DocumentModel currentDocument, ContentView contentView,
             Object showPageSizeSelector, Object showRefreshCommand,
             Object showCSVExport, Object showPDFExport,
-            Object showSyndicationLinks, Boolean showSlideshow,
-            Boolean showEditColumns, Boolean showSpreadsheet) {
+            Object showSyndicationLinks, Object showSlideshow,
+            Object showEditColumns, Object showEditRows, Object showSpreadsheet) {
         return webActions.getActionsList(
                 category,
                 createContentViewActionContext(currentDocument, contentView,
                         showPageSizeSelector, showRefreshCommand,
                         showCSVExport, showPDFExport, showSyndicationLinks,
-                        showSlideshow, showEditColumns, showSpreadsheet));
+                        showSlideshow, showEditColumns, showEditRows,
+                        showSpreadsheet));
     }
 
     protected ActionContext createContentViewActionContext(
             DocumentModel currentDocument, ContentView contentView,
             Object showPageSizeSelector, Object showRefreshCommand,
             Object showCSVExport, Object showPDFExport,
-            Object showSyndicationLinks, Boolean showSlideshow,
-            Boolean showEditColumns, Boolean showSpreadsheet) {
+            Object showSyndicationLinks, Object showSlideshow,
+            Object showEditColumns, Object showEditRows, Object showSpreadsheet) {
         ActionContext ctx;
         FacesContext faces = FacesContext.getCurrentInstance();
         if (faces == null) {
@@ -427,6 +428,7 @@ public class ContentViewActions implements Serializable {
         ctx.putLocalVariable("showSyndicationLinks", showSyndicationLinks);
         ctx.putLocalVariable("showSlideshow", showSlideshow);
         ctx.putLocalVariable("showEditColumns", showEditColumns);
+        ctx.putLocalVariable("showEditRows", showEditRows);
         ctx.putLocalVariable("showSpreadsheet", showSpreadsheet);
         return ctx;
     }

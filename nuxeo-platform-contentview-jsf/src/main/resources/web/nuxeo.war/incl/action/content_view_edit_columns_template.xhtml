@@ -1,0 +1,33 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <h3>
+    <h:outputText value="#{title}" />
+  </h3>
+
+  <h:form id="#{fancyboxFormId}">
+
+    <div class="content">
+
+      <nxl:layout name="#{contentView.currentResultLayout.name}"
+        mode="edit_columns"
+        value="#{contentView.currentResultLayoutColumns}" />
+
+    </div>
+
+    <div class="buttonsGadget">
+      <h:commandButton value="#{messages['command.save']}" styleClass="button">
+        <f:ajax render="#{nxu:componentAbsoluteId(component, contentViewPanelId)}"
+          execute="@form"
+          onevent="jQuery.fancybox.close" />
+      </h:commandButton>
+      <h:commandButton value="#{messages['command.cancel']}" styleClass="button" immediate="true"
+        onclick="jQuery.fancybox.close();" />
+    </div>
+
+  </h:form>
+
+</div>

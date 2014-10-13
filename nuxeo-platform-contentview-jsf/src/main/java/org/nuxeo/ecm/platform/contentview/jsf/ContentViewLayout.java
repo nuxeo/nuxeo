@@ -87,6 +87,18 @@ public interface ContentViewLayout extends Serializable {
     boolean getShowEditColumns();
 
     /**
+     * Returns true if 'edit rows' link is enabled for this layout. Defaults to
+     * false.
+     * <p>
+     * This marker is only useful to handle layout column selection when
+     * columns are actually rows (or display content differently that using
+     * columns).
+     *
+     * @since 5.9.6
+     */
+    boolean getShowEditRows();
+
+    /**
      * Returns true if 'spreadsheet' link is enabled for this layout. Defaults
      * to false.
      *
