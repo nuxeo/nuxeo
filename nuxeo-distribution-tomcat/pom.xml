@@ -48,6 +48,10 @@
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.elasticsearch</groupId>
+      <artifactId>elasticsearch</artifactId>
+    </dependency>
     <!-- Marketplace packages embedded in Tomcat distribution -->
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>

@@ -293,6 +293,8 @@ install nuxeo-dam
         <include name="slf4j*" />
         <include name="jcl-over-slf4j*" />
         <include name="log4j-*" />
+        <include name="elasticsearch-*" />
+        <include name="lucene-*" />
       </fileset>
     </move>
     <nx:rmdups dir="${distribution.dir}/nxserver/lib" />
