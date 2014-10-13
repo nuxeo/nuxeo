@@ -19,17 +19,18 @@
 
 package org.nuxeo.ecm.webapp.contentbrowser;
 
+import java.io.Serializable;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.types.Type;
-import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.webapp.action.TypesTool;
 
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
-public interface DocumentActions extends SelectDataModelListener {
+public interface DocumentActions extends Serializable {
 
     String CHILDREN_DOCUMENT_LIST = "CHILDREN_DOCUMENT_LIST";
 

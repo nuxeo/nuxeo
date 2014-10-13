@@ -15,7 +15,6 @@
   <description>Nuxeo JSF: Parent.</description>
 
   <modules>
-    <module>nuxeo-platform-ui-api</module>
     <module>nuxeo-platform-ui-web</module>
     <module>nuxeo-platform-ui-web-test</module>
     <module>nuxeo-platform-ui-web-compat</module>

@@ -45,18 +45,6 @@
       Its layout columns accept the following properties configuration:
       <ul>
         <li>
-          isListingSelectionBox: true or false, used to define wether a
-          "select all/unselect all" checkbox should be displayed. To be used in
-          conjunction with a widget of type "listing_selection_box". Defaults to
-          false.
-        </li>
-        <li>
-          isListingSelectionBoxWithCurrentDocument: true or false, used to
-          define wether a "select all/unselect all" checkbox should be
-          displayed. To be used in conjunction with a widget of type
-          "listing_selection_box_with_current_document". Defaults to false.
-        </li>
-        <li>
           useFirstWidgetLabelAsColumnHeader: true or false, used to define if
           first widget label should be used as column header label. Will use
           translation settings from the widget configuration. Defaults to false.
@@ -76,69 +64,12 @@
           given column. Defaults to null.
         </li>
       </ul>
-
-      TODO: document layout_listing_ajax_template.xhtml
     </documentation>
 
-    <widgetType name="listing_selection_box_with_current_document">
-      <configuration>
-        <sinceVersion>5.4.0</sinceVersion>
-        <title>Selection checkbox with current document</title>
-        <description>
-          <p>
-            This widget type displays a selection checkbox, that will perform
-            remote selection of given item. The current document information is
-            also provided to restore current context when clicking on the link.
-          </p>
-          <p>
-            It requires the following fields configuration:
-            <ul>
-              <li>
-                first field maps a boolean representing the selection state
-              </li>
-              <li>
-                second field maps the string identifier used to perform
-                selection
-              </li>
-            </ul>
-          </p>
-          <p>
-            It also requires the following variables to be present in the EL
-            context:
-            <ul>
-              <li>
-                provider: result provider used to get the list of items, its
-                name will be used.
-              </li>
-              <li>
-                listName: the name of the list that will hold selected items
-              </li>
-              <li>currentDocument: the current document</li>
-            </ul>
-          </p>
-        </description>
-        <fields>
-          <list>false</list>
-          <complex>false</complex>
-          <defaultConfiguration>
-            <field>selected</field>
-            <field>data.ref</field>
-          </defaultConfiguration>
-        </fields>
-        <categories>
-          <category>old_listing</category>
-        </categories>
-      </configuration>
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">
-        /widgets/listing/listing_selection_box_with_current_document_widget_template.xhtml
-      </property>
-
-    </widgetType>
-
     <widgetType name="listing_ajax_selection_box_with_current_document">
+      <aliases>
+        <alias>listing_selection_box_with_current_document</alias>
+      </aliases>
       <configuration>
         <sinceVersion>5.4.0</sinceVersion>
         <title>Ajax selection checkbox with current document</title>
@@ -196,63 +127,10 @@
 
     </widgetType>
 
-    <widgetType name="listing_selection_box">
-      <configuration>
-        <sinceVersion>5.4.0</sinceVersion>
-        <title>Selection checkbox</title>
-        <description>
-          <p>
-            This widget type displays a selection checkbox, that will perform
-            remote selection of given item.
-          </p>
-          <p>
-            It requires the following fields configuration:
-            <ul>
-              <li>
-                first field maps a boolean representing the selection state
-              </li>
-              <li>
-                second field maps the string identifier used to perform
-                selection
-              </li>
-            </ul>
-          </p>
-          <p>
-            It also requires the following variables to be present in the EL
-            context:
-            <ul>
-              <li>
-                provider: result provider used to get the list of items, its
-                name will be used.
-              </li>
-              <li>
-                listName: the name of the list that will hold selected items
-              </li>
-            </ul>
-          </p>
-        </description>
-        <fields>
-          <list>false</list>
-          <complex>false</complex>
-          <defaultConfiguration>
-            <field>selected</field>
-            <field>data.ref</field>
-          </defaultConfiguration>
-        </fields>
-        <categories>
-          <category>old_listing</category>
-        </categories>
-      </configuration>
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">
-        /widgets/listing/listing_selection_box_widget_template.xhtml
-      </property>
-
-    </widgetType>
-
     <widgetType name="listing_ajax_selection_box">
+      <aliases>
+        <alias>listing_selection_box</alias>
+      </aliases>
       <configuration>
         <sinceVersion>5.4.0</sinceVersion>
         <title>Ajax selection checkbox</title>
@@ -1034,27 +912,10 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <widget name="listing_selection_box_with_current_document" type="listing_selection_box_with_current_document">
-      <labels>
-        <label mode="any"></label>
-      </labels>
-      <fields>
-        <field>selected</field>
-        <field>data.ref</field>
-      </fields>
-    </widget>
-
     <widget name="listing_ajax_selection_box_with_current_document" type="listing_ajax_selection_box_with_current_document">
-      <labels>
-        <label mode="any"></label>
-      </labels>
-      <fields>
-        <field>selected</field>
-        <field>data.ref</field>
-      </fields>
-    </widget>
-
-    <widget name="listing_selection_box" type="listing_selection_box">
+      <aliases>
+        <alias>listing_selection_box_with_current_document</alias>
+      </aliases>
       <labels>
         <label mode="any"></label>
       </labels>
@@ -1065,6 +926,9 @@
     </widget>
 
     <widget name="listing_ajax_selection_box" type="listing_ajax_selection_box">
+      <aliases>
+        <alias>listing_selection_box</alias>
+      </aliases>
       <labels>
         <label mode="any"></label>
       </labels>
@@ -1362,114 +1226,11 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
 
-    <layout name="document_listing">
-      <templates>
-        <template mode="any">/layouts/layout_listing_template.xhtml</template>
-        <template mode="csv">
-          /layouts/layout_listing_csv_template.xhtml
-        </template>
-        <template mode="pdf">
-          /layouts/layout_listing_pdf_template.xhtml
-        </template>
-      </templates>
-      <properties mode="any">
-        <property name="showListingHeader">true</property>
-        <property name="showRowEvenOddClass">true</property>
-      </properties>
-      <columns>
-        <column>
-          <properties mode="any">
-            <property name="isListingSelectionBoxWithCurrentDocument">
-              true
-            </property>
-            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
-            <property name="columnStyleClass">iconColumn</property>
-          </properties>
-          <properties mode="csv">
-            <property name="isHidden">true</property>
-          </properties>
-          <properties mode="pdf">
-            <property name="isHidden">true</property>
-          </properties>
-          <widget>listing_selection_box_with_current_document</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
-            <property name="columnStyleClass">iconColumn</property>
-          </properties>
-          <widget>listing_icon_type</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="sortPropertyName">dc:title</property>
-          </properties>
-          <widget>listing_title_link</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="columnStyleClass">iconColumn</property>
-          </properties>
-          <properties mode="csv">
-            <property name="isHidden">true</property>
-          </properties>
-          <properties mode="pdf">
-            <property name="isHidden">true</property>
-          </properties>
-          <widget>listing_lock_icon</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="sortPropertyName">dc:modified</property>
-            <property name="defaultSortAscending">false</property>
-          </properties>
-          <widget>listing_modification_date</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="sortPropertyName">dc:lastContributor</property>
-          </properties>
-          <widget>listing_last_contributor</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="columnStyleClass">iconColumn</property>
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="isSortable">false</property>
-          </properties>
-          <widget>listing_version</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="sortPropertyName">
-              ecm:currentLifeCycleState
-            </property>
-          </properties>
-          <widget>listing_lifecycle</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="columnStyleClass">iconColumn</property>
-          </properties>
-          <properties mode="csv">
-            <property name="isHidden">true</property>
-          </properties>
-          <properties mode="pdf">
-            <property name="isHidden">true</property>
-          </properties>
-          <widget>listing_livedit_link</widget>
-        </column>
-      </columns>
-    </layout>
-
     <layout name="document_listing_table" type="listingTable">
       <aliases>
         <alias>search_listing_ajax</alias>
         <alias>document_listing_ajax</alias>
+        <alias>document_listing</alias>
       </aliases>
       <columns>
         <column>
@@ -1569,107 +1330,10 @@
       </columns>
     </layout>
 
-    <layout name="document_virtual_navigation_listing">
-      <templates>
-        <template mode="any">/layouts/layout_listing_template.xhtml</template>
-        <template mode="csv">
-          /layouts/layout_listing_csv_template.xhtml
-        </template>
-        <template mode="pdf">
-          /layouts/layout_listing_pdf_template.xhtml
-        </template>
-      </templates>
-      <properties mode="any">
-        <property name="showListingHeader">true</property>
-        <property name="showRowEvenOddClass">true</property>
-      </properties>
-      <columns>
-        <column>
-          <properties mode="any">
-            <property name="isListingSelectionBox">true</property>
-            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
-            <property name="columnStyleClass">iconColumn</property>
-          </properties>
-          <properties mode="csv">
-            <property name="isHidden">true</property>
-          </properties>
-          <properties mode="pdf">
-            <property name="isHidden">true</property>
-          </properties>
-          <widget>listing_selection_box</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
-            <property name="columnStyleClass">iconColumn</property>
-          </properties>
-          <widget>listing_icon_type</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="sortPropertyName">dc:title</property>
-          </properties>
-          <widget>listing_title_link</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="columnStyleClass">iconColumn</property>
-          </properties>
-          <properties mode="csv">
-            <property name="isHidden">true</property>
-          </properties>
-          <properties mode="pdf">
-            <property name="isHidden">true</property>
-          </properties>
-          <widget>listing_lock_icon</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="sortPropertyName">dc:modified</property>
-            <property name="defaultSortAscending">false</property>
-          </properties>
-          <widget>listing_modification_date</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="sortPropertyName">dc:lastContributor</property>
-          </properties>
-          <widget>listing_last_contributor</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-          </properties>
-          <widget>listing_version</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="sortPropertyName">
-              ecm:currentLifeCycleState
-            </property>
-          </properties>
-          <widget>listing_lifecycle</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="columnStyleClass">iconColumn</property>
-          </properties>
-          <properties mode="csv">
-            <property name="isHidden">true</property>
-          </properties>
-          <properties mode="pdf">
-            <property name="isHidden">true</property>
-          </properties>
-          <widget>listing_livedit_link</widget>
-        </column>
-      </columns>
-    </layout>
-
     <layout name="document_virtual_navigation_listing_ajax">
+      <aliases>
+        <alias>document_virtual_navigation_listing</alias>
+      </aliases>
       <templates>
         <template mode="any">
           /layouts/layout_listing_ajax_template.xhtml
@@ -1767,49 +1431,10 @@
       </columns>
     </layout>
 
-    <layout name="document_listing_compact_2_columns">
-      <properties mode="any">
-        <property name="display">table_2_columns</property>
-      </properties>
-      <templates>
-        <template mode="any">/layouts/layout_listing_template.xhtml</template>
-        <template mode="csv">
-          /layouts/layout_listing_csv_template.xhtml
-        </template>
-        <template mode="pdf">
-          /layouts/layout_listing_pdf_template.xhtml
-        </template>
-      </templates>
-      <columns>
-        <column alwaysSelected="true">
-          <properties mode="any">
-            <property name="columnStyleClass">iconColumn</property>
-          </properties>
-          <properties mode="csv">
-            <property name="isHidden">true</property>
-          </properties>
-          <properties mode="pdf">
-            <property name="isHidden">true</property>
-          </properties>
-          <widget>listing_selection_box_with_current_document</widget>
-        </column>
-        <column alwaysSelected="true">
-          <properties mode="any">
-            <property name="columnStyleClass">iconColumn</property>
-          </properties>
-          <widget>listing_icon_type</widget>
-        </column>
-        <column alwaysSelected="true">
-          <widget>listing_title_link</widget>
-          <widget>listing_modification_date</widget>
-          <widget>listing_author</widget>
-          <widget>listing_lifecycle</widget>
-          <widget>listing_version</widget>
-        </column>
-      </columns>
-    </layout>
-
     <layout name="document_listing_ajax_compact_2_columns">
+      <aliases>
+        <alias>document_listing_compact_2_columns</alias>
+      </aliases>
       <properties mode="any">
         <property name="display">table_2_columns</property>
       </properties>
