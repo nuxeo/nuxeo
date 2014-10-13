@@ -1252,6 +1252,7 @@ public class ConnectBroker {
                 requestPackages.addAll(solverRemove);
                 requestPackages.addAll(solverUpgrade);
                 if (ignoreMissing) {
+                    // Remove unkown packages from the list
                     Map<String, List<DownloadablePackage>> knownNames = getPackageManager().getAllPackagesByName();
                     List<String> solverInstallCopy = new ArrayList<String>(solverInstall);
                     for (String pkgToInstall : solverInstallCopy) {
@@ -1262,26 +1263,33 @@ public class ConnectBroker {
                         }
                     }
                 }
-                String nonCompliantPkg = getPackageManager().getNonCompliant(
+                List<String> nonCompliantPkg = getPackageManager().getNonCompliantList(
                         requestPackages, targetPlatform);
-                if (nonCompliantPkg != null) {
+                if (nonCompliantPkg.size()>0) {
                     requestPlatform = null;
                     if ("ask".equalsIgnoreCase(relax)) {
                         relax = readConsole(
-                                "Package %s is not available on platform version %s.\n"
+                                "Package %s not available on platform version %s.\n"
                                         + "Do you want to relax the constraint (yes/no)? [no] ",
-                                "no", nonCompliantPkg, targetPlatform);
+                                "no", StringUtils.join(nonCompliantPkg, ", "), targetPlatform);
                     }
 
                     if (Boolean.parseBoolean(relax)) {
                         log.warn(String.format(
-                                "Relax restriction to target platform %s because of package %s",
-                                targetPlatform, nonCompliantPkg));
+                                "Relax restriction to target platform %s because of package(s) %s",
+                                targetPlatform, StringUtils.join(nonCompliantPkg, ", ")));
                     } else {
-                        throw new PackageException(
-                                String.format(
-                                        "Package %s is not available on platform version %s (relax is not allowed)",
-                                        nonCompliantPkg, targetPlatform));
+                        if (ignoreMissing) {
+                            for (String pkgToInstall : nonCompliantPkg) {
+                                log.warn("Unable to install pacakge: " + pkgToInstall);
+                                solverInstall.remove(pkgToInstall);
+                            }
+                        } else {
+                            throw new PackageException(
+                                    String.format(
+                                        "Package %s not available on platform version %s (relax is not allowed)",
+                                        StringUtils.join(nonCompliantPkg, ", "), targetPlatform));
+                        }
                     }
                 }
 
