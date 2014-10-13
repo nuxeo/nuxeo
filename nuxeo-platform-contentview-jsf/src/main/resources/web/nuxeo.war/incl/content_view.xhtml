@@ -83,7 +83,6 @@
 <nxu:set var="aggregates"
   value="#{contentView.pageProvider.hasAggregateSupport() ? contentView.pageProvider.aggregates : null}"
   cache="true">
-  #{aggregates}
 <nxu:set var="selectedResultLayoutColumns"
   value="#{nxu:test(selectedResultLayoutColumns == null, contentView.currentResultLayoutColumns, selectedResultLayoutColumns)}"
   cache="true">
