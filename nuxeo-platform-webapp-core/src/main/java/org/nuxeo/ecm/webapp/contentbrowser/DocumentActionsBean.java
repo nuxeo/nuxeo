@@ -58,7 +58,6 @@ import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
-import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelRowEvent;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
@@ -83,7 +82,7 @@ import org.nuxeo.runtime.api.Framework;
 public class DocumentActionsBean extends InputController implements
         DocumentActions, Serializable {
 
-    private static final long serialVersionUID = -2069669959016643607L;
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(DocumentActionsBean.class);
 
@@ -438,29 +437,6 @@ public class DocumentActionsBean extends InputController implements
         } catch (Throwable t) {
             throw ClientException.wrap(t);
         }
-    }
-
-    // SelectModelListener interface
-    @Override
-    public void processSelectRowEvent(SelectDataModelRowEvent event) {
-        // could use source to get to the SelectModel and retrieve its name,
-        // but
-        // useless here as only one table is involved.
-        // SelectModelRow row = event.getRow();
-        Boolean selection = event.getSelected();
-        DocumentModel data = (DocumentModel) event.getRowData();
-        if (Boolean.TRUE.equals(selection)) {
-            documentsListsManager.addToWorkingList(
-                    DocumentsListsManager.CURRENT_DOCUMENT_SELECTION, data);
-        } else {
-            documentsListsManager.removeFromWorkingList(
-                    DocumentsListsManager.CURRENT_DOCUMENT_SELECTION, data);
-        }
-    }
-
-    private String handleError(String errorMessage) {
-        log.error(errorMessage);
-        return "ERROR: " + errorMessage;
     }
 
     @Override

@@ -1,57 +1,6 @@
-var proxy = null;
-var proxySearch = null;
 var lastSelectedCheckBox = null;
 var lastSelectAll = null;
 var lastTableName = null;
-
-function selectDataTableRow(docRef, providerName, checkbox, listName) {
-  if (proxy == null) {
-    proxy = Seam.Component.getInstance("documentActions");
-  }
-  lastSelectedCheckBox = checkbox;
-  proxy.processSelectRow(docRef, providerName, listName, checkbox.checked, selectDataTableRowCB);
-}
-
-// same as above with current document explicit reference to avoid browser back button to
-// trigger errors with the default CURRENT_DOC_CHILDREN provider
-function selectDataTableRowForDocument(docRef, providerName, checkbox, listName, currentDocRef) {
-  if (proxy == null) {
-    proxy = Seam.Component.getInstance("documentActions");
-  }
-  lastSelectedCheckBox = checkbox;
-  proxy.checkCurrentDocAndProcessSelectRow(docRef, providerName, listName, checkbox.checked, currentDocRef, selectDataTableRowCB);
-}
-
-// to be deprecated: the search form should use the ResultsProviderCache
-// as well
-function selectResultsDataTableRow(docRef, selected) {
-  if (proxySearch == null) {
-    proxySearch = Seam.Component.getInstance("searchActions");
-  }
-  proxySearch.processSelectRow(docRef, selected, selectDataTableRowCB);
-}
-
-function selectDataTablePage(tableId, providerName, selected, listName) {
-  if (proxy == null) {
-    proxy = Seam.Component.getInstance("documentActions");
-  }
-  lastSelectAll = selected;
-  lastTableName = tableId;
-  proxy.processSelectPage(providerName, listName, selected, selectDataTablePageCB);
-  handleAllCheckBoxes(tableId, selected);
-}
-
-// same as above with current document explicit reference to avoid browser back button to
-// trigger errors with the default CURRENT_DOC_CHILDREN provider
-function selectDataTablePageForDocument(tableId, providerName, selected, listName, currentDocRef) {
-  if (proxy == null) {
-    proxy = Seam.Component.getInstance("documentActions");
-  }
-  lastSelectAll = selected;
-  lastTableName = tableId;
-  proxy.checkCurrentDocAndProcessSelectPage(providerName, listName, selected, currentDocRef, selectDataTablePageCB);
-  handleAllCheckBoxes(tableId, selected);
-}
 
 function handleAllCheckBoxes(tableName, checked) {
   var table = document.getElementById(tableName);

@@ -50,8 +50,6 @@ import org.nuxeo.ecm.core.trash.TrashInfo;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
-import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
-import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelRowEvent;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
@@ -63,7 +61,7 @@ import org.nuxeo.runtime.api.Framework;
 @Scope(ScopeType.EVENT)
 @Install(precedence = Install.FRAMEWORK)
 public class DeleteActionsBean extends InputController implements
-        DeleteActions, Serializable, SelectDataModelListener {
+        DeleteActions, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -301,22 +299,6 @@ public class DeleteActionsBean extends InputController implements
 
     public boolean isTrashManagementEnabled() {
         return trashManager.isTrashManagementEnabled();
-    }
-
-    /**
-     * Listener method - not used for now because the binding is not used but
-     * might be used after the refactoring.
-     */
-    public void processSelectRowEvent(SelectDataModelRowEvent event) {
-        Boolean selection = event.getSelected();
-        DocumentModel data = (DocumentModel) event.getRowData();
-        if (selection) {
-            documentsListsManager.addToWorkingList(
-                    CURRENT_DOCUMENT_TRASH_SELECTION, data);
-        } else {
-            documentsListsManager.removeFromWorkingList(
-                    CURRENT_DOCUMENT_TRASH_SELECTION, data);
-        }
     }
 
     public List<Action> getActionsForTrashSelection() {
