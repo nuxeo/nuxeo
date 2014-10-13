@@ -44,6 +44,7 @@ import org.nuxeo.ecm.platform.actions.seam.SeamActionContext;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewCache;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
+import org.nuxeo.ecm.platform.contentview.jsf.ContentViewState;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
@@ -311,6 +312,22 @@ public class ContentViewActions implements Serializable {
         ContentView cv = contentViewRestActions.restoreContentView(
                 contentViewName, currentPage, pageSize, sortInfos,
                 jsonContentViewState);
+        cache.add(cv);
+        return cv;
+    }
+
+    /**
+     * Restore a Content View from the given ContentView state.
+     * <p>
+     * The content view is put in a cache map so that it's not rebuilt at each
+     * call. It is rebuilt when its cache key changes (if defined).
+     *
+     * @since 6.0
+     */
+    public ContentView restoreContentView(ContentViewState state)
+            throws UnsupportedEncodingException,
+            ClientException {
+        ContentView cv = contentViewService.restoreContentView(state);
         cache.add(cv);
         return cv;
     }
