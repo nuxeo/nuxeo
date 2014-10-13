@@ -43,6 +43,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * A binary manager that encrypts binaries on the filesystem using AES.
@@ -319,6 +320,7 @@ public class AESBinaryManager extends LocalBinaryManager {
         // write to a tmp file that will be used by the returned Binary
         // TODO if stream source, avoid copy (no-copy optimization)
         File tmp = File.createTempFile("bin_", ".tmp", tmpDir);
+        Framework.trackFile(tmp, tmp);
         OutputStream out = new BufferedOutputStream(new FileOutputStream(tmp));
         IOUtils.copy(in, out);
         in.close();
