@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.platform.routing.web;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.ScopeType.EVENT;
 import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SELECTION;
 
 import java.io.Serializable;
@@ -75,8 +74,6 @@ import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
-import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
-import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelImpl;
 import org.nuxeo.ecm.webapp.action.TypesTool;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.edit.lock.LockActions;
@@ -204,9 +201,9 @@ public class DocumentRoutingActionsBean implements Serializable {
      * When called on a regular document, the routing service is queried to get
      * the routes which have the current document attached.
      * <p>
-     * When dealing with a regular document, this is DEPRECATED as several graph
-     * routes may be related to the current document (for instance in the case
-     * of sub-workflows). Use {@link #getRelatedRoutes} instead.
+     * When dealing with a regular document, this is DEPRECATED as several
+     * graph routes may be related to the current document (for instance in the
+     * case of sub-workflows). Use {@link #getRelatedRoutes} instead.
      */
     public DocumentRoute getRelatedRoute() {
         // try to see if actually the current document is a route
@@ -261,7 +258,6 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     /**
      * Cancels the first workflow found on the current document
-     *
      */
     public String cancelRoute() throws ClientException {
         List<DocumentRoute> routes = getRelatedRoutes();
@@ -375,39 +371,6 @@ public class DocumentRoutingActionsBean implements Serializable {
             DocumentRoute currentRoute) {
         return getDocumentRoutingService().getRouteElements(currentRoute,
                 documentManager);
-    }
-
-    /**
-     * @deprecated since 5.9.2 - Use only routes of type 'graph'
-     */
-    @Deprecated
-    @Factory(value = "routeElementsSelectModel", scope = EVENT)
-    public SelectDataModel computeSelectDataModelRouteElements()
-            throws ClientException {
-        return new SelectDataModelImpl("dm_route_elements",
-                computeRouteElements(), null);
-    }
-
-    /**
-     * @deprecated since 5.9.2 - Use only routes of type 'graph'
-     */
-    @Deprecated
-    @Factory(value = "relatedRouteElementsSelectModel", scope = EVENT)
-    public SelectDataModel computeSelectDataModelRelatedRouteElements()
-            throws ClientException {
-        return new SelectDataModelImpl("related_route_elements",
-                computeRelatedRouteElements(), null);
-    }
-
-    /**
-     * @deprecated since 5.9.2 - Use only routes of type 'graph'
-     */
-    @Deprecated
-    public SelectDataModel computeSelectDataModelRouteElements(
-            DocumentModel relatedRouteDocumentModel) throws ClientException {
-        DocumentRoute currentRoute = relatedRouteDocumentModel.getAdapter(DocumentRoute.class);
-        return new SelectDataModelImpl("related_route_elements",
-                getElements(currentRoute), null);
     }
 
     /**
@@ -730,10 +693,10 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     /**
-     * Moves the step in the parent container in the specified direction. If the
-     * step is in a parallel container, it can't be moved. A step can't be moved
-     * before a step already done or running. Assumed that the route is already
-     * locked to have this action availabe , so no check is done
+     * Moves the step in the parent container in the specified direction. If
+     * the step is in a parallel container, it can't be moved. A step can't be
+     * moved before a step already done or running. Assumed that the route is
+     * already locked to have this action available, so no check is done.
      *
      * @deprecated since 5.9.2 - Use only routes of type 'graph'
      */
@@ -1063,7 +1026,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     public boolean isRouteGraph(DocumentRoute route) throws ClientException {
         return route != null
                 && ExecutionTypeValues.graph.toString().equals(
-                        (String) route.getDocument().getPropertyValue(
+                        route.getDocument().getPropertyValue(
                                 DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME));
     }
 
