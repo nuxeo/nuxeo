@@ -304,7 +304,7 @@ given the path parameter.
                     "release-%s.log" % os.path.basename(self.repo.basedir)))
             with open(release_log, "wb") as f:
                 f.write("REMOTE=%s\nBRANCH=%s\nTAG=%s\nNEXT_SNAPSHOT=%s\n"
-                        "MAINTENANCE=%s\nFINAL=%s\nSKIP_TESTS=%s\n"
+                        "MAINTENANCE=%s\nFINAL=%s\nSKIP_TESTS=%s\nSKIP_ITS=%s\n"
                         "PROFILES=%s\nOTHER_VERSIONS=%s\nFILES_PATTERN=%s\n"
                         "PROPS_PATTERN=%s\nMSG_COMMIT=%s\nMSG_TAG=%s\n" %
                         (self.repo.alias, self.branch, self.tag,
