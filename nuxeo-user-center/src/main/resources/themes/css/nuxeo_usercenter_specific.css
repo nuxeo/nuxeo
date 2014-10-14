@@ -8,6 +8,14 @@ author: lkemen@nuxeo.com
 .nxMainContainer {
   background: none "color.major.stronger (__FLAVOR__ background)"; }
 
+#viewUser,
+#authorizedApplicationsPanel,
+#cv_all_saved_searches__panel {
+  background-color: #fff;
+  border-radius: 3px;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
+  padding: 2em }
+
 /* =Override GWT styles*/
 body,
 table td,
