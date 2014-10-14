@@ -1526,9 +1526,10 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public Map<String, String> getBinaryFulltext(Serializable id) throws DocumentException {
+    public Map<String, String> getBinaryFulltext(String id)
+            throws DocumentException {
         try {
-            return session.getBinaryFulltext(id);
+            return session.getBinaryFulltext(idFromString(id));
         } catch (StorageException e) {
             throw new DocumentException(e);
         }

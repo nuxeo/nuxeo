@@ -234,6 +234,6 @@ public interface Session {
      *
      * @since 5.9.3
      */
-    Map<String, String> getBinaryFulltext(Serializable id) throws DocumentException;
+    Map<String, String> getBinaryFulltext(String id) throws DocumentException;
 
 }

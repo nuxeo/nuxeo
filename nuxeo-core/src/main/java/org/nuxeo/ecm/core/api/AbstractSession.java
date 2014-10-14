@@ -3018,7 +3018,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         try {
             Document doc = resolveReference(ref);
             checkPermission(doc, READ);
-            return getSession().getBinaryFulltext(ref.toString());
+            return getSession().getBinaryFulltext(doc.getUUID());
         } catch (DocumentException e) {
             throw new ClientException("Failed to get fulltext info  on " + ref, e);
         }

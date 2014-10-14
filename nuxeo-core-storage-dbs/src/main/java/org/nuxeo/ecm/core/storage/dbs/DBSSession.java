@@ -1405,10 +1405,9 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public Map<String, String> getBinaryFulltext(Serializable id)
+    public Map<String, String> getBinaryFulltext(String id)
             throws DocumentException {
-        // TODO fix Serializable vs String
-        State state = transaction.getStateForRead((String) id);
+        State state = transaction.getStateForRead(id);
         String fulltext = (String) state.get(KEY_FULLTEXT_BINARY);
         return Collections.singletonMap("binarytext", fulltext);
     }
