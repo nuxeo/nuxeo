@@ -1,59 +1,59 @@
 #!/usr/bin/env python
-##
-## (C) Copyright 2012-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
-##
-## All rights reserved. This program and the accompanying materials
-## are made available under the terms of the GNU Lesser General Public License
-## (LGPL) version 2.1 which accompanies this distribution, and is available at
-## http://www.gnu.org/licenses/lgpl-2.1.html
-##
-## This library is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-## Lesser General Public License for more details.
-##
-## Contributors:
-##     Julien Carsique
-##
-## This script manages releasing of Nuxeo source code.
-## It applies on current Git repository and its sub-repositories.
-##
-## Examples from Nuxeo root, checkout on master:
-## $ ./scripts/release.py
-## Releasing from branch:   master
-## Current version:         5.6-SNAPSHOT
-## Tag:                     5.6-I20120102_1741
-## Next version:            5.6-SNAPSHOT
-## No maintenance branch
-##
-## $ ./scripts/release.py -f
-## Releasing from branch:   master
-## Current version:         5.6-SNAPSHOT
-## Tag:                     5.6
-## Next version:            5.7-SNAPSHOT
-## No maintenance branch
-##
-## $ ./scripts/release.py -f -m 5.6.1-SNAPSHOT
-## Releasing from branch:   master
-## Current version:         5.6-SNAPSHOT
-## Tag:                     5.6
-## Next version:            5.7-SNAPSHOT
-## Maintenance version:     5.6.1-SNAPSHOT
-##
-## $ ./scripts/release.py -f -b 5.5.0
-## Releasing from branch:   5.5.0
-## Current version:         5.5.0-HF01-SNAPSHOT
-## Tag:                     5.5.0-HF01
-## Next version:            5.5.0-HF02-SNAPSHOT
-## No maintenance branch
-##
-## $ ./scripts/release.py -b 5.5.0 -t sometag
-## Releasing from branch 5.5.0
-## Current version:      5.5.0-HF01-SNAPSHOT
-## Tag:                  sometag
-## Next version:         5.5.0-HF01-SNAPSHOT
-## No maintenance branch
-##
+"""
+(C) Copyright 2012-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the GNU Lesser General Public License
+(LGPL) version 2.1 which accompanies this distribution, and is available at
+http://www.gnu.org/licenses/lgpl-2.1.html
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+Lesser General Public License for more details.
+
+Contributors:
+    Julien Carsique
+
+This script manages releasing of Nuxeo source code.
+It applies on current Git repository and its sub-repositories.
+
+Examples from Nuxeo root, checkout on master:
+$ ./scripts/release.py
+Releasing from branch:   master
+Current version:         5.6-SNAPSHOT
+Tag:                     5.6-I20120102_1741
+Next version:            5.6-SNAPSHOT
+No maintenance branch
+
+$ ./scripts/release.py -f
+Releasing from branch:   master
+Current version:         5.6-SNAPSHOT
+Tag:                     5.6
+Next version:            5.7-SNAPSHOT
+No maintenance branch
+
+$ ./scripts/release.py -f -m 5.6.1-SNAPSHOT
+Releasing from branch:   master
+Current version:         5.6-SNAPSHOT
+Tag:                     5.6
+Next version:            5.7-SNAPSHOT
+Maintenance version:     5.6.1-SNAPSHOT
+
+$ ./scripts/release.py -f -b 5.5.0
+Releasing from branch:   5.5.0
+Current version:         5.5.0-HF01-SNAPSHOT
+Tag:                     5.5.0-HF01
+Next version:            5.5.0-HF02-SNAPSHOT
+No maintenance branch
+
+$ ./scripts/release.py -b 5.5.0 -t sometag
+Releasing from branch 5.5.0
+Current version:      5.5.0-HF01-SNAPSHOT
+Tag:                  sometag
+Next version:         5.5.0-HF01-SNAPSHOT
+No maintenance branch"""
+
 from collections import namedtuple
 from datetime import datetime
 import fnmatch
@@ -66,7 +66,7 @@ import sys
 import tempfile
 
 from IndentedHelpFormatterWithNL import IndentedHelpFormatterWithNL
-from nxutils import ExitException, Repository, assert_git_config, extract_zip,\
+from nxutils import ExitException, Repository, assert_git_config, extract_zip, \
      log, make_zip, system
 from terminalsize import get_terminal_size
 
@@ -94,7 +94,7 @@ NAMESPACES = {"pom": "http://maven.apache.org/POM/4.0.0"}
 etree.register_namespace('pom', 'http://maven.apache.org/POM/4.0.0')
 
 
-#pylint: disable=C0103
+# pylint: disable=C0103
 def etree_parse(xmlfile):
     """XML parsing with context error logging"""
 #     if 'done' not in locals():
@@ -108,7 +108,7 @@ def etree_parse(xmlfile):
     return tree
 
 
-#pylint: disable=R0902
+# pylint: disable=R0902
 class Release(object):
     """Nuxeo release manager.
 
@@ -122,7 +122,7 @@ given the path parameter.
         return os.path.abspath(os.path.join(path, os.pardir,
                                     "release-%s.log" % os.path.basename(path)))
 
-    #pylint: disable=R0914
+    # pylint: disable=R0914
     @staticmethod
     def read_release_log(path=os.getcwd()):
         """Read release parameters generated for the given path.
@@ -283,6 +283,8 @@ given the path parameter.
             log("Maintenance version:".ljust(25) + self.maintenance_version)
         if self.skipTests:
             log("Tests execution is skipped")
+        elif self.skipITs:
+            log("Integration Tests execution is skipped")
         if self.custom_patterns.files:
             log("Custom files pattern: ".ljust(25) +
                 self.custom_patterns.files)
@@ -313,7 +315,7 @@ given the path parameter.
             log("Parameters stored in %s" % release_log)
         log("")
 
-    #pylint: disable=R0912,R0914
+    # pylint: disable=R0912,R0914
     def update_versions(self, old_version, new_version):
         """Update all occurrences of 'old_version' with 'new_version'.
         Return True if there was some change."""
@@ -475,7 +477,7 @@ given the path parameter.
             message = self.msg_commit
         return self.get_message(message, additional_message)
 
-    #pylint: disable=R0915
+    # pylint: disable=R0915
     def prepare(self, dodeploy=False, doperform=False, dryrun=False,
                 upgrade_only=False):
         """ Prepare the release: build, change versions, tag and package source
@@ -661,7 +663,7 @@ Packages aligned even if not released)"""
         # TODO NXP-8573 all POMs have a namespace
 
 
-#pylint: disable=R0912,R0914,R0915
+# pylint: disable=R0912,R0914,R0915
 def main():
 #     global namespaces
     assert_git_config()
