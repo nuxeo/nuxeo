@@ -16,6 +16,8 @@ import javax.servlet.ServletContextListener;
 
 import org.apache.chemistry.opencmis.commons.server.CmisServiceFactory;
 import org.apache.chemistry.opencmis.server.impl.CmisRepositoryContextListener;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -33,11 +35,21 @@ import org.nuxeo.runtime.api.Framework;
 public class NuxeoCmisContextListener implements ServletContextListener {
 
     @Override
-    public void contextInitialized(ServletContextEvent sce) {
-        NuxeoCmisServiceFactoryManager manager = Framework.getService(NuxeoCmisServiceFactoryManager.class);
-        CmisServiceFactory factory = manager.getNuxeoCmisServiceFactory();
-        sce.getServletContext().setAttribute(
-                CmisRepositoryContextListener.SERVICES_FACTORY, factory);
+    public void contextInitialized(final ServletContextEvent sce) {
+        Framework.addListener(new RuntimeServiceListener() {
+
+            @Override
+            public void handleEvent(RuntimeServiceEvent event) {
+                if (event.id != RuntimeServiceEvent.RUNTIME_STARTED) {
+                    return;
+                }
+                Framework.removeListener(this);;
+                NuxeoCmisServiceFactoryManager manager = Framework.getService(NuxeoCmisServiceFactoryManager.class);
+                CmisServiceFactory factory = manager.getNuxeoCmisServiceFactory();
+                sce.getServletContext().setAttribute(
+                        CmisRepositoryContextListener.SERVICES_FACTORY, factory);
+            }
+        });
     }
 
     @Override
