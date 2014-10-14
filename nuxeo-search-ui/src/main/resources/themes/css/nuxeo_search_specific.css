@@ -27,6 +27,7 @@ author: lkemen@nuxeo.com
 
 .nxSearchResults .contentViewUpperActions {
   background: #fff;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
   padding: .7em 1em .6em;
   border-radius: .3em;
   float: none }
@@ -80,6 +81,25 @@ author: lkemen@nuxeo.com
   content: "+ ";}
 
 /* Main content */
+.searchViewTitle {
+  float: left }
+
+.searchViewTitle h3 {
+  border: none;
+  font-size: 1.4em;
+  margin: 0;
+  padding: 1.5em 0 2em }
+
+.widgetPanel.searchResultsActions {
+  float: right;
+  padding: 1.8em 0 2em }
+
+.searchResultsActions input.button {
+  margin: 0 0 .5em .5em }
+
+.searchResultsListing {
+  clear: both }
+
 .contentViewTitle {
   border: none }
 
@@ -110,4 +130,4 @@ author: lkemen@nuxeo.com
   float: right }
 
 div.detail {
-  clear: both }
+  display: inline-block }

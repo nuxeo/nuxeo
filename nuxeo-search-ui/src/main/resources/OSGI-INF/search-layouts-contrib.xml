@@ -222,6 +222,7 @@
     <action id="searchContentView" type="widget" order="400">
       <category>SEARCH_PANEL_RIGHT</category>
       <properties>
+        <property name="containerStyleClass">searchResultsListing</property>
         <property name="widgetName">searchContentView</property>
       </properties>
     </action>
