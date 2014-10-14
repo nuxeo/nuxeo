@@ -53,8 +53,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.convert.api",
-        "org.nuxeo.ecm.platform.commandline.executor",
+@Deploy({ "org.nuxeo.ecm.platform.commandline.executor",
         "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.picture.api",
         "org.nuxeo.ecm.platform.picture.convert" })

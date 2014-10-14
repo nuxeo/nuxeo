@@ -36,38 +36,36 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @author Laurent Doguin
  *
  */
-public class TestImagingConvertPlugin extends NXRuntimeTestCase {
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core.convert.api");
-        deployBundle("org.nuxeo.ecm.core.convert");
-        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        deployBundle("org.nuxeo.ecm.platform.picture.core");
-        deployBundle("org.nuxeo.ecm.platform.picture.convert");
-    }
+@RunWith(FeaturesRunner.class)
+@Features({ AutomationFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.commandline.executor",
+        "org.nuxeo.ecm.platform.picture.core",
+        "org.nuxeo.ecm.platform.picture.convert" })
+public class TestImagingConvertPlugin {
 
     @Test
     public void testResizeConverter() throws Exception {
-
         String converter = "pictureResize";
 
         int resizeWidth = 120;
@@ -95,7 +93,7 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
             assertNotNull("Resized image is null", image);
             /**
              * Imagick keep the image ratio.
-             * 
+             *
              * TODO: See why the ratio is keeped from the height (in the shell
              * it's from the width)
              */
