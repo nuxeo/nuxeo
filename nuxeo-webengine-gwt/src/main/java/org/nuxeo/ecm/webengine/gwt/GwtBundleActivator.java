@@ -22,12 +22,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.ZipUtils;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.FrameworkListener;
 
 /**
  * This activator must be used as an activator by bundles that wants to deploy
@@ -35,9 +35,9 @@ import org.osgi.framework.FrameworkListener;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class GwtBundleActivator implements BundleActivator, FrameworkListener {
+public class GwtBundleActivator implements BundleActivator {
 
-    private static final Log log = LogFactory.getLog(GwtBundleActivator.class);
+    protected static final Log log = LogFactory.getLog(GwtBundleActivator.class);
 
     public static final String GWT_DEV_MODE_PROP = "nuxeo.gwt_dev_mode";
 
@@ -49,19 +49,36 @@ public class GwtBundleActivator implements BundleActivator, FrameworkListener {
 
     protected BundleContext context;
 
+    @Override
     public void start(BundleContext context) throws Exception {
         this.context = context;
-        context.addFrameworkListener(this);
-    }
-
-    public void stop(BundleContext context) throws Exception {
-        context.removeFrameworkListener(this);
-    }
-
-    public static void installGwtApp(Bundle bundle) throws Exception {
         if (GWT_DEV_MODE) {
             return;
         }
+        Framework.addListener(new RuntimeServiceListener() {
+
+            @Override
+            public void handleEvent(RuntimeServiceEvent event) {
+               if (event.id != RuntimeServiceEvent.RUNTIME_STARTED) {
+                   return;
+               }
+               Framework.removeListener(this);
+               try {
+                   installGwtApp(GwtBundleActivator.this.context.getBundle());
+               } catch (Exception cause) {
+                   log.error("Cannot install gwt app", cause);
+               }
+            }
+        });
+    }
+
+
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        this.context = null;
+    }
+
+    protected void installGwtApp(Bundle bundle) throws Exception {
         GWT_ROOT.mkdirs();
         String symName = bundle.getSymbolicName();
         // check the marker file to avoid copying twice
@@ -79,16 +96,6 @@ public class GwtBundleActivator implements BundleActivator, FrameworkListener {
         }
     }
 
-    public void frameworkEvent(FrameworkEvent event) {
-        if (FrameworkEvent.STARTED == event.getType()) {
-            try {
-                installGwtApp(context.getBundle());
-            } catch (Exception e) {
-                throw new RuntimeException(
-                        "Failed to install GWT application: "
-                                + context.getBundle().getSymbolicName(), e);
-            }
-        }
-    }
+
 
 }
