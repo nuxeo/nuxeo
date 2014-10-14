@@ -59,6 +59,11 @@ public class FakeDocument implements Document {
     }
 
     @Override
+    public Long getPos() {
+        return null;
+    }
+
+    @Override
     public String getUUID() {
         return uuid;
     }
