@@ -10,7 +10,7 @@
       styleClass="documentDescription quote" />
   </c:if>
 
-  <table>
+  <table class="fullWidth infoBoxTable">
     <c:if test="#{!empty fieldOrValue.dc.created}">
       <tr>
         <td class="labelColumn">#{messages['label.dublincore.creationDate']}</td>
@@ -42,12 +42,12 @@
       <td class="labelColumn">#{messages['label.content.header.currentLifecycleState']}</td>
       <td class="fieldColumn">
         <h:outputText value="#{messages[fieldOrValue.currentLifeCycleState]}"
-          styleClass="sticker"/>
+          styleClass="label"/>
         <nxu:set var="lockDetails" value="#{lockActions.getLockDetails(fieldOrValue)}"
           cache="true">
           <h:outputText value="#{messages['label.document.lock']}"
             title="#{messages['label.summary.by']} #{nxu:userFullName(lockDetails['document.locker'])}, #{messages['label.summary.the']} #{lockDetails['document.lock.created'].time}"
-            styleClass="sticker warningLabel tipsyShow tipsyGravityS"
+            styleClass="label label-warning tipsyShow tipsyGravityS"
             rendered="#{!empty lockDetails}" />
         </nxu:set>
       </td>
