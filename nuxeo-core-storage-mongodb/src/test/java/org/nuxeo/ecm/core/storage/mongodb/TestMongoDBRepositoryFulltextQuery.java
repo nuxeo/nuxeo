@@ -849,8 +849,6 @@ public class TestMongoDBRepositoryFulltextQuery extends
         assertEquals(1, list.size());
     }
 
-    // XXX TODO on MongoDB
-    @Ignore
     @Test
     public void testGetBinaryFulltext() throws Exception {
         createDocs();

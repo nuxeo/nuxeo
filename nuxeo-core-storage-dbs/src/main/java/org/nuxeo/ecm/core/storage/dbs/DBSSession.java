@@ -1407,8 +1407,10 @@ public class DBSSession implements Session {
     @Override
     public Map<String, String> getBinaryFulltext(Serializable id)
             throws DocumentException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        // TODO fix Serializable vs String
+        State state = transaction.getStateForRead((String) id);
+        String fulltext = (String) state.get(KEY_FULLTEXT_BINARY);
+        return Collections.singletonMap("binarytext", fulltext);
     }
 
     @Override
