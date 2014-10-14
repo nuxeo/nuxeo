@@ -3,7 +3,7 @@
   "private": true,
   "dependencies": {
     "es6-module-loader": "~0.8.2",
-    "handsontable": "~0.11.2",
+    "handsontable": "~0.11.4",
     "nuxeo": "~0.2.0",
     "select2": "~3.5.1",
     "traceur-runtime": "~0.0.59",
