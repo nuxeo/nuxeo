@@ -317,22 +317,25 @@ class Repository(object):
         t = check_output("git describe --all").split("/")
         return t[-1]
 
-    def mvn(self, commands, skip_tests=False, profiles=None, dryrun=False):
+    def mvn(self, commands, skip_tests=False, skip_ITs=False,
+            profiles=None, dryrun=False):
         """Run Maven commands (install, package, deploy, ...) on the whole
         sources (including addons and all distributions) with the given
         parameters.
 
         'commands': the commands to run.
         'skip_tests': whether to skip or not the tests.
+        'skip_ITs': whether to skip or not the Integration Tests.
         'profiles': comma-separated additional Maven profiles to use.
         If 'dryrun', then print command without executing them."""
+        skip_tests_param = "-fae"
         if skip_tests:
-            skip_tests_param = "-DskipTests=true"
-        else:
-            skip_tests_param = "-fae"
+            skip_tests_param += " -DskipTests=true"
+        if skip_ITs:
+            skip_tests_param += " -DskipITs=true"
         profiles_param = []
         if self.is_nuxeoecm:
-            profiles_param += ["addons", "distrib", "all-distributions"]
+            profiles_param += ["addons", "distrib"]
         if profiles:
             profiles_param += profiles.split(',')
         if profiles_param:

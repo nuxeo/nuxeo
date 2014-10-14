@@ -138,29 +138,32 @@ given the path parameter.
             maintenance_version = f.readline().split("=")[1].strip()
             is_final = f.readline().split("=")[1].strip() == "True"
             skipTests = f.readline().split("=")[1].strip() == "True"
+            skipITs = f.readline().split("=")[1].strip() == "True"
             profiles = f.readline().split("=")[1].strip()
             other_versions = f.readline().split("=")[1].strip()
             files_pattern = f.readline().split("=")[1].strip()
             props_pattern = f.readline().split("=")[1].strip()
             other_versions = ':'.join((files_pattern, props_pattern,
-                                               other_versions))
+                                       other_versions))
             msg_commit = f.readline().split("=")[1].strip()
             msg_tag = f.readline().split("=")[1].strip()
         if other_versions == "::":
             other_versions = None
         return (remote_alias, branch, tag, next_snapshot,
-                maintenance_version, is_final, skipTests, profiles,
+                maintenance_version, is_final, skipTests, skipITs, profiles,
                 other_versions, msg_commit, msg_tag)
 
-    #pylint: disable=R0913
+    # pylint: disable=R0913
     def __init__(self, repo, branch, tag, next_snapshot,
-                 maintenance_version="auto", is_final=False, skipTests=False,
+                 maintenance_version="auto", is_final=False,
+                 skipTests=False, skipITs=False,
                  other_versions=None, profiles='', msg_commit='', msg_tag=''):
         self.repo = repo
         self.branch = branch
         self.is_final = is_final
         self.maintenance_version = maintenance_version
         self.skipTests = skipTests
+        self.skipITs = skipITs
         if profiles:
             self.profiles = ',' + profiles
         else:
@@ -306,7 +309,8 @@ given the path parameter.
                         "PROPS_PATTERN=%s\nMSG_COMMIT=%s\nMSG_TAG=%s\n" %
                         (self.repo.alias, self.branch, self.tag,
                          self.next_snapshot, self.maintenance_version,
-                         self.is_final, self.skipTests, self.profiles,
+                         self.is_final, self.skipTests, self.skipITs,
+                         self.profiles,
                          (','.join('/'.join(other_version)
                                    for other_version in self.other_versions)),
                          self.custom_patterns.files,
@@ -564,8 +568,8 @@ Packages aligned even if not released)"""
                                      self.maintenance_branch)
 
         if upgrade_only and doperform:
-            self.perform(skip_tests=self.skipTests, dryrun=dryrun,
-                         upgrade_only=True)
+            self.perform(skip_tests=self.skipTests, skip_ITs=self.skipITs,
+                         dryrun=dryrun, upgrade_only=True)
         if not upgrade_only:
             log("\n[INFO] Build and package release-%s..." % self.tag)
             self.repo.system_recurse("git checkout release-%s" % self.tag)
@@ -577,9 +581,11 @@ Packages aligned even if not released)"""
                 commands = "clean install"
                 profiles = "release,-qa" + self.profiles
             if doperform:
-                self.perform(skip_tests=self.skipTests, dryrun=dryrun)
+                self.perform(skip_tests=self.skipTests, skip_ITs=self.skipITs,
+                             dryrun=dryrun)
             else:
                 self.repo.mvn(commands, skip_tests=self.skipTests,
+                              skip_ITs=self.skipITs,
                               profiles=profiles, dryrun=dryrun)
             if not dryrun:
                 self.package_all()
@@ -625,11 +631,13 @@ Packages aligned even if not released)"""
                                  (self.get_commit_message(msg_commit)))
         os.chdir(cwd)
 
-    def perform(self, skip_tests=True, dryrun=False, upgrade_only=False):
+    def perform(self, skip_tests=True, skip_ITs=True,
+                dryrun=False, upgrade_only=False):
         """ Perform the release: push source, deploy artifacts and upload
         packages.
 
         'skip_tests': whether to run tests during Maven deployment
+        'skip_ITs': whether to run Integration Tests during Maven deployment
         'dryrun': dry run mode (no Maven deployment, nor Git push)
         'upgrade_only': only upgrade other versions (used to keep Marketplace
 Packages aligned even if not released)"""
@@ -652,7 +660,8 @@ Packages aligned even if not released)"""
             self.repo.system_recurse("%s %s release-%s" %
                                      (command, self.repo.alias, self.tag))
             self.repo.system_recurse("git checkout release-%s" % self.tag)
-            self.repo.mvn("clean deploy", skip_tests=skip_tests,
+            self.repo.mvn("clean deploy",
+                          skip_tests=skip_tests, skip_ITs=skip_ITs,
                           profiles="release,-qa" + self.profiles,
                           dryrun=dryrun)
         os.chdir(cwd)
@@ -675,15 +684,16 @@ def main():
             raise ExitException(1, "That script must be ran from root of a Git"
                                 + " repository")
         usage = ("""usage: %prog <command> [options]
-       %prog prepare [-r alias] [-f] [-d] [--skipTests] [-p profiles] \
-[-b branch] [-t tag] [-n next_snapshot] [-m maintenance] [--dryrun] \
-[--arv versions_replacements] [--mc msg_commit] [--mt msg_tag]
+       %prog prepare [-r alias] [-f] [-d] [--skipTests] [--skipITs] \
+[-p profiles] [-b branch] [-t tag] [-n next_snapshot] [-m maintenance] \
+[--dryrun] [--arv versions_replacements] [--mc msg_commit] [--mt msg_tag]
        %prog perform [-r alias] [-f] [-p profiles] [-b branch] [-t tag] \
 [-m maintenance] [--dryrun]
-       %prog package [-b branch] [-t tag] [--skipTests] [-p profiles]
+       %prog package [-b branch] [-t tag] [--skipTests] [--skipITs] \
+[-p profiles]
        %prog maintenance [-r alias] [-b branch] [-t tag] [-m maintenance] \
 [--arv versions_replacements]
-       %prog onestep [-r alias] [-f] [--skipTests] [-p profiles] \
+       %prog onestep [-r alias] [-f] [--skipTests] [--skipITs] [-p profiles] \
 [-b branch] [-t tag] [-n next_snapshot] [-m maintenance] [--dryrun] \
 [--arv versions_replacements] [--mc msg_commit] [--mt msg_tag]
 \nCommands:
@@ -726,13 +736,17 @@ Default: '%default'""")
                           dest='skipTests', default=False,
                           help="""Skip tests execution (but compile them).
 Default: '%default'""")
+        parser.add_option('--skipITs', action="store_true",
+                          dest='skipITs', default=False,
+                          help="""Skip Integration Tests execution (but compile
+them). Default: '%default'""")
         parser.add_option('-p', '--profiles', action="store", type="string",
                           dest='profiles',
                           default='',
                           help="""Comma-separated additional Maven profiles.
 Default: '%default'\n
 Those profiles are activated by default (unless overriden by that parameter):\n
- - 'addons,distrib,all-distributions' for all commands executed on nuxeo-ecm,\n
+ - 'addons,distrib' for all commands executed on nuxeo-ecm,\n
  - 'release,-qa' for 'prepare', 'perform' and 'onestep' commands,\n
  - 'qa' for 'package' command,\n
  - 'nightly' if 'deploy' option is used.
@@ -809,8 +823,8 @@ Default tag message:\n
             and options == parser.get_default_values()):
             (options.remote_alias, options.branch, options.tag,
              options.next_snapshot, options.maintenance_version,
-             options.is_final, options.skipTests, options.profiles,
-             options.other_versions, options.msg_commit,
+             options.is_final, options.skipTests, options.skipITs,
+             options.profiles, options.other_versions, options.msg_commit,
              options.msg_tag) = Release.read_release_log(os.getcwd())
         repo = Repository(os.getcwd(), options.remote_alias)
         system("git fetch %s" % (options.remote_alias))
@@ -839,7 +853,7 @@ Default tag message:\n
                 repo.git_update(options.branch)
         release = Release(repo, options.branch, options.tag,
                           options.next_snapshot, options.maintenance_version,
-                          options.is_final, options.skipTests,
+                          options.is_final, options.skipTests, options.skipITs,
                           options.other_versions, options.profiles,
                           options.msg_commit, options.msg_tag)
         if ("command" not in locals() or
@@ -860,11 +874,12 @@ Default tag message:\n
             repo.clone(release.branch)
             # workaround for NXBT-121: use install instead of package
             if options.profiles:
-                repo.mvn("clean install", skip_tests=options.skipTests,
-                         profiles="qa," + options.profiles)
+                profiles = "qa," + options.profiles
             else:
-                repo.mvn("clean install", skip_tests=options.skipTests,
-                         profiles="qa")
+                profiles = "qa"
+            repo.mvn("clean install", profiles=profiles,
+                     skip_tests=options.skipTests,
+                     skip_ITs=options.skipITs)
             release.package_all(release.snapshot)
         elif command == "test":
             release.test()

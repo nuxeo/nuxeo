@@ -111,7 +111,7 @@ class ReleaseMP(object):
                         self.mp_config.get(marketplace, "tag"),
                         self.mp_config.get(marketplace, "next_snapshot"),
                         self.mp_config.get(marketplace, "maintenance_version"),
-                        is_final=True, skipTests=False,
+                        is_final=True, skipTests=False, skipITs=False,
                         other_versions=self.mp_config.get(
                                                 marketplace, "other_versions",
                                                 None))
@@ -176,11 +176,11 @@ class ReleaseMP(object):
                 mp_repo = Repository(os.getcwd(), self.alias)
                 # Perform release
                 (_, branch, tag, next_snapshot, maintenance_version, is_final,
-                 skipTests, _, other_versions,
+                 skipTests, skipITs, _, other_versions,
                  _, _) = Release.read_release_log(mp_repo.basedir)
                 mp_release = Release(mp_repo, branch, tag, next_snapshot,
                                      maintenance_version, is_final=is_final,
-                                     skipTests=skipTests,
+                                     skipTests=skipTests, skipITs=skipITs,
                                      other_versions=other_versions)
                 mp_release.perform(dryrun=dryrun, upgrade_only=upgrade_only)
                 performed = True
