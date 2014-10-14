@@ -406,6 +406,12 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         doc.setPropertyValue(VIEWS_PROPERTY, (Serializable) views);
     }
 
+    @Override
+    public boolean fillPictureViews(Blob blob, String filename, String title)
+            throws IOException, ClientException {
+        return fillPictureViews(blob, filename, title, null);
+    }
+
     /**
      * Safely get the picture views attached with the document.
      *

@@ -56,6 +56,9 @@ public interface PictureResourceAdapter {
             ArrayList<Map<String, Object>> pictureTemplates)
             throws IOException, ClientException;
 
+    boolean fillPictureViews(Blob blob, String filename, String title)
+            throws IOException, ClientException;
+
     /**
      * Pre-fill this Picture views using the given {@code pictureTemplates} and
      * {@code blob}.
