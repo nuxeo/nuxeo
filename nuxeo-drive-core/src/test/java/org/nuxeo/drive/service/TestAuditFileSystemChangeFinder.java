@@ -21,8 +21,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,6 +34,7 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
@@ -1102,31 +1105,25 @@ public class TestAuditFileSystemChangeFinder {
             // - documentCreated for doc2
             // - documentCreated for doc1
             changes = getChanges(session.getPrincipal());
-            assertEquals(8, changes.size());
-            change = changes.get(0);
-            assertEquals("addedToCollection", change.getEventId());
-            assertEquals(doc2.getId(), change.getDocUuid());
-            change = changes.get(1);
-            assertEquals("documentModified", change.getEventId());
-            assertEquals(locallyEditedCollection.getId(), change.getDocUuid());
-            change = changes.get(2);
-            assertEquals("rootRegistered", change.getEventId());
-            assertEquals(locallyEditedCollection.getId(), change.getDocUuid());
-            change = changes.get(3);
-            assertEquals("addedToCollection", change.getEventId());
-            assertEquals(doc1.getId(), change.getDocUuid());
-            change = changes.get(4);
-            assertEquals("documentModified", change.getEventId());
-            assertEquals(locallyEditedCollection.getId(), change.getDocUuid());
-            change = changes.get(5);
-            assertEquals("documentCreated", change.getEventId());
-            assertEquals(locallyEditedCollection.getId(), change.getDocUuid());
-            change = changes.get(6);
-            assertEquals("documentCreated", change.getEventId());
-            assertEquals(doc2.getId(), change.getDocUuid());
-            change = changes.get(7);
-            assertEquals("documentCreated", change.getEventId());
-            assertEquals(doc1.getId(), change.getDocUuid());
+            List<SimpleFileSystemItemChange> expectedChanges = new ArrayList<>();
+            expectedChanges.add(new SimpleFileSystemItemChange(doc2.getId(),
+                    "addedToCollection"));
+            expectedChanges.add(new SimpleFileSystemItemChange(
+                    locallyEditedCollection.getId(), "documentModified"));
+            expectedChanges.add(new SimpleFileSystemItemChange(
+                    locallyEditedCollection.getId(), "rootRegistered"));
+            expectedChanges.add(new SimpleFileSystemItemChange(doc1.getId(),
+                    "addedToCollection"));
+            expectedChanges.add(new SimpleFileSystemItemChange(
+                    locallyEditedCollection.getId(), "documentModified"));
+            expectedChanges.add(new SimpleFileSystemItemChange(
+                    locallyEditedCollection.getId(), "documentCreated"));
+            expectedChanges.add(new SimpleFileSystemItemChange(doc2.getId(),
+                    "documentCreated"));
+            expectedChanges.add(new SimpleFileSystemItemChange(doc1.getId(),
+                    "documentCreated"));
+            checkAuditChanges(expectedChanges,
+                    toSimpleFileSystemItemChanges(changes));
 
             log.trace("Update doc1 member of the 'Locally Edited' collection");
             doc1.setPropertyValue("file:content", new StringBlob(
@@ -1168,25 +1165,19 @@ public class TestAuditFileSystemChangeFinder {
             // - documentModified for 'Locally Edited' collection
             // - deleted for doc1
             changes = getChanges(session.getPrincipal());
-            assertEquals(6, changes.size());
-            change = changes.get(0);
-            assertEquals("addedToCollection", change.getEventId());
-            assertEquals(doc3.getId(), change.getDocUuid());
-            change = changes.get(1);
-            assertEquals("documentModified", change.getEventId());
-            assertEquals(locallyEditedCollection.getId(), change.getDocUuid());
-            change = changes.get(2);
-            assertEquals("documentCreated", change.getEventId());
-            assertEquals(doc3.getId(), change.getDocUuid());
-            change = changes.get(3);
-            assertEquals("deleted", change.getEventId());
-            assertEquals(doc2.getId(), change.getDocUuid());
-            change = changes.get(4);
-            assertEquals("documentModified", change.getEventId());
-            assertEquals(locallyEditedCollection.getId(), change.getDocUuid());
-            change = changes.get(5);
-            assertEquals("deleted", change.getEventId());
-            assertEquals(doc1.getId(), change.getDocUuid());
+            List<SimpleFileSystemItemChange> expectedChanges = new ArrayList<>();
+            expectedChanges.add(new SimpleFileSystemItemChange(doc3.getId(),
+                    "addedToCollection"));
+            expectedChanges.add(new SimpleFileSystemItemChange(
+                    locallyEditedCollection.getId(), "documentModified"));
+            expectedChanges.add(new SimpleFileSystemItemChange(doc3.getId(),
+                    "documentCreated"));
+            expectedChanges.add(new SimpleFileSystemItemChange(doc2.getId(),
+                    "deleted"));
+            expectedChanges.add(new SimpleFileSystemItemChange(
+                    locallyEditedCollection.getId(), "documentModified"));
+            expectedChanges.add(new SimpleFileSystemItemChange(doc1.getId(),
+                    "deleted"));
 
             log.trace("Unregister the 'Locally Edited' collection as a sync root");
             nuxeoDriveManager.unregisterSynchronizationRoot(
@@ -1324,6 +1315,70 @@ public class TestAuditFileSystemChangeFinder {
                         em.createNativeQuery("delete from nxp_logs").executeUpdate();
                     }
                 });
+    }
+
+    protected List<SimpleFileSystemItemChange> toSimpleFileSystemItemChanges(
+            List<FileSystemItemChange> changes) {
+        List<SimpleFileSystemItemChange> simpleChanges = new ArrayList<>();
+        for (FileSystemItemChange change : changes) {
+            simpleChanges.add(new SimpleFileSystemItemChange(
+                    change.getDocUuid(), change.getEventId()));
+        }
+        return simpleChanges;
+    }
+
+    protected void checkAuditChanges(
+            List<SimpleFileSystemItemChange> expectedChanges,
+            List<SimpleFileSystemItemChange> changes) {
+        Iterator<SimpleFileSystemItemChange> it = expectedChanges.iterator();
+        while (it.hasNext()) {
+            SimpleFileSystemItemChange expectedChange = it.next();
+            if (!changes.contains(expectedChange)) {
+                fail(String.format("Change summary should contain %s",
+                        expectedChange));
+            }
+            changes.remove(expectedChange);
+        }
+        if (!changes.isEmpty()) {
+            fail("Change summary contains too many elements");
+        }
+    }
+
+    protected final class SimpleFileSystemItemChange {
+
+        protected String docId;
+
+        protected String eventName;
+
+        public SimpleFileSystemItemChange(String docId, String eventName) {
+            this.docId = docId;
+            this.eventName = eventName;
+        }
+
+        public String getDocId() {
+            return docId;
+        }
+
+        public String getEventName() {
+            return eventName;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof SimpleFileSystemItemChange)) {
+                return false;
+            }
+            return StringUtils.equals(
+                    ((SimpleFileSystemItemChange) obj).getDocId(), docId)
+                    && StringUtils.equals(
+                            ((SimpleFileSystemItemChange) obj).getEventName(),
+                            eventName);
+        }
+
+        @Override
+        public String toString() {
+            return "(" + docId + ", " + eventName + ")";
+        }
     }
 
 }
