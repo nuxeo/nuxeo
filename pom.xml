@@ -47,7 +47,6 @@
     <nuxeo.dam.version>5.9.6-SNAPSHOT</nuxeo.dam.version>
     <nuxeo.cmf.version>5.9.6-SNAPSHOT</nuxeo.cmf.version>
     <nuxeo.poll.version>5.9.6-SNAPSHOT</nuxeo.poll.version>
-    <nuxeo.flavors.version>5.9.6-SNAPSHOT</nuxeo.flavors.version>
     <nuxeo.quota.version>5.9.6-SNAPSHOT</nuxeo.quota.version>
     <nuxeo.web.mobile.version>5.9.6-SNAPSHOT</nuxeo.web.mobile.version>
     <nuxeo.indexing.gateway.version>5.9.6-SNAPSHOT</nuxeo.indexing.gateway.version>
@@ -109,7 +108,6 @@
     <module>nuxeo-dam</module>
     <module>nuxeo-poll</module>
     <module>nuxeo-rss-reader</module>
-    <module>nuxeo-flavors</module>
     <module>nuxeo-quota</module>
     <module>nuxeo-platform-indexing-gateway</module>
     <module>nuxeo-exalead-connector</module>
@@ -792,13 +790,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-poll-web</artifactId>
         <version>${nuxeo.poll.version}</version>
-      </dependency>
-
-      <!-- Flavors -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-flavors-unicolor</artifactId>
-        <version>${nuxeo.flavors.version}</version>
       </dependency>
 
       <!-- Quota -->
