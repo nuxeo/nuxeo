@@ -17,7 +17,8 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@LocalDeploy("org.nuxeo.elasticsearch.core:disable-listener-contrib.xml")
+@LocalDeploy({ "org.nuxeo.elasticsearch.core:disable-listener-contrib.xml",
+        "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml" })
 public class TestIndexingCommandsMarshaling {
 
     @Inject

@@ -34,7 +34,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -117,13 +116,13 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     private Node createEmbeddedNode(ElasticSearchLocalConfig conf) {
         log.info("ES embedded Node Initializing (local in JVM)");
+        if (conf == null) {
+            throw new IllegalStateException("No embedded configuration defined");
+        }
         if (!Framework.isTestModeSet()) {
             log.warn("Elasticsearch embedded configuration is ONLY for testing"
                     + " purpose. You need to create a dedicated Elasticsearch"
                     + " cluster for production.");
-        }
-        if (conf == null) {
-            conf = getDefaultLocalConfig();
         }
         Builder sBuilder = ImmutableSettings.settingsBuilder();
         sBuilder.put("http.enabled", conf.httpEnabled())
@@ -206,17 +205,6 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             log.error(message, e);
             throw new RuntimeException(message, e);
         }
-    }
-
-    private ElasticSearchLocalConfig getDefaultLocalConfig() {
-        ElasticSearchLocalConfig ret = new ElasticSearchLocalConfig();
-        ret.setHttpEnabled(true);
-        ret.setIndexStorageType("memory");
-        ret.setNodeName("nuxeoTestNode");
-        // use something random so we don't join an existing cluster
-        ret.setClusterName("nuxeoTestCluster-"
-                + RandomStringUtils.randomAlphanumeric(6));
-        return ret;
     }
 
     private void initializeIndexes() {

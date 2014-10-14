@@ -58,6 +58,8 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.ES_ENABLED_PROPERTY;
+
 /**
  * Component used to configure and manage ElasticSearch integration
  *
@@ -140,10 +142,18 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
+        if (! isElasticsearchEnabled()) {
+            log.info("Elasticsearch service is disabled");
+            return;
+        }
         esa = new ElasticSearchAdminImpl(localConfig, remoteConfig, indexConfig);
         esi = new ElasticSearchIndexingImpl(esa);
         ess = new ElasticsearchServiceImpl(esa);
         processStackedCommands();
+    }
+
+    protected boolean isElasticsearchEnabled() {
+        return Boolean.parseBoolean(Framework.getProperty(ES_ENABLED_PROPERTY, "true"));
     }
 
     @Override

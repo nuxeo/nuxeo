@@ -61,6 +61,7 @@ final public class ElasticSearchConstants {
     public static final String BINARYTEXT_FIELD = "ecm:binarytext";
     public static final String ALL_FIELDS = "*";
 
+    public static final String ES_ENABLED_PROPERTY = "elasticsearch.enabled";
     public static final String FETCH_DOC_FROM_ES_PROPERTY = "elasticsearch.fetchDocFromEs";
 }
 
