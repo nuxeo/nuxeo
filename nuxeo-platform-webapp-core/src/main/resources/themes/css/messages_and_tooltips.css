@@ -231,10 +231,9 @@ a.ambiance-close {
 
 /* =Quote */
 .quote {
-  background: url("${basePath}/icons/quote.png") no-repeat scroll 0 1px transparent;
-  color: "gray.dark (__FLAVOR__ color)";
-  margin: .3em 0;
-  text-indent: 1.7em }
+  display: block;
+  font-size: 1.12em;
+  margin: 0 0 1em  }
 
 /* Tipsy tooltips */
 .tispsyShow,

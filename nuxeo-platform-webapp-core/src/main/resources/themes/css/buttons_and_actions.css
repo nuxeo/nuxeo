@@ -488,24 +488,24 @@ a.tag:hover,
 .group,
 span.user,
 span.group {
-  background: url("${basePath}/icons/user.png") no-repeat scroll 2px 2px transparent;
+  background: url("${basePath}/icons/user.png") no-repeat scroll 2px 2px / 13px transparent;
   border: 1px solid;
   border-color: "neutral.light (__FLAVOR__ border)";
   border-radius: 3px;
   color: "gray.dark (__FLAVOR__ color)";
   display: inline-block;
-  opacity: 1;
-  padding: .1em .3em .1em 1.8em;
+  font-size: 0.95em;
+  padding: 0 .3em 0 1.6em;
   margin: 0 .2em .2em 0;
   white-space: nowrap }
 
 .group,
 span.group {
-  background: url("${basePath}/icons/group.png") no-repeat scroll 2px 2px transparent }
+  background: url("${basePath}/icons/group.png") no-repeat scroll 2px 2px /13px transparent }
 
 .user a:hover,
 .group a:hover {
-  color: "link (__FLAVOR__ color)";
+  color: "link.hover (__FLAVOR__ color)";
   text-decoration: none }
 
 a .user:hover,

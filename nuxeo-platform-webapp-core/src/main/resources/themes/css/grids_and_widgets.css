@@ -426,6 +426,13 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   color: #999;
   width: 30% }
 
+.infoViewRight .quote {
+  border-bottom: 1px solid #eee;
+  padding: 0 .4em .7em }
+
+.infoViewRight .infoBoxTable .labelColumn {
+  padding: 0 .7em .4em .3em }
+
 .compactLayout .infoViewInfoLayout .widgetHeader.foldedDisabled {
   border: medium none;
   color: #000;
