@@ -36,7 +36,7 @@ public class PictureTemplate implements Comparable<PictureTemplate> {
     protected String title;
 
     @XNode("@order")
-    protected int order;
+    protected Integer order;
 
     @XNode("@description")
     protected String description;
@@ -62,7 +62,7 @@ public class PictureTemplate implements Comparable<PictureTemplate> {
     }
 
     public PictureTemplate(String title, String description, String tag,
-            Integer maxSize, int order, String chainId, Boolean enabled) {
+            Integer maxSize, Integer order, String chainId, Boolean enabled) {
         this.title = title;
         this.description = description;
         this.tag = tag;
@@ -143,11 +143,11 @@ public class PictureTemplate implements Comparable<PictureTemplate> {
         this.maxSize = maxSize;
     }
 
-    public void setOrder(int order) {
+    public void setOrder(Integer order) {
         this.order = order;
     }
 
-    public int getOrder() {
+    public Integer getOrder() {
         return order;
     }
 

@@ -16,7 +16,7 @@
  *
  * $Id$
  */
-package org.nuxeo.ecm.platform.picture.core.test.adapter;
+package org.nuxeo.ecm.platform.picture.core.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -57,6 +57,11 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.picture.convert" })
 public class TestImagingAdapter {
+
+    /**
+     *
+     */
+    private static final String JPEG_IMAGE = "iptc_sample.jpg";
 
     @Inject
     protected CoreSession session;
@@ -141,11 +146,6 @@ public class TestImagingAdapter {
         }
     }
 
-    private String getConversionFormat() {
-        return Framework.getLocalService(ImagingService.class).getConfigurationValue(
-                "conversionFormat", "jpg");
-    }
-
     @Test
     public void testBlobReadOnlyOnce() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "pic", "Picture");
@@ -154,7 +154,7 @@ public class TestImagingAdapter {
         PictureResourceAdapter adapter = doc.getAdapter(PictureResourceAdapter.class);
         assertNotNull(adapter);
 
-        String filename = ImagingResourcesHelper.TEST_IMAGE_FILENAMES.get(0);
+        String filename = JPEG_IMAGE;
         String path = ImagingResourcesHelper.TEST_DATA_FOLDER + filename;
 
         FileInputStream in = new FileInputStream(
@@ -163,7 +163,7 @@ public class TestImagingAdapter {
             // blob that can be read only once, like HttpServletRequest streams
             Blob blob = new InputStreamBlob(in);
             blob.setFilename(filename);
-            adapter.fillPictureViews(blob, filename, filename, null);
+            adapter.fillPictureViews(blob, filename, filename);
             doc = session.saveDocument(doc);
             MultiviewPicture pic = doc.getAdapter(MultiviewPicture.class);
             assertNotNull(pic);
@@ -173,4 +173,8 @@ public class TestImagingAdapter {
         }
     }
 
+    protected String getConversionFormat() {
+        return Framework.getLocalService(ImagingService.class).getConfigurationValue(
+                "conversionFormat", "jpg");
+    }
 }

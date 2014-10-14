@@ -15,7 +15,7 @@
  *     Vladimir Pasquier <vpasquier@nuxeo.com>
  */
 
-package org.nuxeo.ecm.platform.picture.core.test.adapter;
+package org.nuxeo.ecm.platform.picture.core.test;
 
 import java.io.File;
 import java.io.Serializable;

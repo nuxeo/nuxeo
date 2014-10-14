@@ -42,7 +42,8 @@ public class TestCropPictureConverter {
     public void iShouldHaveCropPictureConverterRegistered() {
         ConverterCheckResult check = Framework.getService(
                 ConversionService.class).isConverterAvailable(
-                ImagingConvertConstants.OPERATION_RESIZE);
+                ImagingConvertConstants.OPERATION_CROP);
+
         Assert.assertTrue(check.isAvailable());
     }
 }

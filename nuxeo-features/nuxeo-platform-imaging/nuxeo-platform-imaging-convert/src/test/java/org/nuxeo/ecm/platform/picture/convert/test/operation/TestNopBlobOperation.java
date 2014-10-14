@@ -34,9 +34,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
- * TODO: Move this class and it's associated operation ({@link NopBlobOperation}
- * ) to nuxeo-platform-imaging-convert.
- *
  * @since 5.9.6
  *
  * @author Vincent Vergnolle
@@ -55,14 +52,13 @@ public class TestNopBlobOperation {
 
     @Test
     public void iShouldHaveEqualsBlob() throws Exception {
-        Blob blob = new StringBlob("--test--");
+        Blob blob = new StringBlob("");
         OperationContext context = new OperationContext(session);
         context.setInput(blob);
 
-        Blob newBlob = (Blob) automationService.run(context,
+        Blob resultBlob = (Blob) automationService.run(context,
                 NopBlobOperation.ID);
 
-        // Do not use the == symbol here since the blob instance can change
-        Assert.assertTrue(blob.equals(newBlob));
+        Assert.assertTrue(blob.equals(resultBlob));
     }
 }

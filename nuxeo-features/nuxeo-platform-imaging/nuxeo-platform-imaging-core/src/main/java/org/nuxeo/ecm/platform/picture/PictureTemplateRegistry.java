@@ -73,10 +73,10 @@ public class PictureTemplateRegistry extends
     }
 
     /**
-     * JIT sort
+     * FIXME- Try a different logic. Like eagerly sort the map when a picture
+     * template is registered
      *
-     * FIXME- Try a different approch since this method will be call a few times
-     * and each time a new list is created and sorted
+     * @return picture template collection sorted by order
      */
     public List<PictureTemplate> getPictureTemplates() {
         List<PictureTemplate> entries = new ArrayList<>(
@@ -98,20 +98,53 @@ public class PictureTemplateRegistry extends
         }
 
         if (pictureTemplate.isEnabled()) {
+            check(pictureTemplate);
             pictureTemplates.put(id, pictureTemplate);
+        }
+    }
+
+    /**
+     * Check if the passed picture template is valid.
+     *
+     * <br/>
+     * <br/>
+     *
+     * A valid picture template should not have:
+     *
+     * <pre>
+     *    - A null or empty 'title'
+     *    - A null 'order'
+     * </pre>
+     *
+     * <br/>
+     *
+     * TODO: See how to handle specific cases
+     *
+     * @throws IllegalStateException if the title is null or empty
+     */
+    protected void check(PictureTemplate pictureTemplate) {
+        // Check if the title is null or empty
+        if (StringUtils.isEmpty(pictureTemplate.getTitle())) {
+            throw new IllegalStateException(
+                    "The 'title' property of a picture template mustn't be null or empty ("
+                            + pictureTemplate + ")");
+        }
+
+        // Check order
+        if (pictureTemplate.getOrder() == null) {
+            pictureTemplate.setOrder(0);
+
+            if (log.isWarnEnabled()) {
+                log.warn("Picture template "
+                        + pictureTemplate.getTitle()
+                        + " order property is null - the order has been setted to zero.");
+            }
         }
     }
 
     @Override
     public String getContributionId(PictureTemplate pictureTemplate) {
-        String title = pictureTemplate.getTitle();
-        if (StringUtils.isEmpty(title)) {
-            throw new IllegalStateException(
-                    "The 'title' property of a pictureTemplate mustn't be null or empty ("
-                            + pictureTemplate + ")");
-        }
-
-        return title;
+        return pictureTemplate.getTitle();
     }
 
     @Override
@@ -146,9 +179,10 @@ public class PictureTemplateRegistry extends
             oldPictureTemplate.setDescription(description);
         }
 
-        // TODO - Fix order always get updated even if it's zero so the default
-        // value if nothing is specified
-        oldPictureTemplate.setOrder(pictureTemplate.getOrder());
+        Integer order = pictureTemplate.getOrder();
+        if (order != null) {
+            oldPictureTemplate.setOrder(order);
+        }
 
         Integer maxSize = pictureTemplate.getMaxSize();
 

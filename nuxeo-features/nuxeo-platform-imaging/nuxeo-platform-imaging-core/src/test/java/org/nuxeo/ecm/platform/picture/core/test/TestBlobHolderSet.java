@@ -16,7 +16,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.platform.picture.core.test.adapter;
+package org.nuxeo.ecm.platform.picture.core.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
