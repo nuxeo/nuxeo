@@ -160,7 +160,7 @@
   <tag>
     <name>methodResult</name>
     <tag-class>None</tag-class>
-    <body-content>None</body-content>
+    <body-content>empty</body-content>
     <description>
       <![CDATA[
       <p>
@@ -221,7 +221,7 @@
   <tag>
     <name>set</name>
     <tag-class>None</tag-class>
-    <body-content>None</body-content>
+    <body-content>empty</body-content>
     <description>
       <![CDATA[
       <p>
@@ -303,7 +303,7 @@
   <tag>
     <name>repeat</name>
     <tag-class>None</tag-class>
-    <body-content>None</body-content>
+    <body-content>empty</body-content>
     <description>
       <![CDATA[
       <p>
@@ -404,7 +404,7 @@
   <tag>
     <name>actionListenerMethod</name>
     <tag-class>None</tag-class>
-    <body-content>None</body-content>
+    <body-content>empty</body-content>
     <description>
       <![CDATA[
       <p>
@@ -453,7 +453,7 @@
   <tag>
     <name>selectItem</name>
     <tag-class>None</tag-class>
-    <body-content>None</body-content>
+    <body-content>empty</body-content>
     <description>
       <![CDATA[
       <p>
@@ -527,7 +527,7 @@
   <tag>
     <name>selectItems</name>
     <tag-class>None</tag-class>
-    <body-content>None</body-content>
+    <body-content>empty</body-content>
     <description>
       <![CDATA[
       <p>

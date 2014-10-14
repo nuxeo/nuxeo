@@ -37,7 +37,7 @@
   <tag>
     <name>selectItems</name>
     <tag-class>None</tag-class>
-    <body-content>None</body-content>
+    <body-content>empty</body-content>
     <description>
       <![CDATA[
       <p>

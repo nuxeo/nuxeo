@@ -91,7 +91,7 @@
   <tag>
     <name>widgetType</name>
     <tag-class>None</tag-class>
-    <body-content>None</body-content>
+    <body-content>empty</body-content>
     <description>
       <![CDATA[
       <p>
@@ -252,7 +252,7 @@
   <tag>
     <name>widget</name>
     <tag-class>None</tag-class>
-    <body-content>None</body-content>
+    <body-content>empty</body-content>
     <description>
       <![CDATA[
       <p>Facelet tag handler that renders a widget in a given mode.</p>
@@ -374,7 +374,7 @@
   <tag>
     <name>layout</name>
     <tag-class>None</tag-class>
-    <body-content>None</body-content>
+    <body-content>empty</body-content>
     <description>
       <![CDATA[
       <p>Facelet tag handler that renders a layout in a given mode.</p>
@@ -511,7 +511,7 @@
   <tag>
     <name>layoutRow</name>
     <tag-class>None</tag-class>
-    <body-content>None</body-content>
+    <body-content>empty</body-content>
     <description>
       <![CDATA[
       <p>
@@ -564,7 +564,7 @@
   <tag>
     <name>layoutColumn</name>
     <tag-class>None</tag-class>
-    <body-content>None</body-content>
+    <body-content>empty</body-content>
     <description>
       Facelet tag handler equivalent to layoutRow tag, available since 5.3.1.
     </description>
@@ -573,7 +573,7 @@
   <tag>
     <name>layoutRowWidget</name>
     <tag-class>None</tag-class>
-    <body-content>None</body-content>
+    <body-content>empty</body-content>
     <description>
       <![CDATA[
       <p>
@@ -627,7 +627,7 @@
   <tag>
     <name>layoutColumnWidget</name>
     <tag-class>None</tag-class>
-    <body-content>None</body-content>
+    <body-content>empty</body-content>
     <description>
       Facelet tag handler equivalent to layoutRowWidget tag, available since
       5.3.1.
@@ -637,7 +637,7 @@
   <tag>
     <name>subWidget</name>
     <tag-class>None</tag-class>
-    <body-content>None</body-content>
+    <body-content>empty</body-content>
     <description>
       <![CDATA[
       <p>
@@ -689,7 +689,7 @@
   <tag>
     <name>documentLayout</name>
     <tag-class>None</tag-class>
-    <body-content>None</body-content>
+    <body-content>empty</body-content>
     <description>
       <![CDATA[
       <p>
