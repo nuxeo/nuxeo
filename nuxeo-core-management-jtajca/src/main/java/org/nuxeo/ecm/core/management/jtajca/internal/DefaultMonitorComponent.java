@@ -28,11 +28,8 @@ import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
-import javax.naming.NamingException;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
-import javax.sql.DataSource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.geronimo.connector.outbound.AbstractConnectionManager;
@@ -40,13 +37,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.management.jtajca.CoreSessionMonitor;
-import org.nuxeo.ecm.core.management.jtajca.DatabaseConnectionMonitor;
 import org.nuxeo.ecm.core.management.jtajca.Defaults;
-import org.nuxeo.ecm.core.management.jtajca.StorageConnectionMonitor;
+import org.nuxeo.ecm.core.management.jtajca.ConnectionPoolMonitor;
 import org.nuxeo.ecm.core.management.jtajca.TransactionMonitor;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.datasource.DataSourceHelper;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.jtajca.NuxeoContainerListener;
 import org.nuxeo.runtime.management.ServerLocator;
@@ -69,22 +64,22 @@ public class DefaultMonitorComponent extends DefaultComponent {
         @Override
         public void handleNewConnectionManager(String name,
                 AbstractConnectionManager cm) {
-            StorageConnectionMonitor monitor = new DefaultStorageConnectionMonitor(
+            ConnectionPoolMonitor monitor = new DefaultConnectionPoolMonitor(
                     name, cm);
             monitor.install();
-            storageConnectionMonitors.put(name, monitor);
+            poolConnectionMonitors.put(name, monitor);
         }
 
         @Override
         public void handleConnectionManagerReset(String name,
                 AbstractConnectionManager cm) {
-            DefaultStorageConnectionMonitor monitor = (DefaultStorageConnectionMonitor) storageConnectionMonitors.get(name);
+            DefaultConnectionPoolMonitor monitor = (DefaultConnectionPoolMonitor) poolConnectionMonitors.get(name);
             monitor.handleNewConnectionManager(cm);
         }
 
         @Override
         public void handleConnectionManagerDispose(String name, AbstractConnectionManager mgr) {
-            StorageConnectionMonitor monitor = storageConnectionMonitors.remove(name);
+            ConnectionPoolMonitor monitor = poolConnectionMonitors.remove(name);
             monitor.uninstall();
         }
 
@@ -96,9 +91,7 @@ public class DefaultMonitorComponent extends DefaultComponent {
 
     protected TransactionMonitor transactionMonitor;
 
-    protected Map<String, StorageConnectionMonitor> storageConnectionMonitors = new HashMap<String, StorageConnectionMonitor>();
-
-    protected Map<String, DatabaseConnectionMonitor> databaseConnectionMonitors = new HashMap<String, DatabaseConnectionMonitor>();
+    protected Map<String, ConnectionPoolMonitor> poolConnectionMonitors = new HashMap<String, ConnectionPoolMonitor>();
 
     // don't use activate, it would be too early
     @Override
@@ -132,21 +125,16 @@ public class DefaultMonitorComponent extends DefaultComponent {
         transactionMonitor.install();
 
         try {
-            installDatabaseStorageMonitors();
-        } catch (ClientException cause) {
-            log.warn("Cannot install database monitors", cause);
-        }
-        try {
-            installRepositoryStorageMonitors();
+            installPoolMonitors();
         } catch (ClientException cause) {
             log.warn("Cannot install storage monitors", cause);
         }
 
     }
 
-    protected void installRepositoryStorageMonitors() throws ClientException, LoginException {
+    protected void installPoolMonitors() throws ClientException, LoginException {
         NuxeoContainer.addListener(cmUpdater);
-        ClientException errors = new ClientException("Cannot install repository storage monitors");
+        ClientException errors = new ClientException("Cannot install pool monitors");
         LoginContext loginContext = Framework.login();
         try {
             for (String name : Framework.getLocalService(
@@ -165,35 +153,6 @@ public class DefaultMonitorComponent extends DefaultComponent {
         }
     }
 
-    protected void installDatabaseStorageMonitors() throws ClientException {
-        ClientException errors = new ClientException("Cannot install database storage monitors");
-        Map<String, DataSource> dsByName;
-        try {
-            dsByName = DataSourceHelper.getDatasources();
-        } catch (NamingException cause) {
-            errors.addSuppressed(cause);
-            throw errors;
-        }
-        for (Map.Entry<String, DataSource> dsEntry : dsByName.entrySet()) {
-            String name = dsEntry.getKey();
-            DataSource ds = dsEntry.getValue();
-            DatabaseConnectionMonitor monitor = null;
-            if (ds instanceof org.apache.commons.dbcp.BasicDataSource) {
-                monitor = new CommonsDatabaseConnectionMonitor(name,
-                        (org.apache.commons.dbcp.BasicDataSource) ds);
-            } else if (ds instanceof org.apache.tomcat.dbcp.dbcp.BasicDataSource) {
-                monitor = new TomcatDatabaseConnectionMonitor(name,
-                        (org.apache.tomcat.dbcp.dbcp.BasicDataSource) ds);
-            } else {
-                continue;
-            }
-            monitor.install();
-            databaseConnectionMonitors.put(name, monitor);
-        }
-        if (errors.getSuppressed().length > 0) {
-            throw errors;
-        }
-    }
 
     /**
      * Make sure we open the repository, to initialize its connection manager.
@@ -211,15 +170,12 @@ public class DefaultMonitorComponent extends DefaultComponent {
         }
         installed = false;
         NuxeoContainer.removeListener(cmUpdater);
-        for (StorageConnectionMonitor storage : storageConnectionMonitors.values()) {
+        for (ConnectionPoolMonitor storage : poolConnectionMonitors.values()) {
             storage.uninstall();
-        }
-        for (DatabaseConnectionMonitor ds : databaseConnectionMonitors.values()) {
-            ds.uninstall();
         }
         coreSessionMonitor.uninstall();
         transactionMonitor.uninstall();
-        storageConnectionMonitors.clear();
+        poolConnectionMonitors.clear();
         coreSessionMonitor = null;
         transactionMonitor = null;
     }

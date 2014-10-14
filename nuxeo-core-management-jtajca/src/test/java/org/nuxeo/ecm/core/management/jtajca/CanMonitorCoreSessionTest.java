@@ -17,57 +17,52 @@
 package org.nuxeo.ecm.core.management.jtajca;
 
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
-
-import javax.inject.Named;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.management.jtajca.CoreSessionMonitor;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 /**
  * @author matic
  *
  */
 @RunWith(FeaturesRunner.class)
-@Features( JtajcaManagementFeature.class )
-public class CanMonitorStoragesTest {
+@Features(JtajcaManagementFeature.class)
+public class CanMonitorCoreSessionTest {
 
-    @Inject @Named("repository/test")
-    protected StorageConnectionMonitor repo;
-
-    @Inject @Named("jdbc/repository_test")
-    protected StorageConnectionMonitor db;
+    @Inject
+    @Named("default")
+    CoreSessionMonitor monitor;
 
     @Inject
     CoreSession repository;
 
-    @Test public void areMonitorsInstalled() {
-        isMonitorInstalled(repo);
-        isMonitorInstalled(db);
+    @Inject
+    FeaturesRunner runner;
+
+    @Test
+    public void isMonitorInstalled() {
+        assertThat(monitor, notNullValue());
+        monitor.getCount(); // throw exception is monitor not present
     }
 
     @Test
-    public void areConnectionsOpened() throws ClientException {
-        isConnectionOpened(repo);
-        isConnectionOpened(db);
+    public void isSessionOpened() throws ClientException {
+        int count = monitor.getCount();
+        assertThat(count, is(1));
+        String firstInfo = monitor.getInfos()[0];
+        assertThat(firstInfo.length(), greaterThan(0));
+        return;
     }
-
-    protected void isMonitorInstalled(StorageConnectionMonitor monitor) {
-        assertThat(monitor, notNullValue());
-        monitor.getConnectionCount(); // throw exception is monitor not present
-    }
-
-    protected void isConnectionOpened(StorageConnectionMonitor monitor) throws ClientException {
-        int count = monitor.getConnectionCount();
-        assertThat(count, greaterThan(0));
-    }
-
 
 }

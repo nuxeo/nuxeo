@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.management.ObjectInstance;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
@@ -44,6 +43,7 @@ import org.javasimon.Stopwatch;
 import org.nuxeo.ecm.core.management.jtajca.TransactionMonitor;
 import org.nuxeo.ecm.core.management.jtajca.TransactionStatistics;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author matic
@@ -61,11 +61,18 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
     @Override
     public void install() {
         tm = lookup();
+        if (tm == null) {
+            log.warn("Cannot monitor transactions, not a geronimo tx manager");
+            return;
+        }
         bindManagementInterface();
     }
 
     @Override
     public void uninstall()  {
+        if (tm == null) {
+            return;
+        }
         unbindManagementInterface();
         if (enabled) {
             toggle();
@@ -83,12 +90,11 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
         self = null;
     }
 
-    public TransactionManagerImpl lookup() {
+    protected TransactionManagerImpl lookup() {
         TransactionManager tm = NuxeoContainer.getTransactionManager();
         if (tm == null) { // try setup trough NuxeoTransactionManagerFactory
             try {
-                InitialContext ic = new InitialContext();
-                tm = (TransactionManager) ic.lookup("java:comp/env/TransactionManager");
+                tm = TransactionHelper.lookupTransactionManager();
             } catch (NamingException cause) {
                 throw new RuntimeException("Cannot lookup tx manager", cause);
             }
@@ -99,11 +105,15 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
         try {
             Field f = NuxeoContainer.TransactionManagerWrapper.class.getDeclaredField("tm");
             f.setAccessible(true);
-            return (TransactionManagerImpl) f.get(tm);
+            tm = (TransactionManager) f.get(tm);
         } catch (Exception cause) {
             throw new RuntimeException("Cannot access to geronimo tx manager",
                     cause);
         }
+        if (!(tm instanceof TransactionManagerImpl)) {
+            return null;
+        }
+        return (TransactionManagerImpl)tm;
     }
 
     protected TransactionStatistics lastCommittedStatistics;

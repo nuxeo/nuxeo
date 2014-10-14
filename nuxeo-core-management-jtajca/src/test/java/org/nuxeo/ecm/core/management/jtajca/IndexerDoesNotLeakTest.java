@@ -31,10 +31,10 @@ public class IndexerDoesNotLeakTest {
     @Inject WorkManager works;
 
     @Inject @Named("repository/test")
-    StorageConnectionMonitor repoMonitor;
+    ConnectionPoolMonitor repoMonitor;
 
     @Inject @Named("jdbc/repository_test")
-    StorageConnectionMonitor dbMonitor;
+    ConnectionPoolMonitor dbMonitor;
 
     @Test
     public void indexerWorkDoesNotLeak() throws ClientException, InterruptedException {

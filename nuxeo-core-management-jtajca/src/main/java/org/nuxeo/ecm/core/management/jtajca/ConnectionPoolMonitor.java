@@ -25,9 +25,9 @@ import org.apache.geronimo.connector.outbound.PoolingAttributes;
  *
  */
 @MXBean
-public interface StorageConnectionMonitor extends PoolingAttributes, Monitor {
+public interface ConnectionPoolMonitor extends PoolingAttributes, Monitor {
 
-    public static String NAME = Defaults.instance.name(StorageConnectionMonitor.class,
+    public static String NAME = Defaults.instance.name(ConnectionPoolMonitor.class,
             "%s");
 
 }

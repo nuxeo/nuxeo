@@ -56,8 +56,7 @@ public class JtajcaManagementFeature extends SimpleFeature {
         NuxeoContainer.getConnectionManager(DatabaseHelper.DATABASE.repositoryName);
 
         MBeanServer mbs = Framework.getLocalService(ServerLocator.class).lookupServer();
-        bind(binder, mbs, DatabaseConnectionMonitor.class);
-        bind(binder, mbs, StorageConnectionMonitor.class);
+        bind(binder, mbs, ConnectionPoolMonitor.class);
         bind(binder, mbs, CoreSessionMonitor.class);
         TransactionManager tm = NuxeoContainer.getTransactionManager();
         if (tm != null) {

@@ -31,7 +31,7 @@ import org.apache.geronimo.connector.outbound.AbstractConnectionManager.Intercep
 import org.apache.geronimo.connector.outbound.ConnectionInfo;
 import org.apache.geronimo.connector.outbound.ConnectionInterceptor;
 import org.apache.log4j.MDC;
-import org.nuxeo.ecm.core.management.jtajca.StorageConnectionMonitor;
+import org.nuxeo.ecm.core.management.jtajca.ConnectionPoolMonitor;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
@@ -49,9 +49,9 @@ import com.codahale.metrics.SharedMetricRegistries;
  * @author matic
  *
  */
-public class DefaultStorageConnectionMonitor implements StorageConnectionMonitor {
+public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
 
-    private static final Log log = LogFactory.getLog(DefaultStorageConnectionMonitor.class);
+    private static final Log log = LogFactory.getLog(DefaultConnectionPoolMonitor.class);
 
     // @since 5.7.2
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
@@ -60,7 +60,7 @@ public class DefaultStorageConnectionMonitor implements StorageConnectionMonitor
 
     protected AbstractConnectionManager cm;
 
-    protected DefaultStorageConnectionMonitor(String mame, AbstractConnectionManager cm) {
+    protected DefaultConnectionPoolMonitor(String mame, AbstractConnectionManager cm) {
         name = mame;
         this.cm = enhanceConnectionManager(cm);
     }

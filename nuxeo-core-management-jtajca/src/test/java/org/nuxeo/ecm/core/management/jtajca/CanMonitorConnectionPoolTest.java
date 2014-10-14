@@ -22,14 +22,12 @@ import static org.junit.Assert.assertThat;
 
 import javax.inject.Named;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
@@ -39,26 +37,37 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features( JtajcaManagementFeature.class )
-@LocalDeploy("org.nuxeo.ecm.core.management.jtajca:ds-contrib.xml")
-@Ignore // databases connection are monitored through a geronimo pool (see StorageConnectionMonitor)
-public class CanMonitorDatabasesTest {
+public class CanMonitorConnectionPoolTest {
+
+    @Inject @Named("repository/test")
+    protected ConnectionPoolMonitor repo;
 
     @Inject @Named("jdbc/repository_test")
-    protected DatabaseConnectionMonitor monitor;
+    protected ConnectionPoolMonitor db;
 
     @Inject
     CoreSession repository;
 
-    @Test
-    public void isMonitorInstalled() {
-        assertThat(monitor, notNullValue());
-        monitor.getMaxActive(); // throw exception is monitor not present
+    @Test public void areMonitorsInstalled() {
+        isMonitorInstalled(repo);
+        isMonitorInstalled(db);
     }
 
     @Test
-    public void isConnectionOpened() throws ClientException {
-        int count = monitor.getNumActive();
+    public void areConnectionsOpened() throws ClientException {
+        isConnectionOpened(repo);
+        isConnectionOpened(db);
+    }
+
+    protected void isMonitorInstalled(ConnectionPoolMonitor monitor) {
+        assertThat(monitor, notNullValue());
+        monitor.getConnectionCount(); // throw exception is monitor not present
+    }
+
+    protected void isConnectionOpened(ConnectionPoolMonitor monitor) throws ClientException {
+        int count = monitor.getConnectionCount();
         assertThat(count, greaterThan(0));
     }
+
 
 }
