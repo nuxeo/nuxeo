@@ -117,6 +117,7 @@ public class NuxeoTypeHelper {
 
     public static final String NX_PATH_SEGMENT = "nuxeo:pathSegment";
 
+    /** @since 6.0 */
     public static final String NX_POS = "nuxeo:pos";
 
     private static final String NAMESPACE = "http://ns.nuxeo.org/cmis/type/";

@@ -92,6 +92,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
+import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
 /**
@@ -951,8 +952,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         properties.put("dc:description", "my description");
         properties.put("dc:modified", lastModifiedCalendar);
         folder.updateProperties(properties, true);
-        // TODO XXX fix timezone issues with H2
-        if (!(database instanceof DatabaseH2)) {
+        // TODO XXX fix timezone issues with H2 / SQL Server
+        if (!(database instanceof DatabaseH2 || database instanceof DatabaseSQLServer)) {
             assertEquals(
                     lastModifiedCalendar.getTimeInMillis(),
                     ((GregorianCalendar) folder.getPropertyValue("dc:modified")).getTimeInMillis());
@@ -974,8 +975,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
             response = client.execute(request);
             assertEquals(HttpServletResponse.SC_OK,
                     response.getStatusLine().getStatusCode());
-            // TODO XXX fix timezone issues with H2
-            if (!(database instanceof DatabaseH2)) {
+            // TODO XXX fix timezone issues with H2 / SQL Server
+            if (!(database instanceof DatabaseH2 || database instanceof DatabaseSQLServer)) {
                 assertEquals(lastModified,
                         response.getLastHeader("Last-Modified").getValue());
             }
