@@ -28,7 +28,13 @@
       </templates>
       <rows>
         <row>
+          <widget>infoViewTitleContainer</widget>
+        </row>
+        <row>
           <widget>toggle</widget>
+        </row>
+        <row>
+          <widget>infoViewActions</widget>
         </row>
       </rows>
       <widget name="toggle" type="toggleableLayoutWithForms">
