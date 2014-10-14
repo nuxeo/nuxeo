@@ -65,16 +65,13 @@ public class TestMagickExecutors extends SQLRepositoryTestCase {
 
     @Test
     public void testJpegSimplier() throws Exception {
-        String outputFile = System.getProperty("java.io.tmpdir")
-                + "/test_small.jpg";
-
+        File out = File.createTempFile("", "test_small.jpg");
         File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
         ImageInfo info = ImageResizer.resize(file.getAbsolutePath(),
-                outputFile, 20, 20, 8);
+                out.getAbsolutePath(), 20, 20, 8);
         assertNotNull(info);
 
-        File out = new File(outputFile);
         assertTrue(out.exists());
         assertTrue(out.length() < file.length());
         out.delete();
@@ -82,19 +79,16 @@ public class TestMagickExecutors extends SQLRepositoryTestCase {
 
     @Test
     public void testCropper() throws Exception {
-        String outputFilePath = System.getProperty("java.io.tmpdir")
-                + "/test_crop.jpg";
-
+        File out = File.createTempFile("", "/test_crop.jpg");
         File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
-        ImageCropper.crop(file.getAbsolutePath(), outputFilePath, 255, 255, 10,
-                10);
+        ImageCropper.crop(file.getAbsolutePath(), out.getAbsolutePath(), 255,
+                255, 10, 10);
 
-        File out = new File(outputFilePath);
         assertTrue(out.exists());
         assertTrue(out.length() < file.length());
 
-        ImageInfo info = ImageIdentifier.getInfo(outputFilePath);
+        ImageInfo info = ImageIdentifier.getInfo(out.getAbsolutePath());
         assertNotNull(info);
         assertEquals(255, info.getWidth());
         assertEquals(255, info.getHeight());
@@ -103,53 +97,48 @@ public class TestMagickExecutors extends SQLRepositoryTestCase {
 
     @Test
     public void testCropperAndResize() throws Exception {
-        String outputFilePath = System.getProperty("java.io.tmpdir")
-                + "/test_crop_resized.jpg";
-
+        File out = File.createTempFile(null, "/test_crop_resized.jpg");
         File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
         ImageCropperAndResizer.cropAndResize(file.getAbsolutePath(),
-                outputFilePath, 255, 255, 10, 10, 200, 200);
+                out.getAbsolutePath(), 255, 255, 10, 10, 200, 200);
 
-        File out = new File(outputFilePath);
         assertTrue(out.exists());
         assertTrue(out.length() < file.length());
 
-        ImageInfo info = ImageIdentifier.getInfo(outputFilePath);
+        ImageInfo info = ImageIdentifier.getInfo(out.getAbsolutePath());
         assertNotNull(info);
         assertEquals(200, info.getWidth());
         assertEquals(200, info.getHeight());
+
         out.delete();
     }
 
     @Test
     public void testConverterWithBmp() throws Exception {
         File file = FileUtils.getResourceFileFromContext("images/andy.bmp");
+        File out = File.createTempFile(null, "/andy.jpg");
 
-        String outputFilePath = System.getProperty("java.io.tmpdir")
-                + "/andy.jpg";
+        ImageConverter.convert(file.getAbsolutePath(), out.getAbsolutePath());
 
-        ImageConverter.convert(file.getAbsolutePath(), outputFilePath);
-
-        ImageInfo info = ImageIdentifier.getInfo(outputFilePath);
+        ImageInfo info = ImageIdentifier.getInfo(out.getAbsolutePath());
         assertNotNull(info);
         assertEquals("JPEG", info.getFormat());
-        new File(outputFilePath).delete();
+
+        out.delete();
     }
 
     @Test
     public void testConverterWithGif() throws Exception {
         File file = FileUtils.getResourceFileFromContext("images/cat.gif");
+        File out = File.createTempFile(null, "/cat.jpg");
 
-        String outputFilePath = System.getProperty("java.io.tmpdir")
-                + "/cat.jpg";
+        ImageConverter.convert(file.getAbsolutePath(), out.getAbsolutePath());
 
-        ImageConverter.convert(file.getAbsolutePath(), outputFilePath);
-
-        ImageInfo info = ImageIdentifier.getInfo(outputFilePath);
+        ImageInfo info = ImageIdentifier.getInfo(out.getAbsolutePath());
         assertNotNull(info);
         assertEquals("JPEG", info.getFormat());
-        new File(outputFilePath).delete();
-    }
 
+        out.delete();
+    }
 }
