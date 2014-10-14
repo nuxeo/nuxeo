@@ -38,11 +38,9 @@ public class GlobalConfigDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @XNode("gcInterval")
-    protected long GCInterval;
+    protected long GCInterval = DEFAULT_GC_INTERVAL_IN_MIN;
 
-    @XNode("diskCacheSize")
-    protected int diskCacheSize;
+    protected int diskCacheSize = DEFAULT_DISK_CACHE_IN_KB;
 
     @XNode("enableCache")
     protected boolean enableCache = true;
@@ -51,25 +49,21 @@ public class GlobalConfigDescriptor implements Serializable {
     protected String cachingDirectory = defaultCachingDirectory().getAbsolutePath();
 
     public long getGCInterval() {
-        if (GCInterval == 0) {
-            return DEFAULT_GC_INTERVAL_IN_MIN;
-        }
         return GCInterval;
     }
 
-    public void setGCInterval(long interval) {
-        GCInterval = interval;
+    @XNode("gcInterval")
+    public void setGCInterval(long value) {
+        GCInterval = value == 0 ? DEFAULT_GC_INTERVAL_IN_MIN : value;
     }
 
     public int getDiskCacheSize() {
-        if (diskCacheSize == 0) {
-            return DEFAULT_DISK_CACHE_IN_KB;
-        }
         return diskCacheSize;
     }
 
+    @XNode("diskCacheSize")
     public void setDiskCacheSize(int size) {
-        diskCacheSize = size;
+        diskCacheSize = size == 0  ? DEFAULT_DISK_CACHE_IN_KB : size;
     }
 
     public boolean isCacheEnabled() {
@@ -77,14 +71,14 @@ public class GlobalConfigDescriptor implements Serializable {
     }
 
     public void update(GlobalConfigDescriptor other) {
-        if (other.GCInterval != 0) {
+        if (other.GCInterval != DEFAULT_GC_INTERVAL_IN_MIN) {
             GCInterval = other.GCInterval;
         }
-        if (other.diskCacheSize != 0) {
+        if (other.diskCacheSize != DEFAULT_GC_INTERVAL_IN_MIN) {
             diskCacheSize = other.diskCacheSize;
         }
 
-        if (other.cachingDirectory != null) {
+        if (other.cachingDirectory != defaultCachingDirectory().getAbsolutePath()) {
             cachingDirectory = other.cachingDirectory;
         }
 

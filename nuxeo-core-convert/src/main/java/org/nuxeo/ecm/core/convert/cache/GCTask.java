@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
  */
 public class GCTask implements Runnable {
 
-    public static boolean GCEnabled = false;
+    public boolean GCEnabled = true;
 
     private static final Log log = LogFactory.getLog(GCTask.class);
 
@@ -52,6 +52,7 @@ public class GCTask implements Runnable {
             } catch (InterruptedException e) {
                 GCEnabled = false;
                 log.info("GCThread bruttaly interupted");
+                Thread.currentThread().interrupt();
             }
         }
     }

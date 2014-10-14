@@ -2,7 +2,6 @@ Export-Package: org.nuxeo.ecm.core.convert.cache,
  org.nuxeo.ecm.core.convert.extension,
  org.nuxeo.ecm.core.convert.service
 Bundle-ActivationPolicy: lazy
-Bundle-Activator: org.nuxeo.ecm.core.convert.service.CacheCGTaskActivator
 Bundle-ClassPath: .
 Manifest-Version: 1.0
 Bundle-Category: core

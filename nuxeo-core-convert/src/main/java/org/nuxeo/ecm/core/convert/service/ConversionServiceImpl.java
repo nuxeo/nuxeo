@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.convert.api.ConverterNotAvailable;
 import org.nuxeo.ecm.core.convert.api.ConverterNotRegistered;
 import org.nuxeo.ecm.core.convert.cache.CacheKeyGenerator;
 import org.nuxeo.ecm.core.convert.cache.ConversionCacheHolder;
+import org.nuxeo.ecm.core.convert.cache.GCTask;
 import org.nuxeo.ecm.core.convert.extension.ChainedConverter;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
@@ -49,6 +50,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
 
     protected static final Log log = LogFactory.getLog(ConversionServiceImpl.class);
 
+
     public static final String CONVERTER_EP = "converter";
 
     public static final String CONFIG_EP = "configuration";
@@ -60,6 +62,8 @@ public class ConversionServiceImpl extends DefaultComponent implements
     protected final GlobalConfigDescriptor config = new GlobalConfigDescriptor();
 
     protected static ConversionServiceImpl self;
+
+    protected Thread gcThread;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -310,4 +314,25 @@ public class ConversionServiceImpl extends DefaultComponent implements
         }
         return super.getAdapter(adapter);
     }
+
+    @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+        startGC();
+    }
+
+    protected void startGC() {
+        log.debug("CasheCGTaskActivator activated starting GC thread");
+        gcThread = new Thread(new GCTask(), "Nuxeo-Convert-GC");
+        gcThread.setDaemon(true);
+        gcThread.start();
+        log.debug("GC Thread started");
+
+    }
+
+    public void endGC() {
+        log.debug("Stopping GC Thread");
+        gcThread.interrupt();
+        gcThread = null;
+    }
+
 }
