@@ -294,10 +294,6 @@
     <priority value="INFO" />
   </category>
 
-  <category name="org.nuxeo.elasticsearch.ElasticSearchComponent">
-    <priority value="INFO" />
-  </category>
-
   <category name="org.nuxeo">
     <priority value="WARN" />
   </category>
