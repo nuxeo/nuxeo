@@ -20,6 +20,46 @@
   </c:if>
 
   <c:if test="#{layoutListingStatus.index == 0}">
+    <!-- slideshow init -->
+    <nxu:set var="cvpcfp"
+      value="#{nxu:jsfTagIdEscape(contentViewPanelId)}">
+      <a4j:jsFunction name="#{cvpcfp}NP" action="#{provider.next()}"
+        render="#{contentIdToBeReRendered}"
+        oncomplete="jQuery('div[id$=#{contentViewPanelId}]').openLightBoxAfterNP();" />
+      <a4j:jsFunction name="#{cvpcfp}PP" action="#{provider.previous()}"
+        render="#{contentIdToBeReRendered}"
+        oncomplete="jQuery('div[id$=#{contentViewPanelId}]').openLightBoxAfterPP();" />
+
+      <script>
+        jQuery.extend(true, jQuery.magnificPopup.defaults, {
+          tClose: "#{messages['label.slideshow.close']}",
+          tLoading: "#{messages['label.slideshow.loading']}",
+          gallery: {
+            tPrev: "#{messages['label.slideshow.gallery.previous']}",
+            tNext: "#{messages['label.slideshow.gallery.next']}",
+            tCounter: ""
+          },
+          image: {
+            tError: "#{messages['label.slideshow.image.error']}"
+          },
+          ajax: {
+            tError: "#{messages['label.slideshow.ajax.error']}"
+          }
+        });
+
+        jQuery(document).ready(function() {
+          jQuery("div[id$=#{contentViewPanelId}]").initNxCv({
+            nxHasPreviousPage : #{provider.previousPageAvailable},
+            nxHasNextPage : #{provider.nextPageAvailable},
+            endOfPageCallback : #{cvpcfp}NP,
+            startOfPageCallback : #{cvpcfp}PP,
+          });
+        });
+      </script>
+
+    </nxu:set>
+
+    <!-- select all -->
     <div class="detail">
       <a4j:outputPanel id="#{layout.id}_selectAll_panel" layout="block">
         <nxu:set var="selectAllLabel" value="#{nxu:test(documents.selected, 'label.search.deselect.all', 'label.search.select.all')}">
@@ -36,6 +76,15 @@
       </a4j:outputPanel>
     </div>
   </c:if>
+
+  <!-- for slideshow -->
+  <nxu:set var="blobInfo"
+    value="#{blobHolderGenerator.getBlobHolder(value.data).blob.filename}"
+    cache="true">
+    <h:outputLink value="#{contextPath}/api/v1/id/#{value.data.id}"
+      class="image-popup visibilityH"
+      rendered="#{not empty blobInfo and value.data.hasFacet('Picture')}" />
+  </nxu:set>
 
   <c:set var="boxSelectedStyleClass" value="#{nxu:test(value.data.id == currentDocument.id, 'selectedItem', '')}" />
   <c:set var="infoViewUrl" value="#{nxd:complexDocumentUrl('id', value.data, 'info_view', null, true)}" />
