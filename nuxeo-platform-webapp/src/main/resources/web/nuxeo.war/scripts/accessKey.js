@@ -24,7 +24,7 @@ function showAccessKeys() {
               var keySpan = jQuery("<span>" + key + "</span>");
               keySpan.css({"background-color":"#CCCCCC", "color":"black","padding":"6px", "margin":"2px","border-radius" : "2px", "font-size" : "12px", "font-weight" : "bold", "font-family": "monospace"});
               var keyText = this.innerHTML;
-              if (this.tagName=="INPUT" && (item.attr("type")=="button"  || item.attr("type")=="submit")) {
+              if (this.tagName=="INPUT" && (item.attr("type")=="button" || item.attr("type")=="submit")) {
                  keyText = item.attr("value");
               }
               if (keyText && keyText!="" && keyText.indexOf("<!--")!=0 ) {
