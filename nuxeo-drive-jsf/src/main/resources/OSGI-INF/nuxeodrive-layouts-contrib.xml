@@ -48,8 +48,7 @@
         <properties mode="any">
           <property name="initialLayoutName">driveFormLayout</property>
           <property name="toggledLayoutName">driveFormLayout</property>
-          <property name="canToggleMode">true</property>
-          <property name="actionsDisplay">buttons</property>
+          <property name="displayToggleActionInHeader">true</property>
           <property name="useAjaxForm">false</property>
           <property name="hideDefaultActions">true</property>
           <property name="additionalActionsCategory">DRIVE_ACTION_VIEW</property>
