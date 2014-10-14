@@ -18,45 +18,40 @@
  */
 package org.nuxeo.ecm.platform.picture.core.test;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.After;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.picture.api.MetadataConstants;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.google.inject.Inject;
 
 /**
  * @author Laurent Doguin
  *
  */
-public class TestMetaDataService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ CoreFeature.class })
+@Deploy({ "org.nuxeo.ecm.platform.commandline.executor",
+        "org.nuxeo.ecm.platform.picture.core",
+        "org.nuxeo.ecm.platform.picture.api" })
+public class TestMetaDataService {
 
-    ImagingService service;
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        deployBundle("org.nuxeo.ecm.platform.picture.core");
-        deployBundle("org.nuxeo.ecm.platform.picture.api");
-        service = Framework.getService(ImagingService.class);
-        assertNotNull(service);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        super.tearDown();
-        service = null;
-    }
+    @Inject
+    protected ImagingService service;
 
     private static File getFileFromPath(String path) {
         File file = FileUtils.getResourceFileFromContext(path);

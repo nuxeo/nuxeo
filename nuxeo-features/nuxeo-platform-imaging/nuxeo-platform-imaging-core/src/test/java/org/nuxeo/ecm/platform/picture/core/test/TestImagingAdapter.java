@@ -58,9 +58,6 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.picture.convert" })
 public class TestImagingAdapter {
 
-    /**
-     *
-     */
     private static final String JPEG_IMAGE = "iptc_sample.jpg";
 
     @Inject

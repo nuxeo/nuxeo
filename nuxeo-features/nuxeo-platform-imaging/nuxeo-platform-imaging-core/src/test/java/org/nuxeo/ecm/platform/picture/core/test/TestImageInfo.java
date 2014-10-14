@@ -25,57 +25,55 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.google.inject.Inject;
 
 /**
  * @author btatar
  *
  */
-public class TestImageInfo extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ AutomationFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.commandline.executor",
+        "org.nuxeo.ecm.platform.picture.api",
+        "org.nuxeo.ecm.platform.picture.core" })
+public class TestImageInfo {
 
     protected DocumentModel root;
 
+    @Inject
     protected BlobHolderAdapterService blobHolderService;
 
+    @Inject
     protected ImagingService imagingService;
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        deployBundle("org.nuxeo.ecm.platform.picture.api");
-        deployBundle("org.nuxeo.ecm.platform.picture.core");
+    @Inject
+    protected CoreSession session;
 
-        openSession();
+    @Before
+    public void init() {
         root = session.getRootDocument();
         assertNotNull(root);
-        blobHolderService = Framework.getLocalService(BlobHolderAdapterService.class);
-        assertNotNull(blobHolderService);
-        imagingService = Framework.getService(ImagingService.class);
-        assertNotNull(imagingService);
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-        blobHolderService = null;
-        imagingService = null;
     }
 
     private List<Map<String, Serializable>> createViews() {

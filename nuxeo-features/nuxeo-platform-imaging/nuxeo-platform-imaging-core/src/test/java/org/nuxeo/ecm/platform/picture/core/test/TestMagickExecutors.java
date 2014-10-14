@@ -26,27 +26,28 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageConverter;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageCropper;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageCropperAndResizer;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageResizer;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-public class TestMagickExecutors extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ CoreFeature.class })
+@Deploy({ "org.nuxeo.ecm.platform.commandline.executor" })
+@LocalDeploy({ "org.nuxeo.ecm.platform.picture.core:OSGI-INF/commandline-imagemagick-contrib.xml" })
+public class TestMagickExecutors {
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        deployContrib("org.nuxeo.ecm.platform.picture.core",
-                "OSGI-INF/commandline-imagemagick-contrib.xml");
-    }
+    private static final String TMP_FILE_PREFIX = TestMagickExecutors.class.getName();
 
     @Test
     public void testIdentify() throws Exception {
@@ -65,7 +66,7 @@ public class TestMagickExecutors extends SQLRepositoryTestCase {
 
     @Test
     public void testJpegSimplier() throws Exception {
-        File out = File.createTempFile("", "test_small.jpg");
+        File out = File.createTempFile(TMP_FILE_PREFIX, ".test_small.jpg");
         File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
         ImageInfo info = ImageResizer.resize(file.getAbsolutePath(),
@@ -79,7 +80,7 @@ public class TestMagickExecutors extends SQLRepositoryTestCase {
 
     @Test
     public void testCropper() throws Exception {
-        File out = File.createTempFile("", "/test_crop.jpg");
+        File out = File.createTempFile(TMP_FILE_PREFIX, ".test_crop.jpg");
         File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
         ImageCropper.crop(file.getAbsolutePath(), out.getAbsolutePath(), 255,
@@ -97,7 +98,8 @@ public class TestMagickExecutors extends SQLRepositoryTestCase {
 
     @Test
     public void testCropperAndResize() throws Exception {
-        File out = File.createTempFile(null, "/test_crop_resized.jpg");
+        File out = File.createTempFile(TMP_FILE_PREFIX,
+                ".test_crop_resized.jpg");
         File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
         ImageCropperAndResizer.cropAndResize(file.getAbsolutePath(),
@@ -117,7 +119,7 @@ public class TestMagickExecutors extends SQLRepositoryTestCase {
     @Test
     public void testConverterWithBmp() throws Exception {
         File file = FileUtils.getResourceFileFromContext("images/andy.bmp");
-        File out = File.createTempFile(null, "/andy.jpg");
+        File out = File.createTempFile(TMP_FILE_PREFIX, ".andy.jpg");
 
         ImageConverter.convert(file.getAbsolutePath(), out.getAbsolutePath());
 
@@ -131,7 +133,7 @@ public class TestMagickExecutors extends SQLRepositoryTestCase {
     @Test
     public void testConverterWithGif() throws Exception {
         File file = FileUtils.getResourceFileFromContext("images/cat.gif");
-        File out = File.createTempFile(null, "/cat.jpg");
+        File out = File.createTempFile(TMP_FILE_PREFIX, ".cat.jpg");
 
         ImageConverter.convert(file.getAbsolutePath(), out.getAbsolutePath());
 

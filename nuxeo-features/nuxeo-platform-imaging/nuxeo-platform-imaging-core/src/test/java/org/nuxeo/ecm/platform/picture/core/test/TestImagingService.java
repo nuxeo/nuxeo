@@ -19,38 +19,39 @@
 
 package org.nuxeo.ecm.platform.picture.core.test;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import com.google.inject.Inject;
 
 /**
  * @author btatar
  *
  */
-public class TestImagingService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ AutomationFeature.class })
+@LocalDeploy({
+        "org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-service-framework.xml",
+        "org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-service-contrib.xml" })
+public class TestImagingService {
 
+    @Inject
     protected ImagingService imagingService;
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployContrib("org.nuxeo.ecm.platform.picture.core",
-                "OSGI-INF/imaging-service-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.picture.core",
-                "OSGI-INF/imaging-service-contrib.xml");
-
-        imagingService = Framework.getService(ImagingService.class);
-        assertNotNull(imagingService);
-    }
 
     @Test
     public void testConfigurationContrib() throws Exception {
         String conversionFormat = imagingService.getConfigurationValue(
                 "conversionFormat", "png");
+
         assertEquals("jpg", conversionFormat);
         assertNotSame("png", conversionFormat);
     }
@@ -59,10 +60,12 @@ public class TestImagingService extends NXRuntimeTestCase {
     public void testUnregisteredConfiguration() throws Exception {
         String testConfiguration = imagingService.getConfigurationValue("testConfiguration");
         assertNull(testConfiguration);
+
         imagingService.setConfigurationValue("testConfiguration",
                 "testConfigurationValue");
         testConfiguration = imagingService.getConfigurationValue(
                 "testConfiguration", "testConfiguration");
+
         assertEquals("testConfigurationValue", testConfiguration);
         assertNotSame("testConfiguration", testConfiguration);
     }

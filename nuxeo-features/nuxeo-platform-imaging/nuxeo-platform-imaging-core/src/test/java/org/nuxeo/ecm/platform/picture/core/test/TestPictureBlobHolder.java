@@ -17,6 +17,9 @@
  */
 package org.nuxeo.ecm.platform.picture.core.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTUREBOOK_TYPE_NAME;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_FACET;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_TYPE_NAME;
@@ -28,43 +31,36 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.After;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureBlobHolder;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureBookBlobHolder;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public class TestPictureBlobHolder extends SQLRepositoryTestCase {
+import com.google.inject.Inject;
 
-    BlobHolderAdapterService service;
+@RunWith(FeaturesRunner.class)
+@Features({ AutomationFeature.class })
+@Deploy({ "org.nuxeo.ecm.platform.picture.api",
+        "org.nuxeo.ecm.platform.picture.core" })
+public class TestPictureBlobHolder {
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.picture.api");
-        deployBundle("org.nuxeo.ecm.platform.picture.core");
-        openSession();
-        service = Framework.getLocalService(BlobHolderAdapterService.class);
-        assertNotNull(service);
-    }
+    @Inject
+    protected BlobHolderAdapterService service;
 
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-        service = null;
-    }
+    @Inject
+    protected CoreSession session;
 
     private static File getFileFromPath(String path) {
         File file = FileUtils.getResourceFileFromContext(path);

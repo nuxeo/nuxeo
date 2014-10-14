@@ -56,6 +56,21 @@ public interface PictureResourceAdapter {
             ArrayList<Map<String, Object>> pictureTemplates)
             throws IOException, ClientException;
 
+    /**
+     * This method just delegate the job to
+     * {@link PictureResourceAdapter#fillPictureViews(Blob, String, String, ArrayList)}
+     * by passing null instead of statics picture templates.
+     *
+     * <br/>
+     * <br/>
+     *
+     * This will fill the picture views by using the registered picture
+     * templates.
+     *
+     * @see {@link PictureResourceAdapter#fillPictureViews(Blob, String, String, ArrayList)}
+     *
+     * @since 6.9.6
+     */
     boolean fillPictureViews(Blob blob, String filename, String title)
             throws IOException, ClientException;
 
