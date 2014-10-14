@@ -25,24 +25,24 @@
     fixedContentPos : true,
     image : {
       verticalFit : true
-    },
+    }
   };
 
   $.fn.initNxCv = function(args) {
     jQuery.extend(true, args, defaultArgs);
-    jQuery(this).find('div.thumbnailContainer a.image-popup').magnificPopup(
+    jQuery(this).find('a.image-popup').magnificPopup(
         args);
   }
 
   $.fn.openLightBoxAfterNP = function() {
-    jQuery(this).find('div.thumbnailContainer a.image-popup').magnificPopup(
+    jQuery(this).find('a.image-popup').magnificPopup(
         'open');
   }
 
   $.fn.openLightBoxAfterPP = function() {
-    var nbItems = jQuery(this).find('div.thumbnailContainer a.image-popup')
+    var nbItems = jQuery(this).find('a.image-popup')
         .size();
-    jQuery(this).find('div.thumbnailContainer a.image-popup').magnificPopup(
+    jQuery(this).find('a.image-popup').magnificPopup(
         'open', nbItems - 1);
   }
 
