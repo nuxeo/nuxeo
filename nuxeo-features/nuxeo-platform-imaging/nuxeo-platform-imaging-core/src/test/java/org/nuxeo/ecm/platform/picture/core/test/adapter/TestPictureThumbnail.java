@@ -15,7 +15,7 @@
  *     Vladimir Pasquier <vpasquier@nuxeo.com>
  */
 
-package org.nuxeo.ecm.platform.picture.convert.test;
+package org.nuxeo.ecm.platform.picture.core.test.adapter;
 
 import java.io.File;
 import java.io.Serializable;
@@ -29,6 +29,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -36,7 +37,6 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.picture.api.PictureView;
@@ -51,7 +51,7 @@ import com.google.inject.Inject;
  * @since 5.7
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ AutomationFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.core.convert.api",
         "org.nuxeo.ecm.platform.commandline.executor",
@@ -71,10 +71,9 @@ public class TestPictureThumbnail {
         List<Map<String, Serializable>> views = new ArrayList<Map<String, Serializable>>();
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put("title", "Original");
-        map.put("content", new FileBlob(
-                getFileFromPath("test-data/big_nuxeo_logo.gif"), "image/gif",
-                null, "big_nuxeo_logo.gif", null));
-        map.put("filename", "big_nuxeo_logo.gif");
+        map.put("content", new FileBlob(getFileFromPath("images/cat.gif"),
+                "image/gif", null, "cat.gif", null));
+        map.put("filename", "cat.gif");
         views.add(map);
         return views;
     }
@@ -90,9 +89,8 @@ public class TestPictureThumbnail {
         session.save();
         // Create 4 views
         BlobHolder bh = picture.getAdapter(BlobHolder.class);
-        Blob blob = new FileBlob(
-                getFileFromPath("test-data/big_nuxeo_logo.gif"), "image/gif",
-                null, "big_nuxeo_logo.gif", null);
+        Blob blob = new FileBlob(getFileFromPath("images/cat.gif"),
+                "image/gif", null, "cat.gif", null);
         bh.setBlob(blob);
         session.saveDocument(picture);
         session.save();

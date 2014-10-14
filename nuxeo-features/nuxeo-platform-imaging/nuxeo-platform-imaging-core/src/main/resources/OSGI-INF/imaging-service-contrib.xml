@@ -5,7 +5,6 @@
     Defines configurations for imaging service
   </documentation>
 
-  <!-- Remove ? -->
   <extension target="org.nuxeo.ecm.platform.picture.ImagingComponent"
     point="configuration">
 
@@ -20,20 +19,20 @@
   <extension target="org.nuxeo.ecm.platform.picture.ImagingComponent"
     point="pictureTemplates">
 
-    <pictureTemplate title="Original" enabled="true"
-      description="Original size" order="5" chainId="originalPictureResizeConverter" />
+    <pictureTemplate title="Original" description="Original image"
+      order="10" chainId="Blob.Nop" />
 
     <pictureTemplate title="OriginalJpeg" enabled="true"
-      description="Original size" order="10" chainId="originalJpegPictureResizeConverter" />
+      description="Original jpeg image" order="25" chainId="Picture.Resize" />
 
-    <pictureTemplate title="Medium" enabled="true" description="Medium size"
-      maxSize="550" order="15" chainId="defaultPictureResizeConverter" />
+    <pictureTemplate title="Medium" description="Medium size"
+      maxSize="550" order="5" chainId="Picture.Resize" />
 
-    <pictureTemplate title="Small" enabled="true" description="Small size"
-      maxSize="280" order="20" chainId="defaultPictureResizeConverter" />
+    <pictureTemplate title="Small" description="Small size"
+      maxSize="280" order="15" chainId="Picture.Resize" />
 
-    <pictureTemplate title="Thumbnail" enabled="true"
-      description="Thumbnail size" maxSize="100" order="25" chainId="defaultPictureResizeConverter" />
+    <pictureTemplate title="Thumbnail" description="Thumbnail size"
+      maxSize="100" order="20" chainId="Picture.Resize" />
 
   </extension>
 </component>

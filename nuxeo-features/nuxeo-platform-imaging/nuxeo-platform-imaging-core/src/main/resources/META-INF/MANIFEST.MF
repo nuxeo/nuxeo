@@ -33,8 +33,7 @@ Nuxeo-Component: OSGI-INF/imaging-service-framework.xml,
  OSGI-INF/commandline-imagemagick-contrib.xml,
  OSGI-INF/filemanager-plugins-contrib.xml,
  OSGI-INF/picture-thumbnailfactory-contrib.xml,
- OSGI-INF/picture-workmanager-contrib.xml,
- OSGI-INF/converter-operation-contrib.xml
+ OSGI-INF/picture-workmanager-contrib.xml
 Import-Package: com.drew.imaging.jpeg,
  com.drew.metadata,
  com.drew.metadata.iptc,
@@ -64,7 +63,10 @@ Import-Package: com.drew.imaging.jpeg,
  org.nuxeo.runtime,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.model,
- org.nuxeo.runtime.services.streaming
+ org.nuxeo.runtime.services.streaming,
+ org.nuxeo.ecm.automation,
+ org.nuxeo.ecm.automation.core,
+ org.nuxeo.ecm.automation.core.annotations
 Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.core;singleton=true
 Eclipse-RegisterBuddy: org.nuxeo.ecm.platform.filemanager.core
 Require-Bundle: net.java.dev.mistral.EditableImage

@@ -14,7 +14,7 @@
  * Contributors:
  *     Vincent Vergnolle
  */
-package org.nuxeo.ecm.platform.picture.operation;
+package org.nuxeo.ecm.platform.picture.convert.operation;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -49,7 +49,7 @@ public class ConverterOperation {
     protected String converter;
 
     /*
-     * FIXME- Add a Properties (nuxeo) instead of a Map (may broke the nx studio
+     * FIXME- Use a Properties (nuxeo) instead of a Map (may broke the nx studio
      * way to add parameters in operation property)
      */
 

@@ -17,13 +17,14 @@
  */
 package org.nuxeo.ecm.platform.picture.core.im;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 
+import org.apache.commons.io.FilenameUtils;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
-import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
@@ -33,6 +34,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestIMImageUtils extends NXRuntimeTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();

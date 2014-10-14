@@ -101,6 +101,10 @@ public class PictureTemplate implements Comparable<PictureTemplate> {
         return maxSize;
     }
 
+    public Integer getSafeMaxSize() {
+        return maxSize == null ? 1 : maxSize;
+    }
+
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);

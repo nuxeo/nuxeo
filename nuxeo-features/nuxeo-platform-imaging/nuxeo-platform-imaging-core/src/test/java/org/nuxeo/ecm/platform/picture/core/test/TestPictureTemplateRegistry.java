@@ -97,8 +97,8 @@ public class TestPictureTemplateRegistry {
 
     @Test
     public void iHaveDefaultPictureTemplatesOrder() {
-        String[] defaultPictureTemplatesOrder = new String[] { "Original",
-                "OriginalJpeg", "Medium", "Small", "Thumbnail" };
+        String[] defaultPictureTemplatesOrder = new String[] { "Medium",
+                "Original", "Small", "Thumbnail", "OriginalJpeg" };
         List<PictureTemplate> pictureTemplates = getPictureTemplateRegistry().getPictureTemplates();
 
         for (int i = 0; i < defaultPictureTemplatesOrder.length; i++) {
@@ -111,16 +111,16 @@ public class TestPictureTemplateRegistry {
     public void iHavePictureTemplatesOrder() throws Exception {
         deploy(PICTURE_TEMPLATES_OVERRIDE_MORE_COMPONENT_LOCATION);
 
-        String[] defaultPictureTemplatesOrder = new String[] { "ThumbnailMini",
-                "Tiny", "OriginalJpeg", "Thumbnail", "Medium", "Wide",
-                "Original", "Small", "ThumbnailWide" };
+        String[] expectedPictureTemplatesOrder = new String[] {
+                "ThumbnailMini", "Tiny", "Medium", "OriginalJpeg", "Thumbnail",
+                "Wide", "Small", "Original", "ThumbnailWide" };
         List<PictureTemplate> pictureTemplates = getPictureTemplateRegistry().getPictureTemplates();
 
         Assert.assertEquals(pictureTemplates.size(),
-                defaultPictureTemplatesOrder.length);
+                expectedPictureTemplatesOrder.length);
 
-        for (int i = 0; i < defaultPictureTemplatesOrder.length; i++) {
-            Assert.assertEquals(defaultPictureTemplatesOrder[i],
+        for (int i = 0; i < expectedPictureTemplatesOrder.length; i++) {
+            Assert.assertEquals(expectedPictureTemplatesOrder[i],
                     pictureTemplates.get(i).getTitle());
         }
 

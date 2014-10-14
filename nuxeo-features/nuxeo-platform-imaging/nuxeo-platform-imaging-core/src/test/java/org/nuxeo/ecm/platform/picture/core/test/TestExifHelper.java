@@ -19,18 +19,16 @@
 
 package org.nuxeo.ecm.platform.picture.core.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
-import java.util.Map;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.platform.picture.ExifHelper;
-import org.nuxeo.ecm.platform.picture.api.MetadataConstants;
 import org.nuxeo.ecm.platform.picture.core.mistral.MistralMetadataUtils;
 
 /**

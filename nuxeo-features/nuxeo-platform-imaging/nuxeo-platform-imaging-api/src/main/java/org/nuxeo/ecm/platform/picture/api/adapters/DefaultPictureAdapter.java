@@ -138,7 +138,9 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
                     imageInfo, false);
         } else {
             // TODO - Call service here - call with false for convert params
-            pictureViews = imagingService.computeViewFor(fileContent, false);
+            // FIXED: make this method call using the passed blob and not the
+            // instance filecontent
+            pictureViews = imagingService.computeViewFor(blob, false);
         }
 
         addPictureViews(pictureViews);

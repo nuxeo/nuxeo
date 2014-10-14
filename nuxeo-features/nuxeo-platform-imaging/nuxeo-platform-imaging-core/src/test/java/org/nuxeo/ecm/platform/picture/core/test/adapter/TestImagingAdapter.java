@@ -16,7 +16,7 @@
  *
  * $Id$
  */
-package org.nuxeo.ecm.platform.picture.convert.test;
+package org.nuxeo.ecm.platform.picture.core.test.adapter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -49,6 +49,7 @@ public class TestImagingAdapter extends SQLRepositoryTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
+
         deployBundle("org.nuxeo.ecm.core.convert.api");
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
@@ -57,6 +58,7 @@ public class TestImagingAdapter extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.picture.api");
         deployBundle("org.nuxeo.ecm.platform.picture.core");
         deployBundle("org.nuxeo.ecm.platform.picture.convert");
+
         openSession();
     }
 
@@ -103,10 +105,10 @@ public class TestImagingAdapter extends SQLRepositoryTestCase {
         String conversionFormat = Framework.getLocalService(
                 ImagingService.class).getConfigurationValue("conversionFormat",
                 "jpg");
-        for (String filename : ImagingRessourcesHelper.TEST_IMAGE_FILENAMES) {
-            String path = ImagingRessourcesHelper.TEST_DATA_FOLDER + filename;
+        for (String filename : ImagingResourcesHelper.TEST_IMAGE_FILENAMES) {
+            String path = ImagingResourcesHelper.TEST_DATA_FOLDER + filename;
             Blob blob = new FileBlob(
-                    ImagingRessourcesHelper.getFileFromPath(path));
+                    ImagingResourcesHelper.getFileFromPath(path));
             assertNotNull(blob);
             blob.setFilename(filename);
             boolean ret = adapter.fillPictureViews(blob, filename, "sample",
@@ -150,18 +152,17 @@ public class TestImagingAdapter extends SQLRepositoryTestCase {
 
     @Test
     public void testBlobReadOnlyOnce() throws Exception {
-        DocumentModel doc = session.createDocumentModel("/", "pic",
-                "Picture");
+        DocumentModel doc = session.createDocumentModel("/", "pic", "Picture");
         doc = session.createDocument(doc);
 
         PictureResourceAdapter adapter = doc.getAdapter(PictureResourceAdapter.class);
         assertNotNull(adapter);
 
-        String filename = ImagingRessourcesHelper.TEST_IMAGE_FILENAMES.get(0);
-        String path = ImagingRessourcesHelper.TEST_DATA_FOLDER + filename;
+        String filename = ImagingResourcesHelper.TEST_IMAGE_FILENAMES.get(0);
+        String path = ImagingResourcesHelper.TEST_DATA_FOLDER + filename;
 
         FileInputStream in = new FileInputStream(
-                ImagingRessourcesHelper.getFileFromPath(path));
+                ImagingResourcesHelper.getFileFromPath(path));
         try {
             // blob that can be read only once, like HttpServletRequest streams
             Blob blob = new InputStreamBlob(in);

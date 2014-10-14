@@ -16,68 +16,65 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.platform.picture.convert.test;
+package org.nuxeo.ecm.platform.picture.core.test.adapter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public class TestBlobHolderSet extends SQLRepositoryTestCase {
+import com.google.inject.Inject;
+
+@RunWith(FeaturesRunner.class)
+@Features({ AutomationFeature.class })
+@Deploy({ "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.core.convert",
+        "org.nuxeo.ecm.platform.commandline.executor",
+        "org.nuxeo.ecm.platform.picture.core",
+        "org.nuxeo.ecm.platform.picture.convert" })
+public class TestBlobHolderSet {
 
     protected DocumentModel root;
 
-    @Override
+    @Inject
+    protected CoreSession session;
+
     @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.picture.api");
-        deployBundle("org.nuxeo.ecm.core.convert");
-        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        deployBundle("org.nuxeo.ecm.platform.picture.core");
-        deployBundle("org.nuxeo.ecm.platform.picture.convert");
-        openSession();
+    public void init() throws Exception {
         root = session.getRootDocument();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
-
-    private static File getFileFromPath(String path) {
-        return FileUtils.getResourceFileFromContext(path);
     }
 
     private List<Map<String, Serializable>> createViews() {
         List<Map<String, Serializable>> views = new ArrayList<Map<String, Serializable>>();
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put("title", "Original");
-        map.put("content", new FileBlob(
-                getFileFromPath("test-data/sample.jpeg"), "image/jpeg", null,
-                "mysample.jpg", null));
-        map.put("filename", "mysample.jpg");
+        map.put("content",
+                new FileBlob(
+                        FileUtils.getResourceFileFromContext(ImagingResourcesHelper.TEST_DATA_FOLDER
+                                + "test.jpg"), "image/jpeg", null, "test.jpg",
+                        null));
+        map.put("filename", "test.jpg");
         views.add(map);
         return views;
     }
@@ -97,8 +94,9 @@ public class TestBlobHolderSet extends SQLRepositoryTestCase {
         assertEquals(1, bh.getBlobs().size());
 
         // test write
-        blob = new FileBlob(getFileFromPath("test-data/big_nuxeo_logo.jpg"),
-                "image/jpeg", null, "logo.jpg", null);
+        blob = new FileBlob(
+                FileUtils.getResourceFileFromContext(ImagingResourcesHelper.TEST_DATA_FOLDER
+                        + "test.jpg"), "image/jpeg", null, "logo.jpg", null);
         bh.setBlob(blob);
         session.saveDocument(picture);
         session.save();
@@ -112,7 +110,7 @@ public class TestBlobHolderSet extends SQLRepositoryTestCase {
         assertEquals("logo.jpg", blob.getFilename());
         assertEquals("image/jpeg", blob.getMimeType());
         byte[] bytes = FileUtils.readBytes(blob.getStream());
-        assertEquals(36830, bytes.length);
+        assertEquals(2022140, bytes.length);
         bytes = null;
 
         // generated views

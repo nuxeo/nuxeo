@@ -315,8 +315,8 @@ public class ImagingComponent extends DefaultComponent implements
 
     /**
      * Use
-     * {@link ImagingComponent#computeView(Blob, PictureTemplate, ImageInfo)}
-     * by passing the <b>Original</b> picture template.
+     * {@link ImagingComponent#computeView(Blob, PictureTemplate, ImageInfo)} by
+     * passing the <b>Original</b> picture template.
      *
      * <br/>
      * <br/>
@@ -436,23 +436,40 @@ public class ImagingComponent extends DefaultComponent implements
         pictureViewMap.put(PictureView.FIELD_TAG, pictureTemplate.getTag());
 
         Point size = new Point(imageInfo.getWidth(), imageInfo.getHeight());
-        size = getSize(size, pictureTemplate.getMaxSize());
+
+        /*
+         * If the picture template have a max size then use it for the new size
+         * computation. Else take the current size will be used.
+         */
+        if (pictureTemplate.getMaxSize() != null) {
+            size = getSize(size, pictureTemplate.getMaxSize());
+        }
 
         pictureViewMap.put(PictureView.FIELD_WIDTH, size.x);
         pictureViewMap.put(PictureView.FIELD_HEIGHT, size.y);
 
-        // use the registered conversion format for 'Medium' and 'Thumbnail'
-        // views
+        // Use the registered conversion format
         String conversionFormat = getConfigurationValue(CONVERSION_FORMAT,
                 JPEG_CONVERSATION_FORMAT);
 
         Blob viewBlob = callPictureTemplateChain(blob, pictureTemplate,
                 imageInfo, size, conversionFormat);
 
-        String viewFilename = title + "_"
-                + computeViewFilename(blob.getFilename(), conversionFormat);
-        viewBlob.setFilename(viewFilename);
+        String viewFilename = null;
 
+        /*
+         * Update the blob extension filename only if the picture template
+         * hasn't the 'Original' title which is the template that should not
+         * touch the blob.
+         */
+        if (!title.equals("Original")) {
+            viewFilename = title + "_"
+                    + computeViewFilename(blob.getFilename(), conversionFormat);
+        } else {
+            viewFilename = title + "_" + blob.getFilename();
+        }
+
+        viewBlob.setFilename(viewFilename);
         pictureViewMap.put(PictureView.FIELD_FILENAME, viewFilename);
         pictureViewMap.put(PictureView.FIELD_CONTENT, (Serializable) viewBlob);
 
@@ -462,10 +479,11 @@ public class ImagingComponent extends DefaultComponent implements
     protected Blob callPictureTemplateChain(Blob blob,
             PictureTemplate pictureTemplate, ImageInfo imageInfo, Point size,
             String conversionFormat) {
-        Map<String, Object> parameters = new HashMap<>(3);
-        parameters.put(OPTION_RESIZE_WIDTH, size.x);
-        parameters.put(OPTION_RESIZE_HEIGHT, size.y);
-        parameters.put(OPTION_RESIZE_DEPTH, imageInfo.getDepth());
+        Map<String, String> parameters = new HashMap<>(3);
+        parameters.put(OPTION_RESIZE_WIDTH, String.valueOf(size.x));
+        parameters.put(OPTION_RESIZE_HEIGHT, String.valueOf(size.y));
+        parameters.put(OPTION_RESIZE_DEPTH,
+                String.valueOf(imageInfo.getDepth()));
 
         Map<String, Object> chainParameters = new HashMap<>(1);
         chainParameters.put("parameters", parameters);
@@ -478,9 +496,22 @@ public class ImagingComponent extends DefaultComponent implements
         AutomationService automationService = Framework.getService(AutomationService.class);
         Blob viewBlob = null;
 
+        String chainId = pictureTemplate.getChainId();
+
+        /*
+         * Avoid to break unit test which don't pass a chainId
+         */
+        if (chainId == null) {
+            if (pictureTemplate.getTitle().equals("Original")) {
+                chainId = "Blob.Nop";
+            } else {
+                chainId = "Picture.Resize";
+            }
+        }
+
         try {
-            viewBlob = (Blob) automationService.run(context,
-                    pictureTemplate.getChainId(), chainParameters);
+            viewBlob = (Blob) automationService.run(context, chainId,
+                    chainParameters);
 
             if (viewBlob == null) {
                 viewBlob = wrapBlob(blob);

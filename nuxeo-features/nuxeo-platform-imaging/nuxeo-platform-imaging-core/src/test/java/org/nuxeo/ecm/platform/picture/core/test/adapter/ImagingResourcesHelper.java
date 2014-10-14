@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.picture.convert.test;
+package org.nuxeo.ecm.platform.picture.core.test.adapter;
 
 import java.io.File;
 import java.util.Arrays;
@@ -25,12 +25,12 @@ import java.util.List;
 
 import org.nuxeo.common.utils.FileUtils;
 
-public class ImagingRessourcesHelper {
+class ImagingResourcesHelper {
 
-    public static final String TEST_DATA_FOLDER = "test-data/";
+    public static final String TEST_DATA_FOLDER = "images/";
 
     public static final List<String> TEST_IMAGE_FILENAMES = Arrays.asList(
-            "big_nuxeo_logo.jpg", "big_nuxeo_logo.gif", "big_nuxeo_logo.png");
+            "cat.gif", "andy.bmp");
 
     public static File getFileFromPath(String path) {
         File file = FileUtils.getResourceFileFromContext(path);

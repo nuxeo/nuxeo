@@ -40,7 +40,7 @@ public class PictureTemplateRegistry extends
     private static final Log log = LogFactory.getLog(PictureTemplateRegistry.class);
 
     protected final Map<String, PictureTemplate> pictureTemplates = new HashMap<>(
-            7);
+            10);
 
     /**
      * Collection of picture template which can't be disabled
@@ -75,7 +75,7 @@ public class PictureTemplateRegistry extends
     /**
      * JIT sort
      *
-     * FIXME- Try a different approch since this method will be call a few time
+     * FIXME- Try a different approch since this method will be call a few times
      * and each time a new list is created and sorted
      */
     public List<PictureTemplate> getPictureTemplates() {
