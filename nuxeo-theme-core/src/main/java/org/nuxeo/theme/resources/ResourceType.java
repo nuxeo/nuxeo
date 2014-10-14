@@ -50,10 +50,12 @@ public final class ResourceType implements Type {
         this.dependencies = dependencies;
     }
 
+    @Override
     public TypeFamily getTypeFamily() {
         return TypeFamily.RESOURCE;
     }
 
+    @Override
     public String getTypeName() {
         return name;
     }

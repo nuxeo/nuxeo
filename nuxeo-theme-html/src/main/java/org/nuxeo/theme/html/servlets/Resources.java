@@ -63,13 +63,7 @@ public final class Resources extends HttpServlet implements Serializable {
     @Override
     protected void doPost(final HttpServletRequest request,
             final HttpServletResponse response) throws IOException {
-        ResourceResolver.setInstance(new ServletResourceResolver(
-                getServletContext()));
-        try {
-            doProcess(request, response);
-        } finally {
-            ResourceResolver.setInstance(null);
-        }
+        doProcess(request, response);
     }
 
     protected void doProcess(final HttpServletRequest request,

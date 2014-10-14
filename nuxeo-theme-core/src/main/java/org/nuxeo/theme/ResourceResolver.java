@@ -25,29 +25,21 @@ public class ResourceResolver {
 
     private static final ResourceResolver DEFAULT = new ResourceResolver();
 
-    private static ThreadLocal<ResourceResolver> instance = new ThreadLocal<ResourceResolver>() {
-        @Override
-        protected ResourceResolver initialValue() {
-            return DEFAULT;
-        }
-    };
+    private static ResourceResolver instance = DEFAULT;
+
 
     /**
      * Gets the current resolver (thread local).
      */
     public static ResourceResolver getInstance() {
-        return instance.get();
+        return instance;
     }
 
     /**
      * Called by the framework to set the current resolver or clear it.
      */
     public static void setInstance(ResourceResolver resolver) {
-        if (resolver == null) {
-            instance.set(DEFAULT);
-        } else {
-            instance.set(resolver);
-        }
+        instance = resolver == null ? DEFAULT : resolver;
     }
 
     /**

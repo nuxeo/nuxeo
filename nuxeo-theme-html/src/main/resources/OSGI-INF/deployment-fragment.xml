@@ -2,6 +2,13 @@
 
 <fragment version="1">
 
+
+  <extension target="web#LISTENER">
+    <listener>
+      <listener-class>org.nuxeo.theme.html.servlets.ServletResourceResolver</listener-class>
+    </listener>
+  </extension>
+
   <extension target="web#SERVLET">
 
     <servlet>

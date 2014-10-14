@@ -16,6 +16,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 import org.nuxeo.theme.ResourceResolver;
 
@@ -24,13 +26,10 @@ import org.nuxeo.theme.ResourceResolver;
  *
  * @since 5.5
  */
-public class ServletResourceResolver extends ResourceResolver {
+public class ServletResourceResolver extends ResourceResolver implements
+        ServletContextListener {
 
-    public final ServletContext servletContext;
-
-    public ServletResourceResolver(ServletContext servletContext) {
-        this.servletContext = servletContext;
-    }
+    protected ServletContext servletContext;
 
     @Override
     public URL getResource(String path) {
@@ -52,6 +51,18 @@ public class ServletResourceResolver extends ResourceResolver {
             return is;
         }
         return super.getResourceAsStream(path);
+    }
+
+    @Override
+    public void contextInitialized(ServletContextEvent sce) {
+        servletContext = sce.getServletContext();
+        ResourceResolver.setInstance(this);
+    }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent sce) {
+        servletContext = null;
+        ResourceResolver.setInstance(null);
     }
 
 }
