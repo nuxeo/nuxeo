@@ -19,6 +19,7 @@ package org.nuxeo.runtime.tomcat;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.core.NamingContextListener;
 import org.apache.catalina.core.StandardContext;
 import org.apache.naming.ContextAccessController;
 
@@ -33,17 +34,21 @@ import org.apache.naming.ContextAccessController;
  */
 public class ContextSecurityGrabber implements LifecycleListener {
 
+    final NamingContextListener namingContextListener = new NamingContextListener();
+
     @Override
     public void lifecycleEvent(LifecycleEvent event) {
         final String type = event.getType();
-        if (!Lifecycle.START_EVENT.equals(type)) {
-            return;
-        }
-        final Object token = event.getLifecycle();
         final StandardContext source = (StandardContext) event.getSource();
-        String name = "/" + source.getDomain() + "/" + source.getHostname()
-                + source.getPath();
-        ContextAccessController.setWritable(name, token);
+        if (source.getNamingContextListener() == null) {
+            namingContextListener.setName(source.getName());
+            source.setNamingContextListener(namingContextListener);
+        }
+        namingContextListener.lifecycleEvent(event);
+        if (Lifecycle.CONFIGURE_START_EVENT.equals(type)) {
+            final Object token = event.getLifecycle();
+            ContextAccessController.setWritable(namingContextListener.getName(), token);
+        }
     }
 
 }
