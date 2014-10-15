@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.spreadsheet.actions">
   <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
-    <action id="spreadsheet" order="90" icon="/icons/spreadsheet.png"
+    <action id="contentViewSpreadsheet" order="90" icon="/icons/spreadsheet.png"
             label="label.contentview.actions.spreadsheet" type="fancybox">
       <category>CONTENT_VIEW_ACTIONS</category>
       <properties>
