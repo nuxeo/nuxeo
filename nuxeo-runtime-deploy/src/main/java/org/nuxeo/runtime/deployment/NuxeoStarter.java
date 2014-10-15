@@ -141,11 +141,13 @@ public class NuxeoStarter implements ServletContextListener {
         if (bundleFiles.isEmpty()) { // Fallback on directory scan
             File root = new File(servletContext.getRealPath("/"));
             Set<String> ctxpaths = servletContext.getResourcePaths("/WEB-INF/lib/");
-            for (String ctxpath : ctxpaths) {
-                if (!ctxpath.endsWith(".jar")) {
-                    continue;
+            if (ctxpaths != null) {
+                for (String ctxpath : ctxpaths) {
+                    if (!ctxpath.endsWith(".jar")) {
+                        continue;
+                    }
+                    bundleFiles.add(new File(root, ctxpath));
                 }
-                bundleFiles.add(new File(root, ctxpath));
             }
         }
     }

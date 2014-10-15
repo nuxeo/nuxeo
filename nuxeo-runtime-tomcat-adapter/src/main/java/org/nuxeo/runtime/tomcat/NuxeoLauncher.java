@@ -114,11 +114,7 @@ public class NuxeoLauncher implements LifecycleListener {
                 bootstrap.setHostName("Tomcat");
                 bootstrap.setHostVersion(ServerInfo.getServerNumber());
                 bootstrap.initialize();
-            } else if (type == Lifecycle.START_EVENT) {
-                bootstrap.start();
             } else if (type == Lifecycle.STOP_EVENT) {
-                bootstrap.stop();
-                bootstrap = null;
                 if (devMode) {
                     MBeanServer server = ManagementFactory.getPlatformMBeanServer();
                     server.unregisterMBean(new ObjectName(DEV_BUNDLES_NAME));
