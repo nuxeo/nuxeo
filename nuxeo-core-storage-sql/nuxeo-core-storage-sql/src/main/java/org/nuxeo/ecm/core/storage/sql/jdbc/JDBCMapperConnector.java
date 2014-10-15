@@ -51,6 +51,9 @@ public class JDBCMapperConnector implements InvocationHandler {
         if ("clearCache".equals(name)) {
             return doInvoke(method, args);
         }
+        if ("close".equals(name)) {
+            return null;
+        }
         mapper.connect();
         try {
             return doInvoke(method, args);

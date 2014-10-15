@@ -130,11 +130,7 @@ public class JDBCConnection {
         }
     }
 
-    protected void open() throws StorageException {
-        openConnections();
-    }
-
-    private void openConnections() throws StorageException {
+    protected void openConnections() throws StorageException {
         try {
             openBaseConnection();
             supportsBatchUpdates = connection.getMetaData().supportsBatchUpdates();

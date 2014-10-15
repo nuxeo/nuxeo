@@ -1423,11 +1423,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     @Override
     public void connect() throws StorageException {
-        try {
-            openBaseConnection();
-        } catch (SQLException | ResourceException cause) {
-            throw new StorageException("Cannot connect to database", cause);
-        }
+        openConnections();
     }
 
     @Override
