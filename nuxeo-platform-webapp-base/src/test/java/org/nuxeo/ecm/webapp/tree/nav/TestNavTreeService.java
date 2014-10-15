@@ -34,6 +34,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @LocalDeploy({ "org.nuxeo.ecm.webapp.base:OSGI-INF/navtree-framework.xml",
+        "org.nuxeo.ecm.webapp.base:test-navtree-contrib-compat.xml",
         "org.nuxeo.ecm.webapp.base:test-navtree-contrib.xml" })
 public class TestNavTreeService {
 
@@ -49,10 +50,17 @@ public class TestNavTreeService {
         assertNotNull(service);
 
         List<NavTreeDescriptor> descs = service.getTreeDescriptors();
-        assertEquals(1, descs.size());
+        assertEquals(2, descs.size());
 
-        assertNotNull(descs.get(0).getXhtmlview());
-        assertFalse(descs.get(0).isDirectoryTreeBased());
+        NavTreeDescriptor desc = descs.get(0);
+        assertEquals("/incl/tag_cloud.xhtml", desc.getXhtmlview());
+        assertEquals("TAG_CLOUD", desc.getTreeId());
+        assertFalse(desc.isDirectoryTreeBased());
+
+        desc = descs.get(1);
+        assertEquals("/incl/tag_cloud.xhtml", desc.getXhtmlview());
+        assertEquals("TAG_CLOUD_COMPAT", desc.getTreeId());
+        assertFalse(desc.isDirectoryTreeBased());
     }
 
 }

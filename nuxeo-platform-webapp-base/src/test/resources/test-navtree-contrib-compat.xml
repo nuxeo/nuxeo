@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.virtualnavigation.tagsContrib.compat">
+
+  <extension target="org.nuxeo.ecm.platform.virtualnavigation.NavTreeService"
+    point="navigationTree">
+
+    <navTree treeId="TAG_CLOUD_COMPAT" xhtmlview="/incl/tag_cloud.xhtml" />
+
+  </extension>
+
+</component>
