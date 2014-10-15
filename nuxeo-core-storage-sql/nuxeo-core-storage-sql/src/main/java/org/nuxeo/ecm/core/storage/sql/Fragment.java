@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 
+import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -189,7 +190,17 @@ public abstract class Fragment implements Serializable {
      * Clears the dirty state.
      */
     public void clearDirty() {
-        oldvalues = row.values.clone();
+        // turn back deltas into full values
+        Serializable[] values = row.values;
+        int len = values.length;
+        for (int i = 0; i < len; i++) {
+            Serializable ob = values[i];
+            if (ob instanceof Delta) {
+                values[i] = ((Delta) ob).getFullValue();
+            }
+        }
+        // clone to clear the dirty state
+        oldvalues = values.clone();
     }
 
     /**

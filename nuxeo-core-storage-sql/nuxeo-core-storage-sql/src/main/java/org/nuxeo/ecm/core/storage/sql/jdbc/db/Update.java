@@ -12,10 +12,12 @@
 package org.nuxeo.ecm.core.storage.sql.jdbc.db;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
-import org.nuxeo.common.utils.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * An {@code UPDATE} statement.
@@ -46,14 +48,31 @@ public class Update implements Serializable {
 
     /** Alternative to {@link #setNewValues} */
     public void setUpdatedColumns(List<Column> columns) {
+        setUpdatedColumns(columns, Collections.<String> emptySet());
+    }
+
+    /**
+     * Alternative to {@link #setNewValues}
+     *
+     * @param columns the columns
+     * @param deltas which of the columns are delta updates
+     */
+    public void setUpdatedColumns(List<Column> columns, Set<String> deltas) {
         List<String> updatedColumns = new LinkedList<String>();
         for (Column column : columns) {
             if (column.isIdentity()) {
                 // identity column is never inserted
                 continue;
             }
-            updatedColumns.add(column.getQuotedName() + " = "
-                    + column.getFreeVariableSetter());
+            String col = column.getQuotedName();
+            String fvs = column.getFreeVariableSetter();
+            String update;
+            if (deltas.contains(column.getKey())) {
+                update = col + " = " + col + " + " + fvs;
+            } else {
+                update = col + " = " + fvs;
+            }
+            updatedColumns.add(update);
         }
         newValues = StringUtils.join(updatedColumns, ", ");
     }

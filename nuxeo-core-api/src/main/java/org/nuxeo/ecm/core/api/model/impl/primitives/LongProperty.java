@@ -16,6 +16,7 @@ package org.nuxeo.ecm.core.api.model.impl.primitives;
 
 import java.io.Serializable;
 
+import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
@@ -35,7 +36,8 @@ public class LongProperty extends ScalarProperty {
 
     @Override
     public boolean isNormalized(Object value) {
-        return value == null || value.getClass() == Long.class;
+        return value == null || value instanceof Long
+                || value instanceof DeltaLong;
     }
 
     @Override

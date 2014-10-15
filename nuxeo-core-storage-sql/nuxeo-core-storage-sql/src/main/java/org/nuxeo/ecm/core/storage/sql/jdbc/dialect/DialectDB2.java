@@ -144,7 +144,7 @@ public class DialectDB2 extends Dialect {
             return;
         case Types.INTEGER:
         case Types.BIGINT:
-            ps.setLong(index, ((Long) value).longValue());
+            ps.setLong(index, ((Number) value).longValue());
             return;
         case Types.DOUBLE:
             ps.setDouble(index, ((Double) value).doubleValue());

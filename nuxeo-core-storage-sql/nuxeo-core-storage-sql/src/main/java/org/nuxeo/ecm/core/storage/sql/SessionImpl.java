@@ -399,12 +399,16 @@ public class SessionImpl implements Session, XAResource {
     }
 
     protected void doFlush() throws StorageException {
-        RowBatch batch = context.getSaveBatch();
+        List<Fragment> fragmentsToClearDirty = new ArrayList<>(0);
+        RowBatch batch = context.getSaveBatch(fragmentsToClearDirty);
         if (!batch.isEmpty()) {
             log.debug("Saving session");
             // execute the batch
             mapper.write(batch);
             log.debug("End of save");
+            for (Fragment fragment : fragmentsToClearDirty) {
+                fragment.clearDirty();
+            }
         }
     }
 

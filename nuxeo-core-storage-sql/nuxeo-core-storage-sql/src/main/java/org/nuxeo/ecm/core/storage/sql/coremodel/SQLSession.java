@@ -50,9 +50,11 @@ import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
+import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -965,6 +967,9 @@ public class SQLSession implements Session {
                 if (type.isSimpleType()) {
                     // simple property
                     Serializable value = node.getSimpleProperty(name).getValue();
+                    if (value instanceof Delta) {
+                        value = ((Delta) value).getFullValue();
+                    }
                     property.init(value);
                 } else if (type.isListType()) {
                     ListType listType = (ListType) type;
@@ -1111,6 +1116,10 @@ public class SQLSession implements Session {
                     // simple property
                     Serializable value = property.getValueForWrite();
                     node.getSimpleProperty(name).setValue(value);
+                    if (value instanceof Delta) {
+                        value = ((Delta) value).getFullValue();
+                        ((ScalarProperty) property).internalSetValue(value);
+                    }
                     // TODO VersionNotModifiableException
                 } else if (type.isListType()) {
                     ListType listType = (ListType) type;

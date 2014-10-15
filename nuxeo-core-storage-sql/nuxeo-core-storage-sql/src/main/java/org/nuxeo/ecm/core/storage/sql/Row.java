@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.storage.binary.Binary;
 
 /**
@@ -143,6 +144,18 @@ public final class Row extends RowId implements Serializable, Cloneable {
         // linear search but the array is small
         for (int i = 0; i < size; i++) {
             if (key.equals(keys[i])) {
+                Serializable oldValue = values[i];
+                if (oldValue instanceof Delta) {
+                    Delta oldDelta = (Delta) oldValue;
+                    if (value instanceof Delta) {
+                        // add a delta to another delta
+                        value = oldDelta.add((Delta) value);
+                    } else if (oldDelta.getFullValue().equals(value)) {
+                        // don't overwrite a delta with the full value
+                        // that actually comes from it
+                        return;
+                    }
+                }
                 values[i] = value;
                 return;
             }

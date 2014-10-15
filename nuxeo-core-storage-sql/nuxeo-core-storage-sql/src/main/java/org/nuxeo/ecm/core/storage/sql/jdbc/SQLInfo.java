@@ -280,14 +280,15 @@ public class SQLInfo {
 
     // TODO these two methods are redundant with one another
 
-    public SQLInfoSelect getUpdateById(String tableName, Collection<String> keys) {
+    public SQLInfoSelect getUpdateById(String tableName,
+            Collection<String> keys, Set<String> deltas) {
         Table table = database.getTable(tableName);
         List<Column> columns = new LinkedList<Column>();
         for (String key : keys) {
             columns.add(table.getColumn(key));
         }
         Update update = new Update(table);
-        update.setUpdatedColumns(columns);
+        update.setUpdatedColumns(columns, deltas);
         update.setWhere(getIdEqualsClause(tableName));
         columns.add(table.getColumn(model.MAIN_KEY));
         return new SQLInfoSelect(update.getStatement(), columns, null, null);

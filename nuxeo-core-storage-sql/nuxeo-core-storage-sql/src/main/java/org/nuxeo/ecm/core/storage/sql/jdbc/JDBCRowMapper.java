@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -37,7 +38,8 @@ import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
-import org.nuxeo.common.utils.StringUtils;
+import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
@@ -641,25 +643,41 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             return;
         }
 
-        // reorganize by unique sets of keys
-        Map<String, List<RowUpdate>> updatesByKeys = new HashMap<String, List<RowUpdate>>();
+        // reorganize by unique sets of keys + which ones are for delta updates
+        Map<String, List<RowUpdate>> updatesByCanonKeys = new HashMap<>();
+        Map<String, Collection<String>> keysByCanonKeys = new HashMap<>();
+        Map<String, Set<String>> deltasByCanonKeys = new HashMap<>();
         for (RowUpdate rowu : rows) {
             List<String> keys = new ArrayList<String>(rowu.keys);
             if (keys.isEmpty()) {
                 continue;
             }
+            Set<String> deltas = new HashSet<>();
+            for (ListIterator<String> it = keys.listIterator(); it.hasNext(); ) {
+                String key = it.next();
+                Serializable value = rowu.row.get(key);
+                if (value instanceof Delta) {
+                    deltas.add(key);
+                    it.set(key + '+');
+                }
+            }
             Collections.sort(keys);
-            String k = StringUtils.join(keys, ","); // canonical keys
-            List<RowUpdate> keysUpdates = updatesByKeys.get(k);
+            String ck = StringUtils.join(keys, ','); // canonical keys
+            List<RowUpdate> keysUpdates = updatesByCanonKeys.get(ck);
             if (keysUpdates == null) {
-                updatesByKeys.put(k, keysUpdates = new LinkedList<RowUpdate>());
+                updatesByCanonKeys.put(ck, keysUpdates = new LinkedList<RowUpdate>());
+                keysByCanonKeys.put(ck, rowu.keys);
+                deltasByCanonKeys.put(ck, deltas);
             }
             keysUpdates.add(rowu);
         }
 
-        for (List<RowUpdate> keysUpdates : updatesByKeys.values()) {
-            Collection<String> keys = keysUpdates.iterator().next().keys;
-            SQLInfoSelect update = sqlInfo.getUpdateById(tableName, keys);
+        for (String ck : updatesByCanonKeys.keySet()) {
+            List<RowUpdate> keysUpdates = updatesByCanonKeys.get(ck);
+            Collection<String> keys = keysByCanonKeys.get(ck);
+            Set<String> deltas = deltasByCanonKeys.get(ck);
+            SQLInfoSelect update = sqlInfo.getUpdateById(tableName, keys,
+                    deltas);
             String loggedSql = supportsBatchUpdates && rows.size() > 1 ? update.sql
                     + " -- BATCHED"
                     : update.sql;
@@ -671,12 +689,15 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                         batch++;
                         if (logger.isLogEnabled()) {
                             logger.logSQL(loggedSql, update.whatColumns,
-                                    rowu.row);
+                                    rowu.row, deltas);
                         }
                         int i = 1;
                         for (Column column : update.whatColumns) {
-                            column.setToPreparedStatement(ps, i++,
-                                    rowu.row.get(column.getKey()));
+                            Serializable value = rowu.row.get(column.getKey());
+                            if (value instanceof Delta) {
+                                value = ((Delta) value).getDeltaValue();
+                            }
+                            column.setToPreparedStatement(ps, i++, value);
                         }
                         if (supportsBatchUpdates) {
                             ps.addBatch();

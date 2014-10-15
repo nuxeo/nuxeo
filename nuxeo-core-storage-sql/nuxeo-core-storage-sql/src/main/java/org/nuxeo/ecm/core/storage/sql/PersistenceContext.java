@@ -244,8 +244,14 @@ public class PersistenceContext {
     /**
      * Saves all the created, modified and deleted rows into a batch object, for
      * later execution.
+     * <p>
+     * Also updates the passed fragmentsToClearDirty list with dirty modified
+     * fragments, for later call of clearDirty (it's important to call it later
+     * and not now because for delta values we need the delta during batch
+     * write, and they are cleared by clearDirty).
      */
-    protected RowBatch getSaveBatch() throws StorageException {
+    protected RowBatch getSaveBatch(List<Fragment> fragmentsToClearDirty)
+            throws StorageException {
         RowBatch batch = new RowBatch();
 
         // created main rows are saved first in the batch (in their order of
@@ -280,13 +286,13 @@ public class PersistenceContext {
                 if (fragment.row.isCollection()) {
                     if (((CollectionFragment) fragment).isDirty()) {
                         batch.updates.add(new RowUpdate(fragment.row, null));
-                        fragment.clearDirty();
+                        fragmentsToClearDirty.add(fragment);
                     }
                 } else {
                     Collection<String> keys = ((SimpleFragment) fragment).getDirtyKeys();
                     if (!keys.isEmpty()) {
                         batch.updates.add(new RowUpdate(fragment.row, keys));
-                        fragment.clearDirty();
+                        fragmentsToClearDirty.add(fragment);
                     }
                 }
                 fragment.setPristine();

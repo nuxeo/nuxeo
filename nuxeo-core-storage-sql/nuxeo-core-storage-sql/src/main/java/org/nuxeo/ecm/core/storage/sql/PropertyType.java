@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
@@ -114,6 +115,9 @@ public enum PropertyType {
         case LONG:
             if (value instanceof Long) {
                 return (Long) value;
+            }
+            if (value instanceof DeltaLong) {
+                return (DeltaLong) value;
             }
             throw new IllegalArgumentException("value is not a Long: " + value);
         case DOUBLE:
