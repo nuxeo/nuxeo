@@ -35,7 +35,7 @@
   </target>
   <target name="build-skip-tests" if="skipTests">
     <exec executable="${cmd.gulp}" failonerror="true">
-      <arg value="build-skip-tests" />
+      <arg value="build" /> <!-- TODO(nsilva) build-skip-tests -->
     </exec>
   </target>
 
