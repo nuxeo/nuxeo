@@ -48,12 +48,30 @@
         });
 
         jQuery(document).ready(function() {
-          jQuery("div[id$=#{contentViewPanelId}]").initNxCv({
+          // slideshow
+          jQuery('div[id$=#{contentViewPanelId}]').initNxCv({
             nxHasPreviousPage : #{provider.previousPageAvailable},
             nxHasNextPage : #{provider.nextPageAvailable},
             endOfPageCallback : #{cvpcfp}NP,
             startOfPageCallback : #{cvpcfp}PP
           });
+
+          // info view
+          jQuery('div[data-infoviewurl]').each(function(index, ele) {
+            var ele = jQuery(ele);
+            var infoViewUrl = ele.data('infoviewurl');
+            ele.click(function() {
+              openFancyBox(infoViewUrl, {
+                'autoDimensions': false,
+                'width': '100%',
+                'height': '100%',
+                'centerOnScroll': true,
+                'scrolling': 'auto',
+                'padding': 0
+              });
+            });
+          });
+
         });
       </script>
 
@@ -89,15 +107,7 @@
 
   <c:set var="boxSelectedStyleClass" value="#{nxu:test(value.data.id == currentDocument.id, 'selectedItem', '')}" />
   <c:set var="infoViewUrl" value="#{nxd:complexDocumentUrl('id', value.data, 'info_view', null, true)}" />
-  <div data-docref="#{value.data.id}" class="bubbleBox #{boxSelectedStyleClass}"
-    onclick="openFancyBox('#{infoViewUrl}', {
-      'autoDimensions': false,
-      'width': '100%',
-      'height': '100%',
-      'centerOnScroll': true,
-      'scrolling': 'auto',
-      'padding': 0
-    })">
+  <div class="bubbleBox #{boxSelectedStyleClass}" data-docref="#{value.data.id}" data-infoviewurl="#{infoViewUrl}">
     <nxl:layout name="${layoutProperty_thumbnailHeaderLayout}" value="#{value}" mode="view" />
     <nxl:layoutColumn>
       <nxu:set var="divStyleClass" value="#{nxu:test(layoutColumn.properties.isBoxTitle, 'bubbleHeader', '')}">
