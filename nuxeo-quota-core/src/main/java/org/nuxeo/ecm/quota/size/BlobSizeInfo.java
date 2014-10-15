@@ -19,10 +19,10 @@ package org.nuxeo.ecm.quota.size;
 
 /**
  * helper class to transmis info about Blob changes during a transaction
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
- * 
+ *
  */
 public class BlobSizeInfo {
 
@@ -38,24 +38,7 @@ public class BlobSizeInfo {
         return blobSizeDelta;
     }
 
-    public boolean changed() {
-        return blobSizeDelta != 0;
-    }
-
-    public BlobSizeInfo invert() {
-        BlobSizeInfo inverse = new BlobSizeInfo();
-        inverse.blobSize = blobSize;
-        inverse.blobSizeDelta = -blobSizeDelta;
-        return inverse;
-    }
-
-    public BlobSizeInfo removeValue() {
-        BlobSizeInfo inverse = new BlobSizeInfo();
-        inverse.blobSize = blobSize;
-        inverse.blobSizeDelta = -blobSize;
-        return inverse;
-    }
-
+    @Override
     public String toString() {
         return "total : " + blobSize + "; delta:" + blobSizeDelta;
     }

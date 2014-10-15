@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
@@ -143,6 +144,9 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
         if (ancestors == null || ancestors.isEmpty()) {
             return;
         }
+        if (count == 0) {
+            return;
+        }
 
         if (!doc.hasFacet(FOLDERISH)) {
             DocumentModel parent = ancestors.get(0);
@@ -150,45 +154,37 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
         }
 
         for (DocumentModel ancestor : ancestors) {
-            if (count != 0) {
-                long descendantsCount = 0;
-                if (ancestor.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET)) {
-                    Long c = (Long) ancestor.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY);
-                    descendantsCount = c != null ? c : 0;
-                }
-                descendantsCount += count;
-
-                if (descendantsCount >= 0) {
-                    if (!ancestor.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET)) {
-                        ancestor.addFacet(DOCUMENTS_COUNT_STATISTICS_FACET);
-                    }
-                    ancestor.setPropertyValue(
-                            DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY,
-                            descendantsCount);
-                } else {
-                    if (ancestor.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET)) {
-                        ancestor.removeFacet(DOCUMENTS_COUNT_STATISTICS_FACET);
-                    }
-                }
-                setSystemContextData(ancestor);
-                session.saveDocument(ancestor);
+            Number previous;
+            if (ancestor.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET)) {
+                previous = (Number) ancestor.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY);
+            } else {
+                ancestor.addFacet(DOCUMENTS_COUNT_STATISTICS_FACET);
+                previous = null;
             }
+            Number descendantsCount = DeltaLong.deltaOrLong(previous, count);
+            ancestor.setPropertyValue(
+                    DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY,
+                    descendantsCount);
+            setSystemContextData(ancestor);
+            session.saveDocument(ancestor);
         }
+
         session.save();
     }
 
     protected void updateParentChildrenCount(CoreSession session,
             DocumentModel parent, long count) throws ClientException {
-        long childrenCount = 0;
+        Number previous;
         if (parent.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET)) {
-            Long c = (Long) parent.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_CHILDREN_COUNT_PROPERTY);
-            childrenCount = c != null ? c : 0;
+            previous = (Number) parent.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_CHILDREN_COUNT_PROPERTY);
         } else {
             parent.addFacet(DOCUMENTS_COUNT_STATISTICS_FACET);
+            previous = null;
         }
+        Number childrenCount = DeltaLong.deltaOrLong(previous, count);
         parent.setPropertyValue(
                 DOCUMENTS_COUNT_STATISTICS_CHILDREN_COUNT_PROPERTY,
-                childrenCount + count);
+                childrenCount);
         setSystemContextData(parent);
         session.saveDocument(parent);
     }
@@ -196,8 +192,8 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     protected long getCount(DocumentModel doc) throws ClientException {
         if (doc.hasFacet(FOLDERISH)) {
             if (doc.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET)) {
-                Long count = (Long) doc.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY);
-                return count != null ? count : 0;
+                Number count = (Number) doc.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY);
+                return count == null ? 0 : count.longValue();
             } else {
                 return 0;
             }
@@ -325,10 +321,10 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
         }
         folder.setPropertyValue(
                 DOCUMENTS_COUNT_STATISTICS_CHILDREN_COUNT_PROPERTY,
-                count.childrenCount);
+                Long.valueOf(count.childrenCount));
         folder.setPropertyValue(
                 DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY,
-                count.descendantsCount);
+                Long.valueOf(count.descendantsCount));
         setSystemContextData(folder);
         session.saveDocument(folder);
     }

@@ -115,22 +115,31 @@ public class TestDocumentsCountUpdater {
         secondFolderRef = secondFolder.getRef();
     }
 
+    protected static void assertHasCountFacet(DocumentModel doc) {
+        assertTrue(doc.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
+    }
+
+    protected static void assertHasNoCountFacet(DocumentModel doc) {
+        assertFalse(doc.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
+    }
+
+    protected static void assertDescendantsCount(long expected, DocumentModel doc) {
+        assertHasCountFacet(doc);
+        assertEquals(
+                expected,
+                ((Number) doc.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY)).longValue());
+    }
+
     @Test
     public void testDocumentsCount() throws Exception {
         DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
-        assertTrue(firstSubFolder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                2L,
-                firstSubFolder.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        assertDescendantsCount(2, firstSubFolder);
 
         DocumentModel secondSubFolder = session.getDocument(secondSubFolderRef);
-        assertFalse(secondSubFolder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
+        assertHasNoCountFacet(secondSubFolder);
 
         DocumentModel ws = session.getDocument(wsRef);
-        assertTrue(ws.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                2L,
-                ws.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        assertDescendantsCount(2, ws);
     }
 
     @Test
@@ -139,16 +148,10 @@ public class TestDocumentsCountUpdater {
         session.save();
 
         DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
-        assertTrue(firstSubFolder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                1L,
-                firstSubFolder.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        assertDescendantsCount(1, firstSubFolder);
 
         DocumentModel ws = session.getDocument(wsRef);
-        assertTrue(ws.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                1L,
-                ws.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        assertDescendantsCount(1, ws);
     }
 
     @Test
@@ -157,22 +160,13 @@ public class TestDocumentsCountUpdater {
         session.save();
 
         DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
-        assertTrue(firstSubFolder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                2L,
-                firstSubFolder.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        assertDescendantsCount(2, firstSubFolder);
 
         DocumentModel secondSubFolder = session.getDocument(secondSubFolderRef);
-        assertTrue(secondSubFolder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                1L,
-                secondSubFolder.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        assertDescendantsCount(1, secondSubFolder);
 
         DocumentModel ws = session.getDocument(wsRef);
-        assertTrue(ws.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                3L,
-                ws.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        assertDescendantsCount(3, ws);
     }
 
     @Test
@@ -181,22 +175,13 @@ public class TestDocumentsCountUpdater {
         session.save();
 
         DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
-        assertTrue(firstSubFolder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                1L,
-                firstSubFolder.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        assertDescendantsCount(1, firstSubFolder);
 
         DocumentModel secondSubFolder = session.getDocument(secondSubFolderRef);
-        assertTrue(secondSubFolder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                1L,
-                secondSubFolder.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        assertDescendantsCount(1, secondSubFolder);
 
         DocumentModel ws = session.getDocument(wsRef);
-        assertTrue(ws.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                2L,
-                ws.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        assertDescendantsCount(2, ws);
     }
 
     @Test
@@ -205,16 +190,10 @@ public class TestDocumentsCountUpdater {
         session.save();
 
         DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        assertTrue(firstFolder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                0L,
-                firstFolder.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        assertDescendantsCount(0, firstFolder);
 
         DocumentModel ws = session.getDocument(wsRef);
-        assertTrue(ws.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                0L,
-                ws.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        assertDescendantsCount(0, ws);
     }
 
     @Test
@@ -223,40 +202,28 @@ public class TestDocumentsCountUpdater {
         session.save();
 
         DocumentModel secondFolder = session.getDocument(secondFolderRef);
-        assertTrue(secondFolder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                2L,
-                secondFolder.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        assertDescendantsCount(2, secondFolder);
 
         DocumentModel ws = session.getDocument(wsRef);
-        assertTrue(ws.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                4L,
-                ws.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        assertDescendantsCount(4, ws);
     }
 
     @Test
     public void testMoveFolder() throws Exception {
         DocumentModel secondFolder = session.getDocument(secondFolderRef);
-        assertFalse(secondFolder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
+        assertHasNoCountFacet(secondFolder);
 
         session.move(firstSubFolderRef, secondFolderRef, null);
         session.save();
 
         DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        assertTrue(firstFolder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
+        assertHasCountFacet(firstFolder);
 
         secondFolder = session.getDocument(secondFolderRef);
-        assertTrue(secondFolder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                2L,
-                secondFolder.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        assertDescendantsCount(2, secondFolder);
 
         DocumentModel ws = session.getDocument(wsRef);
-        assertTrue(ws.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                2L,
-                ws.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        assertDescendantsCount(2, ws);
     }
 
     @Test
