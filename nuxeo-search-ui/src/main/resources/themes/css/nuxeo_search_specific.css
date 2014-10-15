@@ -19,7 +19,7 @@ author: lkemen@nuxeo.com
 .nxSearchResults {
   background-color: "neutral.lighter (__FLAVOR__ background)";
   padding: 1em 3em 3em;
-  min-height: 800px;
+  min-height: 900px;
   width: 81% }
 
 .nxSearchResults .containerWidgetPanel {
@@ -46,7 +46,7 @@ author: lkemen@nuxeo.com
 .searchesSelector {
   margin: 0 -1.5em;
   padding: 1em;
-  background-color: #213f7d }
+  background-color: "color.major.stronger (__FLAVOR__ background)" }
 
 .nxSearchForm.compactLayout .containerWidgetPanel {
   padding: 0 0 1em }
