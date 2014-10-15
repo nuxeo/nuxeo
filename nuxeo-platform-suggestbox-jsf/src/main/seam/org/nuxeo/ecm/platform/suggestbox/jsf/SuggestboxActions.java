@@ -42,13 +42,13 @@ import org.nuxeo.ecm.platform.suggestbox.service.SuggestionService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
 import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBean;
-import org.nuxeo.ecm.virtualnavigation.action.MultiNavTreeManager;
+import org.nuxeo.ecm.webapp.tree.nav.MultiNavTreeManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Back seam component for the top right search box using the suggestion service
- * to help decode the user intent and minimize the number of clicks to find the
- * relevant information.
+ * Back seam component for the top right search box using the suggestion
+ * service to help decode the user intent and minimize the number of clicks to
+ * find the relevant information.
  */
 @Name("suggestboxActions")
 @Scope(CONVERSATION)
@@ -75,8 +75,9 @@ public class SuggestboxActions extends DocumentContextBoundActionBean implements
     @In(create = true)
     protected MultiNavTreeManager multiNavTreeManager;
 
-    /*@In(create = true)
-    protected FacetedSearchActions facetedSearchActions;*/
+    /*
+     * @In(create = true) protected FacetedSearchActions facetedSearchActions;
+     */
 
     @In(create = true)
     protected ContentViewActions contentViewActions;
@@ -119,9 +120,9 @@ public class SuggestboxActions extends DocumentContextBoundActionBean implements
     /**
      * Callback for the ajax keypress event that triggers the generation of
      * context sensitive action suggestions. The most specific actions (e.g.
-     * direct navigation to a document with matching titles) should be suggested
-     * in the first position and more generic (traditional free-text search for
-     * documents) last.
+     * direct navigation to a document with matching titles) should be
+     * suggested in the first position and more generic (traditional free-text
+     * search for documents) last.
      */
     public List<Suggestion> getSuggestions(Object input) {
         if (cachedSuggestions.hasExpired(input, locale)) {
@@ -132,8 +133,10 @@ public class SuggestboxActions extends DocumentContextBoundActionBean implements
                         input.toString(), ctx);
                 cachedSuggestions.cache(suggestions, input, locale);
             } catch (SuggestionException e) {
-                // log the exception rather than trying to display it since this
-                // method is called by ajax events when typing in the searchbox.
+                // log the exception rather than trying to display it since
+                // this
+                // method is called by ajax events when typing in the
+                // searchbox.
                 log.error(e, e);
                 return Collections.emptyList();
             }

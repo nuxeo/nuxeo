@@ -27,8 +27,8 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.platform.suggestbox.service.DocumentSuggestion;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
-import org.nuxeo.ecm.virtualnavigation.action.MultiNavTreeManager;
 import org.nuxeo.ecm.webapp.context.NavigationContextBean;
+import org.nuxeo.ecm.webapp.tree.nav.MultiNavTreeManager;
 
 /**
  * Handle DocumentSuggestion using a simple navigation in the JSF UI.
@@ -58,11 +58,13 @@ public class NavigateToDocumentSuggestionHandler {
             MultiNavTreeManager multiNavTreeManager = (MultiNavTreeManager) Component.getInstance(MultiNavTreeManager.class);
             multiNavTreeManager.setSelectedNavigationTree(navigationTree);
         }
-        /* TODO reactivate when the Search tab will be deployed
-         * if (clearFacetedSearch) {
-            FacetedSearchActions facetedSearchActions = (FacetedSearchActions) Component.getInstance(FacetedSearchActions.class);
-            facetedSearchActions.clearSearch();
-        }*/
+        /*
+         * TODO reactivate when the Search tab will be deployed if
+         * (clearFacetedSearch) { FacetedSearchActions facetedSearchActions =
+         * (FacetedSearchActions)
+         * Component.getInstance(FacetedSearchActions.class);
+         * facetedSearchActions.clearSearch(); }
+         */
         DocumentSuggestion suggestion = (DocumentSuggestion) input;
         NavigationContext navigationContext = (NavigationContext) Component.getInstance(NavigationContextBean.class);
         DocumentLocation docLoc = suggestion.getDocumentLocation();
