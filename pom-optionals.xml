@@ -26,7 +26,6 @@ included in the default full build). Thus they are not deprecated.</description>
     <module>nuxeo-platform-sync</module>
     <module>nuxeo-cm-demo-utils</module>
     <module>nuxeo-fsexporter</module>
-    <module>nuxeo-platform-spreadsheet</module>
   </modules>
 
   <!-- dependencyManagement of optional addons must be defined in pom.xml -->
