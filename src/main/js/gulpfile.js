@@ -11,9 +11,9 @@ var sources = ['app/app.js', 'app/nuxeo/**/*.js', 'app/ui/**/*.js'];
 
 gulp.task('transpile', function () {
   var traceur = path.join('node_modules', 'traceur', 'traceur'),
-      out = path.join('app', 'app-build.js'),
-      app = path.join('app', 'app.js');
-  return $.shell.task(traceur + ' --modules=instantiate --experimental --out '+ out + ' ' + app);
+      out = path.join('app', 'app-build.js');
+  return gulp.src('app/app.js', {read:false})
+    .pipe($.shell(['node ' + traceur + ' --modules=instantiate --experimental --out '+ out + ' <%= file.path %>']));
 });
 
 gulp.task('jshint', function () {
