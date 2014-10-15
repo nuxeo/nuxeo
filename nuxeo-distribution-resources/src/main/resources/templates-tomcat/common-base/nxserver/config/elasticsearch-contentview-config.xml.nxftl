@@ -1,3 +1,4 @@
+<#escape x as x?xml>
 <?xml version="1.0"?>
 <component name="org.nuxeo.elasticsearch.contentviews.override">
 
@@ -7,18 +8,18 @@
 
   <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
     point="contentViews">
-
+<#if "${elasticsearch.enabled}" == "true">
     <contentView name="default_search">
       <title>label.search.default</title>
       <translateTitle>true</translateTitle>
-      <showTitle>false</showTitle>
+      <showTitle>true</showTitle>
       <emptySentence>label.content.empty.search</emptySentence>
       <translateEmptySentence>true</translateEmptySentence>
 
       <genericPageProvider name="default_search_ES"
         class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
         <property name="maxResults">-1</property>
-        <property name="coreSession">#{documentManager}</property>
+        <property name="coreSession">${r"#{documentManager}"}</property>
         <whereClause docType="DefaultSearch">
           <fixedPart>
             ecm:mixinType != 'HiddenInNavigation' AND ecm:isProxy = 0
@@ -141,6 +142,9 @@
         <flag>SEARCH</flag>
       </flags>
     </contentView>
+</#if>
   </extension>
 
 </component>
+</#escape>
+
