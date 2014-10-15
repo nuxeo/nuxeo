@@ -179,6 +179,7 @@ public class SQLSession extends BaseSession implements EntrySource {
 
         if (isReadOnly()) {
             log.warn(READ_ONLY_VOCABULARY_WARN);
+            return null;
         }
 
         Field schemaIdField = schemaFieldMap.get(idField);
