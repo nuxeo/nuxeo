@@ -43,7 +43,6 @@ import org.jboss.seam.core.Events;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.drive.adapter.FileSystemItem;
-import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceHelper;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveManager;
@@ -151,7 +150,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
             return false;
         }
         // Check if current document can be adapted as a FileSystemItem
-        return getCurrentFileSystemItem(false) != null;
+        return getCurrentFileSystemItem() != null;
     }
 
     /**
@@ -161,53 +160,37 @@ public class NuxeoDriveActions extends InputController implements Serializable {
      * @return Drive edit URL in the form "{@link #NXDRIVE_PROTOCOL}://
      *         {@link #PROTOCOL_COMMAND_EDIT}
      *         /protocol/server[:port]/webappName/repo/repoName/nxdocid/docId/
-     *         filename/fileName" for a non synchronized document or "
-     *         {@link #NXDRIVE_PROTOCOL}://{@link #PROTOCOL_COMMAND_EDIT}
-     *         /protocol/server[:port]/webappName/nxdoc/repoName/docRef" for a
-     *         synchronized document.
-     *
+     *         filename/fileName"
      * @throws ClientException
      *
      */
     public String getDriveEditURL() throws ClientException {
         // TODO NXP-15397: handle Drive not started exception
-        DocumentModel currentDoc = navigationContext.getCurrentDocument();
-        StringBuilder sb = new StringBuilder();
-        ServletRequest servletRequest = (ServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        String baseURL = VirtualHostHelper.getBaseURL(servletRequest);
-        sb.append(NXDRIVE_PROTOCOL).append("://");
-        sb.append(PROTOCOL_COMMAND_EDIT).append("/");
-        sb.append(baseURL.replaceFirst("://", "/"));
-        currentFileSystemItem = null;
-        if (getCurrentFileSystemItem(true) != null) {
-            log.trace(String.format(
-                    "Document %s (%s) is adaptable as a FileSystemItem and under a synchronization root, let's generate the URL to open the locally synchronized file.",
-                    currentDoc.getPathAsString(), currentDoc.getId()));
-            String fsItemId = currentFileSystemItem.getId();
-            sb.append("fsitem/");
-            sb.append(fsItemId);
-        } else if (getCurrentFileSystemItem(false) != null) {
-            log.trace(String.format(
-                    "Document %s (%s) is adaptable as a FileSystemItem but not under a synchronization root, let's generate the URL to download the file to the 'Locally Edited' folder, open it and add it to the 'Locally Edited' collection.",
-                    currentDoc.getPathAsString(), currentDoc.getId()));
-            String docId = navigationContext.getCurrentDocument().getId();
-            String fileName = navigationContext.getCurrentDocument().getAdapter(
-                    BlobHolder.class).getBlob().getFilename();
-            sb.append("repo/");
-            sb.append(documentManager.getRepositoryName());
-            sb.append("/nxdocid/");
-            sb.append(docId);
-            sb.append("/filename/");
-            String escapedFilename = fileName.replaceAll(
-                    "(/|\\\\|\\*|<|>|\\?|\"|:|\\|)", "-");
-            sb.append(URIUtils.quoteURIPathComponent(escapedFilename, true));
-        } else {
+        // Current document must be adaptable as a FileSystemItem
+        if (getCurrentFileSystemItem() == null) {
             throw new ClientException(
                     String.format(
                             "Document %s (%s) is not adaptable as a FileSystemItem thus not Drive editable, \"driveEdit\" action should not be displayed.",
                             navigationContext.getCurrentDocument().getId(),
                             navigationContext.getCurrentDocument().getPathAsString()));
         }
+        String docId = navigationContext.getCurrentDocument().getId();
+        String fileName = navigationContext.getCurrentDocument().getAdapter(
+                BlobHolder.class).getBlob().getFilename();
+        ServletRequest servletRequest = (ServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String baseURL = VirtualHostHelper.getBaseURL(servletRequest);
+        StringBuffer sb = new StringBuffer();
+        sb.append(NXDRIVE_PROTOCOL).append("://");
+        sb.append(PROTOCOL_COMMAND_EDIT).append("/");
+        sb.append(baseURL.replaceFirst("://", "/"));
+        sb.append("repo/");
+        sb.append(documentManager.getRepositoryName());
+        sb.append("/nxdocid/");
+        sb.append(docId);
+        sb.append("/filename/");
+        String escapedFilename = fileName.replaceAll(
+                "(/|\\\\|\\*|<|>|\\?|\"|:|\\|)", "-");
+        sb.append(URIUtils.quoteURIPathComponent(escapedFilename, true));
         return sb.toString();
     }
 
@@ -393,32 +376,18 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         return true;
     }
 
-    protected FileSystemItem getCurrentFileSystemItem(boolean computePath)
-            throws ClientException {
+    protected FileSystemItem getCurrentFileSystemItem() throws ClientException {
         if (currentFileSystemItem == null) {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
-            if (computePath) {
-                try {
-                    currentFileSystemItem = Framework.getLocalService(
-                            FileSystemItemAdapterService.class).getFileSystemItem(
-                            currentDocument);
-                } catch (RootlessItemException e) {
-                    log.trace(String.format(
-                            "Document %s (%s) is not adaptable as a FileSystemItem without forcing the parent FileSystemItem.",
-                            currentDocument.getId(),
-                            currentDocument.getPathAsString()));
-                }
-            } else {
-                // Force parentItem to null to avoid computing ancestors
-                currentFileSystemItem = Framework.getLocalService(
-                        FileSystemItemAdapterService.class).getFileSystemItem(
-                        currentDocument, null);
-                if (currentFileSystemItem == null) {
-                    log.trace(String.format(
-                            "Document %s (%s) is not adaptable as a FileSystemItem even by forcing the parent FileSystemItem.",
-                            currentDocument.getId(),
-                            currentDocument.getPathAsString()));
-                }
+            // Force parentItem to null to avoid computing ancestors
+            currentFileSystemItem = Framework.getLocalService(
+                    FileSystemItemAdapterService.class).getFileSystemItem(
+                    currentDocument, null);
+            if (currentFileSystemItem == null) {
+                log.debug(String.format(
+                        "Document %s (%s) is not adaptable as a FileSystemItem => currentFileSystemItem is null.",
+                        currentDocument.getId(),
+                        currentDocument.getPathAsString()));
             }
         }
         return currentFileSystemItem;
