@@ -26,6 +26,8 @@ Nuxeo-Component: OSGI-INF/nxtreemanager-framework.xml,
  OSGI-INF/chains-contrib.xml,
  OSGI-INF/bulkedit-service.xml,
  OSGI-INF/bulkedit-service-contrib.xml,
- OSGI-INF/user-registration-contrib.xml
+ OSGI-INF/user-registration-contrib.xml,
+ OSGI-INF/navtree-framework.xml,
+ OSGI-INF/navtree-default-contrib.xml
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.webapp.base

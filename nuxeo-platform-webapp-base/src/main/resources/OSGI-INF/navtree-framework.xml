@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webapp.tree.nav.NavTreeService">
+  <alias>org.nuxeo.ecm.platform.virtualnavigation.NavTreeService</alias>
+
+  <documentation>
+    This component is used to register and manage custom navigation
+    trees.
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.webapp.tree.nav.NavTreeService" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.webapp.tree.nav.NavTreeService" />
+  </service>
+
+  <extension-point name="navigationTree">
+    <documentation>
+      Extension point to register new navigation tree
+    </documentation>
+    <object class="org.nuxeo.ecm.webapp.tree.nav.NavTreeDescriptor" />
+  </extension-point>
+
+</component>
