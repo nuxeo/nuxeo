@@ -42,6 +42,19 @@
       <event>beforeRemovedFromCollection</event>
     </listener>
 
+    <documentation>
+      Handle document removal from the "Locally Edited"
+      collection in order to unlock it.
+
+      @author Antoine Taillefer
+    </documentation>
+    <listener name="nuxeoDriveUnlockListener"
+      async="false" postCommit="false"
+      class="org.nuxeo.drive.listener.NuxeoDriveUnlockListener"
+      priority="400">
+      <event>removedFromCollection</event>
+    </listener>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
