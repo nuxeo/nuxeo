@@ -90,7 +90,7 @@
 
     <view name="nuxeo5 tree explorer" template-engine="jsf-facelets">
       <format-type>widget</format-type>
-      <template>incl/tree_explorer.xhtml</template>
+      <template>incl/multi_tree_explorer.xhtml</template>
     </view>
 
     <view name="nuxeo5 directory tree explorer" template-engine="jsf-facelets">

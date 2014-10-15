@@ -1,11 +1,9 @@
-<div
+<div xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:s="http://jboss.org/schema/seam/taglib"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <div class="printButton">
@@ -13,8 +11,8 @@
   </div>
 
   <div class="breadcrumbs">
-
     <h:form id="breadcrumbForm">
+
       <h:commandLink id="goToParentButton" action="#{breadcrumbActions.navigateToParent}"
         rendered="#{facesContext.viewRoot.viewId != '/view_servers.xhtml'}">
         <nxu:graphicImage value="/icons/UpFolder_icon.gif"
@@ -29,13 +27,17 @@
 
           <nxd:restDocumentLink document="#{pathElement.documentModel}"
             rendered="#{pathElement.link}">
-            <h:outputText value="#{nxd:titleOrId(pathElement.documentModel)}"/>
+            <h:outputText value="#{nxd:titleOrId(pathElement.documentModel)}" />
           </nxd:restDocumentLink>
-          <h:outputText value="#{pathElement.name}" rendered="#{!pathElement.link}"/>
+          <h:outputText value="#{pathElement.name}" rendered="#{!pathElement.link} "/>
 
         </nxu:dataList>
 
       </c:if>
+      <c:if test="#{empty backendPath}">
+        <h:outputText value="#{multiNavTreeManager.virtualNavPath}" />
+      </c:if>
+
     </h:form>
   </div>
 
