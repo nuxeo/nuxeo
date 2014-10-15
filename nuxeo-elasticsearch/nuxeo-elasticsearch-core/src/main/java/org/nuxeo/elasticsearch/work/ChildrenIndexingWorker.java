@@ -17,8 +17,9 @@
 
 package org.nuxeo.elasticsearch.work;
 
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -34,7 +35,11 @@ import org.nuxeo.runtime.api.Framework;
 public class ChildrenIndexingWorker extends AbstractIndexingWorker implements
         Work {
 
+    private static final int LIMIT = 50;
+
     private static final long serialVersionUID = 1L;
+
+    private static final String QUERY = "SELECT * FROM Document WHERE ecm:parentId = '%s' ORDER BY dc:created ASC";
 
     public ChildrenIndexingWorker(IndexingCommand cmd) {
         super(cmd);
@@ -55,23 +60,35 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements
     protected void doIndexingWork(ElasticSearchIndexing esi, IndexingCommand cmd)
             throws Exception {
         DocumentModel doc = cmd.getTargetDocument();
-        DocumentModelIterator iter = session.getChildrenIterator(doc.getRef());
-        while (iter.hasNext()) {
-            DocumentModel child = iter.next();
+        long offset = 0;
+        List<DocumentModel> documentsToBeIndexed = session.query(
+                String.format(QUERY, doc.getRef()), null, LIMIT, offset, false);
 
-            IndexingCommand childCommand = cmd.clone(child);
+        while (documentsToBeIndexed != null && !documentsToBeIndexed.isEmpty()) {
 
-            if (!esi.isAlreadyScheduled(childCommand)) {
-                esi.indexNow(childCommand);
+            for (DocumentModel child : documentsToBeIndexed) {
+
+                IndexingCommand childCommand = cmd.clone(child);
+
+                if (!esi.isAlreadyScheduled(childCommand)) {
+                    esi.indexNow(childCommand);
+                }
+                if (child.isFolder()) {
+                    ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(
+                            childCommand);
+                    WorkManager wm = Framework.getLocalService(WorkManager.class);
+                    wm.schedule(subWorker);
+                }
             }
-            if (child.isFolder()) {
-                ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(
-                        childCommand);
-                WorkManager wm = Framework.getLocalService(WorkManager.class);
-                wm.schedule(subWorker);
+
+            if (documentsToBeIndexed.size() < LIMIT) {
+                break;
             }
+            offset += LIMIT;
+            documentsToBeIndexed = session.query(
+                    String.format(QUERY, doc.getRef()), null, LIMIT,
+                    offset, false);
         }
-
     }
 
 }
