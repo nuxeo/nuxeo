@@ -77,7 +77,7 @@ public class NuxeoDeployer implements LifecycleListener {
                 File[] files = lib.listFiles();
                 if (files != null) {
                     for (File f : files) {
-                        if (f.isFile() && f.getPath().endsWith(".jar")) {
+                        if (f.getPath().endsWith(".jar")) {
                             urls.add(f.toURI().toURL());
                         }
                     }
@@ -85,7 +85,7 @@ public class NuxeoDeployer implements LifecycleListener {
                 files = bundles.listFiles();
                 if (files != null) {
                     for (File f : files) {
-                        if (f.isFile() && f.getPath().endsWith(".jar")) {
+                        if (f.getPath().endsWith(".jar")) {
                             urls.add(f.toURI().toURL());
                         }
                     }
