@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.nuxeo.runtime.datasource;
 
-import javax.naming.InitialContext;
+import javax.naming.Context;
 import javax.naming.LinkRef;
 import javax.naming.NamingException;
 
@@ -41,11 +41,11 @@ public class DataSourceLinkDescriptor {
 	@XNode("@type")
 	protected String type;
 
-    public void bindSelf(InitialContext namingContext) throws NamingException {
+    public void bindSelf(Context namingContext) throws NamingException {
         namingContext.bind(name, new LinkRef(global));
     }
 
-    public void unbindSelf(InitialContext namingContext) throws NamingException {
+    public void unbindSelf(Context namingContext) throws NamingException {
         namingContext.unbind(name);
     }
 

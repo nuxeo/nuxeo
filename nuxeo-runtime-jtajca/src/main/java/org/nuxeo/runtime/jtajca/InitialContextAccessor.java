@@ -14,7 +14,7 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.runtime.api;
+package org.nuxeo.runtime.jtajca;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -62,10 +62,11 @@ public class InitialContextAccessor extends InitialContext {
      * @param ctx
      * @return true if JNDI space is writable
      */
-    public static boolean isWritable(Context ctx) {
+    public static boolean isWritable(Context ctx, String prefix) {
         try {
-            ctx.bind("java:IsWritable", "is-writable");
-            ctx.unbind("java:IsWritable");
+            final String name = prefix.concat("IsWritable");
+            ctx.bind(name, "is-writable");
+            ctx.unbind(name);
         } catch (NamingException e) {
             return false;
         }

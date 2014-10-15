@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.Reference;
@@ -32,6 +31,7 @@ import javax.naming.spi.ObjectFactory;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
+import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.jdbc.naming.GenericNamingResourcesFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
@@ -144,7 +144,7 @@ public class DataSourceDescriptor {
     }
 
     public void bindSelf(
-            Context initialContext)
+            Context naming)
             throws NamingException {
         if (xaDataSource != null) {
             String xaName = DataSourceHelper.getDataSourceJNDIName(getName()
@@ -167,7 +167,7 @@ public class DataSourceDescriptor {
                         key, value);
                 xaReference.add(addr);
             }
-            initialContext.bind(
+            naming.bind(
                     DataSourceHelper.getDataSourceJNDIName(xaName),
                     xaReference);
         } else if (dataSource != null) {
@@ -208,13 +208,14 @@ public class DataSourceDescriptor {
             poolReference.add(addr);
         }
 
-        initialContext.bind(
+        LogFactory.getLog(DataSourceDescriptor.class).info("binding " + getName());
+        naming.bind(
                 DataSourceHelper.getDataSourceJNDIName(getName()),
                 poolReference);
     }
 
     public void unbindSelf(
-            InitialContext initialContext)
+            Context naming)
             throws NamingException {
         try {
             final PooledDataSourceRegistry registry = Framework.getLocalService(PooledDataSourceRegistry.class);
@@ -230,11 +231,11 @@ public class DataSourceDescriptor {
         } finally {
             try {
                 if (xaReference != null) {
-                    initialContext.unbind(DataSourceHelper.getDataSourceJNDIName(getName()
+                    naming.unbind(DataSourceHelper.getDataSourceJNDIName(getName()
                             + "-xa"));
                 }
             } finally {
-                initialContext.unbind(DataSourceHelper.getDataSourceJNDIName(getName()));
+                naming.unbind(DataSourceHelper.getDataSourceJNDIName(getName()));
             }
         }
     }

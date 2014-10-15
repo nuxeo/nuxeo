@@ -31,12 +31,10 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -69,7 +67,6 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        NuxeoContainer.install();
         File dir = new File(DIRECTORY);
         FileUtils.deleteQuietly(dir);
         dir.mkdirs();
@@ -77,15 +74,6 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.runtime.jtajca");
         deployBundle("org.nuxeo.runtime.datasource");
         fireFrameworkStarted();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        if (NuxeoContainer.isInstalled()) {
-            NuxeoContainer.uninstall();
-        }
-        super.tearDown();
     }
 
     @Test

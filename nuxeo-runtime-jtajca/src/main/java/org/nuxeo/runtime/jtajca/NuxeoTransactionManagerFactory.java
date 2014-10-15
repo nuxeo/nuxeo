@@ -41,8 +41,8 @@ public class NuxeoTransactionManagerFactory implements ObjectFactory {
         if (!TransactionManager.class.getName().equals(ref.getClassName())) {
             return null;
         }
-        if (NuxeoContainer.transactionManager != null) {
-            return NuxeoContainer.transactionManager;
+        if (NuxeoContainer.tm != null) {
+            return NuxeoContainer.tm;
         }
 
         // initialize

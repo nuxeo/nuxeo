@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.transaction.RollbackException;
 import javax.transaction.Status;
@@ -29,6 +28,7 @@ import javax.transaction.UserTransaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
  * Utilities to work with transactions.
@@ -42,33 +42,6 @@ public class TransactionHelper {
     }
 
     /**
-     * Various binding names for the UserTransaction. They depend on the
-     * application server used and how the configuration is done.
-     */
-    public static final String[] UT_NAMES = { "java:comp/UserTransaction", // standard
-            "java:comp/env/UserTransaction", // manual binding outside appserver
-            "java:jboss/UserTransaction"// jboss
-    };
-
-    /**
-     * Various binding names for the TransactionManager. They depend on the
-     * application server used and how the configuration is done.
-     */
-    public static final String[] TM_NAMES = { "java:comp/TransactionManager", // common
-            "java:comp/env/TransactionManager", // manual binding
-            "java:jboss/TransactionManager" // jboss
-    };
-
-    /**
-     * Various binding names for the TransactionManager. They depend on the
-     * application server used and how the configuration is done.
-     */
-    public static final String[] SYNCH_NAMES = { "java:comp/TransactionManager", // common
-            "java:comp/env/TransactionSynchronizationRegistry", // manual binding
-            "java:jboss/TransactionSynchronizationRegistry" // jboss
-    };
-
-    /**
      * Looks up the User Transaction in JNDI.
      *
      * @return the User Transaction
@@ -76,27 +49,12 @@ public class TransactionHelper {
      */
     public static UserTransaction lookupUserTransaction()
             throws NamingException {
-        InitialContext context = new InitialContext();
-        int i = 0;
-        for (String name : UT_NAMES) {
-            try {
-                final Object lookup = context.lookup(name);
-                UserTransaction userTransaction = (UserTransaction) lookup;
-                if (userTransaction != null) {
-                    if (i != 0) {
-                        // put successful name first for next time
-                        UT_NAMES[i] = UT_NAMES[0];
-                        UT_NAMES[0] = name;
-                    }
-                    return userTransaction;
-                }
-            } catch (NamingException e) {
-                // try next one
-            }
-            i++;
+        UserTransaction ut = NuxeoContainer.getUserTransaction();
+        if (ut == null) {
+            throw new NamingException("tx manager not installed");
         }
-        throw new NamingException("UserTransaction not found in JNDI");
-    }
+        return ut;
+     }
 
     /**
      * Returns the UserTransaction JNDI binding name.
@@ -104,7 +62,7 @@ public class TransactionHelper {
      * Assumes {@link #lookupUserTransaction} has been called once before.
      */
     public static String getUserTransactionJNDIName() {
-        return UT_NAMES[0];
+        return NuxeoContainer.nameOf("UserTransaction");
     }
 
     /**
@@ -115,25 +73,11 @@ public class TransactionHelper {
      */
     public static TransactionManager lookupTransactionManager()
             throws NamingException {
-        InitialContext context = new InitialContext();
-        int i = 0;
-        for (String name : TM_NAMES) {
-            try {
-                TransactionManager transactionManager = (TransactionManager) context.lookup(name);
-                if (transactionManager != null) {
-                    if (i != 0) {
-                        // put successful name first for next time
-                        TM_NAMES[i] = TM_NAMES[0];
-                        TM_NAMES[0] = name;
-                    }
-                    return transactionManager;
-                }
-            } catch (NamingException e) {
-                // try next one
-            }
-            i++;
+        TransactionManager tm = NuxeoContainer.getTransactionManager();
+        if (tm == null) {
+            throw new NamingException("tx manager not installed");
         }
-        throw new NamingException("TransactionManager not found in JNDI");
+        return tm;
     }
 
 
@@ -145,26 +89,26 @@ public class TransactionHelper {
      */
     public static TransactionSynchronizationRegistry lookupSynchronizationRegistry()
             throws NamingException {
-        InitialContext context = new InitialContext();
-        int i = 0;
-        for (String name : SYNCH_NAMES) {
-            try {
-                TransactionSynchronizationRegistry synch = (TransactionSynchronizationRegistry) context.lookup(name);
-                if (synch != null) {
-                    if (i != 0) {
-                        // put successful name first for next time
-                        SYNCH_NAMES[i] = SYNCH_NAMES[0];
-                        SYNCH_NAMES[0] = name;
-                    }
-                    return synch;
-                }
-            } catch (NamingException e) {
-                // try next one
-            }
-            i++;
+        TransactionSynchronizationRegistry synch = NuxeoContainer.getTransactionSynchronizationRegistry();
+        if (synch == null) {
+            throw new NamingException("tx manager not installed");
         }
-        throw new NamingException("SynchronizationRegistry not found in JNDI");
+        return synch;
     }
+
+    /**
+     * Checks if there is no transaction
+     *
+     * @5.9.6
+     */
+    public static boolean isNoTransaction() {
+        try {
+            return lookupUserTransaction().getStatus() == Status.STATUS_NO_TRANSACTION;
+        } catch (NamingException | SystemException cause) {
+            return true;
+        }
+    }
+
     /**
      * Checks if the current User Transaction is active.
      */
@@ -207,16 +151,16 @@ public class TransactionHelper {
      *         {@code false} otherwise
      */
     public static boolean startTransaction() {
-        UserTransaction ut;
+        UserTransaction ut = NuxeoContainer.getUserTransaction();
+        if (ut == null) {
+            return false;
+        }
         try {
             if (log.isDebugEnabled()) {
                 log.debug("Starting transaction");
             }
-            ut = lookupUserTransaction();
             ut.begin();
             return true;
-        } catch (NamingException e) {
-            // no transaction
         } catch (Exception e) {
             log.error("Unable to start transaction", e);
         }
@@ -231,10 +175,8 @@ public class TransactionHelper {
      * @since 5.6
      */
     public static Transaction requireNewTransaction() {
-        TransactionManager tm;
-        try {
-            tm = lookupTransactionManager();
-        } catch (NamingException e) {
+        TransactionManager tm = NuxeoContainer.getTransactionManager();
+        if (tm == null) {
             return null;
         }
         try {
@@ -250,10 +192,8 @@ public class TransactionHelper {
     }
 
     public static Transaction suspendTransaction() {
-        TransactionManager tm;
-        try {
-            tm = lookupTransactionManager();
-        } catch (NamingException e) {
+        TransactionManager tm = NuxeoContainer.getTransactionManager();
+        if (tm == null) {
             return null;
         }
         try {
@@ -274,18 +214,16 @@ public class TransactionHelper {
      * @param tx
      */
     public static void resumeTransaction(Transaction tx) {
-        TransactionManager mgr;
-        try {
-            mgr = lookupTransactionManager();
-        } catch (NamingException e) {
+        TransactionManager tm = NuxeoContainer.getTransactionManager();
+        if (tm == null) {
             return;
         }
         try {
-            if (mgr.getStatus() == Status.STATUS_ACTIVE) {
-                mgr.commit();
+            if (tm.getStatus() == Status.STATUS_ACTIVE) {
+                tm.commit();
             }
             if (tx != null) {
-                mgr.resume(tx);
+                tm.resume(tx);
             }
         } catch (Exception e) {
             throw new TransactionRuntimeException("Cannot resume tx", e);
@@ -305,16 +243,14 @@ public class TransactionHelper {
         if (timeout < 0) {
             timeout = 0;
         }
-        TransactionManager txmgr;
-        try {
-            txmgr = lookupTransactionManager();
-        } catch (NamingException e) {
-            // no transaction
+        TransactionManager tm = NuxeoContainer.getTransactionManager();
+        if (tm == null) {
             return false;
         }
 
+
         try {
-            txmgr.setTransactionTimeout(timeout);
+            tm.setTransactionTimeout(timeout);
         } catch (SystemException e) {
             log.error("Unable to set transaction timeout: " + timeout, e);
             return false;
@@ -323,7 +259,7 @@ public class TransactionHelper {
             return startTransaction();
         } finally {
             try {
-                txmgr.setTransactionTimeout(0);
+                tm.setTransactionTimeout(0);
             } catch (SystemException e) {
                 log.error("Unable to reset transaction timeout", e);
             }
@@ -335,11 +271,8 @@ public class TransactionHelper {
      * status.
      */
     public static void commitOrRollbackTransaction() {
-        UserTransaction ut;
-        try {
-            ut = lookupUserTransaction();
-        } catch (NamingException e) {
-            log.warn("No user transaction", e);
+        UserTransaction ut = NuxeoContainer.getUserTransaction();
+        if (ut == null) {
             return;
         }
         try {
@@ -417,16 +350,16 @@ public class TransactionHelper {
      *         only, {@code false} otherwise
      */
     public static boolean setTransactionRollbackOnly() {
+        log.info("Setting transaction as rollback only", new Throwable("rollback stack trace"));
+        UserTransaction ut = NuxeoContainer.getUserTransaction();
+        if (ut == null) {
+            return false;
+        }
         try {
-            if (log.isDebugEnabled()) {
-                log.debug("Setting transaction as rollback only");
-            }
-            lookupUserTransaction().setRollbackOnly();
+            ut.setRollbackOnly();
             return true;
-        } catch (NamingException e) {
-            // no transaction
-        } catch (Exception e) {
-            log.error("Could not mark transaction as rollback only", e);
+        } catch (Exception cause) {
+            log.error("Could not mark transaction as rollback only", cause);
         }
         return false;
     }
@@ -436,11 +369,11 @@ public class TransactionHelper {
             return;
         }
         try {
-            lookupTransactionManager().getTransaction().registerSynchronization(
-                    handler);
-        } catch (IllegalStateException | RollbackException | SystemException
-                | NamingException cause) {
-            throw new RuntimeException("Cannot register synch handler in current tx", cause);
+            NuxeoContainer.getTransactionManager().getTransaction()
+                .registerSynchronization(handler);
+        } catch (IllegalStateException | RollbackException | SystemException cause) {
+            throw new RuntimeException(
+                    "Cannot register synch handler in current tx", cause);
         }
     }
 

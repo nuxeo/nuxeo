@@ -11,12 +11,8 @@
  */
 package org.nuxeo.runtime.jtajca;
 
-import javax.transaction.TransactionManager;
-
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * If this bundle is present in the running platform it should automatically
@@ -27,28 +23,16 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class JtaActivator extends DefaultComponent {
 
-    public static final String AUTO_ACTIVATION = "NuxeoContainer.autoactivation";
+    public static final String AUTO_ACTIVATION = "null";
 
-    protected boolean isOwner = false;
     @Override
     public void activate(ComponentContext context) throws Exception {
-        final String property = Framework.getProperty(AUTO_ACTIVATION, "false");
-        if ("false".equalsIgnoreCase(property)) {
-            TransactionManager tm = TransactionHelper.lookupTransactionManager();
-            if (NuxeoContainer.transactionManager == null) {
-                NuxeoContainer.transactionManager = new NuxeoContainer.TransactionManagerWrapper(tm);
-            }
-            return;
-        }
         NuxeoContainer.install();
-        isOwner = true;
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        if (isOwner) {
-            NuxeoContainer.uninstall();
-        }
+        NuxeoContainer.uninstall();
     }
 
 }

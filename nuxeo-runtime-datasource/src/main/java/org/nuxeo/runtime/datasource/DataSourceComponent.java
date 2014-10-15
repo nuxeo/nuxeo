@@ -22,12 +22,12 @@ import java.util.Map;
 
 import javax.naming.CompositeName;
 import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.Name;
 import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -52,7 +52,7 @@ public class DataSourceComponent extends DefaultComponent {
 
     protected final PooledDataSourceRegistry registry = new PooledDataSourceRegistry();
 
-    protected InitialContext namingContext;
+    protected Context namingContext;
 
     @Override
     public void registerContribution(Object contrib, String extensionPoint,
@@ -96,7 +96,7 @@ public class DataSourceComponent extends DefaultComponent {
         if (namingContext != null) {
             return;
         }
-        namingContext = new InitialContext();
+        namingContext = NuxeoContainer.getRootContext();
         // allocate datasource sub-contexts
         Name comp = new CompositeName(DataSourceHelper.getDataSourceJNDIPrefix());
         Context ctx = namingContext;

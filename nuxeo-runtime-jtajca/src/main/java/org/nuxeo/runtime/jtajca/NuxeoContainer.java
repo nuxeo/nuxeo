@@ -15,21 +15,16 @@ package org.nuxeo.runtime.jtajca;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.naming.CompositeName;
 import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.Name;
-import javax.naming.NameClassPair;
-import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.Reference;
+import javax.naming.spi.NamingManager;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ConnectionRequestInfo;
@@ -42,6 +37,7 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
+import javax.transaction.TransactionSynchronizationRegistry;
 import javax.transaction.UserTransaction;
 import javax.transaction.xa.XAResource;
 
@@ -64,7 +60,6 @@ import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionImpl;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.apache.xbean.naming.reference.SimpleReference;
-import org.nuxeo.runtime.api.InitialContextAccessor;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -84,28 +79,26 @@ public class NuxeoContainer {
 
     protected static final Log log = LogFactory.getLog(NuxeoContainer.class);
 
-    public static final String JNDI_TRANSACTION_MANAGER = "java:comp/TransactionManager";
+    protected static RecoverableTransactionManager tmRecoverable;
 
-    public static final String JNDI_USER_TRANSACTION = "java:comp/UserTransaction";
+    protected static TransactionManager tm;
 
-    public static final String JNDI_NUXEO_CONNECTION_MANAGER_PREFIX = "java:comp/NuxeoConnectionManager/";
+    protected static TransactionSynchronizationRegistry tmSynchRegistry;
 
-    protected static RecoverableTransactionManager transactionManager;
-
-    protected static UserTransaction userTransaction;
+    protected static UserTransaction ut;
 
     protected static Map<String, ConnectionManagerWrapper> connectionManagers = new ConcurrentHashMap<String, ConnectionManagerWrapper>(
             8, 0.75f, 2);
 
     private static final List<NuxeoContainerListener> listeners = new ArrayList<NuxeoContainerListener>();
 
-    private static InstallContext installContext;
+    private static volatile InstallContext installContext;
 
     private static Context parentContext;
 
-    private static Map<String, Object> parentEnvironment = new HashMap<String, Object>();
-
     protected static Context rootContext;
+
+    protected static String jndiPrefix = "java:comp/env/";
 
     // @since 5.7
     protected static final MetricRegistry registry = SharedMetricRegistries
@@ -146,36 +139,42 @@ public class NuxeoContainer {
      * Install naming and bind transaction and connection management factories
      * "by hand".
      */
-    public static synchronized void install() throws NamingException {
+    protected static void install() throws NamingException {
         if (installContext != null) {
             throw new RuntimeException("Nuxeo container already installed");
         }
-        install(null);
-    }
-
-    /**
-     * Install transaction and connection management "by hand" if the container
-     * didn't do it using file-based configuration. Binds the names in JNDI.
-     *
-     * @param txconfig the transaction manager configuration
-     *
-     * @since 5.4.2
-     */
-    public static synchronized void install(
-            TransactionManagerConfiguration txconfig) throws NamingException {
-        installNaming();
-        installTransactionManager(txconfig);
-        // connection managers are installed lazily by
-        // getOrCreateConnectionManager
+        installContext = new InstallContext();
+        log.trace("Installing nuxeo container", installContext);
+        parentContext = InitialContextAccessor.getInitialContext();
+        if (parentContext != null) {
+            jndiPrefix = detectJNDIPrefix(parentContext);
+            if (parentContext instanceof NamingContext) {
+                rootContext = parentContext;
+            } else if (InitialContextAccessor.isWritable(parentContext, jndiPrefix)){
+                rootContext = parentContext;
+            } else {
+                rootContext = new NamingContextFacade(parentContext);
+                jndiPrefix = "java:comp/env/";
+            }
+        } else {
+            rootContext = new NamingContext();
+        }
+        if (rootContext instanceof NamingContext) {
+            addDeepBinding(nameOf("TransactionManager"), new Reference(
+                    TransactionManager.class.getName(),
+                    NuxeoTransactionManagerFactory.class.getName(), null));
+        }
+        log.info("Using JNDI prefix: " + jndiPrefix);
+        installTransactionManager();
     }
 
     protected static void installTransactionManager(
             TransactionManagerConfiguration config) throws NamingException {
         initTransactionManager(config);
+        addDeepBinding(rootContext, new CompositeName(
+                nameOf("TransactionManager")), getTransactionManagerReference());
         addDeepBinding(rootContext,
-                new CompositeName(JNDI_TRANSACTION_MANAGER),
-                getTransactionManagerReference());
-        addDeepBinding(rootContext, new CompositeName(JNDI_USER_TRANSACTION),
+                new CompositeName(nameOf("UserTransaction")),
                 getUserTransactionReference());
     }
 
@@ -196,7 +195,7 @@ public class NuxeoContainer {
         cm = initConnectionManager(config);
         // also bind it in JNDI
         if (rootContext != null) {
-            String jndiName = JNDI_NUXEO_CONNECTION_MANAGER_PREFIX + name;
+            String jndiName = nameOf("ConnectionManager/".concat(name));
             try {
                 addDeepBinding(rootContext, new CompositeName(jndiName),
                         getConnectionManagerReference(name));
@@ -208,15 +207,11 @@ public class NuxeoContainer {
         return cm;
     }
 
-    public static synchronized boolean isInstalled() {
+    public static boolean isInstalled() {
         return installContext != null;
     }
 
-    public static synchronized InstallContext getInstallContext() {
-        return installContext;
-    }
-
-    public static synchronized void uninstall() throws NamingException {
+    protected static void uninstall() throws NamingException {
         if (installContext == null) {
             throw new RuntimeException("Nuxeo container not installed");
         }
@@ -231,44 +226,19 @@ public class NuxeoContainer {
                 }
             }
             if (errors.getSuppressed().length > 0) {
-                throw errors;
+                log.error("Cannot shutdown some pools", errors);
             }
         } finally {
-            uninstallNaming();
-            transactionManager = null;
-            userTransaction = null;
+            log.trace("Uninstalling nuxeo container", installContext);
+            installContext = null;
+            parentContext = null;
+            rootContext = null;
+            tm = null;
+            tmRecoverable = null;
+            tmSynchRegistry = null;
+            ut = null;
             connectionManagers.clear();
         }
-    }
-
-    /**
-     * setup root naming context and install initial naming context factory
-     *
-     * @since 5.6
-     */
-    public static synchronized void installNaming() throws NamingException {
-        installContext = new InstallContext();
-        log.trace("Installing nuxeo container", installContext);
-        setupRootContext();
-        setAsInitialContext();
-    }
-
-    /**
-     * release naming context and revert settings
-     *
-     * @since 5.6
-     */
-    public static synchronized void uninstallNaming() {
-        log.trace("Uninstalling nuxeo container", installContext);
-        try {
-            cleanupContext(rootContext);
-        } catch (NamingException cause) {
-            log.error("Cannot cleanup root context", cause);
-        }
-        installContext = null;
-        parentContext = null;
-        rootContext = null;
-        revertSetAsInitialContext();
     }
 
     /**
@@ -296,24 +266,22 @@ public class NuxeoContainer {
         }
     }
 
-    /**
-     * setup root context, use the system defined context if writable, use nuxeo
-     * context unless
-     *
-     * @since 5.6
-     */
-    protected static void setupRootContext() throws NamingException {
-        parentContext = InitialContextAccessor.getInitialContext();
-        if (parentContext != null) {
-            if (InitialContextAccessor.isWritable(parentContext)) {
-                rootContext = parentContext;
-                return;
-            }
-            rootContext = new NamingContextFacade(parentContext);
-            log.warn("Chaining naming spaces, can break your application server");
-            return;
+    protected static String detectJNDIPrefix(Context context) {
+        String name = context.getClass().getName();
+        if ("org.jnp.interfaces.NamingContext".equals(name)) { // JBoss
+            return "java:";
+        } else if ("org.jboss.as.naming.InitialContext".equals(name)) { // Wildfly
+            return "java:jboss/";
+        } else if ("org.mortbay.naming.local.localContextRoot".equals(name)) { // Jetty
+            return "jdbc/";
         }
-        rootContext = new NamingContext();
+        // Standard JEE containers (Nuxeo-Embedded, Tomcat, GlassFish,
+        // ...
+        return "java:comp/env/";
+    }
+
+    public static String nameOf(String name) {
+        return jndiPrefix.concat(name);
     }
 
     /**
@@ -326,47 +294,6 @@ public class NuxeoContainer {
         return rootContext;
     }
 
-    /**
-     * set naming context factory to nuxeo implementation, backup original
-     * settings
-     *
-     * @since 5.6
-     */
-    protected static void setAsInitialContext() {
-        // Preserve current set system props
-        String key = Context.INITIAL_CONTEXT_FACTORY;
-        parentEnvironment.put(key, System.getProperty(key));
-        key = Context.URL_PKG_PREFIXES;
-        parentEnvironment.put(key, System.getProperty(key));
-
-        System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-                NamingContextFactory.class.getName());
-        System
-            .setProperty(Context.URL_PKG_PREFIXES, "org.nuxeo.runtime.jtajca");
-    }
-
-    /**
-     * revert naming factory to original settings
-     *
-     * @since 5.6
-     */
-    protected static void revertSetAsInitialContext() {
-        Iterator<Entry<String, Object>> iterator = parentEnvironment.entrySet()
-            .iterator();
-        Properties props = System.getProperties();
-
-        while (iterator.hasNext()) {
-            Entry<String, Object> entry = iterator.next();
-            iterator.remove();
-            String key = entry.getKey();
-            String value = (String) entry.getValue();
-            if (value == null) {
-                props.remove(key);
-            } else {
-                props.setProperty(key, value);
-            }
-        }
-    }
 
     /**
      * Bind object in root context. Create needed sub contexts.
@@ -403,43 +330,8 @@ public class NuxeoContainer {
         }
     }
 
-    protected static void cleanupContext(Context context)
-            throws NamingException {
-        NamingEnumeration<NameClassPair> names = context.list("");
-        NamingException errors = new NamingException("Cannot cleanup context");
-        while (true) {
-            try {
-                if (!names.hasMore()) {
-                    return;
-                }
-                final String name = names.next().getName();
-                Object object = context.lookup(name);
-                if (object instanceof Context) {
-                    cleanupContext((Context) object);
-                }
-                context.unbind(name);
-            } catch (NamingException cause) {
-                errors.addSuppressed(cause);
-            }
-        }
-    }
-
     protected static void removeBinding(String name) throws NamingException {
         rootContext.unbind(name);
-    }
-
-    @SuppressWarnings("unchecked")
-    protected static <T> T resolveBinding(String name) throws NamingException {
-        InitialContext ctx = new InitialContext();
-        try {
-            return (T) ctx.lookup("java:comp/" + name);
-        } catch (NamingException compe) {
-            try {
-                return (T) ctx.lookup("java:comp/env/" + name);
-            } catch (NamingException enve) {
-                return (T) ctx.lookup(name);
-            }
-        }
     }
 
     /**
@@ -448,7 +340,7 @@ public class NuxeoContainer {
      * @return the transaction manager
      */
     public static TransactionManager getTransactionManager() {
-        return transactionManager;
+        return tm;
     }
 
     protected static Reference getTransactionManagerReference() {
@@ -467,8 +359,8 @@ public class NuxeoContainer {
      *
      * @return the user transaction
      */
-    public static UserTransaction getUserTransaction() throws NamingException {
-        return userTransaction;
+    public static UserTransaction getUserTransaction() {
+        return ut;
     }
 
     protected static Reference getUserTransactionReference() {
@@ -516,10 +408,12 @@ public class NuxeoContainer {
 
     protected static synchronized TransactionManager initTransactionManager(
             TransactionManagerConfiguration config) throws NamingException {
-        TransactionManager tm = createTransactionManager(config);
-        transactionManager = new TransactionManagerWrapper(tm);
-        userTransaction = new UserTransactionImpl(transactionManager);
-        return transactionManager;
+        TransactionManagerImpl impl = createTransactionManager(config);
+        tm = impl;
+        tmRecoverable = impl;
+        tmSynchRegistry = impl;
+        ut = new UserTransactionImpl(tm);
+        return tm;
     }
 
     protected static TransactionManagerWrapper wrapTransactionManager(
@@ -578,25 +472,55 @@ public class NuxeoContainer {
         }
     }
 
-    protected static ConnectionManagerWrapper lookupConnectionManager(
-            String repositoryName) {
-        ConnectionManager cm;
-        try {
-            String jndiName = JNDI_NUXEO_CONNECTION_MANAGER_PREFIX
-                    + repositoryName;
-            Object o = resolveBinding(jndiName);
-            cm = (ConnectionManager) o;
-        } catch (NamingException e) {
-            return null;
+    public static <T> T lookup(String name, Class<T> type)
+            throws NamingException {
+        if (rootContext == null) {
+            throw new NamingException("no naming context available");
         }
+        Object resolved = rootContext.lookup(name);
+        if (resolved instanceof Reference) {
+            try {
+                resolved = NamingManager.getObjectInstance(resolved,
+                        new CompositeName(name), rootContext, null);
+            } catch (Exception e) {
+                throw new RuntimeException("Cannot get access to " + name, e);
+            }
+        }
+        return type.cast(resolved);
+    }
+
+    public static <T> T lookupDataSource(String name, Class<T> type)
+            throws NamingException {
+        return lookup(nameOf("jdbc/".concat(name)), type);
+    }
+
+    protected static void installTransactionManager()
+            throws NamingException {
+        TransactionManager actual = lookup(nameOf("TransactionManager"), TransactionManager.class);
+        if (tm != null) {
+            return;
+        }
+        tm = actual;
+        tmRecoverable = wrapTransactionManager(tm);
+        ut = new UserTransactionImpl(tm);
+        tmSynchRegistry = lookup(nameOf("TransactionSynchronizationRegistry"),
+                TransactionSynchronizationRegistry.class);
+    }
+
+    protected static ConnectionManagerWrapper lookupConnectionManager(
+            String repositoryName) throws NamingException {
+        ConnectionManager cm = lookup(
+                nameOf("ConnectionManager/".concat(repositoryName)),
+                ConnectionManager.class);
         if (cm instanceof ConnectionManagerWrapper) {
             return (ConnectionManagerWrapper) cm;
         }
         log.warn("Connection manager not a wrapper, check your configuration");
-        return null;
+        throw new RuntimeException("Connection manager of " + repositoryName
+                + " not a wrapper, check your configuration");
     }
 
-    protected static TransactionManager createTransactionManager(
+    protected static TransactionManagerImpl createTransactionManager(
             TransactionManagerConfiguration config) {
         if (config == null) {
             config = new TransactionManagerConfiguration();
@@ -701,8 +625,7 @@ public class NuxeoContainer {
             .getContextClassLoader(); // NuxeoContainer.class.getClassLoader();
 
         return new GenericConnectionManager(transactionSupport, poolingSupport,
-                null, tracker, transactionManager, config.getName(),
-                classLoader);
+                null, tracker, tmRecoverable, config.getName(), classLoader);
     }
 
     protected static TransactionSupport createTransactionSupport(
@@ -1031,6 +954,10 @@ public class NuxeoContainer {
             coordinator.contextHolder.get().unshareable = false;
         }
 
+    }
+
+    public static TransactionSynchronizationRegistry getTransactionSynchronizationRegistry() {
+        return tmSynchRegistry;
     }
 
 }

@@ -34,11 +34,11 @@ public class NuxeoUserTransactionFactory implements ObjectFactory {
         if (!UserTransaction.class.getName().equals(ref.getClassName())) {
             return null;
         }
-        if (NuxeoContainer.transactionManager == null) {
+        if (NuxeoContainer.tm == null) {
             // initialize tx manager through the factory
-            return TransactionHelper.lookupTransactionManager();
+            NuxeoContainer.installTransactionManager();
         }
-        return NuxeoContainer.userTransaction;
+        return NuxeoContainer.ut;
     }
 
 }

@@ -17,20 +17,13 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.naming.CompositeName;
 import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.NameClassPair;
 import javax.naming.NamingException;
-import javax.naming.Reference;
-import javax.naming.spi.NamingManager;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.InitialContextAccessor;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
  * Helper class to look up {@link DataSource}s without having to deal with
@@ -44,48 +37,13 @@ public class DataSourceHelper {
     private DataSourceHelper() {
     }
 
-    private static final Log log = LogFactory.getLog(DataSourceHelper.class);
-
-    public static final String PREFIX_PROPERTY = "org.nuxeo.runtime.datasource.prefix";
-
-    public static final String DEFAULT_PREFIX = "java:comp/env/jdbc";
-
-    protected static String prefix;
-
-    public static void autodetectPrefix() {
-        Context ctx = InitialContextAccessor.getInitialContext();
-        String name = ctx == null ? null : ctx.getClass().getName();
-        if ("org.jnp.interfaces.NamingContext".equals(name)) { // JBoss
-            prefix = "java:";
-        } else if ("org.jboss.as.naming.InitialContext".equals(name)) {  // Wildfly
-            prefix = "java:jboss";
-        } else if ("org.mortbay.naming.local.localContextRoot".equals(name)) { // Jetty
-            prefix = "jdbc";
-        } else {
-            // Standard JEE containers (Nuxeo-Embedded, Tomcat, GlassFish, ...
-            prefix = DEFAULT_PREFIX;
-        }
-        log.info("Using JDBC JNDI prefix: " + prefix);
-    }
-
     /**
      * Get the JNDI prefix used for DataSource lookups.
      */
     public static String getDataSourceJNDIPrefix() {
-        if (prefix == null) {
-            if (Framework.isInitialized()) {
-                String configuredPrefix = Framework.getProperty(PREFIX_PROPERTY);
-                if (configuredPrefix != null) {
-                    prefix = configuredPrefix;
-                } else {
-                    autodetectPrefix();
-                }
-            } else {
-                prefix = DEFAULT_PREFIX;
-            }
-        }
-        return prefix;
+        return NuxeoContainer.nameOf("jdbc");
     }
+
 
     /**
      * Look up a datasource JNDI name given a partial name.
@@ -96,15 +54,16 @@ public class DataSourceHelper {
      * @param partialName the partial name
      * @return the datasource JNDI name
      */
-    public static String getDataSourceJNDIName(String partialName) {
-        String targetPrefix = getDataSourceJNDIPrefix();
-        // keep suffix only (jdbc/foo -> foo)
-        int idx = partialName.lastIndexOf("/");
+    public static String getDataSourceJNDIName(String name) {
+        return NuxeoContainer.nameOf("jdbc/".concat(relativize(name)));
+    }
+
+    protected static String relativize(String name) {
+        int idx = name.lastIndexOf("/");
         if (idx > 0) {
-            partialName = partialName.substring(idx + 1);
+            return name.substring(idx + 1);
         }
-        // add prefix
-        return targetPrefix + "/" + partialName;
+        return name;
     }
 
     /**
@@ -127,26 +86,17 @@ public class DataSourceHelper {
         return getDataSource(partialName, XADataSource.class);
     }
 
-    public static <T> T getDataSource(String partialName, Class<T> clazz)
+    public static <T> T getDataSource(String name, Class<T> clazz)
             throws NamingException {
-        String jndiName = getDataSourceJNDIName(partialName);
-        InitialContext context = new InitialContext();
-        Object resolved = context.lookup(jndiName);
-        if (resolved instanceof Reference) {
-            try {
-                resolved = NamingManager.getObjectInstance(resolved,
-                        new CompositeName(jndiName), context, null);
-            } catch (Exception e) {
-                throw new RuntimeException("Cannot get access to " + jndiName,
-                        e);
-            }
-        }
-        return clazz.cast(resolved);
+        return NuxeoContainer.lookupDataSource(relativize(name), clazz);
     }
 
     public static Map<String,DataSource> getDatasources() throws NamingException {
         String prefix = getDataSourceJNDIPrefix();
-        Context naming = new InitialContext();
+        Context naming =  NuxeoContainer.getRootContext();
+        if (naming == null) {
+            throw new NamingException("No root context");
+        }
         Context jdbc = (Context)naming.lookup(prefix);
         Enumeration<NameClassPair> namesPair = jdbc.list("");
         Map<String,DataSource> datasourcesByName = new HashMap<String,DataSource>();
