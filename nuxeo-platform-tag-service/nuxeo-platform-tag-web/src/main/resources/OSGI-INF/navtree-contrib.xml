@@ -1,14 +1,11 @@
 <?xml version="1.0"?>
-<component
-    name="org.nuxeo.ecm.virtualnavigation.tagsContrib">
+<component name="org.nuxeo.ecm.virtualnavigation.tagsContrib">
 
-  <require>org.nuxeo.ecm.platform.virtualnavigation.NavTreeService</require>
+  <extension target="org.nuxeo.ecm.webapp.tree.nav.NavTreeService"
+    point="navigationTree">
 
-  <extension target="org.nuxeo.ecm.platform.virtualnavigation.NavTreeService"
-      point="navigationTree">
-
-    <navTree treeId="TAG_CLOUD" treeLabel="label.byTagNavigation" xhtmlview="/incl/tag_cloud.xhtml">
-    </navTree>
+    <navTree treeId="TAG_CLOUD" treeLabel="label.byTagNavigation"
+      xhtmlview="/incl/tag_cloud.xhtml" />
 
   </extension>
 
