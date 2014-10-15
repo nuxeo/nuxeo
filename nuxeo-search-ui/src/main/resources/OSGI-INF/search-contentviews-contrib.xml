@@ -128,7 +128,7 @@
         <layout name="search_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
           showCSVExport="true" showPDFExport="false" showSpreadsheet="true"
-          showSyndicationLinks="true" />
+          showSyndicationLinks="true" showEditRows="true" />
       </resultLayouts>
 
       <selectionList>CURRENT_SELECTION</selectionList>
@@ -190,11 +190,11 @@
         <layout name="thumbnail_listing" title="document_thumbnail_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
           showCSVExport="true" showPDFExport="false" showSpreadsheet="true"
-          showSyndicationLinks="true" />
+          showSyndicationLinks="true" showEditRows="true" />
         <layout name="search_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
           showCSVExport="true" showPDFExport="false" showSpreadsheet="true"
-          showSyndicationLinks="true" />
+          showSyndicationLinks="true" showEditRows="true" />
       </resultLayouts>
 
       <resultColumns>
@@ -237,11 +237,11 @@
         <layout name="thumbnail_listing" title="document_thumbnail_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
           showCSVExport="true" showPDFExport="false" showSpreadsheet="true"
-          showSyndicationLinks="true" />
+          showSyndicationLinks="true" showEditRows="true" />
         <layout name="search_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
           showCSVExport="true" showPDFExport="false" showSpreadsheet="true"
-          showSyndicationLinks="true" />
+          showSyndicationLinks="true" showEditColumns="true" />
       </resultLayouts>
 
       <selectionList>CURRENT_SELECTION</selectionList>
