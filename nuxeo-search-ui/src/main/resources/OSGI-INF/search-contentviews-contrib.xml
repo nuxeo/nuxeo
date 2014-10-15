@@ -125,7 +125,7 @@
           translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
           showCSVExport="true" showPDFExport="false" showSyndicationLinks="true"
           showSlideshow="true" showSpreadsheet="true" showEditRows="true" />
-        <layout name="search_listing_ajax" title="document_listing"
+        <layout name="document_listing_table" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
           showCSVExport="true" showPDFExport="false" showSpreadsheet="true"
           showSyndicationLinks="true" showEditRows="true" />
@@ -191,7 +191,7 @@
           translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
           showCSVExport="true" showPDFExport="false" showSpreadsheet="true"
           showSyndicationLinks="true" showEditRows="true" />
-        <layout name="search_listing_ajax" title="document_listing"
+        <layout name="document_listing_table" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
           showCSVExport="true" showPDFExport="false" showSpreadsheet="true"
           showSyndicationLinks="true" showEditRows="true" />
@@ -238,7 +238,7 @@
           translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
           showCSVExport="true" showPDFExport="false" showSpreadsheet="true"
           showSyndicationLinks="true" showEditRows="true" />
-        <layout name="search_listing_ajax" title="document_listing"
+        <layout name="document_listing_table" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
           showCSVExport="true" showPDFExport="false" showSpreadsheet="true"
           showSyndicationLinks="true" showEditColumns="true" />
