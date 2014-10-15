@@ -23,14 +23,16 @@
     </listener>
 
     <documentation>
-      Handle document removal or root unregistration in order to be able to
-      populate the audit log and hence compute consistent change
+      Handle document removal or root unregistration in
+      order to be able to
+      populate the audit log and hence compute
+      consistent change
       summaries for each user.
 
       @author Olivier Grisel
     </documentation>
-    <listener name="nuxeoDriveFileSystemDeletionListener" async="false"
-      postCommit="false"
+    <listener name="nuxeoDriveFileSystemDeletionListener"
+      async="false" postCommit="false"
       class="org.nuxeo.drive.listener.NuxeoDriveFileSystemDeletionListener"
       priority="200">
       <event>beforeDocumentModification</event>
