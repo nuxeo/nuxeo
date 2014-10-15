@@ -144,6 +144,7 @@
          "fields" : {
            "dc:description" : {
              "index" : "no",
+             "include_in_all" : "true",
              "type" : "string"
            },
            "fulltext" : {
@@ -158,6 +159,7 @@
          "fields" : {
            "note:note" : {
              "index" : "no",
+             "include_in_all" : "true",
              "type" : "string"
            },
            "fulltext" : {
