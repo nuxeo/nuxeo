@@ -66,11 +66,8 @@ author: lkemen@nuxeo.com
 
 /* =Light boxes */
 .foldableLightBox {
+  background-color: #fff;
   margin-bottom: 1.8em }
-
-.foldableLightBox div.folded,
-.foldableLightBox div.unfolded {
-  background: #fff }
 
 .foldableLightBox div.folded a,
 .foldableLightBox div.unfolded a {

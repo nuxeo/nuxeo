@@ -173,7 +173,7 @@ author: lkemen@nuxeo.com
 .pageNavigationControls,
 #pageNavigationControls {
   border: medium none;
-  margin: .2em 0;
+  margin: .2em 0 .5em;
   padding: 0;
   text-align: right;
   float: right }
@@ -190,29 +190,44 @@ author: lkemen@nuxeo.com
 
 .pageNavigationControls input[type="image"],
 #pageNavigationControls input[type="image"] {
-  border: 1px solid #eee !important;
+  background-color: #fff;
+  border: 1px solid #ddd !important;
   border-radius: 2px;
   border-left: none !important;
   margin: 0;
-  padding: 0.3em; }
+  padding: .3em }
 
 .pageNavigationControls input[type="image"]:nth-child(3n+1) {
-  border-left: 1px solid #eee !important }
+  border-left: 1px solid #ddd !important }
 
 .pageNavigationControls input:hover,
 #pageNavigationControls input:hover {
-  background-color: "neutral.medium (__FLAVOR__ background)";
+  background-color: "neutral.light (__FLAVOR__ background)";
   border-color: #ddd }
 
 .pageNavigationControls input[disabled=disabled],
 #pageNavigationControls input[disabled=disabled] {
+  background-color: transparent;
+  border-color: transparent !important;
   cursor: default;
-  filter: alpha(opacity=40);
-  opacity: .4 }
+  filter: alpha(opacity=20);
+  opacity: .2 }
+
+.pageNavigationControls input[disabled="disabled"]:nth-child(3n+1) {
+  border-color: transparent !important }
 
 .pageNavigationControls input[disabled=disabled]:hover,
 #pageNavigationControls input[disabled=disabled]:hover {
   background: none }
+
+#selection_buttons:after {
+/* clear float after pagination buttons */
+  clear: both;
+  content: ".";
+  display: block;
+  font-size: 0;
+  height: 0;
+  visibility: hidden }
 
 /* =Back Arrow */
 .directoryBack {
