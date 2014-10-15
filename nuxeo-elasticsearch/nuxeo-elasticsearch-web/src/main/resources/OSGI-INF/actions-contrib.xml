@@ -4,31 +4,25 @@
     point="actions">
 
     <action id="ElasticSearch" link="view_admin-fragment.xhtml" label="admcommand.elasticsearch"
-      type="admin_rest_document_link" order="70">
+      type="admin_rest_document_link" order="70" enabled="${elasticsearch.enabled:=true}">
       <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="ESConfig" link="/incl/elasticsearch/info.xhtml" label="tab.elastic.info"
-      type="admin_rest_document_link" order="20">
+      type="admin_rest_document_link" order="20" enabled="${elasticsearch.enabled:=true}">
       <category>ElasticSearch_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="ESAdmin" link="/incl/elasticsearch/admin.xhtml" label="tab.elastic.admin"
-      type="admin_rest_document_link" order="30">
+      type="admin_rest_document_link" order="30" enabled="${elasticsearch.enabled:=true}">
       <category>ElasticSearch_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="ESpp" link="/incl/elasticsearch/pp.xhtml" label="tab.elastic.pp"
-      type="admin_rest_document_link" order="40">
-      <category>ElasticSearch_sub_tab</category>
-      <filter-id>only_for_manager</filter-id>
-    </action>
-
-    <action id="ESQuery" link="/incl/elasticsearch/query.xhtml" label="tab.elastic.query"
-      type="admin_rest_document_link" order="50">
+      type="admin_rest_document_link" order="40" enabled="${elasticsearch.enabled:=true}">
       <category>ElasticSearch_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
