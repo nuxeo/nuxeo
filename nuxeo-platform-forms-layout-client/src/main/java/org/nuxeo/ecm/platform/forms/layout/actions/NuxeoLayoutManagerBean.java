@@ -18,7 +18,9 @@ package org.nuxeo.ecm.platform.forms.layout.actions;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 
+import org.nuxeo.ecm.platform.ui.web.rest.FancyNavigationHandler;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -32,24 +34,36 @@ public class NuxeoLayoutManagerBean {
 
     protected Boolean devModeSet = null;
 
-    protected static String enabledMessage = "UI Development mode activated: press 'Shift+d' to activate/deactivate on a given page";
+    protected static String activatedMessage = "UI Development mode activated: press 'Shift+d' to activate/deactivate on a given page";
 
-    protected static String disabledMessage = "UI Development mode deactivated";
+    protected static String deactivatedMessage = "UI Development mode deactivated";
 
     public boolean isDevModeSet() {
         if (devModeSet == null) {
-            devModeSet = Boolean.valueOf(Framework.isDevModeSet());
-            // add a faces message at init
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                    enabledMessage, null);
-            FacesContext faces = FacesContext.getCurrentInstance();
-            faces.addMessage(null, message);
+            setDevModeSet(false, Framework.isDevModeSet());
+            // maybe enable by default when dev mode is set
+            // setDevModeSet(Framework.isDevModeSet());
         }
         return devModeSet.booleanValue();
     }
 
-    public void setDevModeSet(boolean value) {
-        devModeSet = Boolean.valueOf(value);
+    public void setDevModeSet(boolean activated) {
+        setDevModeSet(activated, true);
+    }
+
+    public void setDevModeSet(boolean activated, boolean addMessage) {
+        devModeSet = Boolean.valueOf(activated);
+        if (addMessage) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    activated ? activatedMessage : deactivatedMessage, null);
+            FacesContext faces = FacesContext.getCurrentInstance();
+            faces.addMessage(null, message);
+            // avoid redirect for message to be displayed
+            HttpServletRequest httpRequest = (HttpServletRequest) faces.getExternalContext().getRequest();
+            httpRequest.setAttribute(
+                    FancyNavigationHandler.DISABLE_REDIRECT_FOR_URL_REWRITE,
+                    Boolean.TRUE);
+        }
     }
 
 }
