@@ -10,8 +10,5 @@ Require-Bundle: org.nuxeo.runtime,
  org.nuxeo.ecm.webapp.core,
  org.nuxeo.ecm.webapp.ui
 Bundle-Category: web,stateless
-Nuxeo-Component: OSGI-INF/theme-contrib.xml,
- OSGI-INF/directorytreemanager-contrib.xml,
- OSGI-INF/contentviews-contrib.xml,
- OSGI-INF/navtree-framework.xml,
- OSGI-INF/navtree-default-contrib.xml
+Nuxeo-Component: OSGI-INF/directorytreemanager-contrib.xml,
+ OSGI-INF/contentviews-contrib.xml

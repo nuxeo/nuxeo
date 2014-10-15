@@ -17,54 +17,35 @@
  */
 package org.nuxeo.ecm.virtualnavigation.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
-import org.nuxeo.ecm.virtualnavigation.action.NavTreeDescriptor;
-import org.nuxeo.ecm.virtualnavigation.service.NavTreeService;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.webapp.tree.nav.NavTreeDescriptor;
+import org.nuxeo.ecm.webapp.tree.nav.NavTreeService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestNavTreeService extends NXRuntimeTestCase {
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployContrib("org.nuxeo.platform.virtualnavigation.web",
-                "OSGI-INF/navtree-framework.xml");
-        deployContrib("org.nuxeo.platform.virtualnavigation.web.test",
-                "OSGI-INF/navtree-contrib.xml");
-    }
-
-    @Test
-    public void testServiceLookup() {
-        NavTreeService service = Framework.getLocalService(NavTreeService.class);
-        assertNotNull(service);
-    }
-
-    @Test
-    public void testNavTrees() throws Exception {
-        NavTreeService service = Framework.getLocalService(NavTreeService.class);
-        assertNotNull(service);
-
-        List<NavTreeDescriptor> descs = service.getTreeDescriptors();
-        assertEquals(1, descs.size());
-
-        assertNotNull(descs.get(0).getXhtmlview());
-        assertFalse(descs.get(0).isDirectoryTreeBased());
-    }
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@LocalDeploy({
+        "org.nuxeo.ecm.webapp.base:OSGI-INF/navtree-framework.xml",
+        "org.nuxeo.ecm.webapp.base:OSGI-INF/directorytreemanager-framework.xml",
+        "org.nuxeo.ecm.webapp.base:OSGI-INF/navtree-default-contrib.xml",
+        "org.nuxeo.platform.virtualnavigation.web:OSGI-INF/directorytreemanager-contrib.xml" })
+public class TestNavTreeService {
 
     @Test
     public void testNavTreesWithDirectories() throws Exception {
-
-        deployContrib("org.nuxeo.ecm.webapp.base",
-                "OSGI-INF/directorytreemanager-framework.xml");
-        deployContrib("org.nuxeo.platform.virtualnavigation.web",
-                "OSGI-INF/directorytreemanager-contrib.xml");
-        fireFrameworkStarted(); // needed (org.nuxeo.runtime.started in contrib)
 
         NavTreeService service = Framework.getLocalService(NavTreeService.class);
         assertNotNull(service);

@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: nuxeo-platform-virtualnavigation-web-test
-Bundle-SymbolicName: org.nuxeo.platform.virtualnavigation.web.test;singleton:=true
-Bundle-Version: 1.0.0
-Bundle-Vendor: Nuxeo
