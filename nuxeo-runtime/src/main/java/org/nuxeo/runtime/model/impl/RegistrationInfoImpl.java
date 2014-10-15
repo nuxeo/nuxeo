@@ -74,23 +74,23 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     // my aliases
     @XNodeList(value = "alias", type = HashSet.class, componentType = ComponentName.class)
-    Set<ComponentName> aliases;
+    Set<ComponentName> aliases = new HashSet<>();
 
     // the object names I depend of
     @XNodeList(value = "require", type = HashSet.class, componentType = ComponentName.class)
-    Set<ComponentName> requires;
+    Set<ComponentName> requires = new HashSet<>();
 
     @XNode("implementation@class")
     String implementation;
 
     @XNodeList(value = "extension-point", type = ExtensionPointImpl[].class, componentType = ExtensionPointImpl.class)
-    ExtensionPointImpl[] extensionPoints;
+    ExtensionPointImpl[] extensionPoints = new ExtensionPointImpl[0];
 
     @XNodeList(value = "extension", type = ExtensionImpl[].class, componentType = ExtensionImpl.class)
-    ExtensionImpl[] extensions;
+    ExtensionImpl[] extensions = new ExtensionImpl[0];
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = Property.class)
-    Map<String, Property> properties;
+    Map<String, Property> properties  = new HashMap<>();
 
     @XNode("@version")
     Version version = Version.ZERO;
@@ -167,10 +167,12 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     }
 
     public void destroy() {
-        if (requires != null) {
-            requires.clear();
-            requires = null;
-        }
+        requires.clear();
+        aliases.clear();
+        properties.clear();
+        extensionPoints = new ExtensionPointImpl[0];
+        extensions = new ExtensionImpl[0];
+        version = null;
         component = null;
         name = null;
         manager = null;
@@ -498,9 +500,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     }
 
     public void checkExtensions() {
-        if (extensions == null) {
-            return;
-        }
         // HashSet<String> targets = new HashSet<String>();
         for (ExtensionImpl xt : extensions) {
             if (xt.target == null) {

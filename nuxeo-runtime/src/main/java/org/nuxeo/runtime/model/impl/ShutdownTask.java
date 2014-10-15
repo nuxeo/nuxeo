@@ -57,10 +57,9 @@ public class ShutdownTask {
                     shutdown(mgr, parentRi);
                 }
             }
-        } else {
-            // no components are depending on me - shutdown now
-            mgr.unregister(name);
         }
+        // no components are depending on me - shutdown now
+        mgr.unregister(name);
     }
 
 }
