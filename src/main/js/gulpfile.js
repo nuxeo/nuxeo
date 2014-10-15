@@ -1,6 +1,7 @@
 'use strict';
 
 var gulp = require('gulp');
+var path = require('path');
 var browserSync = require('browser-sync');
 
 // load plugins
@@ -8,17 +9,12 @@ var $ = require('gulp-load-plugins')();
 
 var sources = ['app/app.js', 'app/nuxeo/**/*.js', 'app/ui/**/*.js'];
 
-gulp.task('transpile',
-  $.shell.task('node_modules/traceur/traceur --experimental --out app/app-build.js app/app.js --modules=instantiate')
-//function () {
-//    return gulp.src('src/**/*.js')
-//        .pipe($.sourcemaps.init())
-//        .pipe($.traceur({modules: 'register', experimental: true}))
-//        .pipe($.concat('app.js'))
-//        .pipe($.sourcemaps.write())
-//        .pipe(gulp.dest('dist'));
-//}
-);
+gulp.task('transpile', function () {
+  var traceur = path.join('node_modules', 'traceur', 'traceur'),
+      out = path.join('app', 'app-build.js'),
+      app = path.join('app', 'app.js');
+  return $.shell.task(traceur + ' --modules=instantiate --experimental --out '+ out + ' ' + app);
+});
 
 gulp.task('jshint', function () {
   return gulp.src(sources)
