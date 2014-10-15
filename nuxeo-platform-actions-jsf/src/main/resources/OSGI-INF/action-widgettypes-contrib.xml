@@ -568,6 +568,9 @@
       <property name="template">
         /incl/action/link_action_template.xhtml
       </property>
+      <property name="dev_template">
+        /widgets/actions/dev/action_widget_type_dev_template.xhtml
+      </property>
     </widgetType>
 
     <widgetType name="bare_link">
@@ -653,6 +656,9 @@
       <property name="template">
         /incl/action/bare_link_action_template.xhtml
       </property>
+      <property name="dev_template">
+        /widgets/actions/dev/action_widget_type_dev_template.xhtml
+      </property>
     </widgetType>
 
     <widgetType name="fancybox">
@@ -737,6 +743,9 @@
       <property name="template">
         /incl/action/fancybox_action_template.xhtml
       </property>
+      <property name="dev_template">
+        /widgets/actions/dev/action_widget_type_dev_template.xhtml
+      </property>
     </widgetType>
 
     <widgetType name="rest_document_link">
@@ -810,6 +819,9 @@
       </handler-class>
       <property name="template">
         /incl/action/rest_document_link_action_template.xhtml
+      </property>
+      <property name="dev_template">
+        /widgets/actions/dev/action_widget_type_dev_template.xhtml
       </property>
     </widgetType>
 
@@ -890,6 +902,9 @@
       </handler-class>
       <property name="template">
         /incl/action/main_tab_action_template.xhtml
+      </property>
+      <property name="dev_template">
+        /widgets/actions/dev/action_widget_type_dev_template.xhtml
       </property>
     </widgetType>
 
@@ -1029,6 +1044,9 @@
       <property name="template">
         /incl/action/widget_action_template.xhtml
       </property>
+      <property name="dev_template">
+        /widgets/actions/dev/action_widget_type_dev_template.xhtml
+      </property>
     </widgetType>
 
     <widgetType name="template">
@@ -1081,6 +1099,9 @@
       </handler-class>
       <property name="template">
         /incl/action/template_action_template.xhtml
+      </property>
+      <property name="dev_template">
+        /widgets/actions/dev/action_widget_type_dev_template.xhtml
       </property>
     </widgetType>
 

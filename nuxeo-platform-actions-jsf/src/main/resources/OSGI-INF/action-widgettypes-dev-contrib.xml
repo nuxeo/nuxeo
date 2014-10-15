@@ -1,0 +1,197 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.actions.actionwidgettypes.dev">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <!-- this layout is applied to an action, not a widget -->
+    <layout name="action_widget_type_dev_layout" type="devLayout">
+      <rows>
+        <row>
+          <widget>type</widget>
+        </row>
+        <row>
+          <widget>categories</widget>
+        </row>
+        <row>
+          <widget>label</widget>
+        </row>
+        <row>
+          <widget>order</widget>
+        </row>
+        <row>
+          <widget>icon</widget>
+        </row>
+        <row>
+          <widget>accessKey</widget>
+        </row>
+        <row>
+          <widget>confirm</widget>
+        </row>
+        <row>
+          <widget>immediate</widget>
+        </row>
+        <row>
+          <widget>link</widget>
+        </row>
+        <row>
+          <widget>properties</widget>
+        </row>
+        <row>
+          <widget>filterIds</widget>
+        </row>
+      </rows>
+      <widget name="type" type="text">
+        <labels>
+          <label mode="any">Type</label>
+        </labels>
+        <fields>
+          <field>type</field>
+        </fields>
+      </widget>
+      <widget name="categories" type="text">
+        <labels>
+          <label mode="any">Categories</label>
+        </labels>
+        <fields>
+          <field>categories</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{nxu:test(empty layoutValue.categories, 'hidden',
+            mode)}
+          </mode>
+        </widgetModes>
+      </widget>
+      <widget name="label" type="text">
+        <labels>
+          <label mode="any">Label</label>
+        </labels>
+        <fields>
+          <field>label</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{nxu:test(empty layoutValue.label, 'hidden', mode)}
+          </mode>
+        </widgetModes>
+      </widget>
+      <widget name="order" type="text">
+        <labels>
+          <label mode="any">Order</label>
+        </labels>
+        <fields>
+          <field>order</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{nxu:test(empty layoutValue.order, 'hidden', mode)}
+          </mode>
+        </widgetModes>
+      </widget>
+      <widget name="icon" type="text">
+        <labels>
+          <label mode="any">Icon</label>
+        </labels>
+        <fields>
+          <field>icon</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{nxu:test(empty layoutValue.icon, 'hidden', mode)}
+          </mode>
+        </widgetModes>
+      </widget>
+      <widget name="accessKey" type="text">
+        <labels>
+          <label mode="any">Access Key</label>
+        </labels>
+        <fields>
+          <field>accessKey</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{nxu:test(empty layoutValue.accessKey, 'hidden',
+            mode)}
+          </mode>
+        </widgetModes>
+      </widget>
+      <widget name="confirm" type="text">
+        <labels>
+          <label mode="any">Confirm</label>
+        </labels>
+        <fields>
+          <field>confirm</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{nxu:test(empty layoutValue.confirm, 'hidden',
+            mode)}
+          </mode>
+        </widgetModes>
+      </widget>
+      <widget name="immediate" type="text">
+        <labels>
+          <label mode="any">Immediate</label>
+        </labels>
+        <fields>
+          <field>immediate</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{nxu:test(empty layoutValue.immediate, 'hidden',
+            mode)}
+          </mode>
+        </widgetModes>
+      </widget>
+      <widget name="link" type="text">
+        <labels>
+          <label mode="any">Link</label>
+        </labels>
+        <fields>
+          <field>link</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{nxu:test(empty layoutValue.link, 'hidden', mode)}
+          </mode>
+        </widgetModes>
+      </widget>
+      <widget name="properties" type="template">
+        <labels>
+          <label mode="any">Properties</label>
+        </labels>
+        <fields>
+          <field>properties</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{nxu:test(empty layoutValue.properties, 'hidden',
+            mode)}
+          </mode>
+        </widgetModes>
+        <properties mode="any">
+          <property name="template">
+            /widgets/dev/properties_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="filterIds" type="text">
+        <labels>
+          <label mode="any">Filters</label>
+        </labels>
+        <fields>
+          <field>filterIds</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{nxu:test(empty layoutValue.filterIds, 'hidden',
+            mode)}
+          </mode>
+        </widgetModes>
+      </widget>
+    </layout>
+
+  </extension>
+
+</component>

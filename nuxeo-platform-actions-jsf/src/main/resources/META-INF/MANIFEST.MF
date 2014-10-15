@@ -7,4 +7,5 @@ Bundle-Localization: bundle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/action-widgettypes-contrib.xml,
+ OSGI-INF/action-widgettypes-dev-contrib.xml,
  OSGI-INF/widgettypes-contrib.xml
