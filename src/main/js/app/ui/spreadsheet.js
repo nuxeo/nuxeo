@@ -41,7 +41,7 @@ class Spreadsheet {
     };
 
     this.query = new Query(connection);
-    this.query.enrichers = ['permissions'];
+    this.query.enrichers = ['permissions', 'vocabularies'];
 
     new Layout(connection, layout).fetch().then((layout) => {
       // Check which columns to display
@@ -71,6 +71,10 @@ class Spreadsheet {
   get columns() { return this._columns; }
   set columns(columns) {
     this._columns = columns;
+    this._columnsByField = {};
+    for (var c of columns) {
+      this._columnsByField[c.data] = c;
+    }
     this._update();
   }
 
@@ -143,7 +147,8 @@ class Spreadsheet {
         var doc = this._dirty[uid] = this._dirty[uid] || {};
 
         // Split csv values into array
-        if (Array.isArray(oldV)) {
+        var column = this._columnsByField[field];
+        if (column.multiple) {
           newV = newV.split(',');
         }
 

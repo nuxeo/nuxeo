@@ -43,13 +43,28 @@ class Select2Editor extends Handsontable.editors.Select2Editor {
       allowClear: true,
       width: 'resolve',
       minimumInputLength: 0,
-      formatResult: this.formatter.bind(cellProperties),
+      formatResult: this.formatter.bind(this),
+      formatSelection: this.formatter.bind(this),
       multiple: isMultiple,
       placeholder: 'Select a value',
-      initSelection: this.initSelection(isMultiple),
+      initSelection: this.initSelection(isMultiple).bind(this),
       id: this.getEntryId
     };
 
+  }
+
+  open() {
+    super.open();
+    this.$textarea.on('selected', this.onSelected.bind(this));
+    this.$textarea.on('select2-removed', this.onRemoved.bind(this));
+  }
+
+  onSelected(evt) {
+    //
+  }
+
+  onRemoved(evt) {
+    //
   }
 
   initSelection(isMultiple) {

@@ -1,0 +1,12 @@
+<component name="torg.nuxeo.ecm.platform.spreadsheet.enrichers">
+  <extension
+          target="org.nuxeo.ecm.automation.io.services.enricher.ContentEnricherService"
+          point="enricher">
+    <enricher name="l10nsubjects"
+              class="org.nuxeo.ecm.automation.io.services.enricher.VocabularyEnricher">
+      <category>vocabularies</category>
+      <parameter name="field">dc:subjects</parameter>
+      <parameter name="directoryName">l10nsubjects</parameter>
+    </enricher>
+  </extension>
+</component>

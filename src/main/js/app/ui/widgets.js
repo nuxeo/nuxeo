@@ -14,7 +14,7 @@
  * Contributors:
  *     Nelson Silva <nelson.silva@inevo.pt>
  */
-import {DirectoryEditor} from './editors/directory';
+import {DirectoryEditor, DirectoryRenderer} from './editors/directory';
 import {DocumentEditor} from './editors/document';
 import {UserEditor} from './editors/user';
 
@@ -42,9 +42,11 @@ export const WIDGETS = {
 
   // SUGGESTION
   suggestOneDirectory: {
+    renderer: DirectoryRenderer,
     editor: 'directory'
   },
   suggestManyDirectory: {
+    renderer: DirectoryRenderer,
     editor: 'directory',
     multiple: true
   },

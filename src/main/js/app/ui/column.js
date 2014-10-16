@@ -20,8 +20,8 @@ import {WIDGETS} from './widgets';
   * Handsontable column options
   */
 class Column {
-  constructor( connection, def, widget, renderer) {
-    Object.assign(this, {connection, def, widget, renderer});
+  constructor( connection, def, widget, defaultRenderer = Handsontable.renderers.TextRenderer) {
+    Object.assign(this, {connection, def, widget, defaultRenderer});
     // Mixin widget type
     if (WIDGETS[widget.type]) {
       Object.assign(this, WIDGETS[widget.type]);
@@ -29,6 +29,12 @@ class Column {
     // Mixin special field widget
     if (SPECIAL_FIELDS[this.field] && SPECIAL_FIELDS[this.field].widget) {
       Object.assign(this, SPECIAL_FIELDS[this.field].widget);
+    }
+    // Bind the renderer to this column
+    if (this.renderer) {
+      this.renderer = this.renderer.bind(this);
+    } else {
+      this.renderer = defaultRenderer;
     }
   }
 
