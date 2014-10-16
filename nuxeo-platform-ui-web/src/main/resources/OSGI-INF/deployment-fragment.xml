@@ -1,10 +1,12 @@
 <?xml version="1.0"?>
 <fragment version="1">
 
+  <require>org.nuxeo.runtime.nuxeo-runtime-deploy</require>
+  
   <extension target="web#LISTENER">
     <listener>
       <listener-class>
-        org.nuxeo.ecm.platform.ui.web.application.config.JSFConfigureListener
+        com.sun.faces.config.ConfigureListener
       </listener-class>
     </listener>
     <listener>
@@ -263,13 +265,6 @@
     <context-param>
       <param-name>javax.faces.PROJECT_STAGE</param-name>
       <param-value>${javax.faces.PROJECT_STAGE:=Production}</param-value>
-    </context-param>
-
-    <context-param>
-      <param-name>javax.faces.FACELETS_RESOURCE_RESOLVER</param-name>
-      <param-value>
-        org.nuxeo.theme.jsf.facelets.vendor.NXFaceletsResourceResolver
-      </param-value>
     </context-param>
 
     <context-param>
