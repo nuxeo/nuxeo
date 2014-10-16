@@ -13,9 +13,7 @@
 package org.nuxeo.ecm.core.storage.mongodb;
 
 import org.junit.After;
-import org.junit.Before;
 import org.nuxeo.common.Environment;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -27,9 +25,14 @@ public abstract class MongoDBRepositoryTXTestCase extends
         MongoDBRepositoryTestCase {
 
     @Override
+    protected void initRepository() throws Exception {
+        deployBundle("org.nuxeo.runtime.jtajca");
+        super.initRepository();
+    }
+
+    @Override
     protected void setUpTx() throws Exception {
         super.setUpTx();
-        NuxeoContainer.install();
         Environment.getDefault().setHostApplicationName(
                 Environment.NXSERVER_HOST);
         fireFrameworkStarted();
@@ -53,9 +56,6 @@ public abstract class MongoDBRepositoryTXTestCase extends
                 TransactionHelper.commitOrRollbackTransaction();
             }
         } finally {
-            if (NuxeoContainer.isInstalled()) {
-                NuxeoContainer.uninstall();
-            }
             super.tearDown();
         }
     }

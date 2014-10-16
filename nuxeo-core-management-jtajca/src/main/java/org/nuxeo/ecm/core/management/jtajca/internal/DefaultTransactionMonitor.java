@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.core.management.jtajca.internal;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -98,17 +97,6 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
             } catch (NamingException cause) {
                 throw new RuntimeException("Cannot lookup tx manager", cause);
             }
-        }
-        if (!(tm instanceof NuxeoContainer.TransactionManagerWrapper)) {
-            throw new RuntimeException("Nuxeo container not installed");
-        }
-        try {
-            Field f = NuxeoContainer.TransactionManagerWrapper.class.getDeclaredField("tm");
-            f.setAccessible(true);
-            tm = (TransactionManager) f.get(tm);
-        } catch (Exception cause) {
-            throw new RuntimeException("Cannot access to geronimo tx manager",
-                    cause);
         }
         if (!(tm instanceof TransactionManagerImpl)) {
             return null;

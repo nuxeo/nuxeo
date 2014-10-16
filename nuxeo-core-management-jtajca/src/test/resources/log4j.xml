@@ -7,7 +7,7 @@
     <param name="Target" value="System.out" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern"
-        value="%d{HH:mm:ss,SSS} %-5p [%C{1}] %t %X %m%n" />
+        value="%t %d{HH:mm:ss,SSS} %-5p [%C{1}] %m%X%n" />
     </layout>
   </appender>
 
@@ -15,7 +15,7 @@
     <param name="File" value="target/trace.log" />
     <param name="Append" value="false" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p [%C{1}] %t %X %m%n" />
+      <param name="ConversionPattern" value="%t %d{HH:mm:ss,SSS} %-5p [%C{1}] %t %m%X%n" />
     </layout>
   </appender>
     

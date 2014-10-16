@@ -36,7 +36,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.XAResourceConnectionAdapter;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -53,12 +52,17 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
         return runtime;
     }
 
+    @Override
+    protected void deployRepositoryContrib() throws Exception {
+        super.deployRepositoryContrib();
+        deployBundle("org.nuxeo.runtime.jtajca");
+    }
+
     @Before
     @Override
     public void setUp() throws Exception {
         super.setUp(); // database setUp deletes all tables
         fireFrameworkStarted();
-        NuxeoContainer.install();
         TransactionHelper.startTransaction();
 
         // no openSession() done here
@@ -77,10 +81,7 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
                 TransactionHelper.commitOrRollbackTransaction();
             }
         } finally {
-            System.getProperties().remove(ConnectionHelper.SINGLE_DS);
-            if (NuxeoContainer.isInstalled()) {
-                NuxeoContainer.uninstall();
-            }
+            Framework.getProperties().remove(ConnectionHelper.SINGLE_DS);
             super.tearDown();
         }
     }

@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.core.persistence;
 
+import java.util.Properties;
+
 import javax.persistence.EntityManager;
 
 import org.junit.After;
@@ -19,7 +21,6 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -36,17 +37,18 @@ public class TestPersistenceProvider extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        final Properties properties = Framework.getProperties();
         DatabaseHelper.DATABASE.setUp();
         if (useSingleDataSource()) {
             // the name doesn't actually matter, as code in
             // ConnectionHelper.getDataSource ignores it and uses
             // nuxeo.test.vcs.url etc. for connections in test mode
-            System.setProperty(ConnectionHelper.SINGLE_DS, "jdbc/NuxeoTestDS");
+            properties.put(ConnectionHelper.SINGLE_DS, "jdbc/NuxeoTestDS");
         } else {
-            System.getProperties().remove(ConnectionHelper.SINGLE_DS);
+            properties.remove(ConnectionHelper.SINGLE_DS);
         }
 
-        NuxeoContainer.install();
+        deployBundle("org.nuxeo.runtime.jtajca");
         deployBundle("org.nuxeo.runtime.datasource");
         deployBundle("org.nuxeo.ecm.core.persistence");
         deployContrib("org.nuxeo.ecm.core.persistence.test",
@@ -64,10 +66,6 @@ public class TestPersistenceProvider extends NXRuntimeTestCase {
             TransactionHelper.setTransactionRollbackOnly();
             TransactionHelper.commitOrRollbackTransaction();
         }
-        if (NuxeoContainer.isInstalled()) {
-            NuxeoContainer.uninstall();
-        }
-        System.getProperties().remove(ConnectionHelper.SINGLE_DS);
         DatabaseHelper.DATABASE.tearDown();
         super.tearDown();
     }

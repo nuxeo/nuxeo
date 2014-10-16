@@ -155,6 +155,10 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         }
         if (txType.equals(RESOURCE_LOCAL)) {
             props.remove(Environment.DATASOURCE);
+        } else {
+            String dsname = props.getProperty(Environment.DATASOURCE);
+            dsname = DataSourceHelper.getDataSourceJNDIName(dsname);
+            props.put(Environment.DATASOURCE, dsname);
         }
         return createEntityManagerFactory(properties);
     }

@@ -24,11 +24,11 @@ import static org.nuxeo.ecm.core.work.api.Work.State.RUNNING;
 import static org.nuxeo.ecm.core.work.api.Work.State.SCHEDULED;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -46,6 +46,7 @@ public class WorkManagerTXTest extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.runtime.jtajca");
         deployBundle("org.nuxeo.ecm.core.event");
         deployContrib("org.nuxeo.ecm.core.event.test",
                 "test-workmanager-config.xml");
@@ -56,7 +57,6 @@ public class WorkManagerTXTest extends NXRuntimeTestCase {
         assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
         assertEquals(0, service.getQueueSize(QUEUE, RUNNING));
         assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
-        NuxeoContainer.install();
         TransactionHelper.startTransaction();
     }
 
@@ -70,7 +70,6 @@ public class WorkManagerTXTest extends NXRuntimeTestCase {
             TransactionHelper.setTransactionRollbackOnly();
             TransactionHelper.commitOrRollbackTransaction();
         }
-        NuxeoContainer.uninstall();
         super.tearDown();
     }
 
@@ -95,6 +94,7 @@ public class WorkManagerTXTest extends NXRuntimeTestCase {
 
     @Test
     public void testWorkManagerRollback() throws Exception {
+        Assert.assertTrue(TransactionHelper.isTransactionActive());
         int duration = 1000; // 1s
         assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
         assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));

@@ -17,15 +17,12 @@ import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
-import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.ContainerFeature;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-@Deploy({ "org.nuxeo.runtime.jtajca" })
 @RepositoryConfig(cleanup=Granularity.METHOD, repositoryFactoryClass=PoolingRepositoryFactory.class)
-public class TransactionalFeature extends SimpleFeature {
+public class TransactionalFeature extends ContainerFeature {
 
     protected TransactionalConfig config;
 
@@ -40,22 +37,6 @@ public class TransactionalFeature extends SimpleFeature {
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
         config = runner.getConfig(TransactionalConfig.class);
-    }
-
-    @Override
-    public void start(FeaturesRunner runner) throws Exception {
-        if (!NuxeoContainer.isInstalled()) { // before runtime start (lazy loading)
-            NuxeoContainer.install();
-            nsOwner = true;
-        }
-    }
-
-    @Override
-    public void stop(FeaturesRunner runner) throws Exception {
-        if (nsOwner) {
-            nsOwner = false;
-            NuxeoContainer.uninstall(); // before runtime shutdown
-        }
     }
 
     @Override

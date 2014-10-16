@@ -15,7 +15,6 @@ package org.nuxeo.ecm.core.storage.sql;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -37,7 +36,7 @@ public abstract class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
 
     /** Can be subclassed to instantiate specific pool config. */
     protected void setUpContainer() throws Exception {
-        NuxeoContainer.install();
+
     }
 
     /**
@@ -47,7 +46,7 @@ public abstract class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
     protected void deployRepositoryContrib() throws Exception {
         DatabaseHelper.setRepositoryFactory(PoolingRepositoryFactory.class);
         super.deployRepositoryContrib();
-        setUpContainer();
+        deployBundle("org.nuxeo.runtime.jtajca");
     }
 
     protected boolean hasPoolingConfig() {
@@ -71,9 +70,6 @@ public abstract class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
                 TransactionHelper.commitOrRollbackTransaction();
             }
         } finally {
-            if (NuxeoContainer.isInstalled()) {
-                NuxeoContainer.uninstall();
-            }
             super.tearDown();
         }
     }

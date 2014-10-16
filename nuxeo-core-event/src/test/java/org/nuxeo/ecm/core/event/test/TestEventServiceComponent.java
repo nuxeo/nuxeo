@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.event.impl.PostCommitEventExecutor;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestEventServiceComponent extends NXRuntimeTestCase {
@@ -43,6 +42,7 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.runtime.jtajca");
         deployBundle("org.nuxeo.ecm.core.event");
         fireFrameworkStarted();
         // 2 quartz threads launched by the event contribs above
@@ -50,7 +50,6 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
         initialThreadCount = Thread.activeCount();
         DummyPostCommitEventListener.handledCountReset();
         DummyPostCommitEventListener.eventCountReset();
-        NuxeoContainer.install();
     }
 
     @Override
@@ -61,7 +60,6 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
         EventService service = Framework.getService(EventService.class);
         service.fireEvent(commit);
         service.waitForAsyncCompletion();
-        NuxeoContainer.uninstall();
         super.tearDown();
     }
 
