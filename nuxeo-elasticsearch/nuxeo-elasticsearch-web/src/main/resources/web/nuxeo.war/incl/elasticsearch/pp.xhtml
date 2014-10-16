@@ -7,11 +7,10 @@
   class="hostInfos">
 
 
-  <h3> PageProviders used in ContentViews </h3>
+  <h3> PageProviders </h3>
   <table class="dataOutput">
         <thead>
              <tr>
-               <th>ContentView</th>
                <th>PageProvider</th>
                <th>Type</th>
              </tr>
@@ -19,7 +18,6 @@
         <tbody>
         <c:forEach var="cvs" items="#{esAdmin.contentViewStatus}">
              <tr style="color:#{cvs.color}">
-               <td>#{cvs.cvName}</td>
                <td>#{cvs.ppName}</td>
                <td>#{cvs.type}</td>
              </tr>

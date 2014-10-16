@@ -22,22 +22,27 @@ package org.nuxeo.elasticsearch.web.admin;
  *
  */
 
-public class ContentViewStatus implements Comparable<ContentViewStatus>{
+public class PageProviderStatus implements Comparable<PageProviderStatus> {
+
+    protected static final String CORE_QUERY_TYPE = "CoreQueryDocumentPageProvider";
+    protected static final String ELASTIC_TYPE = "elasticsearch";
 
     String cvName;
-
     String ppName;
-
     String type;
 
-    public ContentViewStatus(String cvName, String ppName, String type) {
-        this.cvName = cvName;
+    public PageProviderStatus(String ppName, String klass) {
         this.ppName = ppName;
-        this.type = type;
-    }
-
-    public String getCvName() {
-        return cvName;
+        switch (klass) {
+            case "org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider":
+                this.type = CORE_QUERY_TYPE;
+                break;
+            case "org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider":
+                this.type = ELASTIC_TYPE;
+                break;
+            default:
+                this.type = klass;
+        }
     }
 
     public String getPpName() {
@@ -49,18 +54,18 @@ public class ContentViewStatus implements Comparable<ContentViewStatus>{
     }
 
     public String getColor() {
-        if ("core".equals(type)) {
-            return "#000000";
-        } else if ("elasticsearch".equals(type)) {
-            return "#00CC00";
-        } else {
+        if (CORE_QUERY_TYPE.equals(type)) {
             return "#0000FF";
+        } else if (ELASTIC_TYPE.equals(type)) {
+            return "#22BB22";
+        } else {
+            return "#424242";
         }
     }
 
     @Override
-    public int compareTo(ContentViewStatus other) {
-        return getCvName().toLowerCase().compareTo(other.getCvName().toLowerCase());
+    public int compareTo(PageProviderStatus other) {
+        return getPpName().toLowerCase().compareTo(other.getPpName().toLowerCase());
     }
 
 }

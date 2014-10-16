@@ -32,11 +32,9 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
-import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
-import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
-import org.nuxeo.ecm.platform.query.core.GenericPageProviderDescriptor;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
@@ -68,7 +66,7 @@ public class ElasticSearchManager {
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
-    protected List<ContentViewStatus> cvStatuses = null;
+    protected List<PageProviderStatus> ppStatuses = null;
 
     protected Timer indexTimer;
 
@@ -116,39 +114,26 @@ public class ElasticSearchManager {
 
     protected void introspectPageProviders() throws Exception {
 
-        cvStatuses = new ArrayList<>();
+        ppStatuses = new ArrayList<>();
 
-        ContentViewService cvs = Framework
-                .getLocalService(ContentViewService.class);
-
-        for (String cvName : cvs.getContentViewNames()) {
-            ContentView cv = cvs.getContentView(cvName);
-            PageProviderDefinition def = cv.getPageProvider().getDefinition();
-            if (def instanceof GenericPageProviderDescriptor) {
-                GenericPageProviderDescriptor gppd = (GenericPageProviderDescriptor) def;
-                if (gppd.getPageProviderClass().getName()
-                        .contains("elasticsearch")) {
-                    cvStatuses.add(new ContentViewStatus(cvName,
-                            gppd.getName(), "elasticsearch"));
-                } else {
-                    cvStatuses.add(new ContentViewStatus(cvName,
-                            gppd.getName(), gppd.getPageProviderClass()
-                                    .getName()));
-                }
-            } else if (def instanceof CoreQueryPageProviderDescriptor) {
-                cvStatuses.add(new ContentViewStatus(cvName, def.getName(),
-                        "core"));
-            }
+        PageProviderService pps = Framework
+                .getLocalService(PageProviderService.class);
+        for (String ppName : pps.getPageProviderDefinitionNames()) {
+            PageProviderDefinition def = pps.getPageProviderDefinition(ppName);
+            // Create an instance so class replacer is taken in account
+            PageProvider<?> pp = pps.getPageProvider(ppName, def, null, null,
+                    0L, 0L, null);
+            String klass = pp.getClass().getCanonicalName();
+            ppStatuses.add(new PageProviderStatus(ppName, klass));
         }
-
-        Collections.sort(cvStatuses);
+        Collections.sort(ppStatuses);
     }
 
-    public List<ContentViewStatus> getContentViewStatus() throws Exception {
-        if (cvStatuses == null) {
+    public List<PageProviderStatus> getContentViewStatus() throws Exception {
+        if (ppStatuses == null) {
             introspectPageProviders();
         }
-        return cvStatuses;
+        return ppStatuses;
     }
 
     public Boolean isIndexingInProgress() {
