@@ -430,16 +430,20 @@ public class SearchUIActions implements Serializable {
     }
 
     public void setSearchTerm(String searchTerm) throws ClientException,
-        UnsupportedEncodingException {
-
-        ContentView cv = contentViewService.getContentView(getCurrentContentViewName());
-        DocumentModel searchDocumentModel = cv.getSearchDocumentModel();
-        // set the search term
-        searchDocumentModel.setPropertyValue("default_search:ecm_fulltext", searchTerm);
-        ContentViewState state = new ContentViewStateImpl();
-        state.setSearchDocumentModel(searchDocumentModel);
-        state.setContentViewName(getCurrentContentViewName());
-        contentViewActions.restoreContentView(state);
+            UnsupportedEncodingException {
+        // If the search term is not defined, we don't do the logic
+        if (StringUtils.isEmpty(searchTerm)) {
+            // By default, the "simple_search" content view is used
+            ContentView cv = contentViewService.getContentView(SIMPLE_SEARCH_CONTENT_VIEW_NAME);
+            DocumentModel searchDocumentModel = cv.getSearchDocumentModel();
+            // set the search term
+            searchDocumentModel.setPropertyValue("default_search:ecm_fulltext",
+                    searchTerm);
+            ContentViewState state = new ContentViewStateImpl();
+            state.setSearchDocumentModel(searchDocumentModel);
+            state.setContentViewName(getCurrentContentViewName());
+            contentViewActions.restoreContentView(state);
+        }
     }
 
     /**
