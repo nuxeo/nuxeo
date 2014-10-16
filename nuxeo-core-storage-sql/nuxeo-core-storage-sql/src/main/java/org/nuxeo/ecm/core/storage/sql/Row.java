@@ -148,8 +148,10 @@ public final class Row extends RowId implements Serializable, Cloneable {
                 if (oldValue instanceof Delta) {
                     Delta oldDelta = (Delta) oldValue;
                     if (value instanceof Delta) {
-                        // add a delta to another delta
-                        value = oldDelta.add((Delta) value);
+                        if (value != oldDelta) {
+                            // add a delta to another delta
+                            value = oldDelta.add((Delta) value);
+                        }
                     } else if (oldDelta.getFullValue().equals(value)) {
                         // don't overwrite a delta with the full value
                         // that actually comes from it

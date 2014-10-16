@@ -38,12 +38,20 @@ public abstract class Delta extends Number {
     public abstract Number getDeltaValue();
 
     /**
-     * Adds two deltas.
+     * Adds this delta to another delta.
      *
      * @param other the other delta
      * @return the added delta
      */
     public abstract Delta add(Delta other);
+
+    /**
+     * Adds this delta to a number.
+     *
+     * @param other the number
+     * @return the resulting number
+     */
+    public abstract Number add(Number other);
 
     // make these two abstract to force implementation
 

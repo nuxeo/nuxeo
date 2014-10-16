@@ -40,12 +40,20 @@ public class TestDeltaLong {
     }
 
     @Test
-    public void testDeltaLong_add() {
+    public void testDeltaLong_addDelta() {
         DeltaLong dl1 = new DeltaLong(100, 123);
         DeltaLong dl2 = new DeltaLong(1000, 555);
         DeltaLong added = (DeltaLong) dl1.add(dl2);
         assertEquals(100, added.getBase());
         assertEquals(123 + 555, added.getDelta());
+    }
+
+    @Test
+    public void testDeltaLong_addNumber() {
+        DeltaLong dl = new DeltaLong(100, 123);
+        Long n = Long.valueOf(1000);
+        Long added = (Long) dl.add(n);
+        assertEquals(1123, added.longValue());
     }
 
     @Test

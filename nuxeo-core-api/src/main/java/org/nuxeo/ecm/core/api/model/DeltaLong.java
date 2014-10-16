@@ -74,6 +74,16 @@ public class DeltaLong extends Delta {
         return new DeltaLong(base, delta + ((DeltaLong) other).delta);
     }
 
+    @Override
+    public Number add(Number other) {
+        if (!(other instanceof Long)) {
+            throw new IllegalArgumentException("Cannot add "
+                    + getClass().getSimpleName() + " and "
+                    + other.getClass().getSimpleName());
+        }
+        return Long.valueOf(((Long) other).longValue() + delta);
+    }
+
     // @Override
     public long getBase() {
         return base;
