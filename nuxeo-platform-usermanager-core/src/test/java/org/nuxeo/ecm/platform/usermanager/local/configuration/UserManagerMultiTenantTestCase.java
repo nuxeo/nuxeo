@@ -30,6 +30,7 @@ public abstract class UserManagerMultiTenantTestCase extends NXRuntimeTestCase {
 
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core.cache");
         deployBundle("org.nuxeo.ecm.directory.api");

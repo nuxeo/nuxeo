@@ -47,10 +47,12 @@ public class MultiDirectoryFactory extends DefaultComponent implements
 
     protected MultiDirectoryRegistry directories;
 
+    @Override
     public Directory getDirectory(String name) {
         return directories.getDirectory(name);
     }
 
+    @Override
     public String getName() {
         return NAME;
     }
@@ -103,6 +105,9 @@ public class MultiDirectoryFactory extends DefaultComponent implements
             throws DirectoryException {
         Object[] contribs = extension.getContributions();
         DirectoryService dirService = getDirectoryService();
+        if (dirService == null) {
+            return;
+        }
         for (Object contrib : contribs) {
             MultiDirectoryDescriptor descriptor = (MultiDirectoryDescriptor) contrib;
             String directoryName = descriptor.name;
@@ -111,12 +116,14 @@ public class MultiDirectoryFactory extends DefaultComponent implements
         }
     }
 
+    @Override
     public void shutdown() throws DirectoryException {
         for (Directory directory : directories.getDirectories()) {
             directory.shutdown();
         }
     }
 
+    @Override
     public List<Directory> getDirectories() {
         return new ArrayList<Directory>(directories.getDirectories());
     }

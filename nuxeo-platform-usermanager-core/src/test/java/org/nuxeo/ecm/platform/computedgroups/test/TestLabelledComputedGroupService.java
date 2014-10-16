@@ -50,6 +50,7 @@ public class TestLabelledComputedGroupService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.platform.usermanager.api");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.directory.api");

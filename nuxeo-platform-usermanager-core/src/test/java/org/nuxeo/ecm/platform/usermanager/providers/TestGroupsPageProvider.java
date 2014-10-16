@@ -31,6 +31,7 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
 
     protected UserManager userManager;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -38,6 +39,7 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
 
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.directory.api");
         deployBundle("org.nuxeo.ecm.directory");
@@ -62,6 +64,7 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
         initGroups();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         DatabaseHelper.DATABASE.tearDown();
@@ -84,8 +87,8 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
     @SuppressWarnings("unchecked")
     public void testGroupsPageProviderAllMode() throws ClientException {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put(GroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY,
-                GroupsPageProvider.ALL_MODE);
+        properties.put(AbstractGroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY,
+                AbstractGroupsPageProvider.ALL_MODE);
         PageProvider<DocumentModel> groupsProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
                 PROVIDER_NAME, null, null, null, properties, "");
         List<DocumentModel> groups = groupsProvider.getCurrentPage();
@@ -108,8 +111,8 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
     @SuppressWarnings("unchecked")
     public void testGroupsPageProviderSearchMode() throws ClientException {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put(GroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY,
-                GroupsPageProvider.SEARCH_ONLY_MODE);
+        properties.put(AbstractGroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY,
+                AbstractGroupsPageProvider.SEARCH_ONLY_MODE);
         PageProvider<DocumentModel> groupsProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
                 PROVIDER_NAME, null, null, null, properties, "gr");
         List<DocumentModel> groups = groupsProvider.getCurrentPage();

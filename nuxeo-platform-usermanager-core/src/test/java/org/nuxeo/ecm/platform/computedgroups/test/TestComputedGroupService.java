@@ -45,12 +45,14 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestComputedGroupService extends NXRuntimeTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
         DatabaseHelper.DATABASE.setUp();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         DatabaseHelper.DATABASE.tearDown();
@@ -70,6 +72,7 @@ public class TestComputedGroupService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.platform.usermanager.api");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.directory.api");
@@ -120,6 +123,7 @@ public class TestComputedGroupService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.platform.usermanager.api");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.directory.api");
@@ -191,6 +195,7 @@ public class TestComputedGroupService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.platform.usermanager.api");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.directory.api");
