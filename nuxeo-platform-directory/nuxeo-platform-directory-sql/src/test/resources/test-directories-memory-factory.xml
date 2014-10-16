@@ -5,6 +5,8 @@
 
 <component name="org.nuxeo.ecm.directory.service.MockMemoryDirectoryFactory">
 
+  <require>org.nuxeo.ecm.directory.sql.SQLDirectoryFactory</require>  
+  
   <!-- register an alternative memory directory factory -->
   <implementation class="org.nuxeo.ecm.directory.service.MockMemoryDirectoryFactory" />
   <extension target="org.nuxeo.ecm.directory.DirectoryServiceImpl"

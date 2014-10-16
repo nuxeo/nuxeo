@@ -66,12 +66,15 @@ public class MockMemoryDirectoryFactory extends DefaultComponent implements
         reg.remove(directoryName);
         try {
             DirectoryService directoryService = Framework.getService(DirectoryService.class);
-            directoryService.unregisterDirectory(directoryName, this);
+            if (directoryService != null) {
+                directoryService.unregisterDirectory(directoryName, this);
+            }
         } catch (Exception e) {
             throw new DirectoryException("Error in Directory Service lookup", e);
         }
     }
 
+    @Override
     public Directory getDirectory(String name) {
         if (reg.containsKey(name)) {
             return new MemoryDirectory(name, null, null, "uid", "foo");
@@ -79,9 +82,11 @@ public class MockMemoryDirectoryFactory extends DefaultComponent implements
         return null;
     }
 
+    @Override
     public void shutdown() {
     }
 
+    @Override
     public List<Directory> getDirectories() {
         throw new NotImplementedException();
     }
