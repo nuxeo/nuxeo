@@ -60,6 +60,11 @@
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.core</artifactId>
     </dependency>
+    <!-- required by shindig gadgets at runtime (internal API uses) -->
+    <dependency>
+      <groupId>com.google.code.guice</groupId>
+      <artifactId>guice-internal</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.apache.shindig</groupId>
       <artifactId>shindig-gadgets</artifactId>
