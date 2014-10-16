@@ -457,12 +457,8 @@ public class SearchUIActions implements Serializable {
 
     /**
      * @return the URL of the search tab with the search term defined.
-     * @throws UnsupportedEncodingException
-     * @throws ClientException
      */
-    public String getSearchTabUrl(
-            String searchTerm)
-            throws ClientException,
+    public String getSearchTabUrl(String searchTerm) throws ClientException,
             UnsupportedEncodingException {
         // do not try to compute an URL if we don't have any CoreSession
         if (documentManager == null) {
@@ -478,33 +474,24 @@ public class SearchUIActions implements Serializable {
      * Create the url to access the Search tab.
      *
      * @param withState If set to true, the state is added in the parameters.
-     * @return
-     * @throws UnsupportedEncodingException
-     * @throws ClientException
      */
-    protected String generateSearchUrl(
-            boolean withState)
-            throws ClientException,
-            UnsupportedEncodingException {
+    protected String generateSearchUrl(boolean withState)
+            throws ClientException, UnsupportedEncodingException {
         String currentContentViewName = getCurrentContentViewName();
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentView docView = computeDocumentView(currentDocument);
         docView.setViewId("search");
-        docView.addParameter(
-                CONTENT_VIEW_NAME_PARAMETER,
+        docView.addParameter(CONTENT_VIEW_NAME_PARAMETER,
                 currentContentViewName);
         // Add the state if needed
         if (withState) {
-            docView.addParameter(
-                    CONTENT_VIEW_STATE_PARAMETER,
+            docView.addParameter(CONTENT_VIEW_STATE_PARAMETER,
                     getJSONContentViewState());
         }
 
         DocumentViewCodecManager documentViewCodecManager = Framework.getService(DocumentViewCodecManager.class);
         String url = documentViewCodecManager.getUrlFromDocumentView(
-                SEARCH_CODEC, docView,
-                true,
-                BaseURL.getBaseURL());
+                SEARCH_CODEC, docView, true, BaseURL.getBaseURL());
 
         return RestHelper.addCurrentConversationParameters(url);
     }
