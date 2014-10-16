@@ -101,7 +101,7 @@
     </action>
 
     <action id="contentViewEditColumns" order="80"
-      label="label.contentview.edit.columns" type="fancybox" icon="/icons/refresh.png">
+      label="label.contentview.edit.columns" type="fancybox" icon="/icons/edit_columns.png">
       <category>CONTENT_VIEW_ACTIONS</category>
       <properties>
         <property name="include">
@@ -114,7 +114,7 @@
     </action>
 
     <action id="contentViewEditRows" order="80"
-      label="label.contentview.edit.rows" type="fancybox" icon="/icons/refresh.png">
+      label="label.contentview.edit.rows" type="fancybox" icon="/icons/edit_columns.png">
       <category>CONTENT_VIEW_ACTIONS</category>
       <properties>
         <property name="include">
