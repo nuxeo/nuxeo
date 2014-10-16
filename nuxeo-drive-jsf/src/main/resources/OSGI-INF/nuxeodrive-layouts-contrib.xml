@@ -4,7 +4,7 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
 
-    <layout name="synchronizationRoots">
+    <layout name="driveSynchronizationRoots">
       <templates>
         <template mode="any">
           /layouts/synchronization_roots_layout_template.xhtml

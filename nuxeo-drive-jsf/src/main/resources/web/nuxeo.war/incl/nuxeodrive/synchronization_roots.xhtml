@@ -14,7 +14,7 @@
 
       <table class="dataOutput">
         <thead>
-          <nxl:layout name="synchronizationRoots" mode="header" value="" />
+          <nxl:layout name="driveSynchronizationRoots" mode="header" value="" />
         </thead>
         <tbody>
           <c:forEach var="synchronizationRoot" items="#{currentUserSyncRoots}"
@@ -25,7 +25,7 @@
             <c:if test="#{status.index % 2 != 0}">
               <c:set var="syncRootClass" value="dataRowEven" />
             </c:if>
-            <nxl:layout name="synchronizationRoots" mode="list" value="#{synchronizationRoot}" />
+            <nxl:layout name="driveSynchronizationRoots" mode="list" value="#{synchronizationRoot}" />
           </c:forEach>
         </tbody>
       </table>
