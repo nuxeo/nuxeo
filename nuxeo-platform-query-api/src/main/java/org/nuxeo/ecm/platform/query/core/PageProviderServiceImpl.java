@@ -202,7 +202,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements
             throws Exception {
         if (PROVIDER_EP.equals(extensionPoint)) {
             PageProviderDefinition desc = (PageProviderDefinition) contribution;
-            providerReg.addContribution(desc);
+            registerPageProviderDefinition(desc);
         } else if (REPLACER_EP.equals(extensionPoint)) {
             PageProviderClassReplacerDefinition desc = (PageProviderClassReplacerDefinition) contribution;
             replacersReg.addContribution(desc);
@@ -215,7 +215,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements
             throws Exception {
         if (PROVIDER_EP.equals(extensionPoint)) {
             PageProviderDefinition desc = (PageProviderDefinition) contribution;
-            providerReg.removeContribution(desc);
+            unregisterPageProviderDefinition(desc);
         }
     }
 
@@ -225,5 +225,14 @@ public class PageProviderServiceImpl extends DefaultComponent implements
         replacersReg.dumpReplacerMap();
     }
 
+    @Override
+    public void registerPageProviderDefinition(PageProviderDefinition desc) {
+        providerReg.addContribution(desc);
+    }
+
+    @Override
+    public void unregisterPageProviderDefinition(PageProviderDefinition desc) {
+        providerReg.removeContribution(desc);
+    }
 
 }

@@ -119,4 +119,15 @@ public interface PageProviderService extends Serializable {
             Map<String, Serializable> properties, Object... parameters)
             throws ClientException;
 
+    /**
+     * @since 5.9.6
+     */
+    void registerPageProviderDefinition(PageProviderDefinition desc);
+
+    /**
+     * @since 5.9.6
+     */
+    void unregisterPageProviderDefinition(PageProviderDefinition desc);
+
+
 }

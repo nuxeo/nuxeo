@@ -159,6 +159,13 @@ public abstract class BasePageProviderDescriptor {
         return name;
     }
 
+    /**
+     * @since 5.9.6
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Long getMaxPageSize() {
         return maxPageSize;
     }
