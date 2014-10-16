@@ -165,3 +165,10 @@ input.tagInput {
 .dataInput textarea,
 .dataInput input {
   background-color: #fff }
+
+/* Column Edition*/
+#fancybox-content .listShuttleSelect {
+  min-height: 15em }
+
+.listShuttleTable .listShuttleSelectionActions a {
+  display: block }

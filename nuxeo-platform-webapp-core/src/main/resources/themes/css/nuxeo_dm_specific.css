@@ -53,10 +53,6 @@ author: lkemen@nuxeo.com
   background: none "color.major.medium (__FLAVOR__ background)";
   border-color: "button.hover (__FLAVOR__ border)" }
 
-/* =Advanced Search */
-.listShuttleTable .listShuttleSelectionActions a {
-  display: block }
-
 /* =Clipboard & Worklist */
 .userClipboard {
   margin: 0 0 1.5em }
