@@ -102,32 +102,3 @@ author: lkemen@nuxeo.com
 
 .contentViewTitle {
   border: none }
-
-.bubbleBox {
-  background-color: #fff;
-  display: inline-block;
-  margin: 0 .5em 1.2em;
-  transition: box-shadow 0.3s ease 0.01s;
-  vertical-align: top;
-  width: 18.1em }
-
-.bubbleBox:hover {
-  box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.2);
-  cursor: pointer; }
-
-.bubbleBox .documentTitle {
-  display: block;
-  padding-bottom: .3em }
-
-.bubbleBox span:not(.documentTitle) {
-  font-size: .95em }
-
-.bubbleBox input[type="checkbox"] {
-  float: right;
-  margin: .5em 0 }
-
-.bubbleBox .documentDownloadLink img {
-  float: right }
-
-div.detail {
-  display: inline-block }
