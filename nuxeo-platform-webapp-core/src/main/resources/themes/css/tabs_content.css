@@ -389,6 +389,37 @@ author: lkemen@nuxeo.com
   font-weight: bold;
   padding: .4em .3em .3em 2.1em }
 
+/* BubbleBox Listing */
+.bubbleBox.bubbleListing {
+  background-color: #fff;
+  display: inline-block;
+  margin: 0 .5em 1.2em;
+  transition: box-shadow 0.3s ease 0.01s;
+  vertical-align: top;
+  width: 18.1em }
+
+.bubbleBox.bubbleListing:hover {
+  box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.2);
+  cursor: pointer; }
+
+.bubbleBox.bubbleListing .documentTitle {
+  display: block;
+  padding-bottom: .3em }
+
+.bubbleBox.bubbleListing span:not(.documentTitle) {
+  font-size: .95em }
+
+.bubbleBox.bubbleListing input[type="checkbox"] {
+  float: right;
+  margin: .5em 0 }
+
+.bubbleBox.bubbleListing .documentDownloadLink img {
+  float: right }
+
+#document_content .detail,
+#nxw_searchContentView .detail {
+  display: inline-block }
+
 /* TinyMce override */
 [class*='mce-'] {
   border-radius: 2px!important }
