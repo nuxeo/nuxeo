@@ -10,7 +10,7 @@
       <label>Favorites</label>
       <description></description>
       <default-view>view_documents</default-view>
-      <icon>/icons/favorite.png</icon>
+      <icon>/icons/pin.png</icon>
       <description>Folder.description</description>
       <default-view>view_documents</default-view>
       <layouts mode="any">
