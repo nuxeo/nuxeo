@@ -12,7 +12,7 @@
     <contentView name="default_search">
       <title>label.search.default</title>
       <translateTitle>true</translateTitle>
-      <showTitle>true</showTitle>
+      <showTitle>false</showTitle>
       <emptySentence>label.content.empty.search</emptySentence>
       <translateEmptySentence>true</translateEmptySentence>
 
