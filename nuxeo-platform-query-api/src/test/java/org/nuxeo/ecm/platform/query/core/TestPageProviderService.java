@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -194,6 +195,15 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
                 CURRENT_DOCUMENT_CHILDREN, null, null, null, props);
         assertTrue(pp.getProperties().containsKey("myprop"));
         assertTrue(pp.getProperties().containsKey("dummy"));
+    }
+
+    @Test
+    public void testRegistrationNames() throws Exception {
+        PageProviderService service = Framework.getService(PageProviderService.class);
+        assertNotNull(service);
+        Set<String> ppNames = service.getPageProviderDefinitionNames();
+        assertFalse(ppNames.isEmpty());
+        assertTrue(ppNames.contains(CURRENT_DOCUMENT_CHILDREN));
     }
 
 }

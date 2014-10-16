@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.query.api;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -129,5 +130,13 @@ public interface PageProviderService extends Serializable {
      */
     void unregisterPageProviderDefinition(PageProviderDefinition desc);
 
+
+    /**
+     * Returns all the registered page provider names, or an empty set if no
+     * page provider is registered.
+     *
+     * @since 5.9.6
+     */
+    Set<String> getPageProviderDefinitionNames();
 
 }
