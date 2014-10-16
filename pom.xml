@@ -31,7 +31,6 @@
     <module>nuxeo-distribution-tests</module>
     <module>nuxeo-distribution-coreserver</module>
     <module>nuxeo-distribution-cap</module>
-    <module>nuxeo-distribution-dm</module>
     <module>nuxeo-marketplace-dm</module>
     <module>nuxeo-marketplace-dam</module>
     <!-- The following is already aggregated by above nuxeo-marketplace-dam -->
@@ -41,11 +40,10 @@
     <module>nuxeo-distribution-tomcat</module>
     <!-- Functional Tests -->
     <module>nuxeo-distribution-tomcat-wizard-tests</module>
-    <module>nuxeo-distribution-cap/ftest/webdriver</module>
-    <module>nuxeo-distribution-dm/ftest/webdriver</module>
-    <module>nuxeo-distribution-dm/ftest/selenium</module>
-    <module>nuxeo-distribution-dm/ftest/funkload</module>
-    <module>nuxeo-distribution-social-collaboration/ftest/selenium</module>
+    <module>nuxeo-distribution-cap-webdriver-tests</module>
+    <module>nuxeo-distribution-cap-funkload-tests</module>
+    <module>nuxeo-distribution-cap-selenium-tests</module>
+    <module>nuxeo-social-collaboration-selenium-tests</module>
     <!-- The following is already aggregated by above nuxeo-marketplace-dam -->
     <!-- <module>nuxeo-marketplace-dam/ftest/webdriver</module> -->
   </modules>
@@ -163,18 +161,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-distribution-cap</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-dm</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-dm</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
       </dependency>
@@ -332,13 +318,6 @@
         <version>${nuxeo.distribution.version}</version>
         <type>test-jar</type>
         <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-dm-webdriver-tests</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <scope>test</scope>
-        <type>test-jar</type>
       </dependency>
     </dependencies>
   </dependencyManagement>

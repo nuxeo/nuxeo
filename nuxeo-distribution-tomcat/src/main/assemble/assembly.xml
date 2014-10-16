@@ -192,9 +192,6 @@
     <move file="${maven.project.build.directory}/nuxeo-marketplace-social-collaboration-${nuxeo.distribution.version}.zip"
           tofile="${tomcat}/setupWizardDownloads/${SCMPMD5}" />
 
-    <echo file="${tomcat}/nxserver/data/installAfterRestart-DM.log">init
-install nuxeo-dm
-</echo>
     <echo file="${tomcat}/nxserver/data/installAfterRestart-SC.log">init
 install nuxeo-social-collaboration
 </echo>

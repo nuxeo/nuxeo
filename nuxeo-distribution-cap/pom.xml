@@ -340,6 +340,10 @@
     <!-- User Center -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-user-oauth</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-user-center</artifactId>
     </dependency>
     <dependency>
