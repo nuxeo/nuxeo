@@ -134,6 +134,7 @@ author: lkemen@nuxeo.com
 
 /* =Bubble boxes */
 .bubbleBox {
+  background-color: #fff;
   border-width: 1px; border-style: solid;
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-radius: 3px;

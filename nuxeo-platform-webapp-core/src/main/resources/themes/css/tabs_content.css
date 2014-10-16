@@ -391,7 +391,6 @@ author: lkemen@nuxeo.com
 
 /* BubbleBox Listing */
 .bubbleBox.bubbleListing {
-  background-color: #fff;
   display: inline-block;
   margin: 0 .5em 1.2em;
   transition: box-shadow 0.3s ease 0.01s;
