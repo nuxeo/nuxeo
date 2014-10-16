@@ -20,52 +20,30 @@
       </rows>
     </layout>
 
-    <layout name="driveFormToggleLayout">
+    <layout name="driveMetadataGridLayout">
       <templates>
         <template mode="any">
-          /layouts/layout_div_template.xhtml
+          /layouts/layout_grid_template.xhtml
         </template>
       </templates>
       <rows>
         <row>
-          <widget>infoViewTitleContainer</widget>
-        </row>
-        <row>
-          <widget>toggle</widget>
-        </row>
-        <row>
-          <widget>infoViewActions</widget>
+          <properties mode="any">
+            <property name="nxl_gridStyleClass_0">gridStyle12 compactLayout
+              infoViewRight
+            </property>
+          </properties>
+          <widget>driveMetadataPanel</widget>
         </row>
       </rows>
-      <widget name="toggle" type="toggleableLayoutWithForms">
-        <labels>
-          <label mode="any">view.drive.title.metadata</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field></field>
-        </fields>
-        <properties mode="any">
-          <property name="initialLayoutName">driveFormLayout</property>
-          <property name="toggledLayoutName">driveFormLayout</property>
-          <property name="displayToggleActionInHeader">true</property>
-          <property name="useAjaxForm">false</property>
-          <property name="hideDefaultActions">true</property>
-          <property name="additionalActionsCategory">DRIVE_ACTION_VIEW</property>
-        </properties>
-        <controls mode="any">
-          <control name="handleLabels">true</control>
-        </controls>
-      </widget>
     </layout>
 
-    <layout name="driveFormLayout">
+    <layout name="defaultDriveMetadataLayout@view">
       <templates>
         <template mode="any">
           /layouts/layout_default_template.xhtml
         </template>
       </templates>
-
       <rows>
         <row>
           <widget>title</widget>
@@ -121,7 +99,8 @@
         </fields>
         <widgetModes>
           <mode value="view_summary">#{empty
-            layoutValue.dc.coverage?'hidden':'view'}</mode>
+            layoutValue.dc.coverage?'hidden':'view'}
+          </mode>
         </widgetModes>
         <properties mode="any">
           <property name="width">300</property>
@@ -144,7 +123,8 @@
         </fields>
         <widgetModes>
           <mode value="view_summary">#{empty
-            layoutValue.dc.subjects?'hidden':'view'}</mode>
+            layoutValue.dc.subjects?'hidden':'view'}
+          </mode>
         </widgetModes>
         <properties mode="any">
           <property name="width">300</property>
@@ -164,7 +144,8 @@
         </fields>
         <widgetModes>
           <mode value="view_summary">#{empty
-            layoutValue.dc.nature?'hidden':'view'}</mode>
+            layoutValue.dc.nature?'hidden':'view'}
+          </mode>
         </widgetModes>
         <properties mode="any">
           <property name="width">300</property>
@@ -208,6 +189,176 @@
         <mode value="edit">view</mode>
       </widgetModes>
     </widget>
+
+    <widget name="driveMetadataPanel" type="documentActions">
+      <properties widgetMode="view">
+        <property name="category">DRIVE_METADATA_VIEW_PANEL</property>
+      </properties>
+      <controls mode="any">
+        <control name="requireSurroundingForm">false</control>
+      </controls>
+    </widget>
+
+    <widget name="driveMetadataTitleContainer" type="container">
+      <handlingLabels>false</handlingLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="styleClass">infoViewTitle</property>
+        <property name="display">block_top</property>
+      </properties>
+      <subWidgets>
+        <widget name="driveMetadataTitle" type="text">
+          <fields>
+            <field>dc.title</field>
+          </fields>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="driveMetadataLayoutContainer" type="container">
+      <handlingLabels>false</handlingLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="styleClass">infoViewInfoLayout</property>
+        <property name="display">block_top</property>
+      </properties>
+      <subWidgets>
+        <widget name="driveMetadataLayout" type="toggleableDocumentLayoutWithForms">
+          <properties widgetMode="any">
+            <property name="initialLayoutName">defaultDriveMetadataLayout@view
+            </property>
+            <property name="toggledLayoutName">defaultDriveMetadataLayout@view
+            </property>
+            <property name="displayToggleActionInHeader">true</property>
+            <property name="useAjaxForm">false</property>
+            <property name="hideDefaultActions">true</property>
+            <property name="additionalActionsCategory">DRIVE_METADATA_VIEW_FORM_ACTION
+            </property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="driveMetadataActions" type="documentActionsWithForms">
+      <properties widgetMode="view">
+        <property name="category">DRIVE_METADATA_VIEW_ACTION</property>
+        <property name="styleClass">globalActionBar infoViewActions
+        </property>
+        <property name="subStyleClass">contextActions</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="actionsDisplay">icons</property>
+        <property name="useAjaxForm">true</property>
+        <property name="ignoreTemplateProperty">true</property>
+        <property name="maxActionsNumber">5</property>
+      </properties>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="driveMetadataTitleContainer" type="widget" order="100">
+      <category>DRIVE_METADATA_VIEW_PANEL</category>
+      <properties>
+        <property name="widgetName">driveMetadataTitleContainer</property>
+      </properties>
+    </action>
+
+    <action id="driveMetadataLayoutContainer" type="widget"
+      order="200">
+      <category>DRIVE_METADATA_VIEW_PANEL</category>
+      <properties>
+        <property name="widgetName">driveMetadataLayoutContainer</property>
+      </properties>
+    </action>
+
+    <action id="driveMetadataActions" type="widget" order="300">
+      <category>DRIVE_METADATA_VIEW_PANEL</category>
+      <properties>
+        <property name="widgetName">driveMetadataActions</property>
+      </properties>
+    </action>
+
+    <action id="driveUpdateDocument" link="#{nuxeoDriveActions.updateCurrentDocument}"
+      order="10" label="command.save" type="link" icon="/icons/update.png">
+      <category>DRIVE_METADATA_VIEW_FORM_ACTION</category>
+    </action>
+
+    <action id="diveMetadataAddToFavoritesAction" order="0"
+      label="label.addToFavorites" link="#{favoritesActions.addCurrentDocumentToFavorites()}"
+      icon="/icons/pin.png">
+      <category>DRIVE_METADATA_VIEW_ACTION</category>
+      <filter-id>canAddToFavorites</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="diveMetadataRemoveFromFavoritesAction" order="0"
+      label="label.removeFromFavorites" link="#{favoritesActions.removeCurrentDocumentFromFavorites()}"
+      icon="/icons/pinned.png">
+      <category>DRIVE_METADATA_VIEW_ACTION</category>
+      <filter-id>canRemoveFromFavorites</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="diveMetadataDocumentLock" link="#{lockActions.lockCurrentDocument}"
+      order="10" label="command.lock" type="link"
+      icon="/icons/contextual_menu/unlocked.png">
+      <category>DRIVE_METADATA_VIEW_ACTION</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>can_lock</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="diveMetadataDocumentUnlock" link="#{lockActions.unlockCurrentDocument}"
+      order="10" label="command.unlock" type="link"
+      icon="/icons/contextual_menu/locked.png">
+      <category>DRIVE_METADATA_VIEW_ACTION</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>can_unlock</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="diveMetadataermalinkAction" order="20"
+      label="label.permalink" type="fancybox" icon="/icons/contextual_menu/share.png"
+      accessKey="k">
+      <category>DRIVE_METADATA_VIEW_ACTION</category>
+      <properties>
+        <property name="include">/incl/permalink_box.xhtml</property>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="diveMetadataubscribesAllDocNotifications" link="#{subscriptionAction.updateAllSubscriptions}"
+      order="40" label="label.subscriptions.follow" type="link"
+      icon="/icons/contextual_menu/subscribe.png">
+      <category>DRIVE_METADATA_VIEW_ACTION</category>
+      <filter-id>hasNoSubscriptions</filter-id>
+      <filter-id>canSubscribe</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="diveMetadataUnsubscribesAllDocNotifications"
+      link="#{subscriptionAction.updateAllSubscriptions}" order="40"
+      label="label.subscriptions.unfollow" type="link"
+      icon="/icons/contextual_menu/unsubscribe.png">
+      <category>DRIVE_METADATA_VIEW_ACTION</category>
+      <filter-id>hasSubscriptions</filter-id>
+      <filter-id>canSubscribe</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
 
   </extension>
 

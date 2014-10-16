@@ -4,11 +4,6 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="driveUpdateDocument" link="#{nuxeoDriveActions.updateCurrentDocument}"
-      order="10" label="command.save" type="link" icon="/icons/update.png">
-      <category>DRIVE_ACTION_VIEW</category>
-    </action>
-
     <action id="driveSynchronizeCurrentDocument" link="#{nuxeoDriveActions.synchronizeCurrentDocument}"
       order="25" label="command.driveSynchronizeFolder" type="link"
       icon="/icons/drive_unsynced.png">

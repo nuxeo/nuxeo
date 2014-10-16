@@ -1,19 +1,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxthemes="http://nuxeo.org/nxthemes"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
   <ui:define name="body">
-    <ui:include src="/incl/message_banner.xhtml"/>
-    <div id="content">
-	  <nxl:documentLayout documentMode="drive" mode="view" 
-						  value="#{currentDocument}" defaultLayout="driveFormLayout"
-					      includeAnyMode="false" />
 
-	</div>	
+    <ui:include src="/incl/message_banner.xhtml"/>
+    <nxl:layout value="#{currentDocument}" name="driveMetadataGridLayout" mode="view" />
+
   </ui:define>
 
 </nxthemes:composition>

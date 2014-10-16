@@ -17,7 +17,7 @@
         <lifetime>900</lifetime>
       </style-caching>
 
-      <view id="/drive/drive_edit.xhtml">
+      <view id="/drive_metadata.xhtml">
         <theme>galaxy/popup</theme>
       </view>
 

@@ -37,7 +37,7 @@
   <extension target="faces-config#NAVIGATION">
     <navigation-case>
       <from-outcome>view_drive_metadata</from-outcome>
-      <to-view-id>/drive/drive_edit.xhtml</to-view-id>
+      <to-view-id>/drive_metadata.xhtml</to-view-id>
       <redirect />
     </navigation-case>
   </extension>
