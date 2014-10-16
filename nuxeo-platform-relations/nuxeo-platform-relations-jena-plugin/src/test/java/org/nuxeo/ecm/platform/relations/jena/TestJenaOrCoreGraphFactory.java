@@ -38,9 +38,13 @@ public class TestJenaOrCoreGraphFactory extends SQLRepositoryTestCase {
 
     private RelationService service;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.runtime.management");
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.relations.jena");
         deployContrib("org.nuxeo.ecm.relations.jena.tests",
@@ -48,6 +52,7 @@ public class TestJenaOrCoreGraphFactory extends SQLRepositoryTestCase {
         service = (RelationService) Framework.getService(RelationManager.class);
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         JenaOrCoreGraphFactory.testJenaGraph = null;

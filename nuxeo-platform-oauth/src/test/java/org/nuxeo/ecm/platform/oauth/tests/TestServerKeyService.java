@@ -17,31 +17,26 @@
 
 package org.nuxeo.ecm.platform.oauth.tests;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
+import javax.inject.Inject;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.oauth.keys.OAuthServerKeyManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public class TestServerKeyService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(OAuthFeature.class)
+public class TestServerKeyService {
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.directory.api");
-        deployBundle("org.nuxeo.ecm.directory");
-        deployBundle("org.nuxeo.ecm.directory.sql");
-        deployBundle("org.nuxeo.ecm.platform.oauth");
-    }
+    @Inject
+    OAuthServerKeyManager skm = Framework.getLocalService(OAuthServerKeyManager.class);
 
     @Test
     public void testServiceLookup() throws Exception {
-        OAuthServerKeyManager skm = Framework.getLocalService(OAuthServerKeyManager.class);
-        assertNotNull( skm);
         String pc = skm.getPublicKeyCertificate();
         assertNotNull(pc);
     }

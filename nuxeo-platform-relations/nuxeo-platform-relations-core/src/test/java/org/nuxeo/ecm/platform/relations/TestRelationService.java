@@ -44,9 +44,15 @@ public class TestRelationService extends NXRuntimeTestCase {
 
     private RelationManager service;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.runtime.management");
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core.api");
+        deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.relations");
         deployContrib("org.nuxeo.ecm.relations.tests",
                 "nxrelations-test-bundle.xml");

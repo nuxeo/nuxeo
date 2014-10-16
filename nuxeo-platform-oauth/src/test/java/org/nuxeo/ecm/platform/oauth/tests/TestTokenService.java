@@ -17,48 +17,27 @@
  */
 package org.nuxeo.ecm.platform.oauth.tests;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import javax.inject.Inject;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.oauth.tokens.OAuthToken;
 import org.nuxeo.ecm.platform.oauth.tokens.OAuthTokenStore;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public class TestTokenService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(OAuthFeature.class)
+public class TestTokenService {
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        DatabaseHelper.DATABASE.setUp();
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.directory.api");
-        deployBundle("org.nuxeo.ecm.directory");
-        deployBundle("org.nuxeo.ecm.directory.sql");
-        deployBundle("org.nuxeo.ecm.platform.oauth");
-        deployContrib("org.nuxeo.ecm.platform.oauth.test", "OSGI-INF/directory-test-config.xml");
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        DatabaseHelper.DATABASE.tearDown();
-        super.tearDown();
-    }
-
-    @Test
-    public void testServiceLookup() throws Exception {
-        OAuthTokenStore tokenStore = Framework.getLocalService(OAuthTokenStore.class);
-        assertNotNull(tokenStore);
-    }
+    @Inject OAuthTokenStore tokenStore;
 
     @Test
     public void testServiceRW() throws Exception {
-
-        OAuthTokenStore tokenStore = Framework.getLocalService(OAuthTokenStore.class);
 
         OAuthToken rToken = tokenStore.createRequestToken("toto", null);
 

@@ -1,32 +1,23 @@
 package org.nuxeo.ecm.platform.oauth.tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.directory.Directory;
-import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.impl.ComponentDescriptorReader;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
@@ -36,10 +27,7 @@ import com.google.inject.Inject;
  */
 
 @RunWith(FeaturesRunner.class)
-@Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.oauth" })
-@LocalDeploy({
-        "org.nuxeo.ecm.platform.oauth:OSGI-INF/directory-test-config.xml" })
+@Features(OAuthFeature.class)
 public class TestOauth2Client {
 
     @Inject

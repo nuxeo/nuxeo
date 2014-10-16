@@ -17,16 +17,18 @@
 
 package org.nuxeo.ecm.platform.oauth.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import javax.inject.Inject;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.oauth.providers.NuxeoOAuthServiceProvider;
@@ -34,49 +36,25 @@ import org.nuxeo.ecm.platform.oauth.providers.OAuthServiceProviderRegistry;
 import org.nuxeo.ecm.platform.oauth.providers.OAuthServiceProviderRegistryImpl;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public class TestServiceProviderService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(OAuthFeature.class)
+public class TestServiceProviderService  {
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        DatabaseHelper.DATABASE.setUp();
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.directory.api");
-        deployBundle("org.nuxeo.ecm.directory");
-        deployBundle("org.nuxeo.ecm.directory.sql");
-        deployBundle("org.nuxeo.ecm.platform.oauth");
-        deployContrib("org.nuxeo.ecm.platform.oauth.test",
-                "OSGI-INF/directory-test-config.xml");
-    }
 
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        DatabaseHelper.DATABASE.tearDown();
-        super.tearDown();
-    }
+   @Inject OAuthServiceProviderRegistry providerRegistry = Framework.getLocalService(OAuthServiceProviderRegistry.class);
 
-    @Test
-    public void testServiceLookup() throws Exception {
-        OAuthServiceProviderRegistry providerRegistry = Framework.getLocalService(OAuthServiceProviderRegistry.class);
-        assertNotNull(providerRegistry);
-    }
+   @Inject OAuth2ServiceProviderRegistry providerRegistry2 = Framework.getLocalService(OAuth2ServiceProviderRegistry.class);
 
     @Test
     public void testServiceLookup2() throws Exception {
-        OAuth2ServiceProviderRegistry providerRegistry = Framework.getLocalService(OAuth2ServiceProviderRegistry.class);
         assertNotNull(providerRegistry);
     }
 
     @Test
     public void testServiceRW() throws Exception {
-
-        OAuthServiceProviderRegistry providerRegistry = Framework.getLocalService(OAuthServiceProviderRegistry.class);
-        assertNotNull(providerRegistry);
 
         NuxeoOAuthServiceProvider p = providerRegistry.addReadOnlyProvider("a",
                 null, "b", null, null);

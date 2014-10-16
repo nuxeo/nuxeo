@@ -18,14 +18,10 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
 import org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.webengine.test.WebEngineFeature;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -39,10 +35,8 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @since 5.9.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ PlatformFeature.class, WebEngineFeature.class })
+@Features({ OAuthFeature.class, WebEngineFeature.class })
 @Jetty(port = 18090)
-@Deploy({ "org.nuxeo.ecm.platform.oauth" })
-@LocalDeploy({ "org.nuxeo.ecm.platform.oauth:OSGI-INF/directory-test-config.xml" })
 public class TestOauth2Challenge {
 
     protected static final String CLIENT_ID = "testClient";
@@ -85,7 +79,7 @@ public class TestOauth2Challenge {
         ClientResponse cr = responseFromAuthorizationWith(params);
         assertEquals(302, cr.getStatus());
 
-        Map<String, AuthorizationRequest> req = TestAuthorizationRequest.getRequests();
+        TestAuthorizationRequest.getRequests();
 
         String redirect = cr.getHeaders().get("Location").get(0);
         assertTrue(redirect.contains(".jsp"));
@@ -126,7 +120,7 @@ public class TestOauth2Challenge {
 
         ObjectMapper obj = new ObjectMapper();
 
-        Map token = obj.readValue(json, Map.class);
+        Map<?,?> token = obj.readValue(json, Map.class);
         assertNotNull(token);
         String accessToken = (String) token.get("access_token");
         assertEquals(32, accessToken.length());
@@ -139,7 +133,7 @@ public class TestOauth2Challenge {
         assertEquals(200, cr.getStatus());
 
         json = cr.getEntity(String.class);
-        Map refreshed = obj.readValue(json, Map.class);
+        Map<?,?> refreshed = obj.readValue(json, Map.class);
 
         assertNotSame(refreshed.get("access_token"), token.get("access_token"));
     }

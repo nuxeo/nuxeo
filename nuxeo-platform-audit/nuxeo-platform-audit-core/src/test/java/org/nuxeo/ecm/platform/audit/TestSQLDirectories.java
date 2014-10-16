@@ -49,6 +49,7 @@ public class TestSQLDirectories extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.directory.sql");
         deployBundle("org.nuxeo.ecm.directory.types.contrib");

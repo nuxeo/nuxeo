@@ -24,13 +24,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -42,7 +39,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.google.inject.Inject;
 
@@ -51,13 +47,13 @@ import com.google.inject.Inject;
  *
  */
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core",
+@Features(CoreFeature.class)
+@Deploy({
         // deploy directory service + sql factory
         "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
         "org.nuxeo.ecm.directory.types.contrib",
         // deploy directory ui service
-        "org.nuxeo.ecm.directory.web" })
+        "org.nuxeo.ecm.actions", "org.nuxeo.ecm.directory.web" })
 // deploy test dirs + ui config
 @LocalDeploy("org.nuxeo.ecm.directory.web.tests:OSGI-INF/test-directory-ui-sql-contrib.xml")
 public class TestDirectoryUIManager {
@@ -67,16 +63,6 @@ public class TestDirectoryUIManager {
 
     @Inject
     DirectoryUIManager service;
-
-    @Before
-    public void setUp() throws Exception {
-        DatabaseHelper.DATABASE.setUp();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        DatabaseHelper.DATABASE.tearDown();
-    }
 
     @Test
     public void testDirectoryUIRegistration() throws Exception {

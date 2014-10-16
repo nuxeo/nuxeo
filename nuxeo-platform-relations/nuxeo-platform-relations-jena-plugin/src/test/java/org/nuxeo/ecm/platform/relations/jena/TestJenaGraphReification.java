@@ -68,9 +68,13 @@ public class TestJenaGraphReification extends NXRuntimeTestCase {
 
     private Statement st2;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.runtime.management");
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.relations.jena");
         deployContrib("org.nuxeo.ecm.relations.jena.tests",
