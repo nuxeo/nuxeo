@@ -9,37 +9,6 @@
 
     <ui:include src="/incl/message_banner.xhtml"/>
 
-    <style>
-      .infoView.navigation {
-        box-sizing: border-box;
-        left: 0;
-        padding: 0 1.5em;
-        position: fixed;
-        right: 0;
-        top: 45%;
-        width: 66.66%;
-        z-index: 200 }
-
-      .infoView.navigation div:first-child,
-      .infoView.navigation div:last-child {
-        background: url("#{contextPath}/icons/chevron-left.png") no-repeat scroll center center / 80% auto rgba(0, 0, 0, 0.3);
-        border-radius: 3px;
-        float: left;
-        height: 8em;
-        width: 2em }
-
-      .infoView.navigation div:last-child {
-        background-image: url("#{contextPath}/icons/chevron-right.png");
-        float: right }
-
-      .infoView .next,
-      .infoView .previous {
-        color: transparent;
-        display: inline-block;
-        height: 8em;
-        width: 2em }
-    </style>
-
     <div class="infoView navigation">
       <div>
         <a class="previous" href="#" onclick="previousInfoView(); return false;"></a>
