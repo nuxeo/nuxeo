@@ -474,7 +474,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   width: 2em }
 
 .infoView.navigation div:last-child {
-  background-image: url("${basePath}/icons/chevron-right.png");
+  background: url("${basePath}/icons/chevron-right.png") no-repeat scroll center center / 80% auto rgba(0, 0, 0, 0.3);
   float: right }
 
 .infoView .next,
