@@ -104,6 +104,9 @@
       <property name="template">
         /incl/action/rest_document_link_action_template.xhtml
       </property>
+      <property name="dev_template">
+        /widgets/actions/dev/action_widget_type_dev_template.xhtml
+      </property>
     </widgetType>
 
   </extension>
