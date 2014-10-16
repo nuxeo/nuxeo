@@ -28,6 +28,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.nuxeo.ecm.core.api.model.Delta;
+
 /**
  * Abstraction for a Map<String, Serializable> that is Serializable.
  *
@@ -212,7 +214,7 @@ public class State implements Serializable {
     /**
      * Sets a key/value.
      */
-    public void put(String key, Serializable value) {
+    public void putInternal(String key, Serializable value) {
         if (value == null) {
             // if we're using a ConcurrentHashMap
             // then null values are forbidden
@@ -221,6 +223,27 @@ public class State implements Serializable {
         } else {
             map.put(key, value);
         }
+    }
+
+    /**
+     * Sets a key/value, dealing with deltas.
+     */
+    public void put(String key, Serializable value) {
+        Serializable oldValue = map.get(key);
+        if (oldValue instanceof Delta) {
+            Delta oldDelta = (Delta) oldValue;
+            if (value instanceof Delta) {
+                if (value != oldDelta) {
+                    // add a delta to another delta
+                    value = oldDelta.add((Delta) value);
+                }
+            } else if (oldDelta.getFullValue().equals(value)) {
+                // don't overwrite a delta with the full value
+                // that actually comes from it
+                return;
+            }
+        }
+        putInternal(key, value);
     }
 
     /**

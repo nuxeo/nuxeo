@@ -37,6 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateDocumentException;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
@@ -102,7 +103,9 @@ public class MemRepository extends DBSRepositoryBase {
     public State readState(String id) {
         State state = states.get(id);
         if (state != null) {
-            log.trace("read   " + id + ": " + state);
+            if (log.isTraceEnabled()) {
+                log.trace("read   " + id + ": " + state);
+            }
         }
         return state;
     }
@@ -119,16 +122,22 @@ public class MemRepository extends DBSRepositoryBase {
     @Override
     public void createState(State state) throws DocumentException {
         String id = (String) state.get(KEY_ID);
-        log.trace("create " + id + ": " + state);
+        if (log.isTraceEnabled()) {
+            log.trace("create " + id + ": " + state);
+        }
         if (states.containsKey(id)) {
             throw new DocumentException("Already exists: " + id);
         }
-        states.put(id, StateHelper.deepCopy(state, true)); // thread-safe
+        state = StateHelper.deepCopy(state, true); // thread-safe
+        StateHelper.resetDeltas(state);
+        states.put(id, state);
     }
 
     @Override
     public void updateState(String id, StateDiff diff) throws DocumentException {
-        log.trace("update " + id + ": " + diff);
+        if (log.isTraceEnabled()) {
+            log.trace("update " + id + ": " + diff);
+        }
         State state = states.get(id);
         if (state == null) {
             throw new ConcurrentUpdateDocumentException("Missing: " + id);
@@ -138,7 +147,9 @@ public class MemRepository extends DBSRepositoryBase {
 
     @Override
     public void deleteStates(Set<String> ids) throws DocumentException {
-        log.trace("delete " + ids);
+        if (log.isTraceEnabled()) {
+            log.trace("delete " + ids);
+        }
         for (String id : ids) {
             if (states.remove(id) == null) {
                 log.debug("Missing on remove: " + id);
@@ -299,6 +310,16 @@ public class MemRepository extends DBSRepositoryBase {
                 applyDiff((State) old, (StateDiff) diffElem);
             } else if (diffElem instanceof ListDiff) {
                 state.put(key, applyDiff(state.get(key), (ListDiff) diffElem));
+            } else if (diffElem instanceof Delta) {
+                Delta delta = (Delta) diffElem;
+                Number oldValue = (Number) state.get(key);
+                Number value;
+                if (oldValue == null) {
+                    value = delta.getFullValue();
+                } else {
+                    value = delta.add(oldValue);
+                }
+                state.put(key, value);
             } else {
                 state.put(key, diffElem);
             }

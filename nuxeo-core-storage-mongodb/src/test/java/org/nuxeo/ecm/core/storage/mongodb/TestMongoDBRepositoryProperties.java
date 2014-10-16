@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
@@ -909,6 +910,159 @@ public class TestMongoDBRepositoryProperties extends MongoDBRepositoryTestCase {
         assertFalse(blob4.equals(blob2));
         assertFalse(blob3.equals(blob4));
         assertFalse(blob4.equals(blob3));
+    }
+
+    @Test
+    public void testPropertyDelta() throws Exception {
+        int base = 100;
+        int fakebase = 1000;
+        int delta = 123;
+        doc = session.createDocumentModel("/", "doc", "MyDocType");
+        doc.setPropertyValue("my:integer", Long.valueOf(base));
+        doc = session.createDocument(doc);
+        session.save();
+
+        doc.setPropertyValue("my:integer", new DeltaLong(fakebase, delta));
+
+        // re-reading the property before saveDocument() returns the Delta
+        Serializable value = doc.getPropertyValue("my:integer");
+        assertTrue(value.getClass().getName(), value instanceof DeltaLong);
+        assertEquals(fakebase + delta, ((DeltaLong) value).longValue());
+
+        doc = session.saveDocument(doc);
+
+        // write another property in the same schema
+        // to make sure the delta is not applied twice
+        doc.setPropertyValue("my:string", "foo");
+        doc = session.saveDocument(doc);
+
+        // after saveDocument() we now read a Long
+        value = doc.getPropertyValue("my:integer");
+        assertTrue(value.getClass().getName(), value instanceof Long);
+        assertEquals(fakebase + delta, ((Long) value).longValue());
+
+        session.save();
+
+        // after save() but before refetch still a Long
+        value = doc.getPropertyValue("my:integer");
+        assertTrue(value.getClass().getName(), value instanceof Long);
+        assertEquals(fakebase + delta, ((Long) value).longValue());
+
+        // DBS: save() purged the transient space so doc state was reread
+        // DBS: with the incremented integer, and this saveDocument
+        // DBS: will overwrite it with the full value based on the fake base
+        // // write another property in the same schema
+        // // to make sure the delta is not applied twice
+        // doc.setPropertyValue("my:string", "bar");
+        // doc = session.saveDocument(doc);
+        // session.save();
+
+        closeSession();
+        openSession();
+
+        // after refetch it's a Long with the correct incremented value
+        doc = session.getDocument(new IdRef(doc.getId()));
+        value = doc.getPropertyValue("my:integer");
+        assertTrue(value.getClass().getName(), value instanceof Long);
+        assertEquals(base + delta, ((Long) value).longValue());
+    }
+
+    @Test
+    public void testPropertyDeltaTwice() throws Exception {
+        int base = 100;
+        int fakebase = 1000;
+        int delta = 123;
+        doc = session.createDocumentModel("/", "doc", "MyDocType");
+        doc.setPropertyValue("my:integer", Long.valueOf(base));
+        doc = session.createDocument(doc);
+        session.save();
+
+        doc.setPropertyValue("my:integer", new DeltaLong(fakebase, delta));
+        doc = session.saveDocument(doc);
+        doc.setPropertyValue("my:integer", new DeltaLong(fakebase, delta));
+        doc = session.saveDocument(doc);
+
+        session.save();
+
+        closeSession();
+        openSession();
+
+        // after refetch it's a Long with the correct incremented value
+        doc = session.getDocument(new IdRef(doc.getId()));
+        Serializable value = doc.getPropertyValue("my:integer");
+        assertTrue(value.getClass().getName(), value instanceof Long);
+        assertEquals(base + delta * 2, ((Long) value).longValue());
+    }
+
+    /**
+     * Checks that writing several documents using batching with some of them
+     * having Delta and some not doesn't fail.
+     */
+    @Test
+    public void testPropertyDeltaBatching() throws Exception {
+        int n = 10;
+        int base = 100;
+        int fakebase = 1000;
+        for (int i = 0; i < n; i++) {
+            DocumentModel doc = session.createDocumentModel("/", "doc" + i,
+                    "MyDocType");
+            doc.setPropertyValue("my:integer", Long.valueOf(base));
+            doc = session.createDocument(doc);
+        }
+        session.save();
+
+        // updates
+
+        for (int i = 0; i < n; i++) {
+            DocumentModel doc = session.getDocument(new PathRef("/doc" + i));
+            Serializable value;
+            if (i < n / 2) {
+                value = Long.valueOf(i);
+            } else {
+                // delta whose base is not the actual base, to check
+                // that we really do an increment instead of setting
+                // the full value
+                value = new DeltaLong(fakebase, i);
+            }
+            doc.setPropertyValue("my:integer", value);
+            if (i % 2 == 0) {
+                // also sometimes change another property
+                doc.setPropertyValue("my:string", "foo" + i);
+            }
+            doc = session.saveDocument(doc);
+        }
+        session.save();
+
+        // check result after re-reading from database
+        closeSession();
+        openSession();
+
+        for (int i = 0; i < n; i++) {
+            DocumentModel doc = session.getDocument(new PathRef("/doc" + i));
+            Serializable value = doc.getPropertyValue("my:integer");
+            Serializable expected;
+            if (i < n / 2) {
+                expected = Long.valueOf(i);
+            } else {
+                expected = Long.valueOf(base + i);
+            }
+            assertEquals(doc.getName(), expected, value);
+        }
+    }
+
+    /**
+     * Checks that even on document creation using a Delta doesn't fail.
+     */
+    @Test
+    public void testPropertyDeltaOnCreate() throws Exception {
+        doc = session.createDocumentModel("/", "doc", "MyDocType");
+        doc.setPropertyValue("my:integer", new DeltaLong(100, 123));
+        doc = session.createDocument(doc);
+        session.save();
+
+        Serializable value = doc.getPropertyValue("my:integer");
+        assertTrue(value.getClass().getName(), value instanceof Long);
+        assertEquals(223, ((Long) value).longValue());
     }
 
 }

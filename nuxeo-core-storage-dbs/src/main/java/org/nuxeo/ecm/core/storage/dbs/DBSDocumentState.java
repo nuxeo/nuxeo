@@ -98,6 +98,7 @@ public class DBSDocumentState {
 
     public void setNotDirty() {
         originalState = null;
+        StateHelper.resetDeltas(state);
     }
 
     /**

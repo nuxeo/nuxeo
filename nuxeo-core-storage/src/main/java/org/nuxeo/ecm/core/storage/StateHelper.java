@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.binary.Binary;
@@ -45,7 +46,8 @@ public class StateHelper {
                 || value instanceof Long //
                 || value instanceof Double //
                 || value instanceof Calendar //
-                || value instanceof Binary;
+                || value instanceof Binary //
+                || value instanceof Delta;
     }
 
     /**
@@ -471,6 +473,22 @@ public class StateHelper {
             }
         }
         return diff;
+    }
+
+    /**
+     * Changes the deltas stored into actual full values.
+     *
+     * @since 6.0
+     */
+    public static void resetDeltas(State state) {
+        for (Entry<String, Serializable> en : state.entrySet()) {
+            Serializable value = en.getValue();
+            if (value instanceof State) {
+                resetDeltas((State) value);
+            } else if (value instanceof Delta) {
+                state.putInternal(en.getKey(), ((Delta) value).getFullValue());
+            }
+        }
     }
 
 }

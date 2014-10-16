@@ -39,6 +39,7 @@ import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
@@ -245,6 +246,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
         public BasicDBObject unset = new BasicDBObject();
 
         public BasicDBObject push = new BasicDBObject();
+
+        public BasicDBObject inc = new BasicDBObject();
     }
 
     /**
@@ -264,6 +267,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
         }
         for (Entry<String, Object> en : updates.push.entrySet()) {
             builder.update(MONGODB_PUSH, en.getKey(), en.getValue());
+        }
+        for (Entry<String, Object> en : updates.inc.entrySet()) {
+            builder.update(MONGODB_INC, en.getKey(), en.getValue());
         }
         return builder.updateList;
     }
@@ -335,6 +341,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
                 diffToUpdates((StateDiff) value, name, updates);
             } else if (value instanceof ListDiff) {
                 diffToUpdates((ListDiff) value, name, updates);
+            } else if (value instanceof Delta) {
+                diffToUpdates((Delta) value, name, updates);
             } else {
                 // not a diff
                 updates.set.put(name, valueToBson(value));
@@ -369,6 +377,11 @@ public class MongoDBRepository extends DBSRepositoryBase {
             }
             updates.push.put(prefix, pushed);
         }
+    }
+
+    protected void diffToUpdates(Delta delta, String prefix, Updates updates) {
+        Object inc = valueToBson(delta.getDeltaValue());
+        updates.inc.put(prefix, inc);
     }
 
     protected Object serializableToBson(Object value) {

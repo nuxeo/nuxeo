@@ -41,10 +41,12 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
+import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
@@ -743,6 +745,9 @@ public class DBSDocument implements Document {
             if (type.isSimpleType()) {
                 // simple property
                 Serializable value = state.get(name);
+                if (value instanceof Delta) {
+                    value = ((Delta) value).getFullValue();
+                }
                 property.init(value);
             } else if (type.isListType()) {
                 ListType listType = (ListType) type;
@@ -1035,6 +1040,10 @@ public class DBSDocument implements Document {
                 Serializable value = property.getValueForWrite();
                 markDirty.run();
                 state.put(name, value);
+                if (value instanceof Delta) {
+                    value = ((Delta) value).getFullValue();
+                    ((ScalarProperty) property).internalSetValue(value);
+                }
             } else if (type.isListType()) {
                 ListType listType = (ListType) type;
                 if (listType.getFieldType().isSimpleType()) {
