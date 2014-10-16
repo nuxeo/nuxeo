@@ -20,6 +20,7 @@
   </c:if>
 
   <c:if test="#{layoutListingStatus.index == 0}">
+
     <!-- slideshow init -->
     <nxu:set var="cvpcfp"
       value="#{nxu:jsfTagIdEscape(contentViewPanelId)}">
@@ -29,6 +30,13 @@
       <a4j:jsFunction name="#{cvpcfp}PP" action="#{provider.previous()}"
         render="#{contentIdToBeReRendered}"
         oncomplete="jQuery('div[id$=#{contentViewPanelId}]').openLightBoxAfterPP();" />
+
+      <a4j:jsFunction name="#{cvpcfp}_infoViewNextPage" action="#{provider.next()}"
+        render="#{contentIdToBeReRendered}"
+        oncomplete="nuxeo.infoView.openFirstInfoView();" />
+      <a4j:jsFunction name="#{cvpcfp}_infoViewPreviousPage" action="#{provider.previous()}"
+        render="#{contentIdToBeReRendered}"
+        oncomplete="nuxeo.infoView.openLastInfoView();" />
 
       <script>
         jQuery.extend(true, jQuery.magnificPopup.defaults, {
@@ -46,6 +54,60 @@
             tError: "#{messages['label.slideshow.ajax.error']}"
           }
         });
+
+        var nuxeo = nuxeo || {};
+        nuxeo.infoView = (function(m) {
+          m.hasPreviousPage = #{provider.previousPageAvailable};
+          m.hasNextPage = #{provider.nextPageAvailable};
+          m.infoViewUrls = [];
+
+          m.nextPageAndOpenInfoView = function() {
+            if (m.hasNextPage) {
+              console.log("next");
+              #{cvpcfp}_infoViewNextPage();
+              // #{cvpcfp}NP();
+            }
+          };
+
+          m.previousPageAndOpenInfoView = function() {
+            if (m.hasPreviousPage) {
+              console.log("previous")
+              #{cvpcfp}_infoViewPreviousPage();
+              // #{cvpcfp}PP();
+            }
+          };
+
+          m.openFirstInfoView = function() {
+            jQuery.fancybox.close();
+            if (m.infoViewUrls.length > 0) {
+              openFancyBox(m.infoViewUrls[0], {
+                'autoDimensions': false,
+                'width': '100%',
+                'height': '100%',
+                'centerOnScroll': true,
+                'scrolling': 'auto',
+                'padding': 0
+              });
+            }
+          };
+
+          m.openLastInfoView = function() {
+            jQuery.fancybox.close();
+            if (m.infoViewUrls.length > 0) {
+              openFancyBox(m.infoViewUrls[m.infoViewUrls.length - 1], {
+                'autoDimensions': false,
+                'width': '100%',
+                'height': '100%',
+                'centerOnScroll': true,
+                'scrolling': 'auto',
+                'padding': 0
+              });
+            }
+          };
+
+          return m;
+
+        })(nuxeo.infoView || {});
 
         jQuery(document).ready(function() {
           // slideshow
@@ -66,10 +128,13 @@
               }
             }
             return true;
-          }
+          };
+
           jQuery('div[data-infoviewurl]').each(function(index, ele) {
             var ele = jQuery(ele);
             var infoViewUrl = ele.data('infoviewurl');
+            // store the info view url
+            nuxeo.infoView.infoViewUrls.push(infoViewUrl);
             ele.click(function(event) {
               if (canTriggerInfoView(event)) {
                 openFancyBox(infoViewUrl, {
