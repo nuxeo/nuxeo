@@ -27,9 +27,6 @@
       <filter-id>canAddToCollection</filter-id>
       <properties>
         <property name="include">/incl/add_to_collection.xhtml</property>
-        <property name="autoDimensions">false</property>
-        <property name="height">300</property>
-        <property name="width">500</property>
       </properties>
     </action>
 
@@ -39,9 +36,6 @@
       <filter-id>canSelectedToBeAddedToCollection</filter-id>
       <properties>
         <property name="include">/incl/select_doc_to_be_added_to_collection.xhtml</property>
-        <property name="autoDimensions">false</property>
-        <property name="height">300</property>
-        <property name="width">500</property>
       </properties>
     </action>
 
