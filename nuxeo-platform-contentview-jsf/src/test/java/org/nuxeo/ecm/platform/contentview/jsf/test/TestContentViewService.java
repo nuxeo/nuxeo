@@ -37,6 +37,7 @@ import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayout;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
@@ -227,7 +228,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
     public void testGetContentViewNames() throws Exception {
         Set<String> names = service.getContentViewNames();
         assertNotNull(names);
-        assertEquals(14, names.size());
+        assertEquals(15, names.size());
         List<String> orderedNames = new ArrayList<String>();
         orderedNames.addAll(names);
         Collections.sort(orderedNames);
@@ -246,7 +247,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
 
         names = service.getContentViewNames();
         assertNotNull(names);
-        assertEquals(13, names.size());
+        assertEquals(14, names.size());
         orderedNames = new ArrayList<String>();
         orderedNames.addAll(names);
         Collections.sort(orderedNames);
@@ -263,7 +264,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
     public void testGetContentViewHeaders() throws Exception {
         Set<ContentViewHeader> headers = service.getContentViewHeaders();
         assertNotNull(headers);
-        assertEquals(14, headers.size());
+        assertEquals(15, headers.size());
         List<ContentViewHeader> sortedHeaders = new ArrayList<ContentViewHeader>();
         sortedHeaders.addAll(headers);
         Collections.sort(sortedHeaders);
@@ -439,4 +440,17 @@ public class TestContentViewService extends NXRuntimeTestCase {
                 resultLayouts.get(1).getName());
     }
 
+    @Test
+    public void testPageProviderRegistering() throws Exception {
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
+        // CorePP
+        assertNotNull(ppService.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN"));
+        // GenericPP
+        assertNotNull(ppService.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN_FETCH"));
+        // NamedPP
+        ContentView cv = service.getContentView("NAMED_PAGE_PROVIDER");
+        assertEquals("PP_NAME", cv.getPageProvider().getName());
+        assertNotNull(ppService.getPageProviderDefinition("PP_NAME"));
+        assertNull(ppService.getPageProviderDefinition("NAMED_PAGE_PROVIDER"));
+    }
 }

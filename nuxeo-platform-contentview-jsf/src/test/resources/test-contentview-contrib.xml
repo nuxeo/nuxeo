@@ -226,6 +226,16 @@
       </coreQueryPageProvider>
     </contentView>
 
+    <contentView name="NAMED_PAGE_PROVIDER">
+      <coreQueryPageProvider name="PP_NAME">
+        <property name="coreSession">#{documentManager}</property>
+        <pattern>
+          SELECT * FROM Document
+        </pattern>
+        <sort column="dc:title" ascending="true" />
+      </coreQueryPageProvider>
+    </contentView>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"

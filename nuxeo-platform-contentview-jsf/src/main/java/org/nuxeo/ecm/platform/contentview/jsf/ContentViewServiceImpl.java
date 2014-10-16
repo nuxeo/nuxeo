@@ -219,38 +219,11 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         if (ppService == null) {
             throw new ClientException("Page provider service is null");
         }
-
-        CoreQueryPageProviderDescriptor coreDesc = contentViewDesc.getCoreQueryPageProvider();
-        GenericPageProviderDescriptor genDesc = contentViewDesc.getGenericPageProvider();
-        ReferencePageProviderDescriptor refDesc = contentViewDesc.getReferencePageProvider();
-        if (coreDesc != null && coreDesc.isEnabled() && genDesc != null
-                && genDesc.isEnabled() && refDesc != null
-                && refDesc.isEnabled()) {
-            log.error(String.format(
-                    "Only one page provider should be registered on "
-                            + "content view '%s': take the reference "
-                            + "descriptor by default, then core query descriptor, "
-                            + "and then generic descriptor", name));
-        }
-
-        PageProvider<?> provider = null;
-        if (refDesc != null && refDesc.isEnabled()) {
-            provider = ppService.getPageProvider(refDesc.getName(),
-                    searchDocument, sortInfos, pageSize, currentPage,
-                    resolvePageProviderProperties(refDesc.getProperties()),
-                    parameters);
-        } else if (coreDesc != null && coreDesc.isEnabled()) {
-            provider = ppService.getPageProvider(name, coreDesc,
-                    searchDocument, sortInfos, pageSize, currentPage,
-                    resolvePageProviderProperties(coreDesc.getProperties()),
-                    parameters);
-        } else if (genDesc != null && genDesc.isEnabled()) {
-            provider = ppService.getPageProvider(name, genDesc, searchDocument,
-                    sortInfos, pageSize, currentPage,
-                    resolvePageProviderProperties(genDesc.getProperties()),
-                    parameters);
-        }
-
+        String ppName = contentViewDesc.getPageProviderName();
+        PageProvider<?> provider = ppService.getPageProvider(ppName,
+                searchDocument, sortInfos, pageSize, currentPage,
+                resolvePageProviderProperties(contentViewDesc.getPageProviderProperties()),
+                parameters);
         return provider;
     }
 
@@ -292,7 +265,50 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         if (CONTENT_VIEW_EP.equals(extensionPoint)) {
             ContentViewDescriptor desc = (ContentViewDescriptor) contribution;
             contentViewReg.addContribution(desc);
+            registerPageProvider(desc);
         }
+    }
+
+    protected void registerPageProvider(ContentViewDescriptor desc) {
+        ReferencePageProviderDescriptor refDesc = desc
+                .getReferencePageProvider();
+        if (refDesc != null && refDesc.isEnabled()) {
+            // we use an already registered pp
+            return;
+        }
+        PageProviderService ppService = Framework
+                .getLocalService(PageProviderService.class);
+        if (ppService == null) {
+            throw new ClientException("PageProviderService is not available");
+        }
+        String name = desc.getName();
+        PageProviderDefinition coreDef = getPageProviderDefWithName(name,
+                desc.getCoreQueryPageProvider());
+        PageProviderDefinition genDef = getPageProviderDefWithName(name,
+                desc.getGenericPageProvider());
+        if (coreDef != null && genDef != null) {
+            log.error(String
+                    .format("Only one page provider should be registered on "
+                            + "content view '%s': take the reference "
+                            + "descriptor by default, then core query descriptor, "
+                            + "and then generic descriptor", name));
+        }
+        PageProviderDefinition ppDef = (coreDef != null) ? coreDef : genDef;
+        if (ppDef != null) {
+            // log.debug("Register PP: " + ppDef.getName() + " " + ppDef);
+            ppService.registerPageProviderDefinition(ppDef);
+        }
+    }
+
+    protected PageProviderDefinition getPageProviderDefWithName(String name,
+            PageProviderDefinition ppDef) {
+        if (ppDef != null && ppDef.isEnabled()) {
+            if (ppDef.getName() == null) {
+                ppDef.setName(name);
+            }
+            return ppDef;
+        }
+        return null;
     }
 
     @Override
@@ -301,7 +317,23 @@ public class ContentViewServiceImpl extends DefaultComponent implements
             throws Exception {
         if (CONTENT_VIEW_EP.equals(extensionPoint)) {
             ContentViewDescriptor desc = (ContentViewDescriptor) contribution;
+            unregisterPageProvider(desc);
             contentViewReg.removeContribution(desc);
+        }
+    }
+
+    protected void unregisterPageProvider(ContentViewDescriptor desc) {
+        PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
+        if (ppService == null) {
+            log.info("PageProviderServer is not available, failed to unregister pp of the cv");
+            return;
+        }
+        if (desc.getCoreQueryPageProvider() != null) {
+
+            ppService.unregisterPageProviderDefinition((PageProviderDefinition) desc.getCoreQueryPageProvider());
+        }
+        if (desc.getGenericPageProvider() != null) {
+            ppService.unregisterPageProviderDefinition((PageProviderDefinition) desc.getGenericPageProvider());
         }
     }
 

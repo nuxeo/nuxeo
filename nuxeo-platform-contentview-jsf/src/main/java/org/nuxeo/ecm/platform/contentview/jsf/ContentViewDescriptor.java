@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.contentview.jsf;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -140,6 +141,12 @@ public class ContentViewDescriptor {
     public ReferencePageProviderDescriptor getReferencePageProvider() {
         return referencePageProvider;
     }
+
+    // @since 5.9.6
+    protected String pageProviderName;
+
+    // @since 5.9.6
+    protected Map<String, String> pageProviderProperties;
 
     public String getSelectionListName() {
         return selectionList;
@@ -274,6 +281,49 @@ public class ContentViewDescriptor {
         return translateEmptySentence;
     }
 
+    /**
+     * @since 5.9.6
+     */
+    public String getPageProviderName() {
+        if (pageProviderName == null) {
+            if (referencePageProvider != null
+                    && referencePageProvider.isEnabled()) {
+                pageProviderName = referencePageProvider.getName();
+            } else if (coreQueryPageProvider != null
+                    && coreQueryPageProvider.isEnabled()
+                    && coreQueryPageProvider.getName() != null) {
+                pageProviderName = coreQueryPageProvider.getName();
+            } else if (genericPageProvider != null
+                    && genericPageProvider.isEnabled()
+                    && genericPageProvider.getName() != null) {
+                pageProviderName = genericPageProvider.getName();
+            } else {
+                pageProviderName = getName();
+            }
+        }
+        return pageProviderName;
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public Map<String, String> getPageProviderProperties() {
+        if (pageProviderProperties == null) {
+            if (referencePageProvider != null
+                    && referencePageProvider.isEnabled()) {
+                pageProviderProperties = referencePageProvider.getProperties();
+            } else if (coreQueryPageProvider != null
+                    && coreQueryPageProvider.isEnabled()) {
+                pageProviderProperties = coreQueryPageProvider.getProperties();
+
+            } else if (genericPageProvider != null
+                    && genericPageProvider.isEnabled()) {
+                pageProviderProperties = genericPageProvider.getProperties();
+            }
+        }
+        return pageProviderProperties;
+    }
+
     public ContentViewDescriptor clone() {
         ContentViewDescriptor clone = new ContentViewDescriptor();
         clone.name = getName();
@@ -341,5 +391,4 @@ public class ContentViewDescriptor {
         }
         return clone;
     }
-
 }

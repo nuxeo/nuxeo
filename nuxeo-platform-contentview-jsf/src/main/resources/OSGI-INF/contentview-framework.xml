@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <component name="org.nuxeo.ecm.platform.ui.web.ContentViewService">
-
+  <require>org.nuxeo.ecm.platform.query.api.PageProviderService</require>
   <documentation>
     The Content View service provides extension points for content view
     registration.
