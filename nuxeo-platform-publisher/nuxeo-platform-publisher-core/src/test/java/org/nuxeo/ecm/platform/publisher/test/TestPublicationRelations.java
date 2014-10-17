@@ -19,19 +19,16 @@ package org.nuxeo.ecm.platform.publisher.test;
 
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.After;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hsqldb.jdbc.jdbcDataSource;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
@@ -39,65 +36,17 @@ import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.helper.PublicationRelationHelper;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
-public class TestPublicationRelations extends SQLRepositoryTestCase {
+public class TestPublicationRelations extends PublisherTestCase {
 
     private static final Log log = LogFactory.getLog(TestPublicationRelations.class);
 
     protected DocumentModel doc2Publish;
 
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        NuxeoContainer.installNaming();
-
-        jdbcDataSource ds = new jdbcDataSource();
-        ds.setDatabase("jdbc:hsqldb:mem:jena");
-        ds.setUser("sa");
-        ds.setPassword("");
-        NuxeoContainer.addDeepBinding(
-                "java:comp/env/jdbc/nxrelations-default-jena", ds);
-        Framework.getProperties().setProperty(
-                "org.nuxeo.ecm.sql.jena.databaseType", "HSQL");
-        Framework.getProperties().setProperty(
-                "org.nuxeo.ecm.sql.jena.databaseTransactionEnabled", "false");
-
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.platform.content.template");
-        deployBundle("org.nuxeo.ecm.platform.types.api");
-        deployBundle("org.nuxeo.ecm.platform.types.core");
-        deployBundle("org.nuxeo.ecm.platform.versioning.api");
-        deployBundle("org.nuxeo.ecm.platform.versioning");
-        deployBundle("org.nuxeo.ecm.relations");
-        deployBundle("org.nuxeo.ecm.relations.jena");
-        deployContrib("org.nuxeo.ecm.platform.publisher.test",
-                "OSGI-INF/relations-default-jena-contrib.xml");
-
-        deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");
-        deployBundle("org.nuxeo.ecm.platform.publisher.core");
-
-        fireFrameworkStarted();
-        openSession();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        try {
-            closeSession();
-        } finally {
-            if (NuxeoContainer.isInstalled()) {
-                NuxeoContainer.uninstall();
-            }
-            super.tearDown();
-        }
-    }
 
     protected void createInitialDocs() throws Exception {
 

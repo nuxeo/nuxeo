@@ -29,6 +29,7 @@ import javax.persistence.EntityManager;
 
 import org.junit.Test;
 import org.junit.Ignore;
+
 import static org.junit.Assert.*;
 
 import org.apache.commons.logging.Log;
@@ -128,6 +129,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         assertEquals("id", fetchedEntry.getDocUUID());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testByFilter() throws Exception {
         LogEntry one = doCreateEntryAndPersist("id");
@@ -187,6 +189,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         LogEntry one = doCreateEntryAndPersist("one");
         Thread.sleep(1000);
         Date limit = new Date();
+        @SuppressWarnings("unused")
         LogEntry two = doCreateEntryAndPersist("two");
         LogEntry three = doCreateEntryAndPersist("three");
         one.setCategory("nuch");
@@ -201,8 +204,11 @@ public class TestLogEntryProvider extends PersistenceTestCase {
 
     @Test
     public void testRemove() {
+        @SuppressWarnings("unused")
         LogEntry one = doCreateEntryAndPersist("one");
+        @SuppressWarnings("unused")
         LogEntry two = doCreateEntryAndPersist("two");
+        @SuppressWarnings("unused")
         LogEntry three = doCreateEntryAndPersist("three");
         int count = providerUnderTest.removeEntries(eventId(), "/");
         assertEquals(3, count);
@@ -219,6 +225,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
     @Test
     public void testQuery() {
         LogEntry one = doCreateEntryAndPersist("one");
+        @SuppressWarnings("unused")
         LogEntry two = doCreateEntryAndPersist("two");
         LogEntry three = doCreateEntryAndPersist("three");
         one.setCategory("nuch");
@@ -240,7 +247,9 @@ public class TestLogEntryProvider extends PersistenceTestCase {
     @Ignore
     public void testEventIds() {
         String eventId = eventId();
+        @SuppressWarnings("unused")
         LogEntry one = doCreateEntryAndPersist("one");
+        @SuppressWarnings("unused")
         LogEntry two = doCreateEntryAndPersist("two");
         List<String> eventIds = providerUnderTest.findEventIds();
         assertEquals(1, eventIds.size());

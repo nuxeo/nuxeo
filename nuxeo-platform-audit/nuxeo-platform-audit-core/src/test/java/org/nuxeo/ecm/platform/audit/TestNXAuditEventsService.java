@@ -26,98 +26,112 @@ import static org.junit.Assert.assertNull;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.audit.TestNXAuditEventsService.MyInit;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
 import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
+import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
+import org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor;
 import org.nuxeo.ecm.platform.audit.service.management.AuditEventMetricFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ObjectNameFactory;
 import org.nuxeo.runtime.management.ServerLocator;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test the event conf service.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class TestNXAuditEventsService extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(AuditFeature.class)
+@RepositoryConfig(init = MyInit.class, cleanup = Granularity.CLASS)
+@LocalDeploy("org.nuxeo.ecm.platform.audit:test-audit-contrib.xml")
+public class TestNXAuditEventsService {
 
-    private Logs serviceUnderTest;
+    protected static MyInit repo;
+
+    public static class MyInit extends DefaultRepositoryInit {
+        {
+            repo = this;
+        }
+
+        protected DocumentModel source;
+
+        @Override
+        public void populate(CoreSession session) throws ClientException {
+            super.populate(session);
+            DocumentModel rootDocument = session.getRootDocument();
+            DocumentModel model = session.createDocumentModel(
+                    rootDocument.getPathAsString(), "youps", "File");
+            model.setProperty("dublincore", "title", "huum");
+            session.createDocument(model);
+            source = session.getDocument(new PathRef("/youps"));
+        }
+    }
+
+    @Inject
+    Logs serviceUnderTest;
 
     protected MBeanServer mbeanServer;
 
-    @Override
+    @Inject
+    CoreSession session;
+
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-
-        deployBundle("org.nuxeo.ecm.platform.usermanager");
-        deployBundle("org.nuxeo.ecm.core.persistence");
-        deployBundle("org.nuxeo.ecm.platform.audit");
-        deployBundle("org.nuxeo.ecm.platform.audit.tests");
-        deployBundle("org.nuxeo.runtime.management");
-
-        deployTestContrib("org.nuxeo.ecm.platform.audit.tests",
-                "nxaudit-tests.xml");
-        deployTestContrib("org.nuxeo.ecm.platform.audit.tests",
-                "test-audit-contrib.xml");
-        serviceUnderTest = Framework.getLocalService(Logs.class);
-        assertNotNull(serviceUnderTest);
-        openSession();
-        fireFrameworkStarted();
-
-        mbeanServer = Framework.getLocalService(ServerLocator.class).lookupServer();
+        mbeanServer = Framework.getLocalService(ServerLocator.class)
+            .lookupServer();
     }
 
-    protected void waitForEventsDispatched() {
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-    }
+    @Test
+    public void testAuditContribution() throws Exception {
+        NXAuditEventsService auditService = (NXAuditEventsService) Framework
+            .getRuntime().getComponent(NXAuditEventsService.NAME);
+        assertNotNull(auditService);
+        Set<AdapterDescriptor> registeredAdapters = auditService
+            .getDocumentAdapters();
+        assertEquals(1, registeredAdapters.size());
 
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        waitForEventsDispatched();
-        closeSession();
-        super.tearDown();
-    }
+        AdapterDescriptor ad = registeredAdapters.iterator().next();
+        assertEquals("myadapter", ad.getName());
 
-    protected DocumentModel doCreateDocument() throws ClientException {
-        DocumentModel rootDocument = session.getRootDocument();
-        DocumentModel model = session.createDocumentModel(
-                rootDocument.getPathAsString(), "youps", "File");
-        model.setProperty("dublincore", "title", "huum");
-        DocumentModel source = session.createDocument(model);
-        session.save();
-        waitForEventsDispatched();
-        return source;
     }
 
     @Test
     public void testLogDocumentMessageWithoutCategory() throws ClientException {
-        DocumentModel source = doCreateDocument();
         EventContext ctx = new DocumentEventContext(session,
-                session.getPrincipal(), source);
+                session.getPrincipal(), repo.source);
         Event event = ctx.newEvent("documentSecurityUpdated"); // auditable
         event.setInline(false);
         event.setImmediate(true);
         Framework.getLocalService(EventService.class).fireEvent(event);
-        waitForEventsDispatched();
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
 
-        List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(source.getId());
+        List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(repo.source
+            .getId());
         assertEquals(2, entries.size());
 
         // entries are not ordered => skip creation log
@@ -139,17 +153,17 @@ public class TestNXAuditEventsService extends SQLRepositoryTestCase {
 
     @Test
     public void testLogDocumentMessageWithCategory() throws ClientException {
-        DocumentModel source = doCreateDocument();
         EventContext ctx = new DocumentEventContext(session,
-                session.getPrincipal(), source);
+                session.getPrincipal(), repo.source);
         ctx.setProperty("category", "myCategory");
         Event event = ctx.newEvent("documentSecurityUpdated"); // auditable
         event.setInline(false);
         event.setImmediate(true);
         Framework.getLocalService(EventService.class).fireEvent(event);
-        waitForEventsDispatched();
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
 
-        List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(source.getId());
+        List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(repo.source
+            .getId());
         assertEquals(2, entries.size());
 
         // entries are not ordered => skip creation log
@@ -171,18 +185,18 @@ public class TestNXAuditEventsService extends SQLRepositoryTestCase {
 
     @Test
     public void testLogMiscMessage() throws ClientException {
-        
+
         DefaultAuditBackend backend = (DefaultAuditBackend) serviceUnderTest;
-        
+
         List<String> eventIds = backend.getLoggedEventIds();
         int n = eventIds.size();
-        
+
         EventContext ctx = new EventContextImpl(); // not:DocumentEventContext
         Event event = ctx.newEvent("documentModified"); // auditable
         event.setInline(false);
         event.setImmediate(true);
         Framework.getLocalService(EventService.class).fireEvent(event);
-        waitForEventsDispatched();
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
 
         eventIds = backend.getLoggedEventIds();
         assertEquals(n + 1, eventIds.size());
@@ -190,20 +204,22 @@ public class TestNXAuditEventsService extends SQLRepositoryTestCase {
 
     @Test
     public void testsyncLogCreation() throws Exception {
-        doCreateDocument();
         DocumentModel rootDocument = session.getRootDocument();
         long count = serviceUnderTest.syncLogCreationEntries(
                 session.getRepositoryName(), rootDocument.getPathAsString(),
                 true);
-        assertEquals(2, count);
+        assertEquals(14, count);
 
-        List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(rootDocument.getId());
+        String query = String.format(
+                "log.docUUID = '%s' and log.eventId = 'documentCreated'",
+                rootDocument.getId());
+
+        List<LogEntry> entries = serviceUnderTest.nativeQueryLogs(query, 1, 1);
         assertEquals(1, entries.size());
 
         LogEntry entry = entries.get(0);
         assertEquals("eventDocumentCategory", entry.getCategory());
         assertNull(entry.getComment());
-        assertEquals("project", entry.getDocLifeCycle());
         assertEquals("/", entry.getDocPath());
         assertEquals("Root", entry.getDocType());
         assertEquals("documentCreated", entry.getEventId());
@@ -225,8 +241,9 @@ public class TestNXAuditEventsService extends SQLRepositoryTestCase {
         model.setProperty("dublincore", "title", "huum");
         session.createDocument(model);
         session.save();
-        waitForEventsDispatched();
-        ObjectName objectName = AuditEventMetricFactory.getObjectName("documentCreated");
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        ObjectName objectName = AuditEventMetricFactory
+            .getObjectName("documentCreated");
         Long count = (Long) mbeanServer.getAttribute(objectName, "count");
         assertEquals(new Long(1L), count);
     }

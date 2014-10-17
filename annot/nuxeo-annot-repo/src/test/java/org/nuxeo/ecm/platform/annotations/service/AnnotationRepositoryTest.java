@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.apache.commons.logging.Log;
@@ -38,6 +39,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
@@ -60,6 +62,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
     private final NuxeoPrincipal user = new UserPrincipal("bob",
             new ArrayList<String>(), false, false);
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -78,7 +81,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         session.save();
         closeSession();
         waitForAsyncExec();
-        database.sleepForFulltext();
+        DatabaseHelper.DATABASE.sleepForFulltext();
         openSession();
 
         // the text 'zombie' is not found in the document
@@ -100,7 +103,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         session.save();
         closeSession();
         waitForAsyncExec();
-        database.sleepForFulltext();
+        DatabaseHelper.DATABASE.sleepForFulltext();
         openSession();
 
         // the body of the text is annotated on the document
@@ -122,7 +125,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         session.save();
         closeSession();
         waitForAsyncExec();
-        database.sleepForFulltext();
+        DatabaseHelper.DATABASE.sleepForFulltext();
         openSession();
 
         // we  find no documents: this is

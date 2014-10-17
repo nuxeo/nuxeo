@@ -22,19 +22,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-
-import org.h2.Driver;
-import org.junit.After;
-import org.junit.Before;
+import javax.inject.Inject;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.directory.sql.SimpleDataSource;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.converters.LayoutConversionContext;
 import org.nuxeo.ecm.platform.forms.layout.api.converters.LayoutDefinitionConverter;
@@ -42,9 +36,11 @@ import org.nuxeo.ecm.platform.forms.layout.api.converters.WidgetDefinitionConver
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.ecm.platform.forms.layout.io.JSONLayoutExporter;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
@@ -52,63 +48,20 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
  * @author Anahide Tchertchian
  * @since 5.5
  */
-public class TestLayoutExport extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, PlatformFeature.class })
+@Deploy({ "org.nuxeo.ecm.platform.forms.layout.core",
+        "org.nuxeo.ecm.platform.forms.layout.client",
+        "org.nuxeo.ecm.platform.forms.layout.io.plugins" })
+@LocalDeploy({
+        "org.nuxeo.ecm.platform.forms.layout.io.plugins:layouts-test-contrib.xml",
+        "org.nuxeo.ecm.platform.forms.layout.io.plugins:test-directories-contrib.xml" })
+public class TestLayoutExport {
 
     protected static final String TEST_CATEGORY = "standalone";
 
+    @Inject
     protected LayoutStore service;
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        // layout deps
-        deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client",
-                "OSGI-INF/layouts-framework.xml");
-        deployBundle("org.nuxeo.ecm.platform.forms.layout.io.plugins");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.io.plugins.tests",
-                "layouts-test-contrib.xml");
-
-        // other deps
-        setUpContextFactory();
-        // deploy directory service
-        deployBundle("org.nuxeo.ecm.directory");
-        deployBundle("org.nuxeo.ecm.directory.sql");
-        // deploy schemas
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreExtensions.xml");
-        // default dirs
-        deployBundle("org.nuxeo.ecm.directory.types.contrib");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.io.plugins.tests",
-                "test-directories-contrib.xml");
-
-        service = Framework.getService(LayoutStore.class);
-        assertNotNull(service);
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        NuxeoContainer.uninstallNaming();
-        super.tearDown();
-    }
-
-    public static void setUpContextFactory() throws NamingException {
-        DataSource datasourceAutocommit = new SimpleDataSource(
-                "jdbc:h2:mem:memid;DB_CLOSE_DELAY=-1", Driver.class.getName(),
-                "SA", "") {
-            @Override
-            public Connection getConnection() throws SQLException {
-                Connection con = super.getConnection();
-                con.setAutoCommit(true);
-                return con;
-            }
-        };
-        NuxeoContainer.installNaming();
-        NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxsqldirectory",
-                datasourceAutocommit);
-    }
 
     @Test
     public void testLayoutDefinitionExport() throws Exception {
@@ -124,11 +77,13 @@ public class TestLayoutExport extends NXRuntimeTestCase {
     protected void check(LayoutDefinition layoutDef, String lang)
             throws Exception {
         LayoutConversionContext ctx = new LayoutConversionContext(lang, null);
-        List<LayoutDefinitionConverter> layoutConverters = service.getLayoutConverters(TEST_CATEGORY);
+        List<LayoutDefinitionConverter> layoutConverters = service
+            .getLayoutConverters(TEST_CATEGORY);
         for (LayoutDefinitionConverter conv : layoutConverters) {
             layoutDef = conv.getLayoutDefinition(layoutDef, ctx);
         }
-        List<WidgetDefinitionConverter> widgetConverters = service.getWidgetConverters(TEST_CATEGORY);
+        List<WidgetDefinitionConverter> widgetConverters = service
+            .getWidgetConverters(TEST_CATEGORY);
 
         String langFilePath = lang;
         if (langFilePath == null) {

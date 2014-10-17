@@ -134,6 +134,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+       <groupId>org.nuxeo.ecm.annot</groupId>
+       <artifactId>nuxeo-annot-repo</artifactId>
+       <scope>test</scope>
+       <type>test-jar</type>
+    </dependency>
+    <dependency>
       <groupId>hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
       <scope>test</scope>

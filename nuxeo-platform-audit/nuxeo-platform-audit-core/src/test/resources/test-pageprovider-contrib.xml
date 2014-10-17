@@ -38,6 +38,7 @@
       <pattern>
         from LogEntry log
       </pattern>
+      <sort column="log.id" ascending="true" />
       <pageSize>2</pageSize>
     </genericPageProvider>
 
@@ -46,7 +47,7 @@
       <pattern>
         from LogEntry log  where log.category = ?
       </pattern>
-      <sort column="log.eventDate" ascending="true" />
+      <sort column="log.id" ascending="true" />
       <pageSize>2</pageSize>
     </genericPageProvider>
 
@@ -60,7 +61,7 @@
           <field schema="dublincore" name="title" />
         </predicate>
       </whereClause>
-      <sort column="log.eventDate" ascending="true" />
+      <sort column="log.id" ascending="true" />
       <pageSize>2</pageSize>
     </genericPageProvider>
 
@@ -74,7 +75,7 @@
           <field schema="dublincore" name="subjects" />
         </predicate>
       </whereClause>
-      <sort column="log.eventDate" ascending="true" />
+      <sort column="log.id" ascending="true" />
       <pageSize>2</pageSize>
     </genericPageProvider>
 
@@ -89,7 +90,7 @@
           <field schema="dublincore" name="valid" />
         </predicate>
       </whereClause>
-      <sort column="log.eventDate" ascending="true" />
+      <sort column="log.id" ascending="true" />
       <pageSize>10</pageSize>
     </genericPageProvider>
 

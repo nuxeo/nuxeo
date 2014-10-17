@@ -23,8 +23,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import org.junit.Before;
-import org.junit.After;
-
 import static org.junit.Assert.*;
 
 import org.hsqldb.jdbc.jdbcDataSource;
@@ -54,10 +52,14 @@ public abstract class AbstractAnnotationTest extends SQLRepositoryTestCase {
     protected final AnnotationManager manager = new AnnotationManager();
 
     @Override
+    protected void deployRepositoryContrib() throws Exception {
+        deployBundle("org.nuxeo.runtime.jtajca");
+    }
+
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        NuxeoContainer.installNaming();
 
         jdbcDataSource ds = new jdbcDataSource();
         ds.setDatabase("jdbc:hsqldb:mem:jena");
@@ -84,13 +86,5 @@ public abstract class AbstractAnnotationTest extends SQLRepositoryTestCase {
         assertNotNull(annotation);
     }
 
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        if (NuxeoContainer.isInstalled()) {
-            NuxeoContainer.uninstall();
-        }
-        super.tearDown();
-    }
 
 }

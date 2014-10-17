@@ -17,20 +17,21 @@
 
 package org.nuxeo.ecm.platform.publisher.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.After;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
-import org.hsqldb.jdbc.jdbcDataSource;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
@@ -39,7 +40,8 @@ import org.nuxeo.ecm.platform.publisher.helper.RootSectionsManager;
 import org.nuxeo.ecm.platform.publisher.impl.service.ProxyTree;
 import org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
+import org.nuxeo.runtime.model.RegistrationInfo;
+import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
 
 /**
  *
@@ -48,57 +50,10 @@ import org.nuxeo.runtime.jtajca.NuxeoContainer;
  * @author tiry
  *
  */
-public class TestServiceWithCore extends SQLRepositoryTestCase {
+@RepositoryConfig(cleanup=Granularity.METHOD)
+public class TestServiceWithCore extends PublisherTestCase {
 
     protected DocumentModel doc2Publish;
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        NuxeoContainer.installNaming();
-
-        jdbcDataSource ds = new jdbcDataSource();
-        ds.setDatabase("jdbc:hsqldb:mem:jena");
-        ds.setUser("sa");
-        ds.setPassword("");
-        NuxeoContainer.addDeepBinding(
-                "java:comp/env/jdbc/nxrelations-default-jena", ds);
-        Framework.getProperties().setProperty(
-                "org.nuxeo.ecm.sql.jena.databaseType", "HSQL");
-        Framework.getProperties().setProperty(
-                "org.nuxeo.ecm.sql.jena.databaseTransactionEnabled", "false");
-
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.platform.content.template");
-        deployBundle("org.nuxeo.ecm.platform.types.api");
-        deployBundle("org.nuxeo.ecm.platform.types.core");
-        deployBundle("org.nuxeo.ecm.platform.versioning.api");
-        deployBundle("org.nuxeo.ecm.platform.versioning");
-        deployBundle("org.nuxeo.ecm.relations");
-        deployBundle("org.nuxeo.ecm.relations.jena");
-        deployContrib("org.nuxeo.ecm.platform.publisher.test",
-                "OSGI-INF/relations-default-jena-contrib.xml");
-
-        deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");
-        deployBundle("org.nuxeo.ecm.platform.publisher.core");
-
-        fireFrameworkStarted();
-        openSession();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        try {
-            closeSession();
-        } finally {
-            if (NuxeoContainer.isInstalled()) {
-                NuxeoContainer.uninstall();
-            }
-            super.tearDown();
-        }
-    }
 
     protected void createInitialDocs() throws Exception {
 
@@ -148,7 +103,8 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         createInitialDocs();
 
         // check service config
-        PublisherService service = Framework.getLocalService(PublisherService.class);
+        PublisherService service = Framework
+            .getLocalService(PublisherService.class);
         List<String> treeNames = service.getAvailablePublicationTree();
         assertEquals(1, treeNames.size());
 
@@ -194,15 +150,17 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         session.save();
 
         assertEquals("test", pubDoc.getSourceRepositoryName());
-        DocumentModel publishedDocVersion = session.getDocument(pubDoc.getSourceDocumentRef());
+        DocumentModel publishedDocVersion = session.getDocument(pubDoc
+            .getSourceDocumentRef());
         assertNotNull(publishedDocVersion);
         assertTrue(publishedDocVersion.isVersion());
         assertEquals(doc2Publish.getRef().toString(),
                 publishedDocVersion.getSourceId());
 
         // check tree features about proxy detection
-        List<PublishedDocument> detectedProxies = tree.getExistingPublishedDocument(new DocumentLocationImpl(
-                publishedDocVersion));
+        List<PublishedDocument> detectedProxies = tree
+            .getExistingPublishedDocument(new DocumentLocationImpl(
+                    publishedDocVersion));
         assertTrue(detectedProxies.size() == 1);
 
         detectedProxies = tree.getPublishedDocumentInNode(nodes.get(0));
@@ -210,8 +168,8 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
 
         detectedProxies = tree.getPublishedDocumentInNode(subnodes.get(0));
         assertTrue(detectedProxies.size() == 1);
-        assertEquals(publishedDocVersion.getRef(),
-                detectedProxies.get(0).getSourceDocumentRef());
+        assertEquals(publishedDocVersion.getRef(), detectedProxies.get(0)
+            .getSourceDocumentRef());
 
         // check publishing 2
         PublicationNode targetNode2 = nodes.get(0);
@@ -224,66 +182,39 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         session.save();
 
         assertEquals("test", pubDoc2.getSourceRepositoryName());
-        DocumentModel publishedDocVersion2 = session.getDocument(pubDoc2.getSourceDocumentRef());
+        DocumentModel publishedDocVersion2 = session.getDocument(pubDoc2
+            .getSourceDocumentRef());
         assertNotNull(publishedDocVersion2);
         assertTrue(publishedDocVersion2.isVersion());
         assertEquals(doc2Publish.getRef().toString(),
                 publishedDocVersion2.getSourceId());
 
         // check tree features about proxy detection
-        detectedProxies = tree.getExistingPublishedDocument(new DocumentLocationImpl(
-                publishedDocVersion));
+        detectedProxies = tree
+            .getExistingPublishedDocument(new DocumentLocationImpl(
+                    publishedDocVersion));
         assertTrue(detectedProxies.size() == 2);
 
         detectedProxies = tree.getPublishedDocumentInNode(nodes.get(0));
         assertTrue(detectedProxies.size() == 1);
-        assertEquals(publishedDocVersion2.getRef(),
-                detectedProxies.get(0).getSourceDocumentRef());
+        assertEquals(publishedDocVersion2.getRef(), detectedProxies.get(0)
+            .getSourceDocumentRef());
 
         detectedProxies = tree.getPublishedDocumentInNode(subnodes.get(0));
         assertTrue(detectedProxies.size() == 1);
 
     }
 
-    @Test
-    public void testCleanUp() throws Exception {
-        createInitialDocs();
-
-        deployContrib("org.nuxeo.ecm.platform.publisher.test",
-                "OSGI-INF/publisher-remote-contrib-test.xml");
-
-        PublisherServiceImpl service = (PublisherServiceImpl) Framework.getLocalService(PublisherService.class);
-
-        assertEquals(0, service.getLiveTreeCount());
-
-        // get a local tree
-        PublicationTree ltree = service.getPublicationTree(
-                "DefaultSectionsTree-default-domain", session, null);
-        assertEquals(1, service.getLiveTreeCount());
-
-        // get a remote tree
-        PublicationTree rtree = service.getPublicationTree("ClientRemoteTree",
-                session, null);
-        assertEquals(3, service.getLiveTreeCount());
-
-        // release local tree
-        ltree.release();
-        assertEquals(2, service.getLiveTreeCount());
-
-        // release remote tree
-        rtree.release();
-        assertEquals(0, service.getLiveTreeCount());
-
-    }
 
     @Test
     public void testWrapToPublicationNode() throws Exception {
         createInitialDocs();
 
-        PublisherService service = Framework.getLocalService(PublisherService.class);
+        PublisherService service = Framework
+            .getLocalService(PublisherService.class);
 
-        PublicationTree tree = service.getPublicationTree(
-                service.getAvailablePublicationTree().get(0), session, null);
+        PublicationTree tree = service.getPublicationTree(service
+            .getAvailablePublicationTree().get(0), session, null);
 
         DocumentModel ws1 = session.getDocument(new PathRef(
                 "default-domain/workspaces/ws1"));
@@ -320,21 +251,23 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         assertTrue(rootSectionsManager.canAddSection(section1, ws1));
 
         rootSectionsManager.addSection(section1.getId(), ws1);
-        String[] sectionIdsArray = (String[]) ws1.getPropertyValue(RootSectionsManager.SECTIONS_PROPERTY_NAME);
+        String[] sectionIdsArray = (String[]) ws1
+            .getPropertyValue(RootSectionsManager.SECTIONS_PROPERTY_NAME);
         assertEquals(1, sectionIdsArray.length);
 
-        PublisherService service = Framework.getLocalService(PublisherService.class);
+        PublisherService service = Framework
+            .getLocalService(PublisherService.class);
 
-        PublicationTree tree = service.getPublicationTree(
-                service.getAvailablePublicationTree().get(0), session, null,
-                doc2Publish);
+        PublicationTree tree = service.getPublicationTree(service
+            .getAvailablePublicationTree().get(0), session, null, doc2Publish);
         assertNotNull(tree);
 
         List<PublicationNode> nodes = tree.getChildrenNodes();
         assertEquals(1, nodes.size());
 
         rootSectionsManager.removeSection(section1.getId(), ws1);
-        sectionIdsArray = (String[]) ws1.getPropertyValue(RootSectionsManager.SECTIONS_PROPERTY_NAME);
+        sectionIdsArray = (String[]) ws1
+            .getPropertyValue(RootSectionsManager.SECTIONS_PROPERTY_NAME);
         assertEquals(0, sectionIdsArray.length);
 
         DocumentModel section2 = session.getDocument(new PathRef(
@@ -367,9 +300,11 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         DocumentModel workspace = session.getDocument(new PathRef(
                 "/default-domain/workspaces/ws1"));
         rootSectionsManager.addSection(section.getId(), workspace);
-        PublisherService srv = Framework.getLocalService(PublisherService.class);
+        PublisherService srv = Framework
+            .getLocalService(PublisherService.class);
         PublicationTree tree = srv.getPublicationTreeFor(doc2Publish, session);
-        PublicationNode target = tree.getNodeByPath("/default-domain/sections/section1");
+        PublicationNode target = tree
+            .getNodeByPath("/default-domain/sections/section1");
         srv.publish(doc2Publish, target);
         closeSession();
         openSession();
@@ -382,7 +317,8 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         PathRef sectionRef = new PathRef("/default-domain/sections/section1");
         PathRef proxyRef = new PathRef("/default-domain/sections/section1/file");
         assertTrue(session.exists(proxyRef));
-        PublisherService srv = Framework.getLocalService(PublisherService.class);
+        PublisherService srv = Framework
+            .getLocalService(PublisherService.class);
         PublicationTree tree = srv.getPublicationTreeFor(doc2Publish, session);
         PublicationNode target = tree.getNodeByPath(sectionRef.value);
         // Unpublish check-in version (SUPNXP-3013)
@@ -391,4 +327,39 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         assertFalse(session.exists(proxyRef));
     }
 
+
+    @Test
+    public void testCleanUp() throws Exception {
+        RegistrationInfo ri = new DefaultRuntimeContext()
+            .deploy("OSGi-INF/publisher-remote-contrib-test.xml");
+        try {
+            createInitialDocs();
+        } finally {
+            ri.getManager().unregister(ri);
+        }
+
+        PublisherServiceImpl service = (PublisherServiceImpl) Framework
+            .getLocalService(PublisherService.class);
+
+        assertEquals(0, service.getLiveTreeCount());
+
+        // get a local tree
+        PublicationTree ltree = service.getPublicationTree(
+                "DefaultSectionsTree-default-domain", session, null);
+        assertEquals(1, service.getLiveTreeCount());
+
+        // get a remote tree
+        PublicationTree rtree = service.getPublicationTree("ClientRemoteTree",
+                session, null);
+        assertEquals(3, service.getLiveTreeCount());
+
+        // release local tree
+        ltree.release();
+        assertEquals(2, service.getLiveTreeCount());
+
+        // release remote tree
+        rtree.release();
+        assertEquals(0, service.getLiveTreeCount());
+
+    }
 }

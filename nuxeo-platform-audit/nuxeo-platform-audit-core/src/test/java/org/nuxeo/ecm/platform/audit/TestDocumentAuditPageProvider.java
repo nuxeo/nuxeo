@@ -8,13 +8,18 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.platform.audit.TestDocumentAuditPageProvider.Pfouh;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.DocumentHistoryReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -23,158 +28,103 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test the {@link DocumentHistoryPageProvider}
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
-public class TestDocumentAuditPageProvider extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(AuditFeature.class)
+@LocalDeploy("org.nuxeo.ecm.platform.audit.tests:test-pageprovider-contrib.xml")
+@RepositoryConfig(init=Pfouh.class)
+public class TestDocumentAuditPageProvider  {
 
     protected static final Calendar testDate = Calendar.getInstance();
 
-    protected DocumentModel doc;
+    @Inject AuditReader reader;
 
-    protected DocumentModel proxy;
+    @Inject CoreSession session;
 
-    protected List<DocumentModel> versions;
+    protected static Pfouh pfouh;
 
-    protected boolean verbose = false;
+    public static class Pfouh implements RepositoryInit {
 
-    protected void dump(Object ob) {
-        System.out.println(ob.toString());
-    }
-
-    protected void dump(List<?> obs) {
-        for (Object ob : obs) {
-            dump(ob);
-        }
-    }
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.persistence");
-        deployBundle("org.nuxeo.ecm.platform.dublincore");
-        deployBundle("org.nuxeo.ecm.platform.audit");
-        deployBundle("org.nuxeo.ecm.platform.audit.tests");
-        deployBundle("org.nuxeo.ecm.platform.query.api");
-
-        deployTestContrib("org.nuxeo.ecm.platform.audit.tests",
-                "nxaudit-tests.xml");
-
-        deployTestContrib("org.nuxeo.ecm.platform.audit.tests",
-                "test-pageprovider-contrib.xml");
-
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        if (session != null) {
-            closeSession();
-        }
-        super.tearDown();
-    }
-
-    protected void createTestEntries() throws Exception {
-
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
-
-        DocumentModel section = session.createDocumentModel("/", "section",
-                "Folder");
-        section = session.createDocument(section);
-
-        doc = session.createDocumentModel("/", "doc", "File");
-        doc.setPropertyValue("dc:title", "TestDoc");
-
-        // create the doc
-        doc = session.createDocument(doc);
-
-        // do some updates
-        for (int i = 0; i < 5; i++) {
-            doc.setPropertyValue("dc:description", "Update " + i);
-            doc.getContextData().put("comment", "Update " + i);
-            doc = session.saveDocument(doc);
-            session.save();
-            waitForAsyncCompletion();
+        {
+            pfouh = this;
         }
 
-        // wait at least 1s to be sure we have a precise timestamp in all DB
-        // backend
-        Thread.sleep(1100);
+        protected boolean verbose = false;
 
-        // create a version
-        doc.putContextData(VersioningService.VERSIONING_OPTION,
-                VersioningOption.MINOR);
-        doc = session.saveDocument(doc);
-        session.save();
-        waitForAsyncCompletion();
+        DocumentModel doc;
 
-        // wait at least 1s to be sure we have a precise timestamp in all DB
-        // backend
-        Thread.sleep(1100);
+        DocumentModel proxy;
 
-        // do some more updates
-        for (int i = 5; i < 10; i++) {
-            doc.setPropertyValue("dc:description", "Update " + i);
-            doc.getContextData().put("comment", "Update " + i);
-            doc = session.saveDocument(doc);
-            session.save();
-            waitForAsyncCompletion();
-        }
+        List<DocumentModel> versions;
 
-        // wait at least 1s to be sure we have a precise timestamp in all DB
-        // backend
-        Thread.sleep(1100);
+        @Override
+        public void populate(CoreSession session) throws ClientException {
 
-        proxy = session.publishDocument(doc, section);
-        session.save();
-        waitForAsyncCompletion();
+            DocumentModel section = session.createDocumentModel("/", "section",
+                    "Folder");
+            section = session.createDocument(section);
 
-        Thread.sleep(1100); // wait at least 1s to be sure we have a precise
-                            // timestamp in all DB backend
+            doc = session.createDocumentModel("/", "doc", "File");
+            doc.setPropertyValue("dc:title", "TestDoc");
 
-        // do some more updates
-        for (int i = 10; i < 15; i++) {
-            doc.setPropertyValue("dc:description", "Update " + i);
-            doc.getContextData().put("comment", "Update " + i);
-            doc = session.saveDocument(doc);
-            session.save();
-            waitForAsyncCompletion();
-        }
+            // create the doc
+            doc = session.createDocument(doc);
 
-        versions = session.getVersions(doc.getRef());
-        assertEquals(2, versions.size());
-        if (verbose) {
-            for (DocumentModel version : versions) {
-                System.out.println("version: " + version.getId());
-                System.out.println("version series: "
-                        + version.getVersionSeriesId());
-                System.out.println("version label: "
-                        + version.getVersionLabel());
-                System.out.println("version date: "
-                        + ((Calendar) version.getPropertyValue("dc:modified")).getTime());
+            // do some updates
+            for (int i = 0; i < 5; i++) {
+                doc.setPropertyValue("dc:description", "Update " + i);
+                doc.getContextData().put("comment", "Update " + i);
+                doc = session.saveDocument(doc);
+                session.save();
             }
+
+            // create a version
+            doc.putContextData(VersioningService.VERSIONING_OPTION,
+                    VersioningOption.MINOR);
+            doc = session.saveDocument(doc);
+            session.save();
+
+            // do some more updates
+            for (int i = 5; i < 10; i++) {
+                doc.setPropertyValue("dc:description", "Update " + i);
+                doc.getContextData().put("comment", "Update " + i);
+                doc = session.saveDocument(doc);
+                session.save();
+            }
+
+
+            proxy = session.publishDocument(doc, section);
+            session.save();
+
+
+            // do some more updates
+            for (int i = 10; i < 15; i++) {
+                doc.setPropertyValue("dc:description", "Update " + i);
+                doc.getContextData().put("comment", "Update " + i);
+                doc = session.saveDocument(doc);
+                session.save();
+            }
+
+            versions = session.getVersions(doc.getRef());
+            assertEquals(2, versions.size());
+
         }
 
-        List<LogEntry> entries = (List<LogEntry>) reader.nativeQuery(
-                "from LogEntry", 0, 100);
-        if (!entries.get(0).getDocUUID().equals(section.getId())) {
-            entries.remove(0);
-        }
-        if (verbose) {
-            dump(entries);
-        }
 
     }
+
 
     @Test
     public void testDocumentHistoryPageProvider() throws Exception {
 
-        openSession();
-        createTestEntries();
 
         PageProviderService pps = Framework.getService(PageProviderService.class);
         assertNotNull(pps);
@@ -184,7 +134,7 @@ public class TestDocumentAuditPageProvider extends SQLRepositoryTestCase {
 
         PageProvider<?> pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER",
                 null, Long.valueOf(20), Long.valueOf(0),
-                new HashMap<String, Serializable>(), doc);
+                new HashMap<String, Serializable>(), pfouh.doc);
 
         DocumentModel searchDoc = session.createDocumentModel("BasicAuditSearch");
         searchDoc.setPathInfo("/", "auditsearch");
@@ -196,10 +146,6 @@ public class TestDocumentAuditPageProvider extends SQLRepositoryTestCase {
 
         // Get Live doc history
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
-        if (verbose) {
-            System.out.println("Live doc history");
-            dump(entries);
-        }
 
         // create, 15+1 update , 2 checkin
         assertEquals(19, entries.size());
@@ -209,14 +155,11 @@ public class TestDocumentAuditPageProvider extends SQLRepositoryTestCase {
         // Get Proxy history
         pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,
                 Long.valueOf(20), Long.valueOf(0),
-                new HashMap<String, Serializable>(), proxy);
+                new HashMap<String, Serializable>(), pfouh.proxy);
         pp.setSearchDocumentModel(searchDoc);
 
         entries = (List<LogEntry>) pp.getCurrentPage();
-        if (verbose) {
-            System.out.println("Proxy doc history");
-            dump(entries);
-        }
+
 
         // 19 - 5 updates + create + proxyPublished
         int proxyEntriesCount = 19 - 5 + 1 + 1;
@@ -230,15 +173,9 @@ public class TestDocumentAuditPageProvider extends SQLRepositoryTestCase {
         // Get version 1 history
         pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,
                 Long.valueOf(20), Long.valueOf(0),
-                new HashMap<String, Serializable>(), versions.get(0));
+                new HashMap<String, Serializable>(), pfouh.versions.get(0));
         pp.setSearchDocumentModel(searchDoc);
         entries = (List<LogEntry>) pp.getCurrentPage();
-
-        if (verbose) {
-            System.out.println("Version " + versions.get(0).getVersionLabel()
-                    + " doc history");
-            dump(entries);
-        }
 
         // creation + 5 updates + update + checkin + created
         int version1EntriesCount = 1 + 5 + 1 + 1 + 1;
@@ -256,16 +193,11 @@ public class TestDocumentAuditPageProvider extends SQLRepositoryTestCase {
         // get version 2 history
         pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,
                 Long.valueOf(20), Long.valueOf(0),
-                new HashMap<String, Serializable>(), versions.get(1));
+                new HashMap<String, Serializable>(), pfouh.versions.get(1));
         pp.setSearchDocumentModel(searchDoc);
 
         entries = (List<LogEntry>) pp.getCurrentPage();
 
-        if (verbose) {
-            System.out.println("Version " + versions.get(1).getVersionLabel()
-                    + " doc history");
-            dump(entries);
-        }
 
         // creation + 5x2 updates + checkin/update + checkin + created
         int versin2EntriesCount = 1 + 5 * 2 + 1 + 1 + 1 + 1;
@@ -276,16 +208,12 @@ public class TestDocumentAuditPageProvider extends SQLRepositoryTestCase {
 
     }
 
+    @Inject DocumentHistoryReader history;
+
     @Test
     public void testDocumentHistoryReader() throws Exception {
 
-        openSession();
-        createTestEntries();
-
-        DocumentHistoryReader reader = Framework.getLocalService(DocumentHistoryReader.class);
-        assertNotNull(reader);
-
-        List<LogEntry> entries = reader.getDocumentHistory(versions.get(1), 0,
+        List<LogEntry> entries = history.getDocumentHistory(pfouh.versions.get(1), 0,
                 20);
         assertNotNull(entries);
         // creation + 5x2 updates + checkin/update + checkin + created

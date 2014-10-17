@@ -10,11 +10,12 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-import org.junit.After;
+import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.AuditPageProvider;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
@@ -26,70 +27,39 @@ import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.core.GenericPageProviderDescriptor;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Tests the {@link AuditPageProvider}
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
-public class TestPageProvider extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(AuditFeature.class)
+@LocalDeploy({ "org.nuxeo.ecm.platform.audit:test-audit-contrib.xml",
+        "org.nuxeo.ecm.platform.audit:test-pageprovider-contrib.xml" })
+public class TestPageProvider {
 
-    protected static final List<String> entriesIdx = Arrays.asList(new String[] {
-            "3", "7", "7", "8", "1", "8", "7", "9" });
+    protected static final List<String> entriesIdx = Arrays
+        .asList(new String[] { "3", "7", "7", "8", "1", "8", "7", "9" });
 
     protected static final Calendar testDate = Calendar.getInstance();
 
-    protected void dump(Object ob) {
-        // System.out.println(ob.toString());
-    }
+    @Inject
+    AuditFeature audit;
 
-    protected void dump(List<?> obs) {
-        for (Object ob : obs) {
-            dump(ob);
-        }
-    }
+    @Inject
+    CoreSession session;
 
-    @Override
     @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.persistence");
-        deployBundle("org.nuxeo.ecm.platform.audit");
-        deployBundle("org.nuxeo.ecm.platform.audit.tests");
-        deployBundle("org.nuxeo.ecm.platform.query.api");
-
-        deployTestContrib("org.nuxeo.ecm.platform.audit.tests",
-                "nxaudit-tests.xml");
-        deployTestContrib("org.nuxeo.ecm.platform.audit.tests",
-                "test-audit-contrib.xml");
-
-        deployTestContrib("org.nuxeo.ecm.platform.audit.tests",
-                "test-pageprovider-contrib.xml");
-
-        createTestEntries();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        if (session != null) {
-            closeSession();
-        }
-        super.tearDown();
-    }
-
-    protected void createTestEntries() {
+    public void createTestEntries() {
 
         AuditReader reader = Framework.getLocalService(AuditReader.class);
         assertNotNull(reader);
 
-        String query = "select count(log.id) from LogEntry log ";
-        List resCount = reader.nativeQuery(query, 1, 20);
-        if (((Long) resCount.get(0)).longValue() > 0) {
-            // reader.nativeQuery("DELETE FROM LogEntry log where log.docUUID='uuid'",
-            // 1, 20);
-            return;
-        }
+        audit.clear();
 
         AuditLogger logger = Framework.getLocalService(AuditLogger.class);
         assertNotNull(logger);
@@ -110,30 +80,28 @@ public class TestPageProvider extends SQLRepositoryTestCase {
 
         logger.addLogEntries(entries);
 
-        List res = reader.nativeQuery(
+        List<?> res = reader.nativeQuery(
                 "select count(log.eventId) from LogEntry log", 1, 20);
         int count = ((Long) res.get(0)).intValue();
-        dump("Audit initialized with " + count + " entries");
         assertEquals(entries.size(), count);
-
-        entries = (List<LogEntry>) reader.nativeQuery("from LogEntry log", 0,
-                10);
-        dump(entries);
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testSimpleProvider() throws Exception {
 
-        PageProviderService pps = Framework.getService(PageProviderService.class);
+        PageProviderService pps = Framework
+            .getService(PageProviderService.class);
         assertNotNull(pps);
 
-        PageProviderDefinition ppdef = pps.getPageProviderDefinition("GetAllEntries");
+        PageProviderDefinition ppdef = pps
+            .getPageProviderDefinition("GetAllEntries");
         assertNotNull(ppdef);
 
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
-        assertEquals(AuditPageProvider.class.getSimpleName(),
-                gppdef.getPageProviderClass().getSimpleName());
+        assertEquals(AuditPageProvider.class.getSimpleName(), gppdef
+            .getPageProviderClass().getSimpleName());
 
         PageProvider<?> pp = pps.getPageProvider("GetAllEntries", null,
                 Long.valueOf(5), Long.valueOf(0),
@@ -143,17 +111,14 @@ public class TestPageProvider extends SQLRepositoryTestCase {
 
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
 
-        dump(pp);
-        dump(entries);
-
         assertNotNull(entries);
         assertEquals(5, entries.size());
-        assertEquals("category" + entriesIdx.get(0),
-                entries.get(0).getCategory());
-        assertEquals("category" + entriesIdx.get(3),
-                entries.get(3).getCategory());
-        assertEquals("category" + entriesIdx.get(4),
-                entries.get(4).getCategory());
+        assertEquals("category" + entriesIdx.get(0), entries.get(0)
+            .getCategory());
+        assertEquals("category" + entriesIdx.get(3), entries.get(3)
+            .getCategory());
+        assertEquals("category" + entriesIdx.get(4), entries.get(4)
+            .getCategory());
 
         long nbPages = pp.getNumberOfPages();
 
@@ -161,28 +126,30 @@ public class TestPageProvider extends SQLRepositoryTestCase {
 
         pp.nextPage();
         entries = (List<LogEntry>) pp.getCurrentPage();
-        dump(entries);
 
         assertEquals(3, entries.size());
-        assertEquals("category" + entriesIdx.get(0 + 5),
-                entries.get(0).getCategory());
-        assertEquals("category" + entriesIdx.get(2 + 5),
-                entries.get(2).getCategory());
+        assertEquals("category" + entriesIdx.get(0 + 5), entries.get(0)
+            .getCategory());
+        assertEquals("category" + entriesIdx.get(2 + 5), entries.get(2)
+            .getCategory());
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testProviderWithParams() throws Exception {
 
-        PageProviderService pps = Framework.getService(PageProviderService.class);
+        PageProviderService pps = Framework
+            .getService(PageProviderService.class);
         assertNotNull(pps);
 
-        PageProviderDefinition ppdef = pps.getPageProviderDefinition("GetAllEntriesInCategory");
+        PageProviderDefinition ppdef = pps
+            .getPageProviderDefinition("GetAllEntriesInCategory");
         assertNotNull(ppdef);
 
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
-        assertEquals(AuditPageProvider.class.getSimpleName(),
-                gppdef.getPageProviderClass().getSimpleName());
+        assertEquals(AuditPageProvider.class.getSimpleName(), gppdef
+            .getPageProviderClass().getSimpleName());
 
         PageProvider<?> pp = pps.getPageProvider("GetAllEntriesInCategory",
                 null, Long.valueOf(2), Long.valueOf(0),
@@ -191,9 +158,6 @@ public class TestPageProvider extends SQLRepositoryTestCase {
         assertNotNull(pp);
 
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
-
-        dump(pp);
-        dump(entries);
 
         assertNotNull(entries);
         assertEquals(2, entries.size());
@@ -208,32 +172,33 @@ public class TestPageProvider extends SQLRepositoryTestCase {
 
         pp.nextPage();
         entries = (List<LogEntry>) pp.getCurrentPage();
-        dump(entries);
         assertEquals(1, entries.size());
         assertEquals("event" + entriesIdx.get(6), entries.get(0).getEventId());
         assertEquals("category7", entries.get(0).getCategory());
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testProviderWithWhereClause() throws Exception {
 
-        PageProviderService pps = Framework.getService(PageProviderService.class);
+        PageProviderService pps = Framework
+            .getService(PageProviderService.class);
         assertNotNull(pps);
 
-        PageProviderDefinition ppdef = pps.getPageProviderDefinition("GetAllEntriesForDocumentInCategory");
+        PageProviderDefinition ppdef = pps
+            .getPageProviderDefinition("GetAllEntriesForDocumentInCategory");
         assertNotNull(ppdef);
 
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
-        assertEquals(AuditPageProvider.class.getSimpleName(),
-                gppdef.getPageProviderClass().getSimpleName());
+        assertEquals(AuditPageProvider.class.getSimpleName(), gppdef
+            .getPageProviderClass().getSimpleName());
 
         PageProvider<?> pp = pps.getPageProvider(
                 "GetAllEntriesForDocumentInCategory", (DocumentModel) null,
                 null, Long.valueOf(2), Long.valueOf(0),
                 new HashMap<String, Serializable>(), "uuid");
 
-        openSession();
         DocumentModel searchDoc = session.createDocumentModel("File");
         searchDoc.setPathInfo("/", "dummy");
         searchDoc.setPropertyValue("dc:title", "category7");
@@ -245,9 +210,6 @@ public class TestPageProvider extends SQLRepositoryTestCase {
 
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
 
-        dump(pp);
-        dump(entries);
-
         assertNotNull(entries);
         assertEquals(2, entries.size());
         assertEquals("event" + entriesIdx.get(1), entries.get(0).getEventId());
@@ -261,31 +223,32 @@ public class TestPageProvider extends SQLRepositoryTestCase {
 
         pp.nextPage();
         entries = (List<LogEntry>) pp.getCurrentPage();
-        dump(entries);
         assertEquals(1, entries.size());
         assertEquals("event" + entriesIdx.get(6), entries.get(0).getEventId());
         assertEquals("category7", entries.get(0).getCategory());
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testProviderWithWhereClause2() throws Exception {
 
-        PageProviderService pps = Framework.getService(PageProviderService.class);
+        PageProviderService pps = Framework
+            .getService(PageProviderService.class);
         assertNotNull(pps);
 
-        PageProviderDefinition ppdef = pps.getPageProviderDefinition("GetAllEntriesForDocumentInCategories");
+        PageProviderDefinition ppdef = pps
+            .getPageProviderDefinition("GetAllEntriesForDocumentInCategories");
         assertNotNull(ppdef);
 
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
-        assertEquals(AuditPageProvider.class.getSimpleName(),
-                gppdef.getPageProviderClass().getSimpleName());
+        assertEquals(AuditPageProvider.class.getSimpleName(), gppdef
+            .getPageProviderClass().getSimpleName());
 
         PageProvider<?> pp = pps.getPageProvider(
                 "GetAllEntriesForDocumentInCategories", null, Long.valueOf(2),
                 Long.valueOf(0), new HashMap<String, Serializable>(), "uuid");
 
-        openSession();
         DocumentModel searchDoc = session.createDocumentModel("File");
         searchDoc.setPathInfo("/", "dummy");
         List<String> cats = new ArrayList<String>();
@@ -300,9 +263,6 @@ public class TestPageProvider extends SQLRepositoryTestCase {
 
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
 
-        dump(pp);
-        dump(entries);
-
         assertNotNull(entries);
         assertEquals(2, entries.size());
 
@@ -312,29 +272,30 @@ public class TestPageProvider extends SQLRepositoryTestCase {
 
         pp.nextPage();
         entries = (List<LogEntry>) pp.getCurrentPage();
-        dump(entries);
         assertEquals(2, entries.size());
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testProviderWithBetweenDates() throws Exception {
 
-        PageProviderService pps = Framework.getService(PageProviderService.class);
+        PageProviderService pps = Framework
+            .getService(PageProviderService.class);
         assertNotNull(pps);
 
-        PageProviderDefinition ppdef = pps.getPageProviderDefinition("GetAllEntriesBetween2Dates");
+        PageProviderDefinition ppdef = pps
+            .getPageProviderDefinition("GetAllEntriesBetween2Dates");
         assertNotNull(ppdef);
 
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
-        assertEquals(AuditPageProvider.class.getSimpleName(),
-                gppdef.getPageProviderClass().getSimpleName());
+        assertEquals(AuditPageProvider.class.getSimpleName(), gppdef
+            .getPageProviderClass().getSimpleName());
 
         PageProvider<?> pp = pps.getPageProvider("GetAllEntriesBetween2Dates",
                 null, Long.valueOf(6), Long.valueOf(0),
                 new HashMap<String, Serializable>(), "uuid");
 
-        openSession();
         DocumentModel searchDoc = session.createDocumentModel("File");
         searchDoc.setPathInfo("/", "dummy");
 
@@ -353,9 +314,6 @@ public class TestPageProvider extends SQLRepositoryTestCase {
 
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
 
-        dump(pp);
-        dump(entries);
-
         assertNotNull(entries);
         assertEquals(6, entries.size());
 
@@ -371,9 +329,6 @@ public class TestPageProvider extends SQLRepositoryTestCase {
 
         entries = (List<LogEntry>) pp.getCurrentPage();
 
-        dump(pp);
-        dump(entries);
-
         assertNotNull(entries);
         assertEquals(6, entries.size());
 
@@ -383,7 +338,6 @@ public class TestPageProvider extends SQLRepositoryTestCase {
 
         pp.nextPage();
         entries = (List<LogEntry>) pp.getCurrentPage();
-        dump(entries);
         assertNotNull(entries);
         assertEquals(2, entries.size());
 
@@ -397,9 +351,6 @@ public class TestPageProvider extends SQLRepositoryTestCase {
         pp.setSearchDocumentModel(searchDoc);
 
         entries = (List<LogEntry>) pp.getCurrentPage();
-
-        dump(pp);
-        dump(entries);
 
         assertNotNull(entries);
         assertEquals(2, entries.size());
@@ -418,9 +369,6 @@ public class TestPageProvider extends SQLRepositoryTestCase {
 
         entries = (List<LogEntry>) pp.getCurrentPage();
 
-        dump(pp);
-        dump(entries);
-
         assertNotNull(entries);
         assertEquals(6, entries.size());
 
@@ -429,25 +377,28 @@ public class TestPageProvider extends SQLRepositoryTestCase {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testDocumentHistoryPageProvider() throws Exception {
 
-        PageProviderService pps = Framework.getService(PageProviderService.class);
+        PageProviderService pps = Framework
+            .getService(PageProviderService.class);
         assertNotNull(pps);
 
-        PageProviderDefinition ppdef = pps.getPageProviderDefinition("DOCUMENT_HISTORY_PROVIDER");
+        PageProviderDefinition ppdef = pps
+            .getPageProviderDefinition("DOCUMENT_HISTORY_PROVIDER");
         assertNotNull(ppdef);
 
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
-        assertEquals(DocumentHistoryPageProvider.class.getSimpleName(),
-                gppdef.getPageProviderClass().getSimpleName());
+        assertEquals(DocumentHistoryPageProvider.class.getSimpleName(), gppdef
+            .getPageProviderClass().getSimpleName());
 
         PageProvider<?> pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER",
                 null, Long.valueOf(6), Long.valueOf(0),
                 new HashMap<String, Serializable>(), "uuid");
 
-        openSession();
-        DocumentModel searchDoc = session.createDocumentModel("BasicAuditSearch");
+        DocumentModel searchDoc = session
+            .createDocumentModel("BasicAuditSearch");
         searchDoc.setPathInfo("/", "auditsearch");
 
         Calendar startDate = (Calendar) testDate.clone();
@@ -464,9 +415,6 @@ public class TestPageProvider extends SQLRepositoryTestCase {
         assertNotNull(pp);
 
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
-
-        dump(pp);
-        dump(entries);
 
         assertNotNull(entries);
         assertEquals(6, entries.size());

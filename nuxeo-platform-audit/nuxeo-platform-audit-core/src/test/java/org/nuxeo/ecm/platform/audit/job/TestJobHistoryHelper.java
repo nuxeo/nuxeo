@@ -22,28 +22,22 @@ package org.nuxeo.ecm.platform.audit.job;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import static org.junit.Assert.*;
 
+import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.job.JobHistoryHelper;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public class TestJobHistoryHelper extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(AuditFeature.class)
+public class TestJobHistoryHelper {
 
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-
-        deployBundle("org.nuxeo.ecm.core.persistence");
-        deployBundle("org.nuxeo.ecm.platform.audit");
-        deployBundle("org.nuxeo.ecm.platform.audit.tests");
-        deployTestContrib("org.nuxeo.ecm.platform.audit.tests", "nxaudit-tests.xml");
-        fireFrameworkStarted();
-    }
 
     @Test
     public void testLogger() throws Exception {

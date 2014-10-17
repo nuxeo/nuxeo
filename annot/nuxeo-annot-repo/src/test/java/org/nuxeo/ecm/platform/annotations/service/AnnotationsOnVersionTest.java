@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.apache.commons.logging.Log;
@@ -31,6 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.repository.AbstractRepositoryTestCase;
 import org.nuxeo.ecm.platform.annotations.repository.URNDocumentViewTranslator;
@@ -259,7 +261,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
         session.save();
         closeSession();
         waitForAsyncExec();
-        database.sleepForFulltext();
+        DatabaseHelper.DATABASE.sleepForFulltext();
         openSession();
 
         results = session.query(

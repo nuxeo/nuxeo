@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.platform.annotations.repository;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,108 +30,60 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.List;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NameAlreadyBoundException;
-
-import org.junit.Before;
-import org.junit.After;
-import static org.junit.Assert.*;
+import javax.inject.Inject;
 
 import org.h2.util.IOUtils;
-import org.hsqldb.jdbc.jdbcDataSource;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationManager;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
+import org.nuxeo.ecm.platform.annotations.repository.service.AnnotationFeature;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @author Alexandre Russel
  *
  */
-public abstract class AbstractRepositoryTestCase extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(AnnotationFeature.class)
+public abstract class AbstractRepositoryTestCase {
     protected final AnnotationManager manager = new AnnotationManager();
 
     protected URI uri;
 
     protected Annotation annotation;
 
+    @Inject
     protected AnnotationsService service;
 
+    @Inject
     protected DocumentViewCodecManager viewCodecManager;
+
+    @Inject
+    protected CoreSession session;
+
+    @Inject
+    RepositorySettings repo;
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        NuxeoContainer.installNaming();
-
-        jdbcDataSource ds = new jdbcDataSource();
-        ds.setDatabase("jdbc:hsqldb:mem:jena");
-        ds.setUser("sa");
-        ds.setPassword("");
-        Context context = new InitialContext();
-        try {
-            context.createSubcontext("java:comp");
-        } catch (NameAlreadyBoundException e) {
-            // already bound when using Jetty NamingContext
-        }
-        try {
-            context.createSubcontext("java:comp/env");
-        } catch (NameAlreadyBoundException e) {
-            // already bound when using Nuxeo Common NamingContext
-        }
-        try {
-            context.createSubcontext("java:comp/env/jdbc");
-        } catch (NameAlreadyBoundException e) {
-            // already bound when using Nuxeo Common NamingContext
-        }
-        context.bind("java:comp/env/jdbc/nxrelations-default-jena", ds);
-        Framework.getProperties().setProperty(
-                "org.nuxeo.ecm.sql.jena.databaseType", "HSQL");
-        Framework.getProperties().setProperty(
-                "org.nuxeo.ecm.sql.jena.databaseTransactionEnabled", "false");
-        deployBundle("org.nuxeo.ecm.core.convert");
-        deployBundle("org.nuxeo.ecm.core.convert.plugins");
-        deployBundle("org.nuxeo.ecm.relations");
-        deployBundle("org.nuxeo.ecm.annotations.contrib");
-        deployBundle("org.nuxeo.ecm.annotations");
-        deployBundle("org.nuxeo.ecm.annotations.repository");
-        deployBundle("org.nuxeo.ecm.annotations.repository.test");
-        deployBundle("org.nuxeo.ecm.platform.url.core");
-        deployBundle("org.nuxeo.ecm.platform.url.api");
-        deployBundle("org.nuxeo.ecm.platform.types.core");
-        deployBundle("org.nuxeo.ecm.platform.types.api");
-        deployBundle("org.nuxeo.ecm.relations.jena");
-
-        service = Framework.getService(AnnotationsService.class);
-        viewCodecManager = Framework.getService(DocumentViewCodecManager.class);
         assertNotNull(viewCodecManager);
         assertNotNull(manager);
         InputStream is = getClass().getResourceAsStream(
                 "/annotea-spec-post.xml");
         assertNotNull(is);
         annotation = manager.getAnnotation(is);
-        openSession();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        try {
-            closeSession();
-        } finally {
-            if (NuxeoContainer.isInstalled()) {
-                NuxeoContainer.uninstall();
-            }
-            super.tearDown();
-        }
     }
 
     protected void setUpRepository() throws Exception {
@@ -192,8 +148,17 @@ public abstract class AbstractRepositoryTestCase extends SQLRepositoryTestCase {
     }
 
     protected void waitForAsyncExec() {
-        EventServiceImpl evtService = (EventServiceImpl) Framework.getLocalService(EventService.class);
+        EventServiceImpl evtService = (EventServiceImpl) Framework
+            .getLocalService(EventService.class);
         evtService.waitForAsyncCompletion();
     }
 
+    protected void openSession() {
+        session = repo.createSession();
+    }
+
+    protected void closeSession() {
+        repo.releaseSession();
+        session = null;
+    }
 }
