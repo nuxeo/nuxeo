@@ -69,8 +69,6 @@ class Column {
     return header;
   }
 
-  get width() { return 200; }
-
   get hasSupportedWidgetType() {
     return !!WIDGETS[this.widget.type];
   }

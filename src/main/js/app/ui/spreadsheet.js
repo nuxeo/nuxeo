@@ -29,6 +29,9 @@ class Spreadsheet {
     this.connection = connection;
 
     this.options = {
+      autoColumnSize: false,
+      colWidths: 200,
+      stretchH: 'all',
       rowHeaders: true,
       manualColumnResize: true,
       startRows: 0,
