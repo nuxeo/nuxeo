@@ -84,6 +84,10 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
             jg.writeEndArray();
         }
         jg.writeStringField("ecm:changeToken", doc.getChangeToken());
+        Long pos = doc.getPos();
+        if (pos != null) {
+            jg.writeNumberField("ecm:pos", pos);
+        }
         // Add a positive ACL only
         SecurityService securityService = Framework
                 .getService(SecurityService.class);
