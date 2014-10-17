@@ -40,10 +40,6 @@
         <layout>picture</layout>
         <layout>dublincore</layout>
       </layouts>
-      <layouts mode="view">
-        <layout>heading</layout>
-        <layout>file</layout>
-      </layouts>
     </type>
 
     <type id="Folder">
