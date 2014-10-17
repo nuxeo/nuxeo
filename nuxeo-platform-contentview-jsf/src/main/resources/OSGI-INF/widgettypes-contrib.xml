@@ -7,8 +7,10 @@
     <widgetType name="selectManyCheckboxAggregate">
       <configuration>
         <sinceVersion>5.9.6</sinceVersion>
-        <title>Select Many Checkbox Aggregate</title>
-        <description></description>
+        <title>Checkbox</title>
+        <description>
+          A widget to display aggregate result with checkboxes.
+        </description>
         <categories>
           <category>aggregates</category>
           <category>aggregates_terms</category>
@@ -62,8 +64,10 @@
     <widgetType name="selectManyListboxAggregate">
       <configuration>
         <sinceVersion>5.9.6</sinceVersion>
-        <title>Select2 Aggregate Widget</title>
-        <description></description>
+        <title>Select</title>
+        <description>
+          A widget to display aggregate result with select2.
+        </description>
         <categories>
           <category>aggregates</category>
           <category>aggregates_terms</category>
@@ -115,8 +119,11 @@
     <widgetType name="selectManyCheckboxDirectoryAggregate">
       <configuration>
         <sinceVersion>5.9.6</sinceVersion>
-        <title>Select Many Checkbox Directory Aggregate</title>
-        <description></description>
+        <title>Directory Checkbox</title>
+        <description>
+          A widget to display aggregate result with checkboxes. 
+          The display label is resolved from a given directory.
+        </description>
         <categories>
           <category>aggregates</category>
           <category>aggregates_terms</category>
@@ -182,12 +189,6 @@
                   </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">directory_ordering</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">select_layout</widget>
-                </row>
-                <row>
                   <widget category="widgetTypeConf">directory_style</widget>
                 </row>
                 <row>
@@ -206,8 +207,11 @@
     <widgetType name="selectManyListboxDirectoryAggregate">
       <configuration>
         <sinceVersion>5.9.6</sinceVersion>
-        <title>Select2 Directory Aggregate Widget</title>
-        <description></description>
+        <title>Directory Select</title>
+        <description>
+          A widget to display aggregate result with select2. 
+          The display label is resolved from a given directory.
+        </description>
         <categories>
           <category>aggregates</category>
           <category>aggregates_terms</category>
@@ -268,9 +272,6 @@
                   </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">directory_ordering</widget>
-                </row>
-                <row>
                   <widget category="widgetTypeConf">directory_style</widget>
                 </row>
                 <row>
@@ -292,8 +293,12 @@
     <widgetType name="selectManyCheckboxUserAggregate">
       <configuration>
         <sinceVersion>5.9.6</sinceVersion>
-        <title>Select Many Checkbox User Aggregate</title>
-        <description></description>
+        <title>User Checkbox</title>
+        <description>Select Many Checkbox User Aggregate</description>
+        <description>
+          A widget to display aggregate result with checkboxes. 
+          The display label is resolved from user directory.
+        </description>
         <categories>
           <category>aggregates</category>
           <category>aggregates_terms</category>
@@ -346,8 +351,12 @@
     <widgetType name="selectManyListboxUserAggregate">
       <configuration>
         <sinceVersion>5.9.6</sinceVersion>
-        <title>Select2 User Aggregate Widget</title>
-        <description></description>
+        <title>User Select</title>
+        <description>Select2 User Aggregate Widget</description>
+        <description>
+          A widget to display aggregate result with select2. 
+          The display label is resolved from user directory.
+        </description>
         <categories>
           <category>aggregates</category>
           <category>aggregates_terms</category>
@@ -398,8 +407,10 @@
     <widgetType name="selectManyCheckboxHistogramAggregate">
       <configuration>
         <sinceVersion>5.9.6</sinceVersion>
-        <title>Select Many Checkbox Histogram Aggregate</title>
-        <description></description>
+        <title>Histogram Checkbox</title>
+        <description>
+          A widget to display histogram aggregate result with checkboxes.
+        </description>
         <categories>
           <category>aggregates</category>
           <category>aggregates_histogram</category>
@@ -456,8 +467,10 @@
     <widgetType name="selectManyListboxHistogramAggregate">
       <configuration>
         <sinceVersion>5.9.6</sinceVersion>
-        <title>Select2 Histogram Aggregate Widget</title>
-        <description></description>
+        <title>Histogram Select</title>
+        <description>
+          A widget to display histogram aggregate result with select2.
+        </description>
         <categories>
           <category>aggregates</category>
           <category>aggregates_histogram</category>
@@ -507,8 +520,10 @@
     <widgetType name="selectManyCheckboxDateHistogramAggregate">
       <configuration>
         <sinceVersion>5.9.6</sinceVersion>
-        <title>Select Many Checkbox Date Histogram Aggregate</title>
-        <description></description>
+        <title>Date Histogram Checkbox</title>
+        <description>
+          A widget to display date histogram aggregate result with checkboxes.
+        </description>
         <categories>
           <category>aggregates</category>
           <category>aggregates_date_histogram</category>
@@ -565,8 +580,10 @@
     <widgetType name="selectManyListboxDateHistogramAggregate">
       <configuration>
         <sinceVersion>5.9.6</sinceVersion>
-        <title>Select2 Date Histogram Aggregate Widget</title>
-        <description></description>
+        <title>Date Histogram Select</title>
+        <description>
+          A widget to display date histogram aggregate result with select2.
+        </description>
         <categories>
           <category>aggregates</category>
           <category>aggregates_date_histogram</category>
@@ -603,6 +620,9 @@
                 <row>
                   <widget category="widgetTypeConf">directory_styleClass</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
               </rows>
             </layout>
           </layouts>
@@ -616,8 +636,10 @@
     <widgetType name="selectManyCheckboxDateRangeAggregate">
       <configuration>
         <sinceVersion>5.9.6</sinceVersion>
-        <title>Select Many Checkbox Range Histogram Aggregate</title>
-        <description></description>
+        <title>Date Range Checkbox</title>
+        <description>
+          A widget to display date range aggregate result with checkboxes.
+        </description>
         <categories>
           <category>aggregates</category>
           <category>aggregates_date_range</category>
@@ -676,8 +698,10 @@
     <widgetType name="selectManyListboxDateRangeAggregate">
       <configuration>
         <sinceVersion>5.9.6</sinceVersion>
-        <title>Select2 Date Range Aggregate Widget</title>
-        <description></description>
+        <title>Date Range Select</title>
+        <description>
+          A widget to display date range aggregate result with select2.
+        </description>
         <categories>
           <category>aggregates</category>
           <category>aggregates_date_range</category>
@@ -729,8 +753,10 @@
     <widgetType name="selectManyCheckboxRangeAggregate">
       <configuration>
         <sinceVersion>5.9.6</sinceVersion>
-        <title>Select Many Checkbox Range Aggregate</title>
-        <description></description>
+        <title>Range Checkbox</title>
+        <description>
+          A widget to display range aggregate result with checkboxes.
+        </description>
         <categories>
           <category>aggregates</category>
           <category>aggregates_range</category>
@@ -789,8 +815,10 @@
     <widgetType name="selectManyListboxRangeAggregate">
       <configuration>
         <sinceVersion>5.9.6</sinceVersion>
-        <title>Select2 Range Aggregate Widget</title>
-        <description></description>
+        <title>Range Select</title>
+        <description>
+          A widget to display date range aggregate result with select2.
+        </description>
         <categories>
           <category>aggregates</category>
           <category>aggregates_range</category>
