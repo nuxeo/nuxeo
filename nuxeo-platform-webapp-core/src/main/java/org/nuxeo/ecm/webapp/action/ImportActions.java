@@ -45,6 +45,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
+import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -52,6 +53,7 @@ import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.core.util.DataModelProperties;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
+import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -61,6 +63,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.rest.FancyNavigationHandler;
@@ -239,14 +242,21 @@ public class ImportActions implements Serializable {
 
         boolean resetBatchState = true;
         try {
+            List<DocumentModel> importedDocuments;
             if (dndConfigHelper.useHtml5DragAndDrop()) {
-                importDocumentsThroughBatchManager(chainOrOperationId,
-                        contextParams);
+                importedDocuments = importDocumentsThroughBatchManager(
+                        chainOrOperationId, contextParams);
 
             } else {
-                importDocumentsThroughUploadItems(chainOrOperationId,
-                        contextParams);
+                importedDocuments = importDocumentsThroughUploadItems(
+                        chainOrOperationId, contextParams);
             }
+
+            // handle tags
+            addTagsOnDocuments(importedDocuments, importDocumentModel);
+
+            // handle collections
+            addCollectionsOnDocuments(importedDocuments, importDocumentModel);
 
             if (selectedImportFolderId != null) {
                 return navigationContext.navigateToRef(new IdRef(
@@ -260,7 +270,8 @@ public class ImportActions implements Serializable {
                 // do not reset state
                 resetBatchState = false;
                 FacesMessage message = new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR, LABEL_IMPORT_CANNOT_CREATE_ERROR, null);
+                        FacesMessage.SEVERITY_ERROR,
+                        LABEL_IMPORT_CANNOT_CREATE_ERROR, null);
                 FacesContext faces = FacesContext.getCurrentInstance();
                 if (fancyboxFormId != null && fancyboxFormId.startsWith(":")) {
                     faces.addMessage(fancyboxFormId.substring(1), message);
@@ -287,19 +298,23 @@ public class ImportActions implements Serializable {
         return null;
     }
 
-    protected void importDocumentsThroughBatchManager(
+    @SuppressWarnings("unchecked")
+    protected List<DocumentModel> importDocumentsThroughBatchManager(
             String chainOrOperationId, Map<String, Object> contextParams)
             throws ClientException {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
-        bm.execute(currentBatchId, chainOrOperationId, documentManager,
-                contextParams, null);
+        return (List<DocumentModel>) bm.execute(currentBatchId,
+                chainOrOperationId, documentManager, contextParams, null);
     }
 
-    protected void importDocumentsThroughUploadItems(String chainOrOperationId,
-            Map<String, Object> contextParams) throws ClientException {
+    @SuppressWarnings("unchecked")
+    protected List<DocumentModel> importDocumentsThroughUploadItems(
+            String chainOrOperationId, Map<String, Object> contextParams)
+            throws ClientException {
         if (uploadedFiles == null) {
-            return;
+            return Collections.emptyList();
         }
+
         try {
             List<Blob> blobs = new ArrayList<>();
             for (UploadedFile uploadItem : uploadedFiles) {
@@ -316,13 +331,14 @@ public class ImportActions implements Serializable {
 
             AutomationService as = Framework.getLocalService(AutomationService.class);
             if (chainOrOperationId.startsWith("Chain.")) {
-                as.run(ctx, chainOrOperationId.substring(6));
+                return (List<DocumentModel>) as.run(ctx,
+                        chainOrOperationId.substring(6));
             } else {
                 OperationChain chain = new OperationChain("operation");
                 OperationParameters params = new OperationParameters(
                         chainOrOperationId, new HashMap<String, Object>());
                 chain.add(params);
-                as.run(ctx, chain);
+                return (List<DocumentModel>) as.run(ctx, chain);
             }
         } catch (Exception e) {
             log.error("Error while executing automation batch ", e);
@@ -337,6 +353,47 @@ public class ImportActions implements Serializable {
                 // }
             }
             uploadedFiles = null;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void addTagsOnDocuments(List<DocumentModel> documents,
+            DocumentModel importDocumentModel) throws ClientException {
+        List<String> tags = (List<String>) importDocumentModel.getContextData(
+                ScopeType.REQUEST, "bulk_import_tags");
+        if (tags != null && !tags.isEmpty()) {
+            TagService tagService = Framework.getLocalService(TagService.class);
+            String username = documentManager.getPrincipal().getName();
+            for (DocumentModel doc : documents) {
+                for (String tag : tags) {
+                    tagService.tag(documentManager, doc.getId(), tag, username);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void addCollectionsOnDocuments(List<DocumentModel> documents,
+            DocumentModel importDocumentModel) throws ClientException {
+        List<String> collectionIds = (List<String>) importDocumentModel.getContextData(
+                ScopeType.REQUEST, "bulk_import_collections");
+        if (collectionIds != null && !collectionIds.isEmpty()) {
+            List<DocumentModel> collections = new ArrayList<>();
+            for (String collectionId : collectionIds) {
+                IdRef idRef = new IdRef(collectionId);
+                if (documentManager.exists(idRef)) {
+                    collections.add(documentManager.getDocument(idRef));
+                }
+            }
+
+            CollectionManager collectionManager = Framework.getService(CollectionManager.class);
+            for (DocumentModel collection : collections) {
+                if (collectionManager.canAddToCollection(collection,
+                        documentManager)) {
+                    collectionManager.addToCollection(collection, documents,
+                            documentManager);
+                }
+            }
         }
     }
 
