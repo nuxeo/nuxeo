@@ -16,7 +16,7 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1412006830112</id>
+			<id>1413552926911</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
@@ -25,7 +25,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1412006830114</id>
+			<id>1413552926915</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
@@ -34,7 +34,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1412006830115</id>
+			<id>1413552926918</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
@@ -43,16 +43,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1412006830117</id>
-			<name></name>
-			<type>26</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-nuxeo-distribution</arguments>
-			</matcher>
-		</filter>
-		<filter>
-			<id>1412006830119</id>
+			<id>1413552926922</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
@@ -61,7 +52,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1412006830120</id>
+			<id>1413552926925</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
@@ -70,7 +61,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1412006830122</id>
+			<id>1413552926928</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
@@ -79,7 +70,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1412006830124</id>
+			<id>1413552926932</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
@@ -88,7 +79,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1412006830126</id>
+			<id>1413552926936</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
@@ -97,7 +88,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1412006830128</id>
+			<id>1413552926940</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
@@ -106,12 +97,21 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1412006830130</id>
+			<id>1413552926943</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
 				<arguments>1.0-projectRelativePath-matches-false-false-addons/nuxeo*</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1413552926947</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-projectRelativePath-matches-false-false-nuxeo-distribution/nuxeo*</arguments>
 			</matcher>
 		</filter>
 	</filteredResources>
