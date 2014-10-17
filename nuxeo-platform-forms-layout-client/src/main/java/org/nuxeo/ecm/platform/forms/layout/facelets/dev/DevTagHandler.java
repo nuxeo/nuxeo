@@ -78,7 +78,7 @@ public class DevTagHandler extends TagHandler {
                                 dComp), originalHandler });
         TagAttributes cAttrs = FaceletHandlerHelper.getTagAttributes(
                 helper.createAttribute("id", helper.generateDevRegionId(refId)),
-                helper.createAttribute("styleClass", "displayI nxlDevRegion"),
+                helper.createAttribute("styleClass", "nxlDevRegion"),
                 helper.createAttribute("layout", "block"));
         ComponentHandler cComp = helper.getHtmlComponentHandler(
                 config.getTagId(), cAttrs, nextHandler, PANEL_COMPONENT_TYPE,

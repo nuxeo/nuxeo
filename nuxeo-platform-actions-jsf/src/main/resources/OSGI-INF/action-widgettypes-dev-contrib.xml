@@ -51,7 +51,7 @@
       </widget>
       <widget name="categories" type="text">
         <labels>
-          <label mode="any">Categories</label>
+          <label mode="any">Action Categories</label>
         </labels>
         <fields>
           <field>categories</field>
@@ -159,7 +159,7 @@
       </widget>
       <widget name="properties" type="template">
         <labels>
-          <label mode="any">Properties</label>
+          <label mode="any">Action Properties</label>
         </labels>
         <fields>
           <field>properties</field>

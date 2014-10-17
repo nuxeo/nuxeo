@@ -3,59 +3,47 @@
  test="#{nuxeoLayoutManagerBean.devModeSet}">
 
 <script type="text/javascript">
-  jQuery(document).ready(function() {
-    var enabledMsg = "UI Development mode activated on this page";
-    var disabledMsg = "UI Development mode deactivated on this page";
+  (function() {
     var nxlDevEnabled = #{nuxeoLayoutManagerBean.devModeSet};
-    jQuery(document).bind('keydown', 'Shift+d', function() {
-      nxlDevEnabled = !nxlDevEnabled;
-      var msg = enabledMsg;
-      if (!nxlDevEnabled) {
-        var msg = disabledMsg;
-        jQuery(".nxlDevContainer").hide();
+    function doDevMode() {
+      jQuery(".nxlDevRegion").each(function() {
+        jQuery(this).hover(function(e) {
+          if (nxlDevEnabled &amp;&amp; e.shiftKey) {
+            jQuery(".nxlDevRegion.highlight").removeClass("highlight");
+            var elts = jQuery(this).children(".nxlDevContainer").children();
+            jQuery("#nxlMainDevContainerContent").empty().append(elts.clone());
+            jQuery(".nxFooter").css("margin-bottom", jQuery("#nxlMainDevContainer").outerHeight(true));
+            jQuery("#nxlMainDevContainer").show();
+            jQuery(this).addClass("highlight");
+          }
+        }, function() {
+          if (nxlDevEnabled) {
+            jQuery(".nxlDevRegion.highlight").removeClass("highlight");
+          }
+        });
+      });
+      if (nxlDevEnabled &amp;&amp; jQuery("#nxlMainDevContainer").length === 0) {
+        var html = '<div id="nxlMainDevContainer" style="display:none;">' +
+          '<a id="nxlMainDevContainerClose" href="#">X</a>' +
+          '<div id="nxlMainDevContainerContent"></div>' +
+        '</div>';
+        jQuery("body").append(html);
+        jQuery("#nxlMainDevContainerClose").click(function(e) {
+          jQuery("#nxlMainDevContainer").hide();
+          e.preventDefault();
+          e.stopPropagation();
+        });
       }
-      jQuery.ambiance({
-        title: msg,
-        type: "info",
-        className: "infoFeedback",
-        timeout: 0
-      });
-    });
-    jQuery(".nxlDevRegion").each(function() {
-      jQuery(this).hover(function() {
-        if (nxlDevEnabled) {
-          jQuery(".nxlDevRegion.highlight").removeClass("highlight");
-          jQuery(".nxlDevContainer").hide();
-          jQuery(this).children(".nxlDevContainer").show();
-          jQuery(this).addClass("highlight");
-        }
-      }, function() {
-        if (nxlDevEnabled) {
-          jQuery(this).children(".nxlDevContainer").hide();
-          jQuery(".nxlDevRegion.").removeClass("highlight");
-        }
-      });
+    }
+    jQuery(document).ready(function() {
+      doDevMode();
     });
     jsf.ajax.addOnEvent(function(data) {
       var ajaxstatus = data.status;
       if (ajaxstatus == "success") {
-        jQuery(".nxlDevRegion").each(function() {
-          jQuery(this).hover(function() {
-            if (nxlDevEnabled) {
-              jQuery(".nxlDevRegion.highlight").removeClass("highlight");
-              jQuery(".nxlDevContainer").hide();
-              jQuery(this).children(".nxlDevContainer").show();
-              jQuery(this).addClass("highlight");
-            }
-          }, function() {
-            if (nxlDevEnabled) {
-              jQuery(this).children(".nxlDevContainer").hide();
-              jQuery(".nxlDevRegion.").removeClass("highlight");
-            }
-          });
-        });
+        doDevMode();
       }
     });
-  });
+  })();
 </script>
 </c:if>

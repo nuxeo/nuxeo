@@ -34,7 +34,8 @@ public class NuxeoLayoutManagerBean {
 
     protected Boolean devModeSet = null;
 
-    protected static String activatedMessage = "UI Development mode activated: press 'Shift+d' to activate/deactivate on a given page";
+    protected static String activatedMessage = "UI Development mode activated: "
+            + "keep the 'shift' key pressed and mouse hover elements in the page.";
 
     protected static String deactivatedMessage = "UI Development mode deactivated";
 
