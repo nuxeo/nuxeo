@@ -149,6 +149,11 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         if (currentDocument.isFolder()) {
             return false;
         }
+        if (!documentManager.hasPermission(currentDocument.getRef(),
+                SecurityConstants.WRITE)) {
+            return false;
+        }
+
         // Check if current document can be adapted as a FileSystemItem
         return getCurrentFileSystemItem() != null;
     }
