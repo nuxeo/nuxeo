@@ -343,6 +343,9 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .infoViewLeft .actionsWidgetPanel {
   padding: 0 }
 
+.infoViewLeft .note_content_block {
+  background-color: #fff }
+
 .infoViewLeft .pictureContainer {
   height: 100%;
   left: 0;
@@ -455,30 +458,21 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .infoViewDocContainer iframe {
   border: none }
 
-.infoView.navigation {
-  box-sizing: border-box;
-  left: 0;
-  padding: 0 1.5em;
-  position: fixed;
-  right: 0;
-  top: 45%;
-  width: 66.66%;
-  z-index: 200 }
-
-.infoView.navigation div:first-child,
-.infoView.navigation div:last-child {
+.infoView {
   background: url("${basePath}/icons/chevron-left.png") no-repeat scroll center center / 80% auto rgba(0, 0, 0, 0.3);
   border-radius: 3px;
-  float: left;
   height: 8em;
-  width: 2em }
+  position: fixed;
+  top: 45%;
+  width: 2em;
+  z-index: 200 }
 
-.infoView.navigation div:last-child {
+.infoView.nxNext {
   background: url("${basePath}/icons/chevron-right.png") no-repeat scroll center center / 80% auto rgba(0, 0, 0, 0.3);
-  float: right }
+  left: 63% }
 
-.infoView .next,
-.infoView .previous {
+.infoView.nxPrevious a,
+.infoView.nxNext a {
   color: transparent;
   display: inline-block;
   height: 8em;

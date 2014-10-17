@@ -216,7 +216,7 @@ table.noHover tr:hover {
   margin: 0 0 0 .2em }
 .actionsColumn .smallButton {
   margin: 0 .2em;
-  padding: .2em 0 }
+  padding: .2em .3em }
 
 .dataTableNoHeader th {
   background-color: transparent }

@@ -9,13 +9,11 @@
 
     <ui:include src="/incl/message_banner.xhtml"/>
 
-    <div class="infoView navigation">
-      <div>
-        <a class="previous" href="#" onclick="previousInfoView(); return false;"></a>
-      </div>
-      <div>
-        <a class="next" href="#" onclick="nextInfoView(); return false;"></a>
-      </div>
+    <div class="infoView nxPrevious">
+      <a class="" href="#" onclick="previousInfoView(); return false;"></a>
+    </div>
+    <div class="infoView nxNext">
+      <a class="next" href="#" onclick="nextInfoView(); return false;"></a>
     </div>
 
     <nxl:layout value="#{currentDocument}" name="gridInfoViewLayout" mode="view" />
