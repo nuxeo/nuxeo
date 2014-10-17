@@ -345,6 +345,7 @@ div.detail {
   display: none;
   font-weight: normal;
   padding: .6em .8em .8em;
+  text-transform: initial;
   white-space: normal;
   z-index: 2000 }
 
