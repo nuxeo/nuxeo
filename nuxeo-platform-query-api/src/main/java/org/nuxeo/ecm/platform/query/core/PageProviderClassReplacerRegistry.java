@@ -51,7 +51,7 @@ public class PageProviderClassReplacerRegistry extends
         if (! desc.isEnabled()) {
             return;
         }
-        log.info("Registering page provider class replacer using " + name);
+        log.debug("Registering page provider class replacer using " + name);
         Class<? extends PageProvider> klass = getPageProviderClass(desc.getPageProviderClassName());
         for (String providerName : desc.getPageProviderNames()) {
             replacerMap.put(providerName, klass);
@@ -62,7 +62,7 @@ public class PageProviderClassReplacerRegistry extends
     @Override
     public void contributionRemoved(String id,
                                     PageProviderClassReplacerDefinition origContrib) {
-        log.info("Unregistering page provider replacer for class " + id);
+        log.debug("Unregistering page provider replacer for class " + id);
         for (String providerName : origContrib.getPageProviderNames()) {
             replacerMap.remove(providerName);
         }
@@ -112,7 +112,7 @@ public class PageProviderClassReplacerRegistry extends
         StringBuilder out = new StringBuilder();
         out.append("List of page provider names that are superseded: \n");
         for (String name: replacerMap.keySet()) {
-            out.append(String.format("%s: %s\n", name, replacerMap.get(name).getName()));
+            out.append(String.format("  - %s: %s\n", name, replacerMap.get(name).getName()));
         }
         log.info(out.toString());
     }
