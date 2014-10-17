@@ -3,6 +3,8 @@
 var gulp = require('gulp');
 var path = require('path');
 var browserSync = require('browser-sync');
+var del = require('del');
+var runSequence = require('run-sequence');
 
 // load plugins
 var $ = require('gulp-load-plugins')();
@@ -22,8 +24,11 @@ gulp.task('jshint', function () {
       .pipe($.jshint.reporter('jshint-stylish'));
 });
 
-gulp.task('clean', function () {
-  return gulp.src(['app-build.js'], { read: false }).pipe($.clean());
+gulp.task('clean', function (cb) {
+  del.sync([
+    'app/app-build.js',
+    '../../../target/classes/web/nuxeo.war/spreadsheet/**',
+  ], {force: true}, cb);
 });
 
 gulp.task('html', function () {
@@ -44,7 +49,9 @@ gulp.task('html', function () {
     .pipe($.size());
 });
 
-gulp.task('build', ['transpile', 'html']);
+gulp.task('build', function() {
+  runSequence('transpile', 'html');
+});
 
 gulp.task('browser-sync', function () {
   browserSync({
