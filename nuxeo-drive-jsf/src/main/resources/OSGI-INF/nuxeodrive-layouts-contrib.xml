@@ -38,125 +38,6 @@
       </rows>
     </layout>
 
-    <layout name="defaultDriveMetadataLayout@view">
-      <templates>
-        <template mode="any">
-          /layouts/layout_default_template.xhtml
-        </template>
-      </templates>
-      <rows>
-        <row>
-          <widget>title</widget>
-        </row>
-        <row>
-          <widget>description</widget>
-        </row>
-        <row>
-          <widget>coverage</widget>
-        </row>
-        <row>
-          <widget>subject</widget>
-        </row>
-        <row>
-          <widget>nature</widget>
-        </row>
-      </rows>
-      <widget name="title" type="text">
-        <labels>
-          <label mode="any">label.dublincore.title</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>dc:title</field>
-        </fields>
-        <properties widgetMode="edit">
-          <property name="styleClass">dataInputText</property>
-          <property name="required">true</property>
-        </properties>
-      </widget>
-      <widget name="description" type="textarea">
-        <labels>
-          <label mode="any">label.dublincore.description</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>dc:description</field>
-        </fields>
-        <properties widgetMode="edit">
-          <property name="styleClass">dataInputText</property>
-        </properties>
-      </widget>
-      <widget name="coverage" type="suggestOneDirectory">
-        <labels>
-          <label mode="any">label.dublincore.coverage</label>
-        </labels>
-        <helpLabels>
-          <label mode="edit">label.dublincore.coverage.info</label>
-        </helpLabels>
-        <translated>true</translated>
-        <fields>
-          <field>dc:coverage</field>
-        </fields>
-        <widgetModes>
-          <mode value="view_summary">#{empty
-            layoutValue.dc.coverage?'hidden':'view'}
-          </mode>
-        </widgetModes>
-        <properties mode="any">
-          <property name="width">300</property>
-          <property name="dbl10n">true</property>
-          <property name="minChars">0</property>
-          <property name="hideHelpLabel">true</property>
-          <property name="directoryName">l10ncoverage</property>
-        </properties>
-      </widget>
-      <widget name="subject" type="suggestManyDirectory">
-        <labels>
-          <label mode="any">label.dublincore.subject</label>
-        </labels>
-        <helpLabels>
-          <label mode="edit">label.dublincore.subjects.info</label>
-        </helpLabels>
-        <translated>true</translated>
-        <fields>
-          <field>dc:subjects</field>
-        </fields>
-        <widgetModes>
-          <mode value="view_summary">#{empty
-            layoutValue.dc.subjects?'hidden':'view'}
-          </mode>
-        </widgetModes>
-        <properties mode="any">
-          <property name="width">300</property>
-          <property name="dbl10n">true</property>
-          <property name="minChars">0</property>
-          <property name="hideHelpLabel">true</property>
-          <property name="directoryName">l10nsubjects</property>
-        </properties>
-      </widget>
-      <widget name="nature" type="suggestOneDirectory">
-        <labels>
-          <label mode="any">label.dublincore.nature</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>dc:nature</field>
-        </fields>
-        <widgetModes>
-          <mode value="view_summary">#{empty
-            layoutValue.dc.nature?'hidden':'view'}
-          </mode>
-        </widgetModes>
-        <properties mode="any">
-          <property name="width">300</property>
-          <property name="minChars">0</property>
-          <property name="hideHelpLabel">true</property>
-          <property name="directoryName">nature</property>
-          <property name="localize">true</property>
-        </properties>
-      </widget>
-    </layout>
-
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -224,11 +105,13 @@
       </properties>
       <subWidgets>
         <widget name="driveMetadataLayout" type="toggleableDocumentLayoutWithForms">
+          <labels>
+            <label mode="any"></label>
+          </labels>
+          <controls mode="any">
+            <control name="handleLabels">true</control>
+          </controls>
           <properties widgetMode="any">
-            <property name="initialLayoutName">defaultDriveMetadataLayout@view
-            </property>
-            <property name="toggledLayoutName">defaultDriveMetadataLayout@view
-            </property>
             <property name="displayToggleActionInHeader">true</property>
             <property name="useAjaxForm">false</property>
             <property name="hideDefaultActions">true</property>
