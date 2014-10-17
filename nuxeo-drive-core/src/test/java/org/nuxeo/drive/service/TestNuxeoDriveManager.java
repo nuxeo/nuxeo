@@ -538,8 +538,6 @@ public class TestNuxeoDriveManager {
         assertTrue(cm.isInCollection(locallyEditedCollection, doc1, session));
         assertTrue(nuxeoDriveManager.isSynchronizationRoot(
                 session.getPrincipal(), locallyEditedCollection));
-        // Check document is locked
-        assertTrue(doc1.isLocked());
 
         // Add another document to the "Locally Edited" collection, check
         // collection membership
@@ -561,13 +559,6 @@ public class TestNuxeoDriveManager {
         assertTrue(cm.isInCollection(locallyEditedCollection, doc3, session));
         assertTrue(nuxeoDriveManager.isSynchronizationRoot(
                 session.getPrincipal(), locallyEditedCollection));
-
-        // Remove a document from the "Locally Edited" collection and check it
-        // is unlocked
-        assertTrue(doc3.isLocked());
-        cm.removeFromCollection(locallyEditedCollection, doc3, session);
-        doc3 = session.getDocument(doc3.getRef());
-        assertFalse(doc3.isLocked());
     }
 
     @Test

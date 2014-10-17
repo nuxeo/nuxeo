@@ -619,8 +619,6 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                     locallyEditedCollection, session);
         }
 
-        // Lock document
-        session.setLock(doc.getRef());
     }
 
 }
