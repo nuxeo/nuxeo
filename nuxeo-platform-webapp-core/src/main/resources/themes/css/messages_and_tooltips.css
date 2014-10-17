@@ -337,17 +337,27 @@ div.detail {
   background-color: #ffefb6 }
 
 .nxlDevContainer {
+  display: none }
+
+#nxlMainDevContainer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
   background-color: #fff;
   border: 1px solid #bbb;
-  border-radius: 6px;
-  box-shadow: 0 0 3px #aaa;
   color: #000;
-  display: none;
   font-weight: normal;
-  padding: .6em .8em .8em;
+  padding: 1em;
   text-transform: initial;
   white-space: normal;
-  z-index: 2000 }
+  z-index: 2000}
+
+#nxlMainDevContainerClose {
+  float: right;
+  padding-right: 2em}
 
 .nxHeader .nxlDevRegion {
+  display: inline }
+
+.nxFooter .nxlDevRegion {
   display: inline }
