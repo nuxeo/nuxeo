@@ -37,7 +37,6 @@ import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionContext;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionException;
-import org.nuxeo.ecm.platform.suggestbox.service.SuggestionHandlingException;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
@@ -142,40 +141,6 @@ public class SuggestboxActions extends DocumentContextBoundActionBean implements
             }
         }
         return cachedSuggestions.value;
-    }
-
-    /**
-     * Callback for the ajax selection of an item in the rich:suggestionbox
-     * list.
-     */
-    public Object handleSelection(Suggestion selectedSuggestion)
-            throws SuggestionHandlingException {
-        SuggestionService service = Framework.getLocalService(SuggestionService.class);
-        SuggestionContext ctx = getSuggestionContext();
-        // reset the search field on explicit selection from the list.
-        this.searchKeywords = "";
-        return service.handleSelection(selectedSuggestion, ctx);
-    }
-
-    /**
-     * Action listener for the old-style search button.
-     */
-    public Object performKeywordsSearch(String suggesterName,
-            String suggesterGroup) throws SuggestionException,
-            SuggestionHandlingException {
-        this.suggesterGroup = suggesterGroup;
-        // make it possible to override how the default search is performed by
-        // using the suggestion service
-        SuggestionService service = Framework.getLocalService(SuggestionService.class);
-        SuggestionContext context = getSuggestionContext();
-        List<Suggestion> suggestions = service.suggest(searchKeywords, context,
-                suggesterName);
-        if (suggestions.size() != 1) {
-            throw new SuggestionException(String.format(
-                    "Expected 1 keyword search suggestion, got %d",
-                    suggestions.size()));
-        }
-        return service.handleSelection(suggestions.get(0), context);
     }
 
     @Override

@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Bundle-Vendor: Nuxeo
-Bundle-Version: 1.0.0
-Bundle-Name: Nuxeo Platform Suggestbox Jsf Test
-Nuxeo-Component: OSGI-INF/test-suggestion-handlers-contrib.xml
-Bundle-ManifestVersion: 1
-Bundle-SymbolicName: org.nuxeo.ecm.platform.suggestbox.jsf.test;singleton:=true
-

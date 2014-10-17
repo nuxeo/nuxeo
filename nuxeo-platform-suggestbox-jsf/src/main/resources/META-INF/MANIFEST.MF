@@ -2,8 +2,7 @@ Manifest-Version: 1.0
 Bundle-Vendor: Nuxeo
 Bundle-Version: 1.0.0
 Bundle-Name: Nuxeo Platform Suggestbox JSF
-Nuxeo-Component: OSGI-INF/suggestbox-actions-contrib.xml,
- OSGI-INF/suggestbox-operations-contrib.xml
+Nuxeo-Component: OSGI-INF/suggestbox-actions-contrib.xml
 Bundle-ManifestVersion: 1
 Bundle-SymbolicName: org.nuxeo.ecm.platform.suggestbox.jsf;singleton:=
  true
