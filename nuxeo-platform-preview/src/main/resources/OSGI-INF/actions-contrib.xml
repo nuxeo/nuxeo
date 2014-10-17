@@ -47,6 +47,12 @@
       </rule>
     </filter>
 
+    <filter id="notHasPreview">
+      <rule grant="true">
+        <condition>#{not previewActions.hasPreview}</condition>
+      </rule>
+    </filter>
+
     <filter id="popup_view_preview">
       <rule grant="true">
         <condition>#{previewActions.documentHasPreview(document)}</condition>
