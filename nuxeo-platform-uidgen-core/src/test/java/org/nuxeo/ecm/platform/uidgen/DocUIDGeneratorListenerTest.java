@@ -19,43 +19,19 @@
 
 package org.nuxeo.ecm.platform.uidgen;
 
-import org.junit.Before;
-import org.junit.After;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
  * Simple test Case for DocUIDGeneratorListener
  *
  * @author Julien Thimonier <jt@nuxeo.com>
  */
-public class DocUIDGeneratorListenerTest extends SQLRepositoryTestCase {
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        NuxeoContainer.installNaming();
-        openSession();
-        deployBundle("org.nuxeo.ecm.core.persistence");
-        deployBundle("org.nuxeo.ecm.platform.uidgen.core");
-        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests",
-                "nxuidgenerator-test-contrib.xml");
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        NuxeoContainer.uninstallNaming();
-        super.tearDown();
-    }
+public class DocUIDGeneratorListenerTest extends UIDGeneratorTestCase {
 
     protected DocumentModel createFileDocument() throws ClientException {
 

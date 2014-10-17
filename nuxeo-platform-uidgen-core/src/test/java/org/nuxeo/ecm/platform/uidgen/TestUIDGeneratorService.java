@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.uidgen;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -29,45 +28,14 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.platform.uidgen.service.ServiceHelper;
-import org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public class TestUIDGeneratorService extends NXRuntimeTestCase {
+public class TestUIDGeneratorService extends UIDGeneratorTestCase {
 
     final Log log = LogFactory.getLog(TestUIDGeneratorService.class);
-
-    UIDGeneratorService service;
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        NuxeoContainer.installNaming();
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.event");
-        deployBundle("org.nuxeo.ecm.core"); // for dublincore
-        deployBundle("org.nuxeo.ecm.core.persistence");
-        deployBundle("org.nuxeo.ecm.platform.uidgen.core");
-
-        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests",
-                "nxuidgenerator-test-contrib.xml");
-
-        service = ServiceHelper.getUIDGeneratorService();
-        assertNotNull(service);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        NuxeoContainer.uninstallNaming();
-        super.tearDown();
-    }
 
     @Test
     public void testUIDGenerator() throws Exception {

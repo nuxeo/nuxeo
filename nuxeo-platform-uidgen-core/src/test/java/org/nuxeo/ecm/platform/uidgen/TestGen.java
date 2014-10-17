@@ -26,8 +26,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
@@ -38,32 +36,8 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.platform.uidgen.corelistener.DocUIDGeneratorListener;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public class TestGen extends NXRuntimeTestCase {
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        NuxeoContainer.installNaming();
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core"); // for dublincore
-        deployBundle("org.nuxeo.ecm.core.event");
-        deployBundle("org.nuxeo.ecm.core.persistence");
-        deployBundle("org.nuxeo.ecm.platform.uidgen.core");
-
-        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests", "nxuidgenerator-test-contrib.xml");
-    }
-
-    /* (non-Javadoc)
-     * @see org.nuxeo.runtime.test.NXRuntimeTestCase#tearDown()
-     */
-    @After
-    public void tearDown() throws Exception {
-        NuxeoContainer.uninstallNaming();
-        super.tearDown();
-    }
+public class TestGen extends UIDGeneratorTestCase {
 
     @Test
     public void testUIDGenerator() throws Exception {

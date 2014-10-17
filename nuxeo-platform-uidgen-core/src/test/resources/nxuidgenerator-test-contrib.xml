@@ -2,47 +2,39 @@
 
 <component name="org.nuxeo.ecm.platform.uidgen.testGenerators">
 
-  <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
-		point="hibernate">
-		<hibernateConfiguration name="NXUIDSequencer">
-		  <properties>
-            <property name="hibernate.connection.url">jdbc:hsqldb:mem:.;sql.enforce_strict_size=true</property>;
-            <property name="hibernate.connection.driver_class">org.hsqldb.jdbcDriver</property>
-            <property name="hibernate.connection.auto_commit">true</property> 
-        	<property name="hibernate.connection.pool_size">1</property>;
-        	<property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property>;
-        	<property name="hibernate.hbm2ddl.auto">update</property>;
-        	<property name="hibernate.show_sql">false</property>; // true to debug
-        	<property name="hibernate.format_sql">true</property>;
-		   </properties>
-		</hibernateConfiguration>
-  </extension>
+	<extension target="org.nuxeo.runtime.datasource" point="datasources">
+		<datasource name="jdbc/nxuidsequencer" driverClassName="org.h2.Driver"
+			maxActive="20" maxIdle="5">
+			<property name="url">jdbc:h2:mem:test;DB_CLOSE_DELAY=-1</property>
+		</datasource>
+	</extension>
 
-  <extension target="org.nuxeo.ecm.core.schema.TypeService"
-    point="schema">
-    <schema name="other_uid_schema" src="schema/other_uid_schema.xsd" />
-    <schema name="geide" src="schema/emetteur.xsd" />
-  </extension>
-
-  <!-- Sample generators -->
-  <extension target="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService"
-    point="generators">
-
-    <generator name="geideDoc"
-      class="org.nuxeo.ecm.platform.uidgen.generators.UIDGenerator1">
-      <propertyName>uid:uid</propertyName>
-      <propertyName>other_uid_schema:uid2</propertyName>
-      <docType>GeideDoc</docType>
-    </generator>
 	
-	<generator name="coreDocs"
-               class="org.nuxeo.ecm.platform.uidgen.generators.UIDGCoreDocument">
-      <propertyName>uid:uid</propertyName>
-      <docType>File</docType>
-      <docType>Folder</docType>
-      <docType>Note</docType>
-    </generator>
+	<extension target="org.nuxeo.ecm.core.schema.TypeService"
+		point="schema">
+		<schema name="other_uid_schema" src="schema/other_uid_schema.xsd" />
+		<schema name="geide" src="schema/emetteur.xsd" />
+	</extension>
 
-  </extension>
+	<!-- Sample generators -->
+	<extension target="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService"
+		point="generators">
+
+		<generator name="geideDoc"
+			class="org.nuxeo.ecm.platform.uidgen.generators.UIDGenerator1">
+			<propertyName>uid:uid</propertyName>
+			<propertyName>other_uid_schema:uid2</propertyName>
+			<docType>GeideDoc</docType>
+		</generator>
+
+		<generator name="coreDocs"
+			class="org.nuxeo.ecm.platform.uidgen.generators.UIDGCoreDocument">
+			<propertyName>uid:uid</propertyName>
+			<docType>File</docType>
+			<docType>Folder</docType>
+			<docType>Note</docType>
+		</generator>
+
+	</extension>
 
 </component>
