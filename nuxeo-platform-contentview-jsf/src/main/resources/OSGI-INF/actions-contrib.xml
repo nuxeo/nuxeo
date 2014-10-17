@@ -159,7 +159,7 @@
       </rule>
     </filter>
 
-    <filter id="contentViewShowShowPDFExport">
+    <filter id="contentViewShowPDFExport">
       <rule grant="true">
         <condition>
           #{nxu:test(empty showPDFExport,
