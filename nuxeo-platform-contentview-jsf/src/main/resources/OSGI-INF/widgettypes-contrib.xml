@@ -646,6 +646,9 @@
             <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
               <rows>
                 <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">select_selectOptions</widget>
                 </row>
                 <row>
@@ -702,6 +705,9 @@
             <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
               <rows>
                 <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">select_selectOptions</widget>
                 </row>
                 <row>
@@ -752,6 +758,9 @@
           <layouts mode="edit">
             <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
               <rows>
+                <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
                 <row>
                   <widget category="widgetTypeConf">select_selectOptions</widget>
                 </row>
@@ -808,6 +817,9 @@
           <layouts mode="edit">
             <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
               <rows>
+                <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
                 <row>
                   <widget category="widgetTypeConf">select_selectOptions</widget>
                 </row>
