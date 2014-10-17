@@ -60,3 +60,5 @@ elasticsearch.httpEnabled=false
 # Load document model from Elasticsearch result (experimental)
 # if false load from document from VCS
 elasticsearch.fetchDocFromEs=false
+# Comma separated list of CorePageProvider names to supersede by Elasticsearch
+elasticsearch.override.pageproviders=default_search
