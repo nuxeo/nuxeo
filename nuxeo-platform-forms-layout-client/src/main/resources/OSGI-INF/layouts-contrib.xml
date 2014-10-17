@@ -1089,7 +1089,9 @@
         <field>selectOptions</field>
       </fields>
       <widgetModes>
+        <mode value="any">hidden</mode>
         <mode value="edit_demo_preview">hidden</mode>
+        <mode value="view_reference">view</mode>
       </widgetModes>
     </widget>
 
