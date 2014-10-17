@@ -103,8 +103,17 @@
       <properties>
         <property name="widgetName">infoViewPreview</property>
       </properties>
+      <filter-id>notHasNote</filter-id>
       <filter-id>view_preview</filter-id>
       <filter-id>denyInfoViewPreview</filter-id>
+    </action>
+
+    <action id="infoViewNote" type="widget" order="100">
+      <category>INFO_VIEW_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">summary_note_text</property>
+      </properties>
+      <filter-id>hasNote</filter-id>
     </action>
 
     <action id="infoViewTitleContainer" type="widget" order="100">
