@@ -39,6 +39,18 @@
       </subWidgets>
     </widget>
 
+    <widget name="infoViewNote" type="container">
+      <handlingLabels>false</handlingLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="styleClass">infoViewDocContainer</property>
+        <property name="display">block_top</property>
+      </properties>
+      <subWidgetRefs>
+        <widget>summary_note_text</widget>
+      </subWidgetRefs>
+    </widget>
+
     <widget name="infoViewTitleContainer" type="container">
       <handlingLabels>false</handlingLabels>
       <properties widgetMode="any">
@@ -111,7 +123,7 @@
     <action id="infoViewNote" type="widget" order="100">
       <category>INFO_VIEW_PANEL_LEFT</category>
       <properties>
-        <property name="widgetName">summary_note_text</property>
+        <property name="widgetName">infoViewNote</property>
       </properties>
       <filter-id>hasNote</filter-id>
     </action>
