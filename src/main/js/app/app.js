@@ -16,8 +16,12 @@
  */
 import {Connection} from './nuxeo/connection';
 import {Spreadsheet} from './ui/spreadsheet';
+import {parseNXQL} from './nuxeo/util/nxql';
 
 var {layout, query, columns} = parseParams();
+
+// Only parse queries entered in the queryArea
+var doParseQuery = !query;
 
 function run() {
   var nx = new Connection();
@@ -35,7 +39,8 @@ function run() {
     sheet.query.nxql = query;
 
     var doQuery = () => {
-      sheet.query.nxql = $('#query').val();
+      var q = $('#query').val();
+      sheet.query.nxql = (doParseQuery) ? parseNXQL(q) : q;
       sheet.update();
     };
 
