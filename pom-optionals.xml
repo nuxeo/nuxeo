@@ -27,10 +27,6 @@ included in the default full build). Thus they are not deprecated.</description>
     <module>nuxeo-cm-demo-utils</module>
     <module>nuxeo-fsexporter</module>
     <module>nuxeo-platform-spreadsheet</module>
-    <!-- NXP-15561: Temporary move -->
-    <module>nuxeo-poll</module>
-    <module>nuxeo-rss-reader</module>
-    <module>nuxeo-agenda</module>
   </modules>
 
   <!-- dependencyManagement of optional addons must be defined in pom.xml -->

@@ -106,11 +106,14 @@
     <module>nuxeo-social-collaboration</module>
     <module>nuxeo-platform-suggestbox</module>
     <module>nuxeo-dam</module>
+    <module>nuxeo-poll</module>
+    <module>nuxeo-rss-reader</module>
     <module>nuxeo-quota</module>
     <module>nuxeo-platform-indexing-gateway</module>
     <module>nuxeo-exalead-connector</module>
     <module>nuxeo-signature</module>
     <module>nuxeo-rating</module>
+    <module>nuxeo-agenda</module>
     <module>nuxeo-multi-tenant</module>
     <module>nuxeo-core-binarymanager-s3</module>
     <module>nuxeo-core-binarymanager-jclouds</module>
