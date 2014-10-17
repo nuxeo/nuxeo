@@ -250,13 +250,6 @@
         <artifactId>nuxeo-distribution-resources</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
-        <classifier>templates-common-dm</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-resources</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
         <classifier>templates-tomcat</classifier>
       </dependency>
       <dependency>

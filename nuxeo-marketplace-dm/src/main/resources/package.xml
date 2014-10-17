@@ -9,7 +9,8 @@
         <li>nuxeo-dam,</li>
         <li>nuxeo-virtualnavigation,</li>
         <li>nuxeo-imap-connector,</li>
-        <li>nuxeo-diff</li>
+        <li>nuxeo-diff,</li>
+        <li>nuxeo-opensocial</li>
       </ul>
     </p>
   </description>
@@ -31,6 +32,7 @@
     <package>nuxeo-virtualnavigation</package>
     <package>nuxeo-imap-connector</package>
     <package>nuxeo-diff</package>
+    <package>nuxeo-opensocial</package>
   </dependencies>
   <provides>
     <package>nuxeo-content-browser:1.0.0:1.0.0</package>

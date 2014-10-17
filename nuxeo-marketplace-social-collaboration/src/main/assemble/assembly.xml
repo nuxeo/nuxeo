@@ -6,7 +6,8 @@
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
            uri="urn:nuxeo-artifact" />
 
-  <target name="build" description="Build Nuxeo Social Collaboration Marketplace package">
+  <target name="build"
+          description="Build Nuxeo Social Collaboration Marketplace package">
     <tstamp />
     <delete failonerror="false"
             dir="${maven.project.build.directory}/marketplace" />
@@ -19,17 +20,17 @@
     </copy>
     <copy todir="${maven.project.build.directory}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-social-collaboration::zip" />
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm::zip" />
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-cap::zip" />
     </copy>
     <nx:zipdiff file1="${maven.project.build.directory}/nuxeo-distribution-social-collaboration-${nuxeo.distribution.version}.zip"
-                file2="${maven.project.build.directory}/nuxeo-distribution-dm-${nuxeo.distribution.version}.zip"
+                file2="${maven.project.build.directory}/nuxeo-distribution-cap-${nuxeo.distribution.version}.zip"
                 includesfile="${maven.project.build.directory}/includes"
                 excludesfile="${maven.project.build.directory}/excludesfile"
-                patternsetid="socialcollaboration.versus.dm">
+                patternsetid="socialcollaboration.versus.cap">
     </nx:zipdiff>
     <unzip src="${maven.project.build.directory}/nuxeo-distribution-social-collaboration-${nuxeo.distribution.version}.zip"
            dest="${maven.project.build.directory}/marketplace/install">
-      <patternset refid="socialcollaboration.versus.dm" />
+      <patternset refid="socialcollaboration.versus.cap" />
     </unzip>
 
     <!-- Social Collaboration templates -->

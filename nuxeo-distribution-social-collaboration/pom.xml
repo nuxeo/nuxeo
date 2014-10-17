@@ -16,8 +16,30 @@
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-dm</artifactId>
+      <artifactId>nuxeo-distribution-cap</artifactId>
       <type>pom</type>
+    </dependency>
+
+    <!-- OpenSocial -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.opensocial</groupId>
+      <artifactId>nuxeo-opensocial-gadgets</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-admin-center-oauth-opensocial</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.opensocial</groupId>
+      <artifactId>nuxeo-opensocial-features</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.opensocial</groupId>
+      <artifactId>nuxeo-opensocial-container</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.opensocial</groupId>
+      <artifactId>nuxeo-opensocial-container-webapp</artifactId>
     </dependency>
 
     <dependency>
