@@ -328,13 +328,13 @@ div.detail {
   background-position: 5px 13px;
   padding: .8em 1.8em }
 
+/* Layout Dev Mode */
 .nxlDevRegion .nxlDevContainer {
-  position: absolute}
+  position: absolute }
 
 .nxlDevRegion.highlight {
-  border: 2px dashed;
-  border-color: #ff5b2b;
-  background-color: #ffefb6}
+  border: 2px dashed #ff5b2b;
+  background-color: #ffefb6 }
 
 .nxlDevContainer {
   background-color: #fff;
@@ -346,4 +346,7 @@ div.detail {
   font-weight: normal;
   padding: .6em .8em .8em;
   white-space: normal;
-  z-index: 2000}
+  z-index: 2000 }
+
+.nxHeader .nxlDevRegion {
+  display: inline }
