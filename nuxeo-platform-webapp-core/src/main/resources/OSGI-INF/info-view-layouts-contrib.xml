@@ -51,6 +51,24 @@
       </subWidgetRefs>
     </widget>
 
+    <widget name="infoViewNoPreview" type="container">
+      <handlingLabels>false</handlingLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="styleClass">infoViewDocContainer</property>
+        <property name="display">block_top</property>
+      </properties>
+      <subWidgets>
+        <widget name="noPreview" type="template">
+          <properties mode="any">
+            <property name="template">
+              /widgets/info_view_no_preview_widget.xhtml
+            </property>
+          </properties>es>
+        </widget>
+      </subWidgets>
+    </widget>
+
     <widget name="infoViewTitleContainer" type="container">
       <handlingLabels>false</handlingLabels>
       <properties widgetMode="any">
@@ -126,6 +144,14 @@
         <property name="widgetName">infoViewNote</property>
       </properties>
       <filter-id>hasNote</filter-id>
+    </action>
+
+    <action id="infoViewNoPreview" type="widget" order="100">
+      <category>INFO_VIEW_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">infoViewNoPreview</property>
+      </properties>
+      <filter-id>notHasPreview</filter-id>
     </action>
 
     <action id="infoViewTitleContainer" type="widget" order="100">
