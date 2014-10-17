@@ -184,8 +184,8 @@ public class TagSelect2Support {
     }
 
 
-    public String encodePrameters(final Map<String, Serializable> widgetProperties) {
-        return encodeCommonPrameters(widgetProperties).toString();
+    public String encodeParameters(final Map<String, Serializable> widgetProperties) {
+        return encodeCommonParameters(widgetProperties).toString();
     }
 
     public String encodeParametersForCurrentDocument(
@@ -196,19 +196,19 @@ public class TagSelect2Support {
         parameters.put("containerCssClass", "s2tagContainerCssClass");
         parameters.put("dropdownCssClass", "s2tagDropdownCssClass");
         parameters.put("createSearchChoice", "createNewTag");
-        if (!widgetProperties.containsKey("canSelectNewTag")
-                && Boolean.getBoolean((String) widgetProperties.get("canSelectNewTag"))) {
-            parameters.put("createSearchChoice", "createNewTag");
+        if (widgetProperties.containsKey("canSelectNewTag")
+                && !Boolean.parseBoolean((String) widgetProperties.get("canSelectNewTag"))) {
+            parameters.remove("createSearchChoice");
         }
-        return encodeCommonPrameters(widgetProperties, parameters).toString();
+        return encodeCommonParameters(widgetProperties, parameters).toString();
     }
 
-    protected JSONObject encodeCommonPrameters(
+    protected JSONObject encodeCommonParameters(
             final Map<String, Serializable> widgetProperties) {
-        return encodeCommonPrameters(widgetProperties, null);
+        return encodeCommonParameters(widgetProperties, null);
     }
 
-    protected JSONObject encodeCommonPrameters(
+    protected JSONObject encodeCommonParameters(
             final Map<String, Serializable> widgetProperties,
             final Map<String, String> additionalParameters) {
         JSONObject obj = new JSONObject();
@@ -216,7 +216,7 @@ public class TagSelect2Support {
         obj.put(Select2Common.MIN_CHARS, "1");
         obj.put(Select2Common.READ_ONLY_PARAM, "false");
         if (widgetProperties.containsKey("canSelectNewTag")
-                && Boolean.getBoolean((String) widgetProperties.get("canSelectNewTag"))) {
+                && Boolean.parseBoolean((String) widgetProperties.get("canSelectNewTag"))) {
             obj.put("createSearchChoice", "createNewTag");
         }
         obj.put(Select2Common.OPERATION_ID, "Tag.Suggestion");
