@@ -27,12 +27,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -40,7 +40,6 @@ import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
-import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.ecm.webapp.seam.NuxeoSeamHotReloader;
 import org.nuxeo.runtime.api.Framework;
 
@@ -69,7 +68,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
     protected NuxeoSeamHotReloader seamReload;
 
     @In(create = true)
-    protected ResourcesAccessor resourcesAccessor;
+    protected Map<String, String> messages;
 
     protected transient Map<String, DirectoryTreeNode> treeModels;
 
@@ -231,7 +230,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
     protected List<String> translateLabels(List<String> labels) {
         List<String> translatedLabels = new ArrayList<String>(labels.size());
         for (String label : labels) {
-            translatedLabels.add(resourcesAccessor.getMessages().get(label));
+            translatedLabels.add(messages.get(label));
         }
         return translatedLabels;
     }

@@ -88,7 +88,7 @@ public class DirectoryTreeRegistry extends
 
     public DirectoryTreeDescriptor getDirectoryTreeDescriptor(String treeName) {
         DirectoryTreeDescriptor desc = registry.get(treeName);
-        if (Boolean.TRUE.equals(desc.getEnabled())) {
+        if (desc != null && Boolean.TRUE.equals(desc.getEnabled())) {
             return desc;
         } else {
             return null;

@@ -20,6 +20,8 @@ package org.nuxeo.ecm.webapp.directory;
 
 import java.util.List;
 
+import org.nuxeo.ecm.platform.actions.ActionService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -55,6 +57,7 @@ public class DirectoryTreeService extends DefaultComponent {
             String extensionPoint, ComponentInstance contributor) {
         DirectoryTreeDescriptor descriptor = (DirectoryTreeDescriptor) contribution;
         registry.addContribution(descriptor);
+        getActionService().getActionRegistry().addAction(descriptor.getAction());
     }
 
     @Override
@@ -62,6 +65,16 @@ public class DirectoryTreeService extends DefaultComponent {
             String extensionPoint, ComponentInstance contributor) {
         DirectoryTreeDescriptor descriptor = (DirectoryTreeDescriptor) contribution;
         registry.removeContribution(descriptor);
+        getActionService().getActionRegistry().removeAction(
+                descriptor.getAction().getId());
+    }
+
+    /**
+     * @since 6.0
+     */
+    protected ActionService getActionService() {
+        return (ActionService) Framework.getRuntime().getComponent(
+                ActionService.ID);
     }
 
     public List<String> getDirectoryTrees() {

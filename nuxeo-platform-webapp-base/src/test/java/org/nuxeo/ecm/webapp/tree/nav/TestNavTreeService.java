@@ -25,6 +25,9 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
+import org.nuxeo.ecm.webapp.directory.DirectoryTreeDescriptor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -33,7 +36,9 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@LocalDeploy({ "org.nuxeo.ecm.webapp.base:OSGI-INF/navtree-framework.xml",
+@LocalDeploy({
+        "org.nuxeo.ecm.platform.actions.core:OSGI-INF/actions-framework.xml",
+        "org.nuxeo.ecm.webapp.base:OSGI-INF/navtree-framework.xml",
         "org.nuxeo.ecm.webapp.base:test-navtree-contrib-compat.xml",
         "org.nuxeo.ecm.webapp.base:test-navtree-contrib.xml" })
 public class TestNavTreeService {
@@ -61,6 +66,27 @@ public class TestNavTreeService {
         assertEquals("/incl/tag_cloud.xhtml", desc.getXhtmlview());
         assertEquals("TAG_CLOUD_COMPAT", desc.getTreeId());
         assertFalse(desc.isDirectoryTreeBased());
+    }
+
+    @Test
+    public void testNavTreeActions() throws Exception {
+        ActionManager am = Framework.getService(ActionManager.class);
+        List<Action> actions = am.getAllActions(DirectoryTreeDescriptor.NAV_ACTION_CATEGORY);
+        assertEquals(2, actions.size());
+        Action a = actions.get(0);
+        assertEquals("navtree_TAG_CLOUD", a.getId());
+        assertEquals(100, a.getOrder());
+        assertEquals("/img/TAG_CLOUD.png", a.getIcon());
+        assertEquals("my cloud", a.getLabel());
+        assertEquals("/incl/tag_cloud.xhtml", a.getLink());
+        assertEquals("rest_document_link", a.getType());
+        a = actions.get(1);
+        assertEquals("navtree_TAG_CLOUD_COMPAT", a.getId());
+        assertEquals(100, a.getOrder());
+        assertEquals("/img/TAG_CLOUD_COMPAT.png", a.getIcon());
+        assertEquals("navtree_TAG_CLOUD_COMPAT", a.getLabel());
+        assertEquals("/incl/tag_cloud.xhtml", a.getLink());
+        assertEquals("rest_document_link", a.getType());
     }
 
 }

@@ -4,7 +4,8 @@
   <extension target="org.nuxeo.ecm.webapp.tree.nav.NavTreeService"
     point="navigationTree">
 
-    <navTree treeId="TAG_CLOUD" xhtmlview="/incl/tag_cloud.xhtml" />
+    <navTree treeId="TAG_CLOUD" xhtmlview="/incl/tag_cloud.xhtml"
+      treeLabel="my cloud" />
 
   </extension>
 

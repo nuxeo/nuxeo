@@ -19,6 +19,7 @@ package org.nuxeo.ecm.webapp.tree.nav;
 
 import java.util.List;
 
+import org.nuxeo.ecm.platform.actions.ActionService;
 import org.nuxeo.ecm.webapp.directory.DirectoryTreeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -58,11 +59,13 @@ public class NavTreeService extends DefaultComponent {
         if (NAVTREE_EP.equals(extensionPoint)) {
             NavTreeDescriptor contrib = (NavTreeDescriptor) contribution;
             registry.addContribution(contrib);
+            getActionService().getActionRegistry().addAction(
+                    contrib.getAction());
         }
     }
 
     /**
-     * @since 5.6 (no unregister before...)
+     * @since 5.6
      */
     @Override
     public void unregisterContribution(Object contribution,
@@ -71,6 +74,8 @@ public class NavTreeService extends DefaultComponent {
         if (NAVTREE_EP.equals(extensionPoint)) {
             NavTreeDescriptor contrib = (NavTreeDescriptor) contribution;
             registry.removeContribution(contrib);
+            getActionService().getActionRegistry().removeAction(
+                    contrib.getTreeId());
         }
     }
 
@@ -79,12 +84,16 @@ public class NavTreeService extends DefaultComponent {
     }
 
     protected DirectoryTreeService getDirectoryTreeService() {
-        DirectoryTreeService directoryTreeService = (DirectoryTreeService) Framework.getRuntime().getComponent(
+        return (DirectoryTreeService) Framework.getRuntime().getComponent(
                 DirectoryTreeService.NAME);
-        if (directoryTreeService == null) {
-            return null;
-        }
-        return directoryTreeService;
+    }
+
+    /**
+     * @since 6.0
+     */
+    protected ActionService getActionService() {
+        return (ActionService) Framework.getRuntime().getComponent(
+                ActionService.ID);
     }
 
     /**

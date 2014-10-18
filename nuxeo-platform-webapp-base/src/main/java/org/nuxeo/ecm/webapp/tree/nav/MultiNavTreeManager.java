@@ -19,29 +19,22 @@
 package org.nuxeo.ecm.webapp.tree.nav;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
-import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
-import org.jboss.seam.contexts.Context;
-import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.webapp.action.WebActionsBean;
+import org.nuxeo.ecm.webapp.directory.DirectoryTreeDescriptor;
 import org.nuxeo.ecm.webapp.directory.DirectoryTreeManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-import org.nuxeo.ecm.webapp.seam.NuxeoSeamHotReloader;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Seam component to handle MultiTree navigation
@@ -52,96 +45,45 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("multiNavTreeManager")
 @Scope(CONVERSATION)
-@Install(precedence = FRAMEWORK)
+// @Install(precedence = FRAMEWORK)
 public class MultiNavTreeManager implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     public static final String STD_NAV_TREE = "CONTENT_TREE";
 
-    protected List<NavTreeDescriptor> availableNavigationTrees;
-
-    protected Long availableNavigationTreesTimestamp;
-
-    protected String selectedNavigationTree;
-
     protected String thePath = "";
+
+    @In(required = false, create = true)
+    protected WebActionsBean webActions;
 
     @In(required = false, create = true)
     protected DirectoryTreeManager directoryTreeManager;
 
     @In(create = true)
-    protected NuxeoSeamHotReloader seamReload;
-
-    @In(create = true)
     protected Map<String, String> messages;
 
-    public List<NavTreeDescriptor> getAvailableNavigationTrees() {
-        if (availableNavigationTrees == null || shouldResetCache()) {
-            availableNavigationTrees = new ArrayList<NavTreeDescriptor>();
-
-            // add registered additional tress
-            NavTreeService navTreeService = Framework.getLocalService(NavTreeService.class);
-            availableNavigationTrees.addAll(navTreeService.getTreeDescriptors());
-            availableNavigationTreesTimestamp = navTreeService.getLastModified();
-        }
-        return availableNavigationTrees;
-    }
-
-    /**
-     * Checks timestamp on service to handle cache reset when using hot reload
-     *
-     * @since 5.6
-     */
-    protected boolean shouldResetCache() {
-        NavTreeService navTreeService = Framework.getLocalService(NavTreeService.class);
-        if (seamReload.isDevModeSet()
-                && seamReload.shouldResetCache(navTreeService,
-                        availableNavigationTreesTimestamp)) {
-            return true;
-        }
-        return false;
-    }
-
-    @Factory(value = "selectedNavigationTree", scope = ScopeType.EVENT)
-    public String getSelectedNavigationTree() {
-        if (selectedNavigationTree == null) {
-            List<NavTreeDescriptor> trees = getAvailableNavigationTrees();
-            if (trees != null && trees.size() > 0) {
-                setSelectedNavigationTree(trees.get(0).getTreeId());
-            } else {
-                setSelectedNavigationTree(STD_NAV_TREE); // !
-            }
-        }
-        return selectedNavigationTree;
-    }
-
-    @Factory(value = "selectedNavigationTreeDescriptor", scope = ScopeType.EVENT)
-    public NavTreeDescriptor getSelectedNavigationTreeDescriptor() {
-        String navTreeName = getSelectedNavigationTree();
-        for (NavTreeDescriptor desc : getAvailableNavigationTrees()) {
-            if (desc.getTreeId().equals(navTreeName)) {
-                return desc;
-            }
-        }
-
-        return null;
-    }
-
     public void setSelectedNavigationTree(String selectedNavigationTree) {
-        directoryTreeManager.setSelectedTreeName(selectedNavigationTree);
-        this.selectedNavigationTree = selectedNavigationTree;
+        webActions.setCurrentTabId(DirectoryTreeDescriptor.NAV_ACTION_CATEGORY,
+                selectedNavigationTree);
+    }
+
+    // currentTabChanged_TREE_EXPLORER
+    @Observer(value = {
+            WebActions.CURRENT_TAB_CHANGED_EVENT + "_"
+                    + DirectoryTreeDescriptor.NAV_ACTION_CATEGORY,
+            WebActions.CURRENT_TAB_CHANGED_EVENT + "_"
+                    + DirectoryTreeDescriptor.DIR_ACTION_CATEGORY }, create = true)
+    public void onCurrentTreeChange(String category, String tabId) {
         // raise this event in order to reset the documents lists from
         // 'conversationDocumentsListsManager'
         Events.instance().raiseEvent(
                 EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED,
                 new DocumentModelImpl("Folder"));
-        // since JSF2 upgrade, both variables are retrieved at restore phase,
-        // and action is called after => need to force re-compute of variables
-        // after action
-        Context eventContext = Contexts.getEventContext();
-        eventContext.remove("selectedNavigationTree");
-        eventContext.remove("selectedNavigationTreeDescriptor");
+        if (tabId != null
+                && tabId.startsWith(DirectoryTreeDescriptor.ACTION_ID_PREFIX)) {
+            directoryTreeManager.setSelectedTreeName(tabId.substring(DirectoryTreeDescriptor.ACTION_ID_PREFIX.length()));
+        }
     }
 
     @Observer(value = { "PATH_PROCESSED" }, create = false)

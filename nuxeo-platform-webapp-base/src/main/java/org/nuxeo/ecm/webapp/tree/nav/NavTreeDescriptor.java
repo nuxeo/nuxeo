@@ -19,9 +19,15 @@
 package org.nuxeo.ecm.webapp.tree.nav;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.actions.ActionPropertiesDescriptor;
+import org.nuxeo.ecm.webapp.directory.DirectoryTreeDescriptor;
 
 /**
  * Descriptor for navigation tree contributions.
@@ -34,6 +40,11 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("navTree")
 public class NavTreeDescriptor implements Serializable,
         Comparable<NavTreeDescriptor> {
+
+    /**
+     * @since 6.0
+     */
+    public static final String ACTION_ID_PREFIX = "navtree_";
 
     private static final long serialVersionUID = 1L;
 
@@ -119,6 +130,37 @@ public class NavTreeDescriptor implements Serializable,
     @Override
     public int compareTo(NavTreeDescriptor o) {
         return getOrder().compareTo(o.getOrder());
+    }
+
+    /**
+     * Helper to register a simple action based on the given descriptor
+     *
+     * @since 6.0
+     */
+    protected Action getAction() {
+        Action a = new Action(ACTION_ID_PREFIX + getTreeId(),
+                new String[] { DirectoryTreeDescriptor.NAV_ACTION_CATEGORY });
+        a.setType("rest_document_link");
+        a.setLabel(getTreeLabel());
+        Map<String, String> props = new HashMap<String, String>();
+        props.put("ajaxSupport", "true");
+        if (isDirectoryTreeBased()) {
+            props.put("link", "/incl/single_directory_tree_explorer.xhtml");
+        } else {
+            props.put("link", getXhtmlview());
+        }
+        ActionPropertiesDescriptor pdesc = new ActionPropertiesDescriptor();
+        pdesc.setProperties(props);
+        a.setPropertiesDescriptor(pdesc);
+        Integer order = getOrder();
+        if (order != null) {
+            a.setOrder(order.intValue());
+        }
+        a.setEnabled(isEnabled());
+        a.setIcon(String.format("/img/%s.png", getTreeId()));
+        // need to set a non-empty list
+        a.setFilterIds(new ArrayList<String>());
+        return a;
     }
 
 }

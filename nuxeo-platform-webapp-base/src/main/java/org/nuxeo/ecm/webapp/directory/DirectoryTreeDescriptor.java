@@ -18,17 +18,34 @@
  */
 package org.nuxeo.ecm.webapp.directory;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.actions.ActionPropertiesDescriptor;
 
 @XObject(value = "directoryTree")
 public class DirectoryTreeDescriptor {
 
-    private static final Log log = LogFactory.getLog(DirectoryTreeDescriptor.class);
+    /**
+     * @since 6.0
+     */
+    public static final String ACTION_ID_PREFIX = "dirtree_";
+
+    /**
+     * @since 6.0
+     */
+    public static final String NAV_ACTION_CATEGORY = "TREE_EXPLORER";
+
+    /**
+     * @since 6.0
+     */
+    public static final String DIR_ACTION_CATEGORY = "DIRECTORY_TREE_EXPLORER";
 
     /**
      * @deprecated since 5.6, supports other schemas than 'vocabulary' and
@@ -101,6 +118,12 @@ public class DirectoryTreeDescriptor {
         this.directories = directories;
     }
 
+    /**
+     * @since 6.0
+     */
+    @XNode("@order")
+    protected Integer order;
+
     public String getFieldName() {
         return fieldName;
     }
@@ -148,8 +171,14 @@ public class DirectoryTreeDescriptor {
         return contentView != null;
     }
 
-    public void merge(DirectoryTreeDescriptor other) {
+    /**
+     * @since 6.0
+     */
+    public Integer getOrder() {
+        return order;
+    }
 
+    public void merge(DirectoryTreeDescriptor other) {
         if (other.schemaName != null) {
             this.schemaName = other.schemaName;
         }
@@ -173,6 +202,9 @@ public class DirectoryTreeDescriptor {
         }
         this.enabled = other.enabled;
         this.isNavigationTree = other.isNavigationTree;
+        if (other.order != null) {
+            this.order = other.order;
+        }
     }
 
     public DirectoryTreeDescriptor clone() {
@@ -189,7 +221,44 @@ public class DirectoryTreeDescriptor {
         if (directories != null) {
             clone.directories = directories.clone();
         }
+        clone.order = order;
         return clone;
+    }
+
+    /**
+     * Helper to register a simple action based on the given descriptor
+     *
+     * @since 6.0
+     */
+    protected Action getAction() {
+        String[] cats;
+        if (isNavigationTree()) {
+            cats = new String[] { NAV_ACTION_CATEGORY, DIR_ACTION_CATEGORY };
+        } else {
+            cats = new String[] { DIR_ACTION_CATEGORY };
+        }
+        Action a = new Action(ACTION_ID_PREFIX + getName(), cats);
+        a.setType("rest_document_link");
+        a.setLabel(getLabel());
+        Map<String, String> props = new HashMap<String, String>();
+        props.put("ajaxSupport", "true");
+        props.put("link", "/incl/single_directory_tree_explorer.xhtml");
+        ActionPropertiesDescriptor pdesc = new ActionPropertiesDescriptor();
+        pdesc.setProperties(props);
+        a.setPropertiesDescriptor(pdesc);
+        Integer order = getOrder();
+        if (order != null) {
+            a.setOrder(order.intValue());
+        } else {
+            // use a default high default order for directory trees so that
+            // they're displayed after standard navigation trees
+            a.setOrder(1000);
+        }
+        a.setIcon(String.format("/img/%s.png", getName()));
+        // need to set a non-empty list
+        a.setEnabled(Boolean.TRUE.equals(getEnabled()));
+        a.setFilterIds(new ArrayList<String>());
+        return a;
     }
 
 }

@@ -18,13 +18,13 @@
       <h:graphicImage value="/icons/action_empty.png"
         title="#{actionLabel}"
         alt="#{actionLabel}"
-        styleClass="smallIcon tipsyShow tipsyGravitySE #{action.properties.iconStyleClass}" />
+        styleClass="smallIcon tipsyShow #{empty tipsyGravity?'tipsyGravitySE':tipsyGravity} #{action.properties.iconStyleClass}" />
     </c:if>
     <c:if test="#{not empty actionIcon}">
       <h:graphicImage value="#{actionIcon}"
         title="#{actionLabel}"
         alt="#{actionLabel}"
-        styleClass="smallIcon tipsyShow tipsyGravitySE #{action.properties.iconStyleClass}" />
+        styleClass="smallIcon tipsyShow #{empty tipsyGravity?'tipsyGravitySE':tipsyGravity} #{action.properties.iconStyleClass}" />
     </c:if>
   </c:if>
   <c:if test="#{not hideIcon and not hideLabel}">

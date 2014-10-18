@@ -2,6 +2,9 @@
 
 <component name="org.nuxeo.ecm.webapp.directory.DirectoryTreeService">
 
+  <!-- since 6.0, automatically registers actions -->
+  <require>org.nuxeo.ecm.platform.actions.ActionService</require>
+
   <documentation>
     The DirectoryTreeService is used to build tree-shaped explorer like
     navigation menus (usging the &lt;richfaces:tree /&gt; components) from a hierarchical

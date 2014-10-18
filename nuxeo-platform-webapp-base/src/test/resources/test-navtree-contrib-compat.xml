@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.virtualnavigation.tagsContrib.compat">
 
+  <!-- FIXME: need to check why this is needed for proper ordering (alias system bug?) -->
+  <require>org.nuxeo.ecm.webapp.tree.nav.NavTreeService</require>
+
   <extension target="org.nuxeo.ecm.platform.virtualnavigation.NavTreeService"
     point="navigationTree">
 

@@ -212,7 +212,10 @@ public class WebActionsBean implements WebActions, Serializable {
             List<Action> actions = getActionsList(category,
                     createActionContext());
             if (actions != null && actions.size() > 0) {
-                return actions.get(0);
+                // make sure selection event is sent
+                Action action = actions.get(0);
+                setCurrentTabAction(category, action);
+                return action;
             }
             return null;
         }
