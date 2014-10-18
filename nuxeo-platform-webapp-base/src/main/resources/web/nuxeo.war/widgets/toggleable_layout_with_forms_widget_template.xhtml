@@ -58,6 +58,8 @@
       var="layoutWidgetMode"
       defaultValue="#{nxu:test(widgetProperty_toggledByDefault and canToggleMode, toggledMode, initialMode)}"
       submitChanges="false">
+    <nxu:set var="layoutToggled" value="#{layoutWidgetMode == initialMode}">
+
     <c:if test="false">
       set toggled layout name after layout widget mode is set so that
       the variable "layoutWidgetMode" can be used to resolve the accurate
@@ -79,7 +81,7 @@
       <ui:decorate template="/widgets/incl/foldable_box_template.xhtml">
         <ui:param name="hideHeader" value="#{not widget.handlingLabels}" />
         <ui:param name="foldable" value="#{widgetProperty_foldable}" />
-        <ui:param name="foldedByDefault" value="#{widgetProperty_foldedByDefault and layoutWidgetMode == initialMode}" />
+        <ui:param name="foldedByDefault" value="#{widgetProperty_foldedByDefault and layoutToggled}" />
         <ui:param name="foldableBoxStyleClass" value="widgetPanel layoutWidgetPanel #{widgetProperty_styleClass}" />
         <ui:param name="headerStyleClass" value="widgetHeader #{nxu:test(widgetProperty_foldable, '', 'summaryTitle')} #{widgetProperty_headerStyleClass}" />
         <ui:param name="headerFormId" value="#{widget.id}_headerForm" />
@@ -101,14 +103,13 @@
                 <ui:param name="idPrefix" value="header_" />
                 <ui:param name="display" value="buttons" />
                 <ui:param name="toggleButtonStyleClass" value="action" />
-                <ui:param name="modeSwitch" value="#{nxu:test(layoutWidgetMode == initialMode, toggledMode, initialMode)}" />
-                <ui:param name="buttonLabel" value="#{nxu:test(layoutWidgetMode == initialMode, initialActionLabel, cancelActionLabel)}" />
+                <ui:param name="modeSwitch" value="#{nxu:test(layoutToggled, toggledMode, initialMode)}" />
+                <ui:param name="buttonLabel" value="#{nxu:test(layoutToggled, initialActionLabel, cancelActionLabel)}" />
               </ui:include>
             </c:if>
           </c:if>
 
         </ui:define>
-
 
         <ui:define name="foldable_box_content">
 
@@ -120,121 +121,44 @@
             </nxu:set>
           </c:if>
 
-          <c:if test="#{layoutWidgetMode == initialMode}">
+          <h:form id="#{widget.id}_initialForm"
+            enctype="multipart/form-data"
+            rendered="#{layoutToggled}">
 
-            <h:form id="#{widget.id}_initialForm"
-              enctype="multipart/form-data">
+            <ui:insert name="initial_mode_content" />
 
-              <ui:insert name="initial_mode_content" />
-
-              <c:if test="#{canToggleMode and (hideHeader or not widgetProperty_displayToggleActionInHeader)}">
-                <p class="buttonsGadget">
-                  <ui:include src="toggleable_layout_with_forms_toggle_button.xhtml" />
-                </p>
-              </c:if>
-
-            </h:form>
-
-          </c:if>
-
-          <c:if test="#{layoutWidgetMode == toggledMode}">
-
-            <c:if test="#{useAjaxForm}">
-              <ui:include src="/incl/safeEdit.xhtml"/>
-              <script>
-                function onSubmitToggledForm() {
-                  removeAllTinyMCEEditors();
-                  jQuery(this).data('dirtyPage', false);
-                  jQuery(window).unbind('beforeunload');
-                  jQuery(this).cleanupSavedData();
-                }
-              </script>
-              <h:form
-                id="#{widget.id}_toggledForm"
-                ajaxSubmit="true"
-                onsubmit="onSubmitToggledForm(); return true;"
-                styleClass="safeEditEnabled">
-
-                <ui:insert name="toggled_mode_content" />
-
-                <c:if test="#{showEditOptions and nxd:isDocumentModel(fieldOrValue)}">
-                  <nxl:layout name="document_edit_form_options"
-                    mode="#{layoutWidgetMode}" value="#{fieldOrValue}" />
-                </c:if>
-
-                <p class="buttonsGadget">
-
-                  <nxu:set var="display"
-                    value="#{actionsDisplay}"
-                    cache="true">
-                    <c:if test="#{not empty actionsCategory}">
-                      <nxu:set var="actions"
-                        value="#{webActions.getActionsList(actionsCategory)}"
-                        cache="true">
-                        <c:forEach var="action" items="#{actions}">
-                          <ui:decorate template="/incl/action/action_template.xhtml">
-                            <ui:param name="idPrefix" value="#{widget.id}_" />
-                            <ui:param name="useAjaxForm" value="true" />
-                            <ui:param name="ajaxReRender" value=":#{widgetPanelComponent.clientId}" />
-                            <ui:param name="actionStyleClass" value="smallButton" />
-                            <ui:define name="after_action_trigger">
-                              <f:attribute name="selectedValue" value="#{initialMode}" />
-                              <f:attribute name="targetComponentId" value="#{modeValueHolderId}" />
-                              <nxu:actionListenerMethod value="#{selectionActions.setStaticValue}"/>
-                            </ui:define>
-                          </ui:decorate>
-                        </c:forEach>
-                      </nxu:set>
-                    </c:if>
-                    <c:if test="#{not empty widgetProperty_additionalActionsCategory}">
-                      <nxu:set var="actions"
-                        value="#{webActions.getActionsList(widgetProperty_additionalActionsCategory)}"
-                        cache="true">
-                        <c:forEach var="action" items="#{actions}">
-                          <ui:decorate template="/incl/action/action_template.xhtml">
-                            <ui:param name="idPrefix" value="#{widget.id}_" />
-                            <ui:param name="useAjaxForm" value="true" />
-                            <ui:param name="ajaxReRender" value=":#{widgetPanelComponent.clientId}" />
-                            <ui:define name="after_action_trigger">
-                              <f:attribute name="selectedValue" value="#{initialMode}" />
-                              <f:attribute name="targetComponentId" value="#{modeValueHolderId}" />
-                              <nxu:actionListenerMethod value="#{selectionActions.setStaticValue}"/>
-                            </ui:define>
-                          </ui:decorate>
-                        </c:forEach>
-                      </nxu:set>
-                    </c:if>
-
-                    <input type="hidden" name="restoreCurrentTabs" value="true" />
-
-                    <ui:include src="toggleable_layout_with_forms_cancel_button.xhtml" />
-                  </nxu:set>
-
-                  <a4j:status>
-                    <f:facet name="start">
-                      <h:graphicImage value="/img/standart_waiter.gif" />
-                    </f:facet>
-                  </a4j:status>
-
-                </p>
-
-              </h:form>
-
-              <script>
-                jQuery(document).ready(function(){
-                  var #{widget.id}_formId = jQuery('form[id$=#{widget.id}_toggledForm]').attr('id').split(":").join("\\:");;
-                  jQuery('#' + #{widget.id}_formId).initSafeEditOnForm('toggled-#{widget.id}-#{fieldOrValue}', "#{messages['safeedit.page.has.unsaved.changes']}");
-                });
-              </script>
-
+            <c:if test="#{canToggleMode and (hideHeader or not widgetProperty_displayToggleActionInHeader)}">
+              <p class="buttonsGadget">
+                <ui:include src="toggleable_layout_with_forms_toggle_button.xhtml">
+                  <ui:param name="modeSwitch" value="#{nxu:test(layoutToggled, toggledMode, initialMode)}" />
+                  <ui:param name="buttonLabel" value="#{nxu:test(layoutToggled, initialActionLabel, cancelActionLabel)}" />
+                </ui:include>
+              </p>
             </c:if>
 
-            <c:if test="#{not useAjaxForm}">
+          </h:form>
 
-              <ui:include src="/incl/safeEdit.xhtml"/>
-              <h:form id="#{widget.id}_toggledForm"
-                enctype="multipart/form-data"
-                styleClass="safeEditEnabled">
+          <h:panelGroup layout="block" rendered="#{not layoutToggled}">
+            <ui:decorate template="/widgets/incl/form_template.xhtml">
+              <ui:param name="addForm" value="true" />
+              <ui:param name="formId" value="#{widget.id}_toggledForm" />
+              <ui:param name="useAjaxForm" value="#{useAjaxForm}" />
+              <ui:param name="onFormSubmit" value="#{nxu:test(useAjaxForm, 'onSubmitToggledForm(); return true;', '')}" />
+              <ui:param name="formStyleClass" value="#{nxu:test(useAjaxForm, safeEditEnabled, '')}" />
+
+              <ui:define name="form_template_content">
+
+                <ui:include src="/incl/safeEdit.xhtml"/>
+                <c:if test="#{useAjaxForm}">
+                  <script>
+                    function onSubmitToggledForm() {
+                      removeAllTinyMCEEditors();
+                      jQuery(this).data('dirtyPage', false);
+                      jQuery(window).unbind('beforeunload');
+                      jQuery(this).cleanupSavedData();
+                    }
+                  </script>
+                </c:if>
 
                 <ui:insert name="toggled_mode_content" />
 
@@ -249,34 +173,44 @@
                     value="#{actionsDisplay}"
                     cache="true">
 
-                    <c:if test="#{not empty actionsCategory}">
-                      <nxu:set var="actions"
-                        value="#{webActions.getActionsList(actionsCategory)}"
-                        cache="true">
-                        <c:forEach var="action" items="#{actions}">
-                          <ui:decorate template="/incl/action/action_template.xhtml">
-                            <ui:param name="idPrefix" value="#{widget.id}_" />
-                            <ui:param name="actionStyleClass" value="smallButton" />
-                          </ui:decorate>
-                        </c:forEach>
-                      </nxu:set>
-                    </c:if>
-                    <c:if test="#{not empty widgetProperty_additionalActionsCategory}">
-                      <nxu:set var="actions"
-                        value="#{webActions.getActionsList(widgetProperty_additionalActionsCategory)}"
-                        cache="true">
-                        <c:forEach var="action" items="#{actions}">
-                          <ui:decorate template="/incl/action/action_template.xhtml">
-                            <ui:param name="idPrefix" value="#{widget.id}_" />
-                            <ui:param name="actionStyleClass" value="smallButton" />
-                          </ui:decorate>
-                        </c:forEach>
-                      </nxu:set>
-                    </c:if>
+                    <nxu:set var="allActionCategories"
+                      value="#{actionsCategory} #{widgetProperty_additionalActionsCategory}"
+                      cache="true">
+                    <nxu:set var="actions"
+                      value="#{webActions.getActionsList(allActionCategories)}"
+                      cache="true">
+                      <c:forEach var="action" items="#{actions}">
+                        <c:if test="#{useAjaxForm}">
+                          <nxu:set var="addForm" value="false" cache="true">
+                            <ui:decorate template="/incl/action/action_template.xhtml">
+                              <ui:param name="idPrefix" value="#{widget.id}_" />
+                              <ui:param name="actionStyleClass" value="smallButton" />
+                              <ui:param name="useAjaxForm" value="true" />
+                              <ui:param name="ajaxReRender" value=":#{widgetPanelComponent.clientId}" />
+                              <ui:define name="after_action_trigger">
+                                <f:attribute name="selectedValue" value="#{initialMode}" />
+                                <f:attribute name="targetComponentId" value="#{modeValueHolderId}" />
+                                <nxu:actionListenerMethod value="#{selectionActions.setStaticValue}" />
+                              </ui:define>
+                            </ui:decorate>
+                          </nxu:set>
+                        </c:if>
+                        <c:if test="#{not useAjaxForm}">
+                          <nxu:set var="addForm" value="false" cache="true">
+                            <ui:decorate template="/incl/action/action_template.xhtml">
+                              <ui:param name="idPrefix" value="#{widget.id}_" />
+                              <ui:param name="actionStyleClass" value="smallButton" />
+                            </ui:decorate>
+                          </nxu:set>
+                        </c:if>
+                      </c:forEach>
+                    </nxu:set>
+                    </nxu:set>
 
                     <input type="hidden" name="restoreCurrentTabs" value="true" />
 
                     <ui:include src="toggleable_layout_with_forms_cancel_button.xhtml" />
+
                   </nxu:set>
 
                   <a4j:status>
@@ -287,24 +221,24 @@
 
                 </p>
 
-              </h:form>
-
-               <script>
-                 jQuery(document).ready(function(){
+                <script>
+                  jQuery(document).ready(function(){
                     var #{widget.id}_formId = jQuery('form[id$=#{widget.id}_toggledForm]').attr('id').split(":").join("\\:");;
                     jQuery('#' + #{widget.id}_formId).initSafeEditOnForm('toggled-#{widget.id}-#{fieldOrValue}', "#{messages['safeedit.page.has.unsaved.changes']}");
                   });
-               </script>
+                </script>
 
-            </c:if>
-
-          </c:if>
+              </ui:define>
+            </ui:decorate>
+          </h:panelGroup>
 
         </ui:define>
       </ui:decorate>
 
     </nxu:set>
     </nxu:set>
+    </nxu:set>
+
     </nxu:set>
     </nxu:valueHolder>
 

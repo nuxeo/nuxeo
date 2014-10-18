@@ -27,6 +27,7 @@ Templating zone to define:
 
   <h:form id="#{formId}"
     enctype="#{useAjaxForm or disableMultipartForm?'':'multipart/form-data'}"
+    onsubmit="#{onFormSubmit}"
     styleClass="#{formStyleClass}">
     <ui:insert name="form_template_content" />
   </h:form>
