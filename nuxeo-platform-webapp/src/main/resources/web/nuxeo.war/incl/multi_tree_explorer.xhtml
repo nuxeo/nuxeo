@@ -1,64 +1,11 @@
-<c:if test="true"
-  xmlns="http://www.w3.org/1999/xhtml"
+<h:panelGroup xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:nxu="http://nuxeo.org/nxweb/util">
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  id="MultiTreeView" layout="block" styleClass="userClipboard">
 
-<c:if test="#{multiNavTreeManager.availableNavigationTrees.size == 1}">
-  <c:if test="#{selectedNavigationTreeDescriptor.directoryTreeBased}">
-    <ui:include src="/incl/single_directory_tree_explorer.xhtml">
-      <ui:param name="treeModel" value="#{directoryTreeManager.selectedTreeAsList}" />
-    </ui:include>
-  </c:if>
+  <nxu:set var="tipsyGravity" value="tipsyGravitySW">
+    <nxl:widget name="treeExplorerTabs" mode="view" value="#{currentDocument}" />
+  </nxu:set>
 
-  <c:if test="#{selectedNavigationTreeDescriptor.xhtmlview != null}">
-    <ui:include src="#{selectedNavigationTreeDescriptor.xhtmlview}"/>
-  </c:if>
-</c:if>
-
-<c:if test="#{multiNavTreeManager.availableNavigationTrees.size &gt; 1}">
-<div class="userClipboard">
-
-  <h:panelGroup id="MultiTreeView" layout="block">
-
-    <div class="tabsBar">
-      <h:form id="virtualNavTreeTab">
-        <nxu:dataList var="tree" layout="unorderedList" id="virtualNavTreeList"
-          value="#{multiNavTreeManager.availableNavigationTrees}"
-          itemStyleClass="#{nxu:test(multiNavTreeManager.selectedNavigationTree == tree.treeId, 'selected', '')}">
-          <h:commandLink id="virtualNavTreeLink"
-            immediate="true"
-            action="#{multiNavTreeManager.setSelectedNavigationTree(tree.treeId)}">
-            <f:ajax execute="@form" render="MultiTreeView" />
-            <nxu:graphicImage value="/img/#{tree.treeId}.png"
-              title="#{messages[tree.treeLabel]}"
-              styleClass="smallIcon tipsyShow tipsyGravitySW" />
-          </h:commandLink>
-         </nxu:dataList>
-      </h:form>
-    </div>
-    <div style="clear:both" />
-
-    <div class="userClipboardContent">
-
-      <c:if test="#{selectedNavigationTreeDescriptor.directoryTreeBased}">
-        <ui:include src="/incl/single_directory_tree_explorer.xhtml">
-          <ui:param name="treeModel" value="#{directoryTreeManager.selectedTreeAsList}" />
-        </ui:include>
-      </c:if>
-
-      <c:if test="#{selectedNavigationTreeDescriptor.xhtmlview != null}">
-        <ui:include src="#{selectedNavigationTreeDescriptor.xhtmlview}"/>
-      </c:if>
-
-    </div>
-
-  </h:panelGroup>
-
-</div>
-</c:if>
-
-</c:if>
+</h:panelGroup>

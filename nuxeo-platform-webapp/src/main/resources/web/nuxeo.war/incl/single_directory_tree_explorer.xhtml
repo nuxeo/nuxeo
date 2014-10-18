@@ -7,6 +7,7 @@
   xmlns:rich="http://richfaces.org/rich"
   class="menu">
 
+<nxu:set var="treeModel" value="#{directoryTreeManager.selectedTreeAsList}">
 <a4j:region renderRegionOnly="true">
   <h:form id="directoryTreeForm" rendered="#{directoryTreeManager.initialized}">
     <div class="floatR">
@@ -48,5 +49,6 @@
     </h:panelGroup>
   </h:form>
 </a4j:region>
+</nxu:set>
 
 </div>
