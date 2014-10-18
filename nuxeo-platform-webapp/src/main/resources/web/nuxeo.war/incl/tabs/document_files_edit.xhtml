@@ -49,6 +49,8 @@
       <a4j:ajax event="uploadcomplete"
         render="validateMultiplesUploadDiv" />
     </rich:fileUpload>
+    <h:message styleClass="errorMessage" for="upload"
+      id="files_message" />
 
     <a4j:region id="files_region">
       <a4j:outputPanel id="files_panel" layout="block">
@@ -68,10 +70,6 @@
             </nxh:outputLink>
           </div>
         </c:forEach>
-
-        <h:message styleClass="errorMessage" for="files_input"
-          id="files_message" />
-
       </a4j:outputPanel>
     </a4j:region>
 
