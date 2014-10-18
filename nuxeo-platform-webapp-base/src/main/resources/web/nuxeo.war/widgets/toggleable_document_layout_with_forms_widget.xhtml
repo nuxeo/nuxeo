@@ -4,8 +4,10 @@
   xmlns:ui="http://java.sun.com/jsf/facelets">
 
   <ui:define name="initial_mode_content">
-    <nxl:documentLayout mode="#{layoutWidgetMode}"
+    <nxl:documentLayout
       category="#{widgetProperty_category}"
+      mode="#{layoutWidgetMode}"
+      documentMode="#{layoutWidgetMode}"
       value="#{fieldOrValue}"
       template="#{widgetProperty_template}"
       selectedRows="#{widgetProperty_selectedRows}"
@@ -17,6 +19,7 @@
     <nxl:documentLayout
       category="#{widgetProperty_category}"
       mode="#{layoutWidgetMode}"
+      documentMode="#{layoutWidgetMode}"
       value="#{fieldOrValue}"
       template="#{widgetProperty_template}"
       selectedRows="#{widgetProperty_selectedRows}"
