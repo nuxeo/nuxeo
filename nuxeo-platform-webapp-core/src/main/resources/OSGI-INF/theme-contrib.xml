@@ -93,16 +93,6 @@
       <template>incl/multi_tree_explorer.xhtml</template>
     </view>
 
-    <view name="nuxeo5 directory tree explorer" template-engine="jsf-facelets">
-      <!-- Fragment (not enabled in the default theme)
-        that displays trees of [x]vocabularies to perform queries
-        based on a hierarchical meta data. See the DirectoryTreeService
-        extension point for more info on how to use this fragment.
-      -->
-      <format-type>widget</format-type>
-      <template>incl/directory_tree_explorer.xhtml</template>
-    </view>
-
     <view name="nuxeo5 clip board" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/user_clipboard.xhtml</template>
