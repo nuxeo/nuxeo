@@ -38,6 +38,8 @@ public interface QuotaAware {
 
     long getMaxQuota();
 
+    void setInnerSize(long size, boolean save) throws ClientException;
+
     void addInnerSize(long additionalSize, boolean save) throws ClientException;
 
     void addTotalSize(long additionalSize, boolean save) throws ClientException;

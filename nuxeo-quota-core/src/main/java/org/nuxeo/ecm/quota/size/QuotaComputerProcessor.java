@@ -208,7 +208,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 // copy the versions so we can't rely on the copied quotaDocInfo
                 if (!sourceDocument.isFolder()) {
                     quotaDoc.resetInfos(false);
-                    quotaDoc.addInnerSize(quotaCtx.getBlobSize(), true);
+                    quotaDoc.setInnerSize(quotaCtx.getBlobSize(), true);
                 }
             }
 

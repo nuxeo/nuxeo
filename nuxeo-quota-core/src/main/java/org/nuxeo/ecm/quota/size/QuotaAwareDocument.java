@@ -26,6 +26,7 @@ import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.quota.QuotaStatsService;
@@ -105,12 +106,37 @@ public class QuotaAwareDocument implements QuotaAware {
     }
 
     @Override
+    public void setInnerSize(long size, boolean save) throws ClientException {
+        doc.setPropertyValue(DOCUMENTS_SIZE_INNER_SIZE_PROPERTY, size);
+        doc.setPropertyValue(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY, size);
+        if (log.isDebugEnabled()) {
+            log.debug("Setting quota (inner size) : " + size + " on document "
+                    + doc.getId());
+        }
+        if (save) {
+            save(true);
+        }
+    }
+
+    protected Number addDelta(String property, long delta) {
+        Number oldValue = (Number) doc.getPropertyValue(property);
+        Number newValue = DeltaLong.deltaOrLong(oldValue, delta);
+        doc.setPropertyValue(property, newValue);
+        return newValue;
+    }
+
+    @Override
     public void addInnerSize(long additionalSize, boolean save)
             throws ClientException {
-        Long inner = getInnerSize() + additionalSize;
-        Long total = getTotalSize() + additionalSize;
-        doc.setPropertyValue(DOCUMENTS_SIZE_INNER_SIZE_PROPERTY, inner);
-        doc.setPropertyValue(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY, total);
+        Number inner = addDelta(DOCUMENTS_SIZE_INNER_SIZE_PROPERTY,
+                additionalSize);
+        Number total = addDelta(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY,
+                additionalSize);
+        if (log.isDebugEnabled()) {
+            log.debug("Setting quota (inner size) : " + inner
+                    + ", (total size) : " + total + " on document "
+                    + doc.getId());
+        }
         if (save) {
             save(true);
         }
@@ -119,10 +145,12 @@ public class QuotaAwareDocument implements QuotaAware {
     @Override
     public void addTotalSize(long additionalSize, boolean save)
             throws ClientException {
-        Long total = getTotalSize() + additionalSize;
-        doc.setPropertyValue(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY, total);
-        log.debug("Setting quota (total size) : " + total + " on document "
-                + doc.getId());
+        Number total = addDelta(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY,
+                additionalSize);
+        if (log.isDebugEnabled()) {
+            log.debug("Setting quota (total size) : " + total + " on document "
+                    + doc.getId());
+        }
         if (save) {
             save(true);
         }
@@ -131,10 +159,12 @@ public class QuotaAwareDocument implements QuotaAware {
     @Override
     public void addTrashSize(long additionalSize, boolean save)
             throws ClientException {
-        Long trash = getTrashSize() + additionalSize;
-        doc.setPropertyValue(DOCUMENTS_SIZE_TRASH_SIZE_PROPERTY, trash);
-        log.debug("Setting quota (trash size):" + trash + " on document "
-                + doc.getId());
+        Number trash = addDelta(DOCUMENTS_SIZE_TRASH_SIZE_PROPERTY,
+                additionalSize);
+        if (log.isDebugEnabled()) {
+            log.debug("Setting quota (trash size):" + trash + " on document "
+                    + doc.getId());
+        }
         if (save) {
             save(true);
         }
@@ -143,10 +173,12 @@ public class QuotaAwareDocument implements QuotaAware {
     @Override
     public void addVersionsSize(long additionalSize, boolean save)
             throws ClientException {
-        Long versions = getVersionsSize() + additionalSize;
-        doc.setPropertyValue(DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY, versions);
-        log.debug("Setting quota (versions size): " + versions
-                + " on document " + doc.getId());
+        Number versions = addDelta(DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY,
+                additionalSize);
+        if (log.isDebugEnabled()) {
+            log.debug("Setting quota (versions size): " + versions
+                    + " on document " + doc.getId());
+        }
         if (save) {
             save(true);
         }
