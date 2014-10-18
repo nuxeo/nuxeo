@@ -21,7 +21,6 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SELECTION;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -34,15 +33,11 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.common.collections.ScopeType;
-import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
@@ -127,12 +122,6 @@ public class BulkEditActions implements Serializable {
                 Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED, doc);
             }
 
-            // handle tags
-            addTagsOnDocuments(selectedDocuments, fictiveDocumentModel);
-
-            // handle collections
-            addCollectionsOnDocuments(selectedDocuments, fictiveDocumentModel);
-
             facesMessages.add(StatusMessage.Severity.INFO,
                     messages.get("label.bulk.edit.documents.updated"),
                     selectedDocuments.size());
@@ -142,47 +131,6 @@ public class BulkEditActions implements Serializable {
             fictiveDocumentModel = null;
         }
         return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    public void addTagsOnDocuments(List<DocumentModel> documents,
-            DocumentModel importDocumentModel) throws ClientException {
-        List<String> tags = (List<String>) importDocumentModel.getContextData(
-                ScopeType.REQUEST, "bulk_edit_tags");
-        if (tags != null && !tags.isEmpty()) {
-            TagService tagService = Framework.getLocalService(TagService.class);
-            String username = documentManager.getPrincipal().getName();
-            for (DocumentModel doc : documents) {
-                for (String tag : tags) {
-                    tagService.tag(documentManager, doc.getId(), tag, username);
-                }
-            }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public void addCollectionsOnDocuments(List<DocumentModel> documents,
-            DocumentModel importDocumentModel) throws ClientException {
-        List<String> collectionIds = (List<String>) importDocumentModel.getContextData(
-                ScopeType.REQUEST, "bulk_edit_collections");
-        if (collectionIds != null && !collectionIds.isEmpty()) {
-            List<DocumentModel> collections = new ArrayList<>();
-            for (String collectionId : collectionIds) {
-                IdRef idRef = new IdRef(collectionId);
-                if (documentManager.exists(idRef)) {
-                    collections.add(documentManager.getDocument(idRef));
-                }
-            }
-
-            CollectionManager collectionManager = Framework.getService(CollectionManager.class);
-            for (DocumentModel collection : collections) {
-                if (collectionManager.canAddToCollection(collection,
-                        documentManager)) {
-                    collectionManager.addToCollection(collection, documents,
-                            documentManager);
-                }
-            }
-        }
     }
 
     /**
