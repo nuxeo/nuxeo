@@ -20,7 +20,12 @@
 package org.nuxeo.ecm.directory;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,10 +35,14 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
  * Base session class with helper methods common to all kinds of directory
@@ -49,6 +58,90 @@ public abstract class BaseSession implements Session {
     protected static final String MULTI_TENANT_ID_FORMAT = "tenant_%s_%s";
 
     private final static Log log = LogFactory.getLog(BaseSession.class);
+
+    protected PermissionDescriptor[] permissions = null;
+
+    /**
+     * Check the current user rights for the given permission against the
+     * specified descriptor
+     * 
+     * @return true if the user
+     *
+     * @since 5.9.6
+     */
+    public boolean isCurrentUserAllowed(String permissionTocheck) {
+        PermissionDescriptor[] permDescriptors = permissions;
+        NuxeoPrincipal currentUser = ClientLoginModule.getCurrentPrincipal();
+
+        // Should happen only in test case
+        if (currentUser == null) {
+            // if(!Framework.isTestModeSet())
+            // {
+            log.warn("Can't get current user to check directory permission. EVERYTHING is allowed by default");
+            // }
+            return true;
+        }
+        String username = currentUser.getName();
+        List<String> userGroups = currentUser.getAllGroups();
+
+        if (username.equalsIgnoreCase(LoginComponent.SYSTEM_USERNAME)) {
+            return true;
+        }
+
+        if (permDescriptors == null || permDescriptors.length == 0) {
+            if (currentUser.isAdministrator()) {
+                // By default if nothing is specified, admin is allowed
+                return true;
+            }
+            //Return true for read access to anyone when nothing defined
+            if(permissionTocheck.equalsIgnoreCase(SecurityConstants.READ))
+            {
+                return true;
+            }
+        }
+        boolean allowed = checkPermission(permDescriptors, permissionTocheck,
+                username, userGroups);
+        if (allowed != true) {
+            // If the permission has not been found and if the permission to
+            // check is read
+            // Then try to check if the current user is allowed, because having
+            // write access include read
+            if (permissionTocheck.equalsIgnoreCase(SecurityConstants.READ)) {
+                allowed = checkPermission(permDescriptors,
+                        SecurityConstants.WRITE, username, userGroups);
+            }
+        }
+
+        return allowed;
+
+    }
+
+    private boolean checkPermission(PermissionDescriptor permDescriptors[],
+            String permToChek, String username, List<String> userGroups) {
+        for (int i = 0; i < permDescriptors.length; i++) {
+            PermissionDescriptor currentDesc = permDescriptors[i];
+            if (currentDesc.name.equalsIgnoreCase(permToChek)) {
+                if (currentDesc.groups != null) {
+                    for (int j = 0; j < currentDesc.groups.length; j++) {
+                        String groupName = currentDesc.groups[j];
+                        if (userGroups.contains(groupName)) {
+                            return true;
+                        }
+                    }
+                }
+
+                if (currentDesc.users != null) {
+                    for (int j = 0; j < currentDesc.users.length; j++) {
+                        String currentUsername = currentDesc.users[j];
+                        if (currentUsername.equals(username)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
     /**
      * Returns a bare document model suitable for directory implementations.
@@ -162,11 +255,12 @@ public abstract class BaseSession implements Session {
 
     @Override
     public DocumentModelList query(Map<String, Serializable> filter,
-                                   Set<String> fulltext, Map<String, String> orderBy,
-                                   boolean fetchReferences, int limit, int offset)
+            Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences, int limit, int offset)
             throws ClientException, DirectoryException {
         log.info("Call an unoverrided query with offset and limit.");
-        DocumentModelList entries = query(filter, fulltext, orderBy, fetchReferences);
+        DocumentModelList entries = query(filter, fulltext, orderBy,
+                fetchReferences);
         int toIndex = offset + limit;
         if (toIndex > entries.size()) {
             toIndex = entries.size();
