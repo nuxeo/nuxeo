@@ -116,7 +116,6 @@ public class JsonFactoryManagerImpl implements JsonFactoryManager {
             }
         };
         oc.registerModule(module);
-        oc.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
         factory.setCodec(oc);
         return factory;
     }
