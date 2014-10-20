@@ -19,11 +19,13 @@
 package org.nuxeo.ecm.webapp.tree.nav;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
 import java.util.Map;
 
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
@@ -45,7 +47,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  */
 @Name("multiNavTreeManager")
 @Scope(CONVERSATION)
-// @Install(precedence = FRAMEWORK)
+@Install(precedence = FRAMEWORK)
 public class MultiNavTreeManager implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -68,7 +70,20 @@ public class MultiNavTreeManager implements Serializable {
                 selectedNavigationTree);
     }
 
-    // currentTabChanged_TREE_EXPLORER
+    public String getSelectedNavigationTree() {
+        String id = webActions.getCurrentTabId(DirectoryTreeDescriptor.NAV_ACTION_CATEGORY);
+        if (id != null) {
+            if (id.startsWith(DirectoryTreeDescriptor.ACTION_ID_PREFIX)) {
+                return id.substring(DirectoryTreeDescriptor.ACTION_ID_PREFIX.length());
+            }
+            if (id.startsWith(DirectoryTreeDescriptor.ACTION_ID_PREFIX)) {
+                return id.substring(DirectoryTreeDescriptor.ACTION_ID_PREFIX.length());
+            }
+            return id;
+        }
+        return null;
+    }
+
     @Observer(value = {
             WebActions.CURRENT_TAB_CHANGED_EVENT + "_"
                     + DirectoryTreeDescriptor.NAV_ACTION_CATEGORY,
@@ -80,9 +95,13 @@ public class MultiNavTreeManager implements Serializable {
         Events.instance().raiseEvent(
                 EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED,
                 new DocumentModelImpl("Folder"));
-        if (tabId != null
-                && tabId.startsWith(DirectoryTreeDescriptor.ACTION_ID_PREFIX)) {
-            directoryTreeManager.setSelectedTreeName(tabId.substring(DirectoryTreeDescriptor.ACTION_ID_PREFIX.length()));
+        if (tabId != null) {
+            if (tabId.startsWith(DirectoryTreeDescriptor.ACTION_ID_PREFIX)) {
+                directoryTreeManager.setSelectedTreeName(tabId.substring(DirectoryTreeDescriptor.ACTION_ID_PREFIX.length()));
+            }
+            if (tabId.startsWith(DirectoryTreeDescriptor.DIR_ACTION_CATEGORY)) {
+                directoryTreeManager.setSelectedTreeName(tabId.substring(DirectoryTreeDescriptor.DIR_ACTION_CATEGORY.length()));
+            }
         }
     }
 
