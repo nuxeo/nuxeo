@@ -434,6 +434,8 @@ public class SearchUIActions implements Serializable {
         // If the search term is not defined, we don't do the logic
         if (!StringUtils.isEmpty(searchTerm)) {
             // By default, the "simple_search" content view is used
+            currentContentViewName = SIMPLE_SEARCH_CONTENT_VIEW_NAME;
+            // Create a ContentViewState
             ContentView cv = contentViewService.getContentView(SIMPLE_SEARCH_CONTENT_VIEW_NAME);
             DocumentModel searchDocumentModel = cv.getSearchDocumentModel();
             // set the search term
