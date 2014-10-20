@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.sql.config.login.test">
+
+  <extension target="org.nuxeo.runtime.LoginComponent" point="domains">
+
+    <domain name="nuxeo-client-login">
+      <login-module code="org.nuxeo.ecm.platform.login.test.DummyNuxeoLoginModule"
+        flag="required">
+        <option name="principalClassName">org.nuxeo.ecm.platform.login.NuxeoPrincipal</option>
+        <option name="useUserIdentificationInfoCB">true</option>
+      </login-module>
+      <login-module code="org.nuxeo.ecm.core.api.local.ClientLoginModule"
+        flag="required">
+        <option name="password-stacking">true</option>
+        <option name="restore-login-identity">true</option>
+        <option name="multi-threaded">true</option>
+      </login-module>
+    </domain>
+  </extension>
+
+</component>
