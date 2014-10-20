@@ -60,7 +60,7 @@ import com.google.inject.Inject;
 public class TestPictureThumbnail {
 
     @Inject
-    CoreSession session;
+    protected CoreSession session;
 
     private static File getFileFromPath(String path) {
         return FileUtils.getResourceFileFromContext(path);

@@ -47,10 +47,11 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.google.inject.Inject;
 
 /**
  * @author Laurent Doguin
@@ -63,6 +64,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
         "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.picture.convert" })
 public class TestImagingConvertPlugin {
+
+    @Inject
+    protected ConversionService conversionService;
 
     @Test
     public void testResizeConverter() throws Exception {
@@ -77,8 +81,6 @@ public class TestImagingConvertPlugin {
         options.put(OPTION_RESIZE_HEIGHT, resizeHeight);
         options.put(OPTION_RESIZE_DEPTH, resizeDepth);
 
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
-
         for (String filename : ImagingResourcesHelper.TEST_IMAGE_FILENAMES) {
             String path = ImagingResourcesHelper.TEST_DATA_FOLDER + filename;
             Blob blob = new FileBlob(
@@ -86,7 +88,7 @@ public class TestImagingConvertPlugin {
             blob.setFilename(filename);
             BlobHolder bh = new SimpleBlobHolder(blob);
 
-            BlobHolder result = cs.convert(converter, bh, options);
+            BlobHolder result = conversionService.convert(converter, bh, options);
             assertNotNull(result);
 
             BufferedImage image = ImageIO.read(result.getBlob().getStream());
@@ -111,8 +113,6 @@ public class TestImagingConvertPlugin {
         Map<String, Serializable> options = new HashMap<String, Serializable>();
         options.put(OPTION_ROTATE_ANGLE, 90);
 
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
-
         for (String filename : ImagingResourcesHelper.TEST_IMAGE_FILENAMES) {
             String path = ImagingResourcesHelper.TEST_DATA_FOLDER + filename;
             Blob blob = new FileBlob(
@@ -120,7 +120,7 @@ public class TestImagingConvertPlugin {
             blob.setFilename(filename);
             BlobHolder bh = new SimpleBlobHolder(blob);
 
-            BlobHolder result = cs.convert(converter, bh, options);
+            BlobHolder result = conversionService.convert(converter, bh, options);
             assertNotNull(result);
 
             BufferedImage image = ImageIO.read(new FileInputStream(
@@ -150,8 +150,6 @@ public class TestImagingConvertPlugin {
         options.put(OPTION_RESIZE_WIDTH, cropWidth);
         options.put(OPTION_RESIZE_HEIGHT, cropHeight);
 
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
-
         for (String filename : ImagingResourcesHelper.TEST_IMAGE_FILENAMES) {
             String path = ImagingResourcesHelper.TEST_DATA_FOLDER + filename;
             Blob blob = new FileBlob(
@@ -159,7 +157,7 @@ public class TestImagingConvertPlugin {
             blob.setFilename(filename);
             BlobHolder bh = new SimpleBlobHolder(blob);
 
-            BlobHolder result = cs.convert(converter, bh, options);
+            BlobHolder result = conversionService.convert(converter, bh, options);
             assertNotNull(result);
 
             BufferedImage image = ImageIO.read(new FileInputStream(

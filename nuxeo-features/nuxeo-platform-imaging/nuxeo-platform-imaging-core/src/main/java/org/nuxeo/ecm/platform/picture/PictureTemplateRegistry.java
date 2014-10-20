@@ -189,6 +189,14 @@ public class PictureTemplateRegistry extends
         // Ignore if maxSize is not specified or negative
         if (maxSize != null && maxSize >= 0) {
             oldPictureTemplate.setMaxSize(maxSize);
+        } else {
+            if (log.isWarnEnabled()) {
+                log.warn("Max size of the picture template named "
+                        + pictureTemplate.getTitle() + " is null or negative ("
+                        + maxSize
+                        + "). The value has been ignored, old value is used ("
+                        + oldPictureTemplate.getMaxSize() + ")");
+            }
         }
     }
 }

@@ -58,7 +58,7 @@ public class TestPictureTemplateRegistry {
     private static final Log log = LogFactory.getLog(TestPictureTemplateRegistry.class);
 
     @Inject
-    RuntimeHarness runtimeHarness;
+    protected RuntimeHarness runtimeHarness;
 
     @Test
     public void iHaveTheImagingServiceContribComponentDeployed() {
@@ -76,7 +76,7 @@ public class TestPictureTemplateRegistry {
         checkDefaultPictureTemplatesPresence();
     }
 
-    private void checkDefaultPictureTemplatesPresence() {
+    protected void checkDefaultPictureTemplatesPresence() {
         PictureTemplateRegistry pictureTemplateRegistry = getPictureTemplateRegistry();
         List<String> requiredPictureTemplates = pictureTemplateRegistry.getDefaultPictureTemplates();
         int count = 0;

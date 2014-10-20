@@ -47,7 +47,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @LocalDeploy({ "org.nuxeo.ecm.platform.picture.core:OSGI-INF/commandline-imagemagick-contrib.xml" })
 public class TestMagickExecutors {
 
-    private static final String TMP_FILE_PREFIX = TestMagickExecutors.class.getName();
+    private static final String TMP_FILE_PREFIX = TestMagickExecutors.class.getName()
+            + "_";
 
     @Test
     public void testIdentify() throws Exception {
