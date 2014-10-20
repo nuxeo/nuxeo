@@ -130,7 +130,7 @@
       <resultLayouts>
         <layout name="document_listing_table" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showPDFExport="true" />
+          showCSVExport="true" showSpreadsheet="true" showEditColumns="true" />
       </resultLayouts>
 
       <selectionList>DAM_SAVED_SEARCHES_CURRENT_SELECTION</selectionList>
