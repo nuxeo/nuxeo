@@ -247,6 +247,15 @@
     </function-signature>
   </function>
   <function>
+    <function-name>documentDisplayTitle</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      String documentDisplayTitle(java.lang.String)
+    </function-signature>
+  </function>
+  <function>
     <function-name>userDisplayNameAndEmail</function-name>
     <function-class>
       org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
