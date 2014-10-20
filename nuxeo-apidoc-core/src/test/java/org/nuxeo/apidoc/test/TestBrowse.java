@@ -40,11 +40,13 @@ public class TestBrowse extends NXRuntimeTestCase {
 
     private static final Log log = LogFactory.getLog(TestBrowse.class);
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.directory.api");
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.directory.sql");

@@ -25,9 +25,11 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestDocumentationHelper extends NXRuntimeTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.platform.htmlsanitizer");
     }
 
