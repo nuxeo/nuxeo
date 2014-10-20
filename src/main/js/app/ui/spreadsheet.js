@@ -118,21 +118,32 @@ class Spreadsheet {
     return Promise.all(
       Object.keys(this._dirty).map((uid) => {
         return new Promise((resolve, reject) => {
-          // TODO(nfgs) - Move request execution to the connection
-
-          this.connection.request('/id/' + uid)
-            .put(
-            {data: this._dirty[uid]},
-            (error) => {
-              if (error) {
-                reject(Error(error));
-              }
-              delete this._dirty[uid];
-              resolve(uid);
-            });
+          try {
+            // TODO(nfgs) - Move request execution to the connection
+            this.connection.request('/id/' + uid)
+                .put(
+                {data: this._dirty[uid]},
+                (error) => {
+                  if (error !== null) {
+                    this._dirty[uid]._error = error;
+                    reject(Error(error));
+                    return;
+                  }
+                  delete this._dirty[uid];
+                  resolve(uid);
+                });
+          } catch (e) {
+            this._dirty[uid]._error = e;
+            reject(Error(e));
+          }
         });
       })
-    ).then(() => this.ht.render());
+    ).catch((err) => {
+      console.log(err);
+    }).then((result) => {
+      this.ht.render();
+      return result;
+    });
   }
 
   onChange(change, source) {
@@ -167,10 +178,18 @@ class Spreadsheet {
   dirtyRenderer(instance, td, row, col, prop, value, cellProperties) {
     Handsontable.renderers.TextRenderer.apply(this, arguments);
     var doc = this.getDataAtRow(row);
-    if (doc && this._dirty[doc.uid] && hasProp(this._dirty[doc.uid], prop)) {
-      $(td).css({
-        background: '#e2f1ff'
-      });
+    if (doc && this._dirty[doc.uid]) {
+      // check for errors
+      if (this._dirty[doc.uid].hasOwnProperty('_error')) {
+        $(td).css({
+          background: '#f33'
+        });
+      // check for this property
+      } else if (hasProp(this._dirty[doc.uid], prop)) {
+        $(td).css({
+          background: '#e2f1ff'
+        });
+      }
     }
   }
 

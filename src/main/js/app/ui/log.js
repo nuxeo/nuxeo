@@ -26,6 +26,10 @@ class Log {
     this.el.text(msg);
   }
 
+  error(msg) {
+    this.el.text(msg);
+  }
+
   default(msg) {
     if (msg !== undefined) {
       this._default = msg;

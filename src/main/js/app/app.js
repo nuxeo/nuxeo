@@ -48,7 +48,19 @@ function setupUI() {
 
   $('#save').click(() => {
     log.info('Saving...');
-    sheet.save().then(() => log.default());
+    sheet.save().then((results) => {
+      if (!results) {
+        log.error("Failed to save changes.");
+        return;
+      }
+      var msg;
+      if (results.length === 0) {
+        msg = 'Everything up to date.';
+      } else {
+        msg = `Saved ${results.length} rows.`;
+      }
+      log.info(msg);
+    });
   });
 
   $('input[name=autosave]').click(function() {
