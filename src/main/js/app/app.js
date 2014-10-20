@@ -59,6 +59,9 @@ function setupUI() {
       log.default('');
     }
   });
+
+  $(document).ajaxStart(() => $('#loading').show());
+  $(document).ajaxStop(() => $('#loading').hide());
 }
 
 function doQuery() {
@@ -71,7 +74,7 @@ function doQuery() {
 function run() {
 
   // Setup our connection
-  var nx = new Connection("http://localhost:8080/nuxeo", "Administrator", "Administrator");
+  var nx = new Connection();
   nx.schemas(['*']);
 
   $(() => {
