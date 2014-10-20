@@ -38,6 +38,7 @@ public class TestImport extends ImportTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.core.schema");
         deployContrib("org.nuxeo.ecm.platform.importer.core",
                 "OSGI-INF/default-importer-service.xml");
@@ -56,7 +57,7 @@ public class TestImport extends ImportTestCase {
     @After
     public void tearDown() throws Exception {
        closeSession();
-       super.tearDown(); 
+       super.tearDown();
     }
 
     @Test
