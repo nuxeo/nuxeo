@@ -122,6 +122,10 @@ public class DocumentBasePage extends AbstractPage {
     @FindBy (linkText = "HOME")
     public WebElement homePageLink;
 
+    @Required
+    @FindBy (linkText = "SEARCH")
+    public WebElement searchPageLink;
+
     public DocumentBasePage(WebDriver driver) {
         super(driver);
     }
@@ -358,6 +362,14 @@ public class DocumentBasePage extends AbstractPage {
     public HomePage goToHomePage() {
         homePageLink.click();
         return asPage(HomePage.class);
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public SearchPage goToSearchPage() {
+        searchPageLink.click();
+        return asPage(SearchPage.class);
     }
 
 }
