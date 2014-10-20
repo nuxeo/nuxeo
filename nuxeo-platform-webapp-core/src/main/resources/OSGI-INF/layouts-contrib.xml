@@ -416,13 +416,29 @@
       </properties>
     </widget>
 
-    <widget name="bulk_collections" type="multipleDocumentsSuggestion">
+    <widget name="bulk_import_tags" type="select_tags">
+      <labels>
+        <label mode="any">label.search.tagSearch</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>contextData['request/bulk_import_tags']</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="canSelectNewTag">true</property>
+        <property name="placeholder">
+          #{messages['label.search.tags.placeholder']}
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="bulk_import_collections" type="multipleDocumentsSuggestion">
       <labels>
         <label mode="any">label.collections</label>
       </labels>
       <translated>true</translated>
       <fields>
-        <field>contextData['request/bulk_collections']</field>
+        <field>contextData['request/bulk_import_collections']</field>
       </fields>
       <properties widgetMode="any">
         <property name="minChars">0</property>
@@ -432,19 +448,35 @@
       </properties>
     </widget>
 
-    <widget name="bulk_tags" type="select_tags">
+    <widget name="bulk_edit_tags" type="select_tags">
       <labels>
         <label mode="any">label.search.tagSearch</label>
       </labels>
       <translated>true</translated>
       <fields>
-        <field>contextData['request/bulk_tags']</field>
+        <field>contextData['request/bulk_edit_tags']</field>
       </fields>
       <properties widgetMode="edit">
         <property name="canSelectNewTag">true</property>
         <property name="placeholder">
           #{messages['label.search.tags.placeholder']}
         </property>
+      </properties>
+    </widget>
+
+    <widget name="bulk_edit_collections" type="multipleDocumentsSuggestion">
+      <labels>
+        <label mode="any">label.collections</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>contextData['request/bulk_edit_collections']</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="minChars">0</property>
+        <property name="hideHelpLabel">true</property>
+        <property name="pageProviderName">default_collection</property>
+        <property name="suggestionFormatter">docSelectionDefaultFormatter</property>
       </properties>
     </widget>
 
@@ -609,10 +641,10 @@
       </templates>
       <rows>
         <row>
-          <widget>bulk_tags</widget>
+          <widget>bulk_edit_tags</widget>
         </row>
         <row>
-          <widget>bulk_collections</widget>
+          <widget>bulk_edit_collections</widget>
         </row>
         <row>
           <widget>nature</widget>
@@ -647,10 +679,10 @@
       </templates>
       <rows>
         <row>
-          <widget>bulk_tags</widget>
+          <widget>bulk_import_tags</widget>
         </row>
         <row>
-          <widget>bulk_collections</widget>
+          <widget>bulk_import_collections</widget>
         </row>
         <row>
           <widget>nature</widget>

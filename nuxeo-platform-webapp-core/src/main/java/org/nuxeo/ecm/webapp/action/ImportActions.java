@@ -43,9 +43,9 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
-import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
+import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -53,6 +53,7 @@ import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.core.util.DataModelProperties;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
+import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -62,6 +63,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.rest.FancyNavigationHandler;
@@ -86,8 +88,6 @@ public class ImportActions implements Serializable {
     public static final String LABEL_IMPORT_PROBLEM = "label.bulk.import.documents.error";
 
     public static final String LABEL_IMPORT_CANNOT_CREATE_ERROR = "label.bulk.import.documents.cannotCreateError";
-
-    public static final String DOCUMENTS_IMPORTED = "documentImported";
 
     protected static Random random = new Random();
 
@@ -252,8 +252,11 @@ public class ImportActions implements Serializable {
                         chainOrOperationId, contextParams);
             }
 
-            Events.instance().raiseEvent(DOCUMENTS_IMPORTED, importedDocuments,
-                    importDocumentModel);
+            // handle tags
+            addTagsOnDocuments(importedDocuments, importDocumentModel);
+
+            // handle collections
+            addCollectionsOnDocuments(importedDocuments, importDocumentModel);
 
             if (selectedImportFolderId != null) {
                 return navigationContext.navigateToRef(new IdRef(
@@ -350,6 +353,47 @@ public class ImportActions implements Serializable {
                 // }
             }
             uploadedFiles = null;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void addTagsOnDocuments(List<DocumentModel> documents,
+            DocumentModel importDocumentModel) throws ClientException {
+        List<String> tags = (List<String>) importDocumentModel.getContextData(
+                ScopeType.REQUEST, "bulk_import_tags");
+        if (tags != null && !tags.isEmpty()) {
+            TagService tagService = Framework.getLocalService(TagService.class);
+            String username = documentManager.getPrincipal().getName();
+            for (DocumentModel doc : documents) {
+                for (String tag : tags) {
+                    tagService.tag(documentManager, doc.getId(), tag, username);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void addCollectionsOnDocuments(List<DocumentModel> documents,
+            DocumentModel importDocumentModel) throws ClientException {
+        List<String> collectionIds = (List<String>) importDocumentModel.getContextData(
+                ScopeType.REQUEST, "bulk_import_collections");
+        if (collectionIds != null && !collectionIds.isEmpty()) {
+            List<DocumentModel> collections = new ArrayList<>();
+            for (String collectionId : collectionIds) {
+                IdRef idRef = new IdRef(collectionId);
+                if (documentManager.exists(idRef)) {
+                    collections.add(documentManager.getDocument(idRef));
+                }
+            }
+
+            CollectionManager collectionManager = Framework.getService(CollectionManager.class);
+            for (DocumentModel collection : collections) {
+                if (collectionManager.canAddToCollection(collection,
+                        documentManager)) {
+                    collectionManager.addToCollection(collection, documents,
+                            documentManager);
+                }
+            }
         }
     }
 
