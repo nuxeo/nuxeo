@@ -31,6 +31,7 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Random;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.SecretKeyFactory;
@@ -522,6 +523,11 @@ public class AESBinaryManager extends LocalBinaryManager {
             // read the encrypted data
             try (InputStream cipherIn = new CipherInputStream(in, cipher)) {
                 IOUtils.copy(cipherIn, out);
+            } catch (IOException e) {
+                Throwable cause = e.getCause();
+                if (cause != null && cause instanceof BadPaddingException) {
+                    throw new NuxeoException(cause.getMessage(), e);
+                }
             }
         } catch (GeneralSecurityException e) {
             throw new NuxeoException(e);

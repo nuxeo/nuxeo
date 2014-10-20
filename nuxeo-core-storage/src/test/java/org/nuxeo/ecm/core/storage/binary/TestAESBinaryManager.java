@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.storage.binary.AESBinaryManager.PARAM_KEY_ALIAS;
 import static org.nuxeo.ecm.core.storage.binary.AESBinaryManager.PARAM_KEY_PASSWORD;
 import static org.nuxeo.ecm.core.storage.binary.AESBinaryManager.PARAM_KEY_STORE_FILE;
@@ -37,6 +38,7 @@ import javax.crypto.KeyGenerator;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestAESBinaryManager extends NXRuntimeTestCase {
@@ -81,9 +83,14 @@ public class TestAESBinaryManager extends NXRuntimeTestCase {
         binaryManager.initializeOptions(options);
 
         out = new ByteArrayOutputStream();
-        binaryManager.decrypt(new ByteArrayInputStream(encrypted), out);
-
-        assertFalse(CONTENT.equals(new String(out.toByteArray(), UTF8)));
+        try {
+            binaryManager.decrypt(new ByteArrayInputStream(encrypted), out);
+            assertFalse(CONTENT.equals(new String(out.toByteArray(), UTF8)));
+        } catch (NuxeoException e) {
+            String message = e.getMessage();
+            assertTrue(message,
+                    message.contains("Given final block not properly padded"));
+        }
 
         binaryManager.close();
     }
