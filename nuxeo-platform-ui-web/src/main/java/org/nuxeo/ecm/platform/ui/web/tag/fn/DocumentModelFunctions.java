@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -313,6 +314,22 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             title = ComponentUtils.translate(context, i18nTitle);
         }
         return title;
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public static String titleFromId(final String documentId) throws ClientException {
+        final CoreSession coreSession = (CoreSession) Component.getInstance("documentManager");
+        if (StringUtils.isNotBlank(documentId)) {
+            try {
+                return coreSession.getDocument(new IdRef(documentId)).getTitle();
+            } catch (ClientException e) {
+                log.info(String.format("Could not find document with id %s", documentId));
+                return documentId;
+            }
+        }
+        return null;
     }
 
     public static boolean isDocumentModel(Object value) {

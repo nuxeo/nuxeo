@@ -88,6 +88,15 @@
     </function-signature>
   </function>
   <function>
+    <function-name>titleFromId</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String titleFromId(java.lang.String)
+    </function-signature>
+  </function>
+  <function>
     <function-name>isDirty</function-name>
     <function-class>
       org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions

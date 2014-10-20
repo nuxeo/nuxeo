@@ -42,11 +42,8 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.Component;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -330,22 +327,6 @@ public final class Functions {
                 return first + ' ' + last;
             }
         }
-    }
-
-    /**
-     * @since 5.9.6
-     */
-    public static String documentDisplayTitle(final String documentId) throws ClientException {
-        final CoreSession coreSession = (CoreSession) Component.getInstance("documentManager");
-        if (StringUtils.isNotBlank(documentId)) {
-            try {
-                return coreSession.getDocument(new IdRef(documentId)).getTitle();
-            } catch (ClientException e) {
-                log.info(String.format("Could not ffind document with id %s", documentId));
-                return documentId;
-            }
-        }
-        return null;
     }
 
     /**
