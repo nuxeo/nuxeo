@@ -31,6 +31,12 @@ gulp.task('clean', function (cb) {
   ], {force: true}, cb);
 });
 
+gulp.task('images', function () {
+  return gulp.src(['app/images/**/*'])
+      .pipe(gulp.dest('../../../target/classes/web/nuxeo.war/spreadsheet/images'))
+      .pipe($.size());
+});
+
 gulp.task('html', function () {
   var jsFilter = $.filter('**/*.js');
   var cssFilter = $.filter('**/*.css');
@@ -50,7 +56,7 @@ gulp.task('html', function () {
 });
 
 gulp.task('build', function() {
-  runSequence('transpile', 'html');
+  runSequence('transpile', 'html', 'images');
 });
 
 gulp.task('browser-sync', function () {
