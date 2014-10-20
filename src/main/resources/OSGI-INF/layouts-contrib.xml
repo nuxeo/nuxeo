@@ -39,23 +39,6 @@
         <property name="directoryName">l10nsubjects</property>
       </properties>
     </widget>
-
-    <!-- TODO: REMOVE -->
-    <widget name="collections_listing" type="multipleDocumentsSuggestion">
-      <labels>
-        <label mode="any">Collections</label>
-      </labels>
-      <translated>true</translated>
-      <fields>
-        <field>data.collectionMember.collectionIds</field>
-      </fields>
-      <properties mode="any">
-        <property name="query">
-          select * from Collection where dc:title LIKE ?
-        </property>
-        <property name="documentSchemas">dublincore</property>
-      </properties>
-    </widget>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -138,14 +121,6 @@
             <property name="label">label.dublincore.subject</property>
           </properties>
           <widget>l10nsubjects_listing</widget>
-        </column>
-        <!-- TODO: REMOVE -->
-        <column name="collections" selectedByDefault="false">
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="label">Collections</property>
-          </properties>
-          <widget>collections_listing</widget>
         </column>
       </columns>
     </layout>
