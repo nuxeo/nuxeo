@@ -23,7 +23,6 @@ import java.sql.Connection;
 import java.util.Properties;
 
 import org.junit.Before;
-import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 
@@ -56,13 +55,6 @@ public class TestSQLDirectories extends NXRuntimeTestCase {
 
         deployBundle("org.nuxeo.ecm.platform.audit.api");
         deployContrib("org.nuxeo.ecm.platform.audit.tests", "OSGI-INF/test-directories-contrib.xml");
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        DatabaseHelper.DATABASE.tearDown();
-        super.tearDown();
     }
 
     protected static Session getSession(String dirName) throws ClientException {
