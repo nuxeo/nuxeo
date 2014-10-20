@@ -161,6 +161,11 @@ public class ITSearchTest extends
         listEntries.get(1).click();
         UserViewTabSubPage userPage = asPage(UserViewTabSubPage.class);
         userPage.checkUserName(USER1_NAME);
+
+        logout();
+        // Delete the workspace created
+        DocumentBasePage defaultDomainPage = login();
+        deleteWorkspace(defaultDomainPage, WORKSPACE_TITLE);
     }
 
     @Test
