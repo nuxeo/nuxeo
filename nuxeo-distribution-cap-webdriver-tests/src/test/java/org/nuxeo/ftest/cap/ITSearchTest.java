@@ -16,21 +16,21 @@
  */
 package org.nuxeo.ftest.cap;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
-
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
+import org.nuxeo.functionaltests.pages.QuickSearchPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserViewTabSubPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -170,8 +170,7 @@ public class ITSearchTest extends
                 driver,
                 driver.findElement(By.xpath(XPATH_SUGGESTBOX)),
                 true);
-        List<WebElement> listEntries = searchElement.typeAndGetResult(VALUE_WITH_SPECIALS_CHAR);
-        assertTrue(listEntries.size() == 0);
-        // TODO to complete when the suggestbox will be finalized
+        QuickSearchPage quickSearchPage = searchElement.typeValueAndTypeEnter(VALUE_WITH_SPECIALS_CHAR);
+        assertEquals(VALUE_WITH_SPECIALS_CHAR, quickSearchPage.textSearchElement.getAttribute("value"));
     }
 }

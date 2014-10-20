@@ -21,9 +21,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
+import org.nuxeo.functionaltests.pages.QuickSearchPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -323,5 +326,27 @@ public class Select2WidgetElement extends WebFragmentImpl {
             select2Field = element.findElement(By.xpath("a[contains(@class,'select2-choice select2-default')]"));
         }
         select2Field.click();
+    }
+
+    /**
+     * Type a value in the select2 and then simulate the enter key.
+     *
+     * @since 5.9.6
+     */
+    public QuickSearchPage typeValueAndTypeEnter(String value) {
+        clickOnSelect2Field();
+
+        WebElement suggestInput = getSuggestInput();
+
+        suggestInput.sendKeys(value);
+        try {
+            waitSelect2();
+        } catch (TimeoutException e) {
+            log.warn("Suggestion timed out with input : " + value
+                    + ". Let's try with next letter.");
+        }
+        suggestInput.sendKeys(Keys.RETURN);
+
+        return AbstractTest.asPage(QuickSearchPage.class);
     }
 }
