@@ -31,6 +31,13 @@
             <field schema="default_search" name="dc_created_min" />
             <field schema="default_search" name="dc_created_max" />
           </predicate>
+          <predicate parameter="dc:modified" operator="BETWEEN">
+            <field schema="default_search" name="dc_modified_min" />
+            <field schema="default_search" name="dc_modified_max" />
+          </predicate>
+          <predicate parameter="dc:nature" operator="IN">
+            <field schema="default_search" name="dc_nature" />
+          </predicate>
           <predicate parameter="dc:subjects" operator="STARTSWITH">
             <field schema="default_search" name="dc_subjects" />
           </predicate>
