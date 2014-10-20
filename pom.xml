@@ -2041,7 +2041,7 @@
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-remoting</artifactId>
-        <version>${seam.version}</version>
+        <version>${nxseam.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
