@@ -14,7 +14,7 @@
     value="#{widget.properties['defaultLayout']}"
     resolveTwice="true" cache="true">
   <nxu:set var="includeAnyMode"
-    value="#{widget.properties.containsKey('includeAnyMode') ? widgetProperty_includeAnyMode : true}"
+    value="#{nxu:test(widget.properties.containsKey('includeAnyMode'), widgetProperty_includeAnyMode, true)}"
     resolveTwice="true" cache="true">
 
     <nxl:documentLayout mode="#{mode}"
