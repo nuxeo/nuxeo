@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.OrFilterBuilder;
 import org.elasticsearch.index.query.RangeFilterBuilder;
@@ -44,6 +45,7 @@ public class RangeAggregate extends AggregateEsBase<BucketRange> {
         super(definition, searchDocument);
     }
 
+    @JsonIgnore
     @Override
     public RangeBuilder getEsAggregate() {
         RangeBuilder ret = AggregationBuilders.range(getId()).field(getField());
@@ -61,6 +63,7 @@ public class RangeAggregate extends AggregateEsBase<BucketRange> {
         return ret;
     }
 
+    @JsonIgnore
     @Override
     public OrFilterBuilder getEsFilter() {
         if (getSelection().isEmpty()) {
@@ -83,6 +86,7 @@ public class RangeAggregate extends AggregateEsBase<BucketRange> {
         return ret;
     }
 
+    @JsonIgnore
     @Override
     public void parseEsBuckets(
             Collection<? extends MultiBucketsAggregation.Bucket> buckets) {

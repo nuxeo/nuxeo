@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
@@ -64,6 +65,7 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
         super(definition, searchDocument);
     }
 
+    @JsonIgnore
     @Override
     public DateHistogramBuilder getEsAggregate() {
         DateHistogramBuilder ret = AggregationBuilders.dateHistogram(getId())
@@ -115,6 +117,7 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
         return ret;
     }
 
+    @JsonIgnore
     @Override
     public FilterBuilder getEsFilter() {
         if (getSelection().isEmpty()) {
@@ -145,6 +148,7 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
         return fmt.parseDateTime(date).getMillis();
     }
 
+    @JsonIgnore
     @Override
     public void parseEsBuckets(
             Collection<? extends MultiBucketsAggregation.Bucket> buckets) {

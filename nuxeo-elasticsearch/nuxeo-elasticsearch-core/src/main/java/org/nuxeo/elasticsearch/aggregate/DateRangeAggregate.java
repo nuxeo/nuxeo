@@ -25,6 +25,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.OrFilterBuilder;
 import org.elasticsearch.index.query.RangeFilterBuilder;
@@ -47,6 +48,7 @@ public class DateRangeAggregate extends AggregateEsBase<BucketRangeDate> {
         super(definition, searchDocument);
     }
 
+    @JsonIgnore
     @Override
     public DateRangeBuilder getEsAggregate() {
         DateRangeBuilder ret = AggregationBuilders.dateRange(getId()).field(
@@ -71,6 +73,7 @@ public class DateRangeAggregate extends AggregateEsBase<BucketRangeDate> {
         return ret;
     }
 
+    @JsonIgnore
     @Override
     public OrFilterBuilder getEsFilter() {
         if (getSelection().isEmpty()) {
@@ -93,6 +96,7 @@ public class DateRangeAggregate extends AggregateEsBase<BucketRangeDate> {
         return ret;
     }
 
+    @JsonIgnore
     @Override
     public void parseEsBuckets(
             Collection<? extends MultiBucketsAggregation.Bucket> buckets) {

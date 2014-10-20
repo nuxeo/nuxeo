@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.TermsFilterBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -43,6 +44,7 @@ public class SignificantTermAggregate extends AggregateEsBase<BucketTerm> {
         super(definition, searchDocument);
     }
 
+    @JsonIgnore
     @Override
     public SignificantTermsBuilder getEsAggregate() {
         SignificantTermsBuilder ret = AggregationBuilders.significantTerms(
@@ -57,6 +59,7 @@ public class SignificantTermAggregate extends AggregateEsBase<BucketTerm> {
         return ret;
     }
 
+    @JsonIgnore
     @Override
     public TermsFilterBuilder getEsFilter() {
         if (getSelection().isEmpty()) {
@@ -65,6 +68,7 @@ public class SignificantTermAggregate extends AggregateEsBase<BucketTerm> {
         return FilterBuilders.termsFilter(getField(), getSelection());
     }
 
+    @JsonIgnore
     @Override
     public void parseEsBuckets(
             Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
