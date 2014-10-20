@@ -97,13 +97,10 @@
       <resultLayouts>
         <layout name="document_virtual_navigation_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showSyndicationLinks="true" />
-        <layout name="document_listing_ajax_compact_2_columns" title="document_listing_compact_2_columns"
-          translateTitle="true" iconPath="/icons/document_listing_compact_2_columns_icon.png"
-          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
-        <layout name="document_listing_ajax_icon_2_columns" title="document_listing_icon_2_columns"
+          showCSVExport="true" showSpreadsheet="true" showEditColumns="true" />
+        <layout name="thumbnail_listing" title="document_thumbnail_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
-          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+          showSlideshow="true" showEditRows="true" />
       </resultLayouts>
 
       <selectionList>COLLECTION_CURRENT_SELECTION</selectionList>
