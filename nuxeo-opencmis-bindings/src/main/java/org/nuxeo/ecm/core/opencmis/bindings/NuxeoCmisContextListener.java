@@ -16,6 +16,7 @@ import javax.servlet.ServletContextListener;
 
 import org.apache.chemistry.opencmis.commons.server.CmisServiceFactory;
 import org.apache.chemistry.opencmis.server.impl.CmisRepositoryContextListener;
+import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
@@ -36,26 +37,38 @@ public class NuxeoCmisContextListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(final ServletContextEvent sce) {
-        Framework.addListener(new RuntimeServiceListener() {
+        RuntimeService runtime = Framework.getRuntime();
+        if (runtime == null || !runtime.isStarted()) {
+            Framework.addListener(new RuntimeServiceListener() {
 
-            @Override
-            public void handleEvent(RuntimeServiceEvent event) {
-                if (event.id != RuntimeServiceEvent.RUNTIME_STARTED) {
-                    return;
+                @Override
+                public void handleEvent(RuntimeServiceEvent event) {
+                    if (event.id != RuntimeServiceEvent.RUNTIME_STARTED) {
+                        return;
+                    }
+                    Framework.removeListener(this);
+                    activate(sce);
                 }
-                Framework.removeListener(this);;
-                NuxeoCmisServiceFactoryManager manager = Framework.getService(NuxeoCmisServiceFactoryManager.class);
-                CmisServiceFactory factory = manager.getNuxeoCmisServiceFactory();
-                sce.getServletContext().setAttribute(
-                        CmisRepositoryContextListener.SERVICES_FACTORY, factory);
-            }
-        });
+
+            });
+        } else {
+            activate(sce);
+        }
+    }
+
+    protected void activate(final ServletContextEvent sce) {
+        NuxeoCmisServiceFactoryManager manager = Framework
+            .getService(NuxeoCmisServiceFactoryManager.class);
+        CmisServiceFactory factory = manager.getNuxeoCmisServiceFactory();
+        sce.getServletContext().setAttribute(
+                CmisRepositoryContextListener.SERVICES_FACTORY, factory);
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        CmisServiceFactory factory = (CmisServiceFactory) sce.getServletContext().getAttribute(
-                CmisRepositoryContextListener.SERVICES_FACTORY);
+        CmisServiceFactory factory = (CmisServiceFactory) sce
+            .getServletContext().getAttribute(
+                    CmisRepositoryContextListener.SERVICES_FACTORY);
         if (factory != null) {
             factory.destroy();
         }

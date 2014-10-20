@@ -83,6 +83,12 @@ public class NuxeoBindingTestCase {
     }
 
     protected void deployBundles() throws Exception {
+        nuxeotc.deployBundle("org.nuxeo.ecm.directory");
+        nuxeotc.deployBundle("org.nuxeo.ecm.directory.sql");
+        nuxeotc.deployBundle("org.nuxeo.ecm.core.query");
+        nuxeotc.deployBundle("org.nuxeo.ecm.platform.query.api");
+        nuxeotc.deployBundle("org.nuxeo.ecm.platform.ws");
+
         // NuxeoCmisServiceFactoryManager registration
         nuxeotc.deployBundle("org.nuxeo.ecm.core.opencmis.bindings");
         // QueryMaker registration

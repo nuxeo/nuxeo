@@ -49,6 +49,7 @@ public class TestNuxeoBindingRenditions extends NuxeoBindingTestCase {
     @Override
     protected void deployBundles() throws Exception {
         super.deployBundles();
+        nuxeotc.deployBundle("org.nuxeo.ecm.platform.commandline.executor");
         nuxeotc.deployBundle("org.nuxeo.ecm.core.convert.api");
         nuxeotc.deployBundle("org.nuxeo.ecm.core.convert");
         nuxeotc.deployBundle("org.nuxeo.ecm.core.convert.plugins");
