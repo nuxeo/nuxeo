@@ -30,6 +30,7 @@ public class TestRendering extends NXRuntimeTestCase {
 
     DocumentModel site;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -38,6 +39,7 @@ public class TestRendering extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.query");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.platform.rendering");
         deployBundle("org.nuxeo.ecm.webengine.core");
 
