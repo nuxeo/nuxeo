@@ -12,7 +12,7 @@
       <translateTitle>true</translateTitle>
       <showTitle>false</showTitle>
 
-  <genericPageProvider
+      <genericPageProvider
         class="org.nuxeo.snapshot.pageprovider.VFolderPageProvider">
         <property name="coreSession">#{documentManager}</property>
         <parameter>#{currentDocument}</parameter>
@@ -32,13 +32,10 @@
       <resultLayouts>
         <layout name="document_listing_table" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="false" showPDFExport="false" showSyndicationLinks="false" />
-        <layout name="document_listing_ajax_compact_2_columns" title="document_listing_compact_2_columns"
-          translateTitle="true" iconPath="/icons/document_listing_compact_2_columns_icon.png"
-          showCSVExport="false" showPDFExport="false" showSyndicationLinks="false" />
-        <layout name="document_listing_ajax_icon_2_columns" title="document_listing_icon_2_columns"
+          showCSVExport="true" showSpreadsheet="true" showEditColumns="true" />
+        <layout name="thumbnail_listing" title="document_thumbnail_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
-          showCSVExport="false" showPDFExport="false" showSyndicationLinks="false" />
+          showSlideshow="true" showEditRows="true" />
       </resultLayouts>
 
       <selectionList>CURRENT_SELECTION</selectionList>
