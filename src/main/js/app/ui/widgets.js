@@ -22,7 +22,35 @@ Handsontable.editors.registerEditor('directory', DirectoryEditor);
 Handsontable.editors.registerEditor('document', DocumentEditor);
 Handsontable.editors.registerEditor('user', UserEditor);
 
+/**
+ * Mixin for widgets based on their name.
+ * Used to override widget definitions (ex: template widgets).
+ */
 export const WIDGETS = {
+  listing_coverage: {
+    type: 'suggestOneDirectory',
+    properties: {
+      any: {
+        dbl10n: true,
+        directoryName: 'l10ncoverage'
+      }
+    }
+  },
+  listing_subjects: {
+    type: 'suggestManyDirectory',
+    properties: {
+      any: {
+        dbl10n: true,
+        directoryName: 'l10nsubjects'
+      }
+    }
+  }
+};
+
+/**
+ * Mapping between widget types and handsontable's editors and renderers
+ */
+export const WIDGET_TYPES = {
   text: {
     type: 'text'
   },

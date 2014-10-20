@@ -2,11 +2,20 @@
   <extension
           target="org.nuxeo.ecm.automation.io.services.enricher.ContentEnricherService"
           point="enricher">
+
     <enricher name="l10nsubjects"
               class="org.nuxeo.ecm.automation.io.services.enricher.VocabularyEnricher">
       <category>vocabularies</category>
       <parameter name="field">dc:subjects</parameter>
       <parameter name="directoryName">l10nsubjects</parameter>
     </enricher>
+
+    <enricher name="l10ncoverage"
+              class="org.nuxeo.ecm.automation.io.services.enricher.VocabularyEnricher">
+      <category>vocabularies</category>
+      <parameter name="field">dc:coverage</parameter>
+      <parameter name="directoryName">l10ncoverage</parameter>
+    </enricher>
+
   </extension>
 </component>

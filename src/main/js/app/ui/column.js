@@ -14,7 +14,7 @@
  * Contributors:
  *     Nelson Silva <nelson.silva@inevo.pt>
  */
-import {WIDGETS} from './widgets';
+import {WIDGETS, WIDGET_TYPES} from './widgets';
 
  /**
   * Handsontable column options
@@ -22,9 +22,13 @@ import {WIDGETS} from './widgets';
 class Column {
   constructor( connection, def, widget, defaultRenderer = Handsontable.renderers.TextRenderer) {
     Object.assign(this, {connection, def, widget, defaultRenderer});
+    // Mixin widget
+    if (WIDGETS[widget.name]) {
+      Object.assign(this.widget, WIDGETS[widget.name]);
+    }
     // Mixin widget type
-    if (WIDGETS[widget.type]) {
-      Object.assign(this, WIDGETS[widget.type]);
+    if (WIDGET_TYPES[widget.type]) {
+      Object.assign(this, WIDGET_TYPES[widget.type]);
     }
     // Mixin special field widget
     if (SPECIAL_FIELDS[this.field] && SPECIAL_FIELDS[this.field].widget) {
@@ -70,7 +74,7 @@ class Column {
   }
 
   get hasSupportedWidgetType() {
-    return !!WIDGETS[this.widget.type];
+    return !!WIDGET_TYPES[this.widget.type];
   }
 }
 

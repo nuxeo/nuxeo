@@ -94,10 +94,12 @@ class DirectoryEditor extends Select2Editor {
 
 function DirectoryRenderer(instance, td, row, col, prop, value, cellProperties) {
   var ctx = instance.getSourceDataAtRow(row).contextParameters;
-  if (!Array.isArray(value)) {
-    value = value.split(',');
+  if (value) {
+    if (!Array.isArray(value)) {
+      value = value.split(',');
+    }
+    arguments[5] = getLabels(ctx, cellProperties, value).join(',');
   }
-  arguments[5] = getLabels(ctx, cellProperties, value).join(',');
   cellProperties.defaultRenderer.apply(this, arguments);
 }
 
