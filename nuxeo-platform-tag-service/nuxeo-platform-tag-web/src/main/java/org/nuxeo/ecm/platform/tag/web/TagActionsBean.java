@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.tag.web;
 import static org.jboss.seam.ScopeType.APPLICATION;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.EVENT;
+import static org.nuxeo.ecm.webapp.action.ImportActions.DOCUMENTS_IMPORTED;
+import static org.nuxeo.ecm.webapp.bulkedit.BulkEditActions.SELECTION_EDITED;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -42,6 +44,7 @@ import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
+import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -52,6 +55,8 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.tag.Tag;
 import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.webapp.action.ImportActions;
+import org.nuxeo.ecm.webapp.bulkedit.BulkEditActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
@@ -335,6 +340,23 @@ public class TagActionsBean implements Serializable {
         label = label.replace("'", ""); // dubious char
         label = label.replace("%", ""); // dubious char
         return label;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Observer({ SELECTION_EDITED, DOCUMENTS_IMPORTED })
+    public void addTagsOnEvent(List<DocumentModel> documents,
+            DocumentModel docModel) throws ClientException {
+        List<String> tags = (List<String>) docModel.getContextData(
+                ScopeType.REQUEST, "bulk_tags");
+        if (tags != null && !tags.isEmpty()) {
+            TagService tagService = Framework.getLocalService(TagService.class);
+            String username = documentManager.getPrincipal().getName();
+            for (DocumentModel doc : documents) {
+                for (String tag : tags) {
+                    tagService.tag(documentManager, doc.getId(), tag, username);
+                }
+            }
+        }
     }
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false)
