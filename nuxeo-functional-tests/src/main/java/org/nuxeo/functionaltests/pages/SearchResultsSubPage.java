@@ -16,37 +16,40 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.List;
+
 import org.nuxeo.functionaltests.Required;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 /**
- * @since 6.0
+ * Sub page containing the results of a search.
+ *
+ * @since 5.9.6
  */
-public class QuickSearchPage extends AbstractPage {
+public class SearchResultsSubPage extends AbstractPage {
 
-    protected static final Log log = LogFactory.getLog(QuickSearchPage.class);
-
-    @Required
-    @FindBy(id = "nxl_gridSearchLayout:nxw_searchLayout_form:nxl_simple_search_layout:nxw_ecm_fulltext")
-    public WebElement textSearchElement;
+    private static final String SEARCH_RESULTS_XPATH = "//div[@class='bubbleBox bubbleListing ']";
 
     @Required
-    @FindBy(id = "nxl_gridSearchLayout:nxw_searchLayout_form:nxw_searchActions_clearSearch")
-    public WebElement clearButton;
+    @FindBy(xpath = "//div[@id='nxl_gridSearchLayout:nxw_searchResults_panel']/div/div/h3")
+    public WebElement searchViewTitle;
 
-    @Required
-    @FindBy(id = "nxl_gridSearchLayout:nxw_searchLayout_form:nxw_searchActions_submitSearch")
-    public WebElement filterButton;
-
-    public QuickSearchPage(WebDriver driver) {
+    public SearchResultsSubPage(WebDriver driver) {
         super(driver);
     }
 
-    public SearchResultsSubPage getSearchResultsSubPage() {
-        return asPage(SearchResultsSubPage.class);
+    /**
+     * @return the list of results of the search.
+     */
+    public List<WebElement> getListResults() {
+        try {
+            return driver.findElements(By.xpath(SEARCH_RESULTS_XPATH));
+        } catch (NoSuchElementException e) {
+            return null;
+        }
     }
 }

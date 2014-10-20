@@ -169,6 +169,21 @@ public class ITSearchTest extends
     }
 
     @Test
+    public void testSuggestBoxRedirect() throws Exception {
+        login();
+        Select2WidgetElement searchElement = new Select2WidgetElement(
+                driver,
+                driver.findElement(By.xpath(XPATH_SUGGESTBOX)),
+                true);
+        QuickSearchPage quickSearchPage = searchElement.typeValueAndTypeEnter("Administrator");
+        // Tests the results
+        assertEquals("Administrator", quickSearchPage.textSearchElement.getAttribute("value"));
+        assertEquals("Quick search", quickSearchPage.getSearchResultsSubPage().searchViewTitle.getText());
+        List<WebElement> listResults = quickSearchPage.getSearchResultsSubPage().getListResults();
+        assertTrue(listResults.size() > 0);
+    }
+
+    @Test
     public void requestEncodingTest() throws Exception {
         login();
         Select2WidgetElement searchElement = new Select2WidgetElement(
