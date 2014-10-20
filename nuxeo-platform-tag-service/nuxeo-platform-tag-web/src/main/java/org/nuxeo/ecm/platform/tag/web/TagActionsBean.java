@@ -42,6 +42,7 @@ import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
+import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -69,6 +70,10 @@ public class TagActionsBean implements Serializable {
     private static final Log log = LogFactory.getLog(TagActionsBean.class);
 
     public static final String TAG_SEARCH_RESULT_PAGE = "tag_search_results";
+
+    public static final String SELECTION_EDITED = "selectionEdited";
+
+    public static final String DOCUMENTS_IMPORTED = "documentImported";
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -335,6 +340,23 @@ public class TagActionsBean implements Serializable {
         label = label.replace("'", ""); // dubious char
         label = label.replace("%", ""); // dubious char
         return label;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Observer({ SELECTION_EDITED, DOCUMENTS_IMPORTED })
+    public void addTagsOnEvent(List<DocumentModel> documents,
+            DocumentModel docModel) throws ClientException {
+        List<String> tags = (List<String>) docModel.getContextData(
+                ScopeType.REQUEST, "bulk_tags");
+        if (tags != null && !tags.isEmpty()) {
+            TagService tagService = Framework.getLocalService(TagService.class);
+            String username = documentManager.getPrincipal().getName();
+            for (DocumentModel doc : documents) {
+                for (String tag : tags) {
+                    tagService.tag(documentManager, doc.getId(), tag, username);
+                }
+            }
+        }
     }
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false)
