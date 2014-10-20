@@ -423,7 +423,10 @@
 
         // Handle onchange widget property
         if (params.onchange) {
-          eval(params.onchange)(e);
+          var onchange = eval(params.onchange);
+          if (typeof onchange === 'function') {
+            onchange(e);
+          }
         }
 
       });
