@@ -47,7 +47,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.directory.server.protocol.shared.store.LdifFileLoader;
 import org.apache.directory.server.protocol.shared.store.LdifLoadFilter;
 import org.bouncycastle.x509.X509V1CertificateGenerator;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.runtime.api.Framework;
@@ -156,11 +155,7 @@ public abstract class LDAPDirectoryTestCase extends SQLRepositoryTestCase {
                 }
             }
         } finally {
-            try {
-                DatabaseHelper.DATABASE.tearDown();
-            } finally {
-                super.tearDown();
-            }
+            super.tearDown();
         }
     }
 

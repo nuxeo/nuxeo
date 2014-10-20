@@ -51,9 +51,4 @@ public abstract class UserManagerMultiTenantTestCase extends NXRuntimeTestCase {
                 "test-usermanagerimpl/userservice-config.xml");
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        DatabaseHelper.DATABASE.tearDown();
-        super.tearDown();
-    }
 }

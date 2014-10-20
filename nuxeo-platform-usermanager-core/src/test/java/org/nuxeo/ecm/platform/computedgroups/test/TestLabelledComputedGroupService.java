@@ -18,7 +18,6 @@
 package org.nuxeo.ecm.platform.computedgroups.test;
 
 import org.junit.Before;
-import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -35,13 +34,6 @@ public class TestLabelledComputedGroupService extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         DatabaseHelper.DATABASE.setUp();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        DatabaseHelper.DATABASE.tearDown();
-        super.tearDown();
     }
 
     @Test

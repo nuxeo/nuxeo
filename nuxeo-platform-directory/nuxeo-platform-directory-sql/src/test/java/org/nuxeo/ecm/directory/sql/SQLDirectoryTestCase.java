@@ -51,12 +51,6 @@ public abstract class SQLDirectoryTestCase extends NXRuntimeTestCase {
                 "test-sql-directories-bundle.xml");
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        DatabaseHelper.DATABASE.tearDown();
-        super.tearDown();
-    }
-
     protected static Session getSession(String dirName) throws ClientException {
         DirectoryService dirService = Framework.getLocalService(DirectoryService.class);
         return dirService.open(dirName);

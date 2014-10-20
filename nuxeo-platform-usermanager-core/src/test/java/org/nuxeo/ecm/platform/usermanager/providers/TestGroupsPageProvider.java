@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -62,13 +61,6 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
         assertNotNull(userManager);
 
         initGroups();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        DatabaseHelper.DATABASE.tearDown();
-        super.tearDown();
     }
 
     protected void initGroups() throws ClientException {
