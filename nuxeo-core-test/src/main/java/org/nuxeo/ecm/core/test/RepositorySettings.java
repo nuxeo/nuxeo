@@ -15,7 +15,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.net.URL;
 import java.security.Principal;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
@@ -208,16 +207,8 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
     }
 
     public void shutdown() {
-        try {
-            if (session != null) {
-                releaseSession();
-            }
-        } finally {
-            try {
-                DatabaseHelper.DATABASE.tearDown();
-            } catch (SQLException e) {
-                throw new RuntimeException("Cannot release database", e);
-            }
+        if (session != null) {
+            releaseSession();
         }
     }
 

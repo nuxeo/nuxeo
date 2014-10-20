@@ -66,7 +66,6 @@ public class TestPersistenceProvider extends NXRuntimeTestCase {
             TransactionHelper.setTransactionRollbackOnly();
             TransactionHelper.commitOrRollbackTransaction();
         }
-        DatabaseHelper.DATABASE.tearDown();
         super.tearDown();
     }
 

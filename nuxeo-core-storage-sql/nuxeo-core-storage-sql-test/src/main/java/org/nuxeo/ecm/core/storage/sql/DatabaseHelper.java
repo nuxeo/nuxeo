@@ -28,6 +28,8 @@ import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 
@@ -259,6 +261,19 @@ public abstract class DatabaseHelper {
         setRepositoryFactory(defaultRepositoryFactory);
         setBinaryManager(defaultBinaryManager, "");
         setSingleDataSourceMode();
+        Framework.addListener(new RuntimeServiceListener() {
+
+            @Override
+            public void handleEvent(RuntimeServiceEvent event) {
+                if (RuntimeServiceEvent.RUNTIME_STOPPED == event.id) {
+                    try {
+                        tearDown();
+                    } catch (SQLException cause) {
+                        throw new AssertionError("Cannot teardown database", cause);
+                    }
+                }
+            }
+        });
     }
 
     protected void setOwner() {

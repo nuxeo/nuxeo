@@ -21,8 +21,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.RuntimeServiceEvent;
-import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -80,19 +78,6 @@ public class DatabaseH2 extends DatabaseHelper {
         Class.forName(DRIVER);
         setProperties();
         checkDatabaseLive();
-        Framework.addListener(new RuntimeServiceListener() {
-
-            @Override
-            public void handleEvent(RuntimeServiceEvent event) {
-                if (RuntimeServiceEvent.RUNTIME_STOPPED == event.id) {
-                    try {
-                        tearDown();
-                    } catch (SQLException cause) {
-                        throw new AssertionError("Cannot teardown database", cause);
-                    }
-                }
-            }
-        });
     }
 
     protected void checkDatabaseLive() throws SQLException {

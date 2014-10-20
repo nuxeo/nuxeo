@@ -89,9 +89,6 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
     @Override
     public void tearDown() throws Exception {
         closeRepository();
-        if (initDatabase()) {
-            DatabaseHelper.DATABASE.tearDown();
-        }
         super.tearDown();
     }
 

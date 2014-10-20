@@ -89,7 +89,6 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
     public void tearDown() throws Exception {
         waitForAsyncCompletion();
         super.tearDown();
-        database.tearDown();
         final CoreInstance core = CoreInstance.getInstance();
         int finalOpenSessions = core.getNumberOfSessions();
         int leakedOpenSessions = finalOpenSessions - initialOpenSessions;
