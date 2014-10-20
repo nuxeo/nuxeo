@@ -1,29 +1,36 @@
 <ui:decorate template="/widgets/toggleable_layout_with_forms_widget_template.xhtml"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:ui="http://java.sun.com/jsf/facelets">
 
   <ui:define name="initial_mode_content">
     <nxl:documentLayout
       category="#{widgetProperty_category}"
       mode="#{layoutWidgetMode}"
-      documentMode="#{layoutWidgetMode}"
+      documentMode="#{nxu:test(empty widgetProperty_initialDocumentMode, layoutWidgetMode, widgetProperty_initialDocumentMode)}"
+      documentModeFallback="#{widgetProperty_initialDocumentModeFallback}"
+      includeAnyMode="#{nxu:test(widget.properties.containsKey('includeAnyMode'), widgetProperty_includeAnyMode, true)}"
       value="#{fieldOrValue}"
       template="#{widgetProperty_template}"
       selectedRows="#{widgetProperty_selectedRows}"
       selectAllByDefault="#{widgetProperty_selectAllByDefault}"
-      widgetsDisplay="#{widgetProperty_widgetsDisplay}"/>
+      defaultLayout="#{widgetProperty_defaultLayout}"
+     widgetsDisplay="#{widgetProperty_widgetsDisplay}"/>
   </ui:define>
 
   <ui:define name="toggled_mode_content">
     <nxl:documentLayout
       category="#{widgetProperty_category}"
       mode="#{layoutWidgetMode}"
-      documentMode="#{layoutWidgetMode}"
+      documentMode="#{nxu:test(empty widgetProperty_toggledDocumentMode, layoutWidgetMode, widgetProperty_toggledDocumentMode)}"
+      documentModeFallback="#{widgetProperty_toggledDocumentModeFallback}"
+      includeAnyMode="#{nxu:test(widget.properties.containsKey('includeAnyMode'), widgetProperty_includeAnyMode, true)}"
       value="#{fieldOrValue}"
       template="#{widgetProperty_template}"
       selectedRows="#{widgetProperty_selectedRows}"
       selectAllByDefault="#{widgetProperty_selectAllByDefault}"
+      defaultLayout="#{widgetProperty_defaultLayout}"
       widgetsDisplay="#{widgetProperty_widgetsDisplay}" />
   </ui:define>
 

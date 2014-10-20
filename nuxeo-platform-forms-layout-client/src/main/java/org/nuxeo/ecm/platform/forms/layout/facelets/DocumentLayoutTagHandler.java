@@ -35,6 +35,7 @@ import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
 import javax.faces.view.facelets.TagHandler;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -64,6 +65,8 @@ public class DocumentLayoutTagHandler extends TagHandler {
 
     protected final TagAttribute documentMode;
 
+    protected final TagAttribute documentModeFallback;
+
     protected final TagAttribute value;
 
     protected final TagAttribute template;
@@ -89,6 +92,7 @@ public class DocumentLayoutTagHandler extends TagHandler {
         this.config = config;
         mode = getRequiredAttribute("mode");
         documentMode = getAttribute("documentMode");
+        documentModeFallback = getAttribute("documentModeFallback");
         value = getRequiredAttribute("value");
         template = getAttribute("template");
         defaultLayout = getAttribute("defaultLayout");
@@ -115,13 +119,21 @@ public class DocumentLayoutTagHandler extends TagHandler {
         if (documentMode != null) {
             documentModeValue = documentMode.getValue(ctx);
         }
+        String documentModeFallbackValue = null;
+        if (documentModeFallback != null) {
+            documentModeFallbackValue = documentModeFallback.getValue(ctx);
+        }
         boolean useAnyMode = true;
         if (includeAnyMode != null) {
             useAnyMode = includeAnyMode.getBoolean(ctx);
         }
+        String defaultMode = documentModeFallbackValue;
+        if (StringUtils.isBlank(defaultMode) && useAnyMode) {
+            defaultMode = BuiltinModes.ANY;
+        }
         String[] layoutNames = typeInfo.getLayouts(
                 documentModeValue == null ? modeValue : documentModeValue,
-                useAnyMode ? BuiltinModes.ANY : null);
+                defaultMode);
         if (layoutNames == null || layoutNames.length == 0) {
             // fallback on default layout
             if (defaultLayout != null) {

@@ -58,8 +58,7 @@
       var="layoutWidgetMode"
       defaultValue="#{nxu:test(widgetProperty_toggledByDefault and canToggleMode, toggledMode, initialMode)}"
       submitChanges="false">
-    <nxu:set var="layoutToggled" value="#{layoutWidgetMode == initialMode}">
-
+    <nxu:set var="layoutToggled" value="#{layoutWidgetMode != initialMode}">
     <c:if test="false">
       set toggled layout name after layout widget mode is set so that
       the variable "layoutWidgetMode" can be used to resolve the accurate
@@ -81,7 +80,7 @@
       <ui:decorate template="/widgets/incl/foldable_box_template.xhtml">
         <ui:param name="hideHeader" value="#{not widget.handlingLabels}" />
         <ui:param name="foldable" value="#{widgetProperty_foldable}" />
-        <ui:param name="foldedByDefault" value="#{widgetProperty_foldedByDefault and layoutToggled}" />
+        <ui:param name="foldedByDefault" value="#{widgetProperty_foldedByDefault and not layoutToggled}" />
         <ui:param name="foldableBoxStyleClass" value="widgetPanel layoutWidgetPanel #{widgetProperty_styleClass}" />
         <ui:param name="headerStyleClass" value="widgetHeader #{nxu:test(widgetProperty_foldable, '', 'summaryTitle')} #{widgetProperty_headerStyleClass}" />
         <ui:param name="headerFormId" value="#{widget.id}_headerForm" />
@@ -103,8 +102,8 @@
                 <ui:param name="idPrefix" value="header_" />
                 <ui:param name="display" value="buttons" />
                 <ui:param name="toggleButtonStyleClass" value="action" />
-                <ui:param name="modeSwitch" value="#{nxu:test(layoutToggled, toggledMode, initialMode)}" />
-                <ui:param name="buttonLabel" value="#{nxu:test(layoutToggled, initialActionLabel, cancelActionLabel)}" />
+                <ui:param name="modeSwitch" value="#{nxu:test(layoutToggled, initialMode, toggledMode)}" />
+                <ui:param name="buttonLabel" value="#{nxu:test(layoutToggled, cancelActionLabel, initialActionLabel)}" />
               </ui:include>
             </c:if>
           </c:if>
@@ -123,22 +122,22 @@
 
           <h:form id="#{widget.id}_initialForm"
             enctype="multipart/form-data"
-            rendered="#{layoutToggled}">
+            rendered="#{not layoutToggled}">
 
             <ui:insert name="initial_mode_content" />
 
             <c:if test="#{canToggleMode and (hideHeader or not widgetProperty_displayToggleActionInHeader)}">
               <p class="buttonsGadget">
                 <ui:include src="toggleable_layout_with_forms_toggle_button.xhtml">
-                  <ui:param name="modeSwitch" value="#{nxu:test(layoutToggled, toggledMode, initialMode)}" />
-                  <ui:param name="buttonLabel" value="#{nxu:test(layoutToggled, initialActionLabel, cancelActionLabel)}" />
+                  <ui:param name="modeSwitch" value="#{nxu:test(layoutToggled, initialMode, toggledMode)}" />
+                  <ui:param name="buttonLabel" value="#{nxu:test(layoutToggled, cancelActionLabel, initialActionLabel)}" />
                 </ui:include>
               </p>
             </c:if>
 
           </h:form>
 
-          <h:panelGroup layout="block" rendered="#{not layoutToggled}">
+          <h:panelGroup layout="block" rendered="#{layoutToggled}">
             <ui:decorate template="/widgets/incl/form_template.xhtml">
               <ui:param name="addForm" value="true" />
               <ui:param name="formId" value="#{widget.id}_toggledForm" />
