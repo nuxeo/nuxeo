@@ -105,6 +105,7 @@
             <property name="mode">view</property>
             <property name="documentMode">info</property>
             <property name="defaultLayout">defaultInfoLayout@view</property>
+            <property name="includeAnyMode">false</property>
           </properties>
         </widget>
       </subWidgets>
@@ -317,6 +318,7 @@
             <properties widgetMode="view">
               <property name="mode">view</property>
               <property name="documentMode">view</property>
+              <property name="includeAnyMode">false</property>
             </properties>
           </widget>
         </subWidgets>
