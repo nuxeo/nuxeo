@@ -6,6 +6,17 @@ html, body {
   height: 100%;
   margin: 0; }
 
+#header {
+    background-color: #f8f9fb;
+    border-bottom: 1px solid #e7e7e7;
+    color: #0b447f;
+    font-family: "Lucida Grande",Arial,Helvetica,Geneva,sans-serif;
+    font-size: 1.5em;
+    font-weight: bold;
+    padding: 0.8em 1.5em;
+    top: 0;
+}
+
 #queryArea {
   padding: 1em }
 
@@ -56,6 +67,16 @@ input.button,
   padding: 0.3em 0.7em 0.4em;
   text-decoration: none;
   white-space: nowrap }
+
+.buttonsGadget label {
+    padding-right: 2em }
+
+.buttonsGadget .console {
+    color: #888;
+    display: inline-block;
+    float: right;
+    font-family: "Lucida Grande",Arial,Helvetica,Geneva,sans-serif;
+    font-size: 1em }
 
 /* Override HandsonTable styles*/
 .handsontable {

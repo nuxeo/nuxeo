@@ -20,6 +20,9 @@
   <!-- endbuild -->
 </head>
 <body>
+  <div id="header">
+      Spreadsheet editor
+  </div>
 
   <div id="queryArea" style="display:none">
     <input id="query" type="text" placeholder="SELECT * FROM Document" />
@@ -28,11 +31,12 @@
 
   <div id="grid"></div>
 
-  <pre id="console" class="console"></pre>
-  <p class="buttonsGadget">
-    <button id="save">Save</button>
+  <div class="buttonsGadget">
     <label><input type="checkbox" name="autosave" autocomplete="off"> Autosave</label>
-  </p>
+    <button id="save">Save</button>
+    <button id="close" style="display:none">Close</button>
+    <div id="console" class="console"></div>
+  </div>
   <script>register(System);</script>
   <!-- build:js scripts/app.js -->
   <script src="app-build.js"></script>
