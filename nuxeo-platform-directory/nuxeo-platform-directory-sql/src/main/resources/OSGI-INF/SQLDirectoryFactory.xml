@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory">
 
-  <implementation
-      class="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"/>
+  <implementation class="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" />
 
   <require>org.nuxeo.ecm.directory.DirectoryServiceImpl</require>
 
@@ -11,15 +10,15 @@
   </documentation>
 
   <extension target="org.nuxeo.ecm.directory.DirectoryServiceImpl"
-      point="factoryDescriptor">
-    <factoryDescriptor
-        component="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"/>
+    point="factoryDescriptor">
+    <factoryDescriptor component="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" />
   </extension>
 
   <extension-point name="directories">
     <documentation>
       This extension point can be used to register new SQL-based
-      directories. The extension can contain any number of directories
+      directories. The
+      extension can contain any number of directories
       declarations of the form:
       <code>
         <directory name="userDirectory">
@@ -41,11 +40,19 @@
           </init-dependencies>
           <references>
             <tableReference field="groups" directory="groupDirectory"
-                table="user2group" sourceColumn="userId"
-                targetColumn="groupId" schema="user2group"
-                dataFile="user2group.csv"/>
+              table="user2group" sourceColumn="userId" targetColumn="groupId"
+              schema="user2group" dataFile="user2group.csv" />
           </references>
-
+          <permissions>
+            <permission name="Read">
+              <group>mygroup</group>
+              <group>mygroup2</group>
+              <user>Administrator</user>
+            </permission>
+            <permission name="Write">
+              <group>mygroup3</group>
+            </permission>
+          </permissions>
         </directory>
       </code>
       Here is the description for each field:
@@ -56,69 +63,91 @@
         </li>
         <li>
           dataSource - the dataSource name, as registered in the
-          application server.
+          application
+          server.
         </li>
         <li>
           table - The name of the sql table where the directory data
-          will be stored.
+          will be
+          stored.
         </li>
         <li>
           idField - the id field designs the primary key in the table,
-          used for retrieving entries by id.
+          used for
+          retrieving entries by id.
         </li>
         <li>
           passwordField - the password field.
         </li>
         <li>
           passwordHashAlgorithm - the hash used to encode the password
-          written in the database, either empty (default), SSHA or SMD5.
+          written
+          in the database, either empty (default), SSHA or SMD5.
         </li>
         <li>
           autoincrementIdField - if this is set true, the SQLDirectory
-          will fill the id field using a generated unique number,
-          otherwise the client has to supply the id.
+          will
+          fill the id field using a generated unique number,
+          otherwise the client
+          has to supply the id.
         </li>
         <li>
           dataFile - file from which to populate the table; the
-          first line must contain the column names. This can be a csv, tsv, psv file.
-          But you must take care of the dataFileCharacterSeparator to specify the character
+          first line must
+          contain the column names. This can be a csv, tsv, psv file.
+          But you
+          must take care of the dataFileCharacterSeparator to specify the
+          character
           separator
         </li>
         <li>
           dataFileCharacterSeparator - character that separate each value
-          if more than one character is set, the first one is gotten and other
-          are skipped. The character is by default "," but you can set ";" or tabulation
+          if
+          more than one character is set, the first one is gotten and other
+          are
+          skipped. The character is by default "," but you can set ";" or
+          tabulation
         </li>
         <li>
           createTablePolicy - one of "never", "always" or
-          "on_missing_columns" if this is set to "never", the table will
-          never be created; if set to "always", the table will be
-          created each time the application is started; if set to
-          "on_missing_columns", the table will be created only if the
+          "on_missing_columns"
+          if this is set to "never", the table will
+          never be created; if set to
+          "always", the table will be
+          created each time the application is
+          started; if set to
+          "on_missing_columns", the table will be created only
+          if the
           schema declares some fields that are not present in the sql
           table.
         </li>
         <li>
           querySizeLimit - the maximum number of results that the
-          queries on this directory should return; if there are more
-          results than this, an exception will be raised.
+          queries on
+          this directory should return; if there are more
+          results than this, an
+          exception will be raised.
         </li>
         <li>
           init-dependencies - a list of directories that should be
-          initialized before this one
+          initialized
+          before this one
         </li>
         <li>
           nativeCase - false if table and column names should be used exactly
           as specificed in the configuration and schemas (quoted), true if
-          they should be converted to database-native case (usually
-          uppercase); the default is false for backward-compatibility.
+          they
+          should be converted to database-native case (usually
+          uppercase); the
+          default is false for backward-compatibility.
         </li>
       </ul>
       The references tag is used to define relations between
-      directories. (TODO: describe the references types.)
+      directories. (TODO:
+      describe the references types.)
     </documentation>
 
-    <object class="org.nuxeo.ecm.directory.sql.SQLDirectoryDescriptor"/>
+    <object class="org.nuxeo.ecm.directory.sql.SQLDirectoryDescriptor" />
   </extension-point>
 
 </component>

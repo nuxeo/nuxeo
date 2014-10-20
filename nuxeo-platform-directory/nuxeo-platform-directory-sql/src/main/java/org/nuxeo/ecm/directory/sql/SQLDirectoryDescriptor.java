@@ -29,6 +29,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.InverseReference;
+import org.nuxeo.ecm.directory.PermissionDescriptor;
 import org.nuxeo.ecm.directory.Reference;
 
 @XObject(value = "directory")
@@ -117,6 +118,9 @@ public class SQLDirectoryDescriptor {
     @XNodeList(value = "references/inverseReference", type = InverseReference[].class, componentType = InverseReference.class)
     private InverseReference[] inverseReferences;
 
+    @XNodeList(value = "permissions/permission", type = PermissionDescriptor[].class, componentType = PermissionDescriptor.class)
+    public PermissionDescriptor[] permissions = null;
+    
     @XNode("@remove")
     private boolean remove = false;
 
@@ -447,6 +451,10 @@ public class SQLDirectoryDescriptor {
                 || overwite) {
             tableReferences = other.tableReferences;
         }
+        if ((other.permissions != null && other.permissions.length != 0)
+                || overwite) {
+            permissions = other.permissions;
+        }
 
         remove = other.remove;
 
@@ -501,6 +509,12 @@ public class SQLDirectoryDescriptor {
             clone.inverseReferences = new InverseReference[inverseReferences.length];
             for (int i = 0; i < inverseReferences.length; i++) {
                 clone.inverseReferences[i] = inverseReferences[i].clone();
+            }
+        }
+        if (permissions != null) {
+            clone.permissions = new PermissionDescriptor[permissions.length];
+            for (int i = 0; i < permissions.length; i++) {
+                clone.permissions[i] = permissions[i].clone();
             }
         }
         clone.remove = remove;

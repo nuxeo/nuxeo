@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.storage.sql.ColumnSpec;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
@@ -64,6 +65,7 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.EntrySource;
 import org.nuxeo.ecm.directory.OperationNotAllowedException;
 import org.nuxeo.ecm.directory.PasswordHelper;
+import org.nuxeo.ecm.directory.PermissionDescriptor;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.directory.sql.filter.SQLComplexFilter;
@@ -113,7 +115,7 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     private final Dialect dialect;
 
-    protected JDBCLogger logger = new JDBCLogger("SQLDirectory");;
+    protected JDBCLogger logger = new JDBCLogger("SQLDirectory");
 
     public SQLSession(SQLDirectory directory, SQLDirectoryDescriptor config,
             boolean managedSQLSession) throws DirectoryException {
@@ -132,6 +134,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         autoincrementIdField = config.isAutoincrementIdField();
         staticFilters = config.getStaticFilters();
         computeMultiTenantId = config.isComputeMultiTenantId();
+        permissions = config.permissions;
         acquireConnection();
     }
 
@@ -141,13 +144,12 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
         String idFieldName = schemaFieldMap.get(getIdField()).getName().getPrefixedName();
-        //If the prefixed id is not here, try to get without prefix
-        //It may happen when we gentry from sql
-        if(!fieldMap.containsKey(idFieldName))
-        {
+        // If the prefixed id is not here, try to get without prefix
+        // It may happen when we gentry from sql
+        if (!fieldMap.containsKey(idFieldName)) {
             idFieldName = getIdField();
         }
-        
+
         String id = String.valueOf(fieldMap.get(idFieldName));
         try {
             DocumentModel docModel = BaseSession.createEntryModel(sid,
@@ -176,12 +178,14 @@ public class SQLSession extends BaseSession implements EntrySource {
     @Override
     public DocumentModel createEntry(Map<String, Object> fieldMap)
             throws ClientException {
-
+        
         if (isReadOnly()) {
             log.warn(READ_ONLY_VOCABULARY_WARN);
             return null;
         }
-
+        if(!isCurrentUserAllowed(SecurityConstants.WRITE)){
+            return null;
+        }
         Field schemaIdField = schemaFieldMap.get(idField);
 
         String idFieldName = schemaIdField.getName().getPrefixedName();
@@ -296,7 +300,8 @@ public class SQLSession extends BaseSession implements EntrySource {
         // second step: add references fields
         String sourceId = entry.getId();
         for (Reference reference : getDirectory().getReferences()) {
-            String referenceFieldName = schemaFieldMap.get(reference.getFieldName()).getName().getPrefixedName(); 
+            String referenceFieldName = schemaFieldMap.get(
+                    reference.getFieldName()).getName().getPrefixedName();
             @SuppressWarnings("unchecked")
             List<String> targetIds = (List<String>) fieldMap.get(referenceFieldName);
             if (reference instanceof TableReference) {
@@ -321,7 +326,10 @@ public class SQLSession extends BaseSession implements EntrySource {
     @Override
     public DocumentModel getEntry(String id, boolean fetchReferences)
             throws DirectoryException {
-        return directory.getCache().getEntry(id, this, fetchReferences);
+        if (isCurrentUserAllowed(SecurityConstants.READ)) {
+            return directory.getCache().getEntry(id, this, fetchReferences);
+        }
+        return null;
     }
 
     protected String addFilterWhereClause(String whereClause)
@@ -458,6 +466,10 @@ public class SQLSession extends BaseSession implements EntrySource {
     @Override
     public void updateEntry(DocumentModel docModel) throws ClientException {
 
+        if(!isCurrentUserAllowed(SecurityConstants.WRITE)){
+            return ;
+        }
+        
         if (isReadOnly()) {
             log.warn(READ_ONLY_VOCABULARY_WARN);
             return;
@@ -584,6 +596,10 @@ public class SQLSession extends BaseSession implements EntrySource {
     public void deleteEntry(String id) throws ClientException {
         acquireConnection();
 
+        if(!isCurrentUserAllowed(SecurityConstants.WRITE)){
+            return;
+        }
+        
         if (isReadOnly()) {
             log.warn(READ_ONLY_VOCABULARY_WARN);
             return;
@@ -756,6 +772,10 @@ public class SQLSession extends BaseSession implements EntrySource {
             Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences, int limit, int offset)
             throws ClientException, DirectoryException {
+        
+        if(!isCurrentUserAllowed(SecurityConstants.READ)){
+            return new DocumentModelListImpl();
+        }
         acquireConnection();
         Map<String, Object> filterMap = new LinkedHashMap<String, Object>(
                 filter);
