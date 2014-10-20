@@ -17,36 +17,6 @@
         <filter token="VERSION" value="${nuxeo.distribution.version}" />
       </filterset>
     </copy>
-    <copy todir="${maven.project.build.directory}">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm::zip" />
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-cap::zip" />
-    </copy>
-    <nx:zipdiff file1="${maven.project.build.directory}/nuxeo-distribution-dm-${nuxeo.distribution.version}.zip"
-                file2="${maven.project.build.directory}/nuxeo-distribution-cap-${nuxeo.distribution.version}.zip"
-                includesfile="${maven.project.build.directory}/includes"
-                excludesfile="${maven.project.build.directory}/excludesfile"
-                patternsetid="dm.versus.cap">
-    </nx:zipdiff>
-    <unzip src="${maven.project.build.directory}/nuxeo-distribution-dm-${nuxeo.distribution.version}.zip"
-           dest="${maven.project.build.directory}/marketplace/install">
-      <patternset refid="dm.versus.cap" />
-    </unzip>
-
-    <!-- System libraries -->
-    <mkdir dir="${maven.project.build.directory}/marketplace/install/syslib" />
-    <!-- Move some libraries from lib to syslib ?
-    <move todir="${maven.project.build.directory}/marketplace/install/syslib">
-      <fileset dir="${maven.project.build.directory}/marketplace/install/lib">
-      </fileset>
-    </move>
-    -->
-
-    <!-- DM templates -->
-    <unzip dest="${maven.project.build.directory}/marketplace/install/templates"
-           overwrite="true">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
-                            classifier="templates-common-dm" />
-    </unzip>
 
     <zip destfile="${maven.project.build.directory}/${maven.project.artifactId}-${maven.project.version}.zip"
          basedir="${maven.project.build.directory}/marketplace" />

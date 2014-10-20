@@ -36,9 +36,6 @@
     <antcall target="build-resources">
       <param name="distribution" value="templates-common" />
     </antcall>
-    <antcall target="build-resources">
-      <param name="distribution" value="templates-common-dm" />
-    </antcall>
     <antcall target="copy-resources-with-jdbc-lib">
       <param name="distribution" value="templates-tomcat" />
       <param name="h2-lib-dir" value="lib" />

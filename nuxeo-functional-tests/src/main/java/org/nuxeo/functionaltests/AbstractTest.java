@@ -741,7 +741,7 @@ public abstract class AbstractTest {
     /**
      * Login as Administrator
      *
-     * @return the Document base page (by default returned by nuxeo dm)
+     * @return the Document base page (by default returned by CAP)
      * @throws UserNotConnectedException
      */
     public DocumentBasePage login() throws UserNotConnectedException {
