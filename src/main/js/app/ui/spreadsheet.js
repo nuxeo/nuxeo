@@ -50,9 +50,12 @@ class Spreadsheet {
       // Check which columns to display
       var cols = (!columns) ? layout.columns :  layout.columns.filter((c) => columns.indexOf(c.name) !== -1);
       this.columns = cols
-        .map((c) => new Column(connection, c, layout.widgets[c.widgets[0].name], this.dirtyRenderer.bind(this)))
-        // Only show columns with a known widget type and with a field
-        .filter((c) => c.hasSupportedWidgetType && c.field);
+          // Exclude columns without widgets
+          .filter((c) => c.widgets)
+          // Create our columns wrapper
+          .map((c) => new Column(connection, c, layout.widgets[c.widgets[0].name], this.dirtyRenderer.bind(this)))
+          // Only show columns with a known widget type and with a field
+          .filter((c) => c.hasSupportedWidgetType && c.field);
     });
 
     this._dirty = {};
@@ -162,7 +165,7 @@ class Spreadsheet {
 
         // Split csv values into array
         var column = this._columnsByField[field];
-        if (column.multiple) {
+        if (column.multiple && !Array.isArray(newV)) {
           newV = newV.split(',');
         }
 
