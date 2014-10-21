@@ -1236,7 +1236,7 @@
         <alias>document_listing</alias>
       </aliases>
       <columns>
-        <column>
+        <column alwaysSelected="true" name="selection">
           <properties mode="any">
             <property name="isListingSelectionBoxWithCurrentDocument">
               true
@@ -1253,7 +1253,7 @@
           </properties>
           <widget>listing_ajax_selection_box_with_current_document</widget>
         </column>
-        <column>
+        <column name="icon_type">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">false</property>
             <property name="columnStyleClass">iconColumn</property>
@@ -1261,7 +1261,7 @@
           </properties>
           <widget>listing_icon_type</widget>
         </column>
-        <column>
+        <column name="title_link">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:title</property>
@@ -1269,7 +1269,7 @@
           </properties>
           <widget>listing_title_link</widget>
         </column>
-        <column>
+        <column name="lock">
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
             <property name="label">label.selection.column.lock</property>
@@ -1282,7 +1282,7 @@
           </properties>
           <widget>listing_lock_icon</widget>
         </column>
-        <column>
+        <column name="modification_date">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:modified</property>
@@ -1290,7 +1290,7 @@
           </properties>
           <widget>listing_modification_date</widget>
         </column>
-        <column>
+        <column name="lastContributor">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:lastContributor</property>
@@ -1298,7 +1298,7 @@
           </properties>
           <widget>listing_last_contributor</widget>
         </column>
-        <column>
+        <column name="version">
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
@@ -1307,7 +1307,7 @@
           </properties>
           <widget>listing_version</widget>
         </column>
-        <column>
+        <column name="lifecycle">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">
@@ -1317,7 +1317,7 @@
           </properties>
           <widget>listing_lifecycle</widget>
         </column>
-        <column>
+        <column name="livedit_link">
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
             <property name="label">label.selection.column.livedit_link</property>
@@ -1330,7 +1330,7 @@
           </properties>
           <widget>listing_livedit_link</widget>
         </column>
-        <column selectedByDefault="false">
+        <column name="description" selectedByDefault="false">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:description</property>
@@ -1344,7 +1344,7 @@
           </properties>
           <widget>listing_description</widget>
         </column>
-        <column selectedByDefault="false">
+        <column name="nature" selectedByDefault="false">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:nature</property>
@@ -1358,14 +1358,14 @@
           </properties>
           <widget>listing_nature</widget>
         </column>
-        <column selectedByDefault="false">
+        <column name="subjects" selectedByDefault="false">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="label">label.dublincore.subject</property>
           </properties>
           <widget>listing_subjects</widget>
         </column>
-        <column selectedByDefault="false">
+        <column name="rights" selectedByDefault="false">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:rights</property>
@@ -1379,7 +1379,7 @@
           </properties>
           <widget>listing_rights</widget>
         </column>
-        <column selectedByDefault="false">
+        <column name="source" selectedByDefault="false">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:source</property>
@@ -1393,7 +1393,7 @@
           </properties>
           <widget>listing_source</widget>
         </column>
-        <column selectedByDefault="false">
+        <column name="coverage" selectedByDefault="false">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:coverage</property>
@@ -1407,7 +1407,7 @@
           </properties>
           <widget>listing_coverage</widget>
         </column>
-        <column selectedByDefault="false">
+        <column name="creation_date" selectedByDefault="false">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:created</property>
@@ -1421,7 +1421,7 @@
           </properties>
           <widget>listing_creation_date</widget>
         </column>
-        <column selectedByDefault="false">
+        <column name="format" selectedByDefault="false">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:format</property>
@@ -1435,7 +1435,7 @@
           </properties>
           <widget>listing_format</widget>
         </column>
-        <column selectedByDefault="false">
+        <column name="language" selectedByDefault="false">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:language</property>
@@ -1449,7 +1449,7 @@
           </properties>
           <widget>listing_language</widget>
         </column>
-        <column selectedByDefault="false">
+        <column name="expired_date" selectedByDefault="false">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:expired</property>
@@ -1463,7 +1463,7 @@
           </properties>
           <widget>listing_expiration_date</widget>
         </column>
-        <column selectedByDefault="false">
+        <column name="contributors" selectedByDefault="false">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="label">label.dublincore.contributors</property>
@@ -1772,7 +1772,7 @@
         </template>
       </templates>
       <columns>
-        <column>
+        <column alwaysSelected="true" name="selection">
           <widget>listing_ajax_selection_box</widget>
         </column>
         <column>
