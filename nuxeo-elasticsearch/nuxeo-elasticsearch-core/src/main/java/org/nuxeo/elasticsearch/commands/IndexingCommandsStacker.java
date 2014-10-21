@@ -57,14 +57,19 @@ public abstract class IndexingCommandsStacker {
     protected abstract Map<String, IndexingCommands> getAllCommands();
 
     protected IndexingCommands getCommands(DocumentModel doc) {
-        return getAllCommands().get(doc.getId());
+        return getAllCommands().get(getDocKey(doc));
+    }
+
+    protected String getDocKey(DocumentModel doc) {
+        // Don't merge commandds with different session, so we work only on attached doc
+        return doc.getId() + "#" + doc.getSessionId();
     }
 
     protected IndexingCommands getOrCreateCommands(DocumentModel doc) {
         IndexingCommands cmds = getCommands(doc);
         if (cmds == null) {
             cmds = new IndexingCommands(doc);
-            getAllCommands().put(doc.getId(), cmds);
+            getAllCommands().put(getDocKey(doc), cmds);
         }
         return cmds;
     }
@@ -74,7 +79,6 @@ public abstract class IndexingCommandsStacker {
             return;
         }
         IndexingCommands cmds = getOrCreateCommands(doc);
-
         if (DOCUMENT_CREATED.equals(eventId)) {
             cmds.add(IndexingCommand.INSERT, sync, false);
         } else if (BEFORE_DOC_UPDATE.equals(eventId)) {
