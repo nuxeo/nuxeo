@@ -85,7 +85,9 @@ public class VocabularyEnricher extends AbstractContentEnricher {
             jg.writeStartArray();
 
             // { 'id': ..., 'label_*': ... }
-            writeLabels(jg, directoryName, entriesIds, labelFields);
+            if (entriesIds != null) {
+                writeLabels(jg, directoryName, entriesIds, labelFields);
+            }
 
             // ]
             jg.writeEndArray();
@@ -188,12 +190,15 @@ public class VocabularyEnricher extends AbstractContentEnricher {
      * @return
      */
     private static String[] getPropertyValues(DocumentModel doc, String fieldName) {
-        String[] entriesIds;
+        String[] entriesIds = null;
         Property prop = doc.getProperty(fieldName);
         if (prop.isList()) {
             entriesIds = prop.getValue(String[].class);
         } else {
-            entriesIds = new String[] { prop.getValue(String.class) };
+            String value = prop.getValue(String.class);
+            if (value != null) {
+                entriesIds = new String[] { value };
+            }
         }
         return entriesIds;
     }

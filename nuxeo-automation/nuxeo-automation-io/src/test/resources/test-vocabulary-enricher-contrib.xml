@@ -23,6 +23,13 @@
       <parameter name="directoryName">l10nsubjects</parameter>
     </enricher>
 
+    <enricher name="vocabularies_null_property"
+              class="org.nuxeo.ecm.automation.io.services.enricher.VocabularyEnricher">
+      <category>vocabularies_null_property</category>
+      <parameter name="field">dc:coverage</parameter>
+      <parameter name="directoryName">l10ncoverage</parameter>
+    </enricher>
+
     <enricher name="l10nsubjects"
               class="org.nuxeo.ecm.automation.io.services.enricher.VocabularyEnricher">
       <category>vocabularies</category>
@@ -45,6 +52,22 @@
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
       <table>l10nsubjects</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>always</createTablePolicy>
+      <dataFile>testl10n.csv</dataFile>
+    </directory>
+
+    <directory name="l10ncoverage">
+      <schema>l10nxvocabulary</schema>
+      <parentDirectory>l10ncoverage</parentDirectory>
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>l10ncoverage</table>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <createTablePolicy>always</createTablePolicy>

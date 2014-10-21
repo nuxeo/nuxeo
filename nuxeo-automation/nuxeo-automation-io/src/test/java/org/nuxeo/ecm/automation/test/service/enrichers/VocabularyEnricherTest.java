@@ -96,6 +96,22 @@ public class VocabularyEnricherTest extends BaseRestTest {
     }
 
     @Test
+    public void testNullProperty() throws Exception {
+        // Given a document
+        DocumentModel doc = session.getDocument(new PathRef("/folder/doc1"));
+
+        // When it is written as Json using a vocabulary enricher
+        // with a null property value
+        String jsonDoc = getDocumentAsJson(doc, "vocabularies_null_property");
+
+        // Then an empty list of labels is returned
+        JsonNode node = parseJson(jsonDoc);
+        JsonNode vocabs = node.get("contextParameters").get("vocabularies_null_property");
+        JsonNode labels = vocabs.get("dc:coverage");
+        assertEquals(0, labels.size());
+    }
+
+    @Test
     public void testInvalidDirectory() throws Exception {
         // Given a document
         DocumentModel doc = session.getDocument(new PathRef("/folder/doc1"));
