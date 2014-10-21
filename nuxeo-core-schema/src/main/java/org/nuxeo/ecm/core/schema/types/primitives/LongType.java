@@ -12,6 +12,7 @@
  */
 package org.nuxeo.ecm.core.schema.types.primitives;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.schema.types.PrimitiveType;
 
 /**
@@ -51,7 +52,7 @@ public final class LongType extends PrimitiveType {
 
     @Override
     public Object decode(String str) {
-        if (str == null) {
+        if (StringUtils.isEmpty(str)) {
             return null;
         }
         try {
