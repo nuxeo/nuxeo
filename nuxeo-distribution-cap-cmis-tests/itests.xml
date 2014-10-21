@@ -13,8 +13,9 @@
   </unzip>
   <import file="${out.dir}/nuxeo-ftest.xml" />
 
-  <target name="run-cmis-tests">
-    <for list="AtomPub" param="cmisBinding"> <!-- list="AtomPub,Browser" -->
+  <target name="run-cmis-tests" depends="_init">
+    <for list="AtomPub" param="cmisBinding">
+      <!-- list="AtomPub,Browser" -->
       <sequential>
         <exec executable="python"
               output="${out.dir}/cmis_@{cmisBinding}.log"
@@ -30,9 +31,11 @@
             <equals arg1="${exitCode}" arg2="0" />
           </not>
           <then>
-            <loadfile property="cmis.log" srcFile="${out.dir}/cmis_@{cmisBinding}.log" />
+            <loadfile property="cmis.log"
+                      srcFile="${out.dir}/cmis_@{cmisBinding}.log" />
             <echo level="error" message="${cmis.log}" />
-            <fail status="${exitCode}" message="CMIS @{cmisBinding} tests failed - see cmis_@{cmisBinding}.log" />
+            <fail status="${exitCode}"
+                  message="CMIS @{cmisBinding} tests failed - see cmis_@{cmisBinding}.log" />
           </then>
         </if>
       </sequential>
