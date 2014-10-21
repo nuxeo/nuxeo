@@ -72,4 +72,11 @@ public interface Aggregate<B extends Bucket> {
 
     boolean hasBucket(final String key);
 
+    void resetSelection();
+
+    /**
+     * The regular list of buckets plus buckets with doc count at 0 for selected
+     * buckets which are not returned from es post filtering.
+     */
+    List<Bucket> getExtendedBuckets();
 }

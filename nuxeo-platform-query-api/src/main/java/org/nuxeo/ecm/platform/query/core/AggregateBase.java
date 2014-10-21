@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.query.core;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ public class AggregateBase<B extends Bucket> implements Aggregate<B> {
     protected final DocumentModel searchDocument;
     protected List<String> selection;
     protected List<B> buckets;
+    protected List<Bucket> extendedBuckets;
     protected Map<String,Bucket> bucketMap = null;
 
     public AggregateBase(AggregateDefinition definition,
@@ -114,9 +116,27 @@ public class AggregateBase<B extends Bucket> implements Aggregate<B> {
     }
 
     @Override
+    public List<Bucket> getExtendedBuckets() {
+        if (extendedBuckets == null) {
+            extendedBuckets = new ArrayList<Bucket>();
+            final List<String> currentSelection = getSelection();
+            if (currentSelection != null) {
+                for (String s : currentSelection) {
+                    if (!hasBucket(s)) {
+                        extendedBuckets.add(new MockBucket(s));
+                    }
+                }
+            }
+            extendedBuckets.addAll(buckets);
+        }
+        return extendedBuckets;
+    }
+
+    @Override
     public void setBuckets(List<B> buckets) {
         this.buckets = buckets;
         this.bucketMap = null;
+        this.extendedBuckets = null;
     }
 
     public DocumentModel getSearchDocument() {
@@ -150,4 +170,14 @@ public class AggregateBase<B extends Bucket> implements Aggregate<B> {
         }
         return bucketMap;
     }
+
+    @Override
+    public void resetSelection() {
+        PredicateFieldDefinition field = definition.getSearchField();
+        if (searchDocument != null) {
+            searchDocument.setProperty(field.getSchema(), field.getName(), null);
+            selection = Collections.<String> emptyList();
+        }
+    }
+
 }
