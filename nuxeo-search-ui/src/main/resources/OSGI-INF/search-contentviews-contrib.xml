@@ -367,7 +367,7 @@
               'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="any">
-            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_created_agg'].buckets}</property>
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_created_agg'].extendedBuckets}</property>
           </properties>
           <controls mode="any">
             <control name="supportInsideInputWidgetEffects">true</control>
@@ -409,7 +409,7 @@
               'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="any">
-            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_modified_agg'].buckets}</property>
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_modified_agg'].extendedBuckets}</property>
             <property name="localize">true</property>
           </properties>
           <selectOptions>
@@ -464,7 +464,7 @@
               'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="edit">
-            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_creator_agg'].buckets}</property>
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_creator_agg'].extendedBuckets}</property>
           </properties>
           <controls mode="any">
             <control name="supportInsideInputWidgetEffects">true</control>
@@ -533,7 +533,7 @@
           </widgetModes>
           <properties widgetMode="any">
             <property name="directoryName">nature</property>
-            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_nature_agg'].buckets}</property>
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_nature_agg'].extendedBuckets}</property>
             <property name="localize">true</property>
           </properties>
           <controls mode="any">
@@ -580,7 +580,7 @@
           </widgetModes>
           <properties widgetMode="any">
             <property name="directoryName">l10nsubjects</property>
-            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_subjects_agg'].buckets}</property>
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_subjects_agg'].extendedBuckets}</property>
             <property name="dbl10n">true</property>
             <property name="localize">true</property>
           </properties>
@@ -628,7 +628,7 @@
           </widgetModes>
           <properties widgetMode="any">
             <property name="directoryName">l10ncoverage</property>
-            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_coverage_agg'].buckets}</property>
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_coverage_agg'].extendedBuckets}</property>
             <property name="dbl10n">true</property>
             <property name="localize">true</property>
           </properties>
@@ -662,7 +662,7 @@
               'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="any">
-            <property name="selectOptions">#{contentView.pageProvider.aggregates['common_size_agg'].buckets}</property>
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['common_size_agg'].extendedBuckets}</property>
             <property name="localize">true</property>
           </properties>
           <selectOptions>
