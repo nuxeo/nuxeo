@@ -50,6 +50,9 @@
       <description>
         This target platform is the last LTS.
       </description>
+      <types>
+        <type>CAP</type>
+      </types>
       <testVersions>
         <version>5.8.0-HF07-SNAPSHOT</version>
         <version>5.8</version>
@@ -87,6 +90,18 @@
       <version>5.9.3</version>
       <status>dev</status>
       <fastTrack>true</fastTrack>
+    </platform>
+
+    <platform id="cap-6.0" restricted="true">
+      <name>cap</name>
+      <version>6.0</version>
+      <label>Nuxeo Platform</label>
+      <status>supported</status>
+      <trial>true</trial>
+      <default>true</default>
+      <types>
+        <type>CAP</type>
+      </types>
     </platform>
 
   </extension>
