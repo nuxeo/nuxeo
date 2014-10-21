@@ -1,15 +1,18 @@
 'use strict';
 
-var gulp = require('gulp');
-var path = require('path');
-var browserSync = require('browser-sync');
-var del = require('del');
-var runSequence = require('run-sequence');
+var gulp = require('gulp'),
+    path = require('path'),
+    browserSync = require('browser-sync'),
+    del = require('del'),
+    runSequence = require('run-sequence'),
+    merge = require('merge-stream');
 
 // load plugins
 var $ = require('gulp-load-plugins')();
 
-var sources = ['app/app.js', 'app/nuxeo/**/*.js', 'app/ui/**/*.js'];
+var SOURCES = ['app/app.js', 'app/nuxeo/**/*.js', 'app/ui/**/*.js'],
+    DEST = '../../../target/classes/web/nuxeo.war/spreadsheet',
+    JQUERY_UI_THEME = 'app/bower_components/jquery-ui/themes/smoothness';
 
 gulp.task('transpile', function () {
   var traceur = path.join('node_modules', 'traceur', 'traceur'),
@@ -19,7 +22,7 @@ gulp.task('transpile', function () {
 });
 
 gulp.task('jshint', function () {
-  return gulp.src(sources)
+  return gulp.src(SOURCES)
       .pipe($.jshint('.jshintrc'))
       .pipe($.jshint.reporter('jshint-stylish'));
 });
@@ -27,14 +30,17 @@ gulp.task('jshint', function () {
 gulp.task('clean', function (cb) {
   del.sync([
     'app/app-build.js',
-    '../../../target/classes/web/nuxeo.war/spreadsheet/**',
+    DEST + '/**',
   ], {force: true}, cb);
 });
 
 gulp.task('images', function () {
-  return gulp.src(['app/images/**/*'])
-      .pipe(gulp.dest('../../../target/classes/web/nuxeo.war/spreadsheet/images'))
-      .pipe($.size());
+  var styles = gulp.src([JQUERY_UI_THEME + '/images/**/*'])
+      .pipe(gulp.dest(DEST + '/styles/images'));
+  var app = gulp.src(['app/images/**/*'])
+      .pipe(gulp.dest(DEST + '/images'));
+
+  return merge(styles, app);
 });
 
 gulp.task('html', function () {
@@ -51,7 +57,7 @@ gulp.task('html', function () {
     .pipe(cssFilter.restore())
     .pipe($.useref.restore())
     .pipe($.useref())
-    .pipe(gulp.dest('../../../target/classes/web/nuxeo.war/spreadsheet'))
+    .pipe(gulp.dest(DEST))
     .pipe($.size());
 });
 
@@ -68,7 +74,7 @@ gulp.task('browser-sync', function () {
 });
 
 gulp.task('watch', ['browser-sync'], function () {
-  gulp.watch(sources, ['jshint', 'transpile', browserSync.reload]);
+  gulp.watch(SOURCES, ['jshint', 'transpile', browserSync.reload]);
 });
 
 gulp.task('default', ['clean'], function () {

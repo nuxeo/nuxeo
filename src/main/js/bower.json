@@ -7,7 +7,8 @@
     "nuxeo": "~0.2.0",
     "select2": "~3.5.1",
     "traceur-runtime": "~0.0.59",
-    "system.js": "~0.8.2"
+    "system.js": "~0.8.2",
+    "jquery-ui": "~1.11.2"
   },
   "devDependencies": {}
 }
