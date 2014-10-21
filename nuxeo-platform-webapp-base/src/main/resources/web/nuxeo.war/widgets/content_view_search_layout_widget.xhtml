@@ -10,27 +10,32 @@
 <div id="#{widget.id}"
   class="#{widgetProperty_styleClass}">
 
-  <nxu:set var="contentViewName"
-    value="#{widgetProperty_contentViewName}">
-  <nxu:set var="contentView"
-    value="#{contentViewActions.getContentViewWithProvider(contentViewName)}"
-    cache="true">
+    <nxu:set var="contentViewName"
+      value="#{widgetProperty_contentViewName}">
+      <nxu:set var="contentView"
+        value="#{contentViewActions.getContentViewWithProvider(contentViewName)}"
+        cache="true">
+        <nxu:set var="resolvedAjaxReRender"
+          value="#{nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender)}"
+          cache="true">
+          <c:if test="#{contentView != null}">
+            <nxl:layout name="#{contentView.searchLayout.name}"
+              mode="search" value="#{contentView.searchDocumentModel}">
+              <ui:define name="inside_input_widget">
+                <c:if
+                  test="#{widgetControl_supportInsideInputWidgetEffects}">
+                  <f:ajax execute="@form"
+                    listener="#{contentViewActions.refreshAndRewind(contentView.name)}"
+                    render="@form #{resolvedAjaxReRender}">
+                  </f:ajax>
+                </c:if>
+              </ui:define>
+            </nxl:layout>
+          </c:if>
 
-      <c:if test="#{contentView != null}">
-        <nxl:layout name="#{contentView.searchLayout.name}" mode="search"
-          value="#{contentView.searchDocumentModel}" >
-          <ui:define name="inside_input_widget">
-            <c:if test="#{widgetControl_supportInsideInputWidgetEffects}">
-              <f:ajax execute="@form" listener="#{contentViewActions.refreshAndRewind(contentView.name)}"
-                render="@all" >
-              </f:ajax>
-            </c:if>
-          </ui:define>
-        </nxl:layout>
-      </c:if>
+        </nxu:set>
+      </nxu:set>
+    </nxu:set>
 
-  </nxu:set>
-  </nxu:set>
-
-</div>
+  </div>
 </ui:composition>
