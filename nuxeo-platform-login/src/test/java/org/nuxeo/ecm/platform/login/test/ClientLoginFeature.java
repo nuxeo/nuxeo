@@ -36,9 +36,9 @@ public class ClientLoginFeature extends SimpleFeature {
 
     protected LoginContext logContext = null;
 
-    public Principal loginAs(String username, String password)
+    public Principal loginAs(String username)
             throws LoginException {
-        this.logContext = Framework.login(username, password);
+        this.logContext = Framework.login(username, username);
         return logContext.getSubject().getPrincipals().iterator().next();
     }
 
