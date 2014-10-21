@@ -101,6 +101,21 @@ public class WizardPage extends AbstractWizardPage {
         return errors;
     }
 
+    public List<String> getInfos() {
+        List<WebElement> infosEl = driver.findElements(By.xpath("//div[@class='infoBlock']/div[@class='infoItem']"));
+        List<String> infos = new ArrayList<String>();
+        for (WebElement infoEl : infosEl) {
+            if (infoEl.getText() != null && infoEl.getText().length() > 0) {
+                infos.add(infoEl.getText());
+            }
+        }
+        return infos;
+    }
+
+    public boolean hasInfo() {
+        return getInfos().size() > 0;
+    }
+
     public String getTitle2() {
         WebElement title2 = findElementWithTimeout(By.xpath("//h2"));
         if (title2 == null) {

@@ -67,9 +67,6 @@
   <platforms>
     <platform>cap-@VERSION@</platform>
   </platforms>
-  <dependencies>
-    <package>nuxeo-dm:@VERSION@</package>
-  </dependencies>
   <conflicts>
     <package>nuxeo-cmf</package>
   </conflicts>

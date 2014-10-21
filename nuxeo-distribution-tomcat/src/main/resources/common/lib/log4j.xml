@@ -294,6 +294,14 @@
     <priority value="INFO" />
   </category>
 
+  <category name="org.nuxeo.elasticsearch.ElasticSearchComponent">
+    <priority value="INFO" />
+  </category>
+
+  <category name="org.nuxeo.ecm.platform.query.core.PageProviderClassReplacerRegistry">
+    <priority value="INFO" />
+  </category>
+
   <category name="org.nuxeo">
     <priority value="WARN" />
   </category>

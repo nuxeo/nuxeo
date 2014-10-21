@@ -47,7 +47,7 @@ public class WorkflowHomePage extends AbstractPage {
     protected WebElement userTasksPanel;
 
     @Required
-    @FindBy(id = "nxl_userOpenTasksLayout:contentViewLayoutSelectForm_cv_user_open_tasks_nxw_current_user_open_tasks:refreshContentViewLink")
+    @FindBy(id = "nxl_userOpenTasksLayout:nxw_contentViewActions_refreshContentView_form:nxw_contentViewActions_refreshContentView")
     protected WebElement refreshTask;
 
     @Required

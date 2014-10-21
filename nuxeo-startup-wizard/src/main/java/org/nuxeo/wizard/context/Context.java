@@ -46,6 +46,8 @@ public class Context {
 
     protected Map<String, String> errors = new HashMap<String, String>();
 
+    protected Map<String, String> infos = new HashMap<String, String>();
+
     protected static Map<String, String> connectMap;
 
     protected static String distributionKey = null;
@@ -115,8 +117,20 @@ public class Context {
         return errors.size() > 0;
     }
 
+    public void trackInfo(String fieldId, String message) {
+        infos.put(fieldId, message);
+    }
+
+    public boolean hasInfos() {
+        return infos.size() > 0;
+    }
+
     public Map<String, String> getErrorsMap() {
         return errors;
+    }
+
+    public Map<String, String> getInfosMap() {
+        return infos;
     }
 
     public String getFieldsInErrorAsJson() {

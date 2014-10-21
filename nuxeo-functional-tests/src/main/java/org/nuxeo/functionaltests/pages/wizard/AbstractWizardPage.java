@@ -162,6 +162,21 @@ public abstract class AbstractWizardPage extends AbstractPage {
         return false;
     }
 
+    public boolean selectOptionWithReload(String name, String value) {
+
+        WebElement element = findElementWithTimeout(By.name(name));
+        if (element != null) {
+            Select select = new Select(element);
+            select.selectByValue(value);
+            // page is reload, need to fetch element again
+            element = findElementWithTimeout(By.name(name));
+            select = new Select(element);
+            return select.getFirstSelectedOption().getAttribute("value").equals(
+                    value);
+        }
+        return false;
+    }
+
     public boolean clearInput(String name) {
         WebElement element = findElementWithTimeout(By.name(name));
         if (element != null) {

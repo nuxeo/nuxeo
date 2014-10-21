@@ -1,0 +1,209 @@
+<#escape x as x?xml>
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.index.defaultMarketPlaceContrib">
+  <require>org.nuxeo.elasticsearch.ElasticSearchComponent</require>
+
+<#if "${elasticsearch.addressList}" == "">
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
+    point="elasticSearchLocal">
+    <elasticSearchLocal
+      clusterName="${elasticsearch.clusterName}"
+      nodeName="${elasticsearch.nodeName}"
+      pathData="${nuxeo.data.dir}/elasticsearch"
+      pathLogs="${nuxeo.log.dir}/elasticsearch"
+      httpEnabled="${elasticsearch.httpEnabled}" />
+  </extension>
+<#else>
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
+    point="elasticSearchRemote">
+    <elasticSearchRemote
+      clusterName="${elasticsearch.clusterName}"
+      addressList="${elasticsearch.addressList}"
+      indexNumberOfShards="${elasticsearch.indexNumberOfShards}"
+      indexNumberOfReplicas="${elasticsearch.indexNumberOfReplicas}"
+      clientTransportSniff="false"
+      clientTransportIgnoreClusterName="false"
+      clientTransportPingTimeout="5s"
+      clientTransportNodesSamplerInterval="5s" />
+  </extension>
+</#if>
+
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
+    point="elasticSearchIndex">
+    <elasticSearchIndex name="${elasticsearch.indexName}" type="doc" repository="default">
+      <fetchFromSource>
+        <include>ecm:*</include>
+        <include>dc:*</include>
+        <exclude>ecm:binarytext</exclude>
+      </fetchFromSource>
+
+      <settings>
+{
+   "analysis" : {
+      "filter" : {
+         "en_stem_filter" : {
+            "name" : "minimal_english",
+            "type" : "stemmer"
+         },
+         "en_stop_filter" : {
+            "stopwords" : [
+               "_english_"
+            ],
+            "type" : "stop"
+         },
+         "fr_elision_filter" : {
+            "articles" : [
+               "c",
+               "l",
+               "m",
+               "t",
+               "qu",
+               "n",
+               "s",
+               "j"
+            ],
+            "type" : "elision"
+         },
+         "fr_stem_filter" : {
+            "name" : "minimal_french",
+            "type" : "stemmer"
+         },
+         "fr_stop_filter" : {
+            "stopwords" : [
+               "_french_"
+            ],
+            "type" : "stop"
+         }
+      },
+      "tokenizer" : {
+         "path_tokenizer" : {
+            "delimiter" : "/",
+            "type" : "path_hierarchy"
+         }
+      },
+      "analyzer" : {
+         "en_analyzer" : {
+            "alias" : "fulltext",
+            "filter" : [
+               "lowercase",
+               "en_stop_filter",
+               "en_stem_filter",
+               "asciifolding"
+            ],
+            "type" : "custom",
+            "tokenizer" : "standard"
+         },
+         "fr_analyzer" : {
+            "filter" : [
+               "lowercase",
+               "fr_stop_filter",
+               "fr_stem_filter",
+               "asciifolding",
+               "fr_elision_filter"
+            ],
+            "type" : "custom",
+            "tokenizer" : "standard"
+         },
+         "path_analyzer" : {
+            "type" : "custom",
+            "tokenizer" : "path_tokenizer"
+         },
+         "default" : {
+            "type" : "custom",
+            "tokenizer" : "keyword"
+         }
+      }
+   }
+}
+      </settings>
+      <mapping>
+{
+   "_size" : {
+      "enabled" : true
+   },
+   "_all" : {
+      "analyzer" : "fulltext"
+   },
+   "properties" : {
+      "dc:title" : {
+         "type" : "multi_field",
+         "fields" : {
+           "dc:title" : {
+             "index" : "not_analyzed",
+             "type" : "string"
+           },
+           "fulltext" : {
+             "boost": 2,
+             "type": "string",
+             "analyzer" : "fulltext"
+          }
+        }
+      },
+      "dc:description" : {
+         "type" : "multi_field",
+         "fields" : {
+           "dc:description" : {
+             "index" : "no",
+             "include_in_all" : "true",
+             "type" : "string"
+           },
+           "fulltext" : {
+             "boost": 1.5,
+             "type": "string",
+             "analyzer" : "fulltext"
+          }
+        }
+      },
+      "note:note" : {
+         "type" : "multi_field",
+         "fields" : {
+           "note:note" : {
+             "index" : "no",
+             "include_in_all" : "true",
+             "type" : "string"
+           },
+           "fulltext" : {
+             "type": "string",
+             "analyzer" : "fulltext"
+          }
+        }
+      },
+      "ecm:binarytext*" : {
+         "type" : "string",
+         "analyzer" : "fulltext"
+      },
+      "ecm:path" : {
+         "type" : "multi_field",
+         "fields" : {
+            "children" : {
+               "search_analyzer" : "keyword",
+               "index_analyzer" : "path_analyzer",
+               "type" : "string"
+            },
+            "ecm:path" : {
+               "index" : "not_analyzed",
+               "type" : "string"
+            }
+         }
+      },
+      "ecm:pos": {
+         "type": "integer"
+      },
+      "dc:created": {
+         "format": "dateOptionalTime",
+        "type": "date"
+      },
+      "dc:modified": {
+         "format": "dateOptionalTime",
+        "type": "date"
+      }
+   }
+}
+      </mapping>
+
+    </elasticSearchIndex>
+  </extension>
+
+</component>
+</#escape>
+

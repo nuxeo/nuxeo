@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo</groupId>
@@ -12,11 +13,6 @@
   <name>Nuxeo Functional Tests</name>
   <description>Nuxeo Functional Tests. Framework for testing nuxeo
     distribution projects</description>
-
-  <properties>
-    <!-- Skip tests by default, see profiles -->
-    <skipTests>true</skipTests>
-  </properties>
 
   <dependencies>
     <dependency>
@@ -67,23 +63,20 @@
     </dependency>
   </dependencies>
 
-  <profiles>
-    <profile>
-      <id>all-tests</id>
-      <properties>
-        <skipTests>false</skipTests>
-      </properties>
-    </profile>
-    <profile>
-      <id>all-distributions</id>
-      <properties>
-        <skipTests>false</skipTests>
-      </properties>
-    </profile>
-  </profiles>
-
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>

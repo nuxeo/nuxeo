@@ -18,21 +18,33 @@ Building Nuxeo products requires the following tools:
 ### Build with Maven (recommended)
 
 Java and Maven are at the lowest level, all configuration about building a module
-is given in the Maven POM file. So, everything can be built using Maven but it
-requires some knowledge about Nuxeo and its packagings.
+is given in the Maven POM file.
 
-Maven usage: `mvn clean package [-P<comma separated profiles>]`
+Maven usage: `mvn clean package [options]`
 
 #### Examples
 
- * (default) Building all Nuxeo products and their alternatives:
+ * Build all Nuxeo products without running Integration Tests:
 
         mvn clean package
-        mvn clean package -Pall-distributions
+        mvn clean verify -DskipTests
+        mvn clean verify -DskipITs
 
- * Only Tomcat packages:
+ * Build all Nuxeo products running Integration Tests:
 
-        mvn clean package -Ptomcat
+        mvn clean verify
+
+ * Build only the Tomcat distributions
+
+        mvn clean package -pl :nuxeo-distribution-tomcat
+
+ * Build only the Tomcat CAP distribution (excluding Core Server)
+
+        mvn clean package -pl :nuxeo-distribution-tomcat -Pnuxeo-cap
+
+ * Run CAP Functional Tests after build of the needed resources:
+
+        mvn clean verify -pl :nuxeo-distribution-cap-webdriver-tests -am
 
 ### Build with Ant (deprecated)
 
@@ -50,97 +62,66 @@ Ant usage: `ant distrib [-Ddistrib=profile]`
 
 ### Available Maven profiles
 
- * all-distributions (default): full build
- * nuxeo-coreserver, nuxeo-cap, nuxeo-dm, nuxeo-dam, ...: build the corresponding application/module
- * tomcat: build the corresponding server
- * itest: run integration tests
- * ftest-dm, ftest-dam, ftest-sc, ...: run functional tests against the corresponding application/module
- * fltest-dm: run functional FunkLoad tests against DM
  * sdk: build SDK distributions for use in Nuxeo IDE
  * qa, nightly: for internal use at Nuxeo
 
 ## Modules listing
 
  * nuxeo-distribution-cap: Content Application Platform NXR
+ * nuxeo-distribution-cap/ftest/webdriver: WebDriver tests for CAP
  * nuxeo-distribution-coreserver: CoreServer NXR
  * nuxeo-distribution-dm: Document Management NXR
-    * ftest/cmis: CMIS tests for DM
-    * ftest/funkload: FunkLoad tests for DM
-    * ftest/selenium: Selenium tests for DM
-    * ftest/webdriver: WebDriver tests for DM
+ * nuxeo-distribution-dm/ftest/cmis: CMIS tests for DM
+ * nuxeo-distribution-dm/ftest/funkload: FunkLoad tests for DM
+ * nuxeo-distribution-dm/ftest/selenium: Selenium tests for DM
+ * nuxeo-distribution-dm/ftest/webdriver: WebDriver tests for DM
  * nuxeo-distribution-resources: Resources archives used in other packagings (doc, binaries, templates).
  * nuxeo-distribution-social-collaboration: Social Collaboration NXR
-    * ftest/selenium: Selenium tests for SC
+ * nuxeo-distribution-social-collaboration/ftest/selenium: Selenium tests for SC
  * nuxeo-distribution-tests: Helper POM with Nuxeo test dependencies
  * nuxeo-distribution-tomcat: Tomcat distributions
  * nuxeo-functional-tests: Framework for testing nuxeo distributions
  * nuxeo-dam-functional-tests: DAM specific additions to nuxeo-functional-tests
  * nuxeo-launcher: Control Panel and launcher
- * nuxeo-marketplace-dam: Marketplace package of DAM
-    * ftest/webdriver: WebDriver tests for DAM
- * nuxeo-marketplace-dm: Marketplace package of DM
- * nuxeo-marketplace-rest-api: Marketplace package of REST API
- * nuxeo-marketplace-social-collaboration: Marketplace package of Social Collaboration
+ * nuxeo-marketplace-dam: build aggregator module
+ * nuxeo-marketplace-dam/marketplace: Marketplace Package of DAM
+ * nuxeo-marketplace-dam/ftest/webdriver: WebDriver tests for DAM
+ * nuxeo-marketplace-dm: Marketplace Package of DM
+ * nuxeo-marketplace-social-collaboration: Marketplace Package of Social Collaboration
  * nuxeo-startup-wizard: Startup Wizard WebApp
  * nuxeo-distribution-tomcat-wizard-tests: WebDriver tests for Tomcat wizard
 
 ## Produced packages
 
  * NXR packages
-     * Core Server
-     * Content Application Platform (CAP)
-     * Advanced Document Management (DM)
-     * Digital Assets Management (DAM)
-     * Social Collaboration (SC)
- * Marketplace packages
-     * Advanced Document Management (DM)
-     * Digital Assets Management (DAM)
-     * Social Collaboration (SC)
-     * REST API
+   * Core Server
+   * Content Application Platform (CAP)
+   * Advanced Document Management (DM)
+   * Digital Assets Management (DAM)
+   * Social Collaboration (SC)
+ * Marketplace Packages
+   * Advanced Document Management (DM)
+   * Digital Assets Management (DAM)
+   * Social Collaboration (SC)
  * Tomcat packages
-     * Core Server
-     * Content Application Platform (CAP)
+   * Core Server
+   * Content Application Platform (CAP)
 
-## Understanding Maven profiles and classifiers
+## Understanding Maven phases and options
 
-Profiles are mainly used to manage the list of classifiers being generated.
-Maven plugins rely by default on a such mechanism for creating tests, sources and
-Javadoc JARs. It is usable also for any other specific builds (OS, JDK, env, packaging, ...).
-It's widely used by a lot of third-parties (Google GWT, JSON, shindings, ...).
-Think about "classifiers" as "qualifiers" (sources, javadoc, tests, linux, windows,
-mac, jta, all, ...). For example, the following are two alternatives ("classifiers")
-for the package ("artifact") named "nuxeo-distribution-tomcat":
-  * nuxeo-distribution-tomcat-5.4.0-SNAPSHOT-nuxeo-dm-jtajca.zip
-  * nuxeo-distribution-tomcat-5.4.0-SNAPSHOT-nuxeo-dm.zip
+From (http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html):
+The default lifecycle has the following build phases (for a complete list of the build phases, refer to the [Lifecycle Reference](http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference)):
 
-Some profiles are used to choose the product to build. Other profiles are used to
-choose which alternatives (classifiers) of the product will be built. Multiple
-profiles can be used simultaneously.
-Here are some common profiles and their impact on build result:
-  * all-distributions: build everything
-  * all: build all classifiers for the called module(s)
-  * nuxeo-cap: build only Nuxeo CAP related modules stack
-  * nuxeo-dm: same as nuxeo-cap but with Nuxeo DM
-  * all-tests: run all tests
+ * validate - validate the project is correct and all necessary information is available
+ * compile - compile the source code of the project
+ * test - test the compiled source code using a suitable unit testing framework. These tests should not require the code be packaged or deployed
+ * package - take the compiled code and package it in its distributable format, such as a JAR.
+ * integration-test - process and deploy the package if necessary into an environment where integration tests can be run
+ * verify - run any checks to verify the package is valid and meets quality criteria
+ * install - install the package into the local repository, for use as a dependency in other projects locally
+ * deploy - done in an integration or release environment, copies the final package to the remote repository for sharing with other developers and projects.
 
-Here are some usage examples (ran from nuxeo-distribution):
-  * (default) Building all Nuxeo products and their alternatives
-    o mvn clean install
-    o mvn clean install -Pall-distributions
-  * Run all tests
-    o mvn clean install -Pall-tests
-  * Run Nuxeo DM functional tests
-    o mvn clean install -Pftest-dm
-
-Note: Maven expects multiple classifiers of an artifact to be deployed at the 
-same time, else other classifiers previously built become unreachable from 
-local and remote Maven repositories).
-That means when you want to "deploy" (Maven remote deployment) or "install" (Maven
-local deployment) a module, you must use "all-distributions" profile.
-
-When you need only one classifier, for any other purpose than
-install/deploy to m2 repository, then you can use the dedicated profiles.
-
+See also Nuxeo Documentation: [CORG/Maven+usage](http://doc.nuxeo.com/x/JQk7)
 
 ## Details about predefined applications
 

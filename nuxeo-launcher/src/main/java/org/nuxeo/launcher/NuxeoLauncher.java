@@ -197,6 +197,13 @@ public abstract class NuxeoLauncher {
 
     protected static final String OPTION_HIDE_DEPRECATION_DESC = "Hide deprecation warnings. Not advised on production platforms.";
 
+    /**
+     * @since 5.9.6
+     */
+    protected static final String OPTION_IGNORE_MISSING = "ignore-missing";
+
+    protected static final String OPTION_IGNORE_MISSING_DESC = "Ignore unknown packages on mp-add/install/set commands.";
+
     // Fallback to avoid an error when the log dir is not initialized
     static {
         if (System.getProperty(Environment.NUXEO_LOG_DIR) == null) {
@@ -845,6 +852,10 @@ public abstract class NuxeoLauncher {
             OptionBuilder.withLongOpt(OPTION_FORCE);
             OptionBuilder.withDescription(OPTION_FORCE_DESC);
             launcherOptions.addOption(OptionBuilder.create("f"));
+            // Ignore missing option
+            OptionBuilder.withLongOpt(OPTION_IGNORE_MISSING);
+            OptionBuilder.withDescription(OPTION_IGNORE_MISSING_DESC);
+            launcherOptions.addOption(OptionBuilder.create());
         }
     }
 
@@ -2012,7 +2023,7 @@ public abstract class NuxeoLauncher {
 
     protected boolean pkgAdd(String[] pkgNames) throws IOException,
             PackageException {
-        boolean cmdOK = getConnectBroker().pkgAdd(Arrays.asList(pkgNames));
+        boolean cmdOK = getConnectBroker().pkgAdd(Arrays.asList(pkgNames), hasOption(OPTION_IGNORE_MISSING));
         if (!cmdOK) {
             errorValue = EXIT_CODE_ERROR;
         }
@@ -2027,7 +2038,7 @@ public abstract class NuxeoLauncher {
                     configurationGenerator.getInstallFile(), true,
                     !hasOption(OPTION_NODEPS));
         }
-        cmdOK = cmdOK && getConnectBroker().pkgInstall(Arrays.asList(pkgIDs));
+        cmdOK = cmdOK && getConnectBroker().pkgInstall(Arrays.asList(pkgIDs), hasOption(OPTION_IGNORE_MISSING));
         if (!cmdOK) {
             errorValue = EXIT_CODE_ERROR;
         }
@@ -2233,7 +2244,7 @@ public abstract class NuxeoLauncher {
         }
         cmdOK = cmdOK
                 && getConnectBroker().pkgRequest(pkgsToAdd, pkgsToInstall,
-                        pkgsToUninstall, pkgsToRemove);
+                        pkgsToUninstall, pkgsToRemove, true, hasOption(OPTION_IGNORE_MISSING));
         if (!cmdOK) {
             errorValue = EXIT_CODE_ERROR;
         }
@@ -2335,12 +2346,17 @@ public abstract class NuxeoLauncher {
 
     protected boolean pkgSetRequest(List<String> request, boolean nodeps)
             throws IOException, PackageException {
+        boolean cmdOK;
         if (nodeps) {
-            return getConnectBroker().pkgSet(request);
+            cmdOK = getConnectBroker().pkgSet(request, hasOption(OPTION_IGNORE_MISSING));
         } else {
-            return getConnectBroker().pkgRequest(null, request, null, null,
-                    false);
+            cmdOK = getConnectBroker().pkgRequest(null, request, null, null,
+                    false, hasOption(OPTION_IGNORE_MISSING));
         }
+        if (!cmdOK) {
+            errorValue = EXIT_CODE_ERROR;
+        }
+        return cmdOK;
     }
 
     /**

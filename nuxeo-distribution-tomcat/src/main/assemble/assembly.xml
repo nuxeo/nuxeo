@@ -11,6 +11,7 @@
     <condition property="build.all">
       <or>
         <isset property="maven.profile.all" />
+        <!-- NXP-15473: Deprecated profile all-distributions -->
         <isset property="maven.profile.all-distributions" />
         <not>
           <or>
@@ -191,9 +192,6 @@
     <move file="${maven.project.build.directory}/nuxeo-marketplace-social-collaboration-${nuxeo.distribution.version}.zip"
           tofile="${tomcat}/setupWizardDownloads/${SCMPMD5}" />
 
-    <echo file="${tomcat}/nxserver/data/installAfterRestart-DM.log">init
-install nuxeo-dm
-</echo>
     <echo file="${tomcat}/nxserver/data/installAfterRestart-SC.log">init
 install nuxeo-social-collaboration
 </echo>
@@ -292,6 +290,8 @@ install nuxeo-dam
         <include name="slf4j*" />
         <include name="jcl-over-slf4j*" />
         <include name="log4j-*" />
+        <include name="elasticsearch-*" />
+        <include name="lucene-*" />
       </fileset>
     </move>
     <nx:rmdups dir="${distribution.dir}/nxserver/lib" />
@@ -328,7 +328,11 @@ org.nuxeo.distribution.package=zip</echo>
       </fileset>
     </move>
     <artifact:printMgt output="${distribution.dir}/sdk/artifacts-nuxeo.properties"
-                       key="org.nuxeo:nuxeo-addons-parent:${nuxeo.addons.version}:pom" />
+                       key="org.nuxeo:nuxeo-addons-parent:${nuxeo.addons.version}:pom"
+                       scopes="compile,provided,runtime"/>
+    <artifact:printMgt output="${distribution.dir}/sdk/test-artifacts-nuxeo.properties"
+                       key="org.nuxeo:nuxeo-addons-parent:${nuxeo.addons.version}:pom"
+                       scopes="test,provided" />
   </target>
 
   <target name="build-sdk" if="build.sdk">

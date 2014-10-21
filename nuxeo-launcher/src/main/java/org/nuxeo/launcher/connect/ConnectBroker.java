@@ -680,6 +680,20 @@ public class ConnectBroker {
      * @see #pkgAdd(String)
      */
     public boolean pkgAdd(List<String> pkgsToAdd) {
+        return pkgAdd(pkgsToAdd, false);
+    }
+
+    /**
+     * Add a list of packages into the cache, downloading them if needed and
+     * possible.
+     *
+     * @since 5.9.6
+     * @param pkgsToAdd
+     * @param ignoreMissing
+     * @return true if command succeeded
+     * @see #pkgAdd(String)
+     */
+    public boolean pkgAdd(List<String> pkgsToAdd, boolean ignoreMissing) {
         boolean cmdOk = true;
         if (pkgsToAdd == null || pkgsToAdd.isEmpty()) {
             return cmdOk;
@@ -693,10 +707,17 @@ public class ConnectBroker {
                 if (fileToAdd == null) {
                     String pkgId = getRemotePackageId(pkgToAdd);
                     if (pkgId == null) {
-                        throw new PackageException(
-                                "Couldn't find a remote or local (relative to "
-                                        + "current directory or to NUXEO_HOME) "
-                                        + "package with name or ID " + pkgToAdd);
+                        if (ignoreMissing) {
+                            log.warn("Could not add package: " + pkgToAdd);
+                            cmdInfo.newMessage(SimpleLog.LOG_LEVEL_INFO,
+                                    "Could not add package: " + pkgToAdd);
+                        } else {
+                            throw new PackageException(
+                                    "Could not find a remote or local (relative to "
+                                            + "current directory or to NUXEO_HOME) "
+                                            + "package with name or ID "
+                                            + pkgToAdd);
+                        }
                     } else {
                         cmdInfo.newMessage(SimpleLog.LOG_LEVEL_INFO,
                                 "Waiting for download");
@@ -724,6 +745,18 @@ public class ConnectBroker {
      * @return The added LocalPackage or null if failed
      */
     public LocalPackage pkgAdd(String packageFileName) {
+        return pkgAdd(packageFileName, false);
+    }
+
+    /**
+     * Add a package file into the cache
+     *
+     * @since 5.9.6
+     * @param packageFileName
+     * @param ignoreMissing
+     * @return The added LocalPackage or null if failed
+     */
+    public LocalPackage pkgAdd(String packageFileName, boolean ignoreMissing) {
         CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_ADD);
         cmdInfo.param = packageFileName;
         LocalPackage pkg = null;
@@ -732,19 +765,26 @@ public class ConnectBroker {
             if (fileToAdd == null) {
                 String pkgId = getRemotePackageId(packageFileName);
                 if (pkgId == null) {
-                    throw new PackageException(
-                            "Couldn't find a remote or local (relative to "
-                                    + "current directory or to NUXEO_HOME) "
-                                    + "package with name or ID "
-                                    + packageFileName);
+                    if (ignoreMissing) {
+                        log.warn("Could not add package: " + packageFileName);
+                        cmdInfo.newMessage(SimpleLog.LOG_LEVEL_INFO,
+                                "Could not add package: " + packageFileName);
+                        return null;
+                    } else {
+                        throw new PackageException(
+                                "Could not find a remote or local (relative to "
+                                        + "current directory or to NUXEO_HOME) "
+                                        + "package with name or ID "
+                                        + packageFileName);
+                    }
                 } else if (!downloadPackages(Arrays.asList(new String[] { pkgId }))) {
-                    throw new PackageException("Couldn't download package "
+                    throw new PackageException("Could not download package "
                             + pkgId);
                 }
                 pkg = service.getPackage(pkgId);
                 if (pkg == null) {
                     throw new PackageException(
-                            "Couldn't find downloaded package in cache "
+                            "Could not find downloaded package in cache "
                                     + pkgId);
                 }
             } else {
@@ -768,11 +808,29 @@ public class ConnectBroker {
      * @see #pkgInstall(String)
      */
     public boolean pkgInstall(List<String> packageIdsToInstall) {
+        return pkgInstall(packageIdsToInstall, false);
+    }
+
+    /**
+     * Install a list of local packages. If the list contains a package name
+     * (versus an ID), only the considered as best matching package is
+     * installed.
+     *
+     * @since 5.9.6
+     * @param packageIdsToInstall The list can contain package IDs and names
+     * @param ignoreMissing If true, doesn't throw an exception on unkown
+     *            packages
+     * @see #pkgInstall(String)
+     */
+    public boolean pkgInstall(List<String> packageIdsToInstall,
+            boolean ignoreMissing) {
         log.debug("Installing: " + packageIdsToInstall);
         for (String pkgId : packageIdsToInstall) {
-            if (pkgInstall(pkgId) == null) {
-                log.error("Unable to install " + pkgId);
-                return false;
+            if (pkgInstall(pkgId, ignoreMissing) == null) {
+                if (!ignoreMissing) {
+                    log.error("Unable to install package: " + pkgId);
+                    return false;
+                }
             }
         }
         return true;
@@ -785,6 +843,19 @@ public class ConnectBroker {
      * @return The installed LocalPackage or null if failed
      */
     public LocalPackage pkgInstall(String pkgId) {
+        return pkgInstall(pkgId, false);
+    }
+
+    /**
+     * Install a local package.
+     *
+     * @since 5.9.6
+     * @param pkgId Package ID or Name
+     * @param ignoreMissing If true, doesn't throw an exception on unkown
+     *            packages
+     * @return The installed LocalPackage or null if failed
+     */
+    public LocalPackage pkgInstall(String pkgId, boolean ignoreMissing) {
         if (env.getProperty(LAUNCHER_CHANGED_PROPERTY, "false").equals("true")) {
             System.exit(LAUNCHER_CHANGED_EXIT_CODE);
         }
@@ -806,11 +877,16 @@ public class ConnectBroker {
             }
             if (pkg == null) {
                 // We don't know this package, try to add it first
-                pkg = pkgAdd(pkgId);
+                pkg = pkgAdd(pkgId, ignoreMissing);
             }
             if (pkg == null) {
                 // Nothing worked - can't find the package anywhere
-                throw new PackageException("Package not found: " + pkgId);
+                if (ignoreMissing) {
+                    log.warn("Unable to install package: " + pkgId);
+                    return null;
+                } else {
+                    throw new PackageException("Package not found: " + pkgId);
+                }
             }
             pkgId = pkg.getId();
             cmdInfo.param = pkgId;
@@ -829,6 +905,7 @@ public class ConnectBroker {
         } catch (Exception e) {
             log.error(String.format("Failed to install package: %s (%s)",
                     pkgId, e.getMessage()));
+            log.debug(e, e);
             cmdInfo.exitCode = 1;
             cmdInfo.newMessage(e);
             return null;
@@ -1089,7 +1166,7 @@ public class ConnectBroker {
             List<String> pkgsToInstall, List<String> pkgsToUninstall,
             List<String> pkgsToRemove) {
         return pkgRequest(pkgsToAdd, pkgsToInstall, pkgsToUninstall,
-                pkgsToRemove, true);
+                pkgsToRemove, true, false);
     }
 
     /**
@@ -1100,10 +1177,25 @@ public class ConnectBroker {
     public boolean pkgRequest(List<String> pkgsToAdd,
             List<String> pkgsToInstall, List<String> pkgsToUninstall,
             List<String> pkgsToRemove, boolean keepExisting) {
+        return pkgRequest(pkgsToAdd, pkgsToInstall, pkgsToUninstall,
+                pkgsToRemove, keepExisting, false);
+    }
+
+    /**
+     * @param keepExisting If false, the request will remove existing packages
+     *            that are not part of the resolution
+     * @param ignoreMissing Do not error out on missing packages, just handle
+     *            the rest
+     * @since 5.9.2
+     */
+    public boolean pkgRequest(List<String> pkgsToAdd,
+            List<String> pkgsToInstall, List<String> pkgsToUninstall,
+            List<String> pkgsToRemove, boolean keepExisting,
+            boolean ignoreMissing) {
         try {
             boolean cmdOk = true;
             // Add local files
-            cmdOk = pkgAdd(pkgsToAdd);
+            cmdOk = pkgAdd(pkgsToAdd, ignoreMissing);
             // Build solver request
             List<String> solverInstall = new ArrayList<String>();
             List<String> solverRemove = new ArrayList<String>();
@@ -1166,26 +1258,51 @@ public class ConnectBroker {
                 requestPackages.addAll(solverInstall);
                 requestPackages.addAll(solverRemove);
                 requestPackages.addAll(solverUpgrade);
-                String nonCompliantPkg = getPackageManager().getNonCompliant(
+                if (ignoreMissing) {
+                    // Remove unkown packages from the list
+                    Map<String, List<DownloadablePackage>> knownNames = getPackageManager().getAllPackagesByName();
+                    List<String> solverInstallCopy = new ArrayList<String>(
+                            solverInstall);
+                    for (String pkgToInstall : solverInstallCopy) {
+                        if (!knownNames.containsKey(pkgToInstall)) {
+                            log.warn("Unable to install pacakge: "
+                                    + pkgToInstall);
+                            solverInstall.remove(pkgToInstall);
+                            requestPackages.remove(pkgToInstall);
+                        }
+                    }
+                }
+                List<String> nonCompliantPkg = getPackageManager().getNonCompliantList(
                         requestPackages, targetPlatform);
-                if (nonCompliantPkg != null) {
+                if (nonCompliantPkg.size() > 0) {
                     requestPlatform = null;
                     if ("ask".equalsIgnoreCase(relax)) {
                         relax = readConsole(
-                                "Package %s is not available on platform version %s.\n"
+                                "Package %s not available on platform version %s.\n"
                                         + "Do you want to relax the constraint (yes/no)? [no] ",
-                                "no", nonCompliantPkg, targetPlatform);
+                                "no", StringUtils.join(nonCompliantPkg, ", "),
+                                targetPlatform);
                     }
 
                     if (Boolean.parseBoolean(relax)) {
                         log.warn(String.format(
-                                "Relax restriction to target platform %s because of package %s",
-                                targetPlatform, nonCompliantPkg));
+                                "Relax restriction to target platform %s because of package(s) %s",
+                                targetPlatform,
+                                StringUtils.join(nonCompliantPkg, ", ")));
                     } else {
-                        throw new PackageException(
-                                String.format(
-                                        "Package %s is not available on platform version %s (relax is not allowed)",
-                                        nonCompliantPkg, targetPlatform));
+                        if (ignoreMissing) {
+                            for (String pkgToInstall : nonCompliantPkg) {
+                                log.warn("Unable to install pacakge: "
+                                        + pkgToInstall);
+                                solverInstall.remove(pkgToInstall);
+                            }
+                        } else {
+                            throw new PackageException(
+                                    String.format(
+                                            "Package %s not available on platform version %s (relax is not allowed)",
+                                            StringUtils.join(nonCompliantPkg,
+                                                    ", "), targetPlatform));
+                        }
                     }
                 }
 
@@ -1268,6 +1385,7 @@ public class ConnectBroker {
             return cmdOk;
         } catch (PackageException e) {
             log.error(e);
+            log.debug(e, e);
             return false;
         }
     }
@@ -1278,8 +1396,17 @@ public class ConnectBroker {
      * @since 5.9.2
      */
     public boolean pkgSet(List<String> pkgList) {
+        return pkgSet(pkgList, false);
+    }
+
+    /**
+     * Installs a list of packages and uninstalls the rest (no dependency check)
+     *
+     * @since 5.9.6
+     */
+    public boolean pkgSet(List<String> pkgList, boolean ignoreMissing) {
         boolean cmdOK = true;
-        cmdOK = cmdOK && pkgInstall(pkgList);
+        cmdOK = cmdOK && pkgInstall(pkgList, ignoreMissing);
         List<DownloadablePackage> installedPkgs = getPackageManager().listInstalledPackages();
         List<String> pkgsToUninstall = new ArrayList<String>();
         for (DownloadablePackage pkg : installedPkgs) {
@@ -1478,7 +1605,7 @@ public class ConnectBroker {
         }
 
         throw new PackageException(
-                "Couldn't find a remote or local (relative to "
+                "Could not find a remote or local (relative to "
                         + "current directory or to NUXEO_HOME) "
                         + "package with name or ID " + pkg);
     }

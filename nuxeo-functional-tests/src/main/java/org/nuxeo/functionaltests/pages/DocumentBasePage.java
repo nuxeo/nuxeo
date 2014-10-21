@@ -28,6 +28,7 @@ import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.AddToCollectionForm;
 import org.nuxeo.functionaltests.pages.actions.ContextualActions;
 import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
+import org.nuxeo.functionaltests.pages.search.SearchPage;
 import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
@@ -121,6 +122,10 @@ public class DocumentBasePage extends AbstractPage {
     @Required
     @FindBy (linkText = "HOME")
     public WebElement homePageLink;
+
+    @Required
+    @FindBy (linkText = "SEARCH")
+    public WebElement searchPageLink;
 
     public DocumentBasePage(WebDriver driver) {
         super(driver);
@@ -358,6 +363,14 @@ public class DocumentBasePage extends AbstractPage {
     public HomePage goToHomePage() {
         homePageLink.click();
         return asPage(HomePage.class);
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public SearchPage goToSearchPage() {
+        searchPageLink.click();
+        return asPage(SearchPage.class);
     }
 
 }

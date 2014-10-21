@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,6 +16,10 @@
  *     Florent Guillaume
  *     Benoit Delbosc
  *     Antoine Taillefer
+ *     Anahide Tchertchian
+ *     Guillaume Renard
+ *     Mathieu Guillaume
+ *     Julien Carsique
  */
 package org.nuxeo.functionaltests;
 
@@ -38,7 +42,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,6 +50,26 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.MethodRule;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.Proxy;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.internal.WrapsElement;
+import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.Command;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.DriverCommand;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.functionaltests.fragment.WebFragment;
 import org.nuxeo.functionaltests.pages.AbstractPage;
@@ -61,26 +84,6 @@ import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.NoteCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.Proxy;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxBinary;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxProfile;
-import org.openqa.selenium.internal.WrapsElement;
-import org.openqa.selenium.remote.CapabilityType;
-import org.openqa.selenium.remote.Command;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.DriverCommand;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Wait;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
@@ -113,13 +116,6 @@ public abstract class AbstractTest {
      * @since 5.9.2
      */
     public static final int PAGE_LOAD_TIME_OUT_SECONDS = 60;
-
-    /**
-     * Helper to set FF binary path when running tests in eclipse
-     *
-     * @since 5.9.6
-     */
-    public static final String FIREFOX_DRIVER_PATH = "";
 
     /**
      * @since 5.7
@@ -221,11 +217,6 @@ public abstract class AbstractTest {
     }
 
     protected static void initFirefoxDriver() throws Exception {
-        FirefoxBinary binary = null;
-        if (!StringUtils.isEmpty(FIREFOX_DRIVER_PATH)) {
-            binary = new FirefoxBinary(new File(FIREFOX_DRIVER_PATH));
-        }
-
         DesiredCapabilities dc = DesiredCapabilities.firefox();
         FirefoxProfile profile = new FirefoxProfile();
         // Disable native events (makes things break on Windows)
@@ -321,17 +312,14 @@ public abstract class AbstractTest {
             // Does not work, but leave code for when it does
             // Workaround: use 127.0.0.2
             proxy.setNoProxy("");
+            // setProxyPreferences method does not exist with selenium version 2.43.0
             profile.setProxyPreferences(proxy);
+            // FIXME Should be dc.setCapability(CapabilityType.PROXY, proxy);
         }
         dc.setCapability(FirefoxDriver.PROFILE, profile);
-        if (binary == null) {
-            driver = new FirefoxDriver(dc);
-        } else {
-            driver = new FirefoxDriver(binary, profile, dc);
-        }
+        driver = new FirefoxDriver(dc);
     }
 
-    @SuppressWarnings("deprecation")
     protected static void initChromeDriver() throws Exception {
         if (System.getProperty(SYSPROP_CHROME_DRIVER_PATH) == null) {
             String chromeDriverDefaultPath = null;
@@ -411,7 +399,7 @@ public abstract class AbstractTest {
     }
 
     @AfterClass
-    public static void quitDriver() throws InterruptedException {
+    public static void quitDriver() {
         if (driver != null) {
             driver.quit();
             driver = null;
@@ -491,7 +479,7 @@ public abstract class AbstractTest {
             }
         }
         // turn into files
-        List<String> files = new ArrayList<String>(urls.length);
+        List<String> files = new ArrayList<>(urls.length);
         for (URL url : urls) {
             files.add(url.toURI().getPath());
         }
@@ -639,8 +627,8 @@ public abstract class AbstractTest {
                 AJAX_TIMEOUT_SECONDS), page);
         // check all required WebElements on the page and wait for their
         // loading
-        final List<String> fieldNames = new ArrayList<String>();
-        final List<WrapsElement> elements = new ArrayList<WrapsElement>();
+        final List<String> fieldNames = new ArrayList<>();
+        final List<WrapsElement> elements = new ArrayList<>();
         for (Field field : pageClassToProxy.getDeclaredFields()) {
             if (field.getAnnotation(Required.class) != null) {
                 try {
@@ -653,12 +641,13 @@ public abstract class AbstractTest {
             }
         }
 
-        Wait<T> wait = new FluentWait<T>(page).withTimeout(
-                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        Wait<T> wait = new FluentWait<>(page).withTimeout(LOAD_TIMEOUT_SECONDS,
+                TimeUnit.SECONDS).pollingEvery(POLLING_FREQUENCY_MILLISECONDS,
+                TimeUnit.MILLISECONDS);
 
         return wait.until(new Function<T, T>() {
-            public T apply(T page) {
+            @Override
+            public T apply(@SuppressWarnings("hiding") T page) {
                 String notLoaded = anyElementNotLoaded(elements, fieldNames);
                 if (notLoaded == null) {
                     return page;
@@ -752,7 +741,7 @@ public abstract class AbstractTest {
     /**
      * Login as Administrator
      *
-     * @return the Document base page (by default returned by nuxeo dm)
+     * @return the Document base page (by default returned by CAP)
      * @throws UserNotConnectedException
      */
     public DocumentBasePage login() throws UserNotConnectedException {

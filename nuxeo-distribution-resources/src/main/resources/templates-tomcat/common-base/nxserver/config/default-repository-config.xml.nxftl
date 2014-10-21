@@ -9,7 +9,7 @@
       <pool minPoolSize="${nuxeo.vcs["min-pool-size"]}" maxPoolSize="${nuxeo.vcs["max-pool-size"]}"
         blockingTimeoutMillis="${nuxeo.vcs["blocking-timeout-millis"]}" idleTimeoutMinutes="${nuxeo.vcs["idle-timeout-minutes"]}" />
 <#if "${nuxeo.core.binarymanager}" != "" >
-      <binaryManager class="${nuxeo.core.binarymanager}" />
+      <binaryManager class="${nuxeo.core.binarymanager}" key="${nuxeo.core.binarymanager_key}" />
 </#if>
       <clustering enabled="${repository.clustering.enabled}" delay="${repository.clustering.delay}" />
       <binaryStore path="${repository.binary.store}" />

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="Nuxeo Distribution" default="distrib" basedir=".">
+<project name="Nuxeo Distribution" default="package" basedir=".">
 
   <property file="build.properties" />
   <property name="mvn.opts" value="" />
@@ -20,8 +20,7 @@
       <arg value="./pom.xml" />
       <arg value="clean" />
       <arg value="package" />
-      <arg value="-Dmaven.test.skip=true" />
-      <arg value="-Pall-distributions" />
+      <arg value="-DskipTests=true" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
@@ -33,46 +32,7 @@
       <arg value="pom.xml" />
       <arg value="clean" />
       <arg value="package" />
-      <arg value="-Dmaven.test.skip=true" />
-      <arg value="-Pall-distributions" />
-      <arg value="${mvn.opts}" />
-    </exec>
-  </target>
-
-  <target name="list-available-distributions">
-    <echo message="Available distributions are:" />
-    <echo message="all-distributions    - build all available distributions (default)" />
-    <echo message="tomcat               - build all Tomcat distribution" />
-  </target>
-  <target name="choose-distrib" unless="distrib">
-    <input message="Which distribution do you want to build?"
-           validargs="tomcat,all-distributions"
-           addproperty="distrib" />
-  </target>
-  <target name="distrib"
-          depends="list-available-distributions,choose-distrib,distrib-unix,distrib-windows"
-          description="Build a distribution" />
-  <target name="distrib-unix" if="osfamily-unix">
-    <exec executable="mvn" failonerror="true">
-      <arg value="clean" />
-      <arg value="install" />
-      <arg value="package" />
-      <arg value="-Dmaven.test.skip=true" />
-      <arg value="-P" />
-      <arg value="${distrib}" />
-      <arg value="${mvn.opts}" />
-    </exec>
-  </target>
-  <target name="distrib-windows" if="osfamily-windows">
-    <exec executable="cmd" failonerror="true">
-      <arg value="/c" />
-      <arg value="mvn.bat" />
-      <arg value="clean" />
-      <arg value="install" />
-      <arg value="package" />
-      <arg value="-Dmaven.test.skip=true" />
-      <arg value="-P" />
-      <arg value="${distrib}" />
+      <arg value="-DskipTests=true" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>

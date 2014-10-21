@@ -3,31 +3,28 @@
 /* Corporate fonts */
 @font-face {
 font-family: 'Aregular';
-src: url('http://www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.eot');
-src: url('http://www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.eot?#iefix') format('embedded-opentype'),
-	 url('http://www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.woff') format('woff'),
-	 url('http://www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.ttf') format('truetype'),
-	 url('http://www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.svg#Aregular') format('svg');
+src: url('//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.eot');
+src: url('//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.eot?#iefix') format('embedded-opentype'),
+   url('//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.woff') format('woff'),
+   url('//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.ttf') format('truetype'),
+   url('//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.svg#Aregular') format('svg');
 font-weight: normal;
-font-style: normal;
-}
+font-style: normal;}
 
 @font-face {
 font-family: 'Ademi';
-src: url('http://www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.eot');
-src: url('http://www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.eot?#iefix') format('embedded-opentype'),
-	 url('http://www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.woff') format('woff'),
-	 url('http://www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.ttf') format('truetype'),
-	 url('http://www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.svg#Ademi') format('svg');
+src: url('//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.eot');
+src: url('//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.eot?#iefix') format('embedded-opentype'),
+   url('//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.woff') format('woff'),
+   url('//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.ttf') format('truetype'),
+   url('//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.svg#Ademi') format('svg');
 font-weight: normal;
-font-style: normal;
-}
+font-style: normal;}
 
 /* Global style + reset */
 body {
   height: 100%;
-  width: 100%;
-}
+  width: 100%;}
 
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,
 pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,
@@ -37,8 +34,7 @@ form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td {
   font: normal 13px "Aregular", Arial, sans-serif;
   color: #404040;
   margin: 0;
-  padding: 0;
-}
+  padding: 0;}
 
 body {
   background: url("../images/bg.png") no-repeat scroll right bottom #e2f6ff;}
@@ -46,82 +42,67 @@ body {
 hr {
   color: #fff;
   height: 1px;
-  margin: 20px 0 10px;
-}
+  margin: 20px 0 10px;}
 
 h1, h2, h3,
 h4, h5, h6 {
- font-family: "Ademi", Arial, sans-serif;
- font-weight: 200;
-}
+  font-family: "Ademi", Arial, sans-serif;
+  font-weight: 200;}
 
 h1 {
   font-size: 22px;
   margin: 0 0 15px;
-  color: #00adff;
-}
+  color: #00adff;}
 
 h2 {
   font-size: 16px;
   margin: 0.75em 0 0.5em 0;
-  color: #c30000;
-}
+  color: #c30000;}
 
 h3 {
   color: #2466a3;
   font-size: 14px;
-  margin: 15px 0 7px;
-}
+  margin: 15px 0 7px;}
 
 h4 {
   font-size: 14px;
-  color: #5290ca;
-}
+  color: #5290ca;}
 
 h5 {
   border-bottom: 1px solid #e8e8e8;
   font-size: 15px;
-  margin: 10px 0;
-}
+  margin: 10px 0;}
 
 h6 {
   font-size: 13px;
   border-bottom: 1px solid #e8e8e8;
-  margin: 0 0 5px;
-}
+  margin: 0 0 5px;}
 
 p {
   line-height: 150%;
-  margin: 3px 0 10px;
-}
+  margin: 3px 0 10px;}
 
 a,a:link,a:active,a:visited {
   color: #00adff;
-  text-decoration: none;
-}
+  text-decoration: none;}
 
 a:hover {
   color: #0079b3;
-  text-decoration: none;
-}
+  text-decoration: none;}
 
 ul {
-  margin-left: 2em;
-}
+  margin-left: 2em;}
 
 table {
-  border-collapse: collapse;
-}
+  border-collapse: collapse;}
 
 td {
   padding: 3px 20px 5px 0;
-  vertical-align: top;
-}
+  vertical-align: top;}
 
 b, strong, .bold {
   font-family: "Ademi", Arial, sans-serif;
-  font-weight: 200;
-}
+  font-weight: 200;}
 
 input[type="text"], input[type="password"], textarea {
   background-color: #fff;
@@ -133,22 +114,18 @@ input[type="text"], input[type="password"], textarea {
   margin: 0;
   outline: 0 none;
   padding: 0.65em 1em;
-  width: 100%;
-}
+  width: 100%;}
 
 textarea {
   border: 1px solid #dedede;
   font: 12px "Aregular", Arial, sans-serif;
-  padding: 2px 3px;
-}
+  padding: 2px 3px;}
 
 :focus {
-  outline-style: none;
-}
+  outline-style: none;}
 
 .centered-waiter {
- text-align: center;
-}
+ text-align: center;}
 
 /**** Page Layout ****/
 
@@ -160,12 +137,10 @@ textarea {
 
 #topbar a {
   display: inline-block;
-  padding: 0 0 0 1.5em;
-}
+  padding: 0 0 0 1.5em;}
 
 .visibility {
-  visibility: hidden;
-}
+  visibility: hidden;}
 
 /* Main Container */
 .container {
@@ -173,37 +148,31 @@ textarea {
   margin: auto; }
 
 #wizardFrame {
-  margin-top: 10px;
-}
+  margin-top: 10px;}
 
 .mainBlock {
   background-color: #fff;
-  padding: 0;
-}
+  padding: 0;}
 
 /* Left Column - steps */
 .leftCell {
   width: 15%;
   padding: 1.8em 0 2em;
-  background-color: #213f7d;
-}
+  background-color: #213f7d;}
 
 .navItem {
   margin: .2em 0;
   color: #7291a0;
   padding: .4em 1.5em;
-  padding-left: 3em;
-}
+  padding-left: 3em;}
 
 .navItem a {
   display: block;
-  text-decoration: none;
-}
+  text-decoration: none;}
 
 .navItemSelected {
   background-color: #fff;
-  color: #213f7d;
-}
+  color: #213f7d;}
 
 .navItemSelected a,
 .navItem a.checked,
@@ -212,70 +181,91 @@ textarea {
   font-family: "Ademi", Arial, sans-serif;
   font-weight: 200;
   padding: .1em 0 0 1.8em;
-  margin-left: -1.8em;
-}
+  margin-left: -1.8em;}
 
 .navItem a.checked {
-  color: #fff;
-}
+  color: #fff;}
 
 .navItem:hover a,
 .navItemSelected a,
 .navItemSelected a.checked {
-  color: #00adff;
-}
+  color: #00adff;}
 
 /* Main Column - content */
 .mainCell {
   width: 65%;
-  padding: 2em 4em;
-}
+  padding: 2em 4em;}
 
 .screenDescription {
-  font-size: 120%;
-}
+  font-size: 120%;}
 
 .screenExplanations,
 .warnBlock, .errBlock {
   background-color: #f7f8f9;
-  border-left: 1px solid #00aaff;
+  border-left: 1px solid #0af;
   color: #1275a9;
   display: block;
   margin: 1em 0;
-  padding: .5em 1em;
-}
+  padding: .5em 1em;}
 
 .warnBlock, .errBlock {
-  border-left: 1px solid #fc0000;
-}
+  border-left: 1px solid #fc0000;}
 
 .errItem,
 .warnBlock, .errBlock {
-  color: #d00;
-}
+  color: #d00;}
+
+.infoBlock {
+  background-color: #f7f8f9;
+  border-left: 1px solid blue;
+  color: #1275a9;
+  display: block;
+  margin: 1em 0;
+  padding: .5em 1em;}
+
+.infoItem {
+  color: #00B;}
+
+#wizardform h5 {
+  color: #213f7d ;
+	padding: 1.5em 0 .5em;}
 
 /* Tables & Forms */
 .labelCell {
   font-family: "Ademi", Arial, sans-serif;
   font-weight: 200;
   width: 200px;
-  vertical-align: middle;
-}
+  vertical-align: middle;}
 
 .helpCell,
 .detail {
-  color: #aaa;
-}
+  color: #aaa;}
 
 .helpCell {
-  padding-bottom: 1em;
-}
+  padding-bottom: 1em;}
+
+.serverconf td .helpCell,
+.userdirgeneral td .helpCell,
+.userdirmapping td .helpCell,
+.body-groupdir td .helpCell,
+.fieldmapping td .helpCell,
+.addconf td .helpCell,
+.serverconf td a,
+.userdirgeneral td a,
+.userdirmapping td a,
+.body-groupdir td a,
+.fieldmapping td a,
+.addconf td a {
+  display: inline-block;
+  padding: .3em 0 0 }
+
+#emergencySettings td:nth-child(2) {
+  padding-right: 0;}
 
 /* Buttons */
 .buttonContainer {
   margin: 1em 0;
-  text-align: right;
-}
+  text-align: right;}
 
 .glossyButton,a.glossyButton {
   background-color: #00adff;
@@ -286,48 +276,47 @@ textarea {
   font-weight: 200;
   margin-bottom: 1em;
   padding: .7em 1em;
-  transition: all 0.2s ease-in-out 0s;
-}
+  transition: all 0.2s ease-in-out 0s;}
 
 #btnPrev {
   background-color: #eee;
   color: #333;
-  float: left;
-}
+  float: left;}
 
 .glossyButton:hover,
 a.glossyButton:hover,
 #btnPrev:hover {
   background-color: #0075af;
   color: #fff;
-  cursor: pointer;
-}
+  cursor: pointer;}
 
 /* Step: Proxy - Step: SMTP */
 #proxySettings table,
 #proxyLogin table,
-table.smtp {
-  width: 100%
-}
+table.smtp,
+.serverconf table,
+.userdirgeneral table,
+.userdirmapping table,
+.body-groupdir table,
+.fieldmapping table,
+.addconf table {
+  width: 100%}
 
 /* Step: Modules download */
 .formPadding {
   overflow: auto;
   border-style: solid;
   border-width: 0;
-  margin-bottom: 1em;
-}
+  margin-bottom: 1em;}
 
 .formPadding ul {
   list-style: none outside none;
-  margin: 0;
-}
+  margin: 0;}
 
 .formPadding li {
   font-family: "Ademi",Arial,sans-serif;
   font-weight: 200;
-  padding: 0 0 .5em;
-}
+  padding: 0 0 .5em;}
 
 /* Step: Modules selection */
 #tree {
@@ -335,41 +324,34 @@ table.smtp {
   border-radius: 15px;
   float: left;
   margin: 1em 0 2em;
-  padding: .7em 1em .4em;
-}
+  padding: .7em 1em .4em;}
 
 #tree ul {
   margin-left: 0;
-  font-size:1.1em;
-}
+  font-size:1.1em;}
 
 #treeul input[type="checkbox"] {
-  margin: 0 .8em .7em 0;
-}
+  margin: 0 .8em .7em 0;}
 
 ul#treeul li {
   font-size: 14px;
   list-style: none;
-  padding: 0;
-}
+  padding: 0;}
 
 .hide, ul.hide,
 #treeul span,
 #treeul .expanded,
 #treeul .collapsed {
-  display: none;
-}
+  display: none;}
 
 .blocContainer {
   float: right;
-  margin: 1em .4em 2em 0;
-}
+  margin: 1em .4em 2em 0;}
 
 .presetLabel {
   font-size: 133%;
   font-family: "Ademi", Arial, sans-serif;
-  font-weight: 200;
-}
+  font-weight: 200;}
 
 .presetBtn {
   border: 1px solid #666;
@@ -378,12 +360,10 @@ ul#treeul li {
   cursor: pointer;
   display: inline-block;
   text-align: center;
-  border-radius: 0.5em;
-}
+  border-radius: 0.5em;}
 
 .presetBtn:hover {
-  background-color: #def;
-}
+  background-color: #def;}
 
 .nxpblock {
   border: 2px solid white;
@@ -394,65 +374,77 @@ ul#treeul li {
   font-weight: 200;
   border-radius: .5em;
   cursor: pointer;
-  padding: 7px 0;
-}
+  padding: 7px 0;}
 
 .nxpblock:hover {
-  box-shadow: 0 0 .3em #666;
-}
+  box-shadow: 0 0 .3em #666;}
 
 .unselectedBloc {
   filter: alpha(opacity=30);
-  opacity: .3;
-}
+  opacity: .3;}
 
 .nxprow {
   margin: 4px;
   width: 200px;
-  height: 34px;
-}
+  height: 34px;}
 /* Step: Summary*/
 .highlighted {
-  color: #00adff;
-}
+  color: #00adff;}
 
 /* Hidden Step: Package Download */
 .progressbar {
   margin-top: 10px;
-  margin-bottom: 30px;
-}
+  margin-bottom: 30px;}
 .downloadProgress {
   background-color: green;
   height: 12px;
-  border-radius: 2px;
-}
+  border-radius: 2px;}
 
 /* Footer style */
 .rightCell {
   width: 20%;
   padding: 0;
-  display: none;
-}
+  display: none;}
 
 .footer {
   padding: 1em;
   background-color: #404040;
   color: #aaa;
-  text-align: center;
-}
+  text-align: center;}
 
 .footer a, .footer a:visited, .footer a:hover {
-  color: #fff;
-}
+  color: #fff;}
 
 .footer span a {
   display: inline-block;
-  margin: 0 0.2em;
-}
+  margin: 0 0.2em;}
 
 .nuxeoIFrame {
   border: none;
   height: 600px;
   width: 250px;
-  background-color: #fff;
+  background-color: #fff;}
+
+/* User form */
+
+.required:after {
+  content: '*';
+  padding-left:0.2em;
+  color:red;
+  font-size:133%;
+}
+
+#checkNetwork, #checkAuth, #testUserLdapParam, #testGroupLdapParam {
+  background-color: #5c99bd;
+  border-radius: 0.2em;
+  color: white;
+  display: inline-block;
+  font-size: 80%;
+  line-height: 2em;
+  margin: 0.5em 0.2em;
+  padding: 0.2em 0.7em 0;
+}
+
+#checkNetwork:hover, #checkAuth:hover, #testUserLdapParam:hover, #testGroupLdapParam:hover {
+  background-color: #1ca3c9;
 }

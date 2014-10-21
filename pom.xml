@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -28,114 +29,26 @@
     <module>nuxeo-launcher</module>
     <module>nuxeo-distribution-resources</module>
     <module>nuxeo-distribution-tests</module>
+    <module>nuxeo-distribution-coreserver</module>
+    <module>nuxeo-distribution-cap</module>
+    <module>nuxeo-marketplace-dm</module>
+    <module>nuxeo-marketplace-dam</module>
+    <!-- The following is already aggregated by above nuxeo-marketplace-dam -->
+    <!-- <module>nuxeo-marketplace-dam/marketplace</module> -->
+    <module>nuxeo-distribution-social-collaboration</module>
+    <module>nuxeo-marketplace-social-collaboration</module>
+    <module>nuxeo-distribution-tomcat</module>
+    <!-- Functional Tests -->
+    <module>nuxeo-distribution-tomcat-wizard-tests</module>
+    <module>nuxeo-distribution-cap-webdriver-tests</module>
+    <module>nuxeo-distribution-cap-funkload-tests</module>
+    <module>nuxeo-distribution-cap-selenium-tests</module>
+    <module>nuxeo-social-collaboration-selenium-tests</module>
+    <!-- The following is already aggregated by above nuxeo-marketplace-dam -->
+    <!-- <module>nuxeo-marketplace-dam/ftest/webdriver</module> -->
   </modules>
 
   <profiles>
-    <profile>
-      <id>nuxeo-coreserver</id>
-      <modules>
-        <module>nuxeo-distribution-coreserver</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>nuxeo-cap</id>
-      <modules>
-        <module>nuxeo-distribution-coreserver</module>
-        <module>nuxeo-distribution-cap</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>nuxeo-dm</id>
-      <modules>
-        <module>nuxeo-distribution-coreserver</module>
-        <module>nuxeo-distribution-cap</module>
-        <module>nuxeo-distribution-dm</module>
-        <module>nuxeo-marketplace-dm</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>nuxeo-dam</id>
-      <modules>
-        <module>nuxeo-distribution-coreserver</module>
-        <module>nuxeo-distribution-cap</module>
-        <module>nuxeo-marketplace-dam</module>
-      </modules>
-    </profile>
-    <profile>
-      <!-- Build Tomcat distributions -->
-      <id>tomcat</id>
-      <modules>
-        <module>nuxeo-distribution-coreserver</module>
-        <module>nuxeo-distribution-cap</module>
-        <module>nuxeo-distribution-dm</module>
-        <module>nuxeo-marketplace-dm</module>
-        <module>nuxeo-marketplace-dam</module>
-        <module>nuxeo-distribution-social-collaboration</module>
-        <module>nuxeo-marketplace-social-collaboration</module>
-        <module>nuxeo-distribution-tomcat</module>
-      </modules>
-    </profile>
-    <profile>
-      <!-- Build all distributions -->
-      <id>all-distributions</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-        <module>nuxeo-distribution-coreserver</module>
-        <module>nuxeo-distribution-cap</module>
-        <module>nuxeo-distribution-dm</module>
-        <module>nuxeo-marketplace-dm</module>
-        <module>nuxeo-marketplace-dam</module>
-        <module>nuxeo-distribution-social-collaboration</module>
-        <module>nuxeo-marketplace-social-collaboration</module>
-        <module>nuxeo-distribution-tomcat</module>
-        <module>nuxeo-functional-tests</module>
-      </modules>
-    </profile>
-    <profile>
-      <!-- Run all tests -->
-      <id>all-tests</id>
-      <modules>
-        <module>nuxeo-distribution-tomcat-wizard-tests</module>
-        <module>nuxeo-distribution-dm/ftest/webdriver</module>
-        <module>nuxeo-distribution-dm/ftest/selenium</module>
-        <module>nuxeo-distribution-dm/ftest/funkload</module>
-        <module>nuxeo-distribution-social-collaboration/ftest/selenium</module>
-        <module>nuxeo-marketplace-dam/ftest/webdriver</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>itest</id>
-      <modules>
-        <module>nuxeo-distribution-tomcat-wizard-tests</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>ftest-dm</id>
-      <modules>
-        <module>nuxeo-distribution-dm/ftest/webdriver</module>
-        <module>nuxeo-distribution-dm/ftest/selenium</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>fltest-dm</id>
-      <modules>
-        <module>nuxeo-distribution-dm/ftest/funkload</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>ftest-dam</id>
-      <modules>
-        <module>nuxeo-marketplace-dam/ftest/webdriver</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>ftest-sc</id>
-      <modules>
-        <module>nuxeo-distribution-social-collaboration/ftest/selenium</module>
-      </modules>
-    </profile>
     <profile>
       <!-- Build SDK distributions for use in Nuxeo IDE -->
       <id>sdk</id>
@@ -253,18 +166,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-dm</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-dm</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-marketplace-dm</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
@@ -349,13 +250,6 @@
         <artifactId>nuxeo-distribution-resources</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
-        <classifier>templates-common-dm</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-resources</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
         <classifier>templates-tomcat</classifier>
       </dependency>
       <dependency>
@@ -409,6 +303,13 @@
         <artifactId>nuxeo-distribution-tests</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>pom</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution-cap-webdriver-tests</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>test-jar</type>
         <scope>test</scope>
       </dependency>
     </dependencies>

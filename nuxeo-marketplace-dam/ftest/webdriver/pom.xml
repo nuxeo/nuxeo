@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.marketplace.dam</groupId>
@@ -8,8 +9,8 @@
   </parent>
 
   <artifactId>nuxeo-distribution-dam-webdriver-tests</artifactId>
-  <name>Nuxeo DAM functional tests with WebDriver</name>
-  <description>Nuxeo DAM functional tests with WebDriver</description>
+  <name>Nuxeo DAM WebDriver Tests</name>
+  <description>WebDriver functional tests on Nuxeo DAM module</description>
 
   <dependencies>
     <dependency>
@@ -37,6 +38,22 @@
       <artifactId>nuxeo-functional-tests</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-cap-webdriver-tests</artifactId>
+      <scope>test</scope>
+      <type>test-jar</type>
+    </dependency>
   </dependencies>
 
   <build>
@@ -61,6 +78,7 @@
               <argLine>-Dlog4j.configuration=${file.uri.prefix}${basedir}/src/test/resources/log4j.xml
                 -Dnuxeo.log.dir=${project.build.directory}
               </argLine>
+              <reportNameSuffix>dam</reportNameSuffix>
             </configuration>
           </execution>
         </executions>
@@ -124,12 +142,6 @@
     </profile>
     <profile>
       <id>mysql</id>
-    </profile>
-    <profile>
-      <id>all-tests</id>
-      <properties>
-        <skipTests>false</skipTests>
-      </properties>
     </profile>
   </profiles>
 

@@ -21,9 +21,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
+import org.nuxeo.functionaltests.pages.search.SearchPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -170,44 +173,17 @@ public class Select2WidgetElement extends WebFragmentImpl {
      * @since 5.7.3
      */
     public void selectValue(final String value) {
-        WebElement select2Field = null;
-        if (mutliple) {
-            select2Field = element;
-        } else {
-            select2Field = element.findElement(By.xpath("a[contains(@class,'select2-choice select2-default')]"));
-        }
-        select2Field.click();
+        clickOnSelect2Field();
 
-        Wait<WebElement> wait = new FluentWait<WebElement>(
-                !mutliple ? driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH))
-                        : element.findElement(By.xpath(S2_MULTIPLE_INPUT_XPATH))).withTimeout(
-                SELECT2_LOADING_TIMEOUT, TimeUnit.SECONDS).pollingEvery(100,
-                TimeUnit.MILLISECONDS).ignoring(NoSuchElementException.class);
-
-        WebElement suggestInput = null;
-        if (mutliple) {
-            suggestInput = element.findElement(By.xpath("ul/li[@class='select2-search-field']/input"));
-        } else {
-            suggestInput = driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH));
-        }
+        WebElement suggestInput = getSuggestInput();
 
         char c;
         for (int i = 0; i < value.length(); i++) {
             c = value.charAt(i);
             suggestInput.sendKeys(c + "");
-            try {
-                Function<WebElement, Boolean> s2WaitFunction = new Select2Wait();
-                wait.until(s2WaitFunction);
-            } catch (TimeoutException e) {
-                if (i == (value.length() - 1)) {
-                    log.error("Suggestion definitly timed out with last letter : "
-                            + c + ". There is something wrong with select2");
-                    throw e;
-                }
-                log.warn("Suggestion timed out with letter : " + c
-                        + ". Let's try with next letter.");
-            }
         }
+
+        waitSelect2();
 
         if (getSuggestedEntries() != null && getSuggestedEntries().size() > 1) {
             log.warn("Suggestion for element "
@@ -242,37 +218,72 @@ public class Select2WidgetElement extends WebFragmentImpl {
      * @since 5.9.6
      */
     public List<WebElement> typeAndGetResult(final String value) {
-        WebElement select2Field = null;
-        if (mutliple) {
-            select2Field = element;
-        } else {
-            select2Field = element.findElement(By.xpath("a[contains(@class,'select2-choice select2-default')]"));
-        }
-        select2Field.click();
 
-        Wait<WebElement> wait = new FluentWait<WebElement>(
-                !mutliple ? driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH))
-                        : element.findElement(By.xpath(S2_MULTIPLE_INPUT_XPATH))).withTimeout(
-                SELECT2_LOADING_TIMEOUT, TimeUnit.SECONDS).pollingEvery(100,
-                TimeUnit.MILLISECONDS).ignoring(NoSuchElementException.class);
+        clickOnSelect2Field();
 
-        WebElement suggestInput = null;
-        if (mutliple) {
-            suggestInput = element.findElement(By.xpath("//ul/li[@class='select2-search-field']/input"));
-        } else {
-            suggestInput = driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH));
-        }
+        WebElement suggestInput = getSuggestInput();
 
         suggestInput.sendKeys(value);
         try {
-            Function<WebElement, Boolean> s2WaitFunction = new Select2Wait();
-            wait.until(s2WaitFunction);
+            waitSelect2();
         } catch (TimeoutException e) {
             log.warn("Suggestion timed out with input : " + value
                     + ". Let's try with next letter.");
         }
 
         return getSuggestedEntries();
+    }
+
+    /**
+     * Click on the select2 field.
+     *
+     * @since 5.9.6
+     */
+    private void clickOnSelect2Field() {
+        WebElement select2Field = null;
+        if (mutliple) {
+            select2Field = element;
+        } else {
+            select2Field = element.findElement(By.xpath("a[contains(@class,'select2-choice')]"));
+        }
+        select2Field.click();
+    }
+
+    /**
+     * @return The suggest input element.
+     *
+     * @since 5.9.6
+     */
+    private WebElement getSuggestInput() {
+        WebElement suggestInput = null;
+        if (mutliple) {
+            suggestInput = element.findElement(By.xpath("ul/li[@class='select2-search-field']/input"));
+        } else {
+            suggestInput = driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH));
+        }
+
+        return suggestInput;
+    }
+
+    /**
+     * Do a wait on the select2 field.
+     *
+     * @throws TimeoutException
+     *
+     * @since 5.9.6
+     */
+    private void waitSelect2()
+            throws TimeoutException {
+        Wait<WebElement> wait = new FluentWait<WebElement>(
+                !mutliple ? driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH))
+                        : element.findElement(By.xpath(S2_MULTIPLE_INPUT_XPATH))).withTimeout(
+                SELECT2_LOADING_TIMEOUT,
+                TimeUnit.SECONDS).pollingEvery(
+                100,
+                TimeUnit.MILLISECONDS).ignoring(
+                NoSuchElementException.class);
+        Function<WebElement, Boolean> s2WaitFunction = new Select2Wait();
+        wait.until(s2WaitFunction);
     }
 
     /**
@@ -306,5 +317,27 @@ public class Select2WidgetElement extends WebFragmentImpl {
             select2Field = element.findElement(By.xpath("a[contains(@class,'select2-choice select2-default')]"));
         }
         select2Field.click();
+    }
+
+    /**
+     * Type a value in the select2 and then simulate the enter key.
+     *
+     * @since 5.9.6
+     */
+    public SearchPage typeValueAndTypeEnter(String value) {
+        clickOnSelect2Field();
+
+        WebElement suggestInput = getSuggestInput();
+
+        suggestInput.sendKeys(value);
+        try {
+            waitSelect2();
+        } catch (TimeoutException e) {
+            log.warn("Suggestion timed out with input : " + value
+                    + ". Let's try with next letter.");
+        }
+        suggestInput.sendKeys(Keys.RETURN);
+
+        return AbstractTest.asPage(SearchPage.class);
     }
 }
