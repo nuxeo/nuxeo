@@ -2,9 +2,12 @@
 <component name="org.nuxeo.ecm.platform.spreadsheet.actions">
   <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
     <action id="contentViewSpreadsheet" order="90" icon="/icons/spreadsheet.png"
-            label="label.contentview.actions.spreadsheet" type="fancybox">
+            label="label.contentview.actions.spreadsheet" type="template">
       <category>CONTENT_VIEW_ACTIONS</category>
       <properties>
+        <property name="template">
+          /incl/action/spreadsheet_editor.xhtml
+        </property>
         <property name="iframe">#{spreadsheetActions.urlFor(contentView)}</property>
       </properties>
       <filter-id>contentViewShowSpreadsheet</filter-id>

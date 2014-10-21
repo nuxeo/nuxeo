@@ -1,0 +1,21 @@
+<ui:decorate template="/incl/action/fancybox_action_template.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:c="http://java.sun.com/jsp/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <ui:define name="with_fancybox_properties">
+
+    <a4j:jsFunction name="#{fancyboxIdPrefix}refreshContentView"
+      render="#{contentIdToBeReRendered}">
+      <nxu:actionListenerMethod
+        value="#{contentView.refreshAndRewindPageProvider()}" />
+    </a4j:jsFunction>
+
+    <c:set var="fancy_onClosed"
+       value="#{fancy_onClosed};#{fancyboxIdPrefix}refreshContentView()" />
+
+  </ui:define>
+
+</ui:decorate>
