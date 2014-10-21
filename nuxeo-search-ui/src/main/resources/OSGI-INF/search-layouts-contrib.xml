@@ -110,6 +110,7 @@
     <widget name="searchFilters" type="contentViewSearchLayout">
       <properties widgetMode="any">
         <property name="contentViewName">#{searchUIActions.currentContentViewName}</property>
+        <property name="ajaxReRender">searchPanelRight</property>
       </properties>
     </widget>
 
