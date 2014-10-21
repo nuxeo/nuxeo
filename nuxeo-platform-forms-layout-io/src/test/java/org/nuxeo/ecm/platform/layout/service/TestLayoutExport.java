@@ -276,7 +276,11 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         LayoutRowDefinition[] anyRows = anyLayout.getRows();
         assertEquals(1, anyRows.length);
         LayoutRowDefinition anyRow = anyRows[0];
-        assertNull(anyRow.getName());
+        if (isCompat) {
+            assertNull(anyRow.getName());
+        } else {
+            assertEquals("layout_row_0", anyRow.getName());
+        }
         assertEquals(0, anyRow.getProperties().size());
         String[] anyRowWidgets = anyRow.getWidgets();
         assertEquals(1, anyRowWidgets.length);
@@ -343,7 +347,11 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         }
 
         LayoutRowDefinition editRow = editRows[0];
-        assertNull(editRow.getName());
+        if (isCompat) {
+            assertNull(editRow.getName());
+        } else {
+            assertEquals("layout_row_0", editRow.getName());
+        }
         assertEquals(0, editRow.getProperties().size());
         String[] editRowWidgets = editRow.getWidgets();
         assertEquals(1, editRowWidgets.length);
@@ -401,7 +409,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertEquals(0, subWidget.getSubWidgetDefinitions().length);
 
         editRow = editRows[1];
-        assertNull(editRow.getName());
+        assertEquals("selection_property_row", editRow.getName());
         assertEquals(0, editRow.getProperties().size());
         editRowWidgets = editRow.getWidgets();
         assertEquals(1, editRowWidgets.length);
@@ -459,7 +467,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
 
         // check widgets with subwidgets refs in new export
         editRow = editRows[2];
-        assertNull(editRow.getName());
+        assertEquals("layout_row_2", editRow.getName());
         assertEquals(0, editRow.getProperties().size());
         editRowWidgets = editRow.getWidgets();
         assertEquals(1, editRowWidgets.length);
@@ -509,7 +517,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertEquals(0, subWidgetDef.getSubWidgetReferences().length);
 
         editRow = editRows[3];
-        assertNull(editRow.getName());
+        assertEquals("layout_row_3", editRow.getName());
         assertEquals(0, editRow.getProperties().size());
         editRowWidgets = editRow.getWidgets();
         assertEquals(1, editRowWidgets.length);

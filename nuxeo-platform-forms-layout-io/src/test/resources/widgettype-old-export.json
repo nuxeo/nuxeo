@@ -85,7 +85,10 @@
       "edit": [      {
         "rows":         [
           {"widgets": ["rendered_property"]},
-          {"widgets": ["selection_property"]}
+                    {
+            "name": "selection_property_row",
+            "widgets": [{"name": "selection_property"}]
+          }
         ],
         "widgets":         [
                     {

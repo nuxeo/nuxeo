@@ -722,8 +722,11 @@ public class JSONLayoutExporter {
         LayoutRowDefinition[] defRows = layoutDef.getRows();
         List<WidgetReference> widgetsToExport = new ArrayList<WidgetReference>();
         if (defRows != null) {
+            int rowIndex = -1;
             for (LayoutRowDefinition layoutRowDef : defRows) {
-                rows.add(exportToJson(layoutRowDef));
+                rowIndex++;
+                rows.add(exportToJson(layoutRowDef,
+                        layoutRowDef.getDefaultName(rowIndex)));
                 WidgetReference[] widgets = layoutRowDef.getWidgetReferences();
                 if (widgets != null) {
                     for (WidgetReference widget : widgets) {
@@ -851,11 +854,17 @@ public class JSONLayoutExporter {
         return res;
     }
 
-    public static JSONObject exportToJson(LayoutRowDefinition layoutRowDef) {
+    /**
+     * @since 6.0
+     */
+    public static JSONObject exportToJson(LayoutRowDefinition layoutRowDef,
+            String defaultRowName) {
         JSONObject json = new JSONObject();
         String name = layoutRowDef.getName();
         if (name != null) {
             json.element("name", name);
+        } else if (defaultRowName != null) {
+            json.element("name", defaultRowName);
         }
         JSONObject props = exportPropsByModeToJson(layoutRowDef.getProperties());
         if (!props.isEmpty()) {
@@ -872,6 +881,10 @@ public class JSONLayoutExporter {
             json.element("widgets", widgets);
         }
         return json;
+    }
+
+    public static JSONObject exportToJson(LayoutRowDefinition layoutRowDef) {
+        return exportToJson(layoutRowDef, null);
     }
 
     public static LayoutRowDefinition importLayoutRowDefinition(

@@ -128,7 +128,7 @@
                 <row>
                   <widget>rendered_property</widget>
                 </row>
-                <row>
+                <row name="selection_property_row">
                   <widget>selection_property</widget>
                 </row>
                 <row>

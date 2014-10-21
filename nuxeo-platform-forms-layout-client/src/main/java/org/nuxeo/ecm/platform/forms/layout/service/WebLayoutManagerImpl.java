@@ -456,7 +456,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             rowIndex++;
             String rowName = rowDef.getName();
             if (rowName == null) {
-                rowName = "layout_row_" + rowIndex;
+                rowName = rowDef.getDefaultName(rowIndex);
                 if (selectedRows != null) {
                     log.debug(String.format("Generating default name '%s' in "
                             + "layout '%s' for row or column at index %s",

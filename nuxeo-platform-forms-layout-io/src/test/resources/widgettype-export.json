@@ -49,7 +49,10 @@
         }
       ],
       "layouts": {"any": [      {
-        "rows": [{"widgets": [{"name": "field_0"}]}],
+        "rows": [        {
+          "name": "layout_row_0",
+          "widgets": [{"name": "field_0"}]
+        }],
         "widgets": [        {
           "name": "field_0",
           "type": "selectOneResource",
@@ -67,10 +70,13 @@
     "defaultPropertyValues": {"any": {"rendered": "true"}},
     "properties": {"layouts":     {
       "any": [      {
-        "rows": [{"widgets": [        {
-          "name": "required_property",
-          "category": "widgetTypeConfiguration"
-        }]}],
+        "rows": [        {
+          "name": "layout_row_0",
+          "widgets": [          {
+            "name": "required_property",
+            "category": "widgetTypeConfiguration"
+          }]
+        }],
         "widgets": [        {
           "name": "required_property",
           "type": "text",
@@ -96,10 +102,22 @@
       }],
       "edit": [      {
         "rows":         [
-          {"widgets": [{"name": "rendered_property"}]},
-          {"widgets": [{"name": "selection_property"}]},
-          {"widgets": [{"name": "subwidgets"}]},
-          {"widgets": [{"name": "subwidgetRefs"}]}
+                    {
+            "name": "layout_row_0",
+            "widgets": [{"name": "rendered_property"}]
+          },
+                    {
+            "name": "selection_property_row",
+            "widgets": [{"name": "selection_property"}]
+          },
+                    {
+            "name": "layout_row_2",
+            "widgets": [{"name": "subwidgets"}]
+          },
+                    {
+            "name": "layout_row_3",
+            "widgets": [{"name": "subwidgetRefs"}]
+          }
         ],
         "widgets":         [
                     {
