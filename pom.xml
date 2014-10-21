@@ -1084,11 +1084,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-imaging-transform</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-imaging-tiling</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
@@ -1312,16 +1307,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-virtualnavigation-web</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-wiki-jsf</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-wiki-webengine</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
