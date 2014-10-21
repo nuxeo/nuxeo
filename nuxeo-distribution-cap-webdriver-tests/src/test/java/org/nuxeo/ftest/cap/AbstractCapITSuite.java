@@ -27,14 +27,15 @@ import org.junit.runners.Suite;
  * @since 5.9.6
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ ITArchivedVersionsTest.class, ITCollectionsTest.class,
-        ITContextualActionsTest.class, ITCopyPasteTest.class,
-        ITDefaultWorkflowTest.class, ITDnDImportTest.class,
-        ITDocumentRelationTest.class, ITFileUploadTest.class,
-        ITLoginLogoutTest.class, ITLogsViewerTest.class,
-        ITModifyWorkspaceDescriptionTest.class, ITNoteDocumentTest.class,
-        ITRichfileUploadTest.class, ITRSSAtomExportTest.class,
-        ITSafeEditTest.class, ITSearchTest.class, ITSelect2Test.class,
+@Suite.SuiteClasses({ ITAggregatesTest.class, ITArchivedVersionsTest.class,
+        ITCollectionsTest.class, ITContextualActionsTest.class,
+        ITCopyPasteTest.class, ITDefaultWorkflowTest.class,
+        ITDnDImportTest.class, ITDocumentRelationTest.class,
+        ITFileUploadTest.class, ITLoginLogoutTest.class,
+        ITLogsViewerTest.class, ITModifyWorkspaceDescriptionTest.class,
+        ITNoteDocumentTest.class, ITRichfileUploadTest.class,
+        ITRSSAtomExportTest.class, ITSafeEditTest.class,
+        ITSuggestBoxTest.class, ITSelect2Test.class,
         ITSelectAndFilterTest.class, ITTaggingTest.class, ITUsersTest.class,
         ITVocabularyTest.class })
 public abstract class AbstractCapITSuite {

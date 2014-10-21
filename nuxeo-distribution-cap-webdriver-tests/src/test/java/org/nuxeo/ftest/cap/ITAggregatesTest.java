@@ -31,10 +31,11 @@ import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
-import org.nuxeo.functionaltests.pages.SearchLayoutSubPage;
-import org.nuxeo.functionaltests.pages.SearchPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
+import org.nuxeo.functionaltests.pages.search.DefaultSearchSubPage;
+import org.nuxeo.functionaltests.pages.search.SearchPage;
+import org.nuxeo.functionaltests.pages.search.SearchResultsSubPage;
 import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.openqa.selenium.By;
@@ -111,7 +112,10 @@ public class ITAggregatesTest extends AbstractTest {
             IOException {
         DocumentBasePage documentBasePage = loginAsTestUser();
         SearchPage searchPage = documentBasePage.goToSearchPage();
-        SearchLayoutSubPage searchLayoutSubPage = searchPage.getSearchLayoutSubPage();
+        SearchResultsSubPage resultPanelSubPage = searchPage.getSearchResultsSubPage();
+        final int nbCurrentDoc = resultPanelSubPage.getNumberOfDocumentInCurrentPage();
+        assertTrue(nbCurrentDoc > 1);
+        DefaultSearchSubPage searchLayoutSubPage = searchPage.getDefaultSearch();
         Map<String, Integer> coverageAgg = searchLayoutSubPage.getAvailableCoverageAggregate();
         assertEquals(1, coverageAgg.size());
         assertEquals(new Integer(1), coverageAgg.get(COVERAGE));
@@ -120,6 +124,11 @@ public class ITAggregatesTest extends AbstractTest {
         for (String subject : SUBJECTS) {
             assertEquals(new Integer(1), subjectsAgg.get(subject));
         }
+
+        searchPage = searchLayoutSubPage.selectCoverageAggregate(COVERAGE);
+        resultPanelSubPage = searchPage.getSearchResultsSubPage();
+        assertEquals(1, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
+
         logout();
     }
 

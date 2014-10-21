@@ -27,10 +27,12 @@ import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
-import org.nuxeo.functionaltests.pages.QuickSearchPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserViewTabSubPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
+import org.nuxeo.functionaltests.pages.search.QuickSearchSubPage;
+import org.nuxeo.functionaltests.pages.search.SearchPage;
+import org.nuxeo.functionaltests.pages.search.SearchResultsSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -39,7 +41,7 @@ import org.openqa.selenium.WebElement;
  *
  * @since 5.9.6
  */
-public class ITSearchTest extends
+public class ITSuggestBoxTest extends
         AbstractTest {
 
     private final static String WORKSPACE_TITLE = "WorkspaceTitle"
@@ -175,11 +177,14 @@ public class ITSearchTest extends
                 driver,
                 driver.findElement(By.xpath(XPATH_SUGGESTBOX)),
                 true);
-        QuickSearchPage quickSearchPage = searchElement.typeValueAndTypeEnter("Administrator");
+        SearchPage searchPage = searchElement.typeValueAndTypeEnter("Administrator");
+        assertTrue(searchPage.isQuickSearch());
+        QuickSearchSubPage quickSearchPage = searchPage.getQuickSearch();
+        SearchResultsSubPage searchResultsSubPage = searchPage.getSearchResultsSubPage();
         // Tests the results
         assertEquals("Administrator", quickSearchPage.textSearchElement.getAttribute("value"));
-        assertEquals("Quick search", quickSearchPage.getSearchResultsSubPage().searchViewTitle.getText());
-        List<WebElement> listResults = quickSearchPage.getSearchResultsSubPage().getListResults();
+        assertEquals("Quick search", searchResultsSubPage.searchViewTitle.getText());
+        List<WebElement> listResults = searchResultsSubPage.getListResults();
         assertTrue(listResults.size() > 0);
     }
 
@@ -190,7 +195,8 @@ public class ITSearchTest extends
                 driver,
                 driver.findElement(By.xpath(XPATH_SUGGESTBOX)),
                 true);
-        QuickSearchPage quickSearchPage = searchElement.typeValueAndTypeEnter(VALUE_WITH_SPECIALS_CHAR);
-        assertEquals(VALUE_WITH_SPECIALS_CHAR, quickSearchPage.textSearchElement.getAttribute("value"));
+        SearchPage searchPage = searchElement.typeValueAndTypeEnter(VALUE_WITH_SPECIALS_CHAR);
+        assertTrue(searchPage.isQuickSearch());
+        assertEquals(VALUE_WITH_SPECIALS_CHAR, searchPage.getQuickSearch().textSearchElement.getAttribute("value"));
     }
 }
