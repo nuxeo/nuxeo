@@ -535,6 +535,13 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertEquals("localSubWidget", subWidgetRef.getName());
         assertTrue(StringUtils.isBlank(subWidgetRef.getCategory()));
 
+        // check clone (non-regression test for NXP-15594)
+        WidgetDefinition clone = withSubwidgetRefs.clone();
+        assertEquals(1, clone.getSubWidgetReferences().length);
+        assertNotNull(clone.getSubWidgetReferences()[0]);
+        assertEquals("localSubWidget",
+                clone.getSubWidgetReferences()[0].getName());
+
         WidgetDefinition subWidgetRefDef = editLayout.getWidgetDefinition("localSubWidget");
         assertNotNull(subWidgetRefDef);
         assertEquals("localSubWidget", subWidgetRefDef.getName());
