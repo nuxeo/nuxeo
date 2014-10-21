@@ -106,6 +106,10 @@
       <subWidgets>
         <widget name="driveMetadataLayout" type="toggleableDocumentLayoutWithForms">
           <properties widgetMode="any">
+            <property name="initialDocumentMode">drive</property>
+            <property name="initialDocumentModeFallback">view</property>
+            <property name="toggledDocumentMode">drive</property>
+            <property name="toggledDocumentModeFallback">edit</property>
             <property name="hideDefaultActions">true</property>
             <property name="additionalActionsCategory">DRIVE_METADATA_VIEW_FORM_ACTION
             </property>
