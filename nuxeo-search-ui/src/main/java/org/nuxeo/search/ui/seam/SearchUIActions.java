@@ -280,6 +280,11 @@ public class SearchUIActions implements Serializable {
         contentViewActions.refreshAndRewind(getCurrentContentViewName());
     }
 
+    public void refreshAndRewindAndResetAggregates() throws ClientException {
+        contentViewActions.resetAggregates(getCurrentContentViewName());
+        contentViewActions.refreshAndRewind(getCurrentContentViewName());
+    }
+
     /*
      * ----- Load / Save searches -----
      */
