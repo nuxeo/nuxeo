@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
-import org.nuxeo.functionaltests.pages.QuickSearchPage;
+import org.nuxeo.functionaltests.pages.search.SearchPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
@@ -181,18 +181,9 @@ public class Select2WidgetElement extends WebFragmentImpl {
         for (int i = 0; i < value.length(); i++) {
             c = value.charAt(i);
             suggestInput.sendKeys(c + "");
-            try {
-                waitSelect2();
-            } catch (TimeoutException e) {
-                if (i == (value.length() - 1)) {
-                    log.error("Suggestion definitly timed out with last letter : "
-                            + c + ". There is something wrong with select2");
-                    throw e;
-                }
-                log.warn("Suggestion timed out with letter : " + c
-                        + ". Let's try with next letter.");
-            }
         }
+
+        waitSelect2();
 
         if (getSuggestedEntries() != null && getSuggestedEntries().size() > 1) {
             log.warn("Suggestion for element "
@@ -253,7 +244,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
         if (mutliple) {
             select2Field = element;
         } else {
-            select2Field = element.findElement(By.xpath("a[contains(@class,'select2-choice select2-default')]"));
+            select2Field = element.findElement(By.xpath("a[contains(@class,'select2-choice')]"));
         }
         select2Field.click();
     }
@@ -333,7 +324,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
      *
      * @since 5.9.6
      */
-    public QuickSearchPage typeValueAndTypeEnter(String value) {
+    public SearchPage typeValueAndTypeEnter(String value) {
         clickOnSelect2Field();
 
         WebElement suggestInput = getSuggestInput();
@@ -347,6 +338,6 @@ public class Select2WidgetElement extends WebFragmentImpl {
         }
         suggestInput.sendKeys(Keys.RETURN);
 
-        return AbstractTest.asPage(QuickSearchPage.class);
+        return AbstractTest.asPage(SearchPage.class);
     }
 }
