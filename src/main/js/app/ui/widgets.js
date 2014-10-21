@@ -58,7 +58,9 @@ export const WIDGET_TYPES = {
     type: 'date',
     dateFormat: 'yy-mm-ddT00:00:00.000'
   },
-
+  int: {
+    type: 'numeric'
+  },
   // SELECT
   selectOneDirectory: {
     editor: 'directory'
