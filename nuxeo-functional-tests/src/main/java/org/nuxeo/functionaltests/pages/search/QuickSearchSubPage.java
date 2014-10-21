@@ -14,42 +14,28 @@
  * Contributors:
  *     <a href="mailto:glefevre@nuxeo.com">Gildas</a>
  */
-package org.nuxeo.functionaltests.pages;
+package org.nuxeo.functionaltests.pages.search;
 
-import java.util.List;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.Required;
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 /**
- * Sub page containing the results of a search.
- *
- * @since 5.9.6
+ * @since 6.0
  */
-public class SearchResultsSubPage extends AbstractPage {
+public class QuickSearchSubPage extends AbstractSearchSubPage {
 
-    private static final String SEARCH_RESULTS_XPATH = "//div[@class='bubbleBox bubbleListing ']";
+    protected static final Log log = LogFactory.getLog(QuickSearchSubPage.class);
 
     @Required
-    @FindBy(xpath = "//div[@id='nxl_gridSearchLayout:nxw_searchResults_panel']/div/div/h3")
-    public WebElement searchViewTitle;
+    @FindBy(id = "nxl_gridSearchLayout:nxw_searchLayout_form:nxl_simple_search_layout:nxw_ecm_fulltext")
+    public WebElement textSearchElement;
 
-    public SearchResultsSubPage(WebDriver driver) {
+    public QuickSearchSubPage(WebDriver driver) {
         super(driver);
     }
 
-    /**
-     * @return the list of results of the search.
-     */
-    public List<WebElement> getListResults() {
-        try {
-            return driver.findElements(By.xpath(SEARCH_RESULTS_XPATH));
-        } catch (NoSuchElementException e) {
-            return null;
-        }
-    }
 }

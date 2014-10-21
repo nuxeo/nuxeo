@@ -14,34 +14,29 @@
  * Contributors:
  *     <a href="mailto:grenard@nuxeo.com">Guillaume</a>
  */
-package org.nuxeo.functionaltests.pages;
+package org.nuxeo.functionaltests.pages.search;
 
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 /**
- *
- *
  * @since 5.9.6
  */
-public class SearchPage extends DocumentBasePage {
+public abstract class AbstractSearchSubPage extends AbstractPage {
 
-    @FindBy(id= "nxl_gridSearchLayout:nxw_searchForm_panel")
     @Required
-    protected WebElement searchFormPanel;
+    @FindBy(id = "nxl_gridSearchLayout:nxw_searchLayout_form:nxw_searchActions_clearSearch")
+    public WebElement clearButton;
 
-    @FindBy(id= "nxl_gridSearchLayout:nxw_searchResults_panel")
     @Required
-    protected WebElement searchResultPanel;
+    @FindBy(id = "nxl_gridSearchLayout:nxw_searchLayout_form:nxw_searchActions_submitSearch")
+    public WebElement filterButton;
 
-    public SearchPage(WebDriver driver) {
+    public AbstractSearchSubPage(WebDriver driver) {
         super(driver);
-    }
-
-    public SearchLayoutSubPage getSearchLayoutSubPage() {
-        return asPage(SearchLayoutSubPage.class);
     }
 
 }

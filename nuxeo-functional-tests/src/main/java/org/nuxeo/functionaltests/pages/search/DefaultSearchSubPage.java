@@ -14,11 +14,11 @@
  * Contributors:
  *     <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
  */
-package org.nuxeo.functionaltests.pages;
+package org.nuxeo.functionaltests.pages.search;
 
 import java.util.Map;
 
-import org.nuxeo.functionaltests.pages.aggregates.CheckBoxAggregateElements;
+import org.nuxeo.functionaltests.pages.search.aggregates.CheckBoxAggregateElements;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -26,7 +26,7 @@ import org.openqa.selenium.support.FindBy;
 /**
  * @since 5.9.6
  */
-public class SearchLayoutSubPage extends AbstractPage {
+public class DefaultSearchSubPage extends AbstractSearchSubPage {
 
     @FindBy(id = "nxl_gridSearchLayout:nxw_searchLayout_form:nxl_default_search_layout:nxw_dc_coverage_agg")
     protected WebElement coverageAggregate;
@@ -43,7 +43,7 @@ public class SearchLayoutSubPage extends AbstractPage {
     @FindBy(id = "nxl_gridSearchLayout:nxw_searchLayout_form:nxl_default_search_layout:nxw_dc_subjects_agg")
     protected WebElement subjectsAggregate;
 
-    public SearchLayoutSubPage(WebDriver driver) {
+    public DefaultSearchSubPage(WebDriver driver) {
         super(driver);
     }
 
@@ -85,5 +85,30 @@ public class SearchLayoutSubPage extends AbstractPage {
 
     public WebElement getSubjectsAggregate() {
         return subjectsAggregate;
+    }
+
+    public SearchPage selectCoverageAggregate(String label) {
+        new CheckBoxAggregateElements(driver, coverageAggregate).selectOrUnselect(label);
+        return asPage(SearchPage.class);
+    }
+
+    public SearchPage selectCreatedAggregate(String label) {
+        new CheckBoxAggregateElements(driver, createdAggregate).selectOrUnselect(label);
+        return asPage(SearchPage.class);
+    }
+
+    public SearchPage selectModifiedAggregate(String label) {
+        new CheckBoxAggregateElements(driver, modifiedAggregate).selectOrUnselect(label);
+        return asPage(SearchPage.class);
+    }
+
+    public SearchPage selectSizeAggregate(String label) {
+        new CheckBoxAggregateElements(driver, sizeAggregate).selectOrUnselect(label);
+        return asPage(SearchPage.class);
+    }
+
+    public SearchPage selectSubjectsAggregate(String label) {
+        new CheckBoxAggregateElements(driver, subjectsAggregate).selectOrUnselect(label);
+        return asPage(SearchPage.class);
     }
 }
