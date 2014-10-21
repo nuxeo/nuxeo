@@ -1458,7 +1458,7 @@
           <field>['mail.store.host']</field>
         </fields>
       </widget>
-      <widget name="mail.store.port" type="int">
+      <widget name="mail.store.port" type="text">
         <labels>
           <label mode="any">label.setup.mail.store.port</label>
         </labels>
@@ -1519,7 +1519,7 @@
         <properties mode="edit">
         </properties>
       </widget>
-      <widget name="mail.transport.port" type="int">
+      <widget name="mail.transport.port" type="text">
         <labels>
           <label mode="any">label.setup.mail.transport.port</label>
         </labels>
