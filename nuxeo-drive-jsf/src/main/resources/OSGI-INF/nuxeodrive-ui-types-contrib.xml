@@ -6,12 +6,6 @@
   <extension target="org.nuxeo.ecm.platform.types.TypeService"
     point="types">
 
-    <type id="Folder">
-      <layouts mode="drive">
-        <layout>heading</layout>
-      </layouts>
-    </type>
-
     <type id="File">
       <layouts mode="drive">
         <layout>heading</layout>
@@ -27,10 +21,21 @@
       </layouts>
     </type>
 
-    <type id="Picture">
+    <type id="Workspace">
       <layouts mode="drive">
         <layout>heading</layout>
-        <layout>dublincore</layout>
+      </layouts>
+    </type>
+
+    <type id="Folder">
+      <layouts mode="drive">
+        <layout>heading</layout>
+      </layouts>
+    </type>
+
+    <type id="OrderedFolder">
+      <layouts mode="drive">
+        <layout>heading</layout>
       </layouts>
     </type>
 
