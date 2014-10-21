@@ -3484,11 +3484,13 @@
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat</artifactId>
         <version>${tomcat.version}</version>
+        <type>zip</type>
       </dependency>
       <dependency>
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat</artifactId>
         <version>${tomcat.version}</version>
+        <type>zip</type>
         <classifier>light</classifier>
       </dependency>
       <dependency>
