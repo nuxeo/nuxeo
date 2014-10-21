@@ -5,8 +5,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
 
   <c:set var="canHaveMainBlob" value="#{!empty currentDocumentAsBlobHolder}" />
   <c:set var="hasMainBlob" value="#{!empty currentDocumentAsBlobHolder.blob}" />
@@ -61,8 +60,6 @@
             </div>
           </td>
           <td class="actionsColumn">
-            <nxl:widgetType name="documentAction" actionId="driveEdit" value="#{currentDocument}"
-              mode="view" actionsDisplay="icons"/>
             <nxu:methodResult name="editable"
               value="#{liveEditHelper.isDocumentLiveEditable(currentDocument, 'file', 'content')}">
               <h:outputLink value="#{nxd:liveEditUrl(currentDocument, 'file', 'content', 'filename')}"

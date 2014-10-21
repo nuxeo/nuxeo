@@ -7,7 +7,6 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxdir="http://nuxeo.org/nxdirectory"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout"
   id="#{widget.id}">
 
   <c:if test="#{widget.mode != 'create' and widget.mode != 'edit' and field_0 != null}">
@@ -36,8 +35,6 @@
     <nxu:set var="document"
       value="#{nxu:test(empty widgetProperty_document, value, widgetProperty_document)}"
       cache="true">
-    <nxl:widgetType name="documentAction" actionId="driveEdit" value="#{document}"
-      mode="view" actionsDisplay="icons"/>
     <nxu:set var="isLiveEditable"
       value="#{liveEditHelper.isLiveEditable(document, field_0)}">
       <h:panelGroup
