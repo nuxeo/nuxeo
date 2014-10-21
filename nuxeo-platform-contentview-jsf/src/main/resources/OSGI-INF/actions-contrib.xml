@@ -89,17 +89,6 @@
       <filter-id>contentViewShowSyndicationLinks</filter-id>
     </action>
 
-    <action id="triggerContentViewSlideshow" order="70"
-      label="label.contentview.trigger.slideshow" type="template">
-      <category>CONTENT_VIEW_ACTIONS</category>
-      <properties>
-        <property name="template">
-          /incl/action/content_view_slideshow.xhtml
-        </property>
-      </properties>
-      <filter-id>contentViewShowSlideshow</filter-id>
-    </action>
-
     <action id="contentViewEditColumns" order="80"
       label="label.contentview.edit.columns" type="fancybox" icon="/icons/edit_columns.png">
       <category>CONTENT_VIEW_ACTIONS</category>
@@ -174,16 +163,6 @@
           #{nxu:test(empty showSyndicationLinks,
           contentView.currentResultLayout.showSyndicationLinks,
           showSyndicationLinks)}
-        </condition>
-      </rule>
-    </filter>
-
-    <filter id="contentViewShowSlideshow">
-      <rule grant="true">
-        <condition>
-          #{nxu:test(empty showSlideshow,
-          contentView.currentResultLayout.showSlideshow,
-          showSlideshow)}
         </condition>
       </rule>
     </filter>
