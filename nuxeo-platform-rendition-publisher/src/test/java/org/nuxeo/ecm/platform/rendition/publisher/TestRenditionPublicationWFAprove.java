@@ -80,6 +80,7 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.publisher.core.contrib",
         "org.nuxeo.ecm.platform.publisher.core",
         "org.nuxeo.ecm.platform.publisher.task",
+        "org.nuxeo.ecm.platform.usermanager",
         TaskUTConstants.CORE_BUNDLE_NAME, TaskUTConstants.TESTING_BUNDLE_NAME,
         "org.nuxeo.ecm.platform.rendition.publisher" })
 @LocalDeploy({
