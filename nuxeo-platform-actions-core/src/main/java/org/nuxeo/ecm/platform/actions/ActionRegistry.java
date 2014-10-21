@@ -123,7 +123,7 @@ public class ActionRegistry implements Serializable {
     }
 
     protected void applyCompatibility(Action finalAction) {
-        if (finalAction.getType() == null) {
+        if (finalAction != null && finalAction.getType() == null) {
             // iterate over all categories to apply compat
             String[] cats = finalAction.getCategories();
             if (cats != null) {
@@ -137,7 +137,7 @@ public class ActionRegistry implements Serializable {
     }
 
     protected boolean applyCompatibility(String category, Action finalAction) {
-        if (finalAction.getType() == null) {
+        if (finalAction != null && finalAction.getType() == null) {
             for (TypeCompatibility compat : typeCategoryRelations) {
                 for (String compatCategory : compat.getCategories()) {
                     if (StringUtils.equals(compatCategory, category)) {
