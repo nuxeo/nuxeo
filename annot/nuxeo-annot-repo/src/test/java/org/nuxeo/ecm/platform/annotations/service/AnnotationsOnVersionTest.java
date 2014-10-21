@@ -16,16 +16,16 @@
  */
 package org.nuxeo.ecm.platform.annotations.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -259,10 +259,8 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
                 uriVersion1.toASCIIString());
 
         session.save();
-        closeSession();
         waitForAsyncExec();
         DatabaseHelper.DATABASE.sleepForFulltext();
-        openSession();
 
         results = session.query(
                 "SELECT * FROM Document WHERE ecm:fulltext = 'zombie'", 10);
