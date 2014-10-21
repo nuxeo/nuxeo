@@ -33,7 +33,7 @@ class DocumentEditor extends Select2Editor {
   }
 
   formatter(doc) {
-    return doc.title;
+    return doc.text || doc.title;
   }
 
   getEntryId(item) {

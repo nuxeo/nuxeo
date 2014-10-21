@@ -29,7 +29,7 @@ class UserEditor extends Select2Editor {
   }
 
   formatter(entry) {
-    return entry.displayLabel;
+    return entry.text || entry.displayLabel;
   }
 }
 
