@@ -19,6 +19,17 @@
       <filter-id>hasPictureFacet</filter-id>
     </action>
 
+    <action id="triggerContentViewSlideshow" order="70"
+      label="label.contentview.trigger.slideshow" type="template">
+      <category>CONTENT_VIEW_ACTIONS</category>
+      <properties>
+        <property name="template">
+          /incl/action/content_view_slideshow.xhtml
+        </property>
+      </properties>
+      <filter-id>contentViewShowSlideshow</filter-id>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -40,6 +51,16 @@
     <filter id="hasPictureFacet">
       <rule grant="true">
         <facet>Picture</facet>
+      </rule>
+    </filter>
+
+    <filter id="contentViewShowSlideshow">
+      <rule grant="true">
+        <condition>
+          #{nxu:test(empty showSlideshow,
+          contentView.currentResultLayout.showSlideshow,
+          showSlideshow)}
+        </condition>
       </rule>
     </filter>
 
