@@ -35,8 +35,9 @@ gulp.task('clean', function (cb) {
 });
 
 gulp.task('images', function () {
-  var styles = gulp.src([JQUERY_UI_THEME + '/images/**/*'])
-      .pipe(gulp.dest(DEST + '/styles/images'));
+  var styles = gulp.src([JQUERY_UI_THEME + '/**/*.{png,gif}',
+    'app/bower_components/select2/*.{png,gif}'])
+      .pipe(gulp.dest(DEST + '/styles'));
   var app = gulp.src(['app/images/**/*'])
       .pipe(gulp.dest(DEST + '/images'));
 
