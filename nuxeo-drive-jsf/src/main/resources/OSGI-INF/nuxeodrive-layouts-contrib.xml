@@ -106,7 +106,6 @@
       <subWidgets>
         <widget name="driveMetadataLayout" type="toggleableDocumentLayoutWithForms">
           <properties widgetMode="any">
-            <property name="useAjaxForm">false</property>
             <property name="hideDefaultActions">true</property>
             <property name="additionalActionsCategory">DRIVE_METADATA_VIEW_FORM_ACTION
             </property>
