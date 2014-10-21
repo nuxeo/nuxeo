@@ -114,8 +114,13 @@ function findLabel(id, entries) {
 }
 
 function getLabels(ctx, column, ids) {
-  var field = column.widget.field;
-  var directoryEntries = ctx[column.widget.properties.directoryName][field];
+  var field = column.widget.field,
+      directoryName = column.widget.properties.directoryName;
+
+  if(!ctx[directoryName]) {
+    return ids;
+  }
+  var directoryEntries = ctx[directoryName][field];
   return ids.map((id) => findLabel(id, directoryEntries));
 
 }
