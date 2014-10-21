@@ -35,6 +35,13 @@ public interface LayoutRowDefinition extends Serializable {
     String getName();
 
     /**
+     * Returns the default name for this row, given an index.
+     *
+     * @since 6.0
+     */
+    String getDefaultName(int index);
+
+    /**
      * Returns true if this row should be considered selected by default
      */
     boolean isSelectedByDefault();

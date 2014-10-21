@@ -59,7 +59,6 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
      * @param name the row name
      * @param widget the widget name
      * @param category the category
-     *
      * @since 5.6
      */
     public LayoutRowDefinitionImpl(String name, String widget, String category) {
@@ -115,6 +114,11 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String getDefaultName(int index) {
+        return "layout_row_" + index;
     }
 
     @Override
