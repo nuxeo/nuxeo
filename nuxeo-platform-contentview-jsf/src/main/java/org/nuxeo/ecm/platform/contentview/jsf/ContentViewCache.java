@@ -204,6 +204,26 @@ public class ContentViewCache implements Serializable {
     }
 
     /**
+     * Resets page providers aggregates.
+     *
+     * @since 5.9.6
+     */
+    public void resetPageProviderAggregates(String contentViewName) {
+        ContentView cv = namedContentViews.get(contentViewName);
+        if (cv != null) {
+            cv.resetPageProviderAggregates();
+        }
+        Map<String, ContentView> instances = cacheInstances.get(contentViewName);
+        if (instances != null) {
+            for (ContentView cView : instances.values()) {
+                if (cView != null) {
+                    cView.resetPageProviderAggregates();
+                }
+            }
+        }
+    }
+
+    /**
      * Refresh page providers for content views having declared given event as
      * a refresh event.
      * <p>

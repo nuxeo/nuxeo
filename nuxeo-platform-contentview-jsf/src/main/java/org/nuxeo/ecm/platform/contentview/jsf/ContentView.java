@@ -299,6 +299,13 @@ public interface ContentView extends Serializable {
     void refreshAndRewindPageProvider();
 
     /**
+     * Reset the page provider aggregates.
+     *
+     * @since 5.9.6
+     */
+    void resetPageProviderAggregates();
+
+    /**
      * Returns true is this content view can use the global page size set on
      * the application.
      */

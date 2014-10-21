@@ -360,6 +360,14 @@ public class ContentViewActions implements Serializable {
         cache.refresh(contentViewName, true);
     }
 
+    /**
+     * @since 5.9.6
+     */
+    @BypassInterceptors
+    public void resetAggregates(String contentViewName) {
+        cache.resetPageProviderAggregates(contentViewName);
+    }
+
     @BypassInterceptors
     public void resetPageProvider(String contentViewName) {
         cache.resetPageProvider(contentViewName);

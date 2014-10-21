@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
+import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderChangedListener;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
@@ -778,6 +779,17 @@ public class ContentViewImpl implements ContentView,
     @Override
     public void refreshed(PageProvider<?> pageProvider) {
         raiseEvent(CONTENT_VIEW_REFRESH_EVENT);
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Override
+    public void resetPageProviderAggregates() {
+        if (pageProvider != null && pageProvider.hasAggregateSupport()) {
+            Map<String, Aggregate> aggs = pageProvider.getAggregates();
+            for (Aggregate agg : aggs.values()) {
+                agg.resetSelection();
+            }
+        }
     }
 
 }
