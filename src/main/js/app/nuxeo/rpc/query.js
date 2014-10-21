@@ -35,7 +35,7 @@ class Query extends Operation {
   }
 
   set pageProvider(name) {
-    this.params.name = name;
+    this.params.providerName = name;
   }
 
   set page(p) {

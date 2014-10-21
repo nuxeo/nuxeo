@@ -127,19 +127,9 @@
     //make sure that list positions matches cell position
     this.$textarea.offset($(this.TD).offset());
 
-    var self = this;
     this.$textarea.select2(this.options)
       .on('change', onSelect2Changed.bind(this))
-      .on('select2-close', onSelect2Closed.bind(this))
-      .on("select2-open", function (event) {
-        var search = $('.select2-drop-active .select2-search .select2-input');
-        search.val(self.$textarea.val()).trigger('paste');
-      });
-
-    setTimeout(function () {
-      self.$textarea.select2('focus');
-      self.$textarea.select2('container').find('.select2-choice').trigger('mousedown').trigger('mouseup');
-    }, 50);
+      .on('select2-close', onSelect2Closed.bind(this));
 
   };
 

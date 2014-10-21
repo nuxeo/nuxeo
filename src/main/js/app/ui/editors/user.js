@@ -29,14 +29,7 @@ class UserEditor extends Select2Editor {
   }
 
   formatter(entry) {
-    var markup = '';
-    if (entry.displayIcon && entry.type) {
-      markup += `<img src='${this.connection.baseURL}/icons/`;
-      markup += (entry.type === 'USER_TYPE') ? 'user.png' : 'group.png';
-    }
-    markup += entry.displayLabel;
-    markup += `&nbsp;<span class='detail'>${entry.id}</span>`;
-    return markup;
+    return entry.displayLabel;
   }
 }
 

@@ -18,13 +18,14 @@ import {Select2Editor} from './select2';
 import {Query} from '../../nuxeo/rpc/query';
 
 class DocumentEditor extends Select2Editor {
+
   query(connection, properties, term) {
     var q = new Query(connection);
     // Set the properties
     Object.assign(q.params, properties);
     q.nxql = properties.query;
     q.params.searchTerm = term + '%';
-    q.pageProvider = properties.pageProviderName;
+    q.pageProvider = properties.pageProviderName || 'default_document_suggestion';
     q.page = 0;
     q.pageSize = 20;
     // Execute the query
@@ -32,15 +33,7 @@ class DocumentEditor extends Select2Editor {
   }
 
   formatter(doc) {
-    var markup = '<table><tbody>';
-    markup += '<tr><td>';
-    if (doc.properties && doc.properties['common:icon']) {
-      markup += `<img src='${this.connection.baseURL}${doc.properties['common:icon']}'/>`;
-    }
-    markup += '</td><td>';
-    markup += doc.title;
-    markup += '</td></tr></tbody></table>';
-    return markup;
+    return doc.title;
   }
 
   getEntryId(item) {

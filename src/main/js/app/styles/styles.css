@@ -105,7 +105,8 @@ input.button,
 
 .handsontable th,
 .handsontable td {
-  border-color: #e7e7e7 }
+  border-color: #e7e7e7;
+  line-height: 30px }
 
 .handsontable td {
   font-size: .9em }

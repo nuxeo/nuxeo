@@ -40,7 +40,7 @@ class Widget {
   get label() { return this.widget.labels.any; }
   get type() { return this.widget.type; }
   set type(t) { return this.widget.type = t; }
-  get properties() { return this.widget.properties.any; }
+  get properties() { return (this.widget.properties) ? this.widget.properties.any : {} }
   set properties(p) { this.widget.properties = p; }
 }
 
