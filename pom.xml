@@ -867,11 +867,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-connect-offline-update</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-connect-update</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
@@ -906,11 +901,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.automation</groupId>
         <artifactId>nuxeo-automation-io</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.automation</groupId>
-        <artifactId>nuxeo-automation-restserver</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
@@ -1527,13 +1517,6 @@
         <version>3.0.1</version>
         <scope>provided</scope>
       </dependency>
-      <!-- Deprecated GAV (redirected for backward compat since 5.7.2) -->
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>3.0.1</version>
-        <scope>provided</scope>
-      </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>jstl</artifactId>
@@ -2139,11 +2122,6 @@
         <groupId>org.jboss.jbossas</groupId>
         <artifactId>jboss-as-server</artifactId>
         <version>${version.org.jboss.integration}</version>
-      </dependency>
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jgroups</artifactId>
-        <version>4.2.2.GA</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.naming</groupId>
@@ -3015,12 +2993,6 @@
         <artifactId>gwt-dnd</artifactId>
         <version>3.1.2</version>
         <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-gadgets</artifactId>
-        <version>1.2.0</version>
-        <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>com.google.gwt.inject</groupId>
