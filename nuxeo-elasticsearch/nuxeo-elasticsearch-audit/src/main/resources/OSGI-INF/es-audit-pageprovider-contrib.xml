@@ -68,17 +68,17 @@
         <property name="coreSession"></property>
         <property name="generateUIComments">false</property>
         <whereClause docType="BasicAuditSearch">
-          <predicate parameter="log.eventDate" operator="BETWEEN">
+          <predicate parameter="eventDate" operator="BETWEEN">
             <field schema="basicauditsearch" name="startDate" />
             <field schema="basicauditsearch" name="endDate" />
           </predicate>
-          <predicate parameter="log.category" operator="=">
+          <predicate parameter="category" operator="=">
             <field schema="basicauditsearch" name="eventCategory" />
           </predicate>
-          <predicate parameter="log.eventId" operator="IN">
+          <predicate parameter="eventId" operator="IN">
             <field schema="basicauditsearch" name="eventIds" />
           </predicate>
-          <predicate parameter="log.principalName" operator="=">
+          <predicate parameter="principalName" operator="=">
             <field schema="basicauditsearch" name="principalName" />
           </predicate>
         </whereClause>
