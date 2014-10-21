@@ -77,6 +77,8 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
     private boolean useUserIdentificationInfoCB = false;
 
     public static final String ADMINISTRATOR_USERNAME = "Administrator";
+    
+    public final List<String> groupsToAdd = new ArrayList<String>();
 
     @Override
     public void initialize(Subject subject, CallbackHandler callbackHandler,
@@ -293,6 +295,7 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
 
             String principalId = String.valueOf(random.nextLong());
             principal.setPrincipalId(principalId);
+            ((NuxeoPrincipalImpl) principal).allGroups.add(SecurityConstants.EVERYONE);
             return principal;
         } catch (Exception e) {
             log.error("createIdentity failed", e);
