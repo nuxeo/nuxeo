@@ -3,7 +3,10 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:h="http://java.sun.com/jsf/html">
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <nxl:widgetType name="documentAction" actionId="driveEdit" value="#{field}" actionContextDocument="#{field}" mode="view" actionsDisplay="icons" />
 
   <h:outputLink value="#{nxd:liveEditUrl(field, widget.properties.file_schema, widget.properties.file_field_name, widget.properties.filename_field_name)}"
     rendered="#{liveEditHelper.isDocumentLiveEditable(field, widget.properties.file_schema, widget.properties.file_field_name)}">
