@@ -97,8 +97,10 @@ public class TestAclLayoutSimple extends AbstractAclLayoutTest {
 
         // add all possible acl
         addAcl(session, doc121, "test_g1", SecurityConstants.ADD_CHILDREN, true);
-        addAcl(session, doc121, "test_g2", SecurityConstants.ADD_CHILDREN,
-                false);
+        if (session.isNegativeAclAllowed()) {
+            addAcl(session, doc121, "test_g2", SecurityConstants.ADD_CHILDREN,
+                    false);
+        }
 
         addAcl(session, doc121, "test_u1", SecurityConstants.MANAGE_WORKFLOWS,
                 true);
