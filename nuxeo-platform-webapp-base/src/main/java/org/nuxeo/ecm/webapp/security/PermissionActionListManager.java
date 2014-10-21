@@ -31,8 +31,8 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.common.utils.i18n.Labeler;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Lists the available permission actions. Hardcoded. ATM Grant/Deny supported.
@@ -47,26 +47,22 @@ public class PermissionActionListManager implements Serializable {
 
     private static final Labeler labeler = new Labeler("label.security");
 
-    /**
-     * Framework property to control whether negative ACLs (deny) are allowed.
-     *
-     * @since 5.9.6
-     */
-    public static final String ALLOW_NEGATIVE_ACL_PROPERTY = "nuxeo.security.allowNegativeACL";
-
     protected String selectedGrant = "Grant";
 
     @In(create = true)
     private transient ResourcesAccessor resourcesAccessor;
 
+    @In(create = true, required = false)
+    protected transient CoreSession documentManager;
+
     /**
      * Returns true if negative ACLs are allowed.
      *
      * @since 5.9.6
-     * @see #ALLOW_NEGATIVE_ACL_PROPERTY
      */
     public boolean getAllowNegativeACL() {
-        return Framework.isBooleanPropertyTrue(ALLOW_NEGATIVE_ACL_PROPERTY);
+        return documentManager == null ? false
+                : documentManager.isNegativeAclAllowed();
     }
 
     public SelectItem[] getPermissionActionItems() {
