@@ -547,7 +547,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         WidgetReference[] csubWidgetRefs = null;
         if (subWidgetReferences != null) {
             csubWidgetRefs = new WidgetReference[subWidgetReferences.length];
-            for (int i = 0; i < subWidgets.length; i++) {
+            for (int i = 0; i < subWidgetReferences.length; i++) {
                 csubWidgetRefs[i] = subWidgetReferences[i].clone();
             }
         }
