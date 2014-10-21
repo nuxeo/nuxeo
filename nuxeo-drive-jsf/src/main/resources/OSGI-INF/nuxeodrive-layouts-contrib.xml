@@ -105,14 +105,7 @@
       </properties>
       <subWidgets>
         <widget name="driveMetadataLayout" type="toggleableDocumentLayoutWithForms">
-          <labels>
-            <label mode="any"></label>
-          </labels>
-          <controls mode="any">
-            <control name="handleLabels">true</control>
-          </controls>
           <properties widgetMode="any">
-            <property name="displayToggleActionInHeader">true</property>
             <property name="useAjaxForm">false</property>
             <property name="hideDefaultActions">true</property>
             <property name="additionalActionsCategory">DRIVE_METADATA_VIEW_FORM_ACTION
