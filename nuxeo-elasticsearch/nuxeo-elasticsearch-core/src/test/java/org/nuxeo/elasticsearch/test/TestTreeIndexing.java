@@ -16,6 +16,8 @@
  */
 package org.nuxeo.elasticsearch.test;
 
+import static org.junit.Assume.assumeTrue;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -349,6 +351,8 @@ public class TestTreeIndexing {
 
     @Test
     public void shouldDenyAccessOnUnsupportedACL() throws Exception {
+        assumeTrue(session.isNegativeAclAllowed());
+
         buildAndIndexTree();
         DocumentModelList docs = ess.query(new NxQueryBuilder(session)
                 .nxql("select * from Document").limit(10));

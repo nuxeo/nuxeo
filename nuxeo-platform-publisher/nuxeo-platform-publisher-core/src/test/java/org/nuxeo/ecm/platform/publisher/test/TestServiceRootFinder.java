@@ -146,7 +146,7 @@ public class TestServiceRootFinder extends SQLRepositoryTestCase {
 
         // ACL
         if (idx == 1) {
-            setReadACL(sectionsRoot.getRef(), "myuser1", false);
+            blockACLs(sectionsRoot.getRef());
             setReadACL(section2.getRef(), "myuser1", true);
         }
 
@@ -159,6 +159,16 @@ public class TestServiceRootFinder extends SQLRepositoryTestCase {
         ACL existingACL = acp.getOrCreateACL();
         // existingACL.clear();
         existingACL.add(new ACE(user, SecurityConstants.READ, grant));
+        acp.addACL(existingACL);
+        session.setACP(ref, acp, true);
+    }
+
+    protected void blockACLs(DocumentRef ref) throws Exception {
+        ACP acp = session.getACP(ref);
+        ACL existingACL = acp.getOrCreateACL();
+        existingACL.add(new ACE(SecurityConstants.ADMINISTRATOR,
+                SecurityConstants.EVERYTHING, true));
+        existingACL.add(ACE.BLOCK);
         acp.addACL(existingACL);
         session.setACP(ref, acp, true);
     }
