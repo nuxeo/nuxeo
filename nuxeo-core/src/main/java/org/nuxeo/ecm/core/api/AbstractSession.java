@@ -657,6 +657,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
+    public boolean isNegativeAclAllowed() {
+        return getSession().isNegativeAclAllowed();
+    }
+
+    @Override
     public void cancel() {
         // nothing
     }

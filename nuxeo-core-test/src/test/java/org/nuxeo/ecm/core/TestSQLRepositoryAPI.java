@@ -1649,7 +1649,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         // set ACP on doc1 to block bob
         acp = new ACPImpl();
         acl = new ACLImpl();
-        acl.add(new ACE("bob", "Everything", false));
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(ACE.BLOCK);
         acp.addACL(acl);
         doc1.setACP(acp, true);
         session.save();

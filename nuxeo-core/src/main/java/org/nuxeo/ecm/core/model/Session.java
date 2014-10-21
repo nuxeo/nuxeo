@@ -224,6 +224,18 @@ public interface Session {
     Document getVersion(String versionableId, VersionModel versionModel)
             throws DocumentException;
 
+    /**
+     * Returns {@code true} if negative ACLs are allowed.
+     * <p>
+     * Negative ACLs are ACLs that include an ACE with a deny (isGranted=false).
+     * This does not include the full-blocking ACE for Everyone/Everything,
+     * which is always allowed.
+     *
+     * @return {@code true} if negative ACLs are allowed
+     * @since 6.0
+     */
+    boolean isNegativeAclAllowed();
+
     ACP getMergedACP(Document doc) throws SecurityException;
 
     void setACP(Document doc, ACP acp, boolean overwrite)

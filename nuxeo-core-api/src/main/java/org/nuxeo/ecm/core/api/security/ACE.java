@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,27 +7,51 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.api.security;
 
 import java.io.Serializable;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * Access control entry, assigning a permission to a user.
+ * <p>
+ * Optionally, the assignment can be denied instead of being granted.
  */
 public final class ACE implements Serializable, Cloneable {
 
-    private static final long serialVersionUID = -2466595648453932006L;
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * An ACE that blocks all permissions for everyone.
+     *
+     * @since 6.0
+     */
+    public static final ACE BLOCK = new ACE(SecurityConstants.EVERYONE,
+            SecurityConstants.EVERYTHING, false);
 
     private final String username;
+
     private final String permission;
+
     private final boolean isGranted;
 
+    /**
+     * Constructs an ACE for a given username and permission.
+     * <p>
+     * The ACE is granted.
+     *
+     * @since 6.0
+     */
+    public ACE(String username, String permission) {
+        this(username, permission, true);
+    }
+
+    /**
+     * Constructs an ACE for a given username and permission, and specifies
+     * whether to grant or deny it.
+     */
     public ACE(String username, String permission, boolean isGranted) {
         this.username = username;
         this.permission = permission;

@@ -103,6 +103,13 @@ public class SQLSession implements Session {
 
     protected final Log log = LogFactory.getLog(SQLSession.class);
 
+    /**
+     * Framework property to control whether negative ACLs (deny) are allowed.
+     *
+     * @since 6.0
+     */
+    public static final String ALLOW_NEGATIVE_ACL_PROPERTY = "nuxeo.security.allowNegativeACL";
+
     public static final String BLOB_NAME = "name";
 
     public static final String BLOB_MIME_TYPE = "mime-type";
@@ -146,6 +153,8 @@ public class SQLSession implements Session {
 
     private final String sessionId;
 
+    private final boolean negativeAclAllowed;
+
     public SQLSession(org.nuxeo.ecm.core.storage.sql.Session session,
             Repository repository, String sessionId) throws DocumentException {
         this.session = session;
@@ -158,6 +167,7 @@ public class SQLSession implements Session {
         }
         this.sessionId = sessionId;
         root = newDocument(rootNode);
+        negativeAclAllowed = Framework.isBooleanPropertyTrue(ALLOW_NEGATIVE_ACL_PROPERTY);
     }
 
     /*
@@ -1321,11 +1331,17 @@ public class SQLSession implements Session {
     }
 
     @Override
+    public boolean isNegativeAclAllowed() {
+        return negativeAclAllowed;
+    }
+
+    @Override
     public void setACP(Document doc, ACP acp, boolean overwrite)
             throws SecurityException {
         if (!overwrite && acp == null) {
             return;
         }
+        checkNegativeAcl(acp);
         try {
             Node node = ((SQLDocument) doc).getNode();
             ACLRow[] aclrows;
@@ -1339,6 +1355,31 @@ public class SQLSession implements Session {
             session.requireReadAclsUpdate();
         } catch (StorageException e) {
             throw new SecurityException(e.getMessage(), e);
+        }
+    }
+
+    protected void checkNegativeAcl(ACP acp) {
+        if (negativeAclAllowed) {
+            return;
+        }
+        if (acp == null) {
+            return;
+        }
+        for (ACL acl : acp.getACLs()) {
+            if (acl.getName().equals(ACL.INHERITED_ACL)) {
+                continue;
+            }
+            for (ACE ace : acl.getACEs()) {
+                if (ace.isGranted()) {
+                    continue;
+                }
+                if (ace.getPermission().equals(SecurityConstants.EVERYTHING)
+                        && ace.getUsername().equals(SecurityConstants.EVERYONE)) {
+                    continue;
+                }
+                throw new IllegalArgumentException("Negative ACL not allowed: "
+                        + ace);
+            }
         }
     }
 

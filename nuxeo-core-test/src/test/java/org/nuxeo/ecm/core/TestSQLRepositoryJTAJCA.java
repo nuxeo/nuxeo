@@ -168,7 +168,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         acp = new ACPImpl();
         acl = new ACLImpl();
         acl.add(new ACE("Administrator", "Everything", true));
-        acl.add(new ACE("bob", "Everything", false));
+        acl.add(ACE.BLOCK);
         acp.addACL(acl);
         folder.setACP(acp, true);
         // allow bob on doc

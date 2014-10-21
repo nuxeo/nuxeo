@@ -57,12 +57,13 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLSession;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Florent Guillaume
  */
 public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
-
 
     @Override
     @Before
@@ -72,6 +73,10 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
                 "OSGI-INF/test-repo-core-types-contrib.xml");
         deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-permissions-contrib.xml");
+        if (allowNegativeAcl()) {
+            Framework.getProperties().put(
+                    SQLSession.ALLOW_NEGATIVE_ACL_PROPERTY, "true");
+        }
         openSession();
     }
 
@@ -80,7 +85,13 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
     public void tearDown() throws Exception {
         // session.cancel();
         closeSession();
+        Framework.getProperties().remove(SQLSession.ALLOW_NEGATIVE_ACL_PROPERTY);
         super.tearDown();
+    }
+
+    // overridden to test with allowed negative properties
+    protected boolean allowNegativeAcl() {
+        return false; // default in Nuxeo
     }
 
     //
@@ -177,20 +188,22 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
             assertSame(UNKNOWN, acp.getAccess("c", "Read"));
             assertSame(UNKNOWN, acp.getAccess("c", "Write"));
 
-            // insert a deny ACE before the GRANT
+            if (session.isNegativeAclAllowed()) {
+                // insert a deny ACE before the GRANT
 
-            acp.getACL(ACL.LOCAL_ACL).add(0, new ACE("b", "Write", false));
-            // store changes
-            folder.setACP(acp, true);
-            // refetch ac
-            acp = folder.getACP();
-            // check perms now
-            assertSame(GRANT, acp.getAccess("a", "Read"));
-            assertSame(UNKNOWN, acp.getAccess("a", "Write"));
-            assertSame(DENY, acp.getAccess("b", "Write"));
-            assertSame(UNKNOWN, acp.getAccess("b", "Read"));
-            assertSame(UNKNOWN, acp.getAccess("c", "Read"));
-            assertSame(UNKNOWN, acp.getAccess("c", "Write"));
+                acp.getACL(ACL.LOCAL_ACL).add(0, new ACE("b", "Write", false));
+                // store changes
+                folder.setACP(acp, true);
+                // refetch ac
+                acp = folder.getACP();
+                // check perms now
+                assertSame(GRANT, acp.getAccess("a", "Read"));
+                assertSame(UNKNOWN, acp.getAccess("a", "Write"));
+                assertSame(DENY, acp.getAccess("b", "Write"));
+                assertSame(UNKNOWN, acp.getAccess("b", "Read"));
+                assertSame(UNKNOWN, acp.getAccess("c", "Read"));
+                assertSame(UNKNOWN, acp.getAccess("c", "Write"));
+            }
 
             // create a child document and grant on it the write for b
 
@@ -323,14 +336,16 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
                 "Workspace");
         session.createDocument(ws2);
 
-        ACP acp = new ACPImpl();
-        ACE denyRead = new ACE("test", READ, false);
-        ACL acl = new ACLImpl();
-        acl.setACEs(new ACE[] { denyRead });
-        acp.addACL(acl);
-        // TODO this produces a stack trace
-        repositoryWorkspace.setACP(acp, true);
-        ws1.setACP(acp, true);
+        if (session.isNegativeAclAllowed()) {
+            ACP acp = new ACPImpl();
+            ACE denyRead = new ACE("test", READ, false);
+            ACL acl = new ACLImpl();
+            acl.setACEs(new ACE[] { denyRead });
+            acp.addACL(acl);
+            // TODO this produces a stack trace
+            repositoryWorkspace.setACP(acp, true);
+            ws1.setACP(acp, true);
+        }
 
         session.save();
 

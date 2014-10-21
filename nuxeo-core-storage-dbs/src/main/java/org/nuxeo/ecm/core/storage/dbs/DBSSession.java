@@ -1234,6 +1234,11 @@ public class DBSSession implements Session {
         }
     };
 
+    @Override
+    public boolean isNegativeAclAllowed() {
+        return false;
+    }
+
     // TODO move logic higher
     @Override
     public ACP getMergedACP(Document doc) throws SecurityException {
@@ -1299,6 +1304,7 @@ public class DBSSession implements Session {
     @Override
     public void setACP(Document doc, ACP acp, boolean overwrite)
             throws DocumentException {
+        checkNegativeAcl(acp);
         if (!overwrite) {
             if (acp == null) {
                 return;
@@ -1311,6 +1317,28 @@ public class DBSSession implements Session {
         docState.put(KEY_ACP, acpToMem(acp));
         transaction.save(); // read acls update needs full tree
         transaction.updateReadAcls(id);
+    }
+
+    protected void checkNegativeAcl(ACP acp) {
+        if (acp == null) {
+            return;
+        }
+        for (ACL acl : acp.getACLs()) {
+            if (acl.getName().equals(ACL.INHERITED_ACL)) {
+                continue;
+            }
+            for (ACE ace : acl.getACEs()) {
+                if (ace.isGranted()) {
+                    continue;
+                }
+                if (ace.getPermission().equals(SecurityConstants.EVERYTHING)
+                        && ace.getUsername().equals(SecurityConstants.EVERYONE)) {
+                    continue;
+                }
+                throw new IllegalArgumentException("Negative ACL not allowed: "
+                        + ace);
+            }
+        }
     }
 
     /**

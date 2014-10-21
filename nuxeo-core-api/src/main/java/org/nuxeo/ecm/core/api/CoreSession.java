@@ -853,6 +853,18 @@ public interface CoreSession extends AutoCloseable {
     void setACP(DocumentRef docRef, ACP acp, boolean overwrite)
             throws ClientException;
 
+    /**
+     * Returns {@code true} if negative ACLs are allowed.
+     * <p>
+     * Negative ACLs are ACLs that include an ACE with a deny (isGranted=false).
+     * This does not include the full-blocking ACE for Everyone/Everything,
+     * which is always allowed.
+     *
+     * @return {@code true} if negative ACLs are allowed
+     * @since 6.0
+     */
+    boolean isNegativeAclAllowed();
+
     /*
      * Support for lazy loading
      */

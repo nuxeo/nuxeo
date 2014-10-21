@@ -1198,7 +1198,8 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         DocumentModel folder1 = session.getDocument(new PathRef("/testfolder1"));
         acp = new ACPImpl();
         acl = new ACLImpl();
-        acl.add(new ACE("bob", "Browse", false));
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(ACE.BLOCK);
         acp.addACL(acl);
         folder1.setACP(acp, true);
         session.save();
@@ -1223,7 +1224,8 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         DocumentModel folder1 = session.getDocument(new PathRef("/testfolder1"));
         acp = new ACPImpl();
         acl = new ACLImpl();
-        acl.add(new ACE("bob", "Browse", false));
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(ACE.BLOCK);
         acp.addACL(acl);
         folder1.setACP(acp, true);
         session.save();
@@ -1291,7 +1293,8 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
                 "/testfolder2/testfolder3"));
         acp = new ACPImpl();
         acl = new ACLImpl();
-        acl.add(new ACE("bob", "Browse", false));
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(ACE.BLOCK);
         acp.addACL(acl);
         folder1.setACP(acp, true);
         session.save();
