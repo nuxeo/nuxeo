@@ -23,11 +23,11 @@
   </h:form>
 
   <h:form>
-    <nxu:dataList var="threadEntry" value="#{documentThreadedComments}"
-      styleClass="commentsOutput" rowIndexVar="rowIndex">
+    <c:forEach var="threadEntry" items="#{documentThreadedComments}"
+      styleClass="commentsOutput" varStatus="status">
       <h:panelGroup rendered="#{documentThreadedComments.size > 0}" layout="block"
         style="margin-left:#{threadEntry.depth*25}px;"
-        styleClass="#{nxu:test(rowIndex % 2 == 1, 'dataRowOdd commentBlock', 'dataRowEven commentBlock')}">
+        styleClass="#{nxu:test(status.index % 2 == 1, 'dataRowOdd commentBlock', 'dataRowEven commentBlock')}">
         <div class="commentActions">
           <h:commandLink value="#{messages['command.comments.reply']}"
             action="#{commentManagerActions.beginComment}">
@@ -56,14 +56,14 @@
           <h:outputText value="#{threadEntry.comment.comment.text}" escape="false"/>
         </div>
 
-        <f:subview id="createForm" rendered="#{commentManagerActions.commentStarted
+        <f:subview id="createForm_#{status.index}" rendered="#{commentManagerActions.commentStarted
           and threadEntry.comment.id==commentManagerActions.savedReplyCommentId }">
           <ui:include src="/incl/create_comment_form.xhtml" />
         </f:subview>
 
 
       </h:panelGroup>
-    </nxu:dataList>
+    </c:forEach>
     </h:form>
 
 </div>

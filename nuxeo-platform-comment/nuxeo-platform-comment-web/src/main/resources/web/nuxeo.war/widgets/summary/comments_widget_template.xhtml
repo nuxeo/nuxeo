@@ -27,7 +27,7 @@
 
     <h:outputText class="boldLabel"
       value="#{messages['label.summary.lastComments']}" />
-    <nxu:dataList var="threadEntry" value="#{documentThreadedComments}"
+    <c:forEach var="threadEntry" items="#{documentThreadedComments}"
       styleClass="commentsOutput" rowIndexVar="rowIndex" rows="5"
       first="0">
 
@@ -52,7 +52,7 @@
             escape="false" />
         </div>
       </h:panelGroup>
-    </nxu:dataList>
+    </c:forEach>
 
   </c:if>
 

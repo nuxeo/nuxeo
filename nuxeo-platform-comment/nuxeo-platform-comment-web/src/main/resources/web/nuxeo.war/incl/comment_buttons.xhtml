@@ -1,15 +1,16 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxh="http://nuxeo.org/nxweb/html">
 
   <nxu:set var="actions"
     value="#{commentManagerActions.getActionsForComment()}"
     cache="true">
-    <nxu:dataList var="commentAction" value="#{actions}">
+    <c:forEach var="commentAction" items="#{actions}">
       <nxh:commandButton action="#{commentAction.getLink()}"
         immediate="#{commentAction.immediate}"
         value="#{messages[commentAction.label]}" styleClass="button" />
-    </nxu:dataList>
+    </c:forEach>
   </nxu:set>
 
 </div>

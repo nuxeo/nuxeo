@@ -3,21 +3,21 @@
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:c="http://java.sun.com/jstl/core">
-
   <c:choose>
-   <c:when test="#{tagServiceEnabled}">
+    <c:when test="#{tagServiceEnabled}">
       <h:form id="tagCloudForm">
-        <nxu:dataList id="tagCloudTable" rowIndexVar="rowIndex"
-          value="#{tagCloudOnAllDocuments}" var="tag"
+        <c:forEach varStatus="status"
+          items="#{tagCloudOnAllDocuments}" var="tag"
           rendered="#{not empty tagCloudOnAllDocuments}">
-
-            <h:commandLink value="#{tag.label}" styleClass="tag #{nxu:test(rowIndex % 2 == 1, 'tagClassOdd', 'tagClassEven')}"
-              action="#{tagActions.listDocumentsForTag(tag.label)}" style="font-size: #{nxu:test(tag.weight == 100, '100', tag.weight * 0.75)}%"/>
-        </nxu:dataList>
+          <h:commandLink value="#{tag.label}"
+            styleClass="tag #{nxu:test(status.index % 2 == 1, 'tagClassOdd', 'tagClassEven')}"
+            action="#{tagActions.listDocumentsForTag(tag.label)}"
+            style="font-size: #{nxu:test(tag.weight == 100, '100', tag.weight * 0.75)}%" />
+        </c:forEach>
       </h:form>
-   </c:when>
-   <c:otherwise>
+    </c:when>
+    <c:otherwise>
       Current Server configuration does not allow to activate the Tag feature.
-   </c:otherwise>
+    </c:otherwise>
   </c:choose>
 </div>

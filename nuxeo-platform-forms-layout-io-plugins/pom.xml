@@ -8,7 +8,7 @@
   </parent>
 
   <artifactId>nuxeo-platform-forms-layout-io-plugins</artifactId>
-  <name>Nuxeo Forms Layout IO</name>
+  <name>Nuxeo Forms Layout IO Plugins</name>
 
   <dependencies>
     <dependency>

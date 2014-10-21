@@ -8,8 +8,7 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html">
 
   <nxu:set var="actions" value="#{webActions.getUnfiltredActionsList('VERSION_LIST_ITEM')}">
-    <nxu:dataList var="sel_action" value="#{actions}"
-      id="versionActionsTable">
+    <c:forEach var="sel_action" items="#{actions}">
       <span id="#{sel_action.id}">
         <nxh:commandButton
           styleClass="button"
@@ -18,12 +17,12 @@
           onclick="#{sel_action.confirm}"
           disabled="#{!sel_action.available}"
           immediate="#{sel_action.immediate}"
-          id="versionItemActionsButton">
+          id="#{sel_action.id}_button">
           <f:setPropertyActionListener value="#{versionItemSelection.data.id}"
               target="#{versionedActions.selectedVersionId}" />
         </nxh:commandButton>
        </span>
-    </nxu:dataList>
+     </c:forEach>
   </nxu:set>
 
 </ui:composition>

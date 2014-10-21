@@ -55,8 +55,7 @@
                       <nxu:set var="actions"
                         value="#{webActions.getUnfiltredActionsList('CURRENT_VERSION_SELECTION_LIST')}"
                         cache="true">
-                        <nxu:dataList var="sel_action" value="#{actions}"
-                          id="versionActionsTable">
+                        <c:forEach var="sel_action" items="#{actions}">
                           <span id="#{sel_action.id}">
                             <nxh:commandButton
                               styleClass="button"
@@ -65,9 +64,9 @@
                               onclick="#{sel_action.confirm}"
                               disabled="#{!sel_action.available}"
                               immediate="#{sel_action.immediate}"
-                              id="versionActionsButton" />
+                              id="#{sel_action.id}_button" />
                            </span>
-                        </nxu:dataList>
+                         </c:forEach>
                       </nxu:set>
                     </td>
                     <td valign="middle">
