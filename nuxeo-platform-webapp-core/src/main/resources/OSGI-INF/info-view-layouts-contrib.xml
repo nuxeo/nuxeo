@@ -320,6 +320,9 @@
               <property name="documentMode">view</property>
               <property name="includeAnyMode">false</property>
             </properties>
+            <controls mode="any">
+              <control name="requireSurroundingForm">true</control>
+            </controls>
           </widget>
         </subWidgets>
         <controls mode="any">
