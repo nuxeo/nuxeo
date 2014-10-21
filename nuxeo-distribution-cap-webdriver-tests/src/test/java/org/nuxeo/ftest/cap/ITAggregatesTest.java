@@ -125,9 +125,12 @@ public class ITAggregatesTest extends AbstractTest {
             assertEquals(new Integer(1), subjectsAgg.get(subject));
         }
 
+        // Select and unselect France
         searchPage = searchLayoutSubPage.selectCoverageAggregate(COVERAGE);
         resultPanelSubPage = searchPage.getSearchResultsSubPage();
         assertEquals(1, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
+        searchPage = searchLayoutSubPage.selectCoverageAggregate(COVERAGE);
+        assertEquals(nbCurrentDoc, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
 
         logout();
     }
