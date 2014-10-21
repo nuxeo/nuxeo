@@ -21,7 +21,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -31,6 +35,8 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
@@ -39,10 +45,12 @@ import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinder;
 import org.nuxeo.ecm.platform.publisher.impl.finder.AbstractRootSectionsFinder;
 import org.nuxeo.ecm.platform.publisher.impl.finder.DefaultRootSectionsFinder;
+import org.nuxeo.ecm.platform.publisher.test.TestServiceRootFinder.Populate;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  *
@@ -50,82 +58,82 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  *
  */
 @LocalDeploy("org.nuxeo.ecm.platform.publisher.core:OSGI-INF/publisher-content-template-contrib.xml")
+@RepositoryConfig(init=Populate.class)
 public class TestServiceRootFinder extends PublisherTestCase {
 
-    protected DocumentModel doc2Publish;
+    @Inject
+    PublisherService service;
 
-    protected void createInitialDocs(String domainPath, int idx)
-            throws Exception {
-        DocumentModel wsRoot = session.getDocument(new PathRef(domainPath
-                + "/workspaces"));
+    public static class Populate implements RepositoryInit {
 
-        DocumentModel ws = session.createDocumentModel(
-                wsRoot.getPathAsString(), "ws1", "Workspace");
-        ws.setProperty("dublincore", "title", "test WS");
-        ws = session.createDocument(ws);
+        protected static Populate self;
 
-        DocumentModel sectionsRoot = session.getDocument(new PathRef(domainPath
-                + "/sections"));
-
-        String prefix = "D" + idx + "_";
-
-        DocumentModel section1 = session.createDocumentModel(
-                sectionsRoot.getPathAsString(), prefix + "section1", "Section");
-        section1.setProperty("dublincore", "title", prefix + "section1");
-        section1 = session.createDocument(section1);
-
-        DocumentModel section2 = session.createDocumentModel(
-                sectionsRoot.getPathAsString(), prefix + "section2", "Section");
-        section2.setProperty("dublincore", "title", prefix + "section2");
-        section2 = session.createDocument(section2);
-
-        DocumentModel section11 = session.createDocumentModel(
-                section1.getPathAsString(), prefix + "section11", "Section");
-        section11.setProperty("dublincore", "title", prefix + "section11");
-        section11 = session.createDocument(section11);
-
-        // ACL
-        if (idx == 1) {
-            blockACLs(sectionsRoot.getRef());
-            setReadACL(section2.getRef(), "myuser1", true);
+        @Override
+        public void populate(CoreSession session) throws ClientException {
+            self = this;
+            createInitialDocs(session, "default-domain", 1);
+            createInitialDocs(session, "another-default-domain", 2);
         }
 
-        session.save();
-    }
+        protected void createInitialDocs(CoreSession session, String domainPath, int idx) {
+            DocumentModel wsRoot = session.getDocument(new PathRef(domainPath
+                    + "/workspaces"));
 
-    protected void setReadACL(DocumentRef ref, String user, boolean grant)
-            throws Exception {
-        ACP acp = session.getACP(ref);
-        ACL existingACL = acp.getOrCreateACL();
-        // existingACL.clear();
-        existingACL.add(new ACE(user, SecurityConstants.READ, grant));
-        acp.addACL(existingACL);
-        session.setACP(ref, acp, true);
-    }
+            DocumentModel ws = session.createDocumentModel(
+                    wsRoot.getPathAsString(), "ws1", "Workspace");
+            ws.setProperty("dublincore", "title", "test WS");
+            ws = session.createDocument(ws);
 
-    protected void blockACLs(DocumentRef ref) throws Exception {
-        ACP acp = session.getACP(ref);
-        ACL existingACL = acp.getOrCreateACL();
-        existingACL.add(new ACE(SecurityConstants.ADMINISTRATOR,
-                SecurityConstants.EVERYTHING, true));
-        existingACL.add(ACE.BLOCK);
-        acp.addACL(existingACL);
-        session.setACP(ref, acp, true);
-    }
+            DocumentModel sectionsRoot = session.getDocument(new PathRef(
+                    domainPath + "/sections"));
 
-    private String dump(DocumentModelList roots) throws Exception {
-        StringBuffer sb = new StringBuffer();
+            String prefix = "D" + idx + "_";
 
-        sb.append("Dumping root list\n");
-        for (DocumentModel doc : roots) {
-            sb.append(doc.getPathAsString());
-            sb.append(" -- ");
-            sb.append(doc.getTitle());
-            sb.append(" (");
-            sb.append(doc.getId());
-            sb.append(" )\n");
+            DocumentModel section1 = session.createDocumentModel(
+                    sectionsRoot.getPathAsString(), prefix + "section1",
+                    "Section");
+            section1.setProperty("dublincore", "title", prefix + "section1");
+            section1 = session.createDocument(section1);
+
+            DocumentModel section2 = session.createDocumentModel(
+                    sectionsRoot.getPathAsString(), prefix + "section2",
+                    "Section");
+            section2.setProperty("dublincore", "title", prefix + "section2");
+            section2 = session.createDocument(section2);
+
+            DocumentModel section11 = session
+                .createDocumentModel(section1.getPathAsString(), prefix
+                        + "section11", "Section");
+            section11.setProperty("dublincore", "title", prefix + "section11");
+            section11 = session.createDocument(section11);
+
+            // ACL
+            if (idx == 1) {
+                blockACLs(session, sectionsRoot.getRef());
+                setReadACL(session, section2.getRef(), "myuser1", true);
+            }
+
         }
-        return sb.toString();
+
+        protected void blockACLs(CoreSession session, DocumentRef ref)  {
+            ACP acp = session.getACP(ref);
+            ACL existingACL = acp.getOrCreateACL();
+            existingACL.add(new ACE(SecurityConstants.ADMINISTRATOR,
+                    SecurityConstants.EVERYTHING, true));
+            existingACL.add(ACE.BLOCK);
+            acp.addACL(existingACL);
+            session.setACP(ref, acp, true);
+        }
+
+        protected void setReadACL(CoreSession session, DocumentRef ref, String user, boolean grant) {
+            ACP acp = session.getACP(ref);
+            ACL existingACL = acp.getOrCreateACL();
+            // existingACL.clear();
+            existingACL.add(new ACE(user, SecurityConstants.READ, grant));
+            acp.addACL(existingACL);
+            session.setACP(ref, acp, true);
+        }
+
     }
 
     private void dumpNode(PublicationNode node, StringBuffer sb)
@@ -138,7 +146,8 @@ public class TestServiceRootFinder extends PublisherTestCase {
     }
 
     private void changeUser(String userName) throws Exception {
-        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        DirectoryService directoryService = Framework
+            .getLocalService(DirectoryService.class);
         Session userdir = directoryService.open("userDirectory");
         DocumentModel userModel = userdir.getEntry(userName);
         // set it on session
@@ -149,19 +158,14 @@ public class TestServiceRootFinder extends PublisherTestCase {
 
     @Test
     public void testSectionRootFinder() throws Exception {
-        setReadACL(session.getRootDocument().getRef(), "myuser1", true);
+        Populate.self.setReadACL(session, session.getRootDocument().getRef(), "myuser1", true);
 
-        createInitialDocs("default-domain", 1);
-        createInitialDocs("another-default-domain", 2);
-
-        PublisherService service = Framework.getLocalService(PublisherService.class);
 
         RootSectionFinder finder = service.getRootSectionFinder(session);
 
         // first get all roots
         DocumentModelList roots = finder.getDefaultSectionRoots(true, true);
         assertEquals(2, roots.size());
-        // System.out.println(dump(roots));
 
         String sectionUUID = roots.get(0).getId();
         DocumentModel ws = session.getDocument(new PathRef(
@@ -170,20 +174,19 @@ public class TestServiceRootFinder extends PublisherTestCase {
         // check restrictions at workspace level
         roots = finder.getSectionRootsForWorkspace(ws, true);
         assertEquals(0, roots.size()); // no restriction
-        // System.out.println(dump(roots));
 
         // check accessibles sections
         // should be everything since there are no restrictions
         roots = finder.getAccessibleSectionRoots(ws);
         assertEquals(2, roots.size()); // no restriction
-        // System.out.println(dump(roots));
 
         // now create a restriction
         String[] sectionIdsArray = new String[] { sectionUUID };
         ws.setPropertyValue(AbstractRootSectionsFinder.SECTIONS_PROPERTY_NAME,
                 sectionIdsArray);
         ws = session.saveDocument(ws);
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         // reset the finder since it does contains a cache
         finder.reset();
@@ -195,20 +198,23 @@ public class TestServiceRootFinder extends PublisherTestCase {
 
         roots = finder.getAccessibleSectionRoots(ws);
         assertEquals(1, roots.size()); // 1 restriction
-        // System.out.println(dump(roots));
 
         // change restriction
-        String sectionUUID1 = session.getDocument(
-                new PathRef(
-                        "/another-default-domain/sections/D2_section1/D2_section11")).getId();
+        String sectionUUID1 = session
+            .getDocument(
+                    new PathRef(
+                            "/another-default-domain/sections/D2_section1/D2_section11"))
+            .getId();
         String sectionUUID2 = session.getDocument(
-                new PathRef("/another-default-domain/sections/D2_section2")).getId();
+                new PathRef("/another-default-domain/sections/D2_section2"))
+            .getId();
 
         sectionIdsArray = new String[] { sectionUUID1, sectionUUID2 };
         ws.setPropertyValue(AbstractRootSectionsFinder.SECTIONS_PROPERTY_NAME,
                 sectionIdsArray);
         ws = session.saveDocument(ws);
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         // change user
         changeUser("myuser1");
@@ -225,7 +231,6 @@ public class TestServiceRootFinder extends PublisherTestCase {
         // /default-domain/sections
         // /default-domain/sections/D1_section2
         assertEquals(4, sb.toString().split("\n").length);
-        // System.out.println(sb.toString());
 
         String treeName2 = ps.getAvailablePublicationTree().get(1);
         tree = ps.getPublicationTree(treeName2, session, null);
@@ -238,7 +243,6 @@ public class TestServiceRootFinder extends PublisherTestCase {
         // /another-default-domain/sections/D2_section1/D2_section11
         // /another-default-domain/sections/D2_section2
         assertEquals(4, sb.toString().split("\n").length);
-        // System.out.println(sb.toString());
 
         // now include filtering
         tree = ps.getPublicationTree(treeName2, session, null, ws);
@@ -250,14 +254,11 @@ public class TestServiceRootFinder extends PublisherTestCase {
         // /another-default-domain/sections/D2_section1/D2_section11
         // /another-default-domain/sections/D2_section2
         assertEquals(3, sb.toString().split("\n").length);
-        // System.out.println(sb.toString());
 
     }
 
     @Test
     public void testSectionRootFinderContrib() throws Exception {
-
-        PublisherService service = Framework.getLocalService(PublisherService.class);
 
         RootSectionFinder finder = service.getRootSectionFinder(session);
 

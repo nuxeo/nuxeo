@@ -189,6 +189,17 @@ public class PublisherServiceImpl extends DefaultComponent implements
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
+        if (contribution instanceof PublicationTreeDescriptor) {
+            treeDescriptors.remove(((PublicationTreeDescriptor)contribution).getName());
+        } else if (contribution instanceof PublicationTreeConfigDescriptor) {
+            String name = ((PublicationTreeConfigDescriptor)contribution).getName();
+            pendingDescriptors.remove(name);
+            treeConfigDescriptors.remove(name);
+        } else if (contribution instanceof ValidatorsRuleDescriptor) {
+            validatorsRuleDescriptors.remove(((ValidatorsRuleDescriptor)contribution).getName());
+        } else if (contribution instanceof RootSectionFinderFactoryDescriptor) {
+            rootSectionFinderFactory = null;
+        }
     }
 
     protected String computeTreeSessionId(String treeConfigName,
@@ -200,12 +211,14 @@ public class PublisherServiceImpl extends DefaultComponent implements
         return treeConfigName + sid;
     }
 
+    @Override
     public List<String> getAvailablePublicationTree() {
         List<String> treeConfigs = new ArrayList<String>();
         treeConfigs.addAll(treeConfigDescriptors.keySet());
         return treeConfigs;
     }
 
+    @Override
     public Map<String, String> getAvailablePublicationTrees() {
         Map<String, String> trees = new HashMap<String, String>();
         for (PublicationTreeConfigDescriptor desc : treeConfigDescriptors.values()) {
@@ -216,12 +229,14 @@ public class PublisherServiceImpl extends DefaultComponent implements
         return trees;
     }
 
+    @Override
     public PublicationTree getPublicationTree(String treeName,
             CoreSession coreSession, Map<String, String> params)
             throws ClientException, PublicationTreeNotAvailable {
         return getPublicationTree(treeName, coreSession, params, null);
     }
 
+    @Override
     public PublicationTree getPublicationTree(String treeName,
             CoreSession coreSession, Map<String, String> params,
             DocumentModel currentDocument) throws ClientException,
@@ -236,6 +251,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         return new ProxyTree(tree, tree.getSessionId());
     }
 
+    @Override
     public Map<String, String> initRemoteSession(String treeConfigName,
             Map<String, String> params) throws Exception {
         CoreSession coreSession = CoreInstance.openCoreSession(null);
@@ -254,6 +270,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         return res;
     }
 
+    @Override
     public void release(String sid) {
         PublicationTree tree;
 
@@ -272,6 +289,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public void releaseAllTrees(String sessionId) {
         for (String configName : treeConfigDescriptors.keySet()) {
             String treeid = computeTreeSessionId(configName, sessionId);
@@ -288,8 +306,9 @@ public class PublisherServiceImpl extends DefaultComponent implements
             tree = liveTrees.get(key);
         } else {
             tree = buildTree(key, treeConfigName, coreSession, params);
-            if (tree != null)
+            if (tree != null) {
                 liveTrees.put(key, tree);
+            }
         }
         return tree;
     }
@@ -424,11 +443,13 @@ public class PublisherServiceImpl extends DefaultComponent implements
         return treeImpl;
     }
 
+    @Override
     public PublishedDocument publish(DocumentModel doc,
             PublicationNode targetNode) throws ClientException {
         return publish(doc, targetNode, null);
     }
 
+    @Override
     public PublishedDocument publish(DocumentModel doc,
             PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
@@ -442,6 +463,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public void unpublish(DocumentModel doc, PublicationNode targetNode)
             throws ClientException {
         PublicationTree tree = liveTrees.get(targetNode.getSessionId());
@@ -453,6 +475,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public void unpublish(String sid, PublishedDocument publishedDocument)
             throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
@@ -464,6 +487,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public List<PublishedDocument> getChildrenDocuments(PublicationNode node)
             throws ClientException {
 
@@ -487,6 +511,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         return remoteNodes;
     }
 
+    @Override
     public List<PublicationNode> getChildrenNodes(PublicationNode node)
             throws ClientException {
         String sid = node.getSessionId();
@@ -500,6 +525,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public PublicationNode getParent(PublicationNode node) {
         String sid = node.getSessionId();
         PublicationTree tree = liveTrees.get(sid);
@@ -521,6 +547,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public PublicationNode getNodeByPath(String sid, String path)
             throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
@@ -531,6 +558,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public List<PublishedDocument> getExistingPublishedDocument(String sid,
             DocumentLocation docLoc) throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
@@ -541,6 +569,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public List<PublishedDocument> getPublishedDocumentInNode(
             PublicationNode node) throws ClientException {
         String sid = node.getSessionId();
@@ -553,6 +582,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public void setCurrentDocument(String sid, DocumentModel currentDocument)
             throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
@@ -564,6 +594,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public void validatorPublishDocument(String sid,
             PublishedDocument publishedDocument, String comment)
             throws ClientException {
@@ -576,6 +607,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public void validatorRejectPublication(String sid,
             PublishedDocument publishedDocument, String comment)
             throws ClientException {
@@ -588,6 +620,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public boolean canPublishTo(String sid, PublicationNode publicationNode)
             throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
@@ -599,6 +632,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public boolean canUnpublish(String sid, PublishedDocument publishedDocument)
             throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
@@ -610,6 +644,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public boolean canManagePublishing(String sid,
             PublishedDocument publishedDocument) throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
@@ -621,10 +656,12 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public boolean isPublishedDocument(DocumentModel documentModel) {
         return PublicationRelationHelper.isPublished(documentModel);
     }
 
+    @Override
     public PublicationTree getPublicationTreeFor(DocumentModel doc,
             CoreSession coreSession) throws ClientException {
         PublicationTree tree = null;
@@ -645,6 +682,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         return tree;
     }
 
+    @Override
     public boolean hasValidationTask(String sid,
             PublishedDocument publishedDocument) throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
@@ -656,6 +694,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public PublishedDocument wrapToPublishedDocument(String sid,
             DocumentModel documentModel) throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
@@ -667,6 +706,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public boolean isPublicationNode(String sid, DocumentModel documentModel)
             throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
@@ -678,6 +718,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public PublicationNode wrapToPublicationNode(String sid,
             DocumentModel documentModel) throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
@@ -689,6 +730,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public PublicationNode wrapToPublicationNode(DocumentModel documentModel,
             CoreSession coreSession) throws ClientException,
             PublicationTreeNotAvailable {
@@ -745,6 +787,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public Map<String, String> getParametersFor(String treeConfigName) {
         PublicationTreeConfigDescriptor desc = treeConfigDescriptors.get(treeConfigName);
         Map<String, String> parameters = new HashMap<String, String>();
@@ -754,6 +797,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         return parameters;
     }
 
+    @Override
     public RootSectionFinder getRootSectionFinder(CoreSession session) {
         if (rootSectionFinderFactory != null) {
             return rootSectionFinderFactory.getRootSectionFinder(session);

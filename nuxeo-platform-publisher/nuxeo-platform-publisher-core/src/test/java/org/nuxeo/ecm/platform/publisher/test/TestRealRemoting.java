@@ -49,12 +49,15 @@ public class TestRealRemoting extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.types.core");
         deployBundle("org.nuxeo.ecm.platform.versioning.api");
         deployBundle("org.nuxeo.ecm.platform.versioning");
+        deployBundle("org.nuxeo.ecm.platform.query.api");
 
         deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");
         deployContrib("org.nuxeo.ecm.platform.publisher.core",
                 "OSGI-INF/publisher-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.publisher.core",
                 "OSGI-INF/publisher-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.publisher.core",
+                "OSGI-INF/publisher-pageprovider-contrib.xml");
 
         openSession();
         fireFrameworkStarted();

@@ -62,6 +62,8 @@ public class TestMashalingWithCore extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.content.template");
         deployBundle("org.nuxeo.ecm.platform.types.api");
         deployBundle("org.nuxeo.ecm.platform.types.core");
+        deployBundle("org.nuxeo.ecm.platform.versioning");
+        deployBundle("org.nuxeo.ecm.platform.versioning.api");
         fireFrameworkStarted();
         openSession();
         createInitialDocs();

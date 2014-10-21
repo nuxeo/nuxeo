@@ -24,14 +24,19 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
@@ -39,9 +44,12 @@ import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionsManager;
 import org.nuxeo.ecm.platform.publisher.impl.service.ProxyTree;
 import org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl;
+import org.nuxeo.ecm.platform.publisher.test.TestServiceWithCore.Populate;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  *
@@ -50,57 +58,68 @@ import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
  * @author tiry
  *
  */
-@RepositoryConfig(cleanup=Granularity.METHOD)
+@RepositoryConfig(cleanup = Granularity.METHOD, init = Populate.class)
+@Deploy({ "org.nuxeo.ecm.platform.versioning",
+        "org.nuxeo.ecm.platform.versioning.api" })
 public class TestServiceWithCore extends PublisherTestCase {
 
-    protected DocumentModel doc2Publish;
+    public static class Populate implements RepositoryInit {
 
-    protected void createInitialDocs() throws Exception {
+        protected static Populate self;
 
-        DocumentModel wsRoot = session.getDocument(new PathRef(
-                "default-domain/workspaces"));
+        protected DocumentModel doc2Publish;
 
-        DocumentModel ws = session.createDocumentModel(
-                wsRoot.getPathAsString(), "ws1", "Workspace");
-        ws.setProperty("dublincore", "title", "test WS");
-        ws = session.createDocument(ws);
+        @Override
+        public void populate(CoreSession session) throws ClientException {
+            self = this;
+            DocumentModel wsRoot = session.getDocument(new PathRef(
+                    "default-domain/workspaces"));
 
-        DocumentModel sectionsRoot = session.getDocument(new PathRef(
-                "default-domain/sections"));
+            DocumentModel ws = session.createDocumentModel(
+                    wsRoot.getPathAsString(), "ws1", "Workspace");
+            ws.setProperty("dublincore", "title", "test WS");
+            ws = session.createDocument(ws);
 
-        DocumentModel section1 = session.createDocumentModel(
-                sectionsRoot.getPathAsString(), "section1", "Section");
-        section1.setProperty("dublincore", "title", "section1");
-        section1 = session.createDocument(section1);
+            DocumentModel sectionsRoot = session.getDocument(new PathRef(
+                    "default-domain/sections"));
 
-        DocumentModel section2 = session.createDocumentModel(
-                sectionsRoot.getPathAsString(), "section2", "Section");
-        section2.setProperty("dublincore", "title", "section2");
-        section2 = session.createDocument(section2);
+            DocumentModel section1 = session.createDocumentModel(
+                    sectionsRoot.getPathAsString(), "section1", "Section");
+            section1.setProperty("dublincore", "title", "section1");
+            section1 = session.createDocument(section1);
 
-        DocumentModel section11 = session.createDocumentModel(
-                section1.getPathAsString(), "section11", "Section");
-        section11.setProperty("dublincore", "title", "section11");
-        section11 = session.createDocument(section11);
+            DocumentModel section2 = session.createDocumentModel(
+                    sectionsRoot.getPathAsString(), "section2", "Section");
+            section2.setProperty("dublincore", "title", "section2");
+            section2 = session.createDocument(section2);
 
-        doc2Publish = session.createDocumentModel(ws.getPathAsString(), "file",
-                "File");
-        doc2Publish.setProperty("dublincore", "title", "MyDoc");
+            DocumentModel section11 = session.createDocumentModel(
+                    section1.getPathAsString(), "section11", "Section");
+            section11.setProperty("dublincore", "title", "section11");
+            section11 = session.createDocument(section11);
 
-        Blob blob = new StringBlob("SomeDummyContent");
-        blob.setFilename("dummyBlob.txt");
-        blob.setMimeType("text/plain");
-        doc2Publish.setProperty("file", "content", blob);
+            Populate.self.doc2Publish = session.createDocumentModel(
+                    ws.getPathAsString(), "file", "File");
+            Populate.self.doc2Publish.setProperty("dublincore", "title",
+                    "MyDoc");
 
-        doc2Publish = session.createDocument(doc2Publish);
+            Blob blob = new StringBlob("SomeDummyContent");
+            blob.setFilename("dummyBlob.txt");
+            blob.setMimeType("text/plain");
+            Populate.self.doc2Publish.setProperty("file", "content", blob);
 
-        session.save();
+            Populate.self.doc2Publish = session
+                .createDocument(Populate.self.doc2Publish);
+
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+
+        }
+
     }
 
     @Test
     public void testCorePublishing() throws Exception {
-
-        createInitialDocs();
 
         // check service config
         PublisherService service = Framework
@@ -119,7 +138,6 @@ public class TestServiceWithCore extends PublisherTestCase {
 
         Boolean isRemotable = false;
         if (tree instanceof ProxyTree) {
-            ProxyTree rTree = (ProxyTree) tree;
             isRemotable = true;
         }
         assertTrue(isRemotable);
@@ -141,12 +159,14 @@ public class TestServiceWithCore extends PublisherTestCase {
         assertEquals(tree.getSessionId(), nodes.get(1).getSessionId());
 
         // check publishing
-        PublishedDocument pubDoc = tree.publish(doc2Publish, targetNode);
+        PublishedDocument pubDoc = tree.publish(Populate.self.doc2Publish,
+                targetNode);
         assertNotNull(pubDoc);
         assertEquals(
                 1,
                 tree.getExistingPublishedDocument(
-                        new DocumentLocationImpl(doc2Publish)).size());
+                        new DocumentLocationImpl(Populate.self.doc2Publish))
+                    .size());
         session.save();
 
         assertEquals("test", pubDoc.getSourceRepositoryName());
@@ -154,7 +174,7 @@ public class TestServiceWithCore extends PublisherTestCase {
             .getSourceDocumentRef());
         assertNotNull(publishedDocVersion);
         assertTrue(publishedDocVersion.isVersion());
-        assertEquals(doc2Publish.getRef().toString(),
+        assertEquals(Populate.self.doc2Publish.getRef().toString(),
                 publishedDocVersion.getSourceId());
 
         // check tree features about proxy detection
@@ -173,12 +193,14 @@ public class TestServiceWithCore extends PublisherTestCase {
 
         // check publishing 2
         PublicationNode targetNode2 = nodes.get(0);
-        PublishedDocument pubDoc2 = tree.publish(doc2Publish, targetNode2);
+        PublishedDocument pubDoc2 = tree.publish(Populate.self.doc2Publish,
+                targetNode2);
         assertNotNull(pubDoc2);
         assertEquals(
                 2,
                 tree.getExistingPublishedDocument(
-                        new DocumentLocationImpl(doc2Publish)).size());
+                        new DocumentLocationImpl(Populate.self.doc2Publish))
+                    .size());
         session.save();
 
         assertEquals("test", pubDoc2.getSourceRepositoryName());
@@ -186,7 +208,7 @@ public class TestServiceWithCore extends PublisherTestCase {
             .getSourceDocumentRef());
         assertNotNull(publishedDocVersion2);
         assertTrue(publishedDocVersion2.isVersion());
-        assertEquals(doc2Publish.getRef().toString(),
+        assertEquals(Populate.self.doc2Publish.getRef().toString(),
                 publishedDocVersion2.getSourceId());
 
         // check tree features about proxy detection
@@ -205,13 +227,11 @@ public class TestServiceWithCore extends PublisherTestCase {
 
     }
 
+    @Inject
+    PublisherService service;
 
     @Test
     public void testWrapToPublicationNode() throws Exception {
-        createInitialDocs();
-
-        PublisherService service = Framework
-            .getLocalService(PublisherService.class);
 
         PublicationTree tree = service.getPublicationTree(service
             .getAvailablePublicationTree().get(0), session, null);
@@ -228,17 +248,18 @@ public class TestServiceWithCore extends PublisherTestCase {
                 session);
         assertNotNull(targetNode);
 
-        PublishedDocument pubDoc = tree.publish(doc2Publish, targetNode);
+        PublishedDocument pubDoc = tree.publish(Populate.self.doc2Publish,
+                targetNode);
         assertNotNull(pubDoc);
         assertEquals(
                 1,
                 tree.getExistingPublishedDocument(
-                        new DocumentLocationImpl(doc2Publish)).size());
+                        new DocumentLocationImpl(Populate.self.doc2Publish))
+                    .size());
     }
 
     @Test
     public void testWithRootSections() throws Exception {
-        createInitialDocs();
 
         RootSectionsManager rootSectionsManager = new RootSectionsManager(
                 session);
@@ -259,7 +280,8 @@ public class TestServiceWithCore extends PublisherTestCase {
             .getLocalService(PublisherService.class);
 
         PublicationTree tree = service.getPublicationTree(service
-            .getAvailablePublicationTree().get(0), session, null, doc2Publish);
+            .getAvailablePublicationTree().get(0), session, null,
+                Populate.self.doc2Publish);
         assertNotNull(tree);
 
         List<PublicationNode> nodes = tree.getChildrenNodes();
@@ -280,7 +302,7 @@ public class TestServiceWithCore extends PublisherTestCase {
 
         // "hack" to reset the RootSectionsFinder used by the tree
         // implementation
-        tree.setCurrentDocument(doc2Publish);
+        tree.setCurrentDocument(Populate.self.doc2Publish);
         nodes = tree.getChildrenNodes();
         assertEquals(2, nodes.size());
 
@@ -292,7 +314,6 @@ public class TestServiceWithCore extends PublisherTestCase {
     }
 
     protected void publishDocAndReopenSession() throws Exception {
-        createInitialDocs();
         RootSectionsManager rootSectionsManager = new RootSectionsManager(
                 session);
         DocumentModel section = session.getDocument(new PathRef(
@@ -302,12 +323,13 @@ public class TestServiceWithCore extends PublisherTestCase {
         rootSectionsManager.addSection(section.getId(), workspace);
         PublisherService srv = Framework
             .getLocalService(PublisherService.class);
-        PublicationTree tree = srv.getPublicationTreeFor(doc2Publish, session);
+        PublicationTree tree = srv.getPublicationTreeFor(
+                Populate.self.doc2Publish, session);
         PublicationNode target = tree
             .getNodeByPath("/default-domain/sections/section1");
-        srv.publish(doc2Publish, target);
-        closeSession();
-        openSession();
+        srv.publish(Populate.self.doc2Publish, target);
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
     }
 
     @Test
@@ -319,7 +341,8 @@ public class TestServiceWithCore extends PublisherTestCase {
         assertTrue(session.exists(proxyRef));
         PublisherService srv = Framework
             .getLocalService(PublisherService.class);
-        PublicationTree tree = srv.getPublicationTreeFor(doc2Publish, session);
+        PublicationTree tree = srv.getPublicationTreeFor(
+                Populate.self.doc2Publish, session);
         PublicationNode target = tree.getNodeByPath(sectionRef.value);
         // Unpublish check-in version (SUPNXP-3013)
         DocumentModel publishedDocVersion = session.getSourceDocument(proxyRef);
@@ -327,39 +350,36 @@ public class TestServiceWithCore extends PublisherTestCase {
         assertFalse(session.exists(proxyRef));
     }
 
-
     @Test
     public void testCleanUp() throws Exception {
         RegistrationInfo ri = new DefaultRuntimeContext()
-            .deploy("OSGi-INF/publisher-remote-contrib-test.xml");
+            .deploy("OSGI-INF/publisher-remote-contrib-test.xml");
         try {
-            createInitialDocs();
+
+            PublisherServiceImpl service = (PublisherServiceImpl) Framework
+                .getLocalService(PublisherService.class);
+
+            assertEquals(0, service.getLiveTreeCount());
+
+            // get a local tree
+            PublicationTree ltree = service.getPublicationTree(
+                    "DefaultSectionsTree-default-domain", session, null);
+            assertEquals(1, service.getLiveTreeCount());
+
+            // get a remote tree
+            PublicationTree rtree = service.getPublicationTree(
+                    "ClientRemoteTree", session, null);
+            assertEquals(3, service.getLiveTreeCount());
+
+            // release local tree
+            ltree.release();
+            assertEquals(2, service.getLiveTreeCount());
+
+            // release remote tree
+            rtree.release();
+            assertEquals(0, service.getLiveTreeCount());
         } finally {
             ri.getManager().unregister(ri);
         }
-
-        PublisherServiceImpl service = (PublisherServiceImpl) Framework
-            .getLocalService(PublisherService.class);
-
-        assertEquals(0, service.getLiveTreeCount());
-
-        // get a local tree
-        PublicationTree ltree = service.getPublicationTree(
-                "DefaultSectionsTree-default-domain", session, null);
-        assertEquals(1, service.getLiveTreeCount());
-
-        // get a remote tree
-        PublicationTree rtree = service.getPublicationTree("ClientRemoteTree",
-                session, null);
-        assertEquals(3, service.getLiveTreeCount());
-
-        // release local tree
-        ltree.release();
-        assertEquals(2, service.getLiveTreeCount());
-
-        // release remote tree
-        rtree.release();
-        assertEquals(0, service.getLiveTreeCount());
-
     }
 }

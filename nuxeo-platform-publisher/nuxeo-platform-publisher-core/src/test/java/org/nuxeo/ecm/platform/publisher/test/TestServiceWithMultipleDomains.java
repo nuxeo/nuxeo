@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -64,7 +65,8 @@ public class TestServiceWithMultipleDomains extends PublisherTestCase {
         section11.setProperty("dublincore", "title", "section11");
         section11 = session.createDocument(section11);
 
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
     }
 
     @Test

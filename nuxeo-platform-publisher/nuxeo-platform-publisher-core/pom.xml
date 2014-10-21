@@ -109,6 +109,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
       <scope>test</scope>
@@ -137,7 +142,27 @@
        <groupId>org.nuxeo.ecm.annot</groupId>
        <artifactId>nuxeo-annot-repo</artifactId>
        <scope>test</scope>
+    </dependency>
+    <dependency>
+       <groupId>org.nuxeo.ecm.annot</groupId>
+       <artifactId>nuxeo-annot-repo</artifactId>
+       <scope>test</scope>
        <type>test-jar</type>
+    </dependency>
+    <dependency>
+       <groupId>org.nuxeo.ecm.annot</groupId>
+       <artifactId>nuxeo-annot-core</artifactId>
+       <scope>test</scope>
+    </dependency>
+    <dependency>
+       <groupId>org.nuxeo.ecm.annot</groupId>
+       <artifactId>nuxeo-annot-api</artifactId>
+       <scope>test</scope>
+    </dependency>
+    <dependency>
+       <groupId>org.nuxeo.ecm.annot</groupId>
+       <artifactId>nuxeo-annot-contrib</artifactId>
+       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>hsqldb</groupId>

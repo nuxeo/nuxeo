@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -36,10 +37,18 @@ public class TestRootSectionFinder extends SQLRepositoryTestCase {
 
     Set<String> sectionTypes = new HashSet<String>();
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
         openSession();
+    }
+
+
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
     }
 
     @Test
@@ -77,6 +86,7 @@ public class TestRootSectionFinder extends SQLRepositoryTestCase {
             super(userSession);
         }
 
+        @Override
         public String buildQuery(String path) {
             return super.buildQuery(path);
         }

@@ -66,6 +66,8 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.types.core");
         deployBundle("org.nuxeo.ecm.platform.versioning.api");
         deployBundle("org.nuxeo.ecm.platform.versioning");
+        deployBundle("org.nuxeo.ecm.platform.query.api");
+
 
         deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");
         deployBundle("org.nuxeo.ecm.platform.publisher.core");
