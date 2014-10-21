@@ -478,7 +478,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Available since 5.9.6. The target attribute of the link.
+                    Available since 5.9.6. The target attribute
+                    of the link.
                   </label>
                 </helpLabels>
                 <fields>
@@ -509,7 +510,8 @@
                 <helpLabels>
                   <label mode="any">
                     Available since 5.7.2. Flag indicating that
-                    the external link, opening the document in a new conversation, must be hidden.
+                    the external link, opening the document in a new
+                    conversation, must be hidden.
                   </label>
                 </helpLabels>
                 <fields>
@@ -883,8 +885,9 @@
         <title>Manage Document</title>
         <description>
           <p>This widget type displays a clickable icon when the document can be
-             managed by the current user. Clicking the icon goes directly to the manage
-             tab.
+            managed by the current user. Clicking the icon goes directly to the
+            manage
+            tab.
           </p>
         </description>
         <fields>
