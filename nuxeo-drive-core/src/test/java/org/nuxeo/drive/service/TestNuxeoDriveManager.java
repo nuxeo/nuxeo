@@ -144,10 +144,10 @@ public class TestNuxeoDriveManager {
         folder_2_1 = session.createDocument(session.createDocumentModel(
                 "/default-domain/workspaces/workspace-2", "folder-2-1",
                 "Folder"));
-        Map<String, Boolean> permissions = new HashMap<String, Boolean>();
-        permissions.put(SecurityConstants.READ_WRITE, true);
-        setPermissions(workspace_1, "members", permissions);
-        setPermissions(workspace_2, "members", permissions);
+        setPermissions(workspace_1, new ACE("members",
+                SecurityConstants.READ_WRITE));
+        setPermissions(workspace_2, new ACE("members",
+                SecurityConstants.READ_WRITE));
 
         user1Session = repository.openSessionAs("user1");
         user2Session = repository.openSessionAs("user2");
@@ -457,18 +457,14 @@ public class TestNuxeoDriveManager {
 
         // Deny Read permission => nuxeoDriveCacheInvalidationListener should
         // invalidate the cache
-        Map<String, Boolean> permissions = new HashMap<String, Boolean>();
-        permissions.put(SecurityConstants.READ_WRITE, false);
-        permissions.put(SecurityConstants.READ, false);
-        setPermissions(workspace_2, "user1", permissions);
+        setPermissions(workspace_2, new ACE(SecurityConstants.ADMINISTRATOR,
+                SecurityConstants.EVERYTHING), ACE.BLOCK);
         expectedSyncRootPaths.remove("/default-domain/workspaces/workspace-2");
         checkRoots(user1Principal, 1, expectedSyncRootPaths);
 
         // Grant Read permission back => nuxeoDriveCacheInvalidationListener
         // should invalidate the cache
-        permissions.put(SecurityConstants.READ_WRITE, true);
-        permissions.put(SecurityConstants.READ, true);
-        setPermissions(workspace_2, "user1", permissions);
+        resetPermissions(workspace_2);
         expectedSyncRootPaths.add("/default-domain/workspaces/workspace-2");
         checkRoots(user1Principal, 2, expectedSyncRootPaths);
 
@@ -495,10 +491,9 @@ public class TestNuxeoDriveManager {
                 "/default-domain/workspaces", "folder", "Folder"));
         DocumentModel folder1 = session.createDocument(session.createDocumentModel(
                 "/default-domain/workspaces", "folder1", "Folder"));
-        Map<String, Boolean> permissions = new HashMap<String, Boolean>();
-        permissions.put(SecurityConstants.READ_WRITE, true);
-        setPermissions(folder, "members", permissions);
-        setPermissions(folder1, "members", permissions);
+        setPermissions(folder, new ACE("members", SecurityConstants.READ_WRITE));
+        setPermissions(folder1,
+                new ACE("members", SecurityConstants.READ_WRITE));
 
         // Register folder as a synchronization root
         nuxeoDriveManager.registerSynchronizationRoot(user1Principal, folder,
@@ -652,14 +647,21 @@ public class TestNuxeoDriveManager {
         return false;
     }
 
-    protected void setPermissions(DocumentModel doc, String userName,
-            Map<String, Boolean> permissions) throws ClientException {
+    protected void setPermissions(DocumentModel doc, ACE... aces)
+            throws ClientException {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
-        for (String permission : permissions.keySet()) {
-            localACL.add(0,
-                    new ACE(userName, permission, permissions.get(permission)));
+        for (int i = 0; i < aces.length; i++) {
+            localACL.add(i, aces[i]);
         }
+        session.setACP(doc.getRef(), acp, true);
+        session.save();
+    }
+
+    protected void resetPermissions(DocumentModel doc)
+            throws ClientException {
+        ACP acp = session.getACP(doc.getRef());
+        acp.getOrCreateACL(ACL.LOCAL_ACL).clear();
         session.setACP(doc.getRef(), acp, true);
         session.save();
     }

@@ -183,10 +183,8 @@ public class TestAuditFileSystemChangeFinder {
                 "folder2", "Folder"));
         folder3 = session.createDocument(session.createDocumentModel("/",
                 "folder3", "Folder"));
-        Map<String, Boolean> permissions = new HashMap<String, Boolean>();
-        permissions.put(SecurityConstants.READ_WRITE, true);
-        setPermissions(folder1, "user1", permissions);
-        setPermissions(folder2, "user1", permissions);
+        setPermissions(folder1, new ACE("user1", SecurityConstants.READ_WRITE));
+        setPermissions(folder2, new ACE("user1", SecurityConstants.READ_WRITE));
 
         commitAndWaitForAsyncCompletion();
     }
@@ -517,12 +515,11 @@ public class TestAuditFileSystemChangeFinder {
 
             // Permission changes: deny Read
             // Deny Read to user1 on a regular doc
-            Map<String, Boolean> permissions = new HashMap<String, Boolean>();
-            permissions.put(SecurityConstants.READ_WRITE, false);
-            permissions.put(SecurityConstants.READ, false);
-            setPermissions(subFolder, "user1", permissions);
+            setPermissions(subFolder, new ACE(SecurityConstants.ADMINISTRATOR,
+                    SecurityConstants.EVERYTHING), ACE.BLOCK);
             // Deny Read to user1 on a sync root
-            setPermissions(folder2, "user1", permissions);
+            setPermissions(folder2, new ACE(SecurityConstants.ADMINISTRATOR,
+                    SecurityConstants.EVERYTHING), ACE.BLOCK);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -553,11 +550,9 @@ public class TestAuditFileSystemChangeFinder {
 
             // Permission changes: grant Read
             // Grant Read to user1 on a regular doc
-            Map<String, Boolean> permissions = new HashMap<String, Boolean>();
-            permissions.put(SecurityConstants.READ, true);
-            setPermissions(subFolder, "user1", permissions);
+            setPermissions(subFolder, new ACE("user1", SecurityConstants.READ));
             // Grant Read to user1 on a sync root
-            setPermissions(folder2, "user1", permissions);
+            setPermissions(folder2, new ACE("user1", SecurityConstants.READ));
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -1274,13 +1269,12 @@ public class TestAuditFileSystemChangeFinder {
         commitAndWaitForAsyncCompletion(session);
     }
 
-    protected void setPermissions(DocumentModel doc, String userName,
-            Map<String, Boolean> permissions) throws Exception {
+    protected void setPermissions(DocumentModel doc, ACE... aces)
+            throws Exception {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
-        for (String permission : permissions.keySet()) {
-            localACL.add(0,
-                    new ACE(userName, permission, permissions.get(permission)));
+        for (int i = 0; i < aces.length; i++) {
+            localACL.add(i, aces[i]);
         }
         session.setACP(doc.getRef(), acp, true);
         commitAndWaitForAsyncCompletion();

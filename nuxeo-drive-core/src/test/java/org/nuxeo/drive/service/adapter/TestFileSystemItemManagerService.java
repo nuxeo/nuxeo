@@ -390,13 +390,18 @@ public class TestFileSystemItemManagerService {
         // Not allowed to move a file system item if no ADD_CHILDREN permission
         // on the destination backing doc
         setPermission(folder, "joe", SecurityConstants.WRITE, true);
-        setPermission(subFolder, "joe", SecurityConstants.WRITE, false);
+        setPermission(subFolder, "joe", SecurityConstants.READ, true);
+        setPermission(subFolder, SecurityConstants.ADMINISTRATOR,
+                SecurityConstants.EVERYTHING, true);
+        setPermission(subFolder, SecurityConstants.EVERYONE,
+                SecurityConstants.EVERYTHING, false);
         assertFalse(fileSystemItemManagerService.canMove(srcFsItemId,
                 destFsItemId, joePrincipal));
 
         // OK: REMOVE permission on the source backing doc + REMOVE_CHILDREN
         // permission on its parent + ADD_CHILDREN permission on the destination
         // backing doc
+        resetPermissions(subFolder, SecurityConstants.EVERYONE);
         resetPermissions(subFolder, "joe");
         setPermission(subFolder, "joe", SecurityConstants.WRITE, true);
         assertTrue(fileSystemItemManagerService.canMove(srcFsItemId,
