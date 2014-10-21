@@ -2,19 +2,58 @@
   "name": "dublincore",
   "templates": {"any": "/layouts/layout_default_template.xhtml"},
   "rows":   [
-    {"widgets": [{"name": "nature"}]},
-    {"widgets": [{"name": "subjects"}]},
-    {"widgets": [{"name": "rights"}]},
-    {"widgets": [{"name": "source"}]},
-    {"widgets": [{"name": "coverage"}]},
-    {"widgets": [{"name": "created"}]},
-    {"widgets": [{"name": "modified"}]},
-    {"widgets": [{"name": "format"}]},
-    {"widgets": [{"name": "language"}]},
-    {"widgets": [{"name": "expired"}]},
-    {"widgets": [{"name": "author"}]},
-    {"widgets": [{"name": "contributors"}]},
-    {"widgets": [{"name": "lastContributor"}]}
+        {
+      "name": "layout_row_0",
+      "widgets": [{"name": "nature"}]
+    },
+        {
+      "name": "layout_row_1",
+      "widgets": [{"name": "subjects"}]
+    },
+        {
+      "name": "layout_row_2",
+      "widgets": [{"name": "rights"}]
+    },
+        {
+      "name": "layout_row_3",
+      "widgets": [{"name": "source"}]
+    },
+        {
+      "name": "layout_row_4",
+      "widgets": [{"name": "coverage"}]
+    },
+        {
+      "name": "layout_row_5",
+      "widgets": [{"name": "created"}]
+    },
+        {
+      "name": "layout_row_6",
+      "widgets": [{"name": "modified"}]
+    },
+        {
+      "name": "layout_row_7",
+      "widgets": [{"name": "format"}]
+    },
+        {
+      "name": "layout_row_8",
+      "widgets": [{"name": "language"}]
+    },
+        {
+      "name": "layout_row_9",
+      "widgets": [{"name": "expired"}]
+    },
+        {
+      "name": "layout_row_10",
+      "widgets": [{"name": "author"}]
+    },
+        {
+      "name": "layout_row_11",
+      "widgets": [{"name": "contributors"}]
+    },
+        {
+      "name": "layout_row_12",
+      "widgets": [{"name": "lastContributor"}]
+    }
   ],
   "widgets":   [
         {
@@ -35,13 +74,8 @@
       "selectOptions":       [
                 {
           "multiple": false,
-          "itemLabel": "CD Rom",
-          "itemValue": "CDRom"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Demande de logement",
-          "itemValue": "accomodationApplicationForm"
+          "itemLabel": "Article",
+          "itemValue": "article"
         },
                 {
           "multiple": false,
@@ -50,68 +84,8 @@
         },
                 {
           "multiple": false,
-          "itemLabel": "Candidature",
-          "itemValue": "application"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Article",
-          "itemValue": "article"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Bilan",
-          "itemValue": "assessment"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "RIB",
-          "itemValue": "bankAccountDetails"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Brochure",
-          "itemValue": "booklet"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Fiche",
-          "itemValue": "card"
-        },
-                {
-          "multiple": false,
           "itemLabel": "Certificat",
           "itemValue": "certificate"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Contrat",
-          "itemValue": "contract"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Convocation",
-          "itemValue": "convocation"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Avoir",
-          "itemValue": "credit"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Décret",
-          "itemValue": "decree"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Delivery note",
-          "itemValue": "deliveryNote"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Courriel",
-          "itemValue": "email"
         },
                 {
           "multiple": false,
@@ -120,13 +94,13 @@
         },
                 {
           "multiple": false,
-          "itemLabel": "Fax",
-          "itemValue": "fax"
+          "itemLabel": "Notice",
+          "itemValue": "notice"
         },
                 {
           "multiple": false,
-          "itemLabel": "Rapport de stage",
-          "itemValue": "internshipReport"
+          "itemLabel": "Avoir",
+          "itemValue": "credit"
         },
                 {
           "multiple": false,
@@ -135,13 +109,83 @@
         },
                 {
           "multiple": false,
+          "itemLabel": "Bilan",
+          "itemValue": "assessment"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Bon de commande",
+          "itemValue": "purchaseOrder"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Delivery note",
+          "itemValue": "deliveryNote"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Brochure",
+          "itemValue": "booklet"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Candidature",
+          "itemValue": "application"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "CD Rom",
+          "itemValue": "CDRom"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Certificat médical",
+          "itemValue": "medicalCertificate"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Certificat de travail",
+          "itemValue": "serviceCertificate"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Commande",
+          "itemValue": "order"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Contrat",
+          "itemValue": "contract"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Courriel",
+          "itemValue": "email"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Convocation",
+          "itemValue": "convocation"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Décret",
+          "itemValue": "decree"
+        },
+                {
+          "multiple": false,
           "itemLabel": "Demande de congés",
           "itemValue": "leaveApplication"
         },
                 {
           "multiple": false,
-          "itemLabel": "Lettre",
-          "itemValue": "letter"
+          "itemLabel": "Demande de formation",
+          "itemValue": "trainingApplication"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Demande de logement",
+          "itemValue": "accomodationApplicationForm"
         },
                 {
           "multiple": false,
@@ -150,8 +194,28 @@
         },
                 {
           "multiple": false,
-          "itemLabel": "Certificat médical",
-          "itemValue": "medicalCertificate"
+          "itemLabel": "Devis",
+          "itemValue": "quotation"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Fax",
+          "itemValue": "fax"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Fiche",
+          "itemValue": "card"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Fiche technique",
+          "itemValue": "worksheet"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Lettre",
+          "itemValue": "letter"
         },
                 {
           "multiple": false,
@@ -165,23 +229,8 @@
         },
                 {
           "multiple": false,
-          "itemLabel": "Notice",
-          "itemValue": "notice"
-        },
-                {
-          "multiple": false,
           "itemLabel": "Notification",
           "itemValue": "notification"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Commande",
-          "itemValue": "order"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Revue de presse",
-          "itemValue": "pressReview"
         },
                 {
           "multiple": false,
@@ -190,33 +239,23 @@
         },
                 {
           "multiple": false,
-          "itemLabel": "Bon de commande",
-          "itemValue": "purchaseOrder"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Devis",
-          "itemValue": "quotation"
-        },
-                {
-          "multiple": false,
           "itemLabel": "Rapport",
           "itemValue": "report"
         },
                 {
           "multiple": false,
-          "itemLabel": "Certificat de travail",
-          "itemValue": "serviceCertificate"
+          "itemLabel": "Rapport de stage",
+          "itemValue": "internshipReport"
         },
                 {
           "multiple": false,
-          "itemLabel": "Demande de formation",
-          "itemValue": "trainingApplication"
+          "itemLabel": "RIB",
+          "itemValue": "bankAccountDetails"
         },
                 {
           "multiple": false,
-          "itemLabel": "Fiche technique",
-          "itemValue": "worksheet"
+          "itemLabel": "Revue de presse",
+          "itemValue": "pressReview"
         }
       ],
       "renderingInfos": {"any": [      {
@@ -250,18 +289,13 @@
         },
                 {
           "multiple": false,
-          "itemLabel": "Art/Histoire de l'art",
-          "itemValue": "art/art history"
+          "itemLabel": "Art/Bande dessinée",
+          "itemValue": "art/comics"
         },
                 {
           "multiple": false,
           "itemLabel": "Art/Cinéma",
           "itemValue": "art/cinema"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Art/Bande dessinée",
-          "itemValue": "art/comics"
         },
                 {
           "multiple": false,
@@ -272,6 +306,11 @@
           "multiple": false,
           "itemLabel": "Art/Danse",
           "itemValue": "art/danse"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Art/Histoire de l'art",
+          "itemValue": "art/art history"
         },
                 {
           "multiple": false,
@@ -300,63 +339,13 @@
         },
                 {
           "multiple": false,
-          "itemLabel": "Vie quotidienne",
-          "itemValue": "daily life"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Vie quotidienne/Collection",
-          "itemValue": "daily life/collection"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Vie quotidienne/Mode",
-          "itemValue": "daily life/fashion"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Vie quotidienne/Jeux",
-          "itemValue": "daily life/games"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Vie quotidienne/Jardinage",
-          "itemValue": "daily life/gardening"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Vie quotidienne/Gastronomie",
-          "itemValue": "daily life/gastronomy"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Vie quotidienne/Sexualité",
-          "itemValue": "daily life/sexuality"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Vie quotidienne/Sport",
-          "itemValue": "daily life/sport"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Vie quotidienne/Télévision",
-          "itemValue": "daily life/television"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Vie quotidienne/Tourisme",
-          "itemValue": "daily life/tourism"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Vie quotidienne/Jeux video",
-          "itemValue": "daily life/video games"
-        },
-                {
-          "multiple": false,
           "itemLabel": "Sciences Humaines",
           "itemValue": "human sciences"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Sciences Humaines/Droits",
+          "itemValue": "human sciences/rights"
         },
                 {
           "multiple": false,
@@ -395,11 +384,6 @@
         },
                 {
           "multiple": false,
-          "itemLabel": "Sciences Humaines/Droits",
-          "itemValue": "human sciences/rights"
-        },
-                {
-          "multiple": false,
           "itemLabel": "Sciences Humaines/Sociologie",
           "itemValue": "human sciences/sociology"
         },
@@ -407,6 +391,11 @@
           "multiple": false,
           "itemLabel": "Société",
           "itemValue": "society"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Société/Education",
+          "itemValue": "society/education"
         },
                 {
           "multiple": false,
@@ -420,8 +409,8 @@
         },
                 {
           "multiple": false,
-          "itemLabel": "Société/Education",
-          "itemValue": "society/education"
+          "itemLabel": "Société/Femme",
+          "itemValue": "society/women"
         },
                 {
           "multiple": false,
@@ -440,8 +429,58 @@
         },
                 {
           "multiple": false,
-          "itemLabel": "Société/Femme",
-          "itemValue": "society/women"
+          "itemLabel": "Vie quotidienne",
+          "itemValue": "daily life"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Vie quotidienne/Collection",
+          "itemValue": "daily life/collection"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Vie quotidienne/Gastronomie",
+          "itemValue": "daily life/gastronomy"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Vie quotidienne/Jardinage",
+          "itemValue": "daily life/gardening"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Vie quotidienne/Jeux",
+          "itemValue": "daily life/games"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Vie quotidienne/Jeux video",
+          "itemValue": "daily life/video games"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Vie quotidienne/Mode",
+          "itemValue": "daily life/fashion"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Vie quotidienne/Sexualité",
+          "itemValue": "daily life/sexuality"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Vie quotidienne/Sport",
+          "itemValue": "daily life/sport"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Vie quotidienne/Télévision",
+          "itemValue": "daily life/television"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Vie quotidienne/Tourisme",
+          "itemValue": "daily life/tourism"
         },
                 {
           "multiple": false,
@@ -522,601 +561,6 @@
       }],
       "properties": {"any": {"template": "/widgets/coverage_widget.xhtml"}},
       "selectOptions":       [
-                {
-          "multiple": false,
-          "itemLabel": "Afrique",
-          "itemValue": "africa"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Algérie",
-          "itemValue": "africa/Algeria"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Angola",
-          "itemValue": "africa/Angola"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Bénin",
-          "itemValue": "africa/Benin"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Botswana",
-          "itemValue": "africa/Botswana"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Burkina Faso",
-          "itemValue": "africa/Burkina_Faso"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Burundi",
-          "itemValue": "africa/Burundi"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Cameroun",
-          "itemValue": "africa/Cameroon"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Cap-Vert",
-          "itemValue": "africa/Cape_Verde"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Centrafrique",
-          "itemValue": "africa/Central_African_Republic"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Tchad",
-          "itemValue": "africa/Chad"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Comores",
-          "itemValue": "africa/Comoros"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/République démocratique du Congo",
-          "itemValue": "africa/Congo_Democratic_Republic"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/République du Congo",
-          "itemValue": "africa/Congo_Republic"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Cote D'Ivoire",
-          "itemValue": "africa/Cote_D_Ivoire"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Djibouti",
-          "itemValue": "africa/Djibouti"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Égypte",
-          "itemValue": "africa/Egypt"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Guinée équatoriale",
-          "itemValue": "africa/Equatorial_Guinea"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Érythrée",
-          "itemValue": "africa/Eritrea"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Éthiopie",
-          "itemValue": "africa/Ethiopia"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Gabon",
-          "itemValue": "africa/Gabon"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Gambie",
-          "itemValue": "africa/Gambia"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Ghana",
-          "itemValue": "africa/Ghana"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Guinée",
-          "itemValue": "africa/Guinea"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Guinée-Bissau",
-          "itemValue": "africa/Guinea_Bissau"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Kenya",
-          "itemValue": "africa/Kenya"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Lesotho",
-          "itemValue": "africa/Lesotho"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Libéria",
-          "itemValue": "africa/Liberia"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Libye",
-          "itemValue": "africa/Libyan_Arab_Jamahiriya"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Madagascar",
-          "itemValue": "africa/Madagascar"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Malawi",
-          "itemValue": "africa/Malawi"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Mali",
-          "itemValue": "africa/Mali"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Mauritanie",
-          "itemValue": "africa/Mauritania"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Maurice",
-          "itemValue": "africa/Mauritius"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Mayotte",
-          "itemValue": "africa/Mayotte"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Maroc",
-          "itemValue": "africa/Morocco"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Mozambique",
-          "itemValue": "africa/Mozambique"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Namibie",
-          "itemValue": "africa/Namibia"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Niger",
-          "itemValue": "africa/Niger"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Nigeria",
-          "itemValue": "africa/Nigeria"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Réunion",
-          "itemValue": "africa/Reunion"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Rwanda",
-          "itemValue": "africa/Rwanda"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/São Tomé-et-Principe",
-          "itemValue": "africa/Sao_Tome_and_Principe"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Sénégal",
-          "itemValue": "africa/Senegal"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Seychelles",
-          "itemValue": "africa/Seychelles"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Sierra Leone",
-          "itemValue": "africa/Sierra_Leone"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Somalie",
-          "itemValue": "africa/Somalia"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Afrique du Sud",
-          "itemValue": "africa/South_Africa"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Île Sainte-Hélène",
-          "itemValue": "africa/St_Helena"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Soudan",
-          "itemValue": "africa/Sudan"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Swaziland",
-          "itemValue": "africa/Swaziland"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Tanzanie",
-          "itemValue": "africa/Tanzania"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Togo",
-          "itemValue": "africa/Togo"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Tunisie",
-          "itemValue": "africa/Tunisia"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Ouganda",
-          "itemValue": "africa/Uganda"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Sahara occidental",
-          "itemValue": "africa/Western_Sahara"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Zambie",
-          "itemValue": "africa/Zambia"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Afrique/Zimbabwe",
-          "itemValue": "africa/Zimbabwe"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Antarctique",
-          "itemValue": "antarctica"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Antarctique/Antarctique",
-          "itemValue": "antarctica/Antarctica_the_territory_South_of_60_deg_S"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Antarctique/Île Bouvet",
-          "itemValue": "antarctica/Bouvet_Island_Bouvetoya"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Antarctique/Territoire des Terres australes françaises",
-          "itemValue": "antarctica/French_Southern_Territories"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Antarctique/Île Heard et îles McDonald",
-          "itemValue": "antarctica/Heard_and_McDonald_Islands"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Antarctique/Géorgie du Sud et les îles Sandwich du Sud",
-          "itemValue": "antarctica/South_Georgia_and_the_South_Sandwich_Islands"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie",
-          "itemValue": "asia"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Afghanistan",
-          "itemValue": "asia/Afghanistan"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Arménie",
-          "itemValue": "asia/Armenia"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Azerbaïdjan",
-          "itemValue": "asia/Azerbaijan"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Bahreïn",
-          "itemValue": "asia/Bahrain"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Bangladesh",
-          "itemValue": "asia/Bangladesh"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Bhoutan",
-          "itemValue": "asia/Bhutan"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Îles Chagos",
-          "itemValue": "asia/British_Indian_Ocean_Territory_Chagos_Archipelago"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Brunei",
-          "itemValue": "asia/Brunei_Darussalam"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Cambodge",
-          "itemValue": "asia/Cambodia"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Chine",
-          "itemValue": "asia/China"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Île Christmas",
-          "itemValue": "asia/Christmas_Island"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Îles Cocos",
-          "itemValue": "asia/Cocos_Keeling_Islands"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Chypre",
-          "itemValue": "asia/Cyprus"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Géorgie",
-          "itemValue": "asia/Georgia"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Hong Kong",
-          "itemValue": "asia/Hong_Kong"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Inde",
-          "itemValue": "asia/India"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Indonésie",
-          "itemValue": "asia/Indonesia"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Iran",
-          "itemValue": "asia/Iran"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Iraq",
-          "itemValue": "asia/Iraq"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Israël",
-          "itemValue": "asia/Israel"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Japon",
-          "itemValue": "asia/Japan"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Jordanie",
-          "itemValue": "asia/Jordan"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Kazakhstan",
-          "itemValue": "asia/Kazakhstan"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Koweït",
-          "itemValue": "asia/Kuwait"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Kirghizistan",
-          "itemValue": "asia/Kyrgyz_Republic"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Laos",
-          "itemValue": "asia/Lao_People_s_Democratic_Republic"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Liban",
-          "itemValue": "asia/Lebanon"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Macao",
-          "itemValue": "asia/Macao"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Malaisie",
-          "itemValue": "asia/Malaysia"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Maldives",
-          "itemValue": "asia/Maldives"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Mongolia",
-          "itemValue": "asia/Mongolia"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Myanmar",
-          "itemValue": "asia/Myanmar"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Népal",
-          "itemValue": "asia/Nepal"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Corée du Nord",
-          "itemValue": "asia/North_Korea"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Oman",
-          "itemValue": "asia/Oman"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Pakistan",
-          "itemValue": "asia/Pakistan"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Territoires palestiniens",
-          "itemValue": "asia/Palestinian_Territory"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Philippines",
-          "itemValue": "asia/Philippines"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Qatar",
-          "itemValue": "asia/Qatar"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Arabie saoudite",
-          "itemValue": "asia/Saudi_Arabia"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Singapour",
-          "itemValue": "asia/Singapore"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Corée du Sud",
-          "itemValue": "asia/South_Korea"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Sri Lanka",
-          "itemValue": "asia/Sri_Lanka"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Syrie",
-          "itemValue": "asia/Syrian_Arab_Republic"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Taïwan",
-          "itemValue": "asia/Taiwan"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Tadjikistan",
-          "itemValue": "asia/Tajikistan"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Thaïlande",
-          "itemValue": "asia/Thailand"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Timor oriental",
-          "itemValue": "asia/Timor_Leste"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Turkquie",
-          "itemValue": "asia/Turkey"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Turkménistan",
-          "itemValue": "asia/Turkmenistan"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Émirats arabes unis",
-          "itemValue": "asia/United_Arab_Emirates"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Ouzbékistan",
-          "itemValue": "asia/Uzbekistan"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Viêt Nam",
-          "itemValue": "asia/Viet_Nam"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Asie/Yémen",
-          "itemValue": "asia/Yemen"
-        },
                 {
           "multiple": false,
           "itemLabel": "Europe",
@@ -1379,6 +823,296 @@
         },
                 {
           "multiple": false,
+          "itemLabel": "Afrique",
+          "itemValue": "africa"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Algérie",
+          "itemValue": "africa/Algeria"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Angola",
+          "itemValue": "africa/Angola"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Bénin",
+          "itemValue": "africa/Benin"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Botswana",
+          "itemValue": "africa/Botswana"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Burkina Faso",
+          "itemValue": "africa/Burkina_Faso"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Burundi",
+          "itemValue": "africa/Burundi"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Cameroun",
+          "itemValue": "africa/Cameroon"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Cap-Vert",
+          "itemValue": "africa/Cape_Verde"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Centrafrique",
+          "itemValue": "africa/Central_African_Republic"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Tchad",
+          "itemValue": "africa/Chad"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Comores",
+          "itemValue": "africa/Comoros"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/République du Congo",
+          "itemValue": "africa/Congo_Republic"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/République démocratique du Congo",
+          "itemValue": "africa/Congo_Democratic_Republic"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Cote D'Ivoire",
+          "itemValue": "africa/Cote_D_Ivoire"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Djibouti",
+          "itemValue": "africa/Djibouti"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Égypte",
+          "itemValue": "africa/Egypt"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Guinée équatoriale",
+          "itemValue": "africa/Equatorial_Guinea"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Érythrée",
+          "itemValue": "africa/Eritrea"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Éthiopie",
+          "itemValue": "africa/Ethiopia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Gabon",
+          "itemValue": "africa/Gabon"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Gambie",
+          "itemValue": "africa/Gambia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Ghana",
+          "itemValue": "africa/Ghana"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Guinée",
+          "itemValue": "africa/Guinea"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Guinée-Bissau",
+          "itemValue": "africa/Guinea_Bissau"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Kenya",
+          "itemValue": "africa/Kenya"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Lesotho",
+          "itemValue": "africa/Lesotho"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Libéria",
+          "itemValue": "africa/Liberia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Libye",
+          "itemValue": "africa/Libyan_Arab_Jamahiriya"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Madagascar",
+          "itemValue": "africa/Madagascar"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Malawi",
+          "itemValue": "africa/Malawi"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Mali",
+          "itemValue": "africa/Mali"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Mauritanie",
+          "itemValue": "africa/Mauritania"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Maurice",
+          "itemValue": "africa/Mauritius"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Mayotte",
+          "itemValue": "africa/Mayotte"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Maroc",
+          "itemValue": "africa/Morocco"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Mozambique",
+          "itemValue": "africa/Mozambique"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Namibie",
+          "itemValue": "africa/Namibia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Niger",
+          "itemValue": "africa/Niger"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Nigeria",
+          "itemValue": "africa/Nigeria"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Réunion",
+          "itemValue": "africa/Reunion"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Rwanda",
+          "itemValue": "africa/Rwanda"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Île Sainte-Hélène",
+          "itemValue": "africa/St_Helena"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/São Tomé-et-Principe",
+          "itemValue": "africa/Sao_Tome_and_Principe"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Sénégal",
+          "itemValue": "africa/Senegal"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Seychelles",
+          "itemValue": "africa/Seychelles"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Sierra Leone",
+          "itemValue": "africa/Sierra_Leone"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Somalie",
+          "itemValue": "africa/Somalia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Afrique du Sud",
+          "itemValue": "africa/South_Africa"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Soudan",
+          "itemValue": "africa/Sudan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Swaziland",
+          "itemValue": "africa/Swaziland"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Tanzanie",
+          "itemValue": "africa/Tanzania"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Togo",
+          "itemValue": "africa/Togo"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Tunisie",
+          "itemValue": "africa/Tunisia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Ouganda",
+          "itemValue": "africa/Uganda"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Sahara occidental",
+          "itemValue": "africa/Western_Sahara"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Zambie",
+          "itemValue": "africa/Zambia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Afrique/Zimbabwe",
+          "itemValue": "africa/Zimbabwe"
+        },
+                {
+          "multiple": false,
           "itemLabel": "Amérique du Nord",
           "itemValue": "north-america"
         },
@@ -1569,6 +1303,356 @@
         },
                 {
           "multiple": false,
+          "itemLabel": "Amérique du Sud",
+          "itemValue": "south-america"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Amérique du Sud/Argentine",
+          "itemValue": "south-america/Argentina"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Amérique du Sud/Bolivie",
+          "itemValue": "south-america/Bolivia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Amérique du Sud/Brésil",
+          "itemValue": "south-america/Brazil"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Amérique du Sud/Chili",
+          "itemValue": "south-america/Chile"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Amérique du Sud/Colombie",
+          "itemValue": "south-america/Colombia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Amérique du Sud/Équateur",
+          "itemValue": "south-america/Ecuador"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Amérique du Sud/Îles Malouines",
+          "itemValue": "south-america/Falkland_Islands_Malvinas"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Amérique du Sud/Guyane",
+          "itemValue": "south-america/French_Guiana"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Amérique du Sud/Guyana",
+          "itemValue": "south-america/Guyana"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Amérique du Sud/Paraguay",
+          "itemValue": "south-america/Paraguay"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Amérique du Sud/Pérou",
+          "itemValue": "south-america/Peru"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Amérique du Sud/Suriname",
+          "itemValue": "south-america/Suriname"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Amérique du Sud/Uruguay",
+          "itemValue": "south-america/Uruguay"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Amérique du Sud/Venezuela",
+          "itemValue": "south-america/Venezuela"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie",
+          "itemValue": "asia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Afghanistan",
+          "itemValue": "asia/Afghanistan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Arménie",
+          "itemValue": "asia/Armenia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Azerbaïdjan",
+          "itemValue": "asia/Azerbaijan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Bahreïn",
+          "itemValue": "asia/Bahrain"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Bangladesh",
+          "itemValue": "asia/Bangladesh"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Bhoutan",
+          "itemValue": "asia/Bhutan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Îles Chagos",
+          "itemValue": "asia/British_Indian_Ocean_Territory_Chagos_Archipelago"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Brunei",
+          "itemValue": "asia/Brunei_Darussalam"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Cambodge",
+          "itemValue": "asia/Cambodia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Chine",
+          "itemValue": "asia/China"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Île Christmas",
+          "itemValue": "asia/Christmas_Island"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Îles Cocos",
+          "itemValue": "asia/Cocos_Keeling_Islands"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Chypre",
+          "itemValue": "asia/Cyprus"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Géorgie",
+          "itemValue": "asia/Georgia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Hong Kong",
+          "itemValue": "asia/Hong_Kong"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Inde",
+          "itemValue": "asia/India"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Indonésie",
+          "itemValue": "asia/Indonesia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Iran",
+          "itemValue": "asia/Iran"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Iraq",
+          "itemValue": "asia/Iraq"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Israël",
+          "itemValue": "asia/Israel"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Japon",
+          "itemValue": "asia/Japan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Jordanie",
+          "itemValue": "asia/Jordan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Kazakhstan",
+          "itemValue": "asia/Kazakhstan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Corée du Nord",
+          "itemValue": "asia/North_Korea"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Corée du Sud",
+          "itemValue": "asia/South_Korea"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Koweït",
+          "itemValue": "asia/Kuwait"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Kirghizistan",
+          "itemValue": "asia/Kyrgyz_Republic"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Laos",
+          "itemValue": "asia/Lao_People_s_Democratic_Republic"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Liban",
+          "itemValue": "asia/Lebanon"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Macao",
+          "itemValue": "asia/Macao"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Malaisie",
+          "itemValue": "asia/Malaysia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Maldives",
+          "itemValue": "asia/Maldives"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Mongolia",
+          "itemValue": "asia/Mongolia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Myanmar",
+          "itemValue": "asia/Myanmar"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Népal",
+          "itemValue": "asia/Nepal"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Oman",
+          "itemValue": "asia/Oman"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Pakistan",
+          "itemValue": "asia/Pakistan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Territoires palestiniens",
+          "itemValue": "asia/Palestinian_Territory"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Philippines",
+          "itemValue": "asia/Philippines"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Qatar",
+          "itemValue": "asia/Qatar"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Arabie saoudite",
+          "itemValue": "asia/Saudi_Arabia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Singapour",
+          "itemValue": "asia/Singapore"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Sri Lanka",
+          "itemValue": "asia/Sri_Lanka"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Syrie",
+          "itemValue": "asia/Syrian_Arab_Republic"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Taïwan",
+          "itemValue": "asia/Taiwan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Tadjikistan",
+          "itemValue": "asia/Tajikistan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Thaïlande",
+          "itemValue": "asia/Thailand"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Timor oriental",
+          "itemValue": "asia/Timor_Leste"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Turkquie",
+          "itemValue": "asia/Turkey"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Turkménistan",
+          "itemValue": "asia/Turkmenistan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Émirats arabes unis",
+          "itemValue": "asia/United_Arab_Emirates"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Ouzbékistan",
+          "itemValue": "asia/Uzbekistan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Viêt Nam",
+          "itemValue": "asia/Viet_Nam"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "Asie/Yémen",
+          "itemValue": "asia/Yemen"
+        },
+                {
+          "multiple": false,
           "itemLabel": "Australie/Océanie",
           "itemValue": "oceania"
         },
@@ -1704,78 +1788,33 @@
         },
                 {
           "multiple": false,
-          "itemLabel": "Amérique du Sud",
-          "itemValue": "south-america"
+          "itemLabel": "Antarctique",
+          "itemValue": "antarctica"
         },
                 {
           "multiple": false,
-          "itemLabel": "Amérique du Sud/Argentine",
-          "itemValue": "south-america/Argentina"
+          "itemLabel": "Antarctique/Antarctique",
+          "itemValue": "antarctica/Antarctica_the_territory_South_of_60_deg_S"
         },
                 {
           "multiple": false,
-          "itemLabel": "Amérique du Sud/Bolivie",
-          "itemValue": "south-america/Bolivia"
+          "itemLabel": "Antarctique/Île Bouvet",
+          "itemValue": "antarctica/Bouvet_Island_Bouvetoya"
         },
                 {
           "multiple": false,
-          "itemLabel": "Amérique du Sud/Brésil",
-          "itemValue": "south-america/Brazil"
+          "itemLabel": "Antarctique/Territoire des Terres australes françaises",
+          "itemValue": "antarctica/French_Southern_Territories"
         },
                 {
           "multiple": false,
-          "itemLabel": "Amérique du Sud/Chili",
-          "itemValue": "south-america/Chile"
+          "itemLabel": "Antarctique/Île Heard et îles McDonald",
+          "itemValue": "antarctica/Heard_and_McDonald_Islands"
         },
                 {
           "multiple": false,
-          "itemLabel": "Amérique du Sud/Colombie",
-          "itemValue": "south-america/Colombia"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Amérique du Sud/Équateur",
-          "itemValue": "south-america/Ecuador"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Amérique du Sud/Îles Malouines",
-          "itemValue": "south-america/Falkland_Islands_Malvinas"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Amérique du Sud/Guyane",
-          "itemValue": "south-america/French_Guiana"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Amérique du Sud/Guyana",
-          "itemValue": "south-america/Guyana"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Amérique du Sud/Paraguay",
-          "itemValue": "south-america/Paraguay"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Amérique du Sud/Pérou",
-          "itemValue": "south-america/Peru"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Amérique du Sud/Suriname",
-          "itemValue": "south-america/Suriname"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Amérique du Sud/Uruguay",
-          "itemValue": "south-america/Uruguay"
-        },
-                {
-          "multiple": false,
-          "itemLabel": "Amérique du Sud/Venezuela",
-          "itemValue": "south-america/Venezuela"
+          "itemLabel": "Antarctique/Géorgie du Sud et les îles Sandwich du Sud",
+          "itemValue": "antarctica/South_Georgia_and_the_South_Sandwich_Islands"
         }
       ]
     },
