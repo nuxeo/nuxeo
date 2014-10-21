@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema"
-        targetNamespace="http://project.nuxeo.org/schemas/webengine/site"
-        xmlns:tns="http://project.nuxeo.org/schemas/webengine/site">
-
-  <element name="skin" type="string"></element>
-  <element name="sitebase" type="string"></element>
-
-</schema>
