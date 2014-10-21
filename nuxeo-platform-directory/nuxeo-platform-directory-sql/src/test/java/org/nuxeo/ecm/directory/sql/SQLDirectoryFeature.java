@@ -16,19 +16,8 @@
  */
 package org.nuxeo.ecm.directory.sql;
 
-import java.security.Principal;
-import java.util.Map;
-
-import javax.security.auth.Subject;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-import javax.security.auth.spi.LoginModule;
-
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Directory;
@@ -58,7 +47,7 @@ import com.google.inject.name.Names;
         "org.nuxeo.ecm.directory.sql" })
 public class SQLDirectoryFeature extends SimpleFeature {
     public static final String USER_DIRECTORY_NAME = "userDirectory";
-    
+
     public static final String GROUP_DIRECTORY_NAME = "groupDirectory";
 
     @Inject
@@ -76,13 +65,11 @@ public class SQLDirectoryFeature extends SimpleFeature {
 
                     @Override
                     public Directory get() {
-                        return Framework.getService(DirectoryService.class).getDirectory(name);
+                        return Framework.getService(DirectoryService.class).getDirectory(
+                                name);
                     }
 
                 });
     }
-   
-    
-    
 
 }
