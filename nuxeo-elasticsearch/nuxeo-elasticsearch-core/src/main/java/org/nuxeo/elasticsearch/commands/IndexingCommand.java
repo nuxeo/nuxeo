@@ -311,11 +311,10 @@ public class IndexingCommand implements Serializable {
                         session.getPrincipal());
                 indexingEvent = context
                         .newEvent(EventConstants.ES_INDEX_EVENT_SYNC);
-
             } else {
                 if (Framework.isInitialized()) {
-                    log.error("Unable to generate event, no session found for cmd: "
-                            + toString());
+                    log.error(String.format("Unable to generate event, no session found for cmd:" +
+                            " %s, sessionid: %s", toString(), getTargetDocument().getSessionId()));
                 }
             }
         }
