@@ -19,6 +19,7 @@ package org.nuxeo.ecm.webdav;
 import java.io.IOException;
 
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.webengine.app.WebEngineFilter;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContextFilter;
@@ -27,7 +28,6 @@ import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 import com.sun.grizzly.http.embed.GrizzlyWebServer;
 import com.sun.grizzly.http.servlet.ServletAdapter;
@@ -38,7 +38,7 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
  *
  * @since 5.8
  */
-@Features({ CoreFeature.class })
+@Features({ TransactionalFeature.class, CoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.types.api",
         "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.platform.dublincore",

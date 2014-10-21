@@ -18,6 +18,7 @@ package org.nuxeo.ecm.webdav;
 
 import java.io.File;
 
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -35,6 +36,7 @@ public class WebDavRepoInit implements RepositoryInit{
 
     @Override
     public void populate(CoreSession session) throws ClientException {
+        LogFactory.getLog(WebDavRepoInit.class).trace("enter populate webdav");
         DocumentModel ws = session.createDocumentModel("/", "workspaces",
                 "WorkspaceRoot");
         ws.setPropertyValue("dc:title", "Workspaces");

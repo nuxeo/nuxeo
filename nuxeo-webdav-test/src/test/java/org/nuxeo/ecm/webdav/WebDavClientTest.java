@@ -59,6 +59,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.w3c.dom.Element;
 
 import com.google.inject.Inject;
@@ -247,7 +248,8 @@ public class WebDavClientTest extends AbstractServerTest {
         assertEquals(HttpStatus.SC_CREATED, status);
 
         // check using Nuxeo Core APIs
-        session.save(); // process invalidations
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         PathRef pathRef = new PathRef("/workspaces/workspace/" + name);
         assertTrue(session.exists(pathRef));
         DocumentModel doc = session.getDocument(pathRef);
