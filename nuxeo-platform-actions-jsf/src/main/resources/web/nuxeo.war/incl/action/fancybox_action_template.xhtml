@@ -65,6 +65,8 @@
       <ui:decorate template="fancybox_properties_template.xhtml">
         <ui:define name="fancybox_properties_include">
 
+          <ui:insert name="with_fancybox_properties" />
+
           <nxu:set var="fancyboxJs"
             value="openFancyBox('#{nxu:javaScriptEscape(iframe)}', {
                     width: '#{fancy_width}',
@@ -74,7 +76,8 @@
                     autoDimensions: #{fancy_autoDimensions},
                     modal: #{fancy_modal},
                     centerOnScroll: #{fancy_centerOnScroll},
-                    enableEscapeButton: #{fancy_enableEscapeButton}
+                    enableEscapeButton: #{fancy_enableEscapeButton},
+                    onClosed: function() { #{fancy_onClosed}; }
                   });">
 
             <c:if test="#{not widgetProperty_useButton}">
@@ -122,6 +125,8 @@
   <ui:decorate template="fancybox_properties_template.xhtml">
     <ui:define name="fancybox_properties_include">
 
+      <ui:insert name="with_fancybox_properties" />
+
       <a4j:outputPanel id="#{fancyboxIdPrefix}ajax_panel" layout="block">
 
         <nxu:set var="include"
@@ -157,7 +162,10 @@
                   modal: #{fancy_modal},
                   centerOnScroll: #{fancy_centerOnScroll},
                   enableEscapeButton: #{fancy_enableEscapeButton},
-                  onClosed: #{fancyboxIdPrefix}closeFancybox
+                  onClosed: function() {
+                    #{fancy_onClosed};
+                    #{fancyboxIdPrefix}closeFancybox;
+                  }
                 });
               });
             </script>

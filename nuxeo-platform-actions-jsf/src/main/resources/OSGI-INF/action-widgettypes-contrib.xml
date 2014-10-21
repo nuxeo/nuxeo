@@ -439,6 +439,24 @@
       </fields>
     </widget>
 
+    <widget name="fancybox_onClosed" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">onClosed</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Javascript code to call when the fancybox is closed.
+          Available since 5.9.6.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>onClosed</field>
+      </fields>
+    </widget>
+
     <widget name="rest_document_link_view" type="text">
       <categories>
         <category>actionWidgetTypeConf</category>
@@ -731,6 +749,9 @@
                 </row>
                 <row>
                   <widget category="actionWidgetTypeConf">fancybox_enableEscapeButton</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">fancybox_onClosed</widget>
                 </row>
               </rows>
             </layout>
