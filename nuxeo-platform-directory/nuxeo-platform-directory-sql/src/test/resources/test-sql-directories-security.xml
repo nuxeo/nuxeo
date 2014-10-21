@@ -72,7 +72,11 @@
         <inverseReference field="parentGroups" directory="groupDirectory"
           dualReferenceField="subGroups" />
       </references>
-
+      <permissions>
+        <permission name="Write">
+          <group>Everyone</group> 
+        </permission>
+      </permissions>
     </directory>
 
   </extension>

@@ -54,7 +54,7 @@ public class TestDefaultSQLDirectorySecurity {
     ClientLoginFeature dummyLogin;
 
     @Inject
-    @Named(SQLDirectoryFeature.DEFAULT_TEST_DIRECTORY_NAME)
+    @Named(SQLDirectoryFeature.USER_DIRECTORY_NAME)
     Directory directory;
 
     Session session;

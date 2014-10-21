@@ -57,14 +57,17 @@ import com.google.inject.name.Names;
         "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.directory.types.contrib",
         "org.nuxeo.ecm.directory.sql" })
 public class SQLDirectoryFeature extends SimpleFeature {
-    public static final String DEFAULT_TEST_DIRECTORY_NAME = "userDirectory";
+    public static final String USER_DIRECTORY_NAME = "userDirectory";
+    
+    public static final String GROUP_DIRECTORY_NAME = "groupDirectory";
 
     @Inject
     DirectoryService directoryService;
 
     @Override
     public void configure(final FeaturesRunner runner, Binder binder) {
-        bindDirectory(binder, DEFAULT_TEST_DIRECTORY_NAME);
+        bindDirectory(binder, USER_DIRECTORY_NAME);
+        bindDirectory(binder, GROUP_DIRECTORY_NAME);
     }
 
     protected void bindDirectory(Binder binder, final String name) {

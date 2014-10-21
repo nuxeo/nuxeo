@@ -53,10 +53,16 @@ public class TestContribSQLDirectorySecurity {
     ClientLoginFeature dummyLogin;
 
     @Inject
-    @Named(SQLDirectoryFeature.DEFAULT_TEST_DIRECTORY_NAME)
-    Directory directory;
+    @Named(SQLDirectoryFeature.USER_DIRECTORY_NAME)
+    Directory userDir;
+    
+    @Inject
+    @Named(SQLDirectoryFeature.GROUP_DIRECTORY_NAME)
+    Directory groupDir;
 
-    Session session;
+    Session userDirSession;
+    
+    Session groupDirSession;
 
     public static final String SUPER_USER = "superUser";
 
@@ -64,12 +70,14 @@ public class TestContribSQLDirectorySecurity {
     
     @Before
     public void setUp() {
-        session = directory.getSession();
+        userDirSession = userDir.getSession();
+        groupDirSession = groupDir.getSession();
     }
 
     @After
     public void tearDown() throws Exception {
-        session.close();
+        userDirSession.close();
+        groupDirSession.close();
     }
 
     @Test
@@ -82,10 +90,10 @@ public class TestContribSQLDirectorySecurity {
         map.put("password", "pass_0");
         map.put("intField", Long.valueOf(5));
         map.put("groups", Arrays.asList("members", "administrators"));
-        DocumentModel entry = session.createEntry(map);
+        DocumentModel entry = userDirSession.createEntry(map);
         Assert.assertNull(entry);
         
-        entry = session.getEntry("user_0");
+        entry = userDirSession.getEntry("user_0");
         Assert.assertNull(entry);
         
         dummyLogin.logout();
@@ -100,10 +108,10 @@ public class TestContribSQLDirectorySecurity {
         map.put("password", "pass_0");
         map.put("intField", Long.valueOf(5));
         map.put("groups", Arrays.asList("members", "administrators"));
-        DocumentModel entry = session.createEntry(map);
+        DocumentModel entry = userDirSession.createEntry(map);
         Assert.assertNotNull(entry);
         
-        entry = session.getEntry("user_0");
+        entry = userDirSession.getEntry("user_0");
         Assert.assertNotNull(entry);
         
         dummyLogin.logout();
@@ -114,7 +122,7 @@ public class TestContribSQLDirectorySecurity {
         //Given a user without right
         dummyLogin.loginAs("aUser", "aUser");
         
-        DocumentModel entry = session.getEntry("user_1");
+        DocumentModel entry = userDirSession.getEntry("user_1");
         Assert.assertNull(entry);
         
         dummyLogin.logout();
@@ -125,7 +133,7 @@ public class TestContribSQLDirectorySecurity {
         //Given a user without right
         dummyLogin.loginAs(READER_USER, READER_USER);
         
-        DocumentModel entry = session.getEntry("user_1");
+        DocumentModel entry = userDirSession.getEntry("user_1");
         Assert.assertNotNull(entry);
         
         dummyLogin.logout();
@@ -139,7 +147,7 @@ public class TestContribSQLDirectorySecurity {
         // When I query entry
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put("username", "user_3");
-        DocumentModelList results = session.query(map);
+        DocumentModelList results = userDirSession.query(map);
         Assert.assertEquals(0, results.size());
         
         dummyLogin.logout();
@@ -153,8 +161,26 @@ public class TestContribSQLDirectorySecurity {
         // When I query entry
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put("username", "user_3");
-        DocumentModelList results = session.query(map);
+        DocumentModelList results = userDirSession.query(map);
         Assert.assertEquals(1, results.size());
+        
+        dummyLogin.logout();
+    }
+    
+    @Test
+    public void groupCanCreateAndGetEntry() throws Exception {
+        //Given a user member of everyone group
+        dummyLogin.loginAs("aUserEveryone", "aUserEveryone");
+        
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("groupname", "newGroup");
+        //When I create an entry
+        DocumentModel entry = groupDirSession.createEntry(map);
+        Assert.assertNotNull(entry);
+        
+        //I can read it too
+        entry = groupDirSession.getEntry("newGroup");
+        Assert.assertNotNull(entry);
         
         dummyLogin.logout();
     }
