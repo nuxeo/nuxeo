@@ -78,15 +78,22 @@ public class AggregateBase<B extends Bucket> implements Aggregate<B> {
         return definition.getDateRanges();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<String> getSelection() {
         if (selection == null) {
             PredicateFieldDefinition field = definition.getSearchField();
             if (searchDocument != null) {
                 // property must be nxs:stringList
-                @SuppressWarnings("unchecked")
-                List<String> value = (List<String>) searchDocument.getProperty(
+                List<String> value = null;
+                Object resolvedProperties =  searchDocument.getProperty(
                         field.getSchema(), field.getName());
+                if (resolvedProperties instanceof String[]) {
+                    value = Arrays.asList((String[]) resolvedProperties);
+                } else if (resolvedProperties instanceof List<?>) {
+                    value = (List<String>) searchDocument.getProperty(
+                            field.getSchema(), field.getName());
+                }
                 selection = value;
             }
             if (selection == null) {
