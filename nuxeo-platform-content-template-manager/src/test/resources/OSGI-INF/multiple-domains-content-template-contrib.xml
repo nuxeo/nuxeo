@@ -9,7 +9,6 @@
       <acl>
         <ace granted="true" permission="Everything" principal="Administrator"/>
         <ace granted="true" permission="Dream" principal="Danny"/>
-        <ace granted="false" permission="RedRum" principal="DannysImaginaryFriend"/>
       </acl>
       <template>
         <templateItem typeName="Domain" id="domain1" title="Domain1"

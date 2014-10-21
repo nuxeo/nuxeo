@@ -116,7 +116,7 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
         factory = factoryBindings.get("Root");
         assertNotNull(factory);
         assertNotNull(factory.getRootAcl());
-        assertEquals(3, factory.getRootAcl().size());
+        assertEquals(2, factory.getRootAcl().size());
     }
 
     @Test
@@ -184,8 +184,6 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
         assertTrue(session.getACP(root.getRef()).getAccess("Administrator",
                 "Everything").toBoolean());
         assertTrue(session.getACP(root.getRef()).getAccess("Danny", "Dream").toBoolean());
-        assertFalse(session.getACP(root.getRef()).getAccess(
-                "DannysImaginaryFriend", "RedRum").toBoolean());
 
         // check that default domain has been created
         DocumentModelList children = session.getChildren(root.getRef());
