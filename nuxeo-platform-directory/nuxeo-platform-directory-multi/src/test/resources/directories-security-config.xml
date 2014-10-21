@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.multi.config">
+
+  <extension target="org.nuxeo.ecm.directory.multi.MultiDirectoryFactory"
+    point="directories">
+
+    <directory name="multi">
+      <schema>schema3</schema>
+      <idField>uid</idField>
+      <passwordField>thefoo</passwordField>
+
+      <source name="source1" creation="true">
+        <subDirectory name="dir1">
+          <field for="thefoo">foo</field>
+        </subDirectory>
+        <subDirectory name="dir2">
+          <field for="uid">id</field> <!-- should be implicit -->
+          <field for="thebar">bar</field>
+        </subDirectory>
+      </source>
+
+      <source name="source2">
+        <subDirectory name="dir3" />
+      </source>
+
+      <permissions>
+        <permission name="Read">
+          <user>readerUser</user>
+        </permission>
+        <permission name="Write">
+          <user>superUser</user>
+        </permission>
+      </permissions>
+    </directory>
+
+    <directory name="multi-group">
+      <schema>schema3</schema>
+      <idField>uid</idField>
+      <passwordField>thefoo</passwordField>
+
+      <source name="source1" creation="true">
+        <subDirectory name="dir1">
+          <field for="thefoo">foo</field>
+        </subDirectory>
+        <subDirectory name="dir2">
+          <field for="uid">id</field> <!-- should be implicit -->
+          <field for="thebar">bar</field>
+        </subDirectory>
+      </source>
+
+      <source name="source2">
+        <subDirectory name="dir3" />
+      </source>
+      <permissions>
+        <permission name="Write">
+          <group>Everyone</group>
+        </permission>
+      </permissions>
+    </directory>
+
+  </extension>
+
+</component>

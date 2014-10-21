@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,10 +14,16 @@
  * Contributors:
  *     Florent Guillaume
  *
- * $Id: TestMultiDirectory.java 30378 2008-02-20 17:37:26Z gracinet $
  */
 
 package org.nuxeo.ecm.directory.multi;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -28,11 +34,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -43,16 +48,19 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.memory.MemoryDirectory;
 import org.nuxeo.ecm.directory.memory.MemoryDirectoryFactory;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author Florent Guillaume
  * @author Anahide Tchertchian
  *
  */
-public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
-
-    private static final String TEST_BUNDLE = "org.nuxeo.ecm.directory.multi.tests";
+@RunWith(FeaturesRunner.class)
+@Features({ MultiDirectoryFeature.class })
+@LocalDeploy("org.nuxeo.ecm.directory.multi.tests:directories-optional-config.xml")
+public class TestMultiDirectoryOptional {
 
     DirectoryService directoryService;
 
@@ -70,17 +78,6 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        // platform dependencies
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.directory");
-
-        // Bundle to be tested
-        deployBundle("org.nuxeo.ecm.directory.multi");
-
-        // Config for the tested bundle
-        deployContrib(TEST_BUNDLE, "schemas-config.xml");
-        deployContrib(TEST_BUNDLE, "directories-optional-config.xml");
 
         // mem dir factory
         directoryService = Framework.getLocalService(DirectoryService.class);
@@ -98,11 +95,6 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         memoryDirectoryFactory.registerDirectory(memdir1);
 
         Session dir1 = memdir1.getSession();
-        // do not create entry with uid "1" in this optional dir
-        // e = new HashMap<String, Object>();
-        // e.put("uid", "1");
-        // e.put("foo", "foo1");
-        // dir1.createEntry(e);
         e = new HashMap<String, Object>();
         e.put("uid", "2");
         e.put("foo", "foo2");
@@ -157,7 +149,6 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         memoryDirectoryFactory.unregisterDirectory(memdir2);
         memoryDirectoryFactory.unregisterDirectory(memdir3);
         directoryService.unregisterDirectory("memdirs", memoryDirectoryFactory);
-        super.tearDown();
     }
 
     @Test

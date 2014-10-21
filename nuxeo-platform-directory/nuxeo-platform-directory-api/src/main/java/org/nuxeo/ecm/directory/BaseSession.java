@@ -98,6 +98,8 @@ public abstract class BaseSession implements Session {
             {
                 return true;
             }
+            //Deny in all other case
+            return false;
         }
         boolean allowed = checkPermission(permDescriptors, permissionTocheck,
                 username, userGroups);

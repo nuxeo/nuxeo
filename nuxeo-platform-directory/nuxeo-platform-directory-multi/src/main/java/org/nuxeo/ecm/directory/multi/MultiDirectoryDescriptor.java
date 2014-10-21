@@ -22,6 +22,7 @@ package org.nuxeo.ecm.directory.multi;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.directory.PermissionDescriptor;
 
 /**
  * @author Florent Guillaume
@@ -52,6 +53,9 @@ public class MultiDirectoryDescriptor implements Cloneable {
 
     @XNodeList(value = "source", type = SourceDescriptor[].class, componentType = SourceDescriptor.class)
     protected SourceDescriptor[] sources;
+    
+    @XNodeList(value = "permissions/permission", type = PermissionDescriptor[].class, componentType = PermissionDescriptor.class)
+    public PermissionDescriptor[] permissions = null;
 
     public void merge(MultiDirectoryDescriptor other) {
         merge(other, false);
@@ -85,6 +89,10 @@ public class MultiDirectoryDescriptor implements Cloneable {
                 sources = s;
             }
         }
+        if ((other.permissions != null && other.permissions.length != 0)
+                || overwrite) {
+            permissions = other.permissions;
+        }
     }
 
     /**
@@ -103,6 +111,12 @@ public class MultiDirectoryDescriptor implements Cloneable {
             clone.sources = new SourceDescriptor[sources.length];
             for (int i = 0; i < sources.length; i++) {
                 clone.sources[i] = sources[i].clone();
+            }
+        }
+        if (permissions != null) {
+            clone.permissions = new PermissionDescriptor[permissions.length];
+            for (int i = 0; i < permissions.length; i++) {
+                clone.permissions[i] = permissions[i].clone();
             }
         }
         return clone;
