@@ -44,6 +44,7 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceHelper;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveManager;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -102,8 +103,6 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     private static final String DRIVE_METADATA_VIEW = "view_drive_metadata";
 
-    protected FileSystemItem currentFileSystemItem;
-
     @In(create = true, required = false)
     protected transient NavigationContext navigationContext;
 
@@ -140,22 +139,20 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         return (DocumentModel) cache.get(CURRENT_SYNCHRONIZATION_ROOT);
     }
 
-    @Factory(value = "canEditCurrentDocument")
-    public boolean canEditCurrentDocument() throws ClientException {
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        if (currentDocument == null) {
+    public boolean canEditDocument(DocumentModel doc)
+            throws ClientException {
+        if (doc == null) {
             return false;
         }
-        if (currentDocument.isFolder()) {
+        if (doc.isFolder()) {
             return false;
         }
-        if (!documentManager.hasPermission(currentDocument.getRef(),
+        if (!documentManager.hasPermission(doc.getRef(),
                 SecurityConstants.WRITE)) {
             return false;
         }
-
         // Check if current document can be adapted as a FileSystemItem
-        return getCurrentFileSystemItem() != null;
+        return getFileSystemItem(doc) != null;
     }
 
     /**
@@ -169,19 +166,21 @@ public class NuxeoDriveActions extends InputController implements Serializable {
      * @throws ClientException
      *
      */
-    public String getDriveEditURL() throws ClientException {
+    public String getDriveEditURL(DocumentModel doc) throws ClientException {
         // TODO NXP-15397: handle Drive not started exception
-        // Current document must be adaptable as a FileSystemItem
-        if (getCurrentFileSystemItem() == null) {
+        BlobHolder bh = doc.getAdapter(BlobHolder.class);
+        if (bh == null) {
             throw new ClientException(
                     String.format(
-                            "Document %s (%s) is not adaptable as a FileSystemItem thus not Drive editable, \"driveEdit\" action should not be displayed.",
-                            navigationContext.getCurrentDocument().getId(),
-                            navigationContext.getCurrentDocument().getPathAsString()));
+                            "Document %s (%s) is not a BlobHolder, cannot get Drive Edit URL.",
+                            doc.getPathAsString(), doc.getId()));
         }
-        String docId = navigationContext.getCurrentDocument().getId();
-        String fileName = navigationContext.getCurrentDocument().getAdapter(
-                BlobHolder.class).getBlob().getFilename();
+        Blob blob = bh.getBlob();
+        if (blob == null) {
+            throw new ClientException(
+                    String.format("Document %s (%s) has no blob, cannot get Drive Edit URL."));
+        }
+        String fileName = blob.getFilename();
         ServletRequest servletRequest = (ServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String baseURL = VirtualHostHelper.getBaseURL(servletRequest);
         StringBuffer sb = new StringBuffer();
@@ -191,7 +190,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         sb.append("repo/");
         sb.append(documentManager.getRepositoryName());
         sb.append("/nxdocid/");
-        sb.append(docId);
+        sb.append(doc.getId());
         sb.append("/filename/");
         String escapedFilename = fileName.replaceAll(
                 "(/|\\\\|\\*|<|>|\\?|\"|:|\\|)", "-");
@@ -381,21 +380,17 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         return true;
     }
 
-    protected FileSystemItem getCurrentFileSystemItem() throws ClientException {
-        if (currentFileSystemItem == null) {
-            DocumentModel currentDocument = navigationContext.getCurrentDocument();
-            // Force parentItem to null to avoid computing ancestors
-            currentFileSystemItem = Framework.getLocalService(
-                    FileSystemItemAdapterService.class).getFileSystemItem(
-                    currentDocument, null);
-            if (currentFileSystemItem == null) {
-                log.debug(String.format(
-                        "Document %s (%s) is not adaptable as a FileSystemItem => currentFileSystemItem is null.",
-                        currentDocument.getId(),
-                        currentDocument.getPathAsString()));
-            }
+    protected FileSystemItem getFileSystemItem(DocumentModel doc)
+            throws ClientException {
+        // Force parentItem to null to avoid computing ancestors
+        FileSystemItem fileSystemItem = Framework.getLocalService(
+                FileSystemItemAdapterService.class).getFileSystemItem(doc, null);
+        if (fileSystemItem == null) {
+            log.debug(String.format(
+                    "Document %s (%s) is not adaptable as a FileSystemItem.",
+                    doc.getPathAsString(), doc.getId()));
         }
-        return currentFileSystemItem;
+        return fileSystemItem;
     }
 
     /**

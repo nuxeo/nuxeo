@@ -28,9 +28,8 @@
       </filter-id>
     </action>
 
-    <action id="driveEdit" link="#{nuxeoDriveActions.driveEditURL}"
+    <action id="driveEdit" link="#{nuxeoDriveActions.getDriveEditURL(currentDocument)}"
       order="26" label="command.driveEdit" type="bare_link" icon="/icons/drive_edit.png">
-      <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>can_drive_edit</filter-id>
     </action>
 
@@ -76,7 +75,7 @@
 
     <filter id="can_drive_edit">
       <rule grant="true">
-        <condition>#{canEditCurrentDocument}</condition>
+        <condition>#{nuxeoDriveActions.canEditDocument(document)}</condition>
       </rule>
       <rule grant="false">
         <facet>Collection</facet>
