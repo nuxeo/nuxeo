@@ -149,12 +149,21 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         if (tps.isEmpty()) {
             return null;
         }
+        TargetPlatform defaultTP = null;
         for (TargetPlatform tp : tps) {
             if (tp.isDefault()) {
-                return tp;
+                if (!tp.isRestricted()) {
+                    // Return the first default and unrestricted target platform
+                    return tp;
+                }
+                // If the target platform is restricted, we keep it in case no
+                // unrestricted target platform is found
+                if (defaultTP == null) {
+                    defaultTP = tp;
+                }
             }
         }
-        return null;
+        return defaultTP;
     }
 
     @Override
