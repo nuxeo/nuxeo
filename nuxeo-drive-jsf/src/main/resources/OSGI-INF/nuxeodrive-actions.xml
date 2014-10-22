@@ -31,6 +31,13 @@
     <action id="driveEdit" link="#{nuxeoDriveActions.driveEditURL}"
       order="26" label="command.driveEdit" type="bare_link" icon="/icons/drive_edit.png">
       <filter-id>can_drive_edit</filter-id>
+      <filter-id>has_one_auth_token</filter-id>
+    </action>
+
+    <action id="driveEditUserCenterNuxeoDrive" link="#{nuxeoDriveActions.navigateToUserCenterNuxeoDrive}"
+      order="27" label="command.driveEdit" icon="/icons/drive_edit.png">
+      <filter-id>can_drive_edit</filter-id>
+      <filter-id>has_no_auth_token</filter-id>
     </action>
 
     <action id="userCenterNuxeoDrive" link="/incl/nuxeodrive/user_center_nuxeo_drive.xhtml"
@@ -81,6 +88,19 @@
         <facet>Collection</facet>
       </rule>
     </filter>
+
+    <filter id="has_one_auth_token">
+      <rule grant="true">
+        <condition>#{nuxeoDriveActions.hasOneDriveToken(currentUser)}</condition>
+      </rule>
+    </filter>
+
+    <filter id="has_no_auth_token">
+      <rule grant="false">
+        <condition>#{nuxeoDriveActions.hasOneDriveToken(currentUser)}</condition>
+      </rule>
+    </filter>
+
   </extension>
 
 </component>

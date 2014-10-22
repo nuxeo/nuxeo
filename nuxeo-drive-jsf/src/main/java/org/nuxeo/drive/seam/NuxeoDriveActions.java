@@ -63,6 +63,7 @@ import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.ecm.user.center.UserCenterViewManager;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
+import org.nuxeo.ecm.webapp.security.AbstractUserGroupManagement;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -154,6 +155,16 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         return getFileSystemItem(doc) != null;
     }
 
+    public boolean hasOneDriveToken(Principal user) {
+        TokenAuthenticationService tokenService = Framework.getLocalService(TokenAuthenticationService.class);
+        for (DocumentModel token : tokenService.getTokenBindings(user.getName())) {
+            if ("Nuxeo Drive".equals(token.getPropertyValue("authtoken:applicationName"))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * {@link #NXDRIVE_PROTOCOL} must be handled by a protocol handler
      * configured on the client side (either on the browser, or on the OS).
@@ -198,6 +209,10 @@ public class NuxeoDriveActions extends InputController implements Serializable {
                 "(/|\\\\|\\*|<|>|\\?|\"|:|\\|)", "-");
         sb.append(URIUtils.quoteURIPathComponent(escapedFilename, true));
         return sb.toString();
+    }
+
+    public String navigateToUserCenterNuxeoDrive() {
+        return getUserCenterNuxeoDriveView();
     }
 
     @Factory(value = "canSynchronizeCurrentDocument")
@@ -258,24 +273,15 @@ public class NuxeoDriveActions extends InputController implements Serializable {
             SecurityException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         Principal principal = documentManager.getPrincipal();
-        String userName = principal.getName();
         DocumentModel newSyncRoot = navigationContext.getCurrentDocument();
         driveManager.registerSynchronizationRoot(principal, newSyncRoot,
                 documentManager);
-        TokenAuthenticationService tokenService = Framework.getLocalService(TokenAuthenticationService.class);
-        boolean hasOneNuxeoDriveToken = false;
-        for (DocumentModel token : tokenService.getTokenBindings(userName)) {
-            if ("Nuxeo Drive".equals(token.getPropertyValue("authtoken:applicationName"))) {
-                hasOneNuxeoDriveToken = true;
-                break;
-            }
-        }
+        boolean hasOneNuxeoDriveToken = hasOneDriveToken(principal);
         if (hasOneNuxeoDriveToken) {
             return null;
         } else {
             // redirect to user center
-            userCenterViews.setCurrentViewId("userCenterNuxeoDrive");
-            return "view_home";
+            return getUserCenterNuxeoDriveView();
         }
     }
 
@@ -393,6 +399,11 @@ public class NuxeoDriveActions extends InputController implements Serializable {
                     doc.getPathAsString(), doc.getId()));
         }
         return fileSystemItem;
+    }
+
+    protected String getUserCenterNuxeoDriveView() {
+        userCenterViews.setCurrentViewId("userCenterNuxeoDrive");
+        return AbstractUserGroupManagement.VIEW_HOME;
     }
 
     /**
