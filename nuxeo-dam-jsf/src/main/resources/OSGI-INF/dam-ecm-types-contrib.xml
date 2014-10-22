@@ -41,12 +41,6 @@
         <layout>file</layout>
         <layout>dam_common</layout>
       </layouts>
-      <layouts mode="drive">
-        <layout>heading</layout>
-        <layout>picture</layout>
-        <layout>dam_common</layout>
-        <layout>dublincore</layout>
-      </layouts>
     </type>
 
     <type id="Video">
@@ -66,11 +60,6 @@
         <layout>file</layout>
         <layout>dam_common</layout>
       </layouts>
-      <layouts mode="drive">
-        <layout>heading</layout>
-        <layout>dam_common</layout>
-        <layout>dublincore</layout>
-      </layouts>
     </type>
 
     <type id="Audio">
@@ -89,11 +78,6 @@
         <layout>heading</layout>
         <layout>file</layout>
         <layout>dam_common</layout>
-      </layouts>
-      <layouts mode="drive">
-        <layout>heading</layout>
-        <layout>dam_common</layout>
-        <layout>dublincore</layout>
       </layouts>
     </type>
 
