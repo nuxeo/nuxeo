@@ -17,7 +17,7 @@
         cache="true">
         <nxu:set var="resolvedAjaxReRender"
           value="#{nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender)}"
-          cache="true">
+          cache="false">
           <c:if test="#{contentView != null}">
             <nxl:layout name="#{contentView.searchLayout.name}"
               mode="search" value="#{contentView.searchDocumentModel}">
