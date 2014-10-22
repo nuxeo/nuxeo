@@ -8,8 +8,7 @@ Nuxeo-Component: OSGI-INF/nuxeodrive-actions.xml,
  OSGI-INF/nuxeodrive-layouts-contrib.xml,
  OSGI-INF/nuxeodrive-theme-component-contrib.xml,
  OSGI-INF/nuxeodrive-token-authentication-contrib.xml,
- OSGI-INF/nuxeodrive-ui-types-contrib.xml,
- OSGI-INF/nuxeodrive-dam-ui-types-contrib.xml
+ OSGI-INF/nuxeodrive-ui-types-contrib.xml
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.drive.jsf;singleton:=true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
