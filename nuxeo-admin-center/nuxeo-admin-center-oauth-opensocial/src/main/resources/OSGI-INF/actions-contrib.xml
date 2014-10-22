@@ -40,20 +40,6 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="GrantedTokensByMe" link="/incl/oauth/consumersTokens.xhtml"
-      type="admin_rest_document_link"
-      label="tab.oauth.grantedTokenConsumers" order="35">
-      <category>OAuthOpensocial_sub_tab</category>
-      <filter-id>only_for_manager</filter-id>
-    </action>
-
-    <action id="ExternalGadgets" link="/incl/oauth/externalGadgets.xhtml"
-      type="admin_rest_document_link"
-      label="tab.oauth.externalGadgets" order="40">
-      <category>OAuthOpensocial_sub_tab</category>
-      <filter-id>only_for_manager</filter-id>
-    </action>
-
   </extension>
 
 </component>
