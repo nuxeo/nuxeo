@@ -166,19 +166,22 @@ public class NuxeoDriveActions extends InputController implements Serializable {
      * @throws ClientException
      *
      */
-    public String getDriveEditURL(DocumentModel doc) throws ClientException {
+    public String getDriveEditURL() throws ClientException {
         // TODO NXP-15397: handle Drive not started exception
-        BlobHolder bh = doc.getAdapter(BlobHolder.class);
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        BlobHolder bh = currentDocument.getAdapter(BlobHolder.class);
         if (bh == null) {
             throw new ClientException(
                     String.format(
                             "Document %s (%s) is not a BlobHolder, cannot get Drive Edit URL.",
-                            doc.getPathAsString(), doc.getId()));
+                            currentDocument.getPathAsString(),
+                            currentDocument.getId()));
         }
         Blob blob = bh.getBlob();
         if (blob == null) {
-            throw new ClientException(
-                    String.format("Document %s (%s) has no blob, cannot get Drive Edit URL."));
+            throw new ClientException(String.format(
+                    "Document %s (%s) has no blob, cannot get Drive Edit URL.",
+                    currentDocument.getPathAsString(), currentDocument.getId()));
         }
         String fileName = blob.getFilename();
         ServletRequest servletRequest = (ServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
@@ -190,7 +193,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         sb.append("repo/");
         sb.append(documentManager.getRepositoryName());
         sb.append("/nxdocid/");
-        sb.append(doc.getId());
+        sb.append(currentDocument.getId());
         sb.append("/filename/");
         String escapedFilename = fileName.replaceAll(
                 "(/|\\\\|\\*|<|>|\\?|\"|:|\\|)", "-");

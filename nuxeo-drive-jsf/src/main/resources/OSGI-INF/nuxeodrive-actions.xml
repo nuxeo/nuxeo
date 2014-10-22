@@ -28,7 +28,7 @@
       </filter-id>
     </action>
 
-    <action id="driveEdit" link="#{nuxeoDriveActions.getDriveEditURL(currentDocument)}"
+    <action id="driveEdit" link="#{nuxeoDriveActions.getDriveEditURL}"
       order="26" label="command.driveEdit" type="bare_link" icon="/icons/drive_edit.png">
       <filter-id>can_drive_edit</filter-id>
     </action>
