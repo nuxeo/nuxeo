@@ -276,7 +276,7 @@
         <version>${nuxeo.shell.version}</version>
       </dependency>
 
-      <!-- Nuxeo Web Embedded -->
+      <!-- DEPRECATED Nuxeo Web Embedded -->
       <dependency>
         <groupId>org.nuxeo.ecm.web</groupId>
         <artifactId>nuxeo-web-embedded-servlet</artifactId>
@@ -387,11 +387,6 @@
 
       <!-- Filesystem connectors -->
       <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-core-filesystem</artifactId>
-        <version>${nuxeo.fsconnectors.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.nuxeo.lib.wss</groupId>
         <artifactId>nuxeo-wss-front</artifactId>
         <version>${nuxeo.fsconnectors.version}</version>
@@ -500,7 +495,7 @@
         <version>${nuxeo.smartsearch.version}</version>
       </dependency>
 
-      <!-- Synchronization -->
+      <!-- DEPRECATED Synchronization -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-sync-common</artifactId>
@@ -551,7 +546,7 @@
         <version>${nuxeo.video.version}</version>
       </dependency>
 
-      <!-- Semantic Entities -->
+      <!-- DEPRECATED Semantic Entities -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-semantic-entities-api</artifactId>
@@ -726,7 +721,7 @@
         <version>${nuxeo.dam.version}</version>
       </dependency>
 
-      <!-- Case Management Framework -->
+      <!-- DEPRECATED Case Management Framework -->
       <dependency>
         <groupId>org.nuxeo.cm</groupId>
         <artifactId>nuxeo-case-management-api</artifactId>
@@ -758,7 +753,7 @@
         <version>${nuxeo.cmf.version}</version>
         <scope>test</scope>
       </dependency>
-      <!-- Case Management - Correspondence -->
+      <!-- DEPRECATED Case Management - Correspondence -->
       <dependency>
         <groupId>org.nuxeo.correspondence</groupId>
         <artifactId>nuxeo-correspondence-api</artifactId>
@@ -833,7 +828,7 @@
         <version>${nuxeo.indexing.gateway.version}</version>
       </dependency>
 
-      <!-- Sinequa ICE Connector -->
+      <!-- DEPRECATED Sinequa ICE Connector -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-intuition</artifactId>
@@ -1074,7 +1069,7 @@
         <version>${nuxeo.webengine.sites.version}</version>
       </dependency>
 
-      <!-- jBPM -->
+      <!-- DEPRECATED jBPM -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-jbpm-api</artifactId>
@@ -1157,7 +1152,7 @@
         <version>${nuxeo.easyshare.version}</version>
       </dependency>
 
-      <!-- FS Exporter -->
+      <!-- DEPRECATED FS Exporter -->
       <dependency>
         <groupId>org.nuxeo.io</groupId>
         <artifactId>nuxeo-fsexporter</artifactId>
