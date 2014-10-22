@@ -38,6 +38,8 @@
       cache="true">
     <nxl:widgetType name="documentAction" actionId="driveEdit" value="#{document}"
       mode="view" actionsDisplay="icons"/>
+    <nxl:widgetType name="documentAction" actionId="driveEditUserCenterNuxeoDrive" value="#{currentDocument}"
+      mode="view" actionsDisplay="icons"/>
     <nxu:set var="isLiveEditable"
       value="#{liveEditHelper.isLiveEditable(document, field_0)}">
       <h:panelGroup
