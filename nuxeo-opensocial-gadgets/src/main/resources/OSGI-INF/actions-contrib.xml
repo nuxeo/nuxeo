@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.opensocial.gadgets.actions" version="1.0">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="ActivityCharts" link="/incl/usersActivity/activityCharts.xhtml"
+      type="admin_rest_document_link"
+      label="tab.useractivity.charts" order="40">
+      <category>UsersActivity_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+      <filter id="isOpenSocialAvailable">
+        <rule grant="true">
+          <condition>#{systemInfo.isBundleDeployed("org.nuxeo.opensocial.service")}
+          </condition>
+        </rule>
+      </filter>
+    </action>
+
+  </extension>
+</component>

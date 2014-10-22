@@ -1,0 +1,34 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html">
+
+<script type="text/javascript" src="#{baseURL}opensocial/gadgets/js/rpc.js?c=1"></script>
+<script type="text/javascript" src="#{baseURL}js/?scripts=opensocial/cookies.js%7Copensocial/util.js%7Copensocial/gadgets.js%7Copensocial/cookiebaseduserprefstore.js%7Copensocial/jquery.opensocial.gadget.js"></script>
+
+<div id="gadget1" class="gadgets-gadget-chrome gadgets" style="width:650px;padding:5px;margin:5px"></div>
+<div id="gadget2" class="gadgets-gadget-chrome gadgets" style="width:650px;padding:5px;margin:5px"></div>
+
+<script>
+jQuery(document).ready(function() {
+    jQuery('head').append('<link rel="stylesheet" href="#{baseURL}css/opensocial/light-container-gadgets.css" type="text/css" />');
+    jQuery('.gadgets').openSocialGadget({
+      baseURL: '#{baseURL}',
+      language: '#{localeSelector.language}',
+      gadgetDefs: [
+                   {specUrl : '#{gadgetsBaseURL}/site/gadgets/eventMonitoring/eventMonitoring.xml',
+                    title : '#{messages['adminsubtab.usersActivity.charts.eventMonitoring']}',
+                    width : '100%',
+                    height: '380px'},
+                   {specUrl : '#{gadgetsBaseURL}/site/gadgets/httpMonitoring/httpMonitoring.xml',
+                    title : '#{messages['adminsubtab.usersActivity.charts.httpMonitoring']}',
+                    width : '100%',
+                    height: '380px'}]
+    });
+  })
+</script>
+</div>
