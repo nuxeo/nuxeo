@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,6 @@
  * Contributors:
  *     Anahide Tchertchian
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.directory;
@@ -42,6 +41,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
@@ -63,7 +63,7 @@ public abstract class BaseSession implements Session {
 
     /**
      * Check the current user rights for the given permission against the
-     * specified descriptor
+     * permission descriptor
      * 
      * @return true if the user
      *
@@ -75,10 +75,9 @@ public abstract class BaseSession implements Session {
 
         // Should happen only in test case
         if (currentUser == null) {
-            // if(!Framework.isTestModeSet())
-            // {
-            log.warn("Can't get current user to check directory permission. EVERYTHING is allowed by default");
-            // }
+            if (!Framework.isTestModeSet()) {
+                log.warn("Can't get current user to check directory permission. EVERYTHING is allowed by default");
+            }
             return true;
         }
         String username = currentUser.getName();
@@ -93,12 +92,11 @@ public abstract class BaseSession implements Session {
                 // By default if nothing is specified, admin is allowed
                 return true;
             }
-            //Return true for read access to anyone when nothing defined
-            if(permissionTocheck.equalsIgnoreCase(SecurityConstants.READ))
-            {
+            // Return true for read access to anyone when nothing defined
+            if (permissionTocheck.equalsIgnoreCase(SecurityConstants.READ)) {
                 return true;
             }
-            //Deny in all other case
+            // Deny in all other case
             return false;
         }
         boolean allowed = checkPermission(permDescriptors, permissionTocheck,
