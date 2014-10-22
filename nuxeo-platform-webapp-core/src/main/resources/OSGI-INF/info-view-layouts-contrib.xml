@@ -104,7 +104,7 @@
           <properties widgetMode="view">
             <property name="mode">view</property>
             <property name="documentMode">info</property>
-            <property name="defaultLayout">defaultInfoLayout@view</property>
+            <property name="defaultLayout">defaultInfoLayout@tabLayout</property>
             <property name="includeAnyMode">false</property>
           </properties>
         </widget>
@@ -276,27 +276,47 @@
       </rows>
     </layout>
 
-    <layout name="defaultInfoLayout@view">
+    <layout name="defaultInfoLayout@tabLayout">
       <templates>
-        <template mode="any">/layouts/layout_div_template.xhtml</template>
+        <template mode="any">
+          /layouts/layout_grid_template.xhtml
+        </template>
       </templates>
       <rows>
         <row>
+          <properties mode="any">
+            <property name="nxl_gridStyleClass_0">gridStyle12</property>
+          </properties>
           <widget>infoViewInfoBox</widget>
         </row>
         <row>
+          <properties mode="any">
+            <property name="nxl_gridStyleClass_0">gridStyle12</property>
+          </properties>
           <widget>infoViewMetadata</widget>
         </row>
         <row>
+          <properties mode="any">
+            <property name="nxl_gridStyleClass_0">gridStyle12</property>
+          </properties>
           <widget>infoViewWorkflow</widget>
         </row>
         <row>
+          <properties mode="any">
+            <property name="nxl_gridStyleClass_0">gridStyle12</property>
+          </properties>
           <widget>infoViewTags</widget>
         </row>
         <row>
+          <properties mode="any">
+            <property name="nxl_gridStyleClass_0">gridStyle12</property>
+          </properties>
           <widget>infoViewCollections</widget>
         </row>
         <row>
+          <properties mode="any">
+            <property name="nxl_gridStyleClass_0">gridStyle12</property>
+          </properties>
           <widget>infoViewComments</widget>
         </row>
       </rows>
