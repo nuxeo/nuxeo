@@ -1,11 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 1
-Bundle-Name: nuxeo api documentation browser 
+Bundle-Name: nuxeo api documentation browser
 Bundle-SymbolicName: org.nuxeo.apidoc.webengine;singleton:=true
 Bundle-Version: 0.0.1
 Bundle-Vendor: Nuxeo
 Nuxeo-Require: org.nuxeo.ecm.webengine.core,
  org.nuxeo.apidoc.core
-Nuxeo-Component: OSGI-INF/gadget-contrib.xml,
- OSGI-INF/actions-contrib.xml
+Nuxeo-Component: OSGI-INF/actions-contrib.xml
 Nuxeo-WebModule: org.nuxeo.apidoc.browse.ApiDocApplication
