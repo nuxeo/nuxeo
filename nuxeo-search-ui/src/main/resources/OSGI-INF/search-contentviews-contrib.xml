@@ -16,9 +16,8 @@
         <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
         <whereClause docType="DefaultSearch">
           <fixedPart>
-            ecm:mixinType != 'HiddenInNavigation' AND ecm:isProxy = 0
-            AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
-            'deleted'
+            ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0
+            AND ecm:currentLifeCycleState != 'deleted'
             AND SORTED_COLUMN IS NOT NULL
           </fixedPart>
           <predicate parameter="ecm:fulltext" operator="FULLTEXT">
@@ -112,7 +111,6 @@
             </dateRanges>
           </aggregate>
         </aggregates>
-        <sort column="dc:created" ascending="false" />
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
 
