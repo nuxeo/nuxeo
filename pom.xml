@@ -867,11 +867,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-connect-offline-update</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-connect-update</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
@@ -906,11 +901,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.automation</groupId>
         <artifactId>nuxeo-automation-io</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.automation</groupId>
-        <artifactId>nuxeo-automation-restserver</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
@@ -2126,11 +2116,6 @@
         <version>${version.org.jboss.integration}</version>
       </dependency>
       <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jgroups</artifactId>
-        <version>4.2.2.GA</version>
-      </dependency>
-      <dependency>
         <groupId>org.jboss.naming</groupId>
         <artifactId>jnp-client</artifactId>
         <version>5.0.3.GA</version>
@@ -3002,12 +2987,6 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-gadgets</artifactId>
-        <version>1.2.0</version>
-        <scope>compile</scope>
-      </dependency>
-      <dependency>
         <groupId>com.google.gwt.inject</groupId>
         <artifactId>gin</artifactId>
         <version>1.5.0</version>
@@ -3497,11 +3476,13 @@
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat</artifactId>
         <version>${tomcat.version}</version>
+        <type>zip</type>
       </dependency>
       <dependency>
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat</artifactId>
         <version>${tomcat.version}</version>
+        <type>zip</type>
         <classifier>light</classifier>
       </dependency>
       <dependency>
