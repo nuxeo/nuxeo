@@ -139,8 +139,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         return (DocumentModel) cache.get(CURRENT_SYNCHRONIZATION_ROOT);
     }
 
-    public boolean canEditDocument(DocumentModel doc)
-            throws ClientException {
+    public boolean canEditDocument(DocumentModel doc) throws ClientException {
         if (doc == null) {
             return false;
         }
