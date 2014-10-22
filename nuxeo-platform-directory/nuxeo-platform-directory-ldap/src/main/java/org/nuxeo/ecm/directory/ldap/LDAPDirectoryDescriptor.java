@@ -37,6 +37,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.EntryAdaptor;
 import org.nuxeo.ecm.directory.InverseReference;
+import org.nuxeo.ecm.directory.PermissionDescriptor;
 import org.nuxeo.ecm.directory.Reference;
 
 @XObject(value = "directory")
@@ -109,6 +110,9 @@ public class LDAPDirectoryDescriptor {
     @XNodeList(value = "references/ldapTreeReference", type = LDAPTreeReference[].class, componentType = LDAPTreeReference.class)
     private LDAPTreeReference[] ldapTreeReferences;
 
+    @XNodeList(value = "permissions/permission", type = PermissionDescriptor[].class, componentType = PermissionDescriptor.class)
+    public PermissionDescriptor[] permissions = null;
+    
     @XNode("emptyRefMarker")
     public String emptyRefMarker = "cn=emptyRef";
 
