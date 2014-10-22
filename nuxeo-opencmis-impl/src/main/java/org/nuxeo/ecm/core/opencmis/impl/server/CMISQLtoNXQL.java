@@ -39,6 +39,7 @@ import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionContainer;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.Cardinality;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyDecimalDefinitionImpl;
 import org.apache.chemistry.opencmis.server.support.query.AbstractPredicateWalker;
@@ -94,6 +95,10 @@ public class CMISQLtoNXQL {
     protected static final DateTimeFormatter ISO_DATE_TIME_FORMAT = ISODateTimeFormat.dateTime();
 
     private static final char QUOTE = '\'';
+
+    private static final String SPACE_ASC = " asc";
+
+    private static final String SPACE_DESC = " desc";
 
     // list of SQL column where NULL (missing value) should be treated as
     // Boolean.FALSE in a query result
@@ -400,7 +405,13 @@ public class CMISQLtoNXQL {
      * Finds a NXQL column from a CMIS reference.
      */
     protected String getColumn(ColumnReference col) {
-        String propertyId = col.getPropertyId();
+        return getColumn(col.getPropertyId());
+    }
+
+    /**
+     * Finds a NXQL column from a CMIS reference.
+     */
+    protected String getColumn(String propertyId) {
         if (propertyId.startsWith(CMIS_PREFIX)
                 || propertyId.startsWith(NX_PREFIX)) {
             return getSystemColumn(propertyId);
@@ -464,6 +475,40 @@ public class CMISQLtoNXQL {
         statement = statement.replace(" and ", " ");
         statement = statement.replace(" AND ", " ");
         return statement;
+    }
+
+    /**
+     * Convert an ORDER BY part from CMISQL to NXQL.
+     *
+     * @since 6.0
+     */
+    protected String convertOrderBy(String orderBy, TypeManagerImpl typeManager) {
+        List<String> list = new ArrayList<>(1);
+        for (String order : orderBy.split(",")) {
+            order = order.trim();
+            String lower = order.toLowerCase();
+            String prop;
+            boolean asc;
+            if (lower.endsWith(SPACE_ASC)) {
+                prop = order.substring(0, order.length() - SPACE_ASC.length()).trim();
+                asc = true;
+            } else if (lower.endsWith(SPACE_DESC)) {
+                prop = order.substring(0, order.length() - SPACE_DESC.length()).trim();
+                asc = false;
+            } else {
+                prop = order;
+                asc = true; // default is repository-specific
+            }
+            // assume query name is same as property id
+            String propId = typeManager.getPropertyIdForQueryName(prop);
+            if (propId == null) {
+                throw new CmisInvalidArgumentException("Invalid orderBy: "
+                        + orderBy);
+            }
+            String col = getColumn(propId);
+            list.add(asc ? col : (col + " DESC"));
+        }
+        return StringUtils.join(list, ", ");
     }
 
     /**

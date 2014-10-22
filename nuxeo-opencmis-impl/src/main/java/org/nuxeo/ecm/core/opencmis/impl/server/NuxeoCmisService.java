@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -81,7 +80,6 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentExcep
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
-import org.apache.chemistry.opencmis.commons.impl.Constants;
 import org.apache.chemistry.opencmis.commons.impl.WSConverter;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AbstractPropertyData;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
@@ -136,7 +134,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils.BatchedList;
 import org.nuxeo.ecm.core.opencmis.impl.util.SimpleImageInfo;
-import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -1800,19 +1797,41 @@ public class NuxeoCmisService extends AbstractCmisService implements
         if (!folder.isFolder()) {
             return null;
         }
+
+        String query = String.format("SELECT * FROM %s WHERE " // Folder/Document
+                + "%s = '%s' AND " // ecm:parentId = 'folderId'
+                + "%s <> '%s' AND " // ecm:mixinType <> 'HiddenInNavigation'
+                + "%s <> '%s' AND " // ecm:currentLifeCycleState <> 'deleted'
+                + "%s = 0", // ecm:isProxy = 0
+                folderOnly ? "Folder" : "Document", //
+                NXQL.ECM_PARENTID, folderId, //
+                NXQL.ECM_MIXINTYPE, FacetNames.HIDDEN_IN_NAVIGATION, //
+                NXQL.ECM_LIFECYCLESTATE, LifeCycleConstants.DELETED_STATE, //
+                NXQL.ECM_ISPROXY);
+        if (!StringUtils.isBlank(orderBy)) {
+            CMISQLtoNXQL converter = new CMISQLtoNXQL();
+            query += " ORDER BY "
+                    + converter.convertOrderBy(orderBy,
+                            repository.getTypeManager());
+        }
+
+        long limit = maxItems == null ? 0 : maxItems.longValue();
+        if (limit < 0) {
+            limit = 0;
+        }
+        long offset = skipCount == null ? 0 : skipCount.longValue();
+        if (offset < 0) {
+            offset = 0;
+        }
+
         DocumentModelList children;
         try {
-            children = coreSession.getChildren(folder.getRef());
+            children = coreSession.query(query, null, limit, offset, true);
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
+
         for (DocumentModel child : children) {
-            if (isFilteredOut(child)) {
-                continue;
-            }
-            if (folderOnly && !child.isFolder()) {
-                continue;
-            }
             NuxeoObjectData data = new NuxeoObjectData(this, child, filter,
                     includeAllowableActions, includeRelationships,
                     renditionFilter, Boolean.FALSE, Boolean.FALSE, null);
@@ -1825,89 +1844,17 @@ public class NuxeoCmisService extends AbstractCmisService implements
             collectObjectInfo(repositoryId, data);
         }
 
-        if (StringUtils.isNotBlank(orderBy)) {
-            Collections.sort(list, new OrderByComparator(orderBy, repository));
+        Boolean hasMoreItems;
+        if (limit == 0) {
+            hasMoreItems = Boolean.FALSE;
+        } else {
+            hasMoreItems = Boolean.valueOf(children.totalSize() > offset + limit);
         }
-
-        BatchedList<ObjectInFolderData> batch = ListUtils.getBatchedList(list,
-                maxItems, skipCount, DEFAULT_MAX_CHILDREN);
-        result.setObjects(batch.getList());
-        result.setHasMoreItems(batch.getHasMoreItems());
-        result.setNumItems(batch.getNumItems());
+        result.setObjects(list);
+        result.setHasMoreItems(hasMoreItems);
+        result.setNumItems(BigInteger.valueOf(children.totalSize()));
         collectObjectInfo(repositoryId, folderId);
         return result;
-    }
-
-    public static class OrderByComparator implements
-            Comparator<ObjectInFolderData> {
-
-        protected static String ASC = " asc";
-
-        protected static String DESC = " desc";
-
-        protected String[] props;
-
-        protected boolean[] descs;
-
-        public OrderByComparator(String orderBy, NuxeoRepository repository) {
-            TypeManagerImpl typeManager = repository.getTypeManager();
-            String[] orders = orderBy.split(",");
-            props = new String[orders.length];
-            descs = new boolean[orders.length];
-            for (int i = 0; i < orders.length; i++) {
-                String order = orders[i].trim();
-                String lower = order.toLowerCase();
-                String prop;
-                boolean desc;
-                if (lower.endsWith(DESC)) {
-                    prop = order.substring(0, order.length() - DESC.length()).trim();
-                    desc = true;
-                } else if (lower.endsWith(ASC)) {
-                    prop = order.substring(0, order.length() - ASC.length()).trim();
-                    desc = false;
-                } else {
-                    prop = order;
-                    desc = false;
-                }
-                String propId = typeManager.getPropertyIdForQueryName(prop);
-                if (propId == null) {
-                    throw new CmisInvalidArgumentException("Invalid orderBy: "
-                            + orderBy);
-                }
-                props[i] = propId;
-                descs[i] = desc;
-            }
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public int compare(ObjectInFolderData ob1, ObjectInFolderData ob2) {
-            int cmp = 0;
-            for (int i = 0; i < props.length; i++) {
-                String prop = props[i];
-                boolean desc = descs[i];
-                NuxeoPropertyDataBase<?> p1 = ((NuxeoObjectData) ob1.getObject()).getProperty(prop);
-                NuxeoPropertyDataBase<?> p2 = ((NuxeoObjectData) ob2.getObject()).getProperty(prop);
-                Object v1 = p1 == null ? null : p1.getValue();
-                Object v2 = p2 == null ? null : p2.getValue();
-                if (v1 == null && v2 == null) {
-                    cmp = 0;
-                } else if (v1 == null) {
-                    cmp = -1;
-                } else if (v2 == null) {
-                    cmp = 1;
-                } else {
-                    cmp = ((Comparable<Object>) v1).compareTo(v2);
-                }
-                if (desc) {
-                    cmp = -cmp;
-                }
-                if (cmp != 0) {
-                    break;
-                }
-            }
-            return cmp;
-        }
     }
 
     @Override
