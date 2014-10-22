@@ -518,30 +518,34 @@
     </component>
   </tag>
 
-  <!-- tomahawk tags -->
+  <!-- old tomahawk tags, migrated to use RichFaces tags -->
   <tag>
     <tag-name>dataList</tag-name>
     <component>
-      <component-type>org.apache.myfaces.HtmlDataList</component-type>
+      <component-type>org.richfaces.List</component-type>
+      <renderer-type>org.richfaces.ListRenderer</renderer-type>
+      <handler-class>org.richfaces.taglib.ListHandler</handler-class>
     </component>
   </tag>
   <tag>
     <tag-name>dataTable</tag-name>
     <component>
-      <component-type>org.apache.myfaces.HtmlDataTable</component-type>
-      <renderer-type>org.apache.myfaces.Table</renderer-type>
+      <component-type>org.richfaces.DataTable</component-type>
+      <renderer-type>org.richfaces.DataTableRenderer</renderer-type>
+      <handler-class>org.richfaces.taglib.DataTableHandler</handler-class>
     </component>
   </tag>
   <tag>
     <tag-name>columns</tag-name>
     <component>
-      <component-type>org.apache.myfaces.HtmlColumns</component-type>
+      <component-type>org.richfaces.ColumnGroup</component-type>
+      <renderer-type>org.richfaces.ColumnGroupRenderer</renderer-type>
     </component>
   </tag>
   <tag>
     <tag-name>column</tag-name>
     <component>
-      <component-type>org.apache.myfaces.HtmlColumn</component-type>
+      <component-type>org.richfaces.Column</component-type>
     </component>
   </tag>
   <tag>
@@ -565,7 +569,7 @@
   <tag>
     <tag-name>graphicImage</tag-name>
     <component>
-      <component-type>org.apache.myfaces.HtmlGraphicImage</component-type>
+      <component-type>javax.faces.HtmlGraphicImage</component-type>
       <renderer-type>javax.faces.NXImage</renderer-type>
       <handler-class>
         org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler
