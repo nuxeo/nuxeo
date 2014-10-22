@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -48,6 +50,8 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
 
     private static final long serialVersionUID = 1L;
 
+    private static final Log log = LogFactory.getLog(SectionPublicationTree.class);
+
     protected static final String CAN_ASK_FOR_PUBLISHING = "CanAskForPublishing";
 
     protected static final String DEFAULT_ROOT_PATH = "/default-domain/sections";
@@ -63,8 +67,13 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
         super.initTree(sid, coreSession, parameters, factory, configName, title);
 
         DocumentRef ref = new PathRef(rootPath);
+        boolean exists = coreSession.exists(ref);
+        if (!exists) {
+            log.debug("Root section " + rootPath + " doesn't exist. Check " +
+                    "publicationTreeConfig with name " + configName);
+        }
         try {
-            if (coreSession.hasPermission(ref, SecurityConstants.READ)) {
+            if (exists && coreSession.hasPermission(ref, SecurityConstants.READ)) {
                 treeRoot = coreSession.getDocument(new PathRef(rootPath));
                 rootNode = new CoreFolderPublicationNode(treeRoot,
                         getConfigName(), sid, factory);
