@@ -44,7 +44,10 @@ import org.openqa.selenium.WebElement;
 public class ITSuggestBoxTest extends
         AbstractTest {
 
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle"
+    /**
+     * Use a workspace title with special characters (NXP-15618).
+     */
+    private final static String WORKSPACE_TITLE = "#W/o=rk^s+pa>ce'~Title%"
             + new Date().getTime();
 
     private static final String USER1_NAME = "user1";
