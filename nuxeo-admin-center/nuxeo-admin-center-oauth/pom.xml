@@ -8,9 +8,9 @@
     <version>5.9.6-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-  <artifactId>nuxeo-admin-center-oauth-opensocial</artifactId>
-  <name>Nuxeo Administration Center OAuth/Opensocial</name>
-  <description>Admin screens for OAuth and OpenSocial</description>
+  <artifactId>nuxeo-admin-center-oauth</artifactId>
+  <name>Nuxeo Administration Center OAuth</name>
+  <description>Admin screens for OAuth</description>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
