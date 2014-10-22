@@ -82,6 +82,7 @@
             <f:param name="for" value="#{widget.id}_list" />
             <f:param name="index" value="#{model.rowIndex}" />
             <f:param name="type" value="remove" />
+            <f:ajax event="click" execute="@form" render="#{widget.id}_listRegion" />
           </a4j:commandLink>
         </span>
       </nxu:inputList>
@@ -129,6 +130,7 @@
                 <f:param name="selectionListId" value="#{widget.id}_list" />
                 <f:param name="selectedPath" value="#{node.path}" />
                 <h:outputText value="#{nxd:titleOrId(node.document)}" />
+                <f:ajax event="click" execute="@this" render="#{widget.id}_listRegion" />
               </a4j:commandLink>
             </rich:treeNode>
           </rich:treeModelRecursiveAdaptor>
