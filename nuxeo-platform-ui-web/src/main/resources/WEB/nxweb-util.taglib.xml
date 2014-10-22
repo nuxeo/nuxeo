@@ -581,8 +581,13 @@
   <tag>
     <tag-name>selectOneRadio</tag-name>
     <component>
-      <component-type>org.apache.myfaces.HtmlSelectOneRadio</component-type>
-      <renderer-type>org.apache.myfaces.Radio</renderer-type>
+      <component-type>javax.faces.SelectOne</component-type>
+      <renderer-type>
+        org.nuxeo.ecm.platform.ui.web.component.radio.SelectOneRadioRenderer
+      </renderer-type>
+      <renderer-class>
+        org.nuxeo.ecm.platform.ui.web.component.radio.SelectOneRadioRenderer
+      </renderer-class>
       <handler-class>
         org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler
       </handler-class>
@@ -591,7 +596,13 @@
   <tag>
     <tag-name>radio</tag-name>
     <component>
-      <component-type>org.apache.myfaces.HtmlRadio</component-type>
+      <component-type>org.nuxeo.Radio</component-type>
+      <renderer-type>
+        org.nuxeo.ecm.platform.ui.web.component.radio.SingleRadioRenderer
+      </renderer-type>
+      <renderer-class>
+        org.nuxeo.ecm.platform.ui.web.component.radio.SingleRadioRenderer
+      </renderer-class>
       <handler-class>
         org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler
       </handler-class>

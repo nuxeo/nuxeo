@@ -568,6 +568,13 @@
 
     <!-- end of override of buggy seam libraries -->
 
+    <component>
+      <component-type>org.nuxeo.Radio</component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.component.radio.UIRadio
+      </component-class>
+    </component>
+
     <!-- override default form components to check for nested forms -->
     <!--
       <component>
@@ -687,6 +694,26 @@
         </renderer-class>
       </renderer>
     </render-kit>
+
+    <renderer>
+      <component-family>javax.faces.SelectOne</component-family>
+      <renderer-type>
+        org.nuxeo.ecm.platform.ui.web.component.radio.SelectOneRadioRenderer
+      </renderer-type>
+      <renderer-class>
+        org.nuxeo.ecm.platform.ui.web.component.radio.SelectOneRadioRenderer
+      </renderer-class>
+    </renderer>
+
+    <renderer>
+      <component-family>org.nuxeo.Radio</component-family>
+      <renderer-type>
+        org.nuxeo.ecm.platform.ui.web.component.radio.SingleRadioRenderer
+      </renderer-type>
+      <renderer-class>
+        org.nuxeo.ecm.platform.ui.web.component.radio.SingleRadioRenderer
+      </renderer-class>
+    </renderer>
 
     <renderer>
       <component-family>javax.faces.Messages</component-family>
