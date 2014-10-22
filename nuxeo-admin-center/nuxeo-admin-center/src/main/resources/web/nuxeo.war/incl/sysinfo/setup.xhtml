@@ -73,13 +73,11 @@
                 render="advancedParams_panel"
                 immediate="true"
                 styleClass="button">
-                <f:setPropertyActionListener
-                  value="on"
-                  target="#{selectionActions.selectedValue}" />
-                <f:param name="valueHolderId"
-                  value="advancedParams_valueHolder" />
+                <f:attribute name="selectedValue" value="on"/>
+                <f:attribute name="targetComponentId"
+                             value="advancedParams_valueHolder"/>
                 <nxu:actionListenerMethod
-                  value="#{selectionActions.onClick}" />
+                        value="#{selectionActions.setStaticValue}"/>
               </a4j:commandButton>
             </f:subview>
           </c:if>
@@ -102,13 +100,11 @@
                     render="advancedParams_panel"
                     immediate="true"
                     styleClass="button">
-                    <f:setPropertyActionListener
-                      value="off"
-                      target="#{selectionActions.selectedValue}" />
-                    <f:param name="valueHolderId"
-                      value="advancedParams_valueHolder" />
+                    <f:attribute name="selectedValue" value="off"/>
+                    <f:attribute name="targetComponentId"
+                                 value="advancedParams_valueHolder"/>
                     <nxu:actionListenerMethod
-                      value="#{selectionActions.onClick}" />
+                            value="#{selectionActions.setStaticValue}"/>
                   </a4j:commandButton>
                 </f:subview>
               </p>
