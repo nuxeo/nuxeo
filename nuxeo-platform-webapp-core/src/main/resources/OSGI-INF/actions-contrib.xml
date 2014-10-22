@@ -643,7 +643,7 @@
     </action>
 
     <action id="footer_blogs"
-      link="//blogs.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+      link="//www.nuxeo.com/blog?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
       label="label.footer.blogs" order="20" type="bare_link">
       <category>FOOTER</category>
       <properties>
