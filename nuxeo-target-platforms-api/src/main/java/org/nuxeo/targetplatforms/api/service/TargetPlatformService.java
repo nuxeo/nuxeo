@@ -145,4 +145,12 @@ public interface TargetPlatformService {
      */
     void restoreAllTargetPlatforms() throws ClientException;
 
+    /**
+     * @return the default target platform instance and enabled if not found.
+     *
+     * @since 5.9.3-NXP-15602
+     */
+    TargetPlatformInstance getDefaultTargetPlatformInstance(boolean restricted)
+            throws ClientException;
+
 }
