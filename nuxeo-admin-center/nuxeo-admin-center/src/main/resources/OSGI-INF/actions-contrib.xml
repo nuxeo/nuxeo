@@ -90,19 +90,6 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="ActivityCharts" link="/incl/usersActivity/activityCharts.xhtml"
-      type="admin_rest_document_link"
-      label="tab.useractivity.charts" order="40">
-      <category>UsersActivity_sub_tab</category>
-      <filter-id>only_for_manager</filter-id>
-      <filter id="isOpenSocialAvailable">
-        <rule grant="true">
-          <condition>#{systemInfo.isBundleDeployed("org.nuxeo.opensocial.service")}
-          </condition>
-        </rule>
-      </filter>
-    </action>
-
     <action id="ConnectClient" link="/view_admin-fragment.xhtml" label="admcommand.nuxeoconnect"
       type="admin_rest_document_link"
       order="20">
