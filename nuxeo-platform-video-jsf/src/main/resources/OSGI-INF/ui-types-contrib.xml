@@ -20,6 +20,10 @@
         <layout>video_file</layout>
         <layout>dublincore</layout>
       </layouts>
+      <layouts mode="drive">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
     </type>
 
     <type id="Workspace">
