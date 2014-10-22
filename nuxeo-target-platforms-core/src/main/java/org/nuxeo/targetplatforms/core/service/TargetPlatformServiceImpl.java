@@ -49,6 +49,7 @@ import org.nuxeo.targetplatforms.api.TargetPlatformInfo;
 import org.nuxeo.targetplatforms.api.TargetPlatformInstance;
 import org.nuxeo.targetplatforms.api.impl.TargetPackageImpl;
 import org.nuxeo.targetplatforms.api.impl.TargetPackageInfoImpl;
+import org.nuxeo.targetplatforms.api.impl.TargetPlatformFilterImpl;
 import org.nuxeo.targetplatforms.api.impl.TargetPlatformImpl;
 import org.nuxeo.targetplatforms.api.impl.TargetPlatformInfoImpl;
 import org.nuxeo.targetplatforms.api.impl.TargetPlatformInstanceImpl;
@@ -413,45 +414,8 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         if (id == null) {
             return null;
         }
-        TargetPlatformDescriptor desc = platforms.getTargetPlatform(id);
-        if (desc == null) {
-            return null;
-        }
-        TargetPlatformInstanceImpl tpi = new TargetPlatformInstanceImpl(id,
-                desc.getName(), desc.getVersion(), desc.getRefVersion(),
-                desc.getLabel());
-        tpi.setDeprecated(desc.isDeprecated());
-        tpi.setDescription(desc.getDescription());
-        tpi.setDownloadLink(desc.getDownloadLink());
-        tpi.setEnabled(desc.isEnabled());
-        tpi.setEndOfAvailability(toDate(desc.getEndOfAvailability()));
-        tpi.setFastTrack(desc.isFastTrack());
-        tpi.setParent(getTargetPlatform(desc.getParent()));
-        tpi.setRefVersion(desc.getRefVersion());
-        tpi.setReleaseDate(toDate(desc.getReleaseDate()));
-        tpi.setRestricted(desc.isRestricted());
-        tpi.setStatus(desc.getStatus());
-        tpi.setTypes(desc.getTypes());
 
-        DocumentModel entry = getDirectoryEntry(id);
-        if (entry != null) {
-            Long enabled = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
-                    DirectoryUpdater.ENABLED_PROP);
-            if (enabled != null && enabled.intValue() >= 0) {
-                tpi.setEnabled(enabled.intValue() == 0 ? false : true);
-            }
-            Long restricted = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
-                    DirectoryUpdater.RESTRICTED_PROP);
-            if (restricted != null && restricted.intValue() >= 0) {
-                tpi.setRestricted(restricted.intValue() == 0 ? false : true);
-            }
-            Long deprecated = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
-                    DirectoryUpdater.DEPRECATED_PROP);
-            if (deprecated != null && deprecated.intValue() >= 0) {
-                tpi.setDeprecated(deprecated.intValue() == 0 ? false : true);
-            }
-            tpi.setOverridden(true);
-        }
+        TargetPlatformInstanceImpl tpi = createTargetPlatformInstanceFromId(id);
 
         if (packages != null) {
             for (String pkg : packages) {
@@ -612,4 +576,67 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
+    public TargetPlatformInstance getDefaultTargetPlatformInstance(
+            boolean restricted) throws ClientException {
+        TargetPlatformInstance tpi = null;
+        TargetPlatformFilterImpl filter = new TargetPlatformFilterImpl();
+        filter.setFilterRestricted(restricted);
+        TargetPlatform defaultTP = getDefaultTargetPlatform(filter);
+        if (defaultTP != null) {
+            tpi = createTargetPlatformInstanceFromId(defaultTP.getId());
+        }
+
+        return tpi;
+    }
+
+    /**
+     * Create a TargetPlatformInstance given an id.
+     *
+     * @since 5.9.3-NXP-15602
+     */
+    protected TargetPlatformInstanceImpl createTargetPlatformInstanceFromId(
+            String id) throws ClientException {
+        TargetPlatformDescriptor desc = platforms.getTargetPlatform(id);
+        if (desc == null) {
+            return null;
+        }
+        TargetPlatformInstanceImpl tpi = new TargetPlatformInstanceImpl(id,
+                desc.getName(), desc.getVersion(), desc.getRefVersion(),
+                desc.getLabel());
+        tpi.setDeprecated(desc.isDeprecated());
+        tpi.setDescription(desc.getDescription());
+        tpi.setDownloadLink(desc.getDownloadLink());
+        tpi.setEnabled(desc.isEnabled());
+        tpi.setEndOfAvailability(toDate(desc.getEndOfAvailability()));
+        tpi.setFastTrack(desc.isFastTrack());
+        tpi.setParent(getTargetPlatform(desc.getParent()));
+        tpi.setRefVersion(desc.getRefVersion());
+        tpi.setReleaseDate(toDate(desc.getReleaseDate()));
+        tpi.setRestricted(desc.isRestricted());
+        tpi.setStatus(desc.getStatus());
+        tpi.setTypes(desc.getTypes());
+
+        DocumentModel entry = getDirectoryEntry(id);
+        if (entry != null) {
+            Long enabled = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
+                    DirectoryUpdater.ENABLED_PROP);
+            if (enabled != null && enabled.intValue() >= 0) {
+                tpi.setEnabled(enabled.intValue() == 0 ? false : true);
+            }
+            Long restricted = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
+                    DirectoryUpdater.RESTRICTED_PROP);
+            if (restricted != null && restricted.intValue() >= 0) {
+                tpi.setRestricted(restricted.intValue() == 0 ? false : true);
+            }
+            Long deprecated = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
+                    DirectoryUpdater.DEPRECATED_PROP);
+            if (deprecated != null && deprecated.intValue() >= 0) {
+                tpi.setDeprecated(deprecated.intValue() == 0 ? false : true);
+            }
+            tpi.setOverridden(true);
+        }
+
+        return tpi;
+    }
 }
