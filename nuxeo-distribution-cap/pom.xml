@@ -27,14 +27,6 @@
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.myfaces.tomahawk</groupId>
-      <artifactId>tomahawk</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.myfaces.tomahawk</groupId>
-      <artifactId>tomahawk-sandbox</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -167,10 +159,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-ui-select2</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-ui-web-compat</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
