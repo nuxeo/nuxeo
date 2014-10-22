@@ -182,17 +182,18 @@ class Spreadsheet {
     Handsontable.renderers.TextRenderer.apply(this, arguments);
     var doc = this.getDataAtRow(row);
     if (doc && this._dirty[doc.uid]) {
+      // color dirty rows
+      var color = '#e2f1ff';
       // check for errors
       if (this._dirty[doc.uid].hasOwnProperty('_error')) {
-        $(td).css({
-          background: '#f33'
-        });
-      // check for this property
-      } else if (hasProp(this._dirty[doc.uid], prop)) {
-        $(td).css({
-          background: '#e2f1ff'
-        });
+        color = '#f33';
+      // check for dirty property
+      } else  if (hasProp(this._dirty[doc.uid], prop)) {
+          color = '#afd8ff';
       }
+      $(td).css({
+        background: color
+      });
     }
   }
 
