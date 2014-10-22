@@ -2,6 +2,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
   style="display: inline; float: left">
 
   <a4j:outputPanel id="#{widget.id}_panel" layout="block">
@@ -11,7 +12,7 @@
     <span id="#{widget.id}_suggestDiv">
       <script type="text/javascript">
         function nxSuggestHandleEnterKey(search) {
-            var searchUrl = '#{searchUIActions.getSearchTabUrl(search)}';
+            var searchUrl = '#{nxu:javaScriptEscape(searchUIActions.getSearchTabUrl(search))}';
             searchUrl += '&amp;#{searchUIActions.searchTermParameter}=' + search;
             window.location.replace(searchUrl);
         }
