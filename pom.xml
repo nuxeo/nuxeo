@@ -761,11 +761,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-ui-web-compat</artifactId>
-        <version>${nuxeo.jsf.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-ui-select2</artifactId>
         <version>${nuxeo.jsf.version}</version>
       </dependency>
