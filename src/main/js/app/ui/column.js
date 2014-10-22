@@ -106,8 +106,10 @@ const SPECIAL_FIELDS = {
       readOnly: true
     }
   },
-
   'currentLifeCycleState': {
+    widget: {
+      readOnly: true
+    },
     field: 'state'
   }
 };
