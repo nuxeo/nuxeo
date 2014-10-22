@@ -15,7 +15,6 @@ package org.nuxeo.ecm.core.schema.types.primitives;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
@@ -65,7 +64,7 @@ public final class BinaryType extends PrimitiveType {
 
     @Override
     public Object decode(String str) {
-        if (StringUtils.isEmpty(str)) {
+        if (str == null) {
             return null;
         }
         return new ByteArrayInputStream(str.getBytes());

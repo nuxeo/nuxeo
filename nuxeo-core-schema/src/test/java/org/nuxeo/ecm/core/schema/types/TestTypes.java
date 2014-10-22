@@ -102,7 +102,6 @@ public class TestTypes extends NXRuntimeTestCase {
         assertTrue(type.validate(false));
 
         // Conversion tests
-        assertNull(type.decode(""));
         assertEquals(true, type.convert(true));
         assertEquals(false, type.convert(false));
         assertEquals(true, type.convert("true"));
@@ -131,7 +130,6 @@ public class TestTypes extends NXRuntimeTestCase {
         assertFalse(type.validate(true));
 
         // Conversion tests
-        assertNull(type.decode(""));
         assertEquals(0, type.convert(0));
         assertEquals(0, type.convert("0"));
         assertEquals(0, type.convert(0.5));
@@ -159,7 +157,6 @@ public class TestTypes extends NXRuntimeTestCase {
         assertFalse(type.validate(""));
 
         // Conversion tests
-        assertNull(type.decode(""));
         assertEquals(0.0, type.convert(0));
         assertEquals(0.5, type.convert(0.5));
         assertEquals(3.14, type.convert("3.14"));
@@ -187,7 +184,6 @@ public class TestTypes extends NXRuntimeTestCase {
         assertFalse(type.validate(true));
 
         // Conversion tests
-        assertNull(type.decode(""));
         assertEquals(0L, type.convert(0));
         assertEquals(0L, type.convert("0"));
         assertEquals(0L, type.convert(0.5));
@@ -213,7 +209,6 @@ public class TestTypes extends NXRuntimeTestCase {
         assertTrue(type.validate(Calendar.getInstance()));
 
         // Conversion tests
-        assertNull(type.decode(""));
         //TODO (after the DateType class is fully implemented)
     }
 
