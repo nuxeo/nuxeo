@@ -1,0 +1,183 @@
+<?xml version="1.0"?>
+
+<!-- XXX if you change this conf, change the equivalent -override.xml  -->
+
+<component name="org.nuxeo.ecm.directory.ldap.storage">
+  <implementation class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor" />
+  <require>org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory</require>
+
+  <extension target="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"
+    point="servers">
+
+    <!-- Configuration of a server connection
+
+      A single server declaration can point to a cluster of replicated
+      servers (using OpenLDAP's slapd + sluprd for instance). To leverage
+      such a cluster and improve availibility, please provide one
+      <ldapUrl/> tag for each replica of the cluster.
+    -->
+    <server name="default">
+      <ldapUrl>ldap://localhost:10389</ldapUrl>
+      <!-- Optional servers from the same cluster
+        <ldapUrl>ldap://server2:389</ldapUrl>
+        <ldapUrl>ldap://server3:389</ldapUrl>
+        <ldapUrl srvPrefix="_ldaptest._tcp">ldap:///dc = in, DC= nuxeo,dc=com</ldapUrl>
+      -->
+
+      <!-- Credentials used by Nuxeo5 to browse the directory, create
+        and modify entries
+
+        Only the authentication of users (bind) use the credentials entered
+        through the login form.
+      -->
+
+      <!-- Use the admin credentials to be able to reinit the LDAP tree
+        at each setUp and tearDown -->
+      <bindDn>uid=admin,ou=system</bindDn>
+      <bindPassword>secret</bindPassword>
+    </server>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"
+    point="directories">
+
+    <directory name="userDirectory">
+      <server>default</server>
+      <schema>user</schema>
+      <idField>username</idField>
+      <passwordField>userPassword</passwordField>
+      <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
+
+      <!-- the following dn weird casing is intentional -->
+      <searchBaseDn>ou=people,dc=example, DC=COM</searchBaseDn>
+      <searchClass>person</searchClass>
+      <searchScope>onelevel</searchScope>
+
+      <readOnly>false</readOnly>
+
+      <creationBaseDn>ou=people,dc=example,dc=com</creationBaseDn>
+      <creationClass>top</creationClass>
+      <creationClass>person</creationClass>
+      <creationClass>organizationalPerson</creationClass>
+      <creationClass>inetOrgPerson</creationClass>
+      <!-- <creationClass>testDatePerson</creationClass> -->
+      <rdnAttribute>uid</rdnAttribute>
+
+      <fieldMapping name="username">uid</fieldMapping>
+      <fieldMapping name="firstName">givenName</fieldMapping>
+      <fieldMapping name="lastName">sn</fieldMapping>
+      <fieldMapping name="password">userPassword</fieldMapping>
+      <fieldMapping name="email">mail</fieldMapping>
+      <fieldMapping name="intField">employeeNumber</fieldMapping>
+      <fieldMapping name="company">o</fieldMapping>
+      <fieldMapping name="avatar">jpegPhoto</fieldMapping>
+      <fieldMapping name="certificate">userCertificate;binary</fieldMapping>
+      <!-- <fieldMapping name="dateField">mydate</fieldMapping> -->
+
+      <references>
+
+        <inverseReference field="groups" directory="groupDirectory"
+          dualReferenceField="members" />
+
+        <inverseReference field="profiles" directory="profileDirectory"
+          dualReferenceField="users" />
+
+      </references>
+      
+      <permissions>
+        <permission name="Read">
+          <user>readerUser</user>
+        </permission>
+        <permission name="Write">
+          <user>superUser</user>
+        </permission>
+      </permissions>
+
+    </directory>
+
+    <directory name="groupDirectory">
+      <server>default</server>
+      <schema>group</schema>
+      <idField>groupname</idField>
+
+      <searchBaseDn>ou=groups,dc=example,dc=com</searchBaseDn>
+      <searchFilter>
+        (|(objectClass=groupOfUniqueNames)(objectClass=groupOfURLs))
+      </searchFilter>
+      <searchScope>subtree</searchScope>
+
+      <readOnly>false</readOnly>
+      <entryAdaptor class="org.nuxeo.ecm.directory.impl.WritePolicyEntryAdaptor">
+        <parameter name="fieldName">dn</parameter>
+        <parameter name="regexp">.*,ou=editable,ou=groups,dc=example,dc=com</parameter>
+      </entryAdaptor>
+
+      <creationBaseDn>ou=editable,ou=groups,dc=example,dc=com</creationBaseDn>
+      <creationClass>top</creationClass>
+      <creationClass>groupOfUniqueNames</creationClass>
+      <rdnAttribute>cn</rdnAttribute>
+
+      <fieldMapping name="groupname">cn</fieldMapping>
+
+      <references>
+
+        <ldapReference field="members" directory="userDirectory"
+          staticAttributeId="uniqueMember" dynamicAttributeId="memberURL" />
+
+        <ldapReference field="subGroups" directory="groupDirectory"
+          staticAttributeId="uniqueMember" dynamicAttributeId="memberURL" />
+
+        <ldapTreeReference field="ldapDirectChildren" directory="groupDirectory"
+          scope="onelevel" />
+        <ldapTreeReference field="ldapChildren" directory="groupDirectory"
+          scope="subtree" />
+        <ldapTreeReference field="ldapUnitDirectChildren"
+          directory="unitDirectory" scope="onelevel" />
+
+        <inverseReference field="parentGroups" directory="groupDirectory"
+          dualReferenceField="subGroups" />
+
+        <inverseReference field="ldapDirectParents" directory="groupDirectory"
+          dualReferenceField="ldapDirectChildren" />
+        <inverseReference field="ldapParents" directory="groupDirectory"
+          dualReferenceField="ldapChildren" />
+
+      </references>
+      <permissions>
+        <permission name="Write">
+          <group>Everyone</group>
+        </permission>
+      </permissions>
+    </directory>
+
+    <!-- unit directory, taking organizationalUnit instance in the groups branch -->
+    <directory name="unitDirectory">
+      <server>default</server>
+      <schema>group</schema>
+      <idField>groupname</idField>
+
+      <searchBaseDn>ou=groups,dc=example,dc=com</searchBaseDn>
+      <searchFilter>(objectClass=organizationalUnit)</searchFilter>
+      <searchScope>subtree</searchScope>
+
+      <readOnly>false</readOnly>
+
+      <creationBaseDn>ou=groups,dc=example,dc=com</creationBaseDn>
+      <creationClass>top</creationClass>
+      <creationClass>organizationalUnit</creationClass>
+      <rdnAttribute>ou</rdnAttribute>
+
+      <fieldMapping name="groupname">ou</fieldMapping>
+
+      <references>
+        <inverseReference field="ldapUnitDirectParents"
+          directory="groupDirectory"
+          dualReferenceField="ldapUnitDirectChildren" />
+      </references>
+
+    </directory>
+
+  </extension>
+
+</component>
