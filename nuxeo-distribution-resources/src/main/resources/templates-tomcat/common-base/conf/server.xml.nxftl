@@ -87,6 +87,9 @@
                address="127.0.0.1"
                redirectPort="${nuxeo.server.https.port}"
 </#if>
+<#if nuxeo.server.signature??>
+               server="${nuxeo.server.signature}"
+</#if>
                connectionTimeout="20000" />
     <!-- A "Connector" using the shared thread pool-->
     <!--
@@ -103,6 +106,9 @@
          described in the APR documentation -->
     <Connector port="${nuxeo.server.https.port}" protocol="HTTP/1.1" SSLEnabled="true"
                address="${nuxeo.bind.address}"
+<#if nuxeo.server.signature??>
+               server="${nuxeo.server.signature}"
+</#if>
                maxThreads="150" scheme="https" secure="true"
                keystoreFile="${nuxeo.server.https.keystoreFile}"
                keystorePass="${nuxeo.server.https.keystorePass}"
