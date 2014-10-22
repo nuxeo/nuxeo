@@ -10,7 +10,7 @@
   <artifactId>nuxeo-target-platforms-parent</artifactId>
   <name>Nuxeo Target Platforms - Parent Pom</name>
   <packaging>pom</packaging>
-  <version>5.9.3-NXP-15602-SNAPSHOT</version>
+  <version>5.9.3-NXP-15602</version>
 
   <modules>
     <module>nuxeo-target-platforms-api</module>
