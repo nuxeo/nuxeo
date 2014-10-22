@@ -20,14 +20,16 @@
     <div class="userClipboard">
 
       <div class="tabsBar">
-        <nxu:dataList var="docList" layout="unorderedList"
-          value="#{clipboardActions.descriptorsForAvailableLists}"
-          itemStyleClass="#{nxu:test(clipboardActions.currentSelectedListName == docList.name, 'selected', '')}">
+        <ul>
+        <c:forEach var="docList" items="#{clipboardActions.descriptorsForAvailableLists}">
+          <li class="#{nxu:test(clipboardActions.currentSelectedListName == docList.name, 'selected', '')}">
           <h:commandLink value="" action="#{clipboardActions.selectList}">
             <f:param name="listIdToSelect" value="#{docList.name}" />
             <h:outputText value="#{messages[docList.title]}" />
           </h:commandLink>
-        </nxu:dataList>
+          </li>
+        </c:forEach>
+        </ul>
       </div>
       <div style="clear:both;"></div>
 

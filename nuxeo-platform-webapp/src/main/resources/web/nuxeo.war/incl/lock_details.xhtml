@@ -30,8 +30,8 @@
 </div>
 
 <h:panelGroup rendered="${lockActions.currentDocLockDetails != null}">
-<nxu:dataList var="entry"
-  value="#{lockActions.currentDocLockDetails.entrySet}">
+<c:forEach var="entry"
+  items="#{lockActions.currentDocLockDetails.entrySet}">
 
   <h:panelGrid columns="2" styleClass="dataInput"
     rendered="#{not empty entry.value}"
@@ -40,7 +40,7 @@
     <h:outputText value="#{entry.value}" />
   </h:panelGrid>
 
-</nxu:dataList>
+</c:forEach>
 </h:panelGroup>
 
 <div style="clear:both"></div>

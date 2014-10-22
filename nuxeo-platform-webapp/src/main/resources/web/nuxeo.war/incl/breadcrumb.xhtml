@@ -21,8 +21,7 @@
 
       <c:if test="#{!empty backendPath}">
 
-        <nxu:dataList var="pathElement"
-          value="#{backendPath}">
+        <c:forEach var="pathElement" items="#{backendPath}">
           <f:verbatim>&amp;gt;&amp;nbsp;</f:verbatim>
 
           <nxd:restDocumentLink document="#{pathElement.documentModel}"
@@ -31,7 +30,7 @@
           </nxd:restDocumentLink>
           <h:outputText value="#{pathElement.name}" rendered="#{!pathElement.link} "/>
 
-        </nxu:dataList>
+        </c:forEach>
 
       </c:if>
       <c:if test="#{empty backendPath}">
