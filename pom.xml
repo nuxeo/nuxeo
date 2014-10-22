@@ -17,7 +17,6 @@
   <modules>
     <module>nuxeo-platform-ui-web</module>
     <module>nuxeo-platform-ui-web-test</module>
-    <module>nuxeo-platform-ui-web-compat</module>
     <module>nuxeo-platform-forms-layout-client</module>
     <module>nuxeo-platform-forms-layout-io</module>
     <module>nuxeo-platform-actions-jsf</module>
