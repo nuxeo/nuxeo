@@ -594,4 +594,25 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertEquals(caseSensitive, option.getCaseSensitive());
     }
 
+    @Test
+    public void testLayoutExport() throws Exception {
+        LayoutDefinition lDef = service.getLayoutDefinition(
+                WebLayoutManager.JSF_CATEGORY, "layoutColumnsTest");
+        assertNotNull(lDef);
+
+        File file = File.createTempFile("layout-export", ".json");
+        JSONObject obj = JSONLayoutExporter.exportToJson(
+                WebLayoutManager.JSF_CATEGORY, lDef, null, null);
+
+        FileOutputStream out = new FileOutputStream(file);
+        out.write(obj.toString(2).getBytes(
+                JSONLayoutExporter.ENCODED_VALUES_ENCODING));
+
+        InputStream written = new FileInputStream(file);
+        InputStream expected = new FileInputStream(
+                FileUtils.getResourcePathFromContext("layout-export.json"));
+
+        checkEquals(expected, written);
+    }
+
 }

@@ -1,0 +1,55 @@
+{
+  "name": "layoutColumnsTest",
+  "rows":   [
+        {
+      "name": "mycol",
+      "alwaysSelected": true,
+      "properties": {"any": {"layoutColumnPropName": "layoutColumnPropValue"}},
+      "widgets": [{"name": "globalTestWidget"}]
+    },
+        {
+      "name": "myothercol",
+      "selectedByDefault": false,
+      "widgets": [{"name": "globalTestWidget"}]
+    },
+        {
+      "name": "layout_row_2",
+      "widgets": [{"name": "globalTestWidget"}]
+    }
+  ],
+  "widgets":   [
+        {
+      "name": "globalTestWidget",
+      "type": "test",
+      "translated": true,
+      "handlingLabels": false,
+      "fields": [      {
+        "fieldName": "bar",
+        "schemaName": "foo",
+        "propertyName": "foo:bar"
+      }]
+    },
+        {
+      "name": "globalTestWidget",
+      "type": "test",
+      "translated": true,
+      "handlingLabels": false,
+      "fields": [      {
+        "fieldName": "bar",
+        "schemaName": "foo",
+        "propertyName": "foo:bar"
+      }]
+    },
+        {
+      "name": "globalTestWidget",
+      "type": "test",
+      "translated": true,
+      "handlingLabels": false,
+      "fields": [      {
+        "fieldName": "bar",
+        "schemaName": "foo",
+        "propertyName": "foo:bar"
+      }]
+    }
+  ]
+}

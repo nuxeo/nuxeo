@@ -866,6 +866,15 @@ public class JSONLayoutExporter {
         } else if (defaultRowName != null) {
             json.element("name", defaultRowName);
         }
+        // fill selection info only if that's not the default value from the
+        // definition
+        if (layoutRowDef.isAlwaysSelected()) {
+            json.element("alwaysSelected", true);
+        }
+        if (!layoutRowDef.isSelectedByDefault()) {
+            json.element("selectedByDefault", false);
+        }
+        layoutRowDef.isSelectedByDefault();
         JSONObject props = exportPropsByModeToJson(layoutRowDef.getProperties());
         if (!props.isEmpty()) {
             json.element("properties", props);
@@ -890,6 +899,12 @@ public class JSONLayoutExporter {
     public static LayoutRowDefinition importLayoutRowDefinition(
             JSONObject layoutRowDef) {
         String name = layoutRowDef.optString("name", null);
+
+        boolean alwaysSelected = layoutRowDef.optBoolean("alwaysSelected",
+                false);
+        boolean selectedByDefault = layoutRowDef.optBoolean(
+                "selectedByDefault", true);
+
         Map<String, Map<String, Serializable>> properties = importPropsByMode(layoutRowDef.optJSONObject("properties"));
 
         List<WidgetReference> widgets = new ArrayList<WidgetReference>();
@@ -904,8 +919,8 @@ public class JSONLayoutExporter {
                 }
             }
         }
-        return new LayoutRowDefinitionImpl(name, properties, widgets, false,
-                true);
+        return new LayoutRowDefinitionImpl(name, properties, widgets,
+                alwaysSelected, selectedByDefault);
     }
 
     /**

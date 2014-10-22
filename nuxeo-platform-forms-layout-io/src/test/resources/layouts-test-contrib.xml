@@ -430,12 +430,18 @@
 
     <layout name="layoutColumnsTest">
       <columns>
-        <column>
+        <column name="mycol" alwaysSelected="true">
           <properties mode="any">
             <property name="layoutColumnPropName">
               layoutColumnPropValue
             </property>
           </properties>
+          <widget>globalTestWidget</widget>
+        </column>
+        <column name="myothercol" selectedByDefault="false">
+          <widget>globalTestWidget</widget>
+        </column>
+        <column>
           <widget>globalTestWidget</widget>
         </column>
       </columns>
