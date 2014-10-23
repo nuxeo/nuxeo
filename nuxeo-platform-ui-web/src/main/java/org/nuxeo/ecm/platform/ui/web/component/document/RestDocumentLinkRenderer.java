@@ -114,7 +114,7 @@ public class RestDocumentLinkRenderer extends OutputLinkRenderer {
 
         Boolean isNewConversation = ((RestDocumentLink) component).getNewConversation();
         if (!Boolean.TRUE.equals(isNewConversation)) {
-            String onclickJS = "if(!(event.ctrlKey||event.metaKey||event.button==1)){this.href='"
+            String onclickJS = "if(!(event.ctrlKey||event.shiftKey||event.metaKey||event.button==1)){this.href='"
                     + Functions.javaScriptEscape(urlCurrentConversation) + "'}";
             writer.writeAttribute("onclick", onclickJS, "onclick");
         }
