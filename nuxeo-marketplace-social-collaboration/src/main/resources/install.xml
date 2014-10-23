@@ -1,9 +1,0 @@
-<install>
-  <update file="${package.root}/install/bundles" todir="${env.bundles}" />
-  <update file="${package.root}/install/lib" todir="${env.lib}" />
-  <copy dir="${package.root}/install/templates" todir="${env.templates}"
-    overwrite="true" />
-  <config addtemplate="collaboration" />
-  <append file="${package.root}/install/artifacts.properties" todir="${env.server.home}/sdk" />
-  <append file="${package.root}/install/test-artifacts.properties" todir="${env.server.home}/sdk" />
-</install>

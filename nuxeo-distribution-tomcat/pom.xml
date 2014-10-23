@@ -65,12 +65,6 @@
       <type>zip</type>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-marketplace-social-collaboration</artifactId>
-      <type>zip</type>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
 
   <profiles>

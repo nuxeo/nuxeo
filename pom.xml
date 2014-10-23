@@ -35,15 +35,12 @@
     <module>nuxeo-marketplace-dam</module>
     <!-- The following is already aggregated by above nuxeo-marketplace-dam -->
     <!-- <module>nuxeo-marketplace-dam/marketplace</module> -->
-    <module>nuxeo-distribution-social-collaboration</module>
-    <module>nuxeo-marketplace-social-collaboration</module>
     <module>nuxeo-distribution-tomcat</module>
     <!-- Functional Tests -->
     <module>nuxeo-distribution-tomcat-wizard-tests</module>
     <module>nuxeo-distribution-cap-webdriver-tests</module>
     <module>nuxeo-distribution-cap-funkload-tests</module>
     <module>nuxeo-distribution-cap-selenium-tests</module>
-    <module>nuxeo-social-collaboration-selenium-tests</module>
     <!-- The following is already aggregated by above nuxeo-marketplace-dam -->
     <!-- <module>nuxeo-marketplace-dam/ftest/webdriver</module> -->
   </modules>
@@ -185,12 +182,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-marketplace-social-collaboration</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-distribution-tomcat</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
@@ -270,19 +261,6 @@
         <artifactId>nuxeo-launcher</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <classifier>jar-with-dependencies</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-social-collaboration</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-social-collaboration</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>resources</classifier>
       </dependency>
 
       <!-- Test scope -->

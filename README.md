@@ -76,8 +76,6 @@ Ant usage: `ant distrib [-Ddistrib=profile]`
  * nuxeo-distribution-dm/ftest/selenium: Selenium tests for DM
  * nuxeo-distribution-dm/ftest/webdriver: WebDriver tests for DM
  * nuxeo-distribution-resources: Resources archives used in other packagings (doc, binaries, templates).
- * nuxeo-distribution-social-collaboration: Social Collaboration NXR
- * nuxeo-distribution-social-collaboration/ftest/selenium: Selenium tests for SC
  * nuxeo-distribution-tests: Helper POM with Nuxeo test dependencies
  * nuxeo-distribution-tomcat: Tomcat distributions
  * nuxeo-functional-tests: Framework for testing nuxeo distributions
@@ -87,7 +85,6 @@ Ant usage: `ant distrib [-Ddistrib=profile]`
  * nuxeo-marketplace-dam/marketplace: Marketplace Package of DAM
  * nuxeo-marketplace-dam/ftest/webdriver: WebDriver tests for DAM
  * nuxeo-marketplace-dm: Marketplace Package of DM
- * nuxeo-marketplace-social-collaboration: Marketplace Package of Social Collaboration
  * nuxeo-startup-wizard: Startup Wizard WebApp
  * nuxeo-distribution-tomcat-wizard-tests: WebDriver tests for Tomcat wizard
 
@@ -163,16 +160,6 @@ Based on the addon <https://github.com/nuxeo/nuxeo-dam>.
 Built NXR is in `nuxeo-distribution-dam/target/`.
 
 It is installable in the default available application in `nuxeo-distribution-tomcat/target/` when running the wizard and selecting DAM (for users), or by activating the "nuxeo-dam" preset (for developers).
-
-### Nuxeo Social Collaboration
-
-Social network features (social workspaces, user relationships, mini-messages, user activity stream, ...).
-
-Based on the addon <https://github.com/nuxeo/nuxeo-social-collaboration>.
-
-Built NXR is in `nuxeo-distribution-social-collaboration/target/`.
-
-It is installable in the default available application in `nuxeo-distribution-tomcat/target/` when running the wizard and selecting SC (for users), or by activating the "nuxeo-sc" preset (for developers).
 
 ### Other applications
 

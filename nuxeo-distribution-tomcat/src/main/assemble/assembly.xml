@@ -163,15 +163,12 @@
     <copy todir="${maven.project.build.directory}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-dm::zip" />
       <artifact:resolveFile key="org.nuxeo.marketplace.dam:marketplace-dam::zip" />
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-social-collaboration::zip" />
     </copy>
     <!-- compute MD5 checksums -->
     <checksum file="${maven.project.build.directory}/nuxeo-marketplace-dm-${nuxeo.distribution.version}.zip"
               property="DMMPMD5" />
     <checksum file="${maven.project.build.directory}/marketplace-dam-${nuxeo.distribution.version}.zip"
               property="DAMMPMD5" />
-    <checksum file="${maven.project.build.directory}/nuxeo-marketplace-social-collaboration-${nuxeo.distribution.version}.zip"
-              property="SCMPMD5" />
 
     <!-- Copy default packages.xml file -->
     <copy file="src/main/resources/packages.xml"
@@ -179,7 +176,6 @@
       <filterset>
         <filter token="DMMPMD5" value="${DMMPMD5}" />
         <filter token="DAMMPMD5" value="${DAMMPMD5}" />
-        <filter token="SCMPMD5" value="${SCMPMD5}" />
         <filter token="VERSION" value="${nuxeo.distribution.version}" />
       </filterset>
     </copy>
@@ -189,12 +185,7 @@
           tofile="${tomcat}/setupWizardDownloads/${DMMPMD5}" />
     <move file="${maven.project.build.directory}/marketplace-dam-${nuxeo.distribution.version}.zip"
           tofile="${tomcat}/setupWizardDownloads/${DAMMPMD5}" />
-    <move file="${maven.project.build.directory}/nuxeo-marketplace-social-collaboration-${nuxeo.distribution.version}.zip"
-          tofile="${tomcat}/setupWizardDownloads/${SCMPMD5}" />
 
-    <echo file="${tomcat}/nxserver/data/installAfterRestart-SC.log">init
-install nuxeo-social-collaboration
-</echo>
     <echo file="${tomcat}/nxserver/data/installAfterRestart-DAM.log">init
 install nuxeo-dam
 </echo>
