@@ -417,7 +417,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
         NuxeoObjectData data = new NuxeoObjectData(this, doc, filter,
                 includeAllowableActions, includeRelationships, renditionFilter,
                 includePolicyIds, includeAcl, extension);
-        collectObjectInfo(repositoryId, data);
+        collectObjectInfo(repositoryId, objectId);
         return data;
     }
 
@@ -611,7 +611,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
         } catch (ClientException e) {
             throw new CmisRuntimeException("Cannot create", e);
         }
-        collectObjectInfo(repositoryId, data);
+        collectObjectInfo(repositoryId, data.getId());
         return data;
     }
 
@@ -1025,7 +1025,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
         ObjectData data = new NuxeoObjectData(this, doc, filter,
                 includeAllowableActions, includeRelationships, renditionFilter,
                 includePolicyIds, includeAcl, extension);
-        collectObjectInfo(repositoryId, data);
+        collectObjectInfo(repositoryId, data.getId());
         return data;
     }
 
@@ -1096,8 +1096,8 @@ public class NuxeoCmisService extends AbstractCmisService implements
         }
         DocumentModel doc = getDocumentModel(objectId);
         NuxeoObjectData data = new NuxeoObjectData(this, doc, null,
-                Boolean.TRUE, IncludeRelationships.BOTH, null, Boolean.TRUE,
-                Boolean.FALSE, null);
+                Boolean.TRUE, IncludeRelationships.BOTH, "*", Boolean.TRUE,
+                Boolean.TRUE, null);
         return getObjectInfo(repositoryId, data);
     }
 
@@ -1134,12 +1134,6 @@ public class NuxeoCmisService extends AbstractCmisService implements
     protected void collectObjectInfo(String repositoryId, String objectId) {
         if (collectObjectInfos && callContext.isObjectInfoRequired()) {
             getObjectInfo(repositoryId, objectId);
-        }
-    }
-
-    protected void collectObjectInfo(String repositoryId, ObjectData data) {
-        if (collectObjectInfos && callContext.isObjectInfoRequired()) {
-            getObjectInfo(repositoryId, data);
         }
     }
 
@@ -1841,7 +1835,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
                 oifd.setPathSegment(child.getName());
             }
             list.add(oifd);
-            collectObjectInfo(repositoryId, data);
+            collectObjectInfo(repositoryId, data.getId());
         }
 
         Boolean hasMoreItems;
@@ -2038,7 +2032,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
         res.setNumItems(batch.getNumItems());
         res.setHasMoreItems(batch.getHasMoreItems());
         for (ObjectData data : res.getObjects()) {
-            collectObjectInfo(repositoryId, data);
+            collectObjectInfo(repositoryId, data.getId());
         }
         return res;
     }

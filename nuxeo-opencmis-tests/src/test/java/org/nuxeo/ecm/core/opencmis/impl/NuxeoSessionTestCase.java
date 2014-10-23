@@ -570,10 +570,19 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
         session.clear();
         OperationContext oc = session.createOperationContext();
-        // oc.setRenditionFilterString("*");
         ob = session.getObject(session.createObjectId(ob.getId()), oc);
         renditions = ob.getRenditions();
         assertTrue(renditions.isEmpty());
+
+        // check rendition content stream requested directly
+        // even though the doc has no renditions requested
+        ContentStream cs = ((Document) ob).getContentStream("nuxeo:icon");
+        assertNotNull(cs);
+        assertEquals("image/png", cs.getMimeType());
+        assertEquals("text.png", cs.getFileName());
+        if (!(isAtomPub || isBrowser)) {
+            assertEquals(TEXT_PNG_ICON_SIZE, cs.getLength());
+        }
 
         // get renditions with object
 
