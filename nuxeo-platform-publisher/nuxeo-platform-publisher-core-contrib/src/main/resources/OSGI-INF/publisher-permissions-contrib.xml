@@ -8,10 +8,6 @@
 
     <permission name="CanAskForPublishing" />
 
-    <permission name="Read">
-      <include>CanAskForPublishing</include>
-    </permission>
-
   </extension>
 
   <extension target="org.nuxeo.ecm.core.security.SecurityService"
