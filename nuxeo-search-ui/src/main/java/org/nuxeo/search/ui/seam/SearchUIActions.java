@@ -17,6 +17,7 @@
 
 package org.nuxeo.search.ui.seam;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.apache.commons.logging.LogFactory.getLog;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
@@ -179,8 +180,13 @@ public class SearchUIActions implements Serializable {
         if (currentSelectedSavedSearchId != null) {
             DocumentModel savedSearch = documentManager.getDocument(new IdRef(
                     currentSelectedSavedSearchId));
-            return savedSearch.getTitle();
-        } else if (currentContentViewName != null) {
+
+            String title = savedSearch.getTitle();
+            if (isNotBlank(title)) {
+                return title;
+            }
+        }
+        if (currentContentViewName != null) {
             ContentView cv = contentViewActions.getContentView(currentContentViewName);
             return cv.getTranslateTitle() ? messages.get(cv.getTitle()) : cv.getTitle();
         }
@@ -390,7 +396,7 @@ public class SearchUIActions implements Serializable {
 
     public void setState(String state) throws ClientException,
             UnsupportedEncodingException {
-        if (StringUtils.isNotBlank(state)) {
+        if (isNotBlank(state)) {
             Long finalPageSize = null;
             if (!StringUtils.isBlank(pageSize)) {
                 try {
