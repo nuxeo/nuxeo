@@ -20,7 +20,6 @@ import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.nuxeo.runtime.api.Framework;
@@ -103,9 +102,9 @@ public class TestFrameworkProperties extends NXRuntimeTestCase {
         assertNull(System.getProperty("foo-true"));
         assertNull(System.getProperty("foo-false"));
         assertFalse(Framework.isBooleanPropertyTrue("foo-true"));
-        assertFalse(Framework.isBooleanPropertyTrue("foo-true"));
-        assertTrue(Framework.isBooleanPropertyFalse("foo-false"));
-        assertTrue(Framework.isBooleanPropertyFalse("foo-false"));
+        assertFalse(Framework.isBooleanPropertyTrue("foo-false"));
+        assertFalse(Framework.isBooleanPropertyFalse("foo-false"));
+        assertFalse(Framework.isBooleanPropertyFalse("foo-true"));
         setRuntimeProp("foo-true", "true");
         setRuntimeProp("foo-false", "false");
         assertTrue(Framework.isBooleanPropertyTrue("foo-true"));

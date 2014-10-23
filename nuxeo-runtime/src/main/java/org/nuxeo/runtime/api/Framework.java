@@ -24,6 +24,7 @@ import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.apache.commons.io.FileDeleteStrategy;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
@@ -435,7 +436,14 @@ public final class Framework {
      * @since 5.8
      */
     public static boolean isBooleanPropertyFalse(String propName) {
-        return !isBooleanPropertyTrue(propName);
+        String v = getProperty(propName);
+        if (v == null) {
+            v = System.getProperty(propName);
+        }
+        if (StringUtils.isBlank(v)) {
+            return false;
+        }
+        return !Boolean.parseBoolean(v);
     }
 
     /**
