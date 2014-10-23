@@ -18,6 +18,7 @@ package org.nuxeo.functionaltests.pages.search;
 
 import java.util.Map;
 
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.search.aggregates.CheckBoxAggregateElements;
@@ -146,27 +147,34 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
             }
         });
         if (path.length() == 1) {
+            AjaxRequestManager a = new AjaxRequestManager(driver);
+            a.watchAjaxRequests();
             driver.findElement(By.id(TREE_PATH_ID)).findElement(
                     By.linkText("/")).click();
-            SearchPage.waitForLoading();
+            a.waitForAjaxRequests();
             return;
         } else {
+            AjaxRequestManager a = new AjaxRequestManager(driver);
+            a.watchAjaxRequests();
             driver.findElement(By.id(TREE_PATH_ID)).findElement(
-                    By.linkText("/")).findElement(
-                    By.xpath(EXPAND_XPATH)).click();
+                    By.linkText("/")).findElement(By.xpath(EXPAND_XPATH)).click();
+            a.waitForAjaxRequests();
         }
-        SearchPage.waitForLoading();
         String[] pathArray = path.substring(1).split("/");
         int i = 0;
         for (; i < pathArray.length - 1; i++) {
+            AjaxRequestManager a = new AjaxRequestManager(driver);
+            a.watchAjaxRequests();
             driver.findElement(By.id(TREE_PATH_ID)).findElement(
                     By.linkText(pathArray[i])).findElement(
                     By.xpath(EXPAND_XPATH)).click();
-            SearchPage.waitForLoading();
+            a.waitForAjaxRequests();
         }
+        AjaxRequestManager a = new AjaxRequestManager(driver);
+        a.watchAjaxRequests();
         driver.findElement(By.id(TREE_PATH_ID)).findElement(
                 By.linkText(pathArray[i])).click();
-        SearchPage.waitForLoading();
+        a.waitForAjaxRequests();
         driver.findElement(By.id("fancybox-close")).click();
         Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
             public Boolean apply(WebDriver driver) {
@@ -186,7 +194,9 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
         String folderName = path.substring(lastPartIndex + 1);
         WebElement e = selectPathDiv.findElement(By.xpath("descendant::label[contains(text(),'"
                 + folderName + "')]/ancestor::span[@class='sticker']/a"));
+        AjaxRequestManager a = new AjaxRequestManager(driver);
+        a.watchAjaxRequests();
         e.click();
-        SearchPage.waitForLoading();
+        a.waitForAjaxRequests();
     }
 }

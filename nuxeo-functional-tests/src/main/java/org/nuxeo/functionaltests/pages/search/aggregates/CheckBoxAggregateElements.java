@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.nuxeo.functionaltests.pages.search.SearchPage;
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -77,9 +77,11 @@ public class CheckBoxAggregateElements {
             regexMatcher.find();
             select = regexMatcher.group(1);
             if (label.equals(select)) {
+                AjaxRequestManager a = new AjaxRequestManager(driver);
+                a.watchAjaxRequests();
                 WebElement input = e.findElement(By.xpath("input"));
                 input.click();
-                SearchPage.waitForLoading();
+                a.waitForAjaxRequests();
                 break;
             }
         }

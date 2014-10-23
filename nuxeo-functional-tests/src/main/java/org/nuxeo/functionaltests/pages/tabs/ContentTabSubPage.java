@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.AjaxRequestManager;
@@ -59,11 +58,7 @@ public class ContentTabSubPage extends DocumentBasePage {
 
     private static final String CHECK_BOX_XPATH = "td/input[@type=\"checkbox\"]";
 
-    private static final String DOCUEMNT_TITLE_XPATH = "td//span[@id[starts-with(.,'title_')]]";
-
-    private static final String LOADING_START_XPATH = "//span[@class='rf-st-start']";
-
-    private static final String LOADING_STOP_XPATH = "//span[@class='rf-st-stop']";
+    private static final String DOCUMENT_TITLE_XPATH = "td//span[@id[starts-with(.,'title_')]]";
 
     @Required
     @FindBy(id = "document_content")
@@ -172,7 +167,6 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @param filter the string to filter
      * @param expectedDisplayedElt
      * @param timeout
-     *
      * @since 5.7.2
      */
     public void filterDocument(final String filter,
@@ -196,7 +190,6 @@ public class ContentTabSubPage extends DocumentBasePage {
      *
      * @param expectedNbOfDisplayedResult
      * @param timeout
-     *
      * @since 5.7.2
      */
     public void clearFilter(final int expectedNbOfDisplayedResult,
@@ -213,46 +206,37 @@ public class ContentTabSubPage extends DocumentBasePage {
         });
     }
 
-    public void waitForLoading() {
-        Locator.waitUntilGivenFunction(new Function<WebDriver,Boolean>() {
-            public Boolean apply(WebDriver driver) {
-                return driver.findElement(By.xpath(LOADING_START_XPATH)).getAttribute("style").contains("display: none;") && StringUtils.isBlank(driver.findElement(By.xpath(LOADING_STOP_XPATH)).getAttribute("style"));
-            }
-        });
-    }
-
     /**
      * Select the document by their index in the content view.
      *
      * @param indexes
-     *
      * @since 5.7.8
      */
-    public void selectDocumentByIndex(int ... indexes) {
+    public void selectDocumentByIndex(int... indexes) {
+        AjaxRequestManager a = new AjaxRequestManager(driver);
         for (int i : indexes) {
-            waitForLoading();
+            a.watchAjaxRequests();
             getChildDocumentRows().get(i).findElement(By.xpath(CHECK_BOX_XPATH)).click();
+            a.waitForAjaxRequests();
         }
-        waitForLoading();
     }
 
     /**
      * Select the document by their title in the content view.
      *
      * @param indexes
-     *
      * @since 5.7.8
      */
-    public void selectDocumentByTitles(String ... titles) {
+    public void selectDocumentByTitles(String... titles) {
         selectDocumentByIndex(convertToIndexes(titles));
     }
 
-    protected int[] convertToIndexes(String ... titles) {
+    protected int[] convertToIndexes(String... titles) {
         List<String> titleList = Arrays.asList(titles);
         List<Integer> temp = new ArrayList<Integer>();
         int index = 0;
         for (WebElement row : childDocumentRows) {
-            String docTitle = row.findElement(By.xpath(DOCUEMNT_TITLE_XPATH)).getText();
+            String docTitle = row.findElement(By.xpath(DOCUMENT_TITLE_XPATH)).getText();
             if (docTitle != null && titleList.contains(docTitle)) {
                 temp.add(index);
             }
@@ -266,25 +250,25 @@ public class ContentTabSubPage extends DocumentBasePage {
     }
 
     /**
-     * Select the document by their index in the content view and copy them in the clipboard.
+     * Select the document by their index in the content view and copy them in
+     * the clipboard.
      *
      * @param indexes
-     *
      * @since 5.7.8
      */
-    public void copyByIndex(int ... indexes) {
+    public void copyByIndex(int... indexes) {
         selectDocumentByIndex(indexes);
         findElementWaitUntilEnabledAndClick(By.xpath(COPY_BUTTON_XPATH));
     }
 
     /**
-     * Select the document by their title in the content view and copy them in the clipboard.
+     * Select the document by their title in the content view and copy them in
+     * the clipboard.
      *
      * @param indexes
-     *
      * @since 5.7.8
      */
-    public void copyByTitle(String ... titles) {
+    public void copyByTitle(String... titles) {
         copyByIndex(convertToIndexes(titles));
     }
 
@@ -292,7 +276,6 @@ public class ContentTabSubPage extends DocumentBasePage {
      * Past the content of the clip board.
      *
      * @param indexes
-     *
      * @since 5.7.8
      */
     public ContentTabSubPage paste() {
@@ -304,7 +287,8 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 5.9.3
      */
     public DocumentBasePage goToDocument(final int index) {
-        getChildDocumentRows().get(index).findElement(By.xpath("td[3]/div/a[1]")).click();
+        getChildDocumentRows().get(index).findElement(
+                By.xpath("td[3]/div/a[1]")).click();
         return asPage(DocumentBasePage.class);
     }
 }

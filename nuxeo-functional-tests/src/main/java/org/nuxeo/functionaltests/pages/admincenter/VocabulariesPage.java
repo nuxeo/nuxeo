@@ -20,20 +20,17 @@ package org.nuxeo.functionaltests.pages.admincenter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.NewVocabularyEntryForm;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.Select;
-
-import com.google.common.base.Function;
 
 public class VocabulariesPage extends AdminCenterBasePage {
 
@@ -141,8 +138,10 @@ public class VocabulariesPage extends AdminCenterBasePage {
         List<WebElement> list = directoriesListSelect.getOptions();
         for (WebElement webElement : list) {
             if (directoryName.trim().equals(webElement.getText().trim())) {
+                AjaxRequestManager a = new AjaxRequestManager(driver);
+                a.watchAjaxRequests();
                 directoriesListSelect.selectByVisibleText(webElement.getText());
-                waitForLoading("selectDirectoryForm:selectDirectoryStatus");
+                a.waitForAjaxRequests();
                 return asPage(VocabulariesPage.class);
             }
         }
@@ -150,33 +149,4 @@ public class VocabulariesPage extends AdminCenterBasePage {
                 "directoryName %s not available", directoryName));
     }
 
-    /**
-     * @since 5.9.3
-     * @since 5.9.6: specify the waiter id
-     */
-    protected void waitForLoading(String waiterId) {
-        String waiterPath = String.format("//span[@id=\"%s\"]", waiterId);
-        final String startWaiter = waiterPath
-                + "//span[@class=\"rf-st-start\"]";
-        final String stopWaiter = waiterPath + "//span[@class=\"rf-st-stop\"]";
-        try {
-            Locator.waitUntilGivenFunctionIgnoring(
-                    new Function<WebDriver, Boolean>() {
-                        public Boolean apply(WebDriver driver) {
-                            return driver.findElement(By.xpath(stopWaiter)).getAttribute(
-                                    "style").equals("display: none;");
-                        }
-                    }, StaleElementReferenceException.class);
-        } catch (TimeoutException e) {
-            // maybe this was fast and it is already loaded
-            // let's keep going and see
-        }
-        Locator.waitUntilGivenFunctionIgnoring(
-                new Function<WebDriver, Boolean>() {
-                    public Boolean apply(WebDriver driver) {
-                        return driver.findElement(By.xpath(startWaiter)).getAttribute(
-                                "style").equals("display: none;");
-                    }
-                }, StaleElementReferenceException.class);
-    }
 }
