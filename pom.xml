@@ -138,6 +138,7 @@
     <nuxeo.ftest.version>1.7.16-SNAPSHOT</nuxeo.ftest.version>
 
     <jsf.version>2.2.6</jsf.version>
+    <nxjsf.version>2.2.6-NX01</nxjsf.version>
     <richfaces.version>4.5.0.Alpha3</richfaces.version>
     <seam.version>2.3.1.Final</seam.version>
     <nxseam.version>2.3.1.Final.NX01-SNAPSHOT</nxseam.version>
@@ -1499,7 +1500,7 @@
       <dependency>
         <groupId>com.sun.faces</groupId>
         <artifactId>jsf-impl</artifactId>
-        <version>${jsf.version}</version>
+        <version>${nxjsf.version}</version>
       </dependency>
       <dependency>
         <groupId>javax.jms</groupId>
