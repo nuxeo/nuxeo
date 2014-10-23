@@ -39,4 +39,9 @@ public abstract class AbstractSearchSubPage extends AbstractPage {
         super(driver);
     }
 
+    public SearchPage filter() {
+        filterButton.click();
+        return asPage(SearchPage.class);
+    }
+
 }

@@ -21,14 +21,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.nuxeo.functionaltests.Locator;
+import org.nuxeo.functionaltests.pages.search.SearchPage;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-
-import com.google.common.base.Function;
 
 /**
  * @since 5.9.6
@@ -83,35 +79,10 @@ public class CheckBoxAggregateElements {
             if (label.equals(select)) {
                 WebElement input = e.findElement(By.xpath("input"));
                 input.click();
-                waitForLoading();
+                SearchPage.waitForLoading();
                 break;
             }
         }
-    }
-
-    protected void waitForLoading() {
-        Locator.waitUntilGivenFunctionIgnoring(
-                new Function<WebDriver, Boolean>() {
-                    public Boolean apply(WebDriver driver) {
-                        try {
-                            WebElement start = driver.findElement(By.xpath("//span[@class='rf-st-start']"));
-                            return start.isDisplayed();
-                        } catch (NoSuchElementException e) {
-                            return false;
-                        }
-                    }
-                }, StaleElementReferenceException.class);
-        Locator.waitUntilGivenFunctionIgnoring(
-                new Function<WebDriver, Boolean>() {
-                    public Boolean apply(WebDriver driver) {
-                        try {
-                            WebElement start = driver.findElement(By.xpath("//span[@class='rf-st-start']"));
-                            return !start.isDisplayed();
-                        } catch (NoSuchElementException e) {
-                            return true;
-                        }
-                    }
-                }, StaleElementReferenceException.class);
     }
 
 }

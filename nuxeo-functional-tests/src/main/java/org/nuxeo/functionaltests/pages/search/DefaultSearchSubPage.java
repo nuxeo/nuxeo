@@ -18,15 +18,23 @@ package org.nuxeo.functionaltests.pages.search;
 
 import java.util.Map;
 
+import org.nuxeo.functionaltests.Locator;
+import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.search.aggregates.CheckBoxAggregateElements;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+
+import com.google.common.base.Function;
 
 /**
  * @since 5.9.6
  */
 public class DefaultSearchSubPage extends AbstractSearchSubPage {
+
+    public static final String TREE_PATH_ID = "nxl_gridSearchLayout:nxw_searchLayout_form:nxl_default_search_layout:nxw_ecm_path_treeId";
 
     @FindBy(id = "nxl_gridSearchLayout:nxw_searchLayout_form:nxl_default_search_layout:nxw_dc_coverage_agg")
     protected WebElement coverageAggregate;
@@ -42,6 +50,14 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
 
     @FindBy(id = "nxl_gridSearchLayout:nxw_searchLayout_form:nxl_default_search_layout:nxw_dc_subjects_agg")
     protected WebElement subjectsAggregate;
+
+    @FindBy(id = "nxw_ecm_path_openPopup")
+    @Required
+    protected WebElement openPathPopupButton;
+
+    public static final String PATH_REGEX = "(.*) \\((.*)\\)";
+
+    protected static final String EXPAND_XPATH = "ancestor::div[@class='rf-trn']/span[contains(@class,'rf-trn-hnd')]";
 
     public DefaultSearchSubPage(WebDriver driver) {
         super(driver);
@@ -110,5 +126,53 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
     public SearchPage selectSubjectsAggregate(String label) {
         new CheckBoxAggregateElements(driver, subjectsAggregate).selectOrUnselect(label);
         return asPage(SearchPage.class);
+    }
+
+    public void selectPath(String path) {
+        assert (path != null && !path.isEmpty() && path.charAt(0) == '/');
+        openPathPopupButton.click();
+        Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
+            public Boolean apply(WebDriver driver) {
+                try {
+                    WebElement tree = driver.findElement(By.id(TREE_PATH_ID));
+                    return tree.isDisplayed();
+                } catch (NoSuchElementException e) {
+                    return false;
+                }
+            }
+        });
+        if (path.length() == 1) {
+            driver.findElement(By.id(TREE_PATH_ID)).findElement(
+                    By.linkText("/")).click();
+            SearchPage.waitForLoading();
+            return;
+        } else {
+            driver.findElement(By.id(TREE_PATH_ID)).findElement(
+                    By.linkText("/")).findElement(
+                    By.xpath(EXPAND_XPATH)).click();
+        }
+        SearchPage.waitForLoading();
+        String[] pathArray = path.substring(1).split("/");
+        int i = 0;
+        for (; i < pathArray.length - 1; i++) {
+            driver.findElement(By.id(TREE_PATH_ID)).findElement(
+                    By.linkText(pathArray[i])).findElement(
+                    By.xpath(EXPAND_XPATH)).click();
+            SearchPage.waitForLoading();
+        }
+        driver.findElement(By.id(TREE_PATH_ID)).findElement(
+                By.linkText(pathArray[i])).click();
+        SearchPage.waitForLoading();
+        driver.findElement(By.id("fancybox-close")).click();
+        Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
+            public Boolean apply(WebDriver driver) {
+                try {
+                    WebElement tree = driver.findElement(By.id(TREE_PATH_ID));
+                    return !tree.isDisplayed();
+                } catch (NoSuchElementException e) {
+                    return false;
+                }
+            }
+        });
     }
 }

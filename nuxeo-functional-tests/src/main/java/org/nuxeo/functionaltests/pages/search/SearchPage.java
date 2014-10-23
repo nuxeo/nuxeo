@@ -16,13 +16,18 @@
  */
 package org.nuxeo.functionaltests.pages.search;
 
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+
+import com.google.common.base.Function;
 
 /**
  * @since 5.9.6
@@ -96,6 +101,31 @@ public class SearchPage extends DocumentBasePage {
         Select2WidgetElement s2 = new Select2WidgetElement(driver,
                 searchFormPanel.findElement(By.id(S2_SEARCH_TYPE_ID)));
         s2.selectValue(searchType);
+    }
+
+    public static void waitForLoading() {
+        Locator.waitUntilGivenFunctionIgnoring(
+                new Function<WebDriver, Boolean>() {
+                    public Boolean apply(WebDriver driver) {
+                        try {
+                            WebElement start = driver.findElement(By.xpath("//span[@class='rf-st-start']"));
+                            return start.isDisplayed();
+                        } catch (NoSuchElementException e) {
+                            return false;
+                        }
+                    }
+                }, StaleElementReferenceException.class);
+        Locator.waitUntilGivenFunctionIgnoring(
+                new Function<WebDriver, Boolean>() {
+                    public Boolean apply(WebDriver driver) {
+                        try {
+                            WebElement start = driver.findElement(By.xpath("//span[@class='rf-st-start']"));
+                            return !start.isDisplayed();
+                        } catch (NoSuchElementException e) {
+                            return true;
+                        }
+                    }
+                }, StaleElementReferenceException.class);
     }
 
 }

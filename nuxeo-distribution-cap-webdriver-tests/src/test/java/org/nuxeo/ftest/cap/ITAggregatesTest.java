@@ -132,6 +132,15 @@ public class ITAggregatesTest extends AbstractTest {
         searchPage = searchLayoutSubPage.selectCoverageAggregate(COVERAGE);
         assertEquals(nbCurrentDoc, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
 
+        // Test select path widget
+        resultPanelSubPage = searchPage.getSearchResultsSubPage();
+        searchLayoutSubPage = searchPage.getDefaultSearch();
+        searchLayoutSubPage.selectPath("/Default domain/Templates");
+
+        searchPage = searchLayoutSubPage.filter();
+        resultPanelSubPage = searchPage.getSearchResultsSubPage();
+        assertEquals(1, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
+
         logout();
     }
 
