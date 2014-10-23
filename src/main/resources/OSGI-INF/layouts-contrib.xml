@@ -59,7 +59,7 @@
           </properties>
           <widget>listing_title_link</widget>
         </column>
-        <column name="author" selectedByDefault="false">
+        <column name="author">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:creator</property>
@@ -73,7 +73,7 @@
           </properties>
           <widget>listing_creator</widget>
         </column>
-        <column name="description" selectedByDefault="false">
+        <column name="description">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:description</property>
@@ -101,7 +101,7 @@
           </properties>
           <widget>listing_modification_date</widget>
         </column>
-        <column name="nature" selectedByDefault="false">
+        <column name="nature">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:nature</property>
@@ -115,7 +115,7 @@
           </properties>
           <widget>listing_nature</widget>
         </column>
-        <column name="subjects" selectedByDefault="false">
+        <column name="subjects">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="label">label.dublincore.subject</property>

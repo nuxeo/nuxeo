@@ -48,7 +48,8 @@ class Spreadsheet {
 
     new Layout(connection, layout).fetch().then((layout) => {
       // Check which columns to display
-      var cols = (!columns) ? layout.columns :  layout.columns.filter((c) => columns.indexOf(c.name) !== -1);
+      var cols = (!columns) ? layout.columns :  layout.columns.filter((c) =>
+          (columns.indexOf(c.name) !== -1) || (c.selectedByDefault !== false));
       this.columns = cols
           // Exclude columns without widgets
           .filter((c) => c.widgets)
