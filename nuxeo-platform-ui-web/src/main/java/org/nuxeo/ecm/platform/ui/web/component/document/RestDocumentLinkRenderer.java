@@ -114,7 +114,7 @@ public class RestDocumentLinkRenderer extends OutputLinkRenderer {
             url = context.getExternalContext().encodeResourceURL(url);
             urlNewConversation = context.getExternalContext().encodeResourceURL(
                     urlNewConversation);
-            String onclickJS = "if(!(event.ctrlKey||event.metaKey||event.button==1)){this.href='"
+            String onclickJS = "if(!(event.ctrlKey||event.shiftKey||event.metaKey||event.button==1)){this.href='"
                     + Functions.javaScriptEscape(urlNewConversation) + "'}";
             writer.writeAttribute("onclick", onclickJS, "onclick");
         } else {
