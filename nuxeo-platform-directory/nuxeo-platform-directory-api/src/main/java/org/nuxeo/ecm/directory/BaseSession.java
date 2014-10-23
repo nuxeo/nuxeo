@@ -53,6 +53,8 @@ import org.nuxeo.runtime.api.login.LoginComponent;
  */
 public abstract class BaseSession implements Session {
 
+    protected static final String POWER_USERS_GROUP = "powerusers";
+    
     protected static final String READONLY_ENTRY_FLAG = "READONLY_ENTRY";
 
     protected static final String MULTI_TENANT_ID_FORMAT = "tenant_%s_%s";
@@ -92,10 +94,16 @@ public abstract class BaseSession implements Session {
                 // By default if nothing is specified, admin is allowed
                 return true;
             }
+            if(currentUser.isMemberOf(POWER_USERS_GROUP))
+            {
+                return true;
+            }
+            
             // Return true for read access to anyone when nothing defined
             if (permissionTocheck.equalsIgnoreCase(SecurityConstants.READ)) {
                 return true;
             }
+            
             // Deny in all other case
             return false;
         }
