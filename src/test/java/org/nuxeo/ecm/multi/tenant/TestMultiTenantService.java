@@ -82,7 +82,9 @@ import com.google.inject.Inject;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.login",
         "org.nuxeo.ecm.platform.web.common" })
-@LocalDeploy({"org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml","org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml"})
+@LocalDeploy({
+        "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
+        "org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml" })
 public class TestMultiTenantService {
 
     @Inject
@@ -168,10 +170,12 @@ public class TestMultiTenantService {
     }
 
     @Test
-    public void shouldEnableTenantIsolationForNewDomain() throws ClientException {
+    public void shouldEnableTenantIsolationForNewDomain()
+            throws ClientException {
         multiTenantService.enableTenantIsolation(session);
 
-        DocumentModel newDomain = session.createDocumentModel("/", "newDomain", "Domain");
+        DocumentModel newDomain = session.createDocumentModel("/", "newDomain",
+                "Domain");
         newDomain = session.createDocument(newDomain);
         session.save();
         assertTrue(newDomain.hasFacet(TENANT_CONFIG_FACET));
@@ -243,7 +247,7 @@ public class TestMultiTenantService {
         assertEquals(domain.getName(),
                 domain.getPropertyValue(TENANT_ID_PROPERTY));
 
-        NuxeoPrincipal bender = createUser("bender", domain.getName());
+        NuxeoPrincipal bender = createUser("bender", false, domain.getName());
         LoginContext loginContext = Framework.loginAsUser("bender");
         try (CoreSession benderSession = openSession()) {
             assertTrue(benderSession.hasPermission(domain.getRef(),
@@ -278,7 +282,7 @@ public class TestMultiTenantService {
         DocumentModel domain = session.getDocument(new PathRef(
                 "/default-domain"));
 
-        createUser("fry", domain.getName());
+        createUser("fry", true, domain.getName());
         LoginContext loginContext = Framework.loginAsUser("fry");
 
         NuxeoGroup nuxeoGroup = createGroup("testGroup");
@@ -295,7 +299,7 @@ public class TestMultiTenantService {
         loginContext.logout();
 
         // other user not belonging to the tenant cannot see the group
-        createUser("leela", "nonExistingTenant");
+        createUser("leela", false, "nonExistingTenant");
         loginContext = Framework.loginAsUser("leela");
 
         groups = userManager.searchGroups(null);
@@ -305,7 +309,8 @@ public class TestMultiTenantService {
     }
 
     @Test
-    public void shouldGiveWriteRightOnTenant() throws ClientException, LoginException {
+    public void shouldGiveWriteRightOnTenant() throws ClientException,
+            LoginException {
         multiTenantService.enableTenantIsolation(session);
 
         DocumentModel domain = session.getDocument(new PathRef(
@@ -315,7 +320,7 @@ public class TestMultiTenantService {
         session.saveDocument(domain);
         session.save();
 
-        NuxeoPrincipal fry = createUser("fry", domain.getName());
+        NuxeoPrincipal fry = createUser("fry", true, domain.getName());
         LoginContext loginContext = Framework.loginAsUser("fry");
 
         NuxeoGroup nuxeoGroup = createGroup("supermembers");
@@ -335,10 +340,10 @@ public class TestMultiTenantService {
         loginContext.logout();
 
         // bender is part of the supermembers group
-        NuxeoPrincipal bender = createUser("bender", domain.getName());
+        NuxeoPrincipal bender = createUser("bender", false, domain.getName());
         bender.setGroups(Arrays.asList(nuxeoGroup.getName()));
         userManager.updateUser(bender.getModel());
-        bender = createUser("bender", domain.getName());
+        bender = createUser("bender", false, domain.getName());
         loginContext = Framework.loginAsUser("bender");
         try (CoreSession benderSession = openSession()) {
             assertTrue(benderSession.hasPermission(domain.getRef(), "Write"));
@@ -346,7 +351,7 @@ public class TestMultiTenantService {
         loginContext.logout();
 
         // leela does not have Write permission
-        NuxeoPrincipal leela = createUser("leela", domain.getName());
+        NuxeoPrincipal leela = createUser("leela", false, domain.getName());
         loginContext = Framework.loginAsUser("leela");
         try (CoreSession leelaSession = openSession()) {
             assertTrue(leelaSession.hasPermission(domain.getRef(), "Read"));
@@ -366,7 +371,7 @@ public class TestMultiTenantService {
         DocumentModel domain = session.getDocument(new PathRef(
                 "/default-domain"));
 
-        createUser("fry", domain.getName());
+        createUser("fry", true, domain.getName());
         LoginContext loginContext = Framework.loginAsUser("fry");
 
         NuxeoGroup tenantGroup = createGroup("tenantGroup");
@@ -409,41 +414,41 @@ public class TestMultiTenantService {
         loginContext.logout();
     }
 
-    
-
     @Test
     public void shouldRewriteACLs() throws ClientException {
         multiTenantService.enableTenantIsolation(session);
 
-        DocumentModel newDomain = session.createDocumentModel("/", "newDomain", "Domain");
+        DocumentModel newDomain = session.createDocumentModel("/", "newDomain",
+                "Domain");
         newDomain = session.createDocument(newDomain);
         session.save();
         assertTrue(newDomain.hasFacet(TENANT_CONFIG_FACET));
         assertEquals(newDomain.getName(),
                 newDomain.getPropertyValue(TENANT_ID_PROPERTY));
-        
-        DocumentModel newWS = session.createDocumentModel(newDomain.getPathAsString(), "newFolder", "Workspace");
+
+        DocumentModel newWS = session.createDocumentModel(
+                newDomain.getPathAsString(), "newFolder", "Workspace");
         newWS = session.createDocument(newWS);
         session.save();
-        
+
         ACP acp = new ACPImpl();
         ACL local = new ACLImpl("local");
-        
+
         local.add(new ACE("toto", "Read", true));
         local.add(new ACE("members", "Read", true));
         local.add(new ACE("Everyone", "Read", true));
-        
+
         acp.addACL(local);
-        
-        newWS.setACP(acp, true);        
+
+        newWS.setACP(acp, true);
         newWS = session.getDocument(newWS.getRef());
-        
+
         acp = newWS.getACP();
         local = acp.getACLs()[0];
-        
+
         List<String> principals = new ArrayList<>();
         for (ACE ace : local) {
-            principals.add(ace.getUsername());            
+            principals.add(ace.getUsername());
         }
 
         Assert.assertTrue(principals.contains("toto"));
@@ -452,16 +457,35 @@ public class TestMultiTenantService {
         Assert.assertFalse(principals.contains("Everyone"));
     }
 
-    
     protected CoreSession openSession() throws ClientException {
         return settings.openSession();
     }
 
-    protected NuxeoPrincipal createUser(String username, String tenant)
-            throws ClientException {
+    protected String getPowerUsersGroup() throws LoginException {
+        LoginContext login = Framework.loginAs("Administrator");
+        NuxeoGroup pwrUsrGrp = userManager.getGroup(Constants.POWER_USERS_GROUP);
+
+        if (pwrUsrGrp != null) {
+            return pwrUsrGrp.getName();
+        }
+
+        DocumentModel powerUsers = userManager.getBareGroupModel();
+        powerUsers.setPropertyValue("group:groupname",
+                Constants.POWER_USERS_GROUP);
+        powerUsers = userManager.createGroup(powerUsers);
+        login.logout();
+        return powerUsers.getId();
+    }
+
+    protected NuxeoPrincipal createUser(String username, boolean isPowerUser,
+            String tenant) throws ClientException, LoginException {
         DocumentModel user = userManager.getBareUserModel();
         user.setPropertyValue("user:username", username);
         user.setPropertyValue("user:tenantId", tenant);
+        if (isPowerUser) {
+            String pwrUsrGrp = getPowerUsersGroup();
+            user.setPropertyValue("user:groups", new String[] { pwrUsrGrp });
+        }
         try {
             userManager.createUser(user);
         } catch (UserAlreadyExistsException e) {
