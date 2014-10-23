@@ -111,6 +111,12 @@ const SPECIAL_FIELDS = {
       readOnly: true
     },
     field: 'state'
+  },
+  'versionLabel': {
+    widget: {
+      readOnly: true
+    },
+    field: 'versionLabel'
   }
 };
 

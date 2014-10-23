@@ -44,6 +44,10 @@ export const WIDGETS = {
         directoryName: 'l10nsubjects'
       }
     }
+  },
+  listing_version: {
+    type: 'text',
+    field: 'versionLabel'
   }
 };
 
