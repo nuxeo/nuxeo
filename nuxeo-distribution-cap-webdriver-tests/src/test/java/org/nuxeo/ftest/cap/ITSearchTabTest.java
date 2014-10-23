@@ -43,7 +43,12 @@ import org.openqa.selenium.By;
 /**
  * @since 5.9.6
  */
-public class ITAggregatesTest extends AbstractTest {
+public class ITSearchTabTest extends AbstractTest {
+
+    /**
+     *
+     */
+    private static final String SEARCH_PATH = "/Default domain/Templates";
 
     private final static String WORKSPACE_TITLE = "WorkspaceTitle_"
             + new Date().getTime();
@@ -108,7 +113,7 @@ public class ITAggregatesTest extends AbstractTest {
     }
 
     @Test
-    public void testSimpleAggregates() throws UserNotConnectedException,
+    public void testSearch() throws UserNotConnectedException,
             IOException {
         DocumentBasePage documentBasePage = loginAsTestUser();
         SearchPage searchPage = documentBasePage.goToSearchPage();
@@ -116,6 +121,8 @@ public class ITAggregatesTest extends AbstractTest {
         final int nbCurrentDoc = resultPanelSubPage.getNumberOfDocumentInCurrentPage();
         assertTrue(nbCurrentDoc > 1);
         DefaultSearchSubPage searchLayoutSubPage = searchPage.getDefaultSearch();
+
+        // Test aggregates
         Map<String, Integer> coverageAgg = searchLayoutSubPage.getAvailableCoverageAggregate();
         assertEquals(1, coverageAgg.size());
         assertEquals(new Integer(1), coverageAgg.get(COVERAGE));
@@ -124,7 +131,6 @@ public class ITAggregatesTest extends AbstractTest {
         for (String subject : SUBJECTS) {
             assertEquals(new Integer(1), subjectsAgg.get(subject));
         }
-
         // Select and unselect France
         searchPage = searchLayoutSubPage.selectCoverageAggregate(COVERAGE);
         resultPanelSubPage = searchPage.getSearchResultsSubPage();
@@ -135,11 +141,15 @@ public class ITAggregatesTest extends AbstractTest {
         // Test select path widget
         resultPanelSubPage = searchPage.getSearchResultsSubPage();
         searchLayoutSubPage = searchPage.getDefaultSearch();
-        searchLayoutSubPage.selectPath("/Default domain/Templates");
-
+        searchLayoutSubPage.selectPath(SEARCH_PATH);
         searchPage = searchLayoutSubPage.filter();
         resultPanelSubPage = searchPage.getSearchResultsSubPage();
         assertEquals(1, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
+        searchLayoutSubPage = searchPage.getDefaultSearch();
+        searchLayoutSubPage.deselectPath(SEARCH_PATH);
+        searchPage = searchLayoutSubPage.filter();
+        resultPanelSubPage = searchPage.getSearchResultsSubPage();
+        assertEquals(nbCurrentDoc, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
 
         logout();
     }

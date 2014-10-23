@@ -27,7 +27,7 @@ import org.junit.runners.Suite;
  * @since 5.9.6
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ ITAggregatesTest.class, ITArchivedVersionsTest.class,
+@Suite.SuiteClasses({ ITSearchTabTest.class, ITArchivedVersionsTest.class,
         ITCollectionsTest.class, ITContextualActionsTest.class,
         ITCopyPasteTest.class, ITDefaultWorkflowTest.class,
         ITDnDImportTest.class, ITDocumentRelationTest.class,
