@@ -14,10 +14,24 @@
 
     <nxh:outputLink
       value="#{nxd:fileUrl('downloadFile', value, widget.fieldDefinitions[0].propertyName, field_1)}">
-      <nxh:graphicImage value="#{nxd:fileIconPath(field_0)}"
-        rendered="#{! empty nxd:fileIconPath(field_0)}" />
+      <nxh:graphicImage value="#{nxd:fileIconPath(field_0)}" />
       <nxh:outputText value="#{field_1}" />
     </nxh:outputLink>
+
+    <nxu:set var="document"
+      value="#{nxu:test(empty widgetProperty_document, value, widgetProperty_document)}">
+      <nxl:widgetType name="documentActions"
+        widgetProperty_category="DRIVE_EDIT" value="#{document}"
+        mode="view" actionsDisplay="icons" overallDisplay="horizontal_block" />
+      <h:panelGroup
+        rendered="#{liveEditHelper.isLiveEditable(document, field_0)}">
+        <h:outputText value=" | " />
+        <h:outputLink
+          value="#{nxd:liveEditUrl(document, widget.fieldDefinitions[0].schemaName, widget.fieldDefinitions[0].fieldName, widget.fieldDefinitions[1].fieldName)}">
+          <h:outputText value="#{messages['label.document.directEdit']}" />
+        </h:outputLink>
+      </h:panelGroup>
+    </nxu:set>
 
     <nxu:methodResult name="hasPDFCapabilities"
       value="#{conversionActions.isExportableToPDF(field_0)}">
@@ -32,26 +46,6 @@
         </h:commandLink>
       </h:panelGroup>
     </nxu:methodResult>
-
-    <nxu:set var="document"
-      value="#{nxu:test(empty widgetProperty_document, value, widgetProperty_document)}"
-      cache="true">
-    <nxl:widgetType name="documentAction" actionId="driveEdit" value="#{document}"
-      mode="view" actionsDisplay="icons"/>
-    <nxl:widgetType name="documentAction" actionId="driveEditUserCenterNuxeoDrive" value="#{currentDocument}"
-      mode="view" actionsDisplay="icons"/>
-    <nxu:set var="isLiveEditable"
-      value="#{liveEditHelper.isLiveEditable(document, field_0)}">
-      <h:panelGroup
-        rendered="#{isLiveEditable}">
-        <h:outputText value=" | " />
-        <h:outputLink
-          value="#{nxd:liveEditUrl(layoutValue, widget.fieldDefinitions[0].schemaName, widget.fieldDefinitions[0].fieldName, widget.fieldDefinitions[1].fieldName)}">
-          <h:outputText value="#{messages['label.document.directEdit']}" />
-        </h:outputLink>
-      </h:panelGroup>
-    </nxu:set>
-    </nxu:set>
 
   </c:if>
 

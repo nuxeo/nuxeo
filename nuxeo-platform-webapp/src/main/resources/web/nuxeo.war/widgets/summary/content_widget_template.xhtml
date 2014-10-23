@@ -61,10 +61,9 @@
             </div>
           </td>
           <td class="actionsColumn">
-            <nxl:widgetType name="documentAction" actionId="driveEdit" value="#{currentDocument}"
-              mode="view" actionsDisplay="icons"/>
-            <nxl:widgetType name="documentAction" actionId="driveEditUserCenterNuxeoDrive" value="#{currentDocument}"
-              mode="view" actionsDisplay="icons"/>
+            <nxl:widgetType name="documentActions"
+              widgetProperty_category="DRIVE_EDIT" value="#{currentDocument}"
+              mode="view" actionsDisplay="icons" overallDisplay="horizontal_block" />
             <nxu:methodResult name="editable"
               value="#{liveEditHelper.isDocumentLiveEditable(currentDocument, 'file', 'content')}">
               <h:outputLink value="#{nxd:liveEditUrl(currentDocument, 'file', 'content', 'filename')}"
