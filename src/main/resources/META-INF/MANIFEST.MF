@@ -15,6 +15,7 @@ Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
  OSGI-INF/contentviews-contrib.xml,
  OSGI-INF/operations-contrib.xml,
  OSGI-INF/directories-contrib.xml,
+ OSGI-INF/directories-cache-contrib.xml,
  OSGI-INF/usermanager-contrib.xml,
  OSGI-INF/dashboard-space-providers-contrib.xml,
  OSGI-INF/userworkspace-contrib.xml

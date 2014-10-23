@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.multi.tenant.cache.testsConfig">
+
+  <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
+
+    <cache name="tenants-cache" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+      <ttl>60</ttl><!-- minutes -->
+      <option name="maxSize">1000</option>
+    </cache>
+
+    <cache name="tenants-cache-without-ref" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+      <ttl>60</ttl><!-- minutes -->
+      <option name="maxSize">1000</option>
+    </cache>
+
+    <cache name="topic-cache-without-ref" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+      <ttl>60</ttl><!-- minutes -->
+      <option name="maxSize">1000</option>
+    </cache>
+
+    <cache name="topic-cache" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+      <ttl>60</ttl><!-- minutes -->
+      <option name="maxSize">1000</option>
+    </cache>
+
+    <cache name="subtopic-cache-without-ref" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+      <ttl>60</ttl><!-- minutes -->
+      <option name="maxSize">1000</option>
+    </cache>
+
+    <cache name="subtopic-cache" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+      <ttl>60</ttl><!-- minutes -->
+      <option name="maxSize">1000</option>
+    </cache>
+
+    <cache name="l10nsubjects-cache-without-ref" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+      <ttl>60</ttl><!-- minutes -->
+      <option name="maxSize">1000</option>
+    </cache>
+
+    <cache name="l10nsubjects-cache" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+      <ttl>60</ttl><!-- minutes -->
+      <option name="maxSize">1000</option>
+    </cache>
+
+    <cache name="l10ncoverage-cache-without-ref" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+      <ttl>60</ttl><!-- minutes -->
+      <option name="maxSize">1000</option>
+    </cache>
+    
+    <cache name="l10ncoverage-cache" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+      <ttl>60</ttl><!-- minutes -->
+      <option name="maxSize">1000</option>
+    </cache>
+
+
+  </extension>
+
+</component>

@@ -14,8 +14,8 @@
     <directory name="tenants">
       <schema>tenant</schema>
       <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
+      <entryCacheName>tenants-cache</entryCacheName>
+      <entryCacheWithoutReferencesName>tenants-cache-without-ref</entryCacheWithoutReferencesName>
       <table>tenants</table>
       <idField>id</idField>
       <createTablePolicy>on_missing_columns</createTablePolicy>
@@ -24,8 +24,8 @@
     <directory name="topic">
       <schema>multitenantvocabulary</schema>
       <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
+      <entryCacheName>topic-cache</entryCacheName>
+      <entryCacheWithoutReferencesName>topic-cache-without-ref</entryCacheWithoutReferencesName>
       <table>topic</table>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
@@ -37,8 +37,8 @@
       <schema>multitenantxvocabulary</schema>
       <parentDirectory>topic</parentDirectory>
       <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
+      <entryCacheName>subtopic-cache</entryCacheName>
+      <entryCacheWithoutReferencesName>subtopic-cache-without-ref</entryCacheWithoutReferencesName>
       <table>subtopic</table>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
@@ -50,8 +50,8 @@
       <schema>multitenantl10nxvocabulary</schema>
       <parentDirectory>l10nsubjects</parentDirectory>
       <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
+      <entryCacheName>l10nsubjects-cache</entryCacheName>
+      <entryCacheWithoutReferencesName>l10nsubjects-cache-without-ref</entryCacheWithoutReferencesName>
       <table>l10nsubjects</table>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
@@ -63,8 +63,8 @@
       <schema>multitenantl10nxvocabulary</schema>
       <parentDirectory>l10ncoverage</parentDirectory>
       <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
+      <entryCacheName>l10ncoverage-cache</entryCacheName>
+      <entryCacheWithoutReferencesName>l10ncoverage-cache-without-ref</entryCacheWithoutReferencesName>
       <table>l10ncoverage</table>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
