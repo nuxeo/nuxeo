@@ -107,11 +107,15 @@ public class RestDocumentLinkRenderer extends OutputLinkRenderer {
         Boolean isNewConversation = ((RestDocumentLink) component).getNewConversation();
         if (!Boolean.TRUE.equals(isNewConversation)
                 && !StringUtils.isBlank(sb.toString())) {
-            url = RestHelper.addCurrentConversationParameters(sb.toString());
+            url = sb.toString();
+            String urlNewConversation = RestHelper.addCurrentConversationParameters(sb.toString());
             url += getFragment(component);
+            urlNewConversation += getFragment(component);
             url = context.getExternalContext().encodeResourceURL(url);
+            urlNewConversation = context.getExternalContext().encodeResourceURL(
+                    urlNewConversation);
             String onclickJS = "if(!(event.ctrlKey||event.metaKey||event.button==1)){this.href='"
-                    + Functions.javaScriptEscape(url) + "'}";
+                    + Functions.javaScriptEscape(urlNewConversation) + "'}";
             writer.writeAttribute("onclick", onclickJS, "onclick");
         } else {
             sb.append(getFragment(component));
