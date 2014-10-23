@@ -157,17 +157,24 @@
     <!-- select all -->
     <div class="detail">
       <a4j:outputPanel id="#{layout.id}_selectAll_panel" layout="block">
-        <nxu:set var="selectAllLabel" value="#{nxu:test(documents.selected, 'label.search.deselect.all', 'label.search.select.all')}">
-          <span>#{messages[selectAllLabel]}</span>
-          <h:selectBooleanCheckbox id="#{layoutColumn.widgets[0].name}_header"
-            title="#{messages[selectAllLabel]}"
-            value="#{documents.selected}">
-            <a4j:ajax event="click"
-              listener="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, documents.selected)}"
-              onbeforesubmit="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
-              render="#{layout.id}_selectAll_panel #{formId}_buttons:ajax_selection_buttons" />
-          </h:selectBooleanCheckbox>
-        </nxu:set>
+        <h:commandButton
+          id="#{layoutColumn.widgets[0].name}_selectAll"
+          onclick="javascript:handleAllCheckBoxes(this.form.name, true)"
+          disabled="#{documents.selected}"
+          value="#{messages['label.search.select.all']}">
+          <nxu:actionListenerMethod value="#{documents.setSelected(true)}" />
+          <nxu:actionListenerMethod value="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, true)}" />
+          <f:ajax execute="@this" render="@this #{layoutColumn.widgets[0].name}_deselectAll #{formId}_buttons:ajax_selection_buttons" />
+        </h:commandButton>
+        <h:commandButton
+          id="#{layoutColumn.widgets[0].name}_deselectAll"
+          onclick="javascript:handleAllCheckBoxes(this.form.name, false)"
+          disabled="#{not documents.selected}"
+          value="#{messages['label.search.deselect.all']}">
+          <nxu:actionListenerMethod value="#{documents.setSelected(false)}" />
+          <nxu:actionListenerMethod value="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, false)}" />
+          <f:ajax execute="@this" render="@this #{layoutColumn.widgets[0].name}_selectAll #{formId}_buttons:ajax_selection_buttons" />
+        </h:commandButton>
       </a4j:outputPanel>
     </div>
     <div class="clear" />
