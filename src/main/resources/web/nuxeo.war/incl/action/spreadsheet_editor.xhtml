@@ -8,7 +8,7 @@
   <ui:define name="with_fancybox_properties">
 
     <a4j:jsFunction name="#{fancyboxIdPrefix}refreshContentView"
-      render="#{contentIdToBeReRendered}">
+      render="#{ajaxReRender}">
       <nxu:actionListenerMethod
         value="#{contentView.refreshAndRewindPageProvider()}" />
     </a4j:jsFunction>
