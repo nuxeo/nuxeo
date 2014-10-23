@@ -41,6 +41,13 @@
       </template>
     </factoryBinding>
 
+    <factoryBinding name="SectionRootFactory" factoryName="SimpleTemplateFactory"
+      targetType="SectionRoot">
+      <acl>
+        <ace principal="members" permission="CanAskForPublishing" granted="true" />
+      </acl>
+    </factoryBinding>
+
   </extension>
 
 </component>
