@@ -2023,7 +2023,8 @@ public abstract class NuxeoLauncher {
 
     protected boolean pkgAdd(String[] pkgNames) throws IOException,
             PackageException {
-        boolean cmdOK = getConnectBroker().pkgAdd(Arrays.asList(pkgNames), hasOption(OPTION_IGNORE_MISSING));
+        boolean cmdOK = getConnectBroker().pkgAdd(Arrays.asList(pkgNames),
+                hasOption(OPTION_IGNORE_MISSING));
         if (!cmdOK) {
             errorValue = EXIT_CODE_ERROR;
         }
@@ -2038,7 +2039,9 @@ public abstract class NuxeoLauncher {
                     configurationGenerator.getInstallFile(), true,
                     !hasOption(OPTION_NODEPS));
         }
-        cmdOK = cmdOK && getConnectBroker().pkgInstall(Arrays.asList(pkgIDs), hasOption(OPTION_IGNORE_MISSING));
+        cmdOK = cmdOK
+                && getConnectBroker().pkgInstall(Arrays.asList(pkgIDs),
+                        hasOption(OPTION_IGNORE_MISSING));
         if (!cmdOK) {
             errorValue = EXIT_CODE_ERROR;
         }
@@ -2244,7 +2247,8 @@ public abstract class NuxeoLauncher {
         }
         cmdOK = cmdOK
                 && getConnectBroker().pkgRequest(pkgsToAdd, pkgsToInstall,
-                        pkgsToUninstall, pkgsToRemove, true, hasOption(OPTION_IGNORE_MISSING));
+                        pkgsToUninstall, pkgsToRemove, true,
+                        hasOption(OPTION_IGNORE_MISSING));
         if (!cmdOK) {
             errorValue = EXIT_CODE_ERROR;
         }
@@ -2348,7 +2352,8 @@ public abstract class NuxeoLauncher {
             throws IOException, PackageException {
         boolean cmdOK;
         if (nodeps) {
-            cmdOK = getConnectBroker().pkgSet(request, hasOption(OPTION_IGNORE_MISSING));
+            cmdOK = getConnectBroker().pkgSet(request,
+                    hasOption(OPTION_IGNORE_MISSING));
         } else {
             cmdOK = getConnectBroker().pkgRequest(null, request, null, null,
                     false, hasOption(OPTION_IGNORE_MISSING));

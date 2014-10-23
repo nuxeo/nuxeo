@@ -63,7 +63,7 @@ public class TestNuxeoLauncher {
 
     protected class MockSolarisProcessManager extends SolarisProcessManager {
 
-        protected Map<String, List<String>> commands = new HashMap<String, List<String>>();
+        protected Map<String, List<String>> commands = new HashMap<>();
 
         public void setLines(String command, List<String> lines) {
             commands.put(command, lines);

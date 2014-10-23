@@ -79,7 +79,7 @@ public class NuxeoLauncherGUI {
 
     protected NuxeoFrame nuxeoFrame;
 
-    protected HashMap<String, LogsSourceThread> logsMap = new HashMap<String, LogsSourceThread>();
+    protected HashMap<String, LogsSourceThread> logsMap = new HashMap<>();
 
     /**
      * @since 5.6

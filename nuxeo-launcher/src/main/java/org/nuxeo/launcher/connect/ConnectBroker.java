@@ -180,8 +180,8 @@ public class ConnectBroker {
     protected String getBestIdForNameInList(String pkgName,
             List<? extends Package> pkgList) {
         String foundId = null;
-        SortedMap<Version, String> foundPkgs = new TreeMap<Version, String>();
-        SortedMap<Version, String> matchingPkgs = new TreeMap<Version, String>();
+        SortedMap<Version, String> foundPkgs = new TreeMap<>();
+        SortedMap<Version, String> matchingPkgs = new TreeMap<>();
         for (Package pkg : pkgList) {
             if (pkg.getName().equals(pkgName)) {
                 foundPkgs.put(pkg.getVersion(), pkg.getId());
@@ -205,7 +205,7 @@ public class ConnectBroker {
     }
 
     protected List<String> getAllLocalPackageIdsFromName(String pkgName) {
-        List<String> foundIds = new ArrayList<String>();
+        List<String> foundIds = new ArrayList<>();
         for (Package pkg : getPkgList()) {
             if (pkg.getName().equals(pkgName)) {
                 foundIds.add(pkg.getId());
@@ -216,7 +216,7 @@ public class ConnectBroker {
 
     protected String getInstalledPackageIdFromName(String pkgName) {
         List<LocalPackage> localPackages = getPkgList();
-        List<LocalPackage> installedPackages = new ArrayList<LocalPackage>();
+        List<LocalPackage> installedPackages = new ArrayList<>();
         for (LocalPackage pkg : localPackages) {
             if (pkg.getPackageState().isInstalled()) {
                 installedPackages.add(pkg);
@@ -299,7 +299,7 @@ public class ConnectBroker {
 
     protected List<String> getDistributionFilenames() {
         File distributionMPFile = new File(distributionMPDir, PACKAGES_XML);
-        List<String> md5Filenames = new ArrayList<String>();
+        List<String> md5Filenames = new ArrayList<>();
         // Try to get md5 files from packages.xml
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
@@ -320,14 +320,14 @@ public class ConnectBroker {
         } catch (Exception e) {
             // Parsing failed - return empty list
             log.error("Failed parsing " + distributionMPFile, e);
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
         return md5Filenames;
     }
 
     protected Map<String, PackageDefinition> getDistributionDefinitions(
             List<String> md5Filenames) {
-        Map<String, PackageDefinition> allDefinitions = new HashMap<String, PackageDefinition>();
+        Map<String, PackageDefinition> allDefinitions = new HashMap<>();
         if (md5Filenames == null) {
             return allDefinitions;
         }
@@ -387,7 +387,7 @@ public class ConnectBroker {
             return true;
         }
         List<LocalPackage> localPackages = getPkgList();
-        Map<String, LocalPackage> localPackagesById = new HashMap<String, LocalPackage>();
+        Map<String, LocalPackage> localPackagesById = new HashMap<>();
         if (localPackages != null) {
             for (LocalPackage pkg : localPackages) {
                 localPackagesById.put(pkg.getId(), pkg);
@@ -518,7 +518,7 @@ public class ConnectBroker {
     }
 
     public boolean pkgPurge() throws PackageException {
-        List<String> localNames = new ArrayList<String>();
+        List<String> localNames = new ArrayList<>();
         // Remove packages in DOWNLOADED state first
         // This will avoid extending the CUDF universe needlessly
         for (LocalPackage pkg : service.getPackages()) {
@@ -610,7 +610,7 @@ public class ConnectBroker {
             for (String pkgNameOrId : pkgsToRemove) {
                 List<String> allIds;
                 if (isLocalPackageId(pkgNameOrId)) {
-                    allIds = new ArrayList<String>();
+                    allIds = new ArrayList<>();
                     allIds.add(pkgNameOrId);
                 } else {
                     // Request made on a name: remove all matching packages
@@ -698,7 +698,7 @@ public class ConnectBroker {
         if (pkgsToAdd == null || pkgsToAdd.isEmpty()) {
             return cmdOk;
         }
-        List<String> pkgIdsToDownload = new ArrayList<String>();
+        List<String> pkgIdsToDownload = new ArrayList<>();
         for (String pkgToAdd : pkgsToAdd) {
             CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_ADD);
             cmdInfo.param = pkgToAdd;
@@ -929,10 +929,10 @@ public class ConnectBroker {
         if (!commandsFile.isFile()) {
             return false;
         }
-        List<String> pkgsToAdd = new ArrayList<String>();
-        List<String> pkgsToInstall = new ArrayList<String>();
-        List<String> pkgsToUninstall = new ArrayList<String>();
-        List<String> pkgsToRemove = new ArrayList<String>();
+        List<String> pkgsToAdd = new ArrayList<>();
+        List<String> pkgsToInstall = new ArrayList<>();
+        List<String> pkgsToUninstall = new ArrayList<>();
+        List<String> pkgsToRemove = new ArrayList<>();
         List<String> lines;
         try {
             lines = FileUtils.readLines(commandsFile);
@@ -1197,13 +1197,13 @@ public class ConnectBroker {
             // Add local files
             cmdOk = pkgAdd(pkgsToAdd, ignoreMissing);
             // Build solver request
-            List<String> solverInstall = new ArrayList<String>();
-            List<String> solverRemove = new ArrayList<String>();
-            List<String> solverUpgrade = new ArrayList<String>();
+            List<String> solverInstall = new ArrayList<>();
+            List<String> solverRemove = new ArrayList<>();
+            List<String> solverUpgrade = new ArrayList<>();
             if (pkgsToInstall != null) {
                 // If install request is a file name, add to cache and get the
                 // id
-                List<String> namesOrIdsToInstall = new ArrayList<String>();
+                List<String> namesOrIdsToInstall = new ArrayList<>();
                 for (String pkgToInstall : pkgsToInstall) {
                     if (isLocalPackageFile(pkgToInstall)) {
                         LocalPackage addedPkg = pkgAdd(pkgToInstall);
@@ -1254,14 +1254,14 @@ public class ConnectBroker {
                     || (solverUpgrade.size() != 0)) {
                 // Check whether we need to relax restriction to targetPlatform
                 String requestPlatform = targetPlatform;
-                List<String> requestPackages = new ArrayList<String>();
+                List<String> requestPackages = new ArrayList<>();
                 requestPackages.addAll(solverInstall);
                 requestPackages.addAll(solverRemove);
                 requestPackages.addAll(solverUpgrade);
                 if (ignoreMissing) {
                     // Remove unkown packages from the list
                     Map<String, List<DownloadablePackage>> knownNames = getPackageManager().getAllPackagesByName();
-                    List<String> solverInstallCopy = new ArrayList<String>(
+                    List<String> solverInstallCopy = new ArrayList<>(
                             solverInstall);
                     for (String pkgToInstall : solverInstallCopy) {
                         if (!knownNames.containsKey(pkgToInstall)) {
@@ -1332,7 +1332,7 @@ public class ConnectBroker {
                 List<String> packageIdsToRemove = resolution.getOrderedPackageIdsToRemove();
                 List<String> packageIdsToUpgrade = resolution.getUpgradePackageIds();
                 List<String> packageIdsToInstall = resolution.getOrderedPackageIdsToInstall();
-                List<String> packagesIdsToReInstall = new ArrayList<String>();
+                List<String> packagesIdsToReInstall = new ArrayList<>();
 
                 // Download remote packages
                 if (!downloadPackages(resolution.getDownloadPackageIds())) {
@@ -1408,7 +1408,7 @@ public class ConnectBroker {
         boolean cmdOK = true;
         cmdOK = cmdOK && pkgInstall(pkgList, ignoreMissing);
         List<DownloadablePackage> installedPkgs = getPackageManager().listInstalledPackages();
-        List<String> pkgsToUninstall = new ArrayList<String>();
+        List<String> pkgsToUninstall = new ArrayList<>();
         for (DownloadablePackage pkg : installedPkgs) {
             if ((!pkgList.contains(pkg.getName()))
                     && (!pkgList.contains(pkg.getId()))) {
@@ -1451,7 +1451,7 @@ public class ConnectBroker {
     protected boolean pkgUpgradeByType(PackageType type) {
         List<DownloadablePackage> upgrades = NuxeoConnectClient.getPackageManager().listUpdatePackages(
                 type, targetPlatform);
-        List<String> upgradeIds = new ArrayList<String>();
+        List<String> upgradeIds = new ArrayList<>();
         for (DownloadablePackage upgrade : upgrades) {
             upgradeIds.add(upgrade.getId());
         }

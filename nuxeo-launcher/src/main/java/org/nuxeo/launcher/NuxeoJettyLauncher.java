@@ -66,7 +66,7 @@ public class NuxeoJettyLauncher extends NuxeoLauncher {
 
     @Override
     protected Collection<? extends String> getServerProperties() {
-        ArrayList<String> serverProperties = new ArrayList<String>();
+        ArrayList<String> serverProperties = new ArrayList<>();
         return serverProperties;
     }
 
