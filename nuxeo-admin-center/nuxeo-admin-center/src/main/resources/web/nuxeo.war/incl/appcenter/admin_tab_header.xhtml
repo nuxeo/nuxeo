@@ -1,0 +1,26 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:a4j="http://richfaces.org/a4j"
+     xmlns:c="http://java.sun.com/jstl/core">
+
+  <c:if test="#{adminViews.productionServer}">
+    <div class="processMessage completeWarning">
+      #{messages['label.admin.productionWarning']}
+    </div>
+  </c:if>
+
+  <a4j:outputPanel id="setupRequiresRestartPanel"
+                   layout="block"
+                   ajaxRendered="true">
+    <c:if test="#{setupRequiresRestart}">
+      <div class="processMessage completeWarning">
+        <h:form id="restartRequiredForm">
+          <h:outputText value="#{messages['label.setup.restartNeeded']} "/>
+          <h:commandButton onclick="return confirmRestart();"
+                           action="#{systemInfo.restartServer()}"
+                           value="#{messages['label.action.restart']}"
+                           styleClass="button"/>
+        </h:form>
+      </div>
+    </c:if>
+  </a4j:outputPanel>
+</div>

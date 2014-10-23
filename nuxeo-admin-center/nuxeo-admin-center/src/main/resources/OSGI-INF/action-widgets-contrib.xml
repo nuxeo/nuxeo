@@ -17,6 +17,7 @@
         <property name="actions">#{adminViews.availableActions}</property>
         <property name="currentTabAction">#{adminViews.currentView}</property>
         <property name="overallDisplay">vertical_block</property>
+        <property name="tabContentBeforeInclude">/incl/appcenter/admin_tab_header.xhtml</property>
       </properties>
     </widget>
 
