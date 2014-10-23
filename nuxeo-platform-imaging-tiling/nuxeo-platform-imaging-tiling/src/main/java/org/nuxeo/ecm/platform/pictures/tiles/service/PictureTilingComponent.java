@@ -125,7 +125,8 @@ public class PictureTilingComponent extends DefaultComponent implements
     }
 
     protected String defaultWorkingDirPath() {
-        String defaultPath = new File(Environment.getDefault().getData(), "nuxeo-tiling-cache").getAbsolutePath();
+        String defaultPath = new File(Environment.getDefault().getTemp(),
+                "nuxeo-tiling-cache").getAbsolutePath();
         String path = getEnvValue("WorkingDirPath",
                 defaultPath);
         return normalizeWorkingDirPath(path);
