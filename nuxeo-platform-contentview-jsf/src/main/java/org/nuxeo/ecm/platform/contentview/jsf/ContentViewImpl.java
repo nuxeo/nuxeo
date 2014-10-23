@@ -239,6 +239,10 @@ public class ContentViewImpl implements ContentView,
     }
 
     public void setCurrentResultLayout(final ContentViewLayout layout) {
+        setCurrentResultLayout(layout, true);
+    }
+
+    public void setCurrentResultLayout(final ContentViewLayout layout, boolean resetLayoutColumn) {
         if (!isBlank(resultLayoutBinding)
                 && ComponentTagUtils.isStrictValueReference(resultLayoutBinding)) {
             resolveWithSearchDocument(new Function<FacesContext, Object>() {
@@ -254,8 +258,11 @@ public class ContentViewImpl implements ContentView,
         // still set current result layout value
         currentResultLayoutSet = true;
         currentResultLayout = layout;
-        // reset corresponding columns
-        setCurrentResultLayoutColumns(null);
+
+        if (resetLayoutColumn) {
+            // reset corresponding columns
+            setCurrentResultLayoutColumns(null);
+        }
     }
 
     protected Object resolveWithSearchDocument(
@@ -277,7 +284,7 @@ public class ContentViewImpl implements ContentView,
         if (resultLayoutName != null) {
             for (ContentViewLayout layout : resultLayouts) {
                 if (resultLayoutName.equals(layout.getName())) {
-                    setCurrentResultLayout(layout);
+                    setCurrentResultLayout(layout, false);
                 }
             }
         }
