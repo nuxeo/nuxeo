@@ -55,6 +55,10 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
     @Required
     protected WebElement openPathPopupButton;
 
+    @FindBy(id = "nxw_ecm_path")
+    @Required
+    protected WebElement selectPathDiv;
+
     public static final String PATH_REGEX = "(.*) \\((.*)\\)";
 
     protected static final String EXPAND_XPATH = "ancestor::div[@class='rf-trn']/span[contains(@class,'rf-trn-hnd')]";
@@ -174,5 +178,15 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
                 }
             }
         });
+    }
+
+    public void deselectPath(String path) {
+        assert (path != null && !path.isEmpty());
+        int lastPartIndex = path.lastIndexOf('/');
+        String folderName = path.substring(lastPartIndex + 1);
+        WebElement e = selectPathDiv.findElement(By.xpath("descendant::label[contains(text(),'"
+                + folderName + "')]/ancestor::span[@class='sticker']/a"));
+        e.click();
+        SearchPage.waitForLoading();
     }
 }
