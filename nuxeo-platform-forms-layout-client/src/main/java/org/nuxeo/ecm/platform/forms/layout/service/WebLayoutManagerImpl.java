@@ -633,8 +633,11 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             }
             if (subWidgets != null) {
                 for (Widget subWidget : subWidgets) {
-                    subHandlersList.add(getFaceletHandler(ctx, config,
-                            subWidget, null));
+                    FaceletHandler h = getFaceletHandler(ctx, config,
+                            subWidget, null);
+                    if (h != null) {
+                        subHandlersList.add(h);
+                    }
                 }
             }
             if (!subHandlersList.isEmpty()) {
