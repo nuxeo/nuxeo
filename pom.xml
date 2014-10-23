@@ -106,8 +106,6 @@
     <module>nuxeo-social-collaboration</module>
     <module>nuxeo-platform-suggestbox</module>
     <module>nuxeo-dam</module>
-    <module>nuxeo-poll</module>
-    <module>nuxeo-rss-reader</module>
     <module>nuxeo-quota</module>
     <module>nuxeo-platform-indexing-gateway</module>
     <module>nuxeo-exalead-connector</module>
