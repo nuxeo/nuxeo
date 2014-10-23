@@ -230,7 +230,12 @@ public class DocumentTaskProvider implements TaskProvider {
         task.setVariable(TaskService.VariableName.validated.name(),
                 String.valueOf(isValidated));
         task.end(coreSession);
-        coreSession.saveDocument(task.getDocument());
+        // make sure taskDoc is attached to prevent sending event with null session
+        DocumentModel taskDocument = task.getDocument();
+        if (taskDocument.getSessionId() == null) {
+            taskDocument.attach(coreSession.getSessionId());
+        }
+        coreSession.saveDocument(taskDocument);
         // notify
         Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
         ArrayList<String> notificationRecipients = new ArrayList<String>();
