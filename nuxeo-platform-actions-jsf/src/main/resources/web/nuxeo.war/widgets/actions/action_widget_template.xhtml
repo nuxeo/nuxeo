@@ -20,7 +20,9 @@
   cache="true">
 <nxu:set var="actionsPanelId" value="#{widget.id}_panel"
   cache="true">
-<nxu:set var="actionsAjaxReRender" value="#{nxu:componentAbsoluteId(component, actionsPanelId)}">
+<nxu:set var="actionsPanelAjaxReRender" value="#{nxu:componentAbsoluteId(component, actionsPanelId)}">
+<nxu:set var="actionsAfterViewAjaxReRender" value="#{actionsPanelAjaxReRender}_after_view">
+<nxu:set var="actionsAjaxReRender" value="#{nxu:joinRender(actionsPanelAjaxReRender, actionsAfterViewAjaxReRender)}">
 <nxu:set var="formAdded" value="#{widgetProperty_addForm}" cache="true">
   <nxu:valueHolder id="#{clickedActionIdHolder}"
     var="clickedActionId">
@@ -36,14 +38,17 @@
         <ui:param name="formStyleClass" value="displayI subWidgetForm" />
         <ui:param name="mode" value="#{widget.mode}" />
       </ui:decorate>
+    </a4j:outputPanel>
 
+    <a4j:outputPanel id="#{actionsPanelId}_after_view" layout="block">
       <ui:include src="/incl/action/generic_mode_action_template.xhtml">
         <ui:param name="mode" value="after_view" />
       </ui:include>
-
     </a4j:outputPanel>
 
   </nxu:valueHolder>
+</nxu:set>
+</nxu:set>
 </nxu:set>
 </nxu:set>
 </nxu:set>

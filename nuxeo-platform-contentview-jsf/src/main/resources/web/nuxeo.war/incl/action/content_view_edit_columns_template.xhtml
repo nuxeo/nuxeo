@@ -21,7 +21,7 @@
 
     <div class="buttonsGadget">
       <h:commandButton value="#{messages['command.save']}" styleClass="button">
-        <f:ajax render="#{nxu:componentAbsoluteId(component, contentViewPanelId)}"
+        <f:ajax render="#{nxu:joinRender(ajaxReRender, nxu:componentAbsoluteId(component, contentViewPanelId))}"
           execute="@form"
           onevent="jQuery.fancybox.close" />
       </h:commandButton>

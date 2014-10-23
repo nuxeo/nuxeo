@@ -40,7 +40,7 @@
         value="#{contentView.refreshAndRewindPageProvider()}" />
       <ui:insert name="after_action_trigger" />
       <f:ajax execute="#{action.immediate ? '@this' : '@form'}"
-        render="#{ajaxReRender} #{contentIdToBeReRendered}" />
+        render="#{ajaxReRender}" />
     </h:commandLink>
   </c:if>
 

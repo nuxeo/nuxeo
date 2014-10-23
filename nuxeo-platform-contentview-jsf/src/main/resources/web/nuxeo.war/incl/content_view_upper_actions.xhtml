@@ -5,6 +5,7 @@
   test="#{contentView != null}">
 
   <nxl:widget name="contentViewActions"
-    mode="view" value="#{currentDocument}" />
+    mode="view" value="#{currentDocument}"
+    ajaxReRender="#{contentIdToBeReRendered}" />
 
 </c:if>
