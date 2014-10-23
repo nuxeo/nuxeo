@@ -92,7 +92,7 @@ public class GlobalConfigDescriptor implements Serializable {
     }
 
     protected File defaultCachingDirectory() {
-        File data = new File(Environment.getDefault().getData(),
+        File data = new File(Environment.getDefault().getTemp(),
                 CACHING_DIRECTORY);
         if (data.exists()) {
             try {
