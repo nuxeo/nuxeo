@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,10 +25,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.Enumeration;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -36,6 +34,7 @@ import javax.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.PackageBuilder;
@@ -46,21 +45,10 @@ import org.nuxeo.runtime.test.TargetResourceLocator;
 
 public class TestConfig extends AbstractCommandTest {
 
-    @Inject TargetResourceLocator locator;
+    @Inject
+    TargetResourceLocator locator;
 
     private ConfigurationGenerator configurationGenerator;
-
-
-     protected URL locateResource(String path) throws IOException {
-        Enumeration<URL> urls = TestConfig.class.getClassLoader().getResources(path);
-        while (urls.hasMoreElements()) {
-            URL each = urls.nextElement();
-            if (each.getPath().contains("nuxeo-connect-standalone")) {
-                return each;
-            }
-        }
-        throw new IOException("Cannot find " + path + " in classpath");
-    }
 
     @Override
     @Before
