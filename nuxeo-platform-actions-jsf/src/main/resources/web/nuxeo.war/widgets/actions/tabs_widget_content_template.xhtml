@@ -9,9 +9,12 @@
 </c:if>
 
 <c:if test="#{empty widgetProperty_tabContentTemplate}">
-  <c:if test="#{not empty action.properties.tabContentBeforeInclude}">
-    <ui:include src="#{action.properties.tabContentBeforeInclude}" />
-  </c:if>
+  <nxu:set var="beforeTemplate"
+           value="#{action.properties.containsKey('tabContentBeforeInclude') ? action.properties.tabContentBeforeInclude : widget.properties.tabContentBeforeInclude}">
+    <c:if test="#{not empty beforeTemplate}">
+      <ui:include src="#{beforeTemplate}" />
+    </c:if>
+  </nxu:set>
   <c:if test="#{not empty widgetProperty_currentTabAction.link}">
     <nxu:set var="action" value="#{widgetProperty_currentTabAction}">
     <nxu:set var="defaultParentTabActionCategoryPrefix"
@@ -31,9 +34,12 @@
     </nxu:set>
     </nxu:set>
   </c:if>
-  <c:if test="#{not empty action.properties.tabContentAfterInclude}">
-    <ui:include src="#{action.properties.tabContentAfterInclude}" />
-  </c:if>
+  <nxu:set var="afterTemplate"
+           value="#{action.properties.containsKey('tabContentAfterInclude') ? action.properties.tabContentAfterInclude : widget.properties.tabContentAfterInclude}">
+    <c:if test="#{not empty afterTemplate}">
+      <ui:include src="#{afterTemplate}" />
+    </c:if>
+  </nxu:set>
 </c:if>
 
 </ui:composition>
