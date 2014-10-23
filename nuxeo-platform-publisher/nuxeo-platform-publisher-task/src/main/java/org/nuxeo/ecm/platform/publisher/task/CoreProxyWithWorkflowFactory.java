@@ -56,7 +56,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Implementation of the {@link PublishedDocumentFactory} for core
  * implementation using native proxy system with validation workflow.
- * 
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
@@ -258,7 +258,12 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
                 if (task.getName().equals(TASK_NAME)) {
                     initiator = (String) task.getVariable(TaskService.VariableName.initiator.name());
                     task.end(session);
-                    session.saveDocument(task.getDocument());
+                    // make sure taskDoc is attached to prevent sending event with null session
+                    DocumentModel taskDocument = task.getDocument();
+                    if (taskDocument.getSessionId() == null) {
+                        taskDocument.attach(coreSession.getSessionId());
+                    }
+                    session.saveDocument(taskDocument);
                     break;
                 }
             }
