@@ -79,11 +79,7 @@ Ant usage: `ant distrib [-Ddistrib=profile]`
  * nuxeo-distribution-tests: Helper POM with Nuxeo test dependencies
  * nuxeo-distribution-tomcat: Tomcat distributions
  * nuxeo-functional-tests: Framework for testing nuxeo distributions
- * nuxeo-dam-functional-tests: DAM specific additions to nuxeo-functional-tests
  * nuxeo-launcher: Control Panel and launcher
- * nuxeo-marketplace-dam: build aggregator module
- * nuxeo-marketplace-dam/marketplace: Marketplace Package of DAM
- * nuxeo-marketplace-dam/ftest/webdriver: WebDriver tests for DAM
  * nuxeo-marketplace-dm: Marketplace Package of DM
  * nuxeo-startup-wizard: Startup Wizard WebApp
  * nuxeo-distribution-tomcat-wizard-tests: WebDriver tests for Tomcat wizard
@@ -150,16 +146,6 @@ Advanced document management features.
 Built NXR is in `nuxeo-distribution-dm/target/`.
 
 It is installable in the default available application in `nuxeo-distribution-tomcat/target/` when running the wizard and selecting DM (for users), or by activating the "nuxeo-dm" preset (for developers).
-
-### Nuxeo Digital Assets Management
-
-Multimedia document collection management features.
-
-Based on the addon <https://github.com/nuxeo/nuxeo-dam>.
-
-Built NXR is in `nuxeo-distribution-dam/target/`.
-
-It is installable in the default available application in `nuxeo-distribution-tomcat/target/` when running the wizard and selecting DAM (for users), or by activating the "nuxeo-dam" preset (for developers).
 
 ### Other applications
 

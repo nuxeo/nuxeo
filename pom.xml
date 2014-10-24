@@ -32,17 +32,12 @@
     <module>nuxeo-distribution-coreserver</module>
     <module>nuxeo-distribution-cap</module>
     <module>nuxeo-marketplace-dm</module>
-    <module>nuxeo-marketplace-dam</module>
-    <!-- The following is already aggregated by above nuxeo-marketplace-dam -->
-    <!-- <module>nuxeo-marketplace-dam/marketplace</module> -->
     <module>nuxeo-distribution-tomcat</module>
     <!-- Functional Tests -->
     <module>nuxeo-distribution-tomcat-wizard-tests</module>
     <module>nuxeo-distribution-cap-webdriver-tests</module>
     <module>nuxeo-distribution-cap-funkload-tests</module>
     <module>nuxeo-distribution-cap-selenium-tests</module>
-    <!-- The following is already aggregated by above nuxeo-marketplace-dam -->
-    <!-- <module>nuxeo-marketplace-dam/ftest/webdriver</module> -->
   </modules>
 
   <profiles>
@@ -168,19 +163,6 @@
         <type>zip</type>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.marketplace.dam</groupId>
-        <artifactId>marketplace-dam</artifactId>
-        <classifier>nxr</classifier>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.marketplace.dam</groupId>
-        <artifactId>marketplace-dam</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-distribution-tomcat</artifactId>
         <version>${nuxeo.distribution.version}</version>
@@ -267,12 +249,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-functional-tests</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-functional-tests</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <scope>test</scope>
       </dependency>

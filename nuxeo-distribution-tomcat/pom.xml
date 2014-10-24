@@ -59,12 +59,6 @@
       <type>zip</type>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.marketplace.dam</groupId>
-      <artifactId>marketplace-dam</artifactId>
-      <type>zip</type>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
 
   <profiles>
