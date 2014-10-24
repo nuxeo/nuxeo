@@ -40,6 +40,7 @@ public class MetaActionSourceTagHandler extends HtmlComponentHandler {
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     protected MetaRuleset createMetaRuleset(Class type) {
         MetaRuleset mr = super.createMetaRuleset(type);
         if (ActionSource.class.isAssignableFrom(type)) {

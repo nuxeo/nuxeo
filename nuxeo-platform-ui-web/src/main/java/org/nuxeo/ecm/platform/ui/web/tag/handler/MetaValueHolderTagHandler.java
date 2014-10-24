@@ -40,6 +40,7 @@ public class MetaValueHolderTagHandler extends HtmlComponentHandler {
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     protected MetaRuleset createMetaRuleset(Class type) {
         MetaRuleset m = super.createMetaRuleset(type);
         if (ValueHolder.class.isAssignableFrom(type)) {

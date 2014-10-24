@@ -48,6 +48,7 @@ public class GenericHtmlComponentHandler extends HtmlComponentHandler {
      * @see DefaultValueHolderRule
      */
     @Override
+    @SuppressWarnings("rawtypes")
     protected MetaRuleset createMetaRuleset(Class type) {
         MetaRuleset m = super.createMetaRuleset(type);
         if (ValueHolder.class.isAssignableFrom(type)) {

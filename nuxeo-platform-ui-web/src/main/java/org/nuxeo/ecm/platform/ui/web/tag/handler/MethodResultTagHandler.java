@@ -100,6 +100,7 @@ public class MethodResultTagHandler extends MetaTagHandler {
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     protected MetaRuleset createMetaRuleset(Class type) {
         return null;
     }

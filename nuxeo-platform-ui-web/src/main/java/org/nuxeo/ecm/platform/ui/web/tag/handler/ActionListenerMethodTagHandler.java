@@ -53,6 +53,7 @@ public class ActionListenerMethodTagHandler extends TagHandler {
 
     protected final TagAttribute value;
 
+    @SuppressWarnings("rawtypes")
     public static final Class[] ACTION_LISTENER_SIG = { ActionEvent.class };
 
     public ActionListenerMethodTagHandler(TagConfig config) {

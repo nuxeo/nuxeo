@@ -57,6 +57,7 @@ public class DocumentLinkTagHandler extends GenericHtmlComponentHandler {
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     protected MetaRuleset createMetaRuleset(Class type) {
         // expected created tag is an html command link
         MetaRuleset mr = super.createMetaRuleset(type);

@@ -54,6 +54,7 @@ import com.sun.faces.facelets.tag.jstl.core.ForEachHandler;
  */
 public class RepeatTagHandler extends TagHandler {
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected static final DataModel EMPTY_MODEL = new ListDataModel(
             Collections.emptyList());
 
