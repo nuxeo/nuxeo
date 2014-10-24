@@ -125,11 +125,19 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
                 continue;
             }
             if (log.isTraceEnabled()) {
-                log.trace("Sending bulk indexing request to Elasticsearch: "
-                        + cmd.toString());
+                log.trace("Sending bulk indexing request to Elasticsearch: " + cmd);
             }
-            IndexRequestBuilder idxRequest = buildEsIndexingRequest(cmd);
-            bulkRequest.add(idxRequest);
+            if (cmd.getTargetDocument() == null) {
+                log.warn("Skipping cmd because targetDocument is null " + cmd);
+                continue;
+            }
+            try {
+                IndexRequestBuilder idxRequest = buildEsIndexingRequest(cmd);
+                bulkRequest.add(idxRequest);
+            } catch (ClientException e) {
+                log.error("Fail to create indexing request for cmd: " + cmd, e);
+                continue;
+            }
         }
         if (bulkRequest.numberOfActions() > 0) {
             if (log.isDebugEnabled()) {
