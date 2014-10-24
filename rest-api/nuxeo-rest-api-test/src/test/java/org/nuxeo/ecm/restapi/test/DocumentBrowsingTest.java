@@ -187,6 +187,30 @@ public class DocumentBrowsingTest extends BaseTest {
 
     }
 
+
+    @Test
+    public void itCanSetPropertyToNull() throws Exception {
+        DocumentModel note = RestServerInit.getNote(0, session);
+        note.setPropertyValue("dc:format", "a value that will be set to null");
+        note.setPropertyValue("dc:language",
+                "a value that that must not be resetted");
+        session.saveDocument(note);
+
+        fetchInvalidations();
+
+        // When i do a PUT request on the document with modified data
+        getResponse(RequestType.PUT, "id/" + note.getId(),
+                "{\"entity-type\":\"document\",\"properties\":{\"dc:format\":\"\"}}");
+
+        // Then the document is updated
+        fetchInvalidations();
+        note = RestServerInit.getNote(0, session);
+        assertEquals(null, note.getPropertyValue("dc:format"));
+        assertEquals("a value that that must not be resetted",
+                note.getPropertyValue("dc:language"));
+
+    }
+
     @Test
     public void iCanCreateADocument() throws Exception {
 

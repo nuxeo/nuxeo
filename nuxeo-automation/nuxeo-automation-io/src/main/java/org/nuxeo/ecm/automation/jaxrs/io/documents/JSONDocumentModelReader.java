@@ -155,8 +155,7 @@ public class JSONDocumentModelReader implements
         }
 
         if (tok == null) {
-            throw new IllegalArgumentException(
-                    "Unexpected end of stream.");
+            throw new IllegalArgumentException("Unexpected end of stream.");
         }
 
         if (StringUtils.isNotBlank(type)) {
@@ -186,8 +185,6 @@ public class JSONDocumentModelReader implements
 
     }
 
-
-
     /**
      * Decodes a Serializable to make it a blob.
      *
@@ -206,8 +203,8 @@ public class JSONDocumentModelReader implements
      *
      * @since 5.9.1
      */
-    private static boolean isNotNull(Serializable data) {
-        return data != null && !"null".equals(data);
+    private static boolean isNull(Serializable data) {
+        return data == null || "null".equals(data);
     }
 
     public static void applyPropertyValues(DocumentModel src, DocumentModel dst)
@@ -219,13 +216,12 @@ public class JSONDocumentModelReader implements
             for (String field : fromDataModel.getDirtyFields()) {
                 Serializable data = (Serializable) fromDataModel.getData(field);
                 try {
-                    if (isNotNull(data)) {
-                        if (!(dataModel.getDocumentPart().get(field) instanceof BlobProperty)) {
-                            dataModel.setData(field, data);
-                        } else {
-                            dataModel.setData(field, decodeBlob(data));
-                        }
+                    if (!(dataModel.getDocumentPart().get(field) instanceof BlobProperty)) {
+                        dataModel.setData(field, data);
+                    } else {
+                        dataModel.setData(field, decodeBlob(data));
                     }
+                    // }
                 } catch (PropertyNotFoundException e) {
                     log.warn(String.format(
                             "Trying to deserialize unexistent field : {%s}",
@@ -234,6 +230,5 @@ public class JSONDocumentModelReader implements
             }
         }
     }
-
 
 }
