@@ -530,22 +530,14 @@
   <tag>
     <tag-name>dataTable</tag-name>
     <component>
-      <component-type>org.richfaces.DataTable</component-type>
-      <renderer-type>org.richfaces.DataTableRenderer</renderer-type>
-      <handler-class>org.richfaces.taglib.DataTableHandler</handler-class>
-    </component>
-  </tag>
-  <tag>
-    <tag-name>columns</tag-name>
-    <component>
-      <component-type>org.richfaces.ColumnGroup</component-type>
-      <renderer-type>org.richfaces.ColumnGroupRenderer</renderer-type>
+      <component-type>javax.faces.HtmlDataTable</component-type>
+      <renderer-type>javax.faces.Table</renderer-type>
     </component>
   </tag>
   <tag>
     <tag-name>column</tag-name>
     <component>
-      <component-type>org.richfaces.Column</component-type>
+      <component-type>javax.faces.Column</component-type>
     </component>
   </tag>
   <tag>
