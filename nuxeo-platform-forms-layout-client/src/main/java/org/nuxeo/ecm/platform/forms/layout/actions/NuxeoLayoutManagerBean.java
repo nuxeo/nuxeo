@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.actions;
 
+import java.io.Serializable;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +30,9 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 6.0
  */
-public class NuxeoLayoutManagerBean {
+public class NuxeoLayoutManagerBean implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public static final String NAME = "nuxeoLayoutManagerBean";
 
