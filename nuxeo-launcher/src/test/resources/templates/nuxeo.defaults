@@ -1,0 +1,5 @@
+nuxeo.templates=default
+org.nuxeo.ecm.product.version=5.9.6-SNAPSHOT
+nuxeo.url=http://localhost:8080/nuxeo
+org.nuxeo.ecm.contextPath=/nuxeo
+nuxeo.server.http.port=8080

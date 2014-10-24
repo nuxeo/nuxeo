@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2013-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -17,23 +17,47 @@
 package org.nuxeo.launcher;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.launcher.NuxeoLauncher.SolarisProcessManager;
+import org.junit.internal.AssumptionViolatedException;
 
-public class TestNuxeoLauncher {
+import org.nuxeo.common.Environment;
+import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
+import org.nuxeo.connect.identity.LogicalInstanceIdentifier.InvalidCLID;
+import org.nuxeo.connect.update.PackageException;
+import org.nuxeo.launcher.NuxeoLauncher.SolarisProcessManager;
+import org.nuxeo.launcher.config.AbstractConfigurationTest;
+import org.nuxeo.launcher.config.ConfigurationException;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
+import org.nuxeo.launcher.config.TomcatConfigurator;
+import org.nuxeo.launcher.info.InstanceInfo;
+
+public class TestNuxeoLauncher extends AbstractConfigurationTest {
+
+    private static final String TEST_INSTANCE_CLID = "/opt/build/hudson/instance.clid";
 
     private static final String NUXEO_PATH = "/opt/nuxeo";
 
@@ -110,6 +134,59 @@ public class TestNuxeoLauncher {
 
         pm.setLines("ps", Arrays.asList(SOL_PS1, SOL_PS2, SOL_PS3, SOL_PS4));
         assertEquals("2788", pm.findPid(getRegex()));
+    }
+
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        nuxeoHome = new File("target/launcher");
+        FileUtils.deleteQuietly(nuxeoHome);
+        nuxeoHome.mkdirs();
+        File nuxeoConf = getResourceFile("config/nuxeo.conf");
+        FileUtils.copyFileToDirectory(nuxeoConf, nuxeoHome);
+        FileUtils.copyDirectory(getResourceFile("templates"), new File(
+                nuxeoHome, "templates"));
+        System.setProperty(Environment.NUXEO_HOME, nuxeoHome.getPath());
+        System.setProperty(ConfigurationGenerator.NUXEO_CONF, new File(
+                nuxeoHome, nuxeoConf.getName()).getPath());
+        System.setProperty(
+                TomcatConfigurator.TOMCAT_HOME,
+                org.nuxeo.common.Environment.getDefault().getServerHome().getPath());
+    }
+
+    @Test
+    public void testClidOption() throws ConfigurationException, ParseException,
+            IOException, PackageException, InvalidCLID {
+        configGenerator = new ConfigurationGenerator();
+        assertTrue(configGenerator.init());
+        Path instanceClid = Paths.get(TEST_INSTANCE_CLID);
+        if (!Files.exists(instanceClid)) {
+            throw new AssumptionViolatedException("No test CLID available");
+        }
+        String[] args = new String[] { "--clid", instanceClid.toString(),
+                "showconf" };
+        final NuxeoLauncher launcher = NuxeoLauncher.createLauncher(args);
+        InstanceInfo info = launcher.showConfig();
+        assertNotNull("Failed to get instance info", info);
+        List<String> clidLines = Files.readAllLines(instanceClid,
+                Charsets.UTF_8);
+        LogicalInstanceIdentifier expectedClid = new LogicalInstanceIdentifier(
+                clidLines.get(0) + LogicalInstanceIdentifier.ID_SEP
+                        + clidLines.get(1), "expected clid");
+        assertEquals("Not the right instance.clid file: ",
+                expectedClid.getCLID(), info.clid);
+    }
+
+    @Override
+    @After
+    public void tearDown() {
+        FileUtils.deleteQuietly(nuxeoHome);
+        Properties sysProperties = System.getProperties();
+        sysProperties.remove(ConfigurationGenerator.NUXEO_CONF);
+        sysProperties.remove(Environment.NUXEO_HOME);
+        sysProperties.remove(TomcatConfigurator.TOMCAT_HOME);
+        sysProperties.remove(Environment.NUXEO_DATA_DIR);
+        sysProperties.remove(Environment.NUXEO_LOG_DIR);
     }
 
 }

@@ -204,6 +204,13 @@ public abstract class NuxeoLauncher {
 
     protected static final String OPTION_IGNORE_MISSING_DESC = "Ignore unknown packages on mp-add/install/set commands.";
 
+    /**
+     * @since 5.9.6
+     */
+    protected static final String OPTION_CLID = "clid";
+
+    private static final String OPTION_CLID_DESC = "Use the provided instance CLID file";
+
     // Fallback to avoid an error when the log dir is not initialized
     static {
         if (System.getProperty(Environment.NUXEO_LOG_DIR) == null) {
@@ -431,7 +438,7 @@ public abstract class NuxeoLauncher {
      */
     public void setGUI(NuxeoLauncherGUI gui) {
         if (guis == null) {
-            guis = new HashMap<String, NuxeoLauncherGUI>();
+            guis = new HashMap<>();
         }
         guis.put(configurationGenerator.getNuxeoConf().toString(), gui);
     }
@@ -584,7 +591,7 @@ public abstract class NuxeoLauncher {
      */
     protected void start(boolean logProcessOutput) throws IOException,
             InterruptedException {
-        List<String> startCommand = new ArrayList<String>();
+        List<String> startCommand = new ArrayList<>();
         startCommand.add(getJavaExecutable().getPath());
         startCommand.addAll(Arrays.asList(getJavaOptsProperty().split(" ")));
         startCommand.add("-cp");
@@ -662,7 +669,7 @@ public abstract class NuxeoLauncher {
      */
     public ArrayList<ThreadedStreamGobbler> logProcessStreams(Process process,
             boolean logProcessOutput) {
-        ArrayList<ThreadedStreamGobbler> sgArray = new ArrayList<ThreadedStreamGobbler>();
+        ArrayList<ThreadedStreamGobbler> sgArray = new ArrayList<>();
         ThreadedStreamGobbler inputSG, errorSG;
         if (logProcessOutput) {
             inputSG = new ThreadedStreamGobbler(process.getInputStream(),
@@ -692,7 +699,7 @@ public abstract class NuxeoLauncher {
      */
     private List<String> getOSCommand(List<String> roughCommand) {
         String linearizedCommand = new String();
-        ArrayList<String> osCommand = new ArrayList<String>();
+        ArrayList<String> osCommand = new ArrayList<>();
         if (PlatformUtils.isLinux() || PlatformUtils.isMac()) {
             for (Iterator<String> iterator = roughCommand.iterator(); iterator.hasNext();) {
                 String commandToken = iterator.next();
@@ -746,7 +753,7 @@ public abstract class NuxeoLauncher {
     protected abstract String getShutdownClassPath();
 
     protected Collection<? extends String> getNuxeoProperties() {
-        ArrayList<String> nuxeoProperties = new ArrayList<String>();
+        ArrayList<String> nuxeoProperties = new ArrayList<>();
         nuxeoProperties.add(String.format("-D%s=%s", Environment.NUXEO_HOME,
                 configurationGenerator.getNuxeoHome().getPath()));
         nuxeoProperties.add(String.format("-D%s=%s",
@@ -808,6 +815,11 @@ public abstract class NuxeoLauncher {
             OptionBuilder.withDescription(OPTION_DEBUG_CATEGORY_DESC);
             OptionBuilder.hasArg();
             launcherOptions.addOption(OptionBuilder.create(OPTION_DEBUG_CATEGORY));
+            // Instance CLID option
+            OptionBuilder.withLongOpt(OPTION_CLID);
+            OptionBuilder.withDescription(OPTION_CLID_DESC);
+            OptionBuilder.hasArg();
+            launcherOptions.addOption(OptionBuilder.create());
             OptionGroup outputOptions = new OptionGroup();
             // Hide deprecation warnings option
             OptionBuilder.withLongOpt(OPTION_HIDE_DEPRECATION);
@@ -1051,7 +1063,7 @@ public abstract class NuxeoLauncher {
         } else if ("mp-update".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.pkgRefreshCache();
         } else if ("showconf".equalsIgnoreCase(launcher.command)) {
-            commandSucceeded = launcher.showConfig();
+            commandSucceeded = launcher.showConfig() != null;
         } else if ("mp-show".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.pkgShow(params);
         } else {
@@ -1089,7 +1101,7 @@ public abstract class NuxeoLauncher {
             checkNoRunningServer();
             configurationGenerator.setProperty(PARAM_UPDATECENTER_DISABLED,
                     "true");
-            List<String> startCommand = new ArrayList<String>();
+            List<String> startCommand = new ArrayList<>();
             startCommand.add(getJavaExecutable().getPath());
             startCommand.addAll(Arrays.asList(getJavaOptsProperty().split(" ")));
             startCommand.add("-cp");
@@ -1552,7 +1564,7 @@ public abstract class NuxeoLauncher {
             int stopMaxWait = Integer.parseInt(configurationGenerator.getUserConfig().getProperty(
                     STOP_MAX_WAIT_PARAM, STOP_MAX_WAIT_DEFAULT));
             do {
-                List<String> stopCommand = new ArrayList<String>();
+                List<String> stopCommand = new ArrayList<>();
                 stopCommand.add(getJavaExecutable().getPath());
                 stopCommand.add("-cp");
                 stopCommand.add(getShutdownClassPath());
@@ -1747,8 +1759,9 @@ public abstract class NuxeoLauncher {
      *
      * @param cmdLine Program arguments; may be used by launcher implementation.
      *            Must not be null or empty.
+     * @throws ConfigurationException
      */
-    private void setArgs(CommandLine cmdLine) {
+    private void setArgs(CommandLine cmdLine) throws ConfigurationException {
         this.cmdLine = cmdLine;
         extractCommandAndParams(cmdLine.getArgs());
         // Use GUI?
@@ -1775,6 +1788,13 @@ public abstract class NuxeoLauncher {
         }
         if (cmdLine.hasOption(OPTION_JSON)) {
             setJSONOutput();
+        }
+        if (cmdLine.hasOption(OPTION_CLID)) {
+            try {
+                getConnectBroker().setCLID(cmdLine.getOptionValue(OPTION_CLID));
+            } catch (NoCLID | IOException | PackageException e) {
+                throw new ConfigurationException(e);
+            }
         }
     }
 
@@ -2096,7 +2116,7 @@ public abstract class NuxeoLauncher {
      * @throws IOException
      * @since 5.6
      */
-    protected boolean showConfig() throws IOException, PackageException {
+    protected InstanceInfo showConfig() throws IOException, PackageException {
         InstanceInfo nxInstance = new InstanceInfo();
         log.info("***** Nuxeo instance configuration *****");
         nxInstance.NUXEO_CONF = configurationGenerator.getNuxeoConf().getPath();
@@ -2113,7 +2133,7 @@ public abstract class NuxeoLauncher {
             // something went wrong in the NuxeoConnectClient initialization
             errorValue = EXIT_CODE_UNAUTHORIZED;
             log.error("Could not initialize NuxeoConnectClient", e);
-            return false;
+            return null;
         }
         // distribution.properties
         DistributionInfo nxDistrib = getDistributionInfo();
@@ -2127,7 +2147,7 @@ public abstract class NuxeoLauncher {
         // packages
         List<LocalPackage> pkgs = getConnectBroker().getPkgList();
         log.info("** Packages:");
-        List<String> pkgTemplates = new ArrayList<String>();
+        List<String> pkgTemplates = new ArrayList<>();
         for (LocalPackage pkg : pkgs) {
             nxInstance.packages.add(new PackageInfo(pkg));
             log.info(String.format("- %s (version: %s - id: %s - state: %s)",
@@ -2201,7 +2221,7 @@ public abstract class NuxeoLauncher {
         nxInstance.config = nxConfig;
         log.info("****************************************");
         printInstanceXMLOutput(nxInstance);
-        return true;
+        return nxInstance;
     }
 
     /**
@@ -2331,9 +2351,9 @@ public abstract class NuxeoLauncher {
      */
     protected boolean pkgCompoundRequest(List<String> request)
             throws IOException, PackageException {
-        List<String> add = new ArrayList<String>();
-        List<String> install = new ArrayList<String>();
-        List<String> uninstall = new ArrayList<String>();
+        List<String> add = new ArrayList<>();
+        List<String> install = new ArrayList<>();
+        List<String> uninstall = new ArrayList<>();
         for (String param : request) {
             for (String subparam : param.split("[ ,]")) {
                 if (subparam.charAt(0) == '-') {

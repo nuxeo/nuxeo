@@ -58,6 +58,7 @@ import org.nuxeo.connect.NuxeoConnectClient;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
+import org.nuxeo.connect.identity.LogicalInstanceIdentifier.InvalidCLID;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
 import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.connect.packages.dependencies.CUDFHelper;
@@ -132,6 +133,18 @@ public class ConnectBroker {
 
     public String getCLID() throws NoCLID {
         return LogicalInstanceIdentifier.instance().getCLID();
+    }
+
+    /**
+     * @throws NoCLID
+     * @since 5.9.6
+     */
+    public void setCLID(String file) throws NoCLID {
+        try {
+            LogicalInstanceIdentifier.load(file);
+        } catch (IOException | InvalidCLID e) {
+            throw new NoCLID("can not load CLID", e);
+        }
     }
 
     public StandaloneUpdateService getUpdateService() {
