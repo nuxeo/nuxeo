@@ -145,7 +145,7 @@ public class TestNuxeoDriveManager {
                 "/default-domain/workspaces/workspace-2", "folder-2-1",
                 "Folder"));
         setPermissions(workspace_1, new ACE("members",
-                SecurityConstants.READ_WRITE));
+                SecurityConstants.READ));
         setPermissions(workspace_2, new ACE("members",
                 SecurityConstants.READ_WRITE));
 

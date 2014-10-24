@@ -381,10 +381,6 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         if (LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
             return false;
         }
-        if (!documentManager.hasPermission(doc.getRef(),
-                SecurityConstants.ADD_CHILDREN)) {
-            return false;
-        }
         return true;
     }
 
