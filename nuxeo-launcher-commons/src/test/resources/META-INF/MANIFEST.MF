@@ -1,0 +1,1 @@
+Bundle-SymbolicName: org.nuxeo.launcher.commons.tests;
