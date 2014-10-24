@@ -60,13 +60,13 @@
               </c:if>
 
               <c:if test="#{!useHtml5DragAndDrop}">
-                <rich:fileUpload id="fileUploadForm" uploadData="#{importActions.uploadedFiles}"
+                <rich:fileUpload id="fileUploadForm" fileUploadListener="#{importActions.processUpload}"
                   maxFilesQuantity="10" immediateUpload="true"
                   locale="#{localeSelector.localeString}"
-                  execute="@this"
+                  execute="@this" onclear="nuxeo.documentsImport.onClearPressed();"
                   onadd="nuxeo.documentsImport.disableBulkImportButton();"
                   onuploadcomplete="nuxeo.documentsImport.enableBulkImportButton();"
-                  listWidth="60%" listHeight="150px">
+                  style="width:100%" listHeight="150px">
                 </rich:fileUpload>
               </c:if>
             </td>

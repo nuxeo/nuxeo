@@ -22,6 +22,8 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import static org.nuxeo.ecm.webapp.helpers.EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED;
 
+import java.io.File;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,6 +47,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.Messages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
@@ -68,8 +71,9 @@ import org.nuxeo.ecm.platform.ui.web.rest.FancyNavigationHandler;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.webapp.dnd.DndConfigurationHelper;
+import org.nuxeo.ecm.webapp.filemanager.NxUploadedFile;
 import org.nuxeo.runtime.api.Framework;
-import org.richfaces.model.UploadedFile;
+import org.richfaces.event.FileUploadEvent;
 
 /**
  * @since 5.9.6
@@ -122,7 +126,7 @@ public class ImportActions implements Serializable {
 
     protected String currentBatchId;
 
-    protected Collection<UploadedFile> uploadedFiles = null;
+    protected Collection<NxUploadedFile> uploadedFiles = null;
 
     public DocumentModel getImportDocumentModel() {
         if (importDocumentModel == null) {
@@ -268,7 +272,7 @@ public class ImportActions implements Serializable {
                 resetBatchState = false;
                 FacesMessage message = new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
-                        LABEL_IMPORT_CANNOT_CREATE_ERROR, null);
+                        Messages.instance().get(LABEL_IMPORT_CANNOT_CREATE_ERROR), null);
                 FacesContext faces = FacesContext.getCurrentInstance();
                 if (fancyboxFormId != null && fancyboxFormId.startsWith(":")) {
                     faces.addMessage(fancyboxFormId.substring(1), message);
@@ -283,7 +287,7 @@ public class ImportActions implements Serializable {
                         Boolean.TRUE);
             } else {
                 facesMessages.addFromResourceBundle(
-                        StatusMessage.Severity.ERROR, LABEL_IMPORT_PROBLEM);
+                        StatusMessage.Severity.ERROR, Messages.instance().get(LABEL_IMPORT_PROBLEM));
             }
         } finally {
             if (resetBatchState) {
@@ -314,10 +318,10 @@ public class ImportActions implements Serializable {
 
         try {
             List<Blob> blobs = new ArrayList<>();
-            for (UploadedFile uploadItem : uploadedFiles) {
+            for (NxUploadedFile uploadItem : uploadedFiles) {
                 String filename = FileUtils.getCleanFileName(uploadItem.getName());
                 Blob blob = FileUtils.createTemporaryFileBlob(
-                        uploadItem.getInputStream(), filename,
+                        uploadItem.getFile(), filename,
                         uploadItem.getContentType());
                 blobs.add(blob);
             }
@@ -341,7 +345,7 @@ public class ImportActions implements Serializable {
             log.error("Error while executing automation batch ", e);
             throw ClientException.wrap(e);
         } finally {
-            for (UploadedFile uploadItem : getUploadedFiles()) {
+            for (NxUploadedFile uploadItem : getUploadedFiles()) {
                 // FIXME: check if a temp file needs to be tracked for
                 // deletion
                 // File tempFile = uploadItem.getFile();
@@ -364,20 +368,39 @@ public class ImportActions implements Serializable {
         currentBatchId = null;
     }
 
-    public Collection<UploadedFile> getUploadedFiles() {
+    public Collection<NxUploadedFile> getUploadedFiles() {
         if (uploadedFiles == null) {
             uploadedFiles = new ArrayList<>();
         }
         return uploadedFiles;
     }
 
-    public void setUploadedFiles(Collection<UploadedFile> uploadedFiles) {
+    public void setUploadedFiles(Collection<NxUploadedFile> uploadedFiles) {
         this.uploadedFiles = uploadedFiles;
     }
 
     @Observer(value = USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED)
     public void invalidateSelectedImportFolder() throws ClientException {
         selectedImportFolderId = null;
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    public void processUpload(FileUploadEvent uploadEvent) {
+        try {
+            if (uploadedFiles == null) {
+                uploadedFiles = new ArrayList<NxUploadedFile>();
+            }
+            File file = File.createTempFile("ImportActions", null);
+            InputStream in = uploadEvent.getUploadedFile().getInputStream();
+            org.nuxeo.common.utils.FileUtils.copyToFile(in, file);
+            uploadedFiles.add(new NxUploadedFile(
+                    uploadEvent.getUploadedFile().getName(),
+                    uploadEvent.getUploadedFile().getContentType(), file));
+        } catch (Exception e) {
+            log.error(e, e);
+        }
     }
 
 }

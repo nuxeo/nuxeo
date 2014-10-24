@@ -115,6 +115,12 @@ nuxeo.documentsImport = (function(m) {
     }
   };
 
+  m.onClearPressed = function() {
+    if (jQuery("a.rf-fu-itm-lnk").length == 0)  {
+     m.disableBulkImportButton();
+    }
+  };
+
   return m
 
 }(nuxeo.documentsImport || {}));
