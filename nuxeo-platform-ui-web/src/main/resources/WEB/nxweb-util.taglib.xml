@@ -402,9 +402,14 @@
   </tag>
   <tag>
     <tag-name>set</tag-name>
-    <handler-class>
-      org.nuxeo.ecm.platform.ui.web.tag.handler.SetTagHandler
-    </handler-class>
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.binding.alias.UIAliasHolder
+      </component-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.tag.handler.SetTagHandler
+      </handler-class>
+    </component>
   </tag>
   <tag>
     <tag-name>repeat</tag-name>

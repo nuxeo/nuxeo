@@ -31,16 +31,26 @@ import javax.faces.event.PhaseId;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.SetTagHandler;
 
 import com.sun.faces.facelets.tag.jsf.ComponentSupport;
 
 /**
  * Holder component for value expressions.
  * <p>
- * Exposes its expressions to the request context when rendered.
+ * Since 6.0 and JSF2 migration, exposed values are now stored in a view-scoped
+ * managed bean and do not need to be exposed again at render time.
+ * <p>
+ * This component is still interesting to anchor the component in the tree, and
+ * make sure its children are reset on ajax requests, when the value it holds
+ * can have an impact on the underlying components. In this case, it is
+ * instantiated by the {@link AliasTagHandler} or {@link SetTagHandler} facelet
+ * handlers, depending on their instantiation criteria.
  *
  * @author Anahide Tchertchian
  * @since 5.4
+ * @see AliasTagHandler
+ * @see SetTagHandler
  */
 public class UIAliasHolder extends UIOutput {
 

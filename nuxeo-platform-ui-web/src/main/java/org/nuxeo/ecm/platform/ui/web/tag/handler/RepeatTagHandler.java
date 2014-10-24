@@ -29,11 +29,11 @@ import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
+import javax.faces.view.facelets.ComponentConfig;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletException;
 import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
-import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
 import javax.faces.view.facelets.TagHandler;
 
@@ -173,10 +173,14 @@ public class RepeatTagHandler extends TagHandler {
     /**
      * Encapsulate the call to a c:forEach tag in an SetTagHandler exposing the
      * value and making sure the tagConfigId changes when the value changes
-     * (see NXP-11434)
+     * (see NXP-11434).
+     * <p>
+     * See also NXP-15050: since 6.0, anchor handler in component tree to
+     * ensure proper ajax refresh when iteration value changes.
      */
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
+        String anchor = String.valueOf(true);
         FaceletHandler nextHandler = this.nextHandler;
         TagAttribute varStatusAttr = varStatus;
         if (index != null) {
@@ -196,15 +200,10 @@ public class RepeatTagHandler extends TagHandler {
                     varStatusAttr = createAttribute(this.config, "varStatus",
                             varStatusValue);
                 }
-                TagAttributes indexVarAttrs = new TagAttributesImpl(
-                        new TagAttribute[] {
-                                createAttribute(this.config, "var", indexValue),
-                                createAttribute(this.config, "value",
-                                        String.format("#{%s.index}",
-                                                varStatusAttr.getValue())) });
-                TagConfig indexVarConfig = TagConfigFactory.createTagConfig(
-                        this.config, this.tagId, indexVarAttrs,
-                        this.nextHandler);
+                ComponentConfig indexVarConfig = TagConfigFactory.createAliasTagConfig(
+                        this.config, this.tagId, indexValue,
+                        String.format("#{%s.index}", varStatusAttr.getValue()),
+                        "false", anchor, this.nextHandler);
                 nextHandler = new SetTagHandler(indexVarConfig);
             }
         }
@@ -224,13 +223,10 @@ public class RepeatTagHandler extends TagHandler {
 
         String setTagConfigId = getTagConfigId(ctx);
         TagAttribute itemsAttr = getItemsAttribute();
-        TagAttributes aliasAttrs = new TagAttributesImpl(new TagAttribute[] {
-                createAttribute(this.config, "var", getVarName("items")),
-                createAttribute(this.config, "value",
-                        itemsAttr != null ? itemsAttr.getValue() : null),
-                createAttribute(this.config, "cache", "true") });
-        TagConfig aliasConfig = TagConfigFactory.createTagConfig(this.config,
-                setTagConfigId, aliasAttrs, forEachHandler);
+        ComponentConfig aliasConfig = TagConfigFactory.createAliasTagConfig(
+                this.config, setTagConfigId, getVarName("items"),
+                itemsAttr != null ? itemsAttr.getValue() : null, "false",
+                anchor, forEachHandler);
         FaceletHandler handler = new SetTagHandler(aliasConfig);
 
         // apply

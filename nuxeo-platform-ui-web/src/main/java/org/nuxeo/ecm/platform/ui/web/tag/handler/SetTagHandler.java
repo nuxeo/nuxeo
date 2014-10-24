@@ -28,11 +28,11 @@ import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
+import javax.faces.view.facelets.ComponentConfig;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletException;
 import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
-import javax.faces.view.facelets.TagConfig;
 import javax.faces.view.facelets.TagException;
 
 import org.apache.commons.lang.StringUtils;
@@ -77,7 +77,7 @@ public class SetTagHandler extends AliasTagHandler {
      */
     protected final TagAttribute blockMerge;
 
-    public SetTagHandler(TagConfig config) {
+    public SetTagHandler(ComponentConfig config) {
         super(config, null);
         var = getRequiredAttribute("var");
         value = getAttribute("value");

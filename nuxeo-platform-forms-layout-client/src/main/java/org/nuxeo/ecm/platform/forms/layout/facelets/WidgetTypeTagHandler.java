@@ -32,10 +32,10 @@ import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
+import javax.faces.view.facelets.ComponentConfig;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
-import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
 import javax.faces.view.facelets.TagHandler;
 
@@ -54,8 +54,6 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.facelets.el.VariableMapperWrapper;
-import com.sun.faces.facelets.tag.TagAttributeImpl;
-import com.sun.faces.facelets.tag.TagAttributesImpl;
 
 /**
  * Widget type tag handler.
@@ -302,18 +300,14 @@ public class WidgetTypeTagHandler extends TagHandler {
                 // can be cached and not generated-again on ajax re-render,
                 // this is a quick fix that can be optimized, as the widget
                 // variable is already exposed in the current variable mapper.
+                // Update after NXP-15050: this does not seem to be necessary
+                // anymore, could not reproduce the corresponding bug, to
+                // remove after complementary tests.
                 String setTagConfigId = widget.getTagConfigId();
-                TagAttributes aliasAttrs = new TagAttributesImpl(
-                        new TagAttribute[] {
-                                createAttribute(
-                                        this.config,
-                                        "var",
-                                        RenderVariables.widgetVariables.widget.name()),
-                                createAttribute(this.config, "value",
-                                        "#{widget}"),
-                                createAttribute(this.config, "cache", "true") });
-                TagConfig aliasConfig = TagConfigFactory.createTagConfig(
-                        this.config, setTagConfigId, aliasAttrs, nextHandler);
+                ComponentConfig aliasConfig = TagConfigFactory.createAliasTagConfig(
+                        this.config, setTagConfigId,
+                        RenderVariables.widgetVariables.widget.name(),
+                        "#{widget}", "true", "true", nextHandler);
                 FaceletHandler handler = new SetTagHandler(aliasConfig);
                 handler.apply(ctx, parent);
             } else {
@@ -323,12 +317,6 @@ public class WidgetTypeTagHandler extends TagHandler {
         } finally {
             ctx.setVariableMapper(orig);
         }
-    }
-
-    protected TagAttribute createAttribute(TagConfig tagConfig, String name,
-            String value) {
-        return new TagAttributeImpl(tagConfig.getTag().getLocation(), "", name,
-                name, value);
     }
 
 }

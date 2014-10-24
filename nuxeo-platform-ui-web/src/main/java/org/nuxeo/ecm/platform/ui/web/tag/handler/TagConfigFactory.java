@@ -23,9 +23,15 @@ import javax.faces.view.facelets.ComponentConfig;
 import javax.faces.view.facelets.ConverterConfig;
 import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.Tag;
+import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
 import javax.faces.view.facelets.ValidatorConfig;
+
+import org.nuxeo.ecm.platform.ui.web.binding.alias.UIAliasHolder;
+
+import com.sun.faces.facelets.tag.TagAttributeImpl;
+import com.sun.faces.facelets.tag.TagAttributesImpl;
 
 /**
  * Helper for generating configs outside of a library context.
@@ -154,6 +160,38 @@ public final class TagConfigFactory {
             FaceletHandler nextHandler, String validatorId) {
         return new ValidatorConfigWrapper(tagConfig, tagConfigId, attributes,
                 nextHandler, validatorId);
+    }
+
+    /**
+     * @since 6.0
+     */
+    public static ComponentConfig createAliasTagConfig(TagConfig tagConfig,
+            String tagConfigId, TagAttributes attributes,
+            FaceletHandler nextHandler) {
+        return new ComponentConfigWrapper(tagConfig, tagConfigId, attributes,
+                nextHandler, UIAliasHolder.COMPONENT_TYPE, null);
+    }
+
+    /**
+     * @since 6.0
+     */
+    public static ComponentConfig createAliasTagConfig(TagConfig tagConfig,
+            String tagConfigId, String var, String value, String cache,
+            String anchor, FaceletHandler nextHandler) {
+        TagAttribute[] attrs = new TagAttribute[4];
+        attrs[0] = createAttribute(tagConfig, "var", var);
+        attrs[1] = createAttribute(tagConfig, "value", value);
+        attrs[2] = createAttribute(tagConfig, "cache", cache);
+        attrs[3] = createAttribute(tagConfig, "anchor", anchor);
+        TagAttributes attributes = new TagAttributesImpl(attrs);
+        return new ComponentConfigWrapper(tagConfig, tagConfigId, attributes,
+                nextHandler, UIAliasHolder.COMPONENT_TYPE, null);
+    }
+
+    protected static TagAttribute createAttribute(TagConfig tagConfig,
+            String name, String value) {
+        return new TagAttributeImpl(tagConfig.getTag().getLocation(), "", name,
+                name, value);
     }
 
 }

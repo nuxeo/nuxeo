@@ -365,6 +365,16 @@
   </extension>
 
   <extension target="faces-config#COMPONENT">
+
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.binding.alias.UIAliasHolder
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.binding.alias.UIAliasHolder
+      </component-class>
+    </component>
+
     <component>
       <component-type>
         org.nuxeo.ecm.platform.ui.web.component.UISelectItems
@@ -819,6 +829,13 @@
         org.nuxeo.ecm.platform.ui.web.component.holder.NuxeoValueHolderBean
       </managed-bean-class>
       <managed-bean-scope>view</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+      <managed-bean-name>nuxeoAliasBean</managed-bean-name>
+      <managed-bean-class>
+        org.nuxeo.ecm.platform.ui.web.binding.alias.NuxeoAliasBean
+      </managed-bean-class>
+      <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
   </extension>
 

@@ -664,9 +664,9 @@ public final class FaceletHandlerHelper {
             List<String> blockedPatterns, FaceletHandler nextHandler) {
         FaceletHandler currentHandler = nextHandler;
         if (variables != null) {
-            // XXX also set id ? cache ?
-            TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
-                    tagConfigId, getTagAttributes(), nextHandler);
+            // XXX also set id? cache? anchor?
+            ComponentConfig config = TagConfigFactory.createAliasTagConfig(
+                    tagConfig, tagConfigId, getTagAttributes(), nextHandler);
             currentHandler = new AliasTagHandler(config, variables,
                     blockedPatterns);
         }
@@ -711,13 +711,9 @@ public final class FaceletHandlerHelper {
      */
     public FaceletHandler getDisableDevModeTagHandler(String tagConfigId,
             FaceletHandler nextHandler) {
-        TagConfig config = TagConfigFactory.createTagConfig(
-                tagConfig,
-                tagConfigId,
-                getTagAttributes(
-                        createAttribute("var", DEV_MODE_DISABLED_VARIABLE),
-                        createAttribute("value", "true"),
-                        createAttribute("cache", "true")), nextHandler);
+        ComponentConfig config = TagConfigFactory.createAliasTagConfig(
+                tagConfig, tagConfigId, DEV_MODE_DISABLED_VARIABLE, "true",
+                "true", "false", nextHandler);
         return new SetTagHandler(config);
     }
 }

@@ -30,17 +30,15 @@ import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
+import javax.faces.view.facelets.ComponentConfig;
+import javax.faces.view.facelets.ComponentHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletException;
 import javax.faces.view.facelets.FaceletHandler;
-import javax.faces.view.facelets.MetaRuleset;
-import javax.faces.view.facelets.MetaTagHandler;
 import javax.faces.view.facelets.TagAttribute;
-import javax.faces.view.facelets.TagConfig;
 import javax.faces.view.facelets.TagException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.facelets.tag.jsf.ComponentSupport;
 
@@ -64,9 +62,7 @@ import com.sun.faces.facelets.tag.jsf.ComponentSupport;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  * @since 5.4
  */
-public class AliasTagHandler extends MetaTagHandler {
-
-    private static final Log log = LogFactory.getLog(AliasTagHandler.class);
+public class AliasTagHandler extends ComponentHandler {
 
     protected final TagAttribute cache;
 
@@ -76,7 +72,12 @@ public class AliasTagHandler extends MetaTagHandler {
 
     protected final List<String> blockedPatterns;
 
-    public AliasTagHandler(TagConfig config,
+    /**
+     * @since 6.0
+     */
+    protected final TagAttribute anchor;
+
+    public AliasTagHandler(ComponentConfig config,
             Map<String, ValueExpression> variables) {
         this(config, variables, null);
     }
@@ -84,11 +85,12 @@ public class AliasTagHandler extends MetaTagHandler {
     /**
      * @since 5.6
      */
-    public AliasTagHandler(TagConfig config,
+    public AliasTagHandler(ComponentConfig config,
             Map<String, ValueExpression> variables, List<String> blockedPatterns) {
         super(config);
         id = getAttribute("id");
         cache = getAttribute("cache");
+        anchor = getAttribute("anchor");
         this.variables = variables;
         this.blockedPatterns = blockedPatterns;
     }
@@ -128,6 +130,59 @@ public class AliasTagHandler extends MetaTagHandler {
     }
 
     protected void apply(FaceletContext ctx, UIComponent parent,
+            AliasVariableMapper alias, FaceletHandler nextHandler)
+            throws IOException, FacesException, FaceletException, ELException {
+        if (Framework.isBooleanPropertyTrue("nuxeo.jsf.removeAliasOptims")) {
+            applyCompat(ctx, parent, alias, nextHandler);
+            return;
+        }
+
+        // resolve the "anchor" attribute to decide whether variable should be
+        // anchored in the tree as a UIAliasHolder
+        boolean createComponent = false;
+        if (anchor != null) {
+            createComponent = anchor.getBoolean(ctx);
+        }
+        applyAliasHandler(ctx, parent, alias, nextHandler, createComponent);
+    }
+
+    protected void applyAliasHandler(FaceletContext ctx, UIComponent parent,
+            AliasVariableMapper alias, FaceletHandler nextHandler,
+            boolean createComponent) throws IOException, FacesException,
+            FaceletException, ELException {
+        if (createComponent) {
+            // start by removing component from tree if it is already there, to
+            // make sure it's recreated next
+            String id = ctx.generateUniqueId(getTagId());
+            UIComponent c = ComponentSupport.findChildByTagId(parent, id);
+            if (c != null && c.getParent() != parent) {
+                c.getParent().getChildren().remove(c);
+            }
+        }
+
+        String id = alias.getId();
+        VariableMapper orig = ctx.getVariableMapper();
+        VariableMapper vm = alias.getVariableMapperForBuild(orig);
+        ctx.setVariableMapper(vm);
+        FacesContext facesContext = ctx.getFacesContext();
+        try {
+            AliasVariableMapper.exposeAliasesToRequest(facesContext, alias);
+            if (createComponent) {
+                super.apply(ctx, parent);
+            } else {
+                nextHandler.apply(ctx, parent);
+            }
+        } finally {
+            AliasVariableMapper.removeAliasesExposedToRequest(facesContext, id);
+            ctx.setVariableMapper(orig);
+        }
+    }
+
+    /**
+     * Compatibility application of facelet handler, used to preserve behaviour
+     * while optimizing and improving variables exposure and resolution.
+     */
+    protected void applyCompat(FaceletContext ctx, UIComponent parent,
             AliasVariableMapper alias, FaceletHandler nextHandler)
             throws IOException, FacesException, FaceletException, ELException {
         String id = alias.getId();
@@ -183,12 +238,6 @@ public class AliasTagHandler extends MetaTagHandler {
         // this allows children to determine if it's
         // been part of the tree or not yet
         parent.getChildren().add(c);
-
-    }
-
-    @Override
-    protected MetaRuleset createMetaRuleset(Class type) {
-        return null;
     }
 
 }

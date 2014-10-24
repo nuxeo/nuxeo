@@ -16,14 +16,12 @@
  */
 package org.nuxeo.ecm.platform.ui.web.binding.alias;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
@@ -117,66 +115,42 @@ public class AliasVariableMapper extends VariableMapper {
         this.blockedPatterns = blockedPatterns;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static AliasVariableMapper getVariableMapper(
-            FacesContext facesContext, String id) {
-        ExternalContext ec = facesContext.getExternalContext();
-        Map<String, AliasVariableMapper> mappers = (Map) ec.getRequestMap().get(
-                AliasVariableMapper.REQUEST_MARKER);
-        if (mappers == null) {
+    public static AliasVariableMapper getVariableMapper(FacesContext ctx,
+            String id) {
+        NuxeoAliasBean a = lookupBean(ctx);
+        if (a != null) {
+            return a.get(id);
+        }
+        return null;
+    }
+
+    public static void exposeAliasesToRequest(FacesContext ctx,
+            AliasVariableMapper vm) {
+        NuxeoAliasBean a = lookupBean(ctx);
+        if (a != null) {
+            a.add(vm);
+        }
+    }
+
+    public static void removeAliasesExposedToRequest(FacesContext ctx, String id) {
+        // do not remove aliases from bean anymore: bean is kept in request
+        // scope and will be emptied at the end of the request
+        // NuxeoAliasBean a = lookupBean(ctx);
+        // if (a != null) {
+        // a.remove(id);
+        // }
+        return;
+    }
+
+    protected static NuxeoAliasBean lookupBean(FacesContext ctx) {
+        String expr = "#{" + NuxeoAliasBean.NAME + "}";
+        NuxeoAliasBean bean = (NuxeoAliasBean) ctx.getApplication().evaluateExpressionGet(
+                ctx, expr, Object.class);
+        if (bean == null) {
+            log.error("Managed bean not found: " + expr);
             return null;
         }
-        return mappers.get(id);
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static void exposeAliasesToRequest(FacesContext facesContext,
-            AliasVariableMapper vm) {
-        if (vm == null) {
-            return;
-        }
-        String id = vm.getId();
-        if (id == null && log.isDebugEnabled()) {
-            log.debug("Encountered alias variable mapper with null id");
-        }
-        ExternalContext ec = facesContext.getExternalContext();
-        Map<String, AliasVariableMapper> mappers = (Map) ec.getRequestMap().get(
-                AliasVariableMapper.REQUEST_MARKER);
-        if (mappers == null) {
-            mappers = new HashMap<String, AliasVariableMapper>();
-        }
-        if (mappers.containsKey(id)) {
-            if (log.isTraceEnabled()) {
-                log.trace(String.format(
-                        "Overriding alias variable mapper with id '%s'", id));
-            }
-        }
-        mappers.put(id, vm);
-        ec.getRequestMap().put(AliasVariableMapper.REQUEST_MARKER, mappers);
-        if (log.isTraceEnabled()) {
-            log.trace(String.format(
-                    "Expose alias variable mapper with id '%s' to request: %s",
-                    id, vm.getVariables()));
-        }
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static void removeAliasesExposedToRequest(FacesContext facesContext,
-            String id) {
-        if (log.isTraceEnabled()) {
-            log.trace(String.format(
-                    "Remove alias variable mapper with id '%s' from request",
-                    id));
-        }
-        if (id == null) {
-            return;
-        }
-        ExternalContext ec = facesContext.getExternalContext();
-        Map<String, AliasVariableMapper> mappers = (Map) ec.getRequestMap().get(
-                AliasVariableMapper.REQUEST_MARKER);
-        if (mappers != null) {
-            mappers.remove(id);
-        }
+        return bean;
     }
 
     @Override
