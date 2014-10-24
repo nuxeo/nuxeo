@@ -28,7 +28,9 @@ class Spreadsheet {
     this.container = container;
     this.connection = connection;
 
+    this._data = [];
     this.options = {
+      data: this._data,
       autoColumnSize: false,
       colWidths: 200,
       stretchH: 'all',
@@ -45,6 +47,7 @@ class Spreadsheet {
 
     this.query = new Query(connection);
     this.query.enrichers = ['permissions', 'vocabularies'];
+    this.query.pageSize = 1000;
 
     new Layout(connection, layout).fetch().then((layout) => {
       // Check which columns to display
@@ -69,7 +72,7 @@ class Spreadsheet {
   get data() { return this._data; }
   set data(d) {
     this._data = d;
-    this.ht.loadData(d);
+    this.ht.loadData(this._data);
   }
 
   // Returns source data
@@ -97,27 +100,21 @@ class Spreadsheet {
     return cell;
   }
 
+  _fetch() {
+    return this.query.run()
+        .then((result) => {
+          Array.prototype.push.apply(this._data, result.entries);
+          this.ht.render();
+          if (result.isNextPageAvailable) {
+            this.query.page++;
+            return this._fetch();
+          }
+        });
+  }
+
   update() {
-    // Fetch first page to get the number of pages
-    return this.query.run().then((result) => {
-      // Add the first page results as a resolved promise
-      var promises = [Promise.resolve(result.entries)];
-
-      // TODO(nfgs) - handle more than MAX_RESULTS
-      // Must sequentially check for next page in this case
-
-      // Add all the other page requests to the promise list
-      for (var i = 1; i < result.numberOfPages; i++) {
-        this.query.page = i;
-        promises.push(this.query.run().then((result) => result.entries));
-      }
-      // Wait for all the promisses
-      return Promise.all(promises);
-    })
-      // Merge all the entries
-      .then((entries) => entries.reduce((data, page) => data.concat(page)))
-      // Update the table data
-      .then((data) => this.data = data);
+    this.query.page = 0;
+    return this._fetch();
   }
 
   save() {

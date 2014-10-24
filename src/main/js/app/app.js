@@ -27,9 +27,11 @@ var isStandalone = !query;
 // Our Spreadsheet instance
 var sheet;
 
+var log;
+
 function setupUI() {
 
-  var log = new Log($('#console'));
+  log = new Log($('#console'));
 
   // Only display close button in popup
   if (!isStandalone) {
@@ -80,7 +82,9 @@ function doQuery() {
   var q = $('#query').val();
   // Only parse queries in standalone mode
   sheet.query.nxql = (isStandalone) ? parseNXQL(q) : q;
-  sheet.update();
+  sheet.update().catch(function(err) {
+    log.error(err.message);
+  })
 }
 
 function run() {

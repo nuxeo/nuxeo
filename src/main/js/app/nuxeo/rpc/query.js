@@ -38,8 +38,12 @@ class Query extends Operation {
     this.params.providerName = name;
   }
 
+  get page() {
+    return this.params.currentPageIndex;
+  }
+
   set page(p) {
-    this.params.page = p;
+    this.params.currentPageIndex = p;
   }
 
   set pageSize(s) {
