@@ -7,34 +7,24 @@ if (window.jsf) {
   var jsfAjaxResponse = jsf.ajax.response;
   var getForm = function getForm(element) {
     if (element) {
-      var form = $(element);
-      while (form) {
-        if (form.nodeName && (form.nodeName.toLowerCase() == 'form')) {
-          return form;
-        }
-        if (form.form) {
-          return form.form;
-        }
-        if (form.parentNode) {
-          form = form.parentNode;
-        } else {
-          form = null;
-        }
+      var form = jQuery(element).parents("form");
+      if (form.length === 0) {
+        form = jQuery(document.forms[0]);
       }
-      return document.forms[0];
+      return form;
     }
     return null;
   };
   jsf.ajax.request = function request(source, event, options) {
     var form = getForm(source);
     var cheating = false;
-    if (form && form.enctype == "multipart/form-data") {
-      form.enctype = "";
+    if (form && form.attr("enctype") == "multipart/form-data") {
+      form.attr("enctype", "");
       cheating = true;
     }
     var res = jsfAjaxRequest(source, event, options);
     if (cheating) {
-      form.enctype = "multipart/form-data";
+      form.attr("enctype", "multipart/form-data");
     }
     return res;
   }
