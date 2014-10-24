@@ -1,18 +1,26 @@
 <packages>
-  <packageDefinitions baseUrl="http://cdn.nuxeo.com/nuxeo-@VERSION@/mp/">
-    <package id="nuxeo-cap" label="Content Application Platform (CAP)" color="#635959" textcolor="#FFF" shortlabel="CAP" virtual="true"/>
-    <package id="nuxeo-dm" label="Advanced Document Management (DM)" filename="nuxeo-dm-@VERSION@.zip" md5="@DMMPMD5@" color="#5e9adf" textcolor="#FFF" shortlabel="DM"/>
-    <package id="nuxeo-drive" label="Drive" color="#5AC456" textcolor="#FFF" shortlabel="Drive"/>
+  <packageDefinitions baseUrl="http://cdn.nuxeo.com/nuxeo-5.9.6-SNAPSHOT/mp/">
+    <package id="nuxeo-cap" label="Content Application Platform (CAP)" color="#635959" textcolor="#FFF" shortlabel="CAP" virtual="true" desc="Content Application Platform"/>
+    <package id="nuxeo-dam" label="Digital Asset Management (DAM)" color="#ffeb6d" textcolor="#333" shortlabel="DAM" desc="Digital Asset Management"/>
+    <package id="nuxeo-drive" label="Drive" color="#5AC456" textcolor="#FFF" shortlabel="DRIVE" desc="Drive"/>
+    <package id="nuxeo-diff" label="Nuxeo Diff (DIFF)" color="#5e9adf" textcolor="#FFF" shortlabel="DIFF" desc="Nuxeo Diff"/>
+    <package id="nuxeo-spreadsheet" label="Spreadsheet (GRID)" color="#ff736e" textcolor="#FFF" shortlabel="GRID" desc="Spreadsheet"/>
+    <package id="nuxeo-web-mobile-dm" label="Mobile (MOB)" color="#faac05" textcolor="#FFF" shortlabel="MOB" desc="Mobile"/>
+    <package id="nuxeo-template-rendering" label="Template Rendering (TMPL)" color="#c3c7c9" textcolor="#FFF" shortlabel="TMPL" desc="Template Rendering"/>
   </packageDefinitions>
   <install>
     <packageOptions>
       <package ref="nuxeo-cap" exclusive="false">
-        <package ref="nuxeo-dm" exclusive="false" />
+        <package ref="nuxeo-dam" exclusive="false"/>
         <package ref="nuxeo-drive" exclusive="false" />
+        <package ref="nuxeo-diff" exclusive="false" />
+        <package ref="nuxeo-spreadsheet" exclusive="false" />
+        <package ref="nuxeo-web-mobile-dm" exclusive="false" />
+        <package ref="nuxeo-template-rendering" exclusive="false" />
       </package>
     </packageOptions>
   </install>
   <presets>
-    <preset id="nuxeo-dm" label="Nuxeo DM">nuxeo-cap,nuxeo-dm</preset>
+    <preset id="nuxeo-cap-preset" label="Nuxeo CAP Preset">nuxeo-cap,nuxeo-dam,nuxeo-drive,nuxeo-web-mobile-dm</preset>
   </presets>
 </packages>

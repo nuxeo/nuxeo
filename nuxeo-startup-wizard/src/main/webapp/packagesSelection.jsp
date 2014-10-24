@@ -29,6 +29,7 @@ function createCheckBox(pkg) {
   checkBox += " name=\"" + pkg.id + "\" ";
   checkBox += " pkg=\"" + pkg.package + "\" ";
   checkBox += " exclusive=\"" + pkg.exclusive + "\" ";
+  checkBox += " title=\"" + pkg.desc + "\" ";
   checkBox += ">";
   checkBox += pkg.label;
   checkBox += "</input>";

@@ -157,30 +157,24 @@
     <antcall target="reorganize-libs-zip-attach" />
   </target>
 
-  <target name="add-marketplace-packages"
-          description="Embed Marketplace packages of CAP, DM and DAM">
-    <!-- retrieve Marketplace packages -->
-    <copy todir="${maven.project.build.directory}">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-dm::zip" />
-    </copy>
-    <!-- compute MD5 checksums -->
-    <checksum file="${maven.project.build.directory}/nuxeo-marketplace-dm-${nuxeo.distribution.version}.zip" property="DMMPMD5" />
-    <!-- Copy default packages.xml file -->
-    <copy file="src/main/resources/packages.xml"
-          tofile="${tomcat}/setupWizardDownloads/packages.xml">
-      <filterset>
-        <filter token="DMMPMD5" value="${DMMPMD5}" />
-        <filter token="VERSION" value="${nuxeo.distribution.version}" />
-      </filterset>
-    </copy>
+  <target name="copy-packages-xml">
+  <!-- Copy default packages.xml file -->
+  <copy file="src/main/resources/packages.xml"
+        tofile="${tomcat}/setupWizardDownloads/packages.xml">
+  </copy>
+  </target>
 
-    <!-- Embed the MP files -->
-    <move file="${maven.project.build.directory}/nuxeo-marketplace-dm-${nuxeo.distribution.version}.zip" tofile="${tomcat}/setupWizardDownloads/${DMMPMD5}" />
+  <target name="sample-installAfterRestart-files">
+    <echo file="${tomcat}/nxserver/data/installAfterRestart-SC.log">init
+install nuxeo-sc
+    </echo>
+    <echo file="${tomcat}/nxserver/data/installAfterRestart-DAM.log">init
+install nuxeo-dam</echo>
   </target>
 
   <target name="build-nuxeo-cap"
           if="build.cap"
-          depends="add-marketplace-packages"
+          depends="sample-installAfterRestart-files,copy-packages-xml"
           description="Build Tomcat distribution with Nuxeo CAP">
     <echo>Building Nuxeo CAP...</echo>
     <property name="distribution.dir"
@@ -201,7 +195,7 @@
     </antcall>
 
     <echo file="${distribution.dir}/setupWizardDownloads/packages-default-selection.properties"
-          message="preset=nuxeo-dm" />
+          message="preset=nuxeo-cap-preset" />
 
     <antcall target="reorganize-libs-zip-attach" />
   </target>

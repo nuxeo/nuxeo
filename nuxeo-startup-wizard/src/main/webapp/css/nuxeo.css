@@ -228,7 +228,7 @@ textarea {
 
 #wizardform h5 {
   color: #213f7d ;
-	padding: 1.5em 0 .5em;}
+  padding: 1.5em 0 .5em;}
 
 /* Tables & Forms */
 .labelCell {
@@ -322,7 +322,6 @@ table.smtp,
 #tree {
   border-left: 5px solid #00adff;
   border-radius: 15px;
-  float: left;
   margin: 1em 0 2em;
   padding: .7em 1em .4em;}
 
@@ -345,7 +344,6 @@ ul#treeul li {
   display: none;}
 
 .blocContainer {
-  float: right;
   margin: 1em .4em 2em 0;}
 
 .presetLabel {
@@ -385,7 +383,7 @@ ul#treeul li {
 
 .nxprow {
   margin: 4px;
-  width: 200px;
+  width: 100%;
   height: 34px;}
 /* Step: Summary*/
 .highlighted {
