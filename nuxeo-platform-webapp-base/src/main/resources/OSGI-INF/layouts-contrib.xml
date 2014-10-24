@@ -3303,10 +3303,10 @@
             <layout name="toggleableLayoutViewWithForms_widget_type_properties_any">
               <rows>
                 <row>
-                  <widget>initialLayoutName</widget>
+                  <widget>initialDocumentMode</widget>
                 </row>
                 <row>
-                  <widget>toggledLayoutName</widget>
+                  <widget>toggledDocumentMode</widget>
                 </row>
                 <row>
                   <widget>styleClass</widget>
@@ -3348,45 +3348,54 @@
                   <widget>cancelActionLabel</widget>
                 </row>
                 <row>
+                  <widget>defaultLayout</widget>
+                </row>
+                <row>
                   <widget>template</widget>
                 </row>
               </rows>
-              <widget name="initialLayoutName" type="selectOneResource">
+              <widget name="initialDocumentMode" type="text">
                 <labels>
-                  <label mode="any">Layout(s)</label>
+                  <label mode="any">Initial document mode</label>
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The layout to display before toggling the
-                    mode. Also accepts a list of multiple layout names,
-                    separated by commas.
+                    The document mode to use.
                   </label>
                 </helpLabels>
                 <fields>
-                  <field>initialLayoutName</field>
+                  <field>initialDocumentMode</field>
+                </fields>
+              </widget>
+              <widget name="toggledDocumentMode" type="text">
+                <labels>
+                  <label mode="any">Toggled document mode</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The document mode to use.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>toggledDocumentMode</field>
+                </fields>
+              </widget>
+              <widget name="defaultLayout" type="selectOneResource">
+                <labels>
+                  <label mode="any">Default layout</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The default layout to use if no layout are defined
+                    for the given document mode.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>defaultLayout</field>
                 </fields>
                 <properties mode="any">
                   <property name="resourceName">layouts</property>
                   <property name="required">true</property>
-                </properties>
-              </widget>
-              <widget name="toggledLayoutName" type="selectOneResource">
-                <labels>
-                  <label mode="any">Toggled layout(s)</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The layout to display after toggling the
-                    mode. Also accepts a list of multiple layout names,
-                    separated by commas. If not filled, defaults to the initial
-                    layout name(s).
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>toggledLayoutName</field>
-                </fields>
-                <properties mode="any">
-                  <property name="resourceName">layouts</property>
                 </properties>
               </widget>
               <widget name="template" type="selectOneResource">
@@ -3639,7 +3648,7 @@
                   <widget>defaultLayout</widget>
                 </row>
                 <row>
-                  <widget>includeAnyMode</widget>
+                  <widget>canToggleMode</widget>
                 </row>
               </rows>
               <widget name="mode" type="text">
@@ -3704,7 +3713,7 @@
                   <property name="required">true</property>
                 </properties>
               </widget>
-              <widget name="includeAnyMode" type="text">
+              <widget name="canToggleMode" type="text">
                 <labels>
                   <label mode="any">Can toggle mode</label>
                 </labels>
@@ -3722,7 +3731,7 @@
                   </label>
                 </helpLabels>
                 <fields>
-                  <field>includeAnyMode</field>
+                  <field>canToggleMode</field>
                 </fields>
               </widget>
             </layout>
