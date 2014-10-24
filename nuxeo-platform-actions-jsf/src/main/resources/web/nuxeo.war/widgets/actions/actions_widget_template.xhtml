@@ -18,6 +18,7 @@
 <nxu:set var="actionsPanelId" value="#{widget.id}_panel"
   cache="true">
 <nxu:set var="actionsAjaxReRender" value="#{nxu:componentAbsoluteId(component, actionsPanelId)}">
+<nxu:set var="ajaxReRender" value="#{nxu:joinRender(actionsAjaxReRender, nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender))}">
 <nxu:set var="formAdded" value="#{widgetProperty_addForm}" cache="true">
 
   <nxu:valueHolder id="#{clickedActionIdHolder}"
@@ -36,7 +37,6 @@
               <span class="horizontalAction #{widgetProperty_containerStyleClass} #{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
                 <ui:decorate template="/incl/action/action_template.xhtml">
                   <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
-                  <ui:param name="ajaxReRender" value="#{nxu:joinRender(actionsAjaxReRender, nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender))}" />
                   <ui:param name="addForm" value="#{widgetProperty_addForm}" />
                   <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
                   <ui:param name="formStyleClass" value="displayI subWidgetForm" />
@@ -62,7 +62,6 @@
               <li class="#{widgetProperty_containerStyleClass} #{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
                 <ui:decorate template="/incl/action/action_template.xhtml">
                   <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
-                  <ui:param name="ajaxReRender" value="#{nxu:joinRender(actionsAjaxReRender, nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender))}" />
                   <ui:param name="addForm" value="#{widgetProperty_addForm}" />
                   <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
                   <ui:param name="formStyleClass" value="displayI subWidgetForm" />
@@ -87,7 +86,6 @@
                   <li class="#{widgetProperty_containerStyleClass} #{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
                     <ui:decorate template="/incl/action/action_template.xhtml">
                       <ui:param name="actionsDisplay" value="#{nxu:test(widgetProperty_actionsDisplay == 'buttons', 'links', widgetProperty_actionsDisplay)}" />
-                      <ui:param name="ajaxReRender" value="#{nxu:joinRender(actionsAjaxReRender, nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender))}" />
                       <ui:param name="addForm" value="#{widgetProperty_addForm}" />
                       <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
                       <ui:param name="formStyleClass" value="subWidgetForm" />
@@ -115,7 +113,6 @@
             <div class="widgetPanel actionsWidgetPanel #{widgetProperty_containerStyleClass} #{action.properties.containerStyleClass}">
               <ui:decorate template="/incl/action/action_template.xhtml">
                 <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
-                <ui:param name="ajaxReRender" value="#{nxu:joinRender(actionsAjaxReRender, nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender))}" />
                 <ui:param name="addForm" value="#{widgetProperty_addForm}" />
                 <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
                 <ui:param name="formStyleClass" value="subWidgetForm" />
@@ -143,6 +140,7 @@
     </a4j:outputPanel>
 
   </nxu:valueHolder>
+</nxu:set>
 </nxu:set>
 </nxu:set>
 </nxu:set>

@@ -750,9 +750,6 @@
                 <row>
                   <widget category="actionWidgetTypeConf">fancybox_enableEscapeButton</widget>
                 </row>
-                <row>
-                  <widget category="actionWidgetTypeConf">fancybox_onClosed</widget>
-                </row>
               </rows>
             </layout>
           </layouts>
