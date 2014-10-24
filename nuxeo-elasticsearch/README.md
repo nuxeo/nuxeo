@@ -221,13 +221,6 @@ ready on `nuxeo_v2` you switch atomically
 
   - Fulltext
 
-      - Fulltext search on field is supported if the Elasticsearch
-	mapping is properly defined. For instance
-	`ecm:fulltext.dc:title = 'foo*'` works if there is a multi
-	field `dc:title.fulltext`. Visit the [default
-	configuration](https://github.com/nuxeo/nuxeo-distribution/blob/master/nuxeo-distribution-resources/src/main/resources/templates-tomcat/common-base/nxserver/config/elasticsearch-config.xml.nxftl)
-	to find some examples.
-
       - The fulltext syntax accepted is different from the default
         NXQL.  It is the Elasticsearch [simple query string
         syntax](http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html#_simple_query_string_syntax).
@@ -235,11 +228,16 @@ ready on `nuxeo_v2` you switch atomically
       - The `ecm:fulltext` matches the Elasticsearch `_all` field
         which is the concatenation of all fields. This is different
         from the NXQL `ecm:fulltext` which matches only some explicit
-        fields. Note that you can exclude field from `_all` by
-        changing the mapping.
+        fields. You can adapt the mapping to exclude some field see
+        above section for example.
 
       - Custom fulltext indexes are not supported.
         `ecm:fulltext_someindex` will match the `_all` field.
+
+      - Fulltext search on field is supported if the Elasticsearch
+        mapping is properly defined. For instance
+	`ecm:fulltext.dc:title = 'foo*'` works if there is a multi
+	field `dc:title.fulltext`. See above section for example.
 
   - Fields are case-sensitive: `ecm:primaryType` vs `ecm:primarytype`
 
