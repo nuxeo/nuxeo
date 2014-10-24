@@ -3285,10 +3285,7 @@
           when using it.
         </description>
         <categories>
-          <category>configuration_not_ready</category>
-          <!--
-            <category>tab_designer</category>
-          -->
+          <category>tab_designer</category>
         </categories>
         <fields>
           <defaultConfiguration>
@@ -3612,10 +3609,7 @@
           for the given mode.
         </description>
         <categories>
-          <category>configuration_not_ready</category>
-          <!--
-            <category>tab_designer</category>
-          -->
+          <category>tab_designer</category>
         </categories>
         <fields>
           <defaultConfiguration>
