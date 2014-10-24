@@ -250,7 +250,7 @@ public class IndexingCommand implements Serializable {
                 IdRef ref = new IdRef(cmd.uid);
                 if (!session.exists(ref)) {
                     if (!IndexingCommand.DELETE.equals(cmd.getName())) {
-                        log.warn("Unable to restieve document " + cmd.uid
+                        log.warn("Unable to retrieve document " + cmd.uid
                                 + " form indexing command " + cmd.name);
                     }
                 } else {

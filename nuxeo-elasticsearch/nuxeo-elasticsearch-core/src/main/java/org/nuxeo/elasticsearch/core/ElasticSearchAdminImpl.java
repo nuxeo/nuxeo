@@ -200,7 +200,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             client.admin().indices().status(new IndicesStatusRequest()).get();
         } catch (InterruptedException | ExecutionException
                 | NoNodeAvailableException e) {
-            String message = "Failed to connect to elasticsearch: "
+            String message = "Failed to connect to elasticsearch, check addressList and clusterName: "
                     + e.getMessage();
             log.error(message, e);
             throw new RuntimeException(message, e);
