@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -81,6 +84,24 @@ public class TestUrlCodecs {
                 docView2.getParameter(RenditionBasedCodec.RENDITION_PARAM_NAME));
         assertEquals(RenditionBasedCodec.RENDITION_VIEW_ID,
                 docView2.getViewId());
+    }
+
+    @Test
+    public void testRenditionUrlWithNewDocumentView() {
+        String renditionName = "My Rendition Name";
+        String docPath = "/some/path";
+        String docId = "dbefd5a0-35ee-4ed2-a023-6817714f32cf";
+
+        DocumentLocation documentLocation = new DocumentLocationImpl("default",
+                new IdRef(docId), new PathRef(docPath));
+        Map<String, String> params = new HashMap<>();
+        params.put(RenditionBasedCodec.RENDITION_PARAM_NAME, renditionName);
+        DocumentView docView = new DocumentViewImpl(documentLocation,
+                RenditionBasedCodec.RENDITION_VIEW_ID, params);
+
+        RenditionBasedCodec codec = new DocumentRenditionCodec();
+        String url = codec.getUrlFromDocumentView(docView);
+        assertEquals("nxrendition/default/some/path@My%20Rendition%20Name", url);
     }
 
 }

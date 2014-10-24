@@ -23,9 +23,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -155,13 +155,24 @@ public class RenditionBasedCodec extends AbstractDocumentViewCodec {
                 return null;
             }
             items.add(docRef.toString());
-            String renditionName = docView.getViewId();
+            String renditionName = docView.getParameter(RENDITION_PARAM_NAME);
+            if (StringUtils.isBlank(renditionName)) {
+                // fall-back on view id
+                renditionName = docView.getViewId();
+            }
             if (renditionName != null) {
                 items.add(URIUtils.quoteURIPathComponent(renditionName, true));
             }
             String uri = StringUtils.join(items, "/");
-            return URIUtils.addParametersToURIQuery(uri,
-                    docView.getParameters());
+            Map<String, String> params = new HashMap<>();
+            Map<String, String> dcparams = docView.getParameters();
+            if (dcparams != null) {
+                params.putAll(dcparams);
+            }
+            if (params != null && params.containsKey(RENDITION_PARAM_NAME)) {
+                params.remove(RENDITION_PARAM_NAME);
+            }
+            return URIUtils.addParametersToURIQuery(uri, params);
         }
         return null;
     }
@@ -194,15 +205,26 @@ public class RenditionBasedCodec extends AbstractDocumentViewCodec {
                 items.add(URIUtils.quoteURIPathComponent(path, false));
             }
             String uri = StringUtils.join(items, "/");
-            String renditionName = docView.getViewId();
+            String renditionName = docView.getParameter(RENDITION_PARAM_NAME);
+            if (StringUtils.isBlank(renditionName)) {
+                // fall-back on view id
+                renditionName = docView.getViewId();
+            }
 
             if (renditionName != null) {
                 uri += "@"
                         + URIUtils.quoteURIPathComponent(renditionName, true);
             }
 
-            String uriWithParam = URIUtils.addParametersToURIQuery(uri,
-                    docView.getParameters());
+            Map<String, String> params = new HashMap<>();
+            Map<String, String> dcparams = docView.getParameters();
+            if (dcparams != null) {
+                params.putAll(dcparams);
+            }
+            if (dcparams != null && dcparams.containsKey(RENDITION_PARAM_NAME)) {
+                params.remove(RENDITION_PARAM_NAME);
+            }
+            String uriWithParam = URIUtils.addParametersToURIQuery(uri, params);
 
             // If the URL with the Path codec is to long, it use the URL with
             // the Id Codec.
