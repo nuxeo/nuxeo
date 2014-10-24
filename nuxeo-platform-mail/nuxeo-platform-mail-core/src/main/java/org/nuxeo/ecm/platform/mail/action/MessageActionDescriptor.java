@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.mail.action;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.mail.listener.action.CreateDocumentsFromAutomationChainAction;
 
 /**
  * @author Laurent Doguin
@@ -34,6 +35,9 @@ public class MessageActionDescriptor {
     @XNode("@to")
     private String to;
 
+    @XNode("@chain")
+    private String chain;
+    
     @XNode
     Class<? extends MessageAction> action;
 
@@ -54,6 +58,9 @@ public class MessageActionDescriptor {
 
     public MessageAction getAction() {
         try {
+            if (action==null || chain!=null) {
+                return new CreateDocumentsFromAutomationChainAction(chain);
+            }
             return action.newInstance();
         } catch (InstantiationException e) {
             throw new RuntimeException(

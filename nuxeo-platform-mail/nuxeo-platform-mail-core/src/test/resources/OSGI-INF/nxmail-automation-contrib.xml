@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.mail.automation.override">
+  
+  <require>org.nuxeo.ecm.platform.mail.service.MailServiceContrib</require>
+    
+  <extension target="org.nuxeo.ecm.platform.MailService" point="actionPipes">
+    <pipe name="nxmail"  override="true">
+      <action>
+        org.nuxeo.ecm.platform.mail.listener.action.StartAction
+      </action>
+      <action>
+        org.nuxeo.ecm.platform.mail.listener.action.ExtractMessageInformationAction
+      </action>
+      <action chain="CreateMailDocumentFromAutomation">
+        org.nuxeo.ecm.platform.mail.listener.action.CreateDocumentsFromAutomationChainAction
+      </action>
+    </pipe>
+
+  </extension>
+
+</component>

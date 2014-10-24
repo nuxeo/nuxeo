@@ -75,6 +75,26 @@
         service doesn't find the next action.
       </p>
 
+      <p>
+        Since 6.0, you can use Automation to control how Documents are created from email. 
+        For that you need to redefine the ActionPipe.
+        <code>
+         <pipe name="nxmail"  override="true">
+          <action>
+            org.nuxeo.ecm.platform.mail.listener.action.StartAction
+          </action>
+          <action>
+            org.nuxeo.ecm.platform.mail.listener.action.ExtractMessageInformationAction
+          </action>
+          <action chain="CreateMailDocumentFromAutomation">
+            org.nuxeo.ecm.platform.mail.listener.action.CreateDocumentsFromAutomationChainAction
+          </action>
+         </pipe>
+        </code>
+        
+        Then the CreateMailDocumentFromAutomation Chain whill be used to create the content.
+      </p>
+
     </documentation>
     <object
       class="org.nuxeo.ecm.platform.mail.action.MessageActionPipeDescriptor" />

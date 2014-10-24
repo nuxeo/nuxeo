@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.mail.automation.chains" version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
+    <chain id="CreateMailDocumentFromAutomation">
+      <operation id="Context.RestoreDocumentInput">
+        <param type="string" name="name">mailFolder</param>
+      </operation>
+      <operation id="Document.Create">
+        <param type="string" name="type">MailMessage</param>
+        <param type="string" name="name">expr:Context["mailDocumentName"]</param>
+        <param type="properties" name="properties">expr:mail:messageId=@{messageId}
+        </param>
+      </operation>
+      <operation id="Context.SetInputAsVar">
+        <param type="string" name="name">mailDocument</param>
+      </operation>
+      <operation id="Context.RunOperationOnList">
+        <param type="string" name="id">ProcessAttachment</param>
+        <param type="string" name="list">attachments</param>
+        <param type="boolean" name="isolate">true</param>
+        <param type="string" name="item">attachment</param>
+      </operation>
+      <operation id="Context.RunScript">
+        <param type="string" name="script">
+           
+           Context["mailDocument"].setPropertyValue("dc:title",Context["subject"]);
+           Context["mailDocument"].setPropertyValue("mail:htmlText",Context["text"]);
+           Context["mailDocument"].setPropertyValue("mail:recipients",Context["recipients"]);
+           Context["mailDocument"].setPropertyValue("mail:cc_recipients",Context["ccRecipients"]);
+           Context["mailDocument"].setPropertyValue("mail:sending_date",Context["sendingDate"]);
+              
+        </param>
+      </operation>
+      <operation id="Context.RestoreDocumentInput">
+        <param type="string" name="name">mailDocument</param>
+      </operation>
+      <operation id="Document.Save"/>
+    </chain>
+    <chain id="ProcessAttachment">
+      <operation id="Context.RestoreBlobInput">
+        <param type="string" name="name">attachment</param>
+      </operation>
+      <operation id="Blob.Attach">
+        <param type="document" name="document">expr:Context["mailDocument"]</param>
+        <param type="boolean" name="save">false</param>
+        <param type="string" name="xpath">files:files</param>
+      </operation>
+    </chain>
+  </extension>
+
+</component>
+  
