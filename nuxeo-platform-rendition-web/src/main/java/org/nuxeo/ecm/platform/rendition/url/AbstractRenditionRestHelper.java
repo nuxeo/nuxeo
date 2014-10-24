@@ -82,7 +82,7 @@ public abstract class AbstractRenditionRestHelper implements Serializable {
         }
         DocumentModel doc = documentManager.getDocument(docLoc.getDocRef());
         if (doc != null) {
-            String renditionName = docView.getViewId();
+            String renditionName = docView.getParameter(RenditionBasedCodec.RENDITION_PARAM_NAME);
             FacesContext context = FacesContext.getCurrentInstance();
             Blob rendered = null;
             try {

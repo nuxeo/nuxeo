@@ -30,7 +30,9 @@ public class TestUrlCodecs {
         assertNotNull(dv2);
         assertEquals(repo, dv2.getDocumentLocation().getServerName());
         assertEquals(path, dv2.getDocumentLocation().getPathRef().toString());
-        assertEquals(rendition, dv2.getViewId());
+        assertEquals(rendition,
+                dv2.getParameter(RenditionBasedCodec.RENDITION_PARAM_NAME));
+        assertEquals(RenditionBasedCodec.RENDITION_VIEW_ID, dv2.getViewId());
 
         return url;
     }
@@ -56,12 +58,16 @@ public class TestUrlCodecs {
                 new IdRef(docId), new PathRef(docPath));
         DocumentView docView = new DocumentViewImpl(documentLocation,
                 renditionName);
+
         RenditionBasedCodec codec = new DocumentRenditionCodec();
         String url = codec.getUrlFromDocumentView(docView);
         assertEquals("nxrendition/default/some/path@My%20Rendition%20Name", url);
 
         DocumentView docView2 = codec.getDocumentViewFromUrl(url);
-        assertEquals(renditionName, docView2.getViewId());
+        assertEquals(renditionName,
+                docView2.getParameter(RenditionBasedCodec.RENDITION_PARAM_NAME));
+        assertEquals(RenditionBasedCodec.RENDITION_VIEW_ID,
+                docView2.getViewId());
 
         // force version to get a URL based on docid
         docView.addParameter("version", "true");
@@ -71,7 +77,10 @@ public class TestUrlCodecs {
                 url);
 
         docView2 = codec.getDocumentViewFromUrl(url);
-        assertEquals(renditionName, docView2.getViewId());
+        assertEquals(renditionName,
+                docView2.getParameter(RenditionBasedCodec.RENDITION_PARAM_NAME));
+        assertEquals(RenditionBasedCodec.RENDITION_VIEW_ID,
+                docView2.getViewId());
     }
 
 }

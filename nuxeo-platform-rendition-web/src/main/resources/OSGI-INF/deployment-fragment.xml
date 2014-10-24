@@ -13,6 +13,18 @@
     </filter-mapping>
   </extension>
 
+  <extension target="faces-config#NAVIGATION">
+
+    <!-- register seam template so that excel generation plays
+      well with url service -->
+    <navigation-case>
+      <from-outcome>rendition</from-outcome>
+      <to-view-id>/rendition/rendition.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+  </extension>
+
   <install>
     <!-- unzip the war template -->
     <unzip from="${bundle.fileName}" to="/" prefix="web">

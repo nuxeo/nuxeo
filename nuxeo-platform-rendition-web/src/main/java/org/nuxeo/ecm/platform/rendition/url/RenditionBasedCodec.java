@@ -16,8 +16,8 @@
 
 package org.nuxeo.ecm.platform.rendition.url;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -46,16 +46,25 @@ import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
  * parameters. View is used to represent the Rendition name.
  * <p>
  * This codec supports both path abd id based urls.
- * 
+ *
  * @since 5.6
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class RenditionBasedCodec extends AbstractDocumentViewCodec {
 
     protected static final Log log = LogFactory.getLog(DocumentRenditionCodec.class);
 
     public static final int URL_MAX_LENGTH = 2000;
+
+    /**
+     * @since 6.0
+     */
+    public static final String RENDITION_PARAM_NAME = "rendition";
+
+    /**
+     * @since 6.0
+     */
+    public static final String RENDITION_VIEW_ID = "rendition";
 
     public static final String PATH_URL_PATTERN = "/" // slash
             + "([\\w\\.]+)" // server name (group 1)
@@ -94,9 +103,13 @@ public class RenditionBasedCodec extends AbstractDocumentViewCodec {
             // get other parameters
             String query = pathMatcher.group(4);
             Map<String, String> params = URIUtils.getRequestParameters(query);
+            if (params == null) {
+                params = new HashMap<String, String>();
+            }
+            params.put(RENDITION_PARAM_NAME, renditionName);
             final DocumentLocation docLoc = new DocumentLocationImpl(server,
                     docRef);
-            return new DocumentViewImpl(docLoc, renditionName, params);
+            return new DocumentViewImpl(docLoc, RENDITION_VIEW_ID, params);
         } else {
             final Pattern idPattern = Pattern.compile(getPrefix()
                     + ID_URL_PATTERN);
@@ -116,10 +129,15 @@ public class RenditionBasedCodec extends AbstractDocumentViewCodec {
                         String query = idMatcher.group(7);
                         params = URIUtils.getRequestParameters(query);
                     }
+                    if (params == null) {
+                        params = new HashMap<String, String>();
+                    }
+                    params.put(RENDITION_PARAM_NAME, renditionName);
 
                     final DocumentLocation docLoc = new DocumentLocationImpl(
                             server, docRef);
-                    return new DocumentViewImpl(docLoc, renditionName, params);
+                    return new DocumentViewImpl(docLoc, RENDITION_VIEW_ID,
+                            params);
                 }
             }
         }
