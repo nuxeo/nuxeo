@@ -21,6 +21,7 @@
   <short-name>nxp</short-name>
   <uri>http://nuxeo.org/nxweb/pdf</uri>
   <description>
+    <![CDATA[
     <p>The NXWebPlatform (re)definition of Seam PDF tag library.</p>
     <p>
       This JSF library works as a wrapper of the Seam PDF tag library. As this
@@ -28,6 +29,7 @@
       wrapper library makes it possible to change easily the implementation
       without impacting templates using it.
     </p>
+    ]]>
   </description>
 
 </taglib>

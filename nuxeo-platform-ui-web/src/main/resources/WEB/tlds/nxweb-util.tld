@@ -21,6 +21,7 @@
   <short-name>nxu</short-name>
   <uri>http://nuxeo.org/nxweb/util</uri>
   <description>
+    <![CDATA[
     <p>The NXWebPlatform (re)definition of basic tags.</p>
     <p>
       Basic tags can be seen as useful tags which are still not really specific
@@ -155,6 +156,7 @@
         render attribute for ajax components on JSF2. Available since 5.9.5.
       </li>
     </ul>
+    ]]>
   </description>
 
   <tag>

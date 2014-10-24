@@ -190,6 +190,7 @@
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description>
+      <![CDATA[
         The list of tab ids to select as current tab actions. List is encoded as
         a String separated by the comma ',' character, and each each action
         information looks like:
@@ -210,6 +211,7 @@
           The resulting string looks like:
           CATEGORY_1:ACTION_ID_1,CATEGORY_2:ACTION_ID_2_SUB_ACTION_ID_2,...
         </p>
+      ]]>
       </description>
     </attribute>
     <attribute>
