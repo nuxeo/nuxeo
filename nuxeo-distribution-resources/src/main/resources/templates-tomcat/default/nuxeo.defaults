@@ -6,7 +6,7 @@ nuxeo.db.type=default
 nuxeo.db.name=nuxeo
 nuxeo.db.user=sa
 nuxeo.db.password=
-nuxeo.db.jdbc.url=jdbc:h2:${nuxeo.db.name}
+nuxeo.db.jdbc.url=jdbc:h2:${nuxeo.db.name};DB_CLOSE_ON_EXIT=false
 nuxeo.db.driver=org.h2.Driver
 nuxeo.db.xadatasource=org.h2.jdbcx.JdbcDataSource
 
