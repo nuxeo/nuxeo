@@ -247,9 +247,20 @@ ready on `nuxeo_v2` you switch atomically
   - ILIKE will work only with a proper mapping with an analyzer
     configured to lowercase index.
 
-  - There is no support of complex list correlations like:
+  - There is no support of complex list correlations or indices support
+    we always search on all elements so this kind of query can not be done:
 
-        files/*1/file/name LIKE '%.txt' AND files/*1/file/length = 0)
+        files:files/*1/file/name LIKE '%.txt' AND files:files/*1/file/length = 0
+        dc:subjects/3 = 'foo'
+
+    These previous queries will not match any documents. Note that the
+    match any `/*` is supported.
+
+  - No support of canonical name for complex properties without
+    prefix, so you need to write `file:content/name` and not just
+    `content/name`.  See
+    [NXP-15426](https://jira.nuxeo.com/browse/NXP-15426) for more
+    information.
 
 
 ## Reporting Problems
