@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="nuxeo-platform-forms-layout-demo" default="web-tomcat" basedir=".">
+<project name="nuxeo-platform-spreadsheet" default="web-tomcat" basedir=".">
 
   <import file="../../build.xml" />
   <property file="build.properties" />
