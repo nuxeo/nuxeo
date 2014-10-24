@@ -81,7 +81,7 @@ function setupUI() {
 function doQuery() {
   var q = $('#query').val();
   // Only parse queries in standalone mode
-  sheet.query.nxql = (isStandalone) ? parseNXQL(q) : q;
+  sheet.nxql = (isStandalone) ? parseNXQL(q) : q;
   sheet.update().catch(function(err) {
     log.error(err.message);
   })
@@ -101,7 +101,7 @@ function run() {
 
       // Setup the SpreadSheet
       sheet = new Spreadsheet($('#grid'), nx, layout, (columns) ? columns.split(',') : null);
-      sheet.query.nxql = query;
+      sheet.nxql = query;
 
       if (query) {
         doQuery();

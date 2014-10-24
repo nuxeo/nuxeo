@@ -47,7 +47,7 @@ class Spreadsheet {
 
     this.query = new Query(connection);
     this.query.enrichers = ['permissions', 'vocabularies'];
-    this.query.pageSize = 1000;
+    this.query.pageProvider = 'spreadsheet_query';
 
     new Layout(connection, layout).fetch().then((layout) => {
       // Check which columns to display
@@ -98,6 +98,10 @@ class Spreadsheet {
       cell.readOnly = true;
     }
     return cell;
+  }
+
+  set nxql(q) {
+    this.query.queryParams = [q];
   }
 
   _fetch() {
