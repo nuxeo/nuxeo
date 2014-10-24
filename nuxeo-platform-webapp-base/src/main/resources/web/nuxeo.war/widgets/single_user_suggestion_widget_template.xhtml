@@ -37,7 +37,7 @@
   <c:if test="#{widget.mode == 'pdf'}">
     <nxp:html>
     <nxu:set var="info"
-      value="#{widgetProperty_prefixed ? userSuggestionActions.getPrefixedUserInfo(field) : userSuggestionActions.getUserInfo(field)}" cache="true">
+      value="#{widgetProperty_prefixed ? userSuggestionActions.getPrefixedUserInfo(field) : userSuggestionActions.getUserInfo(field)}" cache="false">
       <ui:include src="user_group_display_template.xhtml" />
     </nxu:set>
     </nxp:html>
