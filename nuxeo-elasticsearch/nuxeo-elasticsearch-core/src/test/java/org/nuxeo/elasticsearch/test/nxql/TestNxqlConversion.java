@@ -609,6 +609,82 @@ public class TestNxqlConversion {
     }
 
     @Test
+    public void testConvertComplexListProperties() throws Exception {
+        String es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where dc:subjects/* = 'foo'")
+                .toString();
+        // this is supported and match any element of the list
+        assertEqualsEvenUnderWindows("{\n"
+                + "  \"constant_score\" : {\n"
+                + "    \"filter\" : {\n"
+                + "      \"term\" : {\n"
+                + "        \"dc:subjects\" : \"foo\"\n"
+                + "      }\n"
+                + "    }\n"
+                + "  }\n"
+                + "}", es);
+
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where files:files/*/file/length=123")
+                .toString();
+        assertEqualsEvenUnderWindows("{\n"
+                + "  \"constant_score\" : {\n"
+                + "    \"filter\" : {\n"
+                + "      \"term\" : {\n"
+                + "        \"files:files.file.length\" : \"123\"\n"
+                + "      }\n"
+                + "    }\n"
+                + "  }\n"
+                + "}", es);
+
+    }
+
+    @Test
+    public void testConvertComplexListPropertiesUnsupported() throws Exception {
+        String es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where dc:subjects/3 = 'foo'")
+                .toString();
+        // This is not supported and generate query that is going to match nothing
+        assertEqualsEvenUnderWindows("{\n"
+                + "  \"constant_score\" : {\n"
+                + "    \"filter\" : {\n"
+                + "      \"term\" : {\n"
+                + "        \"dc:subjects.3\" : \"foo\"\n"
+                + "      }\n"
+                + "    }\n"
+                + "  }\n"
+                + "}", es);
+
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where dc:subjects/*1 = 'foo'")
+                .toString();
+        // This is not supported and generate query that is going to match nothing
+        assertEqualsEvenUnderWindows("{\n"
+                + "  \"constant_score\" : {\n"
+                + "    \"filter\" : {\n"
+                + "      \"term\" : {\n"
+                + "        \"dc:subjects1\" : \"foo\"\n"
+                + "      }\n"
+                + "    }\n"
+                + "  }\n"
+                + "}", es);
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where files:files/*1/file/length=123")
+                .toString();
+        // This is not supported and generate query that is going to match nothing
+        assertEqualsEvenUnderWindows("{\n"
+                + "  \"constant_score\" : {\n"
+                + "    \"filter\" : {\n"
+                + "      \"term\" : {\n"
+                + "        \"files:files1.file.length\" : \"123\"\n"
+                + "      }\n"
+                + "    }\n"
+                + "  }\n"
+                + "}", es);
+
+    }
+
+    @Test
     public void testOrderByFromNxql() throws Exception {
         NxQueryBuilder qb = new NxQueryBuilder(session)
                 .nxql("name='foo' ORDER BY name DESC").limit(10);

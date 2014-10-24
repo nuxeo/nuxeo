@@ -206,7 +206,7 @@ final public class NxqlQueryConverter {
         if (NXQL.ECM_ISVERSION_OLD.equals(name)) {
             name = NXQL.ECM_ISVERSION;
         }
-        name = name.replace("/", ".");
+        name = getComplexFieldName(name);
         if (name.startsWith(NXQL.ECM_FULLTEXT)
                 && ("=".equals(op) || "!=".equals(op) || "<>".equals(op)
                         || "LIKE".equals(op) || "NOT LIKE".equals(op))) {
@@ -276,6 +276,12 @@ final public class NxqlQueryConverter {
             filter = FilterBuilders.existsFilter(name);
         }
         return new QueryAndFilter(query, filter);
+    }
+
+    protected static String getComplexFieldName(String name) {
+        name = name.replace("/*", "");
+        name = name.replace("/", ".");
+        return name;
     }
 
     public static List<SortInfo> getSortInfo(String nxql) {
