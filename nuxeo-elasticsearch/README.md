@@ -33,7 +33,7 @@ To join the cluster edit the `nuxeo.conf` and add the following lines:
 
 Where:
 
-- `addressList` points to one or many Elasticsearch nodes. Not that we
+- `addressList` points to one or many Elasticsearch nodes. Note that we
    connect to the API port **9300** and not the http port 9200.
 
 - `clusterName` is the cluster name to join, `elasticsearch` being the
@@ -92,9 +92,9 @@ Edit the `/tmp/es-conf.json` file at your convenance.
 
 Here are some examples of common changes
 
-#### Customize the language
+##### Customize the language
 
-The Nuxeo code use a fulltext analyzer named `fulltext`, this is an
+The Nuxeo code uses a fulltext analyzer named `fulltext`, this is an
 alias that point to the `en_fulltext` analyzer by default. By moving
 the
 
@@ -103,7 +103,7 @@ the
 line into the `fr_fulltext` you setup a French analyzer.
 
 
-#### Make ILIKE works (Case insensitive search)
+##### Make ILIKE works (Case insensitive search)
 
 If you want to do case insensitive search or use an `ILIKE` operation:
 
@@ -123,7 +123,7 @@ instance:
             "analyzer" : "lowercase"
           },
 
-#### New fulltext field
+##### New fulltext field
 
 To use the fulltext search syntax on a custom field you need to create
 a multi_field like this:
@@ -143,7 +143,7 @@ a multi_field like this:
                }
             },
 
-#### Exclude a field from the fulltext search
+##### Exclude a field from the fulltext search
 
 Suppose you want to exclude `my:secret` field from the `ecm:fulltext` search:
 
@@ -253,8 +253,6 @@ ready on `nuxeo_v2` you switch atomically
 
         files/*1/file/name LIKE '%.txt' AND files/*1/file/length = 0)
 
-- Content view does not support ORDER BY clause inside fixed part or
-  pattern. You need to use the proper SORT element.
 
 ## Reporting Problems
 
