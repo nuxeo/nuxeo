@@ -3360,7 +3360,7 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The document mode to use.
+                    The initial document mode to use.
                   </label>
                 </helpLabels>
                 <fields>
@@ -3373,7 +3373,7 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The document mode to use.
+                    The toggled document mode to use.
                   </label>
                 </helpLabels>
                 <fields>
