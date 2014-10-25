@@ -345,6 +345,10 @@
 
     <el-resolver>org.nuxeo.ecm.platform.el.DocumentModelResolver</el-resolver>
 
+    <resource-handler>
+      org.nuxeo.ecm.platform.ui.web.application.NuxeoResourceHandler
+    </resource-handler>
+
   </extension>
 
   <extension target="faces-config#FACTORY">

@@ -47,8 +47,12 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
 import javax.faces.FacesException;
+import javax.faces.application.ViewResource;
+import javax.faces.context.FacesContext;
 import javax.faces.view.facelets.Facelet;
 import javax.faces.view.facelets.FaceletCache;
+
+import org.nuxeo.ecm.platform.ui.web.application.NuxeoUnknownResource;
 
 import com.sun.faces.util.ConcurrentCache;
 import com.sun.faces.util.ExpiringConcurrentCache;
@@ -63,9 +67,9 @@ import com.sun.faces.util.FacesLogger;
  * (and then breaking the refresh mechanism)</li>
  * </ul>
  *
- * @since 5.9.6: copy/paste of default implementation because constructor
- *        is package private, and changing private DefaultFacelet
- *        implementation references to {@link Facelet}, and for bufix/adapt.
+ * @since 5.9.6: copy/paste of default implementation because constructor is
+ *        package private, and changing private DefaultFacelet implementation
+ *        references to {@link Facelet}, and for bufix/adapt.
  */
 final class DefaultFaceletCache extends FaceletCache<Facelet> {
 
@@ -124,14 +128,63 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
     @Override
     public Facelet getFacelet(URL url) throws IOException {
         com.sun.faces.util.Util.notNull("url", url);
+
         Facelet f = null;
 
         try {
-            f = _faceletCache.get(url).getFacelet();
+            // Nuxeo patches to avoid crash on unknown facelets
+            String path = url.getPath();
+            if (path.contains(NuxeoUnknownResource.MARKER)) {
+                f = getErrorFacelet(url, null);
+            } else {
+                f = _faceletCache.get(url).getFacelet();
+            }
+            if (f == null) {
+                f = getErrorFacelet(url, null);
+            }
+        } catch (ExecutionException e) {
+            f = getErrorFacelet(url, e);
+        }
+
+        return f;
+    }
+
+    /**
+     * Build error facelet, taking into account the fact that depending on
+     * resource inclusion (absolute or relative), an error might happen when
+     * checking the last modified information.
+     *
+     * @since 6.0
+     */
+    protected Facelet getErrorFacelet(URL url, ExecutionException origError)
+            throws IOException {
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        if (ctx == null) {
+            if (origError != null) {
+                _unwrapIOException(origError);
+            }
+            return null;
+        }
+
+        try {
+            // wrap with marker
+            String path = url.getPath();
+            String lookupPath;
+            if (path.startsWith(NuxeoUnknownResource.MARKER)) {
+                lookupPath = path;
+            } else {
+                lookupPath = NuxeoUnknownResource.MARKER + path;
+            }
+            ViewResource res = ctx.getApplication().getResourceHandler().createViewResource(
+                    ctx, lookupPath);
+            if (res != null) {
+                return _faceletCache.get(res.getURL()).getFacelet();
+            }
+            return null;
         } catch (ExecutionException e) {
             _unwrapIOException(e);
+            return null;
         }
-        return f;
     }
 
     @Override
