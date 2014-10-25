@@ -53,6 +53,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
 
+    protected static final String CAN_ASK_FOR_PUBLISHING = "CanAskForPublishing";
+
     private DirectoryService directoryService;
 
     private PublisherService publisherService;
@@ -145,6 +147,17 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         existingACL.add(new ACE("myuser4", SecurityConstants.READ, true));
         acp.addACL(existingACL);
         session.setACP(root.getRef(), acp, true);
+
+        // give explicit CanAskForPublishing permission because
+        // the users are not in the members group
+        acp = session.getACP(sectionsRoot.getRef());
+        existingACL = acp.getOrCreateACL();
+        existingACL.add(new ACE("myuser1", CAN_ASK_FOR_PUBLISHING, true));
+        existingACL.add(new ACE("myuser2", CAN_ASK_FOR_PUBLISHING, true));
+        existingACL.add(new ACE("myuser3", CAN_ASK_FOR_PUBLISHING, true));
+        existingACL.add(new ACE("myuser4", CAN_ASK_FOR_PUBLISHING, true));
+        acp.addACL(existingACL);
+        session.setACP(sectionsRoot.getRef(), acp, true);
 
         DocumentModel ws1 = session.getDocument(new PathRef(
                 "default-domain/workspaces/ws1"));
