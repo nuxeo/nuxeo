@@ -42,7 +42,7 @@ import org.nuxeo.ecm.platform.publisher.helper.PublicationRelationHelper;
 
 /**
  * Simple implementation of a {@link PublicationTree} using the Core Sections.
- * 
+ *
  * @author tiry
  */
 public class SectionPublicationTree extends AbstractBasePublicationTree
@@ -52,7 +52,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
 
     private static final Log log = LogFactory.getLog(SectionPublicationTree.class);
 
-    protected static final String CAN_ASK_FOR_PUBLISHING = "CanAskForPublishing";
+    public static final String CAN_ASK_FOR_PUBLISHING = "CanAskForPublishing";
 
     protected static final String DEFAULT_ROOT_PATH = "/default-domain/sections";
 

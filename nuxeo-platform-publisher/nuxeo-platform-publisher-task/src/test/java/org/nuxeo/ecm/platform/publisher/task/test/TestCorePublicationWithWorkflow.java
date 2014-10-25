@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.publisher.task.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.publisher.impl.core.SectionPublicationTree.CAN_ASK_FOR_PUBLISHING;
 
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +45,7 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
+import org.nuxeo.ecm.platform.publisher.impl.core.SectionPublicationTree;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.ecm.platform.task.test.TaskUTConstants;
 import org.nuxeo.runtime.api.Framework;
@@ -52,8 +54,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
-
-    protected static final String CAN_ASK_FOR_PUBLISHING = "CanAskForPublishing";
 
     private DirectoryService directoryService;
 
