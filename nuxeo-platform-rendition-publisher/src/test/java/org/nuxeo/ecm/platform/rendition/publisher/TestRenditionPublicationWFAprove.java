@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.rendition.publisher;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.publisher.impl.core.SectionPublicationTree.CAN_ASK_FOR_PUBLISHING;
 import static org.nuxeo.ecm.platform.rendition.publisher.RenditionPublicationFactory.RENDITION_NAME_PARAMETER_KEY;
 
 import java.util.Collections;
@@ -52,6 +53,7 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
+import org.nuxeo.ecm.platform.publisher.impl.core.SectionPublicationTree;
 import org.nuxeo.ecm.platform.publisher.task.CoreProxyWithWorkflowFactory;
 import org.nuxeo.ecm.platform.task.test.TaskUTConstants;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -160,6 +162,19 @@ public class TestRenditionPublicationWFAprove {
         existingACL.add(new ACE("myuser4", SecurityConstants.READ, true));
         acp.addACL(existingACL);
         session.setACP(root.getRef(), acp, true);
+
+        // give explicit CanAskForPublishing permission because
+        // the users are not in the members group
+        DocumentModel sectionsRoot = session.getDocument(new PathRef(
+                "default-domain/sections"));
+        acp = session.getACP(sectionsRoot.getRef());
+        existingACL = acp.getOrCreateACL();
+        existingACL.add(new ACE("myuser1", CAN_ASK_FOR_PUBLISHING, true));
+        existingACL.add(new ACE("myuser2", CAN_ASK_FOR_PUBLISHING, true));
+        existingACL.add(new ACE("myuser3", CAN_ASK_FOR_PUBLISHING, true));
+        existingACL.add(new ACE("myuser4", CAN_ASK_FOR_PUBLISHING, true));
+        acp.addACL(existingACL);
+        session.setACP(sectionsRoot.getRef(), acp, true);
 
         DocumentModel ws1 = session.getDocument(new PathRef(
                 "default-domain/workspaces/ws1"));
