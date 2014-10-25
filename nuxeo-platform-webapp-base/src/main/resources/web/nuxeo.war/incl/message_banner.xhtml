@@ -20,6 +20,16 @@
           });
         </script>
       </c:if>
+      <script type="text/javascript">
+        jsf.ajax.addOnError(function(data) {
+          jQuery.ambiance({
+            title: data.description,
+            type: "error",
+            className: "errorFeedback",
+            timeout: 0
+          });
+        });
+      </script>
     </div>
 
     <nxh:messages globalOnly="true"
