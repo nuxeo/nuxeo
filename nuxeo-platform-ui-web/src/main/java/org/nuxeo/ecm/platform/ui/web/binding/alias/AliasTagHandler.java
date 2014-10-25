@@ -132,7 +132,7 @@ public class AliasTagHandler extends ComponentHandler {
     protected void apply(FaceletContext ctx, UIComponent parent,
             AliasVariableMapper alias, FaceletHandler nextHandler)
             throws IOException, FacesException, FaceletException, ELException {
-        if (Framework.isBooleanPropertyTrue("nuxeo.jsf.removeAliasOptims")) {
+        if (!Framework.isBooleanPropertyFalse("nuxeo.jsf.removeAliasOptims")) {
             applyCompat(ctx, parent, alias, nextHandler);
             return;
         }
