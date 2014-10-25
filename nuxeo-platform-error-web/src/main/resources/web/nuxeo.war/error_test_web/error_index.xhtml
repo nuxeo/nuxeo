@@ -1,23 +1,37 @@
-<html xmlns="http://www.w3.org/1999/xhtml"
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:f="http://java.sun.com/jsf/core">
-  <f:view contentType="text/html" />
-  <h:head>
-    <title>Test error management in Nuxeo</title>
-  </h:head>
-  <h:outputScript name="js/fixviewstate.js" target="head" />
-  <h:outputScript name="js/fixformtargetframeid.js" target="head" />
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-<body>
+<ui:define name="body">
+
+<ui:include src="/incl/message_banner.xhtml" />
 
 <h3>Test errors in Nuxeo JSF</h3>
-
-<h:messages globalOnly="true"/>
 
 <h:form disableDoubleClickShield="true">
   <ul>
     <li><h:commandLink action="error_invalid_html"
       value="Error invalid html" /></li>
+    <li><h:commandLink action="error_jsf_function_checked"
+      value="JSF checked error" /></li>
+    <li><h:commandLink action="error_jsf_function_unchecked"
+      value="JSF unchecked error" /></li>
+  </ul>
+</h:form>
+
+<h3>Test facelet errors</h3>
+
+<h:form disableDoubleClickShield="true">
+  <ul>
     <li><h:commandLink action="error_ui_include_not_found"
       value="Error ui:include not found" /></li>
     <li><h:commandLink action="error_ui_include_relative_not_found"
@@ -26,12 +40,9 @@
       value="Error ui:decorate not found" /></li>
     <li><h:commandLink action="error_ui_composition_not_found"
       value="Error ui:composition not found" /></li>
-    <li><h:commandLink action="error_jsf_function_checked"
-      value="JSF checked error" /></li>
-    <li><h:commandLink action="error_jsf_function_unchecked"
-      value="JSF unchecked error" /></li>
   </ul>
 </h:form>
+
 
 <h3>Test errors in Nuxeo Seam</h3>
 
@@ -67,6 +78,29 @@
   </ul>
 </h:form>
 
+
+<h3>Test errors in Nuxeo Seam, ajaxified</h3>
+
+<h:form disableDoubleClickShield="true">
+  <ul>
+    <li><a4j:commandLink
+      action="#{errorSeamComponent.performCheckedError}"
+      value="Seam action checked error ajaxified" /></li>
+    <li><a4j:commandLink
+      action="#{errorSeamComponent.performUncheckedError}"
+      value="Seam action unchecked error ajaxified" /></li>
+    <li><a4j:commandLink
+      action="#{errorSeamComponent.performSecurityError}"
+      value="Seam action security error ajaxified" /></li>
+    <li><a4j:commandLink
+      action="#{errorSeamComponent.performRecoverableClientException}"
+      value="Seam action Rollback via RecoverableClientException ajaxified" /></li>
+    <li><a4j:commandLink
+      action="#{errorSeamComponent.performPureRollback}"
+      value="Seam action simple Rollback ajaxified" /></li>
+  </ul>
+</h:form>
+
 <h3>Test behaviours in Nuxeo Seam</h3>
 
 <h:form disableDoubleClickShield="true">
@@ -80,6 +114,6 @@
   </ul>
 </h:form>
 
-</body>
+</ui:define>
 
-</html>
+</nxthemes:composition>

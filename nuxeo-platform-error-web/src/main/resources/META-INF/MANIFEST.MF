@@ -6,6 +6,7 @@ Bundle-Vendor: Nuxeo
 Nuxeo-Require: org.nuxeo.ecm.webapp.core,
  org.nuxeo.ecm.webengine.core
 Nuxeo-Component: OSGI-INF/error-anonymous-contrib.xml,
- OSGI-INF/error-actions-contrib.xml
+ OSGI-INF/error-actions-contrib.xml,
+ OSGI-INF/error-theme-contrib.xml
 Nuxeo-RequiredBy: org.nuxeo.ecm.war
 Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule
