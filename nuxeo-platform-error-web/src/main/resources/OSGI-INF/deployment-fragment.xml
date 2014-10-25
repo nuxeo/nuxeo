@@ -26,6 +26,12 @@
     </navigation-case>
 
     <navigation-case>
+      <from-outcome>error_ui_include_relative_not_found</from-outcome>
+      <to-view-id>/error_test_web/error_ui_include_relative_not_found.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
       <from-outcome>error_ui_decorate_not_found</from-outcome>
       <to-view-id>/error_test_web/error_ui_decorate_not_found.xhtml</to-view-id>
       <redirect />
