@@ -50,7 +50,7 @@ public class ConverterOperation {
     @Param(name = "converter", description = "The name of the converter to call")
     protected String converter;
 
-    @Param(name = "parameters", description = "The converter parameters to pass")
+    @Param(name = "parameters", description = "The converter parameters to pass", required = false)
     protected Properties parameters;
 
     @Context
@@ -77,7 +77,7 @@ public class ConverterOperation {
         for (Entry<String, String> entry : parameters.entrySet()) {
             Object value = entry.getValue();
 
-            //FIXME: What if it's an integer, a float, a double, etc ...
+            // FIXME: What if it's an integer, a float, a double, etc ...
             Serializable serializable = null;
             try {
                 serializable = Integer.valueOf(value.toString());
