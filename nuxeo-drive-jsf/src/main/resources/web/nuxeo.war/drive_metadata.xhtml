@@ -3,12 +3,15 @@
 <nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxthemes="http://nuxeo.org/nxthemes"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <ui:define name="body">
 
     <ui:include src="/incl/message_banner.xhtml"/>
-    <nxl:layout value="#{currentDocument}" name="driveMetadataGridLayout" mode="view" />
+    <nxu:set var="tipsyGravity" value="tipsyGravitySW">
+      <nxl:layout value="#{currentDocument}" name="driveMetadataGridLayout" mode="view" />
+    </nxu:set>
 
   </ui:define>
 
