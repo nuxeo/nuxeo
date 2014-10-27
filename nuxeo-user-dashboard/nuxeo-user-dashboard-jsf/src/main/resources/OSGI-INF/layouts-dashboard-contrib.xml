@@ -19,10 +19,6 @@
       </templates>
       <rows>
         <row>
-          <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle6</property>
-            <property name="nxl_gridStyleClass_1">gridStyle6</property>
-          </properties>
           <widget>dashboard_left</widget>
           <widget>dashboard_right</widget>
         </row>
@@ -41,6 +37,9 @@
       <properties widgetMode="any">
         <property name="category">DASHBOARD_LEFT</property>
       </properties>
+      <controls mode="any">
+        <control name="gridStyleClass">gridStyle6</control>
+      </controls>
     </widget>
 
     <widget name="dashboard_right" type="documentActions">
@@ -50,6 +49,9 @@
       <properties widgetMode="any">
         <property name="category">DASHBOARD_RIGHT</property>
       </properties>
+      <controls mode="any">
+        <control name="gridStyleClass">gridStyle6</control>
+      </controls>
     </widget>
 
     <widget name="dashboard_user_tasks" type="contentViewWithForms">
