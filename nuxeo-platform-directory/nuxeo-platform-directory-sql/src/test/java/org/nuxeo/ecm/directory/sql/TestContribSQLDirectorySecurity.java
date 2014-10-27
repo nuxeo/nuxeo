@@ -29,10 +29,8 @@ import javax.security.auth.login.LoginException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Directory;
@@ -49,7 +47,6 @@ import com.google.inject.Inject;
 @LocalDeploy({
         "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-schema-override.xml",
         "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-security.xml" })
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestContribSQLDirectorySecurity {
 
     @Inject
