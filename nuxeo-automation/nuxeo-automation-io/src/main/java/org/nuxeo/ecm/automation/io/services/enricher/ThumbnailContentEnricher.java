@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.automation.io.services.enricher;
 
+import java.io.IOException;
+
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -23,8 +25,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.runtime.api.Framework;
-
-import java.io.IOException;
 
 /**
  * This contributor adds a document Thumbnail Download URL
@@ -45,19 +45,16 @@ public class ThumbnailContentEnricher extends AbstractContentEnricher {
     public void enrich(JsonGenerator jg, RestEvaluationContext ec)
             throws ClientException, IOException {
         DocumentModel doc = ec.getDocumentModel();
-        ThumbnailAdapter thumbnailAdapter = doc.getAdapter(ThumbnailAdapter
-                .class);
+        ThumbnailAdapter thumbnailAdapter = doc.getAdapter(ThumbnailAdapter.class);
         jg.writeStartObject();
         if (thumbnailAdapter != null) {
             try {
-                Blob thumbnail = thumbnailAdapter.getThumbnail(doc
-                        .getCoreSession());
+                Blob thumbnail = thumbnailAdapter.getThumbnail(doc.getCoreSession());
                 if (thumbnail != null) {
-                    String url = Framework.getProperty("nuxeo.url") + "/" +
-                            DocumentModelFunctions.fileUrl
-                                    (DOWNLOAD_THUMBNAIL, doc,
-                                            THUMB_THUMBNAIL,
-                                            thumbnail.getFilename());
+                    String url = DocumentModelFunctions.fileUrl(
+                            Framework.getProperty("nuxeo.url"),
+                            DOWNLOAD_THUMBNAIL, doc, THUMB_THUMBNAIL,
+                            thumbnail.getFilename());
                     jg.writeStringField(THUMBNAIL_URL_LABEL, url);
                 } else {
                     writeEmptyThumbnail(jg);
