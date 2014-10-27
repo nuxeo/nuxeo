@@ -800,6 +800,7 @@
       </properties>
       <controls mode="any">
         <control name="handleLabels">true</control>
+        <control name="gridStyleClass">gridStyle12</control>
       </controls>
     </widget>
 
@@ -813,6 +814,7 @@
       </properties>
       <controls mode="any">
         <control name="handleLabels">true</control>
+        <control name="gridStyleClass">gridStyle7</control>
       </controls>
     </widget>
 
@@ -826,6 +828,7 @@
       </properties>
       <controls mode="any">
         <control name="handleLabels">true</control>
+        <control name="gridStyleClass">gridStyle5</control>
       </controls>
     </widget>
 
@@ -839,6 +842,7 @@
       </properties>
       <controls mode="any">
         <control name="handleLabels">true</control>
+        <control name="gridStyleClass">gridStyle12</control>
       </controls>
     </widget>
 
@@ -989,23 +993,13 @@
       </templates>
       <rows>
         <row>
-          <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle12</property>
-          </properties>
           <widget>summary_panel_top</widget>
         </row>
         <row>
-          <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle7</property>
-            <property name="nxl_gridStyleClass_1">gridStyle5</property>
-          </properties>
           <widget>summary_panel_left</widget>
           <widget>summary_panel_right</widget>
         </row>
         <row>
-          <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle12</property>
-          </properties>
           <widget>summary_panel_bottom</widget>
         </row>
       </rows>

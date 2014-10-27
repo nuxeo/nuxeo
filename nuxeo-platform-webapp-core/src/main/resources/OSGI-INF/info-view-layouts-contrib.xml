@@ -10,6 +10,9 @@
       </properties>
       <controls mode="any">
         <control name="requireSurroundingForm">false</control>
+        <control name="gridStyleClass">
+          gridStyle8 infoViewLeft
+        </control>
       </controls>
     </widget>
 
@@ -19,6 +22,9 @@
       </properties>
       <controls mode="any">
         <control name="requireSurroundingForm">false</control>
+        <control name="gridStyleClass">
+          gridStyle4 compactLayout infoViewRight
+        </control>
       </controls>
     </widget>
 
@@ -64,7 +70,7 @@
             <property name="template">
               /widgets/info_view_no_preview_widget.xhtml
             </property>
-          </properties>es>
+          </properties>
         </widget>
       </subWidgets>
     </widget>
@@ -215,8 +221,8 @@
       </properties>
     </action>
 
-    <action id="infoPermalinkAction" order="20" label="label.permalink" type="fancybox"
-      icon="/icons/contextual_menu/share.png" accessKey="k">
+    <action id="infoPermalinkAction" order="20" label="label.permalink"
+      type="fancybox" icon="/icons/contextual_menu/share.png" accessKey="k">
       <category>INFO_VIEW_ACTIONS</category>
       <properties>
         <property name="include">/incl/permalink_box.xhtml</property>
@@ -266,10 +272,6 @@
       </templates>
       <rows>
         <row>
-          <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle8 infoViewLeft</property>
-            <property name="nxl_gridStyleClass_1">gridStyle4 compactLayout infoViewRight</property>
-          </properties>
           <widget>infoViewPanelLeft</widget>
           <widget>infoViewPanelRight</widget>
         </row>
@@ -284,39 +286,21 @@
       </templates>
       <rows>
         <row>
-          <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle12</property>
-          </properties>
           <widget>infoViewInfoBox</widget>
         </row>
         <row>
-          <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle12</property>
-          </properties>
           <widget>infoViewMetadata</widget>
         </row>
         <row>
-          <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle12</property>
-          </properties>
           <widget>infoViewWorkflow</widget>
         </row>
         <row>
-          <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle12</property>
-          </properties>
           <widget>infoViewTags</widget>
         </row>
         <row>
-          <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle12</property>
-          </properties>
           <widget>infoViewCollections</widget>
         </row>
         <row>
-          <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle12</property>
-          </properties>
           <widget>infoViewComments</widget>
         </row>
       </rows>
@@ -327,6 +311,9 @@
         <properties widgetMode="any">
           <property name="hideSubLabels">true</property>
         </properties>
+        <controls mode="any">
+          <control name="gridStyleClass">gridStyle12</control>
+        </controls>
       </widget>
       <widget name="infoViewMetadata" type="container">
         <labels>
@@ -347,6 +334,7 @@
         </subWidgets>
         <controls mode="any">
           <control name="handleLabels">true</control>
+          <control name="gridStyleClass">gridStyle12</control>
         </controls>
         <properties widgetMode="any">
           <property name="hideSubLabels">true</property>
@@ -366,12 +354,14 @@
         </subWidgets>
         <controls mode="any">
           <control name="handleLabels">true</control>
+          <control name="gridStyleClass">gridStyle12</control>
         </controls>
         <properties widgetMode="any">
           <property name="hideSubLabels">true</property>
         </properties>
         <widgetModes>
-          <mode value="view">#{routingActions.filteredRouteModels.size() > 0 ? 'view' : 'hidden'}</mode>
+          <mode value="view">#{routingActions.filteredRouteModels.size() > 0 ?
+            'view' : 'hidden'}</mode>
         </widgetModes>
       </widget>
       <widget name="infoViewTags" type="container">
@@ -393,6 +383,7 @@
         </subWidgets>
         <controls mode="any">
           <control name="handleLabels">true</control>
+          <control name="gridStyleClass">gridStyle12</control>
         </controls>
         <properties widgetMode="any">
           <property name="hideSubLabels">true</property>
@@ -408,17 +399,20 @@
         </subWidgets>
         <controls mode="any">
           <control name="handleLabels">true</control>
+          <control name="gridStyleClass">gridStyle12</control>
         </controls>
         <properties widgetMode="any">
           <property name="hideSubLabels">true</property>
         </properties>
         <widgetModes>
-          <mode value="view">#{collectionActions.hasCurrentDocumentVisibleCollection() ? 'view' : 'hidden'}</mode>
+          <mode value="view">#{collectionActions.hasCurrentDocumentVisibleCollection()
+            ? 'view' : 'hidden'}</mode>
         </widgetModes>
       </widget>
       <widget name="infoViewComments" type="container">
         <labels>
-          <label mode="any">#{nxu:translate('label.summary.comments', documentThreadedComments.size)}</label>
+          <label mode="any">#{nxu:translate('label.summary.comments',
+            documentThreadedComments.size)}</label>
         </labels>
         <translated>false</translated>
         <subWidgets>
@@ -430,12 +424,14 @@
         </subWidgets>
         <controls mode="any">
           <control name="handleLabels">true</control>
+          <control name="gridStyleClass">gridStyle12</control>
         </controls>
         <properties widgetMode="any">
           <property name="hideSubLabels">true</property>
         </properties>
         <widgetModes>
-          <mode value="view">#{documentThreadedComments.size() > 0 ? 'view' : 'hidden'}</mode>
+          <mode value="view">#{documentThreadedComments.size() > 0 ? 'view' :
+            'hidden'}</mode>
         </widgetModes>
       </widget>
     </layout>
