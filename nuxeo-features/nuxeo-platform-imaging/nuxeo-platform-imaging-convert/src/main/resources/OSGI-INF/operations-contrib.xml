@@ -6,14 +6,23 @@
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations">
-    <operation class="org.nuxeo.ecm.platform.picture.convert.operation.ConverterOperation" />
-    <operation class="org.nuxeo.ecm.platform.picture.convert.operation.NopBlobOperation" />
+    <operation
+      class="org.nuxeo.ecm.platform.picture.convert.operation.NopBlobOperation" />
+    <operation
+      class="org.nuxeo.ecm.platform.picture.convert.operation.ConverterOperation" />
+
+    <operation class="org.nuxeo.ecm.platform.picture.convert.operation.PictureResize" />
+
+    <operation class="org.nuxeo.ecm.platform.picture.convert.operation.CreatePicture" />
+
+    <operation
+      class="org.nuxeo.ecm.platform.picture.convert.operation.GetPictureView" />
   </extension>
 
   <extension point="chains"
     target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
 
-    <chain id="Picture.Resize">
+    <chain id="Image.Blob.Resize">
       <operation id="ConverterOperation">
         <param name="converter" type="string">pictureResize</param>
       </operation>
