@@ -50,14 +50,19 @@ public class ResizePictureConverter implements Converter {
             Map<String, Serializable> parameters) throws ConversionException {
         try {
             ImagingService service = Framework.getService(ImagingService.class);
-            List<Blob> results = new ArrayList<Blob>();
+
             List<Blob> sources = blobHolder.getBlobs();
+            List<Blob> results = new ArrayList<Blob>(sources.size());
+
             Serializable h = parameters.get(OPTION_RESIZE_HEIGHT);
-            int height = h == null ? 0 : (Integer) h;
+            int height = ConverterUtils.getInteger(h);
+
             Serializable w = parameters.get(OPTION_RESIZE_WIDTH);
-            int width = w == null ? 0 : (Integer) w;
+            int width = ConverterUtils.getInteger(w);
+
             Serializable d = parameters.get(OPTION_RESIZE_DEPTH);
-            int depth = d == null ? 0 : (Integer) d;
+            int depth = ConverterUtils.getInteger(d);
+
             // use the registered conversion format
             String format = (String) parameters.get(CONVERSION_FORMAT);
 
@@ -70,6 +75,7 @@ public class ResizePictureConverter implements Converter {
                     }
                 }
             }
+
             return new SimpleCachableBlobHolder(results);
         } catch (Exception e) {
             log.error(e);

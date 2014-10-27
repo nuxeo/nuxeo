@@ -46,12 +46,22 @@ public class CropPictureConverter implements Converter {
             Map<String, Serializable> parameters) throws ConversionException {
         try {
             ImagingService service = Framework.getService(ImagingService.class);
-            List<Blob> results = new ArrayList<Blob>();
+
             List<Blob> sources = blobHolder.getBlobs();
-            int height = (Integer) parameters.get(ImagingConvertConstants.OPTION_RESIZE_HEIGHT);
-            int width = (Integer) parameters.get(ImagingConvertConstants.OPTION_RESIZE_WIDTH);
-            int x = (Integer) parameters.get(ImagingConvertConstants.OPTION_CROP_X);
-            int y = (Integer) parameters.get(ImagingConvertConstants.OPTION_CROP_Y);
+            List<Blob> results = new ArrayList<Blob>(sources.size());
+
+            Serializable h = parameters.get(ImagingConvertConstants.OPTION_RESIZE_HEIGHT);
+            int height = ConverterUtils.getInteger(h);
+
+            Serializable w = parameters.get(ImagingConvertConstants.OPTION_RESIZE_WIDTH);
+            int width = ConverterUtils.getInteger(w);
+
+            Serializable xValue = parameters.get(ImagingConvertConstants.OPTION_CROP_X);
+            int x = ConverterUtils.getInteger(xValue);
+
+            Serializable yValue = parameters.get(ImagingConvertConstants.OPTION_CROP_Y);
+            int y = ConverterUtils.getInteger(yValue);
+
             for (Blob source : sources) {
                 if (source != null) {
                     Blob result = service.crop(source, x, y, width, height);
@@ -60,6 +70,7 @@ public class CropPictureConverter implements Converter {
                     }
                 }
             }
+
             return new SimpleCachableBlobHolder(results);
         } catch (Exception e) {
             log.error(e, e);
