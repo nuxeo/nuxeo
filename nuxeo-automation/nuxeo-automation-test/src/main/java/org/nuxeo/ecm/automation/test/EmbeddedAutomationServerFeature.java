@@ -41,7 +41,7 @@ import com.google.inject.Scopes;
 @Features({ TransactionalFeature.class, WebEngineFeature.class })
 public class EmbeddedAutomationServerFeature extends SimpleFeature {
 
-    protected static final int HTTP_CONNECTION_TIMEOUT = 10000; // 10 seconds
+    protected static final int HTTP_CONNECTION_TIMEOUT = 60000; // 60 seconds
 
     protected HttpAutomationClient client;
 
