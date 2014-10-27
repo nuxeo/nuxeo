@@ -126,7 +126,7 @@
       <cacheSize>1</cacheSize>
 
       <resultLayouts>
-        <layout name="thumbnail_listing" title="document_thumbnail_listing"
+        <layout name="document_listing_thumbnail" title="document_thumbnail_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
           showSlideshow="true" showEditRows="true" />
         <layout name="document_listing_table" title="document_listing"
@@ -190,7 +190,7 @@
       <cacheSize>1</cacheSize>
 
       <resultLayouts>
-        <layout name="thumbnail_listing" title="document_thumbnail_listing"
+        <layout name="document_listing_thumbnail" title="document_thumbnail_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
           showSlideshow="true" showEditRows="true" />
         <layout name="document_listing_table" title="document_listing"
@@ -235,7 +235,7 @@
       <cacheSize>1</cacheSize>
 
       <resultLayouts>
-        <layout name="thumbnail_listing" title="document_thumbnail_listing"
+        <layout name="document_listing_thumbnail" title="document_thumbnail_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
           showSlideshow="true" showEditRows="true" />
         <layout name="document_listing_table" title="document_listing"
@@ -821,7 +821,7 @@
       </rows>
     </layout>
 
-    <layout name="thumbnail_listing" type="listingThumbnail">
+    <layout name="document_listing_thumbnail" type="listingThumbnail">
       <columns>
         <column name="last_contributor">
           <properties mode="any">
