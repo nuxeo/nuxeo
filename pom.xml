@@ -142,7 +142,7 @@
     <seam.version>2.3.1.Final</seam.version>
     <nxseam.version>2.3.1.Final.NX01-SNAPSHOT</nxseam.version>
 
-    <tomcat.version>7.0.42</tomcat.version>
+    <tomcat.version>7.0.56</tomcat.version>
     <lucene.version>4.7.2</lucene.version>
     <elasticsearch.version>1.1.2</elasticsearch.version>
     <apacheds.version>1.5.1</apacheds.version>
