@@ -129,17 +129,6 @@ public class PictureTemplateRegistry extends
                     "The 'title' property of a picture template mustn't be null or empty ("
                             + pictureTemplate + ")");
         }
-
-        // Check order
-        if (pictureTemplate.getOrder() == null) {
-            pictureTemplate.setOrder(0);
-
-            if (log.isWarnEnabled()) {
-                log.warn("Picture template "
-                        + pictureTemplate.getTitle()
-                        + " order property is null - the order has been setted to zero.");
-            }
-        }
     }
 
     @Override

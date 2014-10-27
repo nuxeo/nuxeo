@@ -39,6 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -479,7 +480,7 @@ public class ImagingComponent extends DefaultComponent implements
     protected Blob callPictureTemplateChain(Blob blob,
             PictureTemplate pictureTemplate, ImageInfo imageInfo, Point size,
             String conversionFormat) {
-        Map<String, String> parameters = new HashMap<>(3);
+        Properties parameters = new Properties();
         parameters.put(OPTION_RESIZE_WIDTH, String.valueOf(size.x));
         parameters.put(OPTION_RESIZE_HEIGHT, String.valueOf(size.y));
         parameters.put(OPTION_RESIZE_DEPTH,
@@ -505,7 +506,7 @@ public class ImagingComponent extends DefaultComponent implements
             if (pictureTemplate.getTitle().equals("Original")) {
                 chainId = "Blob.Nop";
             } else {
-                chainId = "Picture.Resize";
+                chainId = "Image.Blob.Resize";
             }
         }
 
