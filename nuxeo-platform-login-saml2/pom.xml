@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-login-parent</artifactId>
-        <version>5.9.5-SNAPSHOT</version>
+        <version>5.9.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>nuxeo-platform-login-saml2</artifactId>
@@ -31,7 +31,6 @@
         <dependency>
             <groupId>org.opensaml</groupId>
             <artifactId>opensaml</artifactId>
-            <version>2.6.1</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>

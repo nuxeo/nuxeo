@@ -24,6 +24,7 @@
     <module>nuxeo-platform-login-token</module>
     <module>nuxeo-platform-login-openid</module>
     <module>nuxeo-platform-login-kerberos</module>
+    <module>nuxeo-platform-login-saml2</module>
   </modules>
 
   <repositories>
