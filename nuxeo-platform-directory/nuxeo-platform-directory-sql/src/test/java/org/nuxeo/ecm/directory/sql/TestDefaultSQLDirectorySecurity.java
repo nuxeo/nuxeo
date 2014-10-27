@@ -124,6 +124,7 @@ public class TestDefaultSQLDirectorySecurity {
     }
 
     @Test
+    @ClientLoginFeature.User("aUser");
     public void everyoneCanGetEntry() throws LoginException {
         // Given a user
         dummyLogin.loginAs("aUser");

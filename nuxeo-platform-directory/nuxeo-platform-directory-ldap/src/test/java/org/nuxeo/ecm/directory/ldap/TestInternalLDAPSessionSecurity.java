@@ -42,6 +42,7 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
+import org.nuxeo.ecm.platform.login.test.ClientLoginFeature.User;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -55,7 +56,12 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(InternalLDAPDirectoryFeature.class)
 @LocalDeploy("org.nuxeo.ecm.directory.ldap.tests:ldap-directories-internal-security.xml")
+@ClientLoginFeature.User(name=TestInternalLDAPSessionSecurity.READER_USER)
 public class TestInternalLDAPSessionSecurity {
+
+    private static final String AN_EVERYONE_USER = "anEveryoneUser";
+
+    private static final String UNAUTHORIZED_USER = "unauthorizedUser";
 
     public static final String READER_USER = "readerUser";
 
@@ -113,38 +119,32 @@ public class TestInternalLDAPSessionSecurity {
 
     @Test
     public void readerUserCanGetEntry() throws Exception {
-        dummyLogin.loginAs(READER_USER);
         DocumentModel entry = userDirSession.getEntry("Administrator");
         assertNotNull(entry);
         assertEquals("Administrator", entry.getId());
-        dummyLogin.logout();
     }
 
     @Test
     public void readerUserCanQuery() throws LoginException {
-        dummyLogin.loginAs(READER_USER);
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
         filter.put("lastName", "Manager");
         DocumentModelList entries = userDirSession.query(filter);
         assertEquals(1, entries.size());
-        dummyLogin.logout();
     }
 
     @Test
+    @User(name=UNAUTHORIZED_USER)
     public void unauthorizedUserCantGetEntry() throws Exception {
-        dummyLogin.loginAs("unauthorizedUser");
         DocumentModel entry = userDirSession.getEntry("Administrator");
         Assert.assertNull(entry);
-        dummyLogin.logout();
     }
 
     @Test
+    @User(name=AN_EVERYONE_USER)
     public void everyoneGroupCanGetEntry() throws Exception {
-        dummyLogin.loginAs("anEveryoneUser");
         DocumentModel entry = groupDirSession.getEntry("members");
         assertNotNull(entry);
         assertEquals("members", entry.getId());
-        dummyLogin.logout();
     }
 
 }

@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
+import org.nuxeo.ecm.platform.login.test.ClientLoginFeature.User;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -47,6 +48,7 @@ import com.google.inject.Inject;
 @LocalDeploy({
         "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-schema-override.xml",
         "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-security.xml" })
+@ClientLoginFeature.User(name = TestContribSQLDirectorySecurity.SUPER_USER)
 public class TestContribSQLDirectorySecurity {
 
     @Inject
@@ -68,6 +70,8 @@ public class TestContribSQLDirectorySecurity {
 
     public static final String READER_USER = "readerUser";
 
+    public static final String USER_EVERYONE = "aUserEveryone";
+
     @Before
     public void setUp() {
         userDirSession = userDir.getSession();
@@ -81,28 +85,23 @@ public class TestContribSQLDirectorySecurity {
     }
 
     @Test
+    @ClientLoginFeature.User(name = READER_USER)
     public void cantCreateEntry() throws LoginException {
         // Given a reader user
-        dummyLogin.loginAs(READER_USER);
-        try {
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("username", "user_0");
-            map.put("password", "pass_0");
-            map.put("intField", Long.valueOf(5));
-            map.put("groups", Arrays.asList("members", "administrators"));
-            DocumentModel entry = userDirSession.createEntry(map);
-            Assert.assertNull(entry);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("username", "user_0");
+        map.put("password", "pass_0");
+        map.put("intField", Long.valueOf(5));
+        map.put("groups", Arrays.asList("members", "administrators"));
+        DocumentModel entry = userDirSession.createEntry(map);
+        Assert.assertNull(entry);
 
-            entry = userDirSession.getEntry("user_0");
-            Assert.assertNull(entry);
-        } finally {
-            dummyLogin.logout();
-        }
+        entry = userDirSession.getEntry("user_0");
+        Assert.assertNull(entry);
     }
 
     @Test
     public void canCreateEntry() throws Exception {
-        dummyLogin.loginAs(SUPER_USER);
         try {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("username", "user_0");
@@ -120,71 +119,51 @@ public class TestContribSQLDirectorySecurity {
     }
 
     @Test
+    @User(name = READER_USER)
     public void cantGetEntry() throws LoginException {
-        //Given a user without right
-        dummyLogin.loginAs("aUser");
-
         DocumentModel entry = userDirSession.getEntry("user_1");
         Assert.assertNull(entry);
-
-        dummyLogin.logout();
     }
 
     @Test
+    @User(name = READER_USER)
     public void canGetEntry() throws LoginException {
-        //Given a user without right
-        dummyLogin.loginAs(READER_USER);
-
         DocumentModel entry = userDirSession.getEntry("user_1");
         Assert.assertNotNull(entry);
-
-        dummyLogin.logout();
     }
 
     @Test
+    @User(name = READER_USER)
     public void cantSearch() throws LoginException {
-        //Given a user without right
-        dummyLogin.loginAs("aUser");
-
         // When I query entry
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put("username", "user_3");
         DocumentModelList results = userDirSession.query(map);
         Assert.assertEquals(0, results.size());
-
-        dummyLogin.logout();
     }
 
     @Test
+    @User(name = SUPER_USER)
     public void canSearch() throws LoginException {
-        //Given a user without right
-        dummyLogin.loginAs(SUPER_USER);
-
         // When I query entry
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put("username", "user_3");
         DocumentModelList results = userDirSession.query(map);
         Assert.assertEquals(1, results.size());
-
-        dummyLogin.logout();
     }
 
     @Test
+    @User(name = USER_EVERYONE)
     public void groupCanCreateAndGetEntry() throws Exception {
-        //Given a user member of everyone group
-        dummyLogin.loginAs("aUserEveryone");
-
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("groupname", "newGroup");
-        //When I create an entry
+        // When I create an entry
         DocumentModel entry = groupDirSession.createEntry(map);
         Assert.assertNotNull(entry);
 
-        //I can read it too
+        // I can read it too
         entry = groupDirSession.getEntry("newGroup");
         Assert.assertNotNull(entry);
-
-        dummyLogin.logout();
     }
 
 }

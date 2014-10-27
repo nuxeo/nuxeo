@@ -40,6 +40,7 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.memory.MemoryDirectory;
 import org.nuxeo.ecm.directory.memory.MemoryDirectoryFactory;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
+import org.nuxeo.ecm.platform.login.test.ClientLoginFeature.User;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -50,7 +51,10 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ MultiDirectoryFeature.class })
 @LocalDeploy("org.nuxeo.ecm.directory.multi.tests:directories-security-config.xml")
+@ClientLoginFeature.User(name = TestMultiDirectorySecurity.READER_USER)
 public class TestMultiDirectorySecurity {
+
+    private static final String AN_EVERYONE_USER = "anEveryoneUser";
 
     DirectoryService directoryService;
 
@@ -140,7 +144,8 @@ public class TestMultiDirectorySecurity {
         multiDir = (MultiDirectory) directoryService.getDirectory("multi");
         dir = (MultiDirectorySession) multiDir.getSession();
 
-        dirGroup = (MultiDirectorySession) ((MultiDirectory) directoryService.getDirectory("multi-group")).getSession();
+        dirGroup = (MultiDirectorySession) ((MultiDirectory) directoryService
+            .getDirectory("multi-group")).getSession();
     }
 
     @After
@@ -154,20 +159,13 @@ public class TestMultiDirectorySecurity {
     @Test
     public void readerCanGetEntry() throws Exception {
         // Given a reader user
-        dummyLogin.loginAs(READER_USER);
-
         DocumentModel entry;
         entry = dir.getEntry("1");
         assertNotNull(entry);
-
-        dummyLogin.logout();
     }
 
     @Test
     public void readerCantCreateEntry() throws Exception {
-        // Given a reader user
-        dummyLogin.loginAs(READER_USER);
-
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("uid", "5");
         map.put("thefoo", "foo5");
@@ -177,15 +175,11 @@ public class TestMultiDirectorySecurity {
 
         entry = dir.getEntry("5");
         assertNull(entry);
-
-        dummyLogin.logout();
     }
 
     @Test
+    @User(name = SUPER_USER)
     public void superUserCanCreate() throws Exception {
-        // Given a super user
-        dummyLogin.loginAs(SUPER_USER);
-
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("uid", "5");
         map.put("thefoo", "foo5");
@@ -195,15 +189,11 @@ public class TestMultiDirectorySecurity {
 
         entry = dir.getEntry("5");
         assertNotNull(entry);
-
-        dummyLogin.logout();
     }
 
     @Test
+    @User(name=SUPER_USER)
     public void superUserCanUpdateEntry() throws Exception {
-        // Given a super user
-        dummyLogin.loginAs(SUPER_USER);
-
         // multi-subdirs update
         DocumentModel e = dir.getEntry("1");
         assertEquals("foo1", e.getProperty("schema3", "thefoo"));
@@ -214,15 +204,10 @@ public class TestMultiDirectorySecurity {
         e = dir.getEntry("1");
         assertEquals("fffooo1", e.getProperty("schema3", "thefoo"));
         assertEquals("babar1", e.getProperty("schema3", "thebar"));
-
-        dummyLogin.logout();
     }
 
     @Test
     public void readerUserCantUpdateEntry() throws Exception {
-        // Given a reader user
-        dummyLogin.loginAs(READER_USER);
-
         // multi-subdirs update
         DocumentModel e = dir.getEntry("1");
         assertEquals("foo1", e.getProperty("schema3", "thefoo"));
@@ -233,38 +218,26 @@ public class TestMultiDirectorySecurity {
         e = dir.getEntry("1");
         assertEquals("foo1", e.getProperty("schema3", "thefoo"));
         assertEquals("bar1", e.getProperty("schema3", "thebar"));
-
-        dummyLogin.logout();
-    }
+  }
 
     @Test
+    @User(name=SUPER_USER)
     public void superUserCanDeleteEntry() throws Exception {
-        // Given a super user
-        dummyLogin.loginAs(SUPER_USER);
-
         dir.deleteEntry("1");
         assertNull(dir.getEntry("1"));
         dir.deleteEntry("3");
         assertNull(dir.getEntry("3"));
-
-        dummyLogin.logout();
-    }
+   }
 
     @Test
     public void readerUserCantDeleteEntry() throws Exception {
-        // Given a reader user
-        dummyLogin.loginAs(READER_USER);
-
         dir.deleteEntry("1");
         assertNotNull(dir.getEntry("1"));
-
-        dummyLogin.logout();
-    }
+   }
 
     @Test
+    @User(name=SUPER_USER)
     public void superUserCanQuery() throws Exception {
-        // Given a super user
-        dummyLogin.loginAs(SUPER_USER);
 
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
         DocumentModelList entries;
@@ -273,26 +246,25 @@ public class TestMultiDirectorySecurity {
         entries = dir.query(filter);
         assertNotNull(entries);
         assertEquals(4, entries.size());
-
-        dummyLogin.logout();
+      dummyLogin.logout();
     }
 
     @Test
+    @User(name=AN_EVERYONE_USER)
     public void everyoneUserCanCreateAndGet() throws Exception {
-        // Given a user in the everyone group 
-        //(default in dummy login any user is member of everyone)
-        dummyLogin.loginAs("anEveryoneUser");
+        // Given a user in the everyone group
+        // (default in dummy login any user is member of everyone)
 
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("uid", "5");
         map.put("thefoo", "foo5");
         map.put("thebar", "bar5");
-        
-        //When I call the multi-group dir
+
+        // When I call the multi-group dir
         DocumentModel entry = dirGroup.createEntry(map);
         assertNotNull(entry);
 
-        //I can create and then get entry
+        // I can create and then get entry
         entry = dirGroup.getEntry("5");
         assertNotNull(entry);
 
