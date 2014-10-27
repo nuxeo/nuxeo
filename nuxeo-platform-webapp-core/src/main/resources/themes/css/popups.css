@@ -143,3 +143,8 @@ author: lkemen@nuxeo.com
 .bigPopUp {
   height: 70%;
   width: 80% }
+
+/* Popup view */
+.nxPopUp.nxMainContainer .infoViewInfoLayout {
+  padding-left: 1em;
+  padding-right: 1em }
