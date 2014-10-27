@@ -116,9 +116,9 @@
                   <nxl:subWidget>
                     <c:if test="#{displaySubLabels}">
                       <td class="boldColumn listWidgetInlineDisplay">
-                        <h:outputText rendered="#{model.rowIndex == 0}">
+                        <h:panelGroup rendered="#{model.rowIndex == 0}">
                           <ui:include src="/widgets/incl/widget_label_template.xhtml" />
-                        </h:outputText>
+                        </h:panelGroup>
                       </td>
                     </c:if>
                     <td class="fieldColumn">

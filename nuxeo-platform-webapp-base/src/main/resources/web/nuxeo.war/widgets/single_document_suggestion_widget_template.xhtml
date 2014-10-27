@@ -9,46 +9,46 @@
   xmlns:rich="http://richfaces.org/rich"
   xmlns:ui="http://java.sun.com/jsf/facelets">
   <c:if test="#{nxl:isLikePlainMode(widget.mode)}">
-    <h:outputText rendered="#{not empty field}">
+    <h:panelGroup rendered="#{not empty field}">
       <nxu:set var="canSee"
         value="#{docSuggestionActions.getDocumentExistsAndIsVisibleWithId(field)}">
-        <h:outputText rendered="#{canSee}">
+        <h:panelGroup rendered="#{canSee}">
           <nxu:set var="doc"
             value="#{docSuggestionActions.getDocumentWithId(field)}">
             <h:outputText value="#{nxd:titleOrId(doc)}" />
           </nxu:set>
-        </h:outputText>
+        </h:panelGroup>
         <h:outputText rendered="#{not canSee}"
           value="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']} (#{field})" />
       </nxu:set>
-    </h:outputText>
+    </h:panelGroup>
   </c:if>
   <c:if test="#{widget.mode == 'pdf'}">
-    <h:outputText rendered="#{not empty field}">
+    <h:panelGroup rendered="#{not empty field}">
       <nxu:set var="canSee"
         value="#{docSuggestionActions.getDocumentExistsAndIsVisibleWithId(field)}">
         <nxp:html>
-        <h:outputText rendered="#{canSee}">
+        <h:panelGroup rendered="#{canSee}">
           <nxu:set var="doc"
             value="#{docSuggestionActions.getDocumentWithId(field)}">
             <nxu:graphicImage value="#{nxd:iconPath(doc)}"
               rendered="#{!empty nxd:iconPath(doc)}" />
             <h:outputText value="#{nxd:titleOrId(doc)}" />
           </nxu:set>
-        </h:outputText>
+        </h:panelGroup>
         <h:outputText
           value="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']} (#{field})"
           rendered="#{not canSee}" />
         </nxp:html>
       </nxu:set>
-    </h:outputText>
+    </h:panelGroup>
   </c:if>
   <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
 
-    <h:outputText rendered="#{not empty field}">
+    <h:panelGroup rendered="#{not empty field}">
       <nxu:set var="canSee"
         value="#{docSuggestionActions.getDocumentExistsAndIsVisibleWithId(field)}">
-        <h:outputText rendered="#{canSee}">
+        <h:panelGroup rendered="#{canSee}">
           <nxu:set var="doc"
             value="#{docSuggestionActions.getDocumentWithId(field)}">
             <nxu:graphicImage value="#{nxd:iconPath(doc)}"
@@ -65,12 +65,12 @@
                 title="#{messages['permalink.newTab']}" />
             </nxd:restDocumentLink>
           </nxu:set>
-        </h:outputText>
+        </h:panelGroup>
         <h:outputText
           value="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']} (#{field})"
           rendered="#{not canSee}" />
       </nxu:set>
-    </h:outputText>
+    </h:panelGroup>
 
   </c:if>
   <c:if test="#{widget.mode == 'edit'}">

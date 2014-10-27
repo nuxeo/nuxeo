@@ -13,16 +13,16 @@
       rendered="#{not empty field}">
       <nxu:set var="canSee"
         value="#{docSuggestionActions.getDocumentExistsAndIsVisibleWithId(model.rowData)}">
-        <h:outputText rendered="#{canSee}">
+        <h:panelGroup rendered="#{canSee}">
           <nxu:set var="doc"
             value="#{docSuggestionActions.getDocumentWithId(model.rowData)}">
             <h:outputText value="#{nxd:titleOrId(doc)}" />
           </nxu:set>
-        </h:outputText>
-        <h:outputText rendered="#{not canSee}">
+        </h:panelGroup>
+        <h:panelGroup rendered="#{not canSee}">
           <h:outputText
             value="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']} (#{model.rowData})" />
-        </h:outputText>
+        </h:panelGroup>
         <h:outputText value=", "
           rendered="#{model.rowIndex != (model.rowCount-1)}" />
       </nxu:set>
@@ -35,18 +35,18 @@
       <h:column>
         <nxu:set var="canSee"
           value="#{docSuggestionActions.getDocumentExistsAndIsVisibleWithId(docid)}">
-          <h:outputText rendered="#{canSee}">
+          <h:panelGroup rendered="#{canSee}">
             <nxu:set var="doc"
               value="#{docSuggestionActions.getDocumentWithId(docid)}">
               <nxu:graphicImage value="#{nxd:iconPath(doc)}"
                 rendered="#{!empty nxd:iconPath(doc)}" />
               <h:outputText value=" #{nxd:titleOrId(doc)} " />
             </nxu:set>
-          </h:outputText>
-          <h:outputText rendered="#{not canSee}">
+          </h:panelGroup>
+          <h:panelGroup rendered="#{not canSee}">
             <h:outputText
               value="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']} (#{docid})" />
-          </h:outputText>
+          </h:panelGroup>
         </nxu:set>
       </h:column>
     </h:dataTable>
@@ -59,7 +59,7 @@
       <h:column>
         <nxu:set var="canSee"
           value="#{docSuggestionActions.getDocumentExistsAndIsVisibleWithId(docid)}">
-          <h:outputText rendered="#{canSee}">
+          <h:panelGroup rendered="#{canSee}">
             <nxu:set var="doc"
               value="#{docSuggestionActions.getDocumentWithId(docid)}">
               <nxu:graphicImage value="#{nxd:iconPath(doc)}"
@@ -76,11 +76,11 @@
                   title="#{messages['permalink.newTab']}" />
               </nxd:restDocumentLink>
             </nxu:set>
-          </h:outputText>
-          <h:outputText rendered="#{not canSee}">
+          </h:panelGroup>
+          <h:panelGroup rendered="#{not canSee}">
             <h:outputText
               value="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']} (#{docid})" />
-          </h:outputText>
+          </h:panelGroup>
         </nxu:set>
       </h:column>
     </h:dataTable>
