@@ -15,8 +15,7 @@
 
     <operation class="org.nuxeo.ecm.platform.picture.convert.operation.CreatePicture" />
 
-    <operation
-      class="org.nuxeo.ecm.platform.picture.convert.operation.GetPictureView" />
+    <operation class="org.nuxeo.ecm.platform.picture.convert.operation.GetPictureView" />
   </extension>
 
   <extension point="chains"
