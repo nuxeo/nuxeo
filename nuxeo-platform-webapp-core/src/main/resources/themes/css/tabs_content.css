@@ -10,7 +10,7 @@ author: lkemen@nuxeo.com
 .tabsContent {
   background: none #fff;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
-  margin: 1px 1px 0;
+  margin: 0;
   padding: 2em 1.5em }
 
 .tabsContent .tabsContent {
@@ -20,6 +20,7 @@ author: lkemen@nuxeo.com
   background-color: #fff;
   border-radius: 3px;
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
+  margin: .8em 0 0;
   padding: 2em }
 
 .mainNoTabs h3 {
@@ -93,8 +94,11 @@ author: lkemen@nuxeo.com
 .content_block .actionsColumn {
   min-width: 15% }
 
+.content_block .actionsColumn div {
+  display: inline }
+
 .content_block .smallTable {
-  width: 100%;}
+  width: 100% }
 
 .content_block .dropContent,
 .content_block .dropAttachments {
@@ -392,7 +396,7 @@ author: lkemen@nuxeo.com
 /* BubbleBox Listing */
 .bubbleBox.bubbleListing {
   display: inline-block;
-  margin: 0 .5em 1.2em;
+  margin: 0 .4em 1.2em 0;
   transition: box-shadow 0.3s ease 0.01s;
   vertical-align: top;
   width: 17.6em }
