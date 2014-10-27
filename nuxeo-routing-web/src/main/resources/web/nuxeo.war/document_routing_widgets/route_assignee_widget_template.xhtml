@@ -7,7 +7,7 @@
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:fn="http://java.sun.com/jsp/jstl/functions">
 
-  <h:outputText rendered="#{fn:startsWith(fieldOrValue, 'group:')}">
+  <h:panelGroup rendered="#{fn:startsWith(fieldOrValue, 'group:')}">
     <nxu:set var="group" value="#{fn:split(fieldOrValue, ':')[1]}">
       <span class="group creator">
          <h:commandLink action="#{groupManagementActions.viewGroup(group)}">
@@ -15,8 +15,8 @@
          </h:commandLink>
       </span>
     </nxu:set>
-  </h:outputText>
-  <h:outputText rendered="#{fn:startsWith(fieldOrValue, 'user:')}">
+  </h:panelGroup>
+  <h:panelGroup rendered="#{fn:startsWith(fieldOrValue, 'user:')}">
     <nxu:set var="user" value="#{fn:split(fieldOrValue, ':')[1]}">
       <span class="user creator">
         <a href="#{baseURL}user/#{user}">
@@ -24,11 +24,11 @@
         </a>
       </span>
     </nxu:set>
-  </h:outputText>
-  <h:outputText rendered="#{not fn:startsWith(fieldOrValue, 'group:') and not fn:startsWith(fieldOrValue, 'user:')}">
+  </h:panelGroup>
+  <h:panelGroup rendered="#{not fn:startsWith(fieldOrValue, 'group:') and not fn:startsWith(fieldOrValue, 'user:')}">
     <span class="user creator">
       #{fieldOrValue}
     </span>
-  </h:outputText>
+  </h:panelGroup>
 
 </c:if>
