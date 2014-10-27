@@ -1,6 +1,6 @@
-# Nuxeo platform 5.9.6-SNAPSHOT
+# Nuxeo platform 5.9.6-I20141027_2013
 
-Welcome to the Nuxeo Platform 5.9.6-SNAPSHOT.
+Welcome to the Nuxeo Platform 5.9.6-I20141027_2013.
 
 You can always download the latest releases of Nuxeo packages (distributions, 
 installers, virtual machine images, ...) from [http://www.nuxeo.com/en/downloads][1].
@@ -204,7 +204,7 @@ licenses donated by YourKit), etc.
 [22]: http://www.nuxeo.com/en/products/document-management
 [23]: http://www.nuxeo.com/en/products/dam
 [24]: http://www.nuxeo.com/en/products/case-management
-[25]: http://nuxeo.github.io/releasenotes/5.9.6-SNAPSHOT
+[25]: http://nuxeo.github.io/releasenotes/5.9.6-I20141027_2013
 [26]: http://jira.nuxeo.org/browse/NXP?report=com.atlassian.jira.plugin.system.project:versions-panel
 [27]: https://jira.nuxeo.org/browse/NXP/fixforversion/
 [28]: http://doc.nuxeo.com/
