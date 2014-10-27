@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
@@ -76,14 +77,36 @@ public class DocumentViewCodecService extends DefaultComponent implements
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
         if (CODECS_EXTENSION_POINT.equals(extensionPoint)) {
-            DocumentViewCodecDescriptor codecDesc = (DocumentViewCodecDescriptor) contribution;
-            String codecName = codecDesc.getName();
-            descriptors.put(codecName, codecDesc);
-            if (codecDesc.getDefaultCodec()) {
+            DocumentViewCodecDescriptor desc = (DocumentViewCodecDescriptor) contribution;
+            String codecName = desc.getName();
+            descriptors.put(codecName, desc);
+            if (desc.getDefaultCodec()) {
                 defaultCodecName = codecName;
             }
+            // try to instantiate it
+            String className = desc.getClassName();
+            if (className == null) {
+                throw new IllegalArgumentException(String.format(
+                        "Invalid class for codec '%s': check ERROR logs"
+                                + " at startup", codecName));
+            }
+            DocumentViewCodec codec;
+            try {
+                // Thread context loader is not working in isolated EARs
+                codec = (DocumentViewCodec) DocumentViewCodecManager.class.getClassLoader().loadClass(
+                        className).newInstance();
+            } catch (Exception e) {
+                String msg = String.format(
+                        "Caught error when instantiating codec '%s' with "
+                                + "class '%s' ", codecName, className);
+                throw new IllegalArgumentException(msg, e);
+            }
+            String prefix = desc.getPrefix();
+            if (prefix != null) {
+                codec.setPrefix(prefix);
+            }
+            codecs.put(codecName, codec);
             log.debug("Added URL codec: " + codecName);
-            codecs.remove(codecName);
         }
     }
 
@@ -127,37 +150,10 @@ public class DocumentViewCodecService extends DefaultComponent implements
     }
 
     public DocumentViewCodec getCodec(String codecName) {
-        DocumentViewCodec codec = codecs.get(codecName);
-        if (codec == null) {
-            // try to instanciate it
-            DocumentViewCodecDescriptor desc = descriptors.get(codecName);
-            if (desc == null) {
-                throw new IllegalArgumentException(String.format(
-                        "Unknown codec '%s'", codecName));
-            }
-            String className = desc.getClassName();
-            if (className == null) {
-                throw new IllegalArgumentException(String.format(
-                        "Invalid class for codec '%s': check ERROR logs"
-                                + " at startup", codecName));
-            }
-            try {
-                // Thread context loader is not working in isolated EARs
-                codec = (DocumentViewCodec) DocumentViewCodecManager.class.getClassLoader().loadClass(
-                        className).newInstance();
-            } catch (Exception e) {
-                String msg = String.format(
-                        "Caught error when instantiating codec '%s' with "
-                                + "class '%s' ", codecName, className);
-                throw new IllegalArgumentException(msg, e);
-            }
-            String prefix = desc.getPrefix();
-            if (prefix != null) {
-                codec.setPrefix(prefix);
-            }
-            codecs.put(codecName, codec);
+        if (StringUtils.isBlank(codecName)) {
+            return null;
         }
-        return codec;
+        return codecs.get(codecName);
     }
 
     public String getUrlFromDocumentView(DocumentView docView,
