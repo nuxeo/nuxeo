@@ -36,7 +36,7 @@ public class PictureTemplate implements Comparable<PictureTemplate> {
     protected String title;
 
     @XNode("@order")
-    protected Integer order;
+    protected Integer order = 0;
 
     @XNode("@description")
     protected String description;
