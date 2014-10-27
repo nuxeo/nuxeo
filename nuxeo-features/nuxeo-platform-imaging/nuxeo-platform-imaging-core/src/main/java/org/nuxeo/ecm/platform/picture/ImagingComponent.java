@@ -42,6 +42,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.BlobWrapper;
@@ -494,38 +495,31 @@ public class ImagingComponent extends DefaultComponent implements
         OperationContext context = new OperationContext();
         context.setInput(blob);
 
-        AutomationService automationService = Framework.getService(AutomationService.class);
-        Blob viewBlob = null;
-
         String chainId = pictureTemplate.getChainId();
 
         /*
-         * Avoid to break unit tests which don't pass a chainId
-         * 
-         * TODO: find an another logic in order to avoid this check ? (like
-         * update unit test or force a chainId in the registry)
+         * If the chainId is null just use the same blob (wrapped)
          */
         if (chainId == null) {
-            if (pictureTemplate.getTitle().equals("Original")) {
-                chainId = "Blob.Nop";
-            } else {
-                chainId = "Image.Blob.Resize";
+            if (log.isErrorEnabled()) {
+                log.error("The picture template ("
+                        + pictureTemplate.getTitle()
+                        + ") chain can't be called because it's 'chainId' property is null. The same image will be used.");
             }
+
+            return new BlobWrapper(blob);
         }
 
+        Blob viewBlob = null;
         try {
-            viewBlob = (Blob) automationService.run(context, chainId,
-                    chainParameters);
+            viewBlob = (Blob) Framework.getService(AutomationService.class).run(
+                    context, chainId, chainParameters);
 
             if (viewBlob == null) {
                 viewBlob = wrapBlob(blob);
             }
         } catch (Exception e) {
-            /*
-             * FIXME- How handle that case since we have to update the method
-             * signature <==> compat broken
-             */
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
 
         return viewBlob;
