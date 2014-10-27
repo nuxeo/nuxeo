@@ -19,7 +19,7 @@
         <div class="gridRow #{layoutRow.properties['gridRowStyleClass']}">
           <nxl:layoutRowWidget>
             <c:set var="gridStyleClassProp" value="nxl_gridStyleClass_#{widgetIndex}" />
-            <div class="gridBox #{layoutRow.properties[gridStyleClassProp]}">
+            <div class="gridBox #{nxu:test(empty layoutRow.properties[gridStyleClassProp], widgetControl_gridStyleClass, layoutRow.properties[gridStyleClassProp])}">
               <c:if test="#{widget != null}">
                 <ui:decorate template="/widgets/incl/form_template.xhtml">
                   <ui:param name="addForm" value="#{widgetControl_requireSurroundingForm}" />

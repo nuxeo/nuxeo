@@ -5036,24 +5036,36 @@
       <properties widgetMode="view">
         <property name="category">USER_PANEL_TOP</property>
       </properties>
+      <controls mode="any">
+        <control name="gridStyleClass">gridStyle12</control>
+      </controls>
     </widget>
 
     <widget name="userPanelLeft" type="documentActions">
       <properties widgetMode="view">
         <property name="category">USER_PANEL_LEFT</property>
       </properties>
+      <controls mode="any">
+        <control name="gridStyleClass">gridStyle5</control>
+      </controls>
     </widget>
 
     <widget name="userPanelRight" type="documentActions">
       <properties widgetMode="view">
         <property name="category">USER_PANEL_RIGHT</property>
       </properties>
+      <controls mode="any">
+        <control name="gridStyleClass">gridStyle7</control>
+      </controls>
     </widget>
 
     <widget name="userPanelBottom" type="documentActions">
       <properties widgetMode="view">
         <property name="category">USER_PANEL_BOTTOM</property>
       </properties>
+      <controls mode="any">
+        <control name="gridStyleClass">gridStyle12</control>
+      </controls>
     </widget>
 
     <widget name="userLayout" type="layout">
@@ -5087,23 +5099,13 @@
       </templates>
       <rows>
         <row>
-          <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle12</property>
-          </properties>
           <widget>userPanelTop</widget>
         </row>
         <row>
-          <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle7</property>
-            <property name="nxl_gridStyleClass_1">gridStyle5</property>
-          </properties>
           <widget>userPanelLeft</widget>
           <widget>userPanelRight</widget>
         </row>
         <row>
-          <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle12</property>
-          </properties>
           <widget>userPanelBottom</widget>
         </row>
       </rows>
