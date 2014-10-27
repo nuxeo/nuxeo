@@ -97,6 +97,8 @@ public class ConnectBroker {
 
     protected static final int LAUNCHER_CHANGED_EXIT_CODE = 128;
 
+    public static final String[] POSITIVE_ANSWERS = { "true", "yes", "y" };
+
     private Environment env;
 
     private StandaloneUpdateService service;
@@ -1305,7 +1307,7 @@ public class ConnectBroker {
                     } else {
                         if (ignoreMissing) {
                             for (String pkgToInstall : nonCompliantPkg) {
-                                log.warn("Unable to install pacakge: "
+                                log.warn("Unable to install package: "
                                         + pkgToInstall);
                                 solverInstall.remove(pkgToInstall);
                             }
@@ -1442,7 +1444,8 @@ public class ConnectBroker {
      *            "Enter" key is pressed.
      * @param objects Parameters to use in the message (like in
      *            {@link String#format(String, Object...)})
-     * @return "true" if answer is "yes" or "y", else "false".
+     * @return {@code "true"} if answer is in {@link #POSITIVE_ANSWERS}, else
+     *         return {@code "false"}
      */
     protected String readConsole(String message, String defaultValue,
             Object... objects) {
@@ -1454,11 +1457,30 @@ public class ConnectBroker {
             answer = defaultValue;
         }
         answer = answer.trim().toLowerCase();
-        if ("yes".equals(answer) || "y".equals(answer)) {
-            return "true";
-        } else {
+        return parseAnswer(answer);
+    }
+
+    /**
+     *
+     * @return {@code "true"} if answer is in {@link #POSITIVE_ANSWERS},
+     *         and {@code "ask"} if answer values {@code "ask"}, else
+     *         return {@code "false"}
+     *
+     * @since 5.9.6
+     */
+    public static String parseAnswer(String answer) {
+        if ("ask".equalsIgnoreCase(answer)) {
+            return "ask";
+        }
+        if ("false".equalsIgnoreCase(answer)) {
             return "false";
         }
+        for (String positive : POSITIVE_ANSWERS) {
+            if (positive.equalsIgnoreCase(answer)) {
+                return "true";
+            }
+        }
+        return "false";
     }
 
     protected boolean pkgUpgradeByType(PackageType type) {
@@ -1488,7 +1510,7 @@ public class ConnectBroker {
      */
     public void setRelax(String relaxValue) {
         if (relaxValue != null) {
-            relax = relaxValue;
+            relax = parseAnswer(relaxValue);
         }
     }
 
@@ -1498,8 +1520,8 @@ public class ConnectBroker {
      */
     public void setAccept(String acceptValue) {
         if (acceptValue != null) {
-            accept = acceptValue;
-            if (!"false".equalsIgnoreCase(acceptValue)) {
+            accept = parseAnswer(acceptValue);
+            if ("ask".equals(accept) || "true".equals(accept)) {
                 setRelax(acceptValue);
             }
         }

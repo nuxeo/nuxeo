@@ -837,7 +837,7 @@ public abstract class NuxeoLauncher {
             // GUI option
             OptionBuilder.withLongOpt(OPTION_GUI);
             OptionBuilder.hasArg();
-            OptionBuilder.withArgName("true|false");
+            OptionBuilder.withArgName("true|false|yes|no");
             OptionBuilder.withDescription(OPTION_GUI_DESC);
             launcherOptions.addOption(OptionBuilder.create());
             // Package management option
@@ -847,13 +847,13 @@ public abstract class NuxeoLauncher {
             // Relax on target platform option
             OptionBuilder.withLongOpt(OPTION_RELAX);
             OptionBuilder.hasArg();
-            OptionBuilder.withArgName("true|false|ask");
+            OptionBuilder.withArgName("true|false|yes|no|ask");
             OptionBuilder.withDescription(OPTION_RELAX_DESC);
             launcherOptions.addOption(OptionBuilder.create());
             // Accept option
             OptionBuilder.withLongOpt(OPTION_ACCEPT);
             OptionBuilder.hasArg();
-            OptionBuilder.withArgName("true|false|ask");
+            OptionBuilder.withArgName("true|false|yes|no|ask");
             OptionBuilder.withDescription(OPTION_ACCEPT_DESC);
             launcherOptions.addOption(OptionBuilder.create());
             // Allow SNAPSHOT option
@@ -1766,7 +1766,7 @@ public abstract class NuxeoLauncher {
         extractCommandAndParams(cmdLine.getArgs());
         // Use GUI?
         if (cmdLine.hasOption(OPTION_GUI)) {
-            useGui = Boolean.valueOf(cmdLine.getOptionValue(OPTION_GUI));
+            useGui = Boolean.valueOf(ConnectBroker.parseAnswer(cmdLine.getOptionValue(OPTION_GUI)));
             log.debug("GUI: " + cmdLine.getOptionValue(OPTION_GUI) + " -> "
                     + new Boolean(useGui).toString());
         } else if (OPTION_GUI.equalsIgnoreCase(command)) {
@@ -1997,8 +1997,7 @@ public abstract class NuxeoLauncher {
         if (connectBroker == null) {
             connectBroker = new ConnectBroker(configurationGenerator.getEnv());
             if (hasOption(OPTION_ACCEPT)) {
-                connectBroker.setAccept(cmdLine.getOptionValue(OPTION_ACCEPT,
-                        ConnectBroker.OPTION_ACCEPT_DEFAULT));
+                connectBroker.setAccept(cmdLine.getOptionValue(OPTION_ACCEPT));
             }
             if (hasOption(OPTION_RELAX)) {
                 connectBroker.setRelax(cmdLine.getOptionValue(OPTION_RELAX));
