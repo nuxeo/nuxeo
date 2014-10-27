@@ -16,6 +16,7 @@
  */
 package org.nuxeo.functionaltests.pages.search;
 
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -29,11 +30,13 @@ import org.openqa.selenium.support.FindBy;
  */
 public class SearchPage extends DocumentBasePage {
 
-    private static final String DEFAULT_SEARCH = "Default search";
+    public static final String SEARCH_TAB = "SEARCH";
 
-    private static final String NXQL_SEARCH = "NXQL Search";
+    public static final String DEFAULT_SEARCH = "Default search";
 
-    private static final String QUICK_SEARCH = "Quick search";
+    public static final String NXQL_SEARCH = "NXQL Search";
+
+    public static final String QUICK_SEARCH = "Quick search";
 
     private static final String S2_SEARCH_TYPE_ID = "s2id_nxl_gridSearchLayout:nxw_searchesSelector_form:nxw_searchesSelector";
 
@@ -51,21 +54,21 @@ public class SearchPage extends DocumentBasePage {
 
     public DefaultSearchSubPage getDefaultSearch() {
         if (!isDefaultSearch()) {
-            selectSearchType(DEFAULT_SEARCH);
+            selectSearch(DEFAULT_SEARCH);
         }
         return asPage(DefaultSearchSubPage.class);
     }
 
     public NXQLSearchSubPage getNXQLSearch() {
         if (!isNXQLSearch()) {
-            selectSearchType(NXQL_SEARCH);
+            selectSearch(NXQL_SEARCH);
         }
         return asPage(NXQLSearchSubPage.class);
     }
 
     public QuickSearchSubPage getQuickSearch() {
         if (!isQuickSearch()) {
-            selectSearchType(QUICK_SEARCH);
+            selectSearch(QUICK_SEARCH);
         }
         return asPage(QuickSearchSubPage.class);
     }
@@ -86,16 +89,24 @@ public class SearchPage extends DocumentBasePage {
         return isSearchSelected(QUICK_SEARCH);
     }
 
-    protected boolean isSearchSelected(final String searchType) {
+    public void selectSearch(String searchLabel) {
         Select2WidgetElement s2 = new Select2WidgetElement(driver,
                 searchFormPanel.findElement(By.id(S2_SEARCH_TYPE_ID)));
-        return s2.getSelectedValue().getText().equals(searchType);
+        AjaxRequestManager am = new AjaxRequestManager(driver);
+        am.watchAjaxRequests();
+        s2.selectValue(searchLabel);
+        am.waitForAjaxRequests();
     }
 
-    protected void selectSearchType(String searchType) {
+    public String getSelectedSearch() {
         Select2WidgetElement s2 = new Select2WidgetElement(driver,
                 searchFormPanel.findElement(By.id(S2_SEARCH_TYPE_ID)));
-        s2.selectValue(searchType);
+        return s2.getSelectedValue().getText();
+    }
+
+    protected boolean isSearchSelected(final String searchType) {
+        String selected = getSelectedSearch();
+        return selected != null && selected.equals(searchType);
     }
 
 }
