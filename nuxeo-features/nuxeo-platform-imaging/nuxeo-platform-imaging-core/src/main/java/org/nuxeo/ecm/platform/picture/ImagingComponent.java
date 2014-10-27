@@ -500,7 +500,10 @@ public class ImagingComponent extends DefaultComponent implements
         String chainId = pictureTemplate.getChainId();
 
         /*
-         * Avoid to break unit test which don't pass a chainId
+         * Avoid to break unit tests which don't pass a chainId
+         * 
+         * TODO: find an another logic in order to avoid this check ? (like
+         * update unit test or force a chainId in the registry)
          */
         if (chainId == null) {
             if (pictureTemplate.getTitle().equals("Original")) {
