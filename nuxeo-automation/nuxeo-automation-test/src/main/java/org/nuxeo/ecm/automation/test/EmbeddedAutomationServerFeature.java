@@ -41,6 +41,8 @@ import com.google.inject.Scopes;
 @Features({ TransactionalFeature.class, WebEngineFeature.class })
 public class EmbeddedAutomationServerFeature extends SimpleFeature {
 
+    protected static final int HTTP_CONNECTION_TIMEOUT = 10000; // 10 seconds
+
     protected HttpAutomationClient client;
 
     protected Session session;
@@ -85,7 +87,7 @@ public class EmbeddedAutomationServerFeature extends SimpleFeature {
 
     protected HttpAutomationClient getHttpAutomationClient() {
         HttpAutomationClient client = new HttpAutomationClient(
-                "http://localhost:18080/automation");
+                "http://localhost:18080/automation", HTTP_CONNECTION_TIMEOUT);
         // Deactivate global operation registry cache to allow tests using this
         // feature in a test suite to deploy different set of operations
         client.setSharedRegistryExpirationDelay(0);
