@@ -810,7 +810,7 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.mobile</groupId>
-        <artifactId>nuxeo-web-mobile-dm</artifactId>
+        <artifactId>nuxeo-web-mobile-cap</artifactId>
         <version>${nuxeo.web.mobile.version}</version>
       </dependency>
       <dependency>
