@@ -88,7 +88,8 @@ public class TestImagingConvertPlugin {
             blob.setFilename(filename);
             BlobHolder bh = new SimpleBlobHolder(blob);
 
-            BlobHolder result = conversionService.convert(converter, bh, options);
+            BlobHolder result = conversionService.convert(converter, bh,
+                    options);
             assertNotNull(result);
 
             BufferedImage image = ImageIO.read(result.getBlob().getStream());
@@ -120,7 +121,8 @@ public class TestImagingConvertPlugin {
             blob.setFilename(filename);
             BlobHolder bh = new SimpleBlobHolder(blob);
 
-            BlobHolder result = conversionService.convert(converter, bh, options);
+            BlobHolder result = conversionService.convert(converter, bh,
+                    options);
             assertNotNull(result);
 
             BufferedImage image = ImageIO.read(new FileInputStream(
@@ -157,7 +159,8 @@ public class TestImagingConvertPlugin {
             blob.setFilename(filename);
             BlobHolder bh = new SimpleBlobHolder(blob);
 
-            BlobHolder result = conversionService.convert(converter, bh, options);
+            BlobHolder result = conversionService.convert(converter, bh,
+                    options);
             assertNotNull(result);
 
             BufferedImage image = ImageIO.read(new FileInputStream(
