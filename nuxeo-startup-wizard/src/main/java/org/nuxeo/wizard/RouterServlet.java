@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -250,7 +250,7 @@ public class RouterServlet extends HttpServlet {
 
         // get the connect Token and decode associated infos
         String token = req.getParameter(CONNECT_TOKEN_KEY);
-        Map<String, String> connectMap = new HashMap<String, String>();
+        Map<String, String> connectMap = new HashMap<>();
         if (token != null) {
             String tokenData = new String(Base64.decodeBase64(token));
             String[] tokenDataLines = tokenData.split("\n");
@@ -769,7 +769,6 @@ public class RouterServlet extends HttpServlet {
             HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         List<String> options = new ArrayList<String>();
-        @SuppressWarnings("unchecked")
         Enumeration<String> params = req.getParameterNames();
         while (params.hasMoreElements()) {
             String p = params.nextElement();
