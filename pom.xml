@@ -4,13 +4,13 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.9.6-SNAPSHOT</version>
+    <version>5.9.6-I20141027_2013</version>
   </parent>
 
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-parent</artifactId>
   <name>Nuxeo Runtime Parent</name>
-  <version>5.9.6-SNAPSHOT</version>
+  <version>5.9.6-I20141027_2013</version>
   <packaging>pom</packaging>
   <description>Nuxeo Runtime: Parent.</description>
 
