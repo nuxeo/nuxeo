@@ -191,8 +191,12 @@ public class DocumentViewCodecService extends DefaultComponent implements
         if (codec != null) {
             String partialUrl = codec.getUrlFromDocumentView(docView);
             if (partialUrl != null) {
-                if (needBaseUrl && baseUrl != null) {
-                    return baseUrl + partialUrl;
+                if (needBaseUrl && !StringUtils.isBlank(baseUrl)) {
+                    if (baseUrl.endsWith("/") || partialUrl.startsWith("/")) {
+                        return baseUrl + partialUrl;
+                    } else {
+                        return baseUrl + "/" + partialUrl;
+                    }
                 } else {
                     return partialUrl;
                 }

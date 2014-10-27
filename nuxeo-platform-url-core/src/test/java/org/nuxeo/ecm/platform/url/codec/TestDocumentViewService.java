@@ -82,6 +82,9 @@ public class TestDocumentViewService {
         assertEquals("http://foo/bar/nxdoc/repo/1234/view_doc",
                 service.getUrlFromDocumentView("docid", docView, true,
                         "http://foo/bar/"));
+        assertEquals("http://foo/bar/nxdoc/repo/1234/view_doc",
+                service.getUrlFromDocumentView("docid", docView, true,
+                        "http://foo/bar"));
     }
 
 }
