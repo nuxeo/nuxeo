@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.picture.convert.operation;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,14 +29,13 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 
 /**
- * Move to automation-features
- *
  * @since 5.9.6
  *
  * @author Vincent Vergnolle
@@ -50,13 +50,8 @@ public class ConverterOperation {
     @Param(name = "converter", description = "The name of the converter to call")
     protected String converter;
 
-    /*
-     * FIXME- Use a Properties (nuxeo) instead of a Map (may broke the nx studio
-     * way to add parameters in operation property)
-     */
-
     @Param(name = "parameters", description = "The converter parameters to pass")
-    protected Map<String, String> parameters;
+    protected Properties parameters;
 
     @Context
     protected ConversionService conversionService;
@@ -75,18 +70,19 @@ public class ConverterOperation {
 
     private Map<String, Serializable> propertiesToMap() {
         if (parameters == null) {
-            return new HashMap<>(0);
+            return Collections.emptyMap();
         }
 
         Map<String, Serializable> params = new HashMap<>(parameters.size());
         for (Entry<String, String> entry : parameters.entrySet()) {
-            String value = entry.getValue();
+            Object value = entry.getValue();
 
+            //FIXME: What if it's an integer, a float, a double, etc ...
             Serializable serializable = null;
             try {
-                serializable = Integer.valueOf(value);
+                serializable = Integer.valueOf(value.toString());
             } catch (NumberFormatException e) {
-                serializable = value;
+                serializable = (Serializable) value;
             }
 
             params.put(entry.getKey(), serializable);
