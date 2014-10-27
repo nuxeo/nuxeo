@@ -38,13 +38,13 @@
     <input type="hidden" value="#{directoryNameForPopup}"
       id="directoryNameForPopup" name="directoryNameForPopup" />
 
-    <h:outputText rendered="#{not nxu:hasMessages('suggestAddNewDirectoryEntry') and request.getParameter('postback') != 'false'}">
+    <h:panelGroup rendered="#{not nxu:hasMessages('suggestAddNewDirectoryEntry') and request.getParameter('postback') != 'false'}">
       <script>
         jQuery(document).ready(function() {
           window.parent.jQuery.fancybox.close();
         });
       </script>
-    </h:outputText>
+    </h:panelGroup>
 
     <p class="buttonsGadget">
       <a4j:commandButton value="#{messages['command.create']}"
