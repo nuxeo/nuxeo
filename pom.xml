@@ -156,7 +156,7 @@
     <chemistry.opencmis.version>0.12.0</chemistry.opencmis.version>
     <chemistry.opencmis.version.nx>0.12.0-NX1</chemistry.opencmis.version.nx>
     <textcat.version>1.0.1</textcat.version>
-    <apache.httpcomponents.version>4.2.4</apache.httpcomponents.version>
+    <apache.httpcomponents.version>4.3.3</apache.httpcomponents.version>
     <apache.poi.version>3.10-FINAL</apache.poi.version>
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>1.0</jxls.version>
