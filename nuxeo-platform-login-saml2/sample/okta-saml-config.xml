@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.login.okta.auth">
+
+    <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
+    <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+
+    <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+            point="authenticators">
+        <authenticationPlugin name="OKTA_AUTH" enabled="true"
+                              class="org.nuxeo.ecm.platform.auth.saml.SAMLAuthenticationProvider">
+            <loginModulePlugin>Trusting_LM</loginModulePlugin>
+            <parameters>
+                <parameter name="name">Okta</parameter>
+                <!-- Uri of the metadata -->
+                <parameter name="metadata">https://inevo.okta.com/app/kwojxppsUAOQYHDCJHER/sso/saml/metadata</parameter>
+                <!-- Request timeout in seconds -->
+                <parameter name="timeout">5</parameter>
+            </parameters>
+        </authenticationPlugin>
+    </extension>
+
+    <!-- SKIP FORM_AUTH -->
+    <extension
+            target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+            point="chain">
+        <authenticationChain>
+            <plugins>
+                <plugin>BASIC_AUTH</plugin>
+                <plugin>FORM_AUTH</plugin> <!-- Okta will be added to login screen -->
+                <plugin>OKTA_AUTH</plugin>
+            </plugins>
+        </authenticationChain>
+
+    </extension>
+</component>

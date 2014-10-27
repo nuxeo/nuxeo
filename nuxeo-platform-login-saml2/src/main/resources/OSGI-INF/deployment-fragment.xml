@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<fragment version="1">
+    <extension target="web#SERVLET">
+        <servlet>
+            <servlet-name>Nuxeo SAML2 metadata servlet</servlet-name>
+            <servlet-class>
+                org.nuxeo.ecm.platform.auth.saml.web.MetadataServlet
+            </servlet-class>
+        </servlet>
+        <servlet-mapping>
+            <servlet-name>Nuxeo SAML2 metadata servlet</servlet-name>
+            <url-pattern>/saml/metadata</url-pattern>
+        </servlet-mapping>
+    </extension>
+</fragment>

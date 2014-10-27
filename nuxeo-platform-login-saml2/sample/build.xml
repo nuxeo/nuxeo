@@ -1,0 +1,12 @@
+<project name="SAML2 Samples" default="keygen" basedir=".">
+    <target name="keygen">
+        <exec executable="keytool" failonerror="true">
+            <arg value="-genkeypair"/>
+            <arg line="-keystore samlKeystore.jks"/>
+            <arg line="-alias saml"/>
+            <arg line="-keypass changeit"/>
+            <arg line="-dname 'CN=Nuxeo O=Nuxeo'" />
+            <arg line="-storepass password"/>
+        </exec>
+    </target>
+</project>

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.login.onelogin.auth">
+
+    <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
+    <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+
+    <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+               point="authenticators">
+        <authenticationPlugin name="ONELOGIN_AUTH" enabled="true"
+                              class="org.nuxeo.ecm.platform.auth.saml.SAMLAuthenticationProvider">
+            <loginModulePlugin>Trusting_LM</loginModulePlugin>
+            <parameters>
+                <parameter name="name">OneLogin</parameter>
+                <!-- Uri of the metadata -->
+                <!--parameter name="metadata">https://app.onelogin.com/saml/metadata/389482</parameter-->
+                <!-- Custom metadata to add SLO -->
+                <parameter name="metadata">nxserver/config/onelogin-metadata-idp.xml</parameter>
+                <!-- Request timeout in seconds -->
+                <parameter name="timeout">5</parameter>
+            </parameters>
+        </authenticationPlugin>
+    </extension>
+
+    <extension
+            target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+            point="chain">
+        <authenticationChain>
+            <plugins>
+                <plugin>BASIC_AUTH</plugin>
+                <plugin>FORM_AUTH</plugin>
+                <plugin>ONELOGIN_AUTH</plugin>
+            </plugins>
+        </authenticationChain>
+
+    </extension>
+</component>

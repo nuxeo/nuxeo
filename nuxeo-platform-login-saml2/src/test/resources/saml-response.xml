@@ -1,0 +1,72 @@
+<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="s22520705f2c89536ee66a2c4c92f2832ce9cdc019"
+                InResponseTo="a5947jig4cb55ii746a2963a67bf65" Version="2.0" IssueInstant="2014-01-01T00:00:00Z"
+                Destination="http://localhost:8080/login">
+
+    <saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">http://dummy</saml:Issuer>
+
+    <samlp:Status xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">
+        <samlp:StatusCode
+                xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Value="urn:oasis:names:tc:SAML:2.0:status:Success">
+        </samlp:StatusCode>
+
+    </samlp:Status>
+
+    <saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+                    ID="s2628dba9f8db77d7b0dcf3626ce3d0279a5df8d55" IssueInstant="2014-01-01T00:00:00Z"
+                    Version="2.0">
+        <saml:Issuer>http://dummy</saml:Issuer>
+        <!--Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+            <SignedInfo>
+                <CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+                <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+                <Reference URI="#s2628dba9f8db77d7b0dcf3626ce3d0279a5df8d55">
+                    <Transforms>
+                        <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                        <Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+                    </Transforms>
+                    <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                    <DigestValue>
+                        xhMI8HbRwW08hUK3XmWo3dk8KP4=
+                    </DigestValue>
+                </Reference>
+            </SignedInfo>
+            <SignatureValue>
+                QdnQp3OxZHPSn3DQo4S6MdeokqTeLMIK4WbaDx7y9XCW05SOSHSyXv60PHT5GLmA3idL81UD480fAmm/nZ4dCh/YoSMZBdSYFXPePOfQw85jioQ80uAYjhnX3hs3wf8xI36saZeYzdgjDo4FQdu+iDuVqSuj1MhZm3UDKdgdA/U=
+            </SignatureValue>
+            <KeyInfo>
+                <X509Data>
+                    <X509Certificate>
+                        MIICQDCCAakCBEeNB0swDQYJKoZIhvcNAQEEBQAwZzELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFDASBgNVBAcTC1NhbnRhIENsYXJhMQwwCgYDVQQKEwNTdW4xEDAOBgNVBAsTB09wZW5TU08xDTALBgNVBAMTBHRlc3QwHhcNMDgwMTE1MTkxOTM5WhcNMTgwMTEyMTkxOTM5WjBnMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEUMBIGA1UEBxMLU2FudGEgQ2xhcmExDDAKBgNVBAoTA1N1bjEQMA4GA1UECxMHT3BlblNTTzENMAsGA1UEAxMEdGVzdDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArSQc/U75GB2AtKhbGS5piiLkmJzqEsp64rDxbMJ+xDrye0EN/q1U5Of+RkDsaN/igkAvV1cuXEgTL6RlafFPcUX7QxDhZBhsYF9pbwtMzi4A4su9hnxIhURebGEmxKW9qJNYJs0Vo5+IgjxuEWnjnnVgHTs1+mq5QYTA7E6ZyL8CAwEAATANBgkqhkiG9w0BAQQFAAOBgQB3Pw/UQzPKTPTYi9upbFXlrAKMwtFf2OW4yvGWWvlcwcNSZJmTJ8ARvVYOMEVNbsT4OFcfu2/PeYoAdiDAcGy/F2Zuj8XJJpuQRSE6PtQqBuDEHjjmOQJ0rV/r8mO1ZCtHRhpZ5zYRjhRC9eCbjx9VrFax0JDC/FfwWigmrW0Y0Q==
+                    </X509Certificate>
+                </X509Data>
+            </KeyInfo>
+        </Signature-->
+
+        <saml:Subject>
+            <saml:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+                         NameQualifier="http://dummy">user@dummy
+            </saml:NameID>
+            <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+                <saml:SubjectConfirmationData InResponseTo="a5947jig4cb55ii746a2963a67bf65"
+                                              Recipient="http://localhost:8080/login"/>
+            </saml:SubjectConfirmation>
+        </saml:Subject>
+
+        <saml:Conditions NotBefore="2014-01-01T00:00:00Z">
+            <saml:AudienceRestriction>
+                <saml:Audience>http://localhost:8080/</saml:Audience>
+
+            </saml:AudienceRestriction>
+        </saml:Conditions>
+
+        <saml:AuthnStatement AuthnInstant="2014-01-01T00:00:00Z"
+                             SessionIndex="s2008f616d6f2b777082bbf1a8a135d1a9f3d53501">
+            <saml:AuthnContext>
+                <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport
+                </saml:AuthnContextClassRef>
+            </saml:AuthnContext>
+        </saml:AuthnStatement>
+
+    </saml:Assertion>
+
+</samlp:Response>
