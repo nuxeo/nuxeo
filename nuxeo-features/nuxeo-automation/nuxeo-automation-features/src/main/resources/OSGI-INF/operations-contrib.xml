@@ -79,12 +79,6 @@
       class="org.nuxeo.ecm.automation.core.operations.notification.SendMail" />
 
     <operation
-      class="org.nuxeo.ecm.automation.core.operations.services.GetPictureView" />
-
-    <operation
-      class="org.nuxeo.ecm.automation.core.operations.services.PictureResize" />
-
-    <operation
       class="org.nuxeo.ecm.automation.core.operations.services.FileManagerImport" />
 
     <operation
@@ -101,9 +95,6 @@
 
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.UserWorkspace" />
-
-    <operation
-      class="org.nuxeo.ecm.automation.core.operations.services.CreatePicture" />
 
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.RunOperationOnProvider" />
