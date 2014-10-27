@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.localconf</groupId>
     <artifactId>parent</artifactId>
-    <version>5.9.6-SNAPSHOT</version>
+    <version>5.9.6-I20141027_2013</version>
   </parent>
 
   <artifactId>nuxeo-localconf-simple</artifactId>
