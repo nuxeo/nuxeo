@@ -44,7 +44,6 @@ import org.nuxeo.functionaltests.pages.wizard.IFrameHelper;
 import org.nuxeo.functionaltests.pages.wizard.SummaryWizardPage;
 import org.nuxeo.functionaltests.pages.wizard.WizardPage;
 
-@Ignore("NXP-15177: failing randomly")
 public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
     private static final String MARKETPLACE_PACKAGE_ID = "audit-web-access-1.0.6";
@@ -69,6 +68,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
     public static final String CONNECT_FORM_TITLE = "Nuxeo Connect & Nuxeo Studio";
 
+    @Ignore("NXP-15177: failing randomly")
     @Test
     public void testAll() throws Exception {
         runWizardAndRestart();
