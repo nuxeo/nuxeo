@@ -23,6 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,7 +34,6 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.BaseSession;
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.tokenauth.TokenAuthenticationException;
@@ -91,47 +93,56 @@ public class TokenAuthenticationServiceImpl implements
                     "The permission parameter is mandatory to acquire an authentication token.");
         }
 
-        Session session = null;
+        // Log in as system user
+        LoginContext lc;
+        try {
+            lc = Framework.login();
+        } catch (LoginException e) {
+            throw new ClientException("Cannot log in as system user", e);
+        }
         try {
             // Open directory session
-            DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
-            session = directoryService.open(DIRECTORY_NAME);
+            final Session session = Framework.getService(DirectoryService.class).open(
+                    DIRECTORY_NAME);
+            try {
+                // Generate random token, store the binding and return the token
+                UUID uuid = UUID.randomUUID();
+                token = uuid.toString();
 
-            // Generate random token, store the binding and return the token
-            UUID uuid = UUID.randomUUID();
-            token = uuid.toString();
-
-            DocumentModel entry = getBareAuthTokenModel(directoryService);
-            entry.setProperty(DIRECTORY_SCHEMA, TOKEN_FIELD, token);
-            entry.setProperty(DIRECTORY_SCHEMA, USERNAME_FIELD, userName);
-            entry.setProperty(DIRECTORY_SCHEMA, APPLICATION_NAME_FIELD,
-                    applicationName);
-            entry.setProperty(DIRECTORY_SCHEMA, DEVICE_ID_FIELD, deviceId);
-            if (!StringUtils.isEmpty(deviceDescription)) {
-                entry.setProperty(DIRECTORY_SCHEMA, DEVICE_DESCRIPTION_FIELD,
-                        deviceDescription);
-            }
-            entry.setProperty(DIRECTORY_SCHEMA, PERMISSION_FIELD, permission);
-            Calendar creationDate = Calendar.getInstance();
-            creationDate.setTimeInMillis(System.currentTimeMillis());
-            entry.setProperty(DIRECTORY_SCHEMA, CREATION_DATE_FIELD,
-                    creationDate);
-            session.createEntry(entry);
-
-            log.debug(String.format(
-                    "Generated unique token for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), returning it.",
-                    userName, applicationName, deviceId));
-            return token;
-
-        } catch (ClientException ce) {
-            throw new ClientRuntimeException(ce);
-        } finally {
-            if (session != null) {
-                try {
-                    session.close();
-                } catch (DirectoryException de) {
-                    throw new ClientRuntimeException(de);
+                final DocumentModel entry = getBareAuthTokenModel(Framework.getService(DirectoryService.class));
+                entry.setProperty(DIRECTORY_SCHEMA, TOKEN_FIELD, token);
+                entry.setProperty(DIRECTORY_SCHEMA, USERNAME_FIELD, userName);
+                entry.setProperty(DIRECTORY_SCHEMA, APPLICATION_NAME_FIELD,
+                        applicationName);
+                entry.setProperty(DIRECTORY_SCHEMA, DEVICE_ID_FIELD, deviceId);
+                if (!StringUtils.isEmpty(deviceDescription)) {
+                    entry.setProperty(DIRECTORY_SCHEMA,
+                            DEVICE_DESCRIPTION_FIELD, deviceDescription);
                 }
+                entry.setProperty(DIRECTORY_SCHEMA, PERMISSION_FIELD,
+                        permission);
+                Calendar creationDate = Calendar.getInstance();
+                creationDate.setTimeInMillis(System.currentTimeMillis());
+                entry.setProperty(DIRECTORY_SCHEMA, CREATION_DATE_FIELD,
+                        creationDate);
+                session.createEntry(entry);
+
+                log.debug(String.format(
+                        "Generated unique token for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), returning it.",
+                        userName, applicationName, deviceId));
+                return token;
+
+            } finally {
+                session.close();
+            }
+        } finally {
+            try {
+                // Login context may be null in tests
+                if (lc != null) {
+                    lc.logout();
+                }
+            } catch (LoginException e) {
+                throw new ClientException("Cannot log out system user", e);
             }
         }
     }
@@ -147,106 +158,136 @@ public class TokenAuthenticationServiceImpl implements
                     "The following parameters are mandatory to get an authentication token: userName, applicationName, deviceId.");
         }
 
-        Session session = null;
+        // Log in as system user
+        LoginContext lc;
+        try {
+            lc = Framework.login();
+        } catch (LoginException e) {
+            throw new ClientException("Cannot log in as system user", e);
+        }
         try {
             // Open directory session
-            DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
-            session = directoryService.open(DIRECTORY_NAME);
-
-            // Look for a token bound to the (userName,
-            // applicationName, deviceId) triplet, if it exists return it,
-            // else return null
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
-            filter.put(USERNAME_FIELD, userName);
-            filter.put(APPLICATION_NAME_FIELD, applicationName);
-            filter.put(DEVICE_ID_FIELD, deviceId);
-            DocumentModelList tokens = session.query(filter);
-            if (!tokens.isEmpty()) {
-                // Multiple tokens found for the same triplet, this is
-                // inconsistent
-                if (tokens.size() > 1) {
-                    throw new ClientRuntimeException(
-                            String.format(
-                                    "Found multiple tokens for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), this is inconsistent.",
-                                    userName, applicationName, deviceId));
+            final Session session = Framework.getService(DirectoryService.class).open(
+                    DIRECTORY_NAME);
+            try {
+                // Look for a token bound to the (userName,
+                // applicationName, deviceId) triplet, if it exists return it,
+                // else return null
+                final Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                filter.put(USERNAME_FIELD, userName);
+                filter.put(APPLICATION_NAME_FIELD, applicationName);
+                filter.put(DEVICE_ID_FIELD, deviceId);
+                DocumentModelList tokens = session.query(filter);
+                if (!tokens.isEmpty()) {
+                    // Multiple tokens found for the same triplet, this is
+                    // inconsistent
+                    if (tokens.size() > 1) {
+                        throw new ClientRuntimeException(
+                                String.format(
+                                        "Found multiple tokens for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), this is inconsistent.",
+                                        userName, applicationName, deviceId));
+                    }
+                    // Return token
+                    log.debug(String.format(
+                            "Found token for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), returning it.",
+                            userName, applicationName, deviceId));
+                    DocumentModel tokenModel = tokens.get(0);
+                    return tokenModel.getId();
                 }
-                // Return token
+
                 log.debug(String.format(
-                        "Found token for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), returning it.",
+                        "No token found for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), returning null.",
                         userName, applicationName, deviceId));
-                DocumentModel tokenModel = tokens.get(0);
-                return tokenModel.getId();
-            }
-
-            log.debug(String.format(
-                    "No token found for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), returning null.",
-                    userName, applicationName, deviceId));
-            return null;
-
-        } catch (ClientException ce) {
-            throw new ClientRuntimeException(ce);
-        } finally {
-            if (session != null) {
-                try {
-                    session.close();
-                } catch (DirectoryException de) {
-                    throw new ClientRuntimeException(de);
-                }
-            }
-        }
-    }
-
-    @Override
-    public String getUserName(String token) {
-
-        Session session = null;
-        try {
-            DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
-            session = directoryService.open(DIRECTORY_NAME);
-            DocumentModel entry = session.getEntry(token);
-            if (entry == null) {
-                log.debug(String.format(
-                        "Found no user name bound to the token: '%s', returning null.",
-                        token));
                 return null;
-            }
-            log.debug(String.format(
-                    "Found a user name bound to the token: '%s', returning it.",
-                    token));
-            return (String) entry.getProperty(DIRECTORY_SCHEMA, USERNAME_FIELD);
 
-        } catch (ClientException ce) {
-            throw new ClientRuntimeException(ce);
+            } catch (ClientException e) {
+                log.error(e);
+                throw e;
+            } finally {
+                session.close();
+            }
         } finally {
-            if (session != null) {
-                try {
-                    session.close();
-                } catch (DirectoryException de) {
-                    throw new ClientRuntimeException(de);
+            try {
+                // Login context may be null in tests
+                if (lc != null) {
+                    lc.logout();
                 }
+            } catch (LoginException e) {
+                throw new ClientException("Cannot log out system user", e);
             }
         }
     }
 
     @Override
-    public void revokeToken(String token) {
+    public String getUserName(final String token) {
 
-        Session session = null;
+        // Log in as system user
+        LoginContext lc;
         try {
-            DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
-            session = directoryService.open(DIRECTORY_NAME);
-            session.deleteEntry(token);
-            log.info(String.format("Deleted token: '%s' from the back-end.",
-                    token));
-        } catch (ClientException ce) {
-            throw new ClientRuntimeException(ce);
-        } finally {
-            if (session != null) {
-                try {
-                    session.close();
-                } catch (DirectoryException de) {
-                    throw new ClientRuntimeException(de);
+            lc = Framework.login();
+        } catch (LoginException e) {
+            throw new ClientException("Cannot log in as system user", e);
+        }
+        try {
+            final Session session = Framework.getService(DirectoryService.class).open(
+                    DIRECTORY_NAME);
+            try {
+                DocumentModel entry = session.getEntry(token);
+                if (entry == null) {
+                    log.debug(String.format(
+                            "Found no user name bound to the token: '%s', returning null.",
+                            token));
+                    return null;
                 }
+                log.debug(String.format(
+                        "Found a user name bound to the token: '%s', returning it.",
+                        token));
+                return (String) entry.getProperty(DIRECTORY_SCHEMA,
+                        USERNAME_FIELD);
+
+            } finally {
+                session.close();
+            }
+        } finally {
+            try {
+                // Login context may be null in tests
+                if (lc != null) {
+                    lc.logout();
+                }
+            } catch (LoginException e) {
+                throw new ClientException("Cannot log out system user", e);
+            }
+        }
+    }
+
+    @Override
+    public void revokeToken(final String token) {
+
+        // Log in as system user
+        LoginContext lc;
+        try {
+            lc = Framework.login();
+        } catch (LoginException e) {
+            throw new ClientException("Cannot log in as system user", e);
+        }
+        try {
+            final Session session = Framework.getService(DirectoryService.class).open(
+                    DIRECTORY_NAME);
+            try {
+                session.deleteEntry(token);
+                log.info(String.format(
+                        "Deleted token: '%s' from the back-end.", token));
+            } finally {
+                session.close();
+            }
+        } finally {
+            try {
+                // Login context may be null in tests
+                if (lc != null) {
+                    lc.logout();
+                }
+            } catch (LoginException e) {
+                throw new ClientException("Cannot log out system user", e);
             }
         }
     }
@@ -254,27 +295,34 @@ public class TokenAuthenticationServiceImpl implements
     @Override
     public DocumentModelList getTokenBindings(String userName) {
 
-        Session session = null;
+        // Log in as system user
+        LoginContext lc;
         try {
-            DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
-            session = directoryService.open(DIRECTORY_NAME);
-
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
-            filter.put(USERNAME_FIELD, userName);
-            Map<String, String> orderBy = new HashMap<String, String>();
-            orderBy.put(CREATION_DATE_FIELD, "desc");
-            return session.query(filter, Collections.<String> emptySet(),
-                    orderBy);
-
-        } catch (ClientException ce) {
-            throw new ClientRuntimeException(ce);
+            lc = Framework.login();
+        } catch (LoginException e) {
+            throw new ClientException("Cannot log in as system user", e);
+        }
+        try {
+            final Session session = Framework.getService(DirectoryService.class).open(
+                    DIRECTORY_NAME);
+            try {
+                final Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                filter.put(USERNAME_FIELD, userName);
+                final Map<String, String> orderBy = new HashMap<String, String>();
+                orderBy.put(CREATION_DATE_FIELD, "desc");
+                return session.query(filter, Collections.<String> emptySet(),
+                        orderBy);
+            } finally {
+                session.close();
+            }
         } finally {
-            if (session != null) {
-                try {
-                    session.close();
-                } catch (DirectoryException de) {
-                    throw new ClientRuntimeException(de);
+            try {
+                // Login context may be null in tests
+                if (lc != null) {
+                    lc.logout();
                 }
+            } catch (LoginException e) {
+                throw new ClientException("Cannot log out system user", e);
             }
         }
     }
