@@ -41,6 +41,11 @@
       <subWidgetRefs>
         <widget>searchForm</widget>
       </subWidgetRefs>
+      <controls mode="any">
+        <control name="gridStyleClass">
+          gridStyle2 compactLayout nxSearchForm
+        </control>
+      </controls>
     </widget>
 
     <widget name="searchPanelRight" type="container">
@@ -52,6 +57,11 @@
       <subWidgetRefs>
         <widget>searchResults</widget>
       </subWidgetRefs>
+      <controls mode="any">
+        <control name="gridStyleClass">
+          gridStyle6 nxSearchResults
+        </control>
+      </controls>
     </widget>
 
     <!-- End of Grid layout widgets -->
@@ -243,10 +253,6 @@
       </templates>
       <rows>
         <row>
-          <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle2 compactLayout nxSearchForm</property>
-            <property name="nxl_gridStyleClass_1">gridStyle6 nxSearchResults</property>
-          </properties>
           <widget>searchPanelLeft</widget>
           <widget>searchPanelRight</widget>
         </row>
