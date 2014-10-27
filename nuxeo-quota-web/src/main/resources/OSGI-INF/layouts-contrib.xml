@@ -55,6 +55,9 @@
           /widgets/document_quota_statistics_widget_template.xhtml
         </property>
       </properties>
+      <controls mode="any">
+        <control name="gridStyleClass">gridStyle12</control>
+      </controls>
     </widget>
     
     <widget name="quota_heaviest_containers" type="contentViewWithForms">
@@ -516,14 +519,8 @@
       <rows>
         <row>
           <widget>quota_statsistics_graph</widget>
-          <properties mode="any">
-           <property name="nxl_gridStyleClass_0">gridStyle12</property>
-          </properties> 
         </row>
         <row>
-          <properties mode="any">
-           <property name="nxl_gridStyleClass_0">gridStyle12</property>
-          </properties>  
           <widget>quota_heaviest_folders_container</widget>
         </row>
       </rows>
@@ -540,6 +537,7 @@
         </properties>
         <controls mode="any">
           <control name="handleLabels">true</control>
+          <control name="gridStyleClass">gridStyle12</control>
         </controls>
         <subWidgets>
           <widget name="quota_heaviest_children" type="contentViewWithForms">
