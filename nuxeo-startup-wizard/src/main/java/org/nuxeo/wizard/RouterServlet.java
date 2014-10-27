@@ -211,7 +211,8 @@ public class RouterServlet extends HttpServlet {
 
         if ("register".equals(action)) {
             // store the registration info
-            Map<String, String> connectMap = new HashMap<String, String>();
+            Map<String, String> connectMap = new HashMap<>();
+            Context context = Context.instance(req);
             if (token != null) {
                 String tokenData = new String(Base64.decodeBase64(token));
                 String[] tokenDataLines = tokenData.split("\n");
@@ -221,7 +222,13 @@ public class RouterServlet extends HttpServlet {
                         connectMap.put(parts[0], parts[1]);
                     }
                 }
-                Context.instance(req).storeConnectMap(connectMap);
+                context.storeConnectMap(connectMap);
+            }
+
+            // Save CLID
+            if (context.isConnectRegistrationDone()) {
+                // save Connect registration
+                ConnectRegistrationHelper.saveConnectRegistrationFile(context);
             }
 
             // deactivate the confirm form
@@ -568,11 +575,6 @@ public class RouterServlet extends HttpServlet {
         Context ctx = Context.instance(req);
         ParamCollector collector = ctx.getCollector();
         ConfigurationGenerator cg = collector.getConfigurationGenerator();
-
-        if (ctx.isConnectRegistrationDone()) {
-            // save Connect registration
-            ConnectRegistrationHelper.saveConnectRegistrationFile(ctx);
-        }
 
         // Mark package selection done
         PackageDownloaderHelper.markPackageSelectionDone(ctx);
