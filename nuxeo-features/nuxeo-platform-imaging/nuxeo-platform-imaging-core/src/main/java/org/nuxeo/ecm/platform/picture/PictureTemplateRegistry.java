@@ -118,8 +118,6 @@ public class PictureTemplateRegistry extends
      *
      * <br/>
      *
-     * TODO: See how to handle specific cases
-     *
      * @throws IllegalStateException if the title is null or empty
      */
     protected void check(PictureTemplate pictureTemplate) {

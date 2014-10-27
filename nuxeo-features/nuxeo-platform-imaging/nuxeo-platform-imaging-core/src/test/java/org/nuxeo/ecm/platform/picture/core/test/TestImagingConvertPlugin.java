@@ -93,15 +93,8 @@ public class TestImagingConvertPlugin {
             assertNotNull(result);
 
             BufferedImage image = ImageIO.read(result.getBlob().getStream());
+
             assertNotNull("Resized image is null", image);
-            /**
-             * Imagick keep the image ratio.
-             *
-             * TODO: See why the ratio is keeped from the height (in the shell
-             * it's from the width)
-             */
-            // assertEquals("Resized image width", resizeWidth,
-            // image.getWidth());
             assertEquals("Resized image height", resizeHeight,
                     image.getHeight());
         }
