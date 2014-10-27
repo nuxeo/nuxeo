@@ -1,11 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.9.6-SNAPSHOT</version>
+    <version>5.9.6-I20141027_2013</version>
   </parent>
 
   <artifactId>nuxeo-addons-parent</artifactId>
@@ -20,60 +19,60 @@
   </scm>
 
   <properties>
-    <nuxeo.addons.version>5.9.6-SNAPSHOT</nuxeo.addons.version>
-    <nuxeo.opencmis.version>5.9.6-SNAPSHOT</nuxeo.opencmis.version>
-    <nuxeo.businessdays.version>5.9.6-SNAPSHOT</nuxeo.businessdays.version>
-    <nuxeo.login.version>5.9.6-SNAPSHOT</nuxeo.login.version>
-    <nuxeo.facetedsearch.version>5.9.6-SNAPSHOT</nuxeo.facetedsearch.version>
-    <nuxeo.shell.version>5.9.6-SNAPSHOT</nuxeo.shell.version>
-    <nuxeo.webembedded.version>5.9.6-SNAPSHOT</nuxeo.webembedded.version>
-    <nuxeo.opensocial.version>5.9.6-SNAPSHOT</nuxeo.opensocial.version>
-    <nuxeo.usercenter.version>5.9.6-SNAPSHOT</nuxeo.usercenter.version>
-    <nuxeo.fsconnectors.version>5.9.6-SNAPSHOT</nuxeo.fsconnectors.version>
-    <nuxeo.classification.version>5.9.6-SNAPSHOT</nuxeo.classification.version>
-    <nuxeo.importer.version>5.9.6-SNAPSHOT</nuxeo.importer.version>
-    <nuxeo.routing.version>5.9.6-SNAPSHOT</nuxeo.routing.version>
-    <nuxeo.smartsearch.version>5.9.6-SNAPSHOT</nuxeo.smartsearch.version>
-    <nuxeo.audio.version>5.9.6-SNAPSHOT</nuxeo.audio.version>
-    <nuxeo.video.version>5.9.6-SNAPSHOT</nuxeo.video.version>
-    <nuxeo.categorization.version>5.9.6-SNAPSHOT</nuxeo.categorization.version>
-    <nuxeo.rendition.version>5.9.6-SNAPSHOT</nuxeo.rendition.version>
-    <nuxeo.replication.version>5.9.6-SNAPSHOT</nuxeo.replication.version>
-    <nuxeo.activity.version>5.9.6-SNAPSHOT</nuxeo.activity.version>
-    <nuxeo.sc.version>5.9.6-SNAPSHOT</nuxeo.sc.version>
-    <nuxeo.birt.version>5.9.6-SNAPSHOT</nuxeo.birt.version>
-    <nuxeo.suggestbox.version>5.9.6-SNAPSHOT</nuxeo.suggestbox.version>
-    <nuxeo.rssreader.version>5.9.6-SNAPSHOT</nuxeo.rssreader.version>
-    <nuxeo.dam.version>5.9.6-SNAPSHOT</nuxeo.dam.version>
-    <nuxeo.cmf.version>5.9.6-SNAPSHOT</nuxeo.cmf.version>
-    <nuxeo.poll.version>5.9.6-SNAPSHOT</nuxeo.poll.version>
-    <nuxeo.quota.version>5.9.6-SNAPSHOT</nuxeo.quota.version>
-    <nuxeo.web.mobile.version>5.9.6-SNAPSHOT</nuxeo.web.mobile.version>
-    <nuxeo.indexing.gateway.version>5.9.6-SNAPSHOT</nuxeo.indexing.gateway.version>
-    <nuxeo.exalead.connector.version>5.9.6-SNAPSHOT</nuxeo.exalead.connector.version>
-    <nuxeo.user.registration.version>5.9.6-SNAPSHOT</nuxeo.user.registration.version>
-    <nuxeo.rating.version>5.9.6-SNAPSHOT</nuxeo.rating.version>
-    <nuxeo.agenda.version>5.9.6-SNAPSHOT</nuxeo.agenda.version>
-    <nuxeo.templates.version>5.9.6-SNAPSHOT</nuxeo.templates.version>
-    <nuxeo.csv.version>5.9.6-SNAPSHOT</nuxeo.csv.version>
-    <nuxeo.drive.version>5.9.6-SNAPSHOT</nuxeo.drive.version>
-    <nuxeo.dam.pdf.export.version>5.9.6-SNAPSHOT</nuxeo.dam.pdf.export.version>
-    <nuxeo.resources.compat.version>5.9.6-SNAPSHOT</nuxeo.resources.compat.version>
-    <nuxeo.dmk.version>5.9.6-SNAPSHOT</nuxeo.dmk.version>
-    <nuxeo.webengine.sites.version>5.9.6-SNAPSHOT</nuxeo.webengine.sites.version>
-    <nuxeo.style.guide.version>5.9.6-SNAPSHOT</nuxeo.style.guide.version>
-    <nuxeo.imaging.recompute.version>5.9.6-SNAPSHOT</nuxeo.imaging.recompute.version>
-    <nuxeo.box.version>5.9.6-SNAPSHOT</nuxeo.box.version>
-    <nuxeo.easyshare.version>5.9.6-SNAPSHOT</nuxeo.easyshare.version>
-    <nuxeo.logs.viewer.version>5.9.6-SNAPSHOT</nuxeo.logs.viewer.version>
-    <nuxeo.spreadsheet.version>5.9.6-SNAPSHOT</nuxeo.spreadsheet.version>
+    <nuxeo.addons.version>5.9.6-I20141027_2013</nuxeo.addons.version>
+    <nuxeo.opencmis.version>5.9.6-I20141027_2013</nuxeo.opencmis.version>
+    <nuxeo.businessdays.version>5.9.6-I20141027_2013</nuxeo.businessdays.version>
+    <nuxeo.login.version>5.9.6-I20141027_2013</nuxeo.login.version>
+    <nuxeo.facetedsearch.version>5.9.6-I20141027_2013</nuxeo.facetedsearch.version>
+    <nuxeo.shell.version>5.9.6-I20141027_2013</nuxeo.shell.version>
+    <nuxeo.webembedded.version>5.9.6-I20141027_2013</nuxeo.webembedded.version>
+    <nuxeo.opensocial.version>5.9.6-I20141027_2013</nuxeo.opensocial.version>
+    <nuxeo.usercenter.version>5.9.6-I20141027_2013</nuxeo.usercenter.version>
+    <nuxeo.fsconnectors.version>5.9.6-I20141027_2013</nuxeo.fsconnectors.version>
+    <nuxeo.classification.version>5.9.6-I20141027_2013</nuxeo.classification.version>
+    <nuxeo.importer.version>5.9.6-I20141027_2013</nuxeo.importer.version>
+    <nuxeo.routing.version>5.9.6-I20141027_2013</nuxeo.routing.version>
+    <nuxeo.smartsearch.version>5.9.6-I20141027_2013</nuxeo.smartsearch.version>
+    <nuxeo.audio.version>5.9.6-I20141027_2013</nuxeo.audio.version>
+    <nuxeo.video.version>5.9.6-I20141027_2013</nuxeo.video.version>
+    <nuxeo.categorization.version>5.9.6-I20141027_2013</nuxeo.categorization.version>
+    <nuxeo.rendition.version>5.9.6-I20141027_2013</nuxeo.rendition.version>
+    <nuxeo.replication.version>5.9.6-I20141027_2013</nuxeo.replication.version>
+    <nuxeo.activity.version>5.9.6-I20141027_2013</nuxeo.activity.version>
+    <nuxeo.sc.version>5.9.6-I20141027_2013</nuxeo.sc.version>
+    <nuxeo.birt.version>5.9.6-I20141027_2013</nuxeo.birt.version>
+    <nuxeo.suggestbox.version>5.9.6-I20141027_2013</nuxeo.suggestbox.version>
+    <nuxeo.rssreader.version>5.9.6-I20141027_2013</nuxeo.rssreader.version>
+    <nuxeo.dam.version>5.9.6-I20141027_2013</nuxeo.dam.version>
+    <nuxeo.cmf.version>5.9.6-I20141027_2013</nuxeo.cmf.version>
+    <nuxeo.poll.version>5.9.6-I20141027_2013</nuxeo.poll.version>
+    <nuxeo.quota.version>5.9.6-I20141027_2013</nuxeo.quota.version>
+    <nuxeo.web.mobile.version>5.9.6-I20141027_2013</nuxeo.web.mobile.version>
+    <nuxeo.indexing.gateway.version>5.9.6-I20141027_2013</nuxeo.indexing.gateway.version>
+    <nuxeo.exalead.connector.version>5.9.6-I20141027_2013</nuxeo.exalead.connector.version>
+    <nuxeo.user.registration.version>5.9.6-I20141027_2013</nuxeo.user.registration.version>
+    <nuxeo.rating.version>5.9.6-I20141027_2013</nuxeo.rating.version>
+    <nuxeo.agenda.version>5.9.6-I20141027_2013</nuxeo.agenda.version>
+    <nuxeo.templates.version>5.9.6-I20141027_2013</nuxeo.templates.version>
+    <nuxeo.csv.version>5.9.6-I20141027_2013</nuxeo.csv.version>
+    <nuxeo.drive.version>5.9.6-I20141027_2013</nuxeo.drive.version>
+    <nuxeo.dam.pdf.export.version>5.9.6-I20141027_2013</nuxeo.dam.pdf.export.version>
+    <nuxeo.resources.compat.version>5.9.6-I20141027_2013</nuxeo.resources.compat.version>
+    <nuxeo.dmk.version>5.9.6-I20141027_2013</nuxeo.dmk.version>
+    <nuxeo.webengine.sites.version>5.9.6-I20141027_2013</nuxeo.webengine.sites.version>
+    <nuxeo.style.guide.version>5.9.6-I20141027_2013</nuxeo.style.guide.version>
+    <nuxeo.imaging.recompute.version>5.9.6-I20141027_2013</nuxeo.imaging.recompute.version>
+    <nuxeo.box.version>5.9.6-I20141027_2013</nuxeo.box.version>
+    <nuxeo.easyshare.version>5.9.6-I20141027_2013</nuxeo.easyshare.version>
+    <nuxeo.logs.viewer.version>5.9.6-I20141027_2013</nuxeo.logs.viewer.version>
+    <nuxeo.spreadsheet.version>5.9.6-I20141027_2013</nuxeo.spreadsheet.version>
 
     <!-- optional addons -->
-    <nuxeo.jbpm.version>5.9.6-SNAPSHOT</nuxeo.jbpm.version>
-    <nuxeo.semantic.entities.version>5.9.6-SNAPSHOT</nuxeo.semantic.entities.version>
-    <nuxeo.sync.version>5.9.6-SNAPSHOT</nuxeo.sync.version>
-    <nuxeo.javaagent.version>5.9.6-SNAPSHOT</nuxeo.javaagent.version>
-    <nuxeo.fsexporter.version>5.9.6-SNAPSHOT</nuxeo.fsexporter.version>
+    <nuxeo.jbpm.version>5.9.6-I20141027_2013</nuxeo.jbpm.version>
+    <nuxeo.semantic.entities.version>5.9.6-I20141027_2013</nuxeo.semantic.entities.version>
+    <nuxeo.sync.version>5.9.6-I20141027_2013</nuxeo.sync.version>
+    <nuxeo.javaagent.version>5.9.6-I20141027_2013</nuxeo.javaagent.version>
+    <nuxeo.fsexporter.version>5.9.6-I20141027_2013</nuxeo.fsexporter.version>
     <!-- end of optional addons -->
   </properties>
 
