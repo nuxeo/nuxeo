@@ -319,13 +319,15 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     /**
      * @since 5.9.6
      */
-    public static String titleFromId(final String documentId) throws ClientException {
+    public static String titleFromId(final String documentId)
+            throws ClientException {
         final CoreSession coreSession = (CoreSession) Component.getInstance("documentManager");
         if (StringUtils.isNotBlank(documentId)) {
             try {
                 return coreSession.getDocument(new IdRef(documentId)).getTitle();
             } catch (ClientException e) {
-                log.info(String.format("Could not find document with id %s", documentId));
+                log.info(String.format("Could not find document with id %s",
+                        documentId));
                 return documentId;
             }
         }
@@ -514,8 +516,11 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         return value;
     }
 
-    public static String fileUrl(String patternName, DocumentModel doc,
-            String blobPropertyName, String filename) {
+    /**
+     * @since 6.0
+     */
+    public static String fileUrl(String baseURL, String patternName,
+            DocumentModel doc, String blobPropertyName, String filename) {
         if (doc == null) {
             return null;
         }
@@ -532,14 +537,19 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             if (patternName == null) {
                 patternName = service.getDefaultPatternName();
             }
-            return service.getUrlFromDocumentView(patternName, docView,
-                    BaseURL.getBaseURL());
+            return service.getUrlFromDocumentView(patternName, docView, baseURL);
 
         } catch (Exception e) {
             log.error("Could not generate url for document file", e);
         }
 
         return null;
+    }
+
+    public static String fileUrl(String patternName, DocumentModel doc,
+            String blobPropertyName, String filename) {
+        return fileUrl(BaseURL.getBaseURL(), patternName, doc,
+                blobPropertyName, filename);
     }
 
     public static String bigFileUrl(DocumentModel doc, String blobPropertyName,
