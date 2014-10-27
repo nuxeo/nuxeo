@@ -1473,6 +1473,23 @@
       </columns>
     </layout>
 
+    <layout name="document_listing_thumbnail" type="listingThumbnail">
+      <columns>
+        <column name="last_contributor">
+          <properties mode="any">
+            <property name="label">label.dublincore.lastContributor</property>
+          </properties>
+          <widget>listing_last_contributor</widget>
+        </column>
+        <column name="size_and_format">
+          <properties mode="any">
+            <property name="label">label.selection.column.size_and_format</property>
+          </properties>
+          <widget>listing_size_and_format</widget>
+        </column>
+      </columns>
+    </layout>
+
     <layout name="document_virtual_navigation_listing_ajax">
       <aliases>
         <alias>document_virtual_navigation_listing</alias>
