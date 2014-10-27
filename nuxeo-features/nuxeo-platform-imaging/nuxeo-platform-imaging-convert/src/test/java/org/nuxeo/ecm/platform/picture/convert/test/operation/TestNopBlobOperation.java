@@ -51,7 +51,7 @@ public class TestNopBlobOperation {
     AutomationService automationService;
 
     @Test
-    public void iShouldHaveEqualsBlob() throws Exception {
+    public void iShouldHaveEqualsBlobs() throws Exception {
         Blob blob = new StringBlob("");
         OperationContext context = new OperationContext(session);
         context.setInput(blob);

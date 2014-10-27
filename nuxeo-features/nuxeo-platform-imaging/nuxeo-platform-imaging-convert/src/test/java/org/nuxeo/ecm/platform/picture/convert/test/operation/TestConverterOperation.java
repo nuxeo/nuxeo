@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -80,9 +81,9 @@ public class TestConverterOperation {
         int height = 480;
         Blob blob = getTestImage();
 
-        Map<String, Object> params = new HashMap<>(2);
+        Map<String, Object> params = new HashMap<>();
         params.put("converter", NopConverter.ID);
-        params.put("parameters", createConverterParametersMap(640, height));
+        params.put("parameters", createConverterParameters(640, height));
 
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(blob);
@@ -99,9 +100,8 @@ public class TestConverterOperation {
                 TestConverterOperation.class.getResourceAsStream("/test-data/big_nuxeo_logo.gif"));
     }
 
-    protected Map<String, String> createConverterParametersMap(int width,
-            int height) {
-        Map<String, String> parameters = new HashMap<>(3);
+    protected Object createConverterParameters(int width, int height) {
+        Properties parameters = new Properties();
         parameters.put(ImagingConvertConstants.CONVERSION_FORMAT,
                 ImagingConvertConstants.JPEG_CONVERSATION_FORMAT);
         parameters.put(ImagingConvertConstants.OPTION_RESIZE_WIDTH,
