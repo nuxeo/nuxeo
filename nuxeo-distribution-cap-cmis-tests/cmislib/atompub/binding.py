@@ -1224,9 +1224,10 @@ class AtomPubRepository(object):
                 self.reload()
             capabilitiesElement = self.xmlDoc.getElementsByTagNameNS(CMIS_NS, 'capabilities')[0]
             for node in [e for e in capabilitiesElement.childNodes if e.nodeType == e.ELEMENT_NODE]:
-                key = node.localName.replace('capability', '')
-                value = parseBoolValue(node.childNodes[0].data)
-                self._capabilities[key] = value
+                if node.childNodes:
+                    key = node.localName.replace('capability', '')
+                    value = parseBoolValue(node.childNodes[0].data)
+                    self._capabilities[key] = value
         return self._capabilities
 
     def getRootFolder(self):
