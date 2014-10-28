@@ -131,6 +131,11 @@ public final class DocumentEventTypes {
      */
     public static final String BINARYTEXT_UPDATED = "binaryTextUpdated";
 
+    /**
+     * @since 5.9.6
+     */
+    public static final String DOCUMENT_TAG_UPDATED = "documentTagUpdated";
+
     // Constant utility class
     private DocumentEventTypes() {
     }
