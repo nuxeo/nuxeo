@@ -19,6 +19,7 @@
       <event>documentCheckedOut</event>
       <event>documentCheckedIn</event>
       <event>binaryTextUpdated</event>
+      <event>documentTagUpdated</event>
     </listener>
 
     <listener name="elasticSearchPostCommitSyncListener" async="false"

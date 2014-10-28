@@ -39,11 +39,13 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -60,6 +62,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
+@Deploy({ "org.nuxeo.ecm.platform.tag" })
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestAutomaticIndexing {
 
@@ -72,10 +75,16 @@ public class TestAutomaticIndexing {
 
     @Inject
     protected ElasticSearchService ess;
+
     @Inject
     protected TrashService trashService;
+
     @Inject
     ElasticSearchAdmin esa;
+
+    @Inject
+    protected TagService tagService;
+
     private int commandProcessed;
     private boolean syncMode = false;
 
@@ -433,6 +442,61 @@ public class TestAutomaticIndexing {
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
                 .setSize(60).execute().actionGet();
         Assert.assertEquals(3, searchResponse.getHits().getTotalHits());
+    }
+
+    @Test
+    public void shouldIndexTag() throws Exception {
+        startTransaction();
+        startCountingCommandProcessed();
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+        tagService.tag(session, doc.getId(), "mytag", "Administrator");
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
+        startTransaction();
+
+        // doc, tagging relation and tag
+        assertNumberOfCommandProcessed(3);
+        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
+                .setSize(60).setQuery(QueryBuilders.termQuery("ecm:tag", "mytag")).execute().actionGet();
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+
+        startCountingCommandProcessed();
+        tagService.tag(session, doc.getId(), "mytagbis", "Administrator");
+        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
+        startTransaction();
+
+        // doc, tagging and new tag
+        assertNumberOfCommandProcessed(3);
+        searchResponse = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
+                .setSize(60).setQuery(QueryBuilders.termQuery("ecm:tag", "mytagbis")).execute().actionGet();
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+
+        startCountingCommandProcessed();
+        tagService.untag(session, doc.getId(), "mytag", "Administrator");
+        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
+        startTransaction();
+
+        // doc, tagging
+        assertNumberOfCommandProcessed(2);
+        searchResponse = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
+                .setSize(60).setQuery(QueryBuilders.termQuery("ecm:tag", "mytagbis")).execute().actionGet();
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+        searchResponse = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
+                .setSize(60).setQuery(QueryBuilders.termQuery("ecm:tag", "mytag")).execute().actionGet();
+        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
     }
 
 }
