@@ -442,6 +442,8 @@
       }
   }
 
+  // @deprecated since 6.0: use a better way to init select2 on ajax request,
+  // see select2_js.xhtml
   window.initSelect2AjaxWidget = function initSelect2AjaxWidget(widgetId, index) {
 
     var selector = "input[type='hidden'][id$=";

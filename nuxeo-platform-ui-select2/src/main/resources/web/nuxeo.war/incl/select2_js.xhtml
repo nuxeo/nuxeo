@@ -29,6 +29,12 @@
         }
         initSelect2Widgets();
       });
+      jsf.ajax.addOnEvent(function(data) {
+        var ajaxstatus = data.status;
+        if (ajaxstatus == "success") {
+          initSelect2Widgets();
+        }
+      });
     </script>
 
   </ui:fragment>
@@ -36,12 +42,6 @@
   <c:if test="#{widgetProperty_inlinejs != null }">
     <script>
       <h:outputText value="#{widgetProperty_inlinejs}" escape="false"/>
-    </script>
-  </c:if>
-
-  <c:if test="#{facesContext.getPartialViewContext().isAjaxRequest()}">
-    <script>
-      initSelect2AjaxWidget("#{widget.id}", "#{model.rowIndex}");
     </script>
   </c:if>
 
