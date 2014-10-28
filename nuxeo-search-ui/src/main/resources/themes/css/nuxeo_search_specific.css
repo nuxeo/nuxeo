@@ -48,7 +48,7 @@ author: lkemen@nuxeo.com
   padding: 1em;
   background-color: "color.major.stronger (__FLAVOR__ background)" }
 
-.nxSearchForm.compactLayout .containerWidgetPanel {
+.nxSearchForm .studioFormTable .containerSubWidget {
   padding: 0 0 1em }
 
 .nxSearchForm.compactLayout .fieldColumnn input[type="text"] {
@@ -79,6 +79,18 @@ author: lkemen@nuxeo.com
 
 .nxSearchForm .nx-less-more-ctrl:before {
   content: "+ ";}
+
+/* Studio forms specific */
+.nxSearchForm .studioFormTable .widgetLabel,
+.nxSearchForm .studioFormTable .containerWidgetPanel .widgetLabel {
+  font-weight: bold }
+
+.nxSearchForm .studioFormTable .fieldColumn {
+  padding-bottom: 1em !important }
+
+.nxSearchForm.compactLayout .studioFormTable .containerWidgetPanel,
+.nxSearchForm .studioFormTable .containerSubWidget:last-child {
+  padding-bottom: 0 }
 
 /* Main content */
 .searchViewTitle {
