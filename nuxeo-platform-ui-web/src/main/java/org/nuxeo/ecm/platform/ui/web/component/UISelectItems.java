@@ -26,7 +26,6 @@ import javax.faces.model.SelectItem;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.i18n.I18NUtils;
-import org.nuxeo.ecm.platform.ui.web.directory.SelectItemComparator;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 /**

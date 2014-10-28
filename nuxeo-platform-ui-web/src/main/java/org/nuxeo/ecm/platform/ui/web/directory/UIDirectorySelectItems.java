@@ -198,10 +198,8 @@ public class UIDirectorySelectItems extends UISelectItems {
         String ordering = getOrdering();
         boolean caseSensitive = isCaseSensitive();
         if (!StringUtils.isBlank(ordering)) {
-            Collections.sort(
-                    items,
-                    new SelectItemComparator(ordering,
-                            Boolean.valueOf(caseSensitive)));
+            Collections.sort(items, new DirectorySelectItemComparator(ordering,
+                    Boolean.valueOf(caseSensitive)));
         }
         DirectorySelectItem[] res = items.toArray(new DirectorySelectItem[0]);
         if (isDisplayAll()) {

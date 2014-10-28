@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.ui.web.directory;
+package org.nuxeo.ecm.platform.ui.web.component;
 
 import java.io.Serializable;
 import java.text.Collator;
