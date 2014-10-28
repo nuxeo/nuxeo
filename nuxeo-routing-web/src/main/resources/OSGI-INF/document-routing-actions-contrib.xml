@@ -71,7 +71,7 @@
       </filter>
     </action>
 
-    <!--@deprecated since 5.9.2, use only routes of type 'graph'  -->
+    <!--@deprecated since 5.9.2, use only routes of type 'graph' -->
     <action id="ADD_STEP_BEFORE" label="command.add.routeelement.before"
       link="javascript:document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'before';Richfaces.showModalPanel('selectRouteElementsTypePanel');"
       icon="/icons/add.png">
@@ -81,7 +81,7 @@
       <filter-id>isNotImutableConditionalStructure</filter-id>
     </action>
 
-    <!--@deprecated since 5.9.2, use only routes of type 'graph'  -->
+    <!--@deprecated since 5.9.2, use only routes of type 'graph' -->
     <action id="ADD_STEP_AFTER" label="command.add.routeelement.after"
       link="javascript:document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'after';Richfaces.showModalPanel('selectRouteElementsTypePanel');"
       icon="/icons/add.png">
@@ -90,7 +90,7 @@
       <filter-id>isNotImutableConditionalStructure</filter-id>
     </action>
 
-    <!--@deprecated since 5.9.2, use only routes of type 'graph'  -->
+    <!--@deprecated since 5.9.2, use only routes of type 'graph' -->
     <action id="ADD_STEP_BETWEEN" label="command.add.routeelement.in"
       link="javascript:document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'in';Richfaces.showModalPanel('selectRouteElementsTypePanel');"
       icon="/icons/add.png">
@@ -99,7 +99,7 @@
       <filter-id>isEditableRoute</filter-id>
     </action>
 
-    <!--@deprecated since 5.9.2, use only routes of type 'graph'  -->
+    <!--@deprecated since 5.9.2, use only routes of type 'graph' -->
     <action id="REMOVE_STEP" label="command.delete" link="#{routingActions.removeStep}"
       icon="/icons/delete.png">
       <category>REMOVE_STEP_ACTIONS_LIST</category>
@@ -108,7 +108,7 @@
       <filter-id>isNotImutableConditionalStructure</filter-id>
     </action>
 
-    <!--@deprecated since 5.9.2, use only routes of type 'graph'  -->
+    <!--@deprecated since 5.9.2, use only routes of type 'graph' -->
     <action id="UPDATE_STEP" label="command.edit" link="#{routingActions.editStep}"
       icon="/icons/modify.png">
       <category>EDIT_STEP_ACTIONS_LIST</category>
@@ -116,7 +116,7 @@
       <filter-id>isEditableRoute</filter-id>
     </action>
 
-    <!--@deprecated since 5.9.2, use only routes of type 'graph'  -->
+    <!--@deprecated since 5.9.2, use only routes of type 'graph' -->
     <action id="MOVE_STEP_UP" label="command.selection.moveUp"
       link="#{routingActions.moveRouteElement('up')}" icon="/icons/routing_move_up.png">
       <category>EDIT_STEP_ACTIONS_LIST</category>
@@ -125,7 +125,7 @@
       <filter-id>isNotImutableConditionalStructure</filter-id>
     </action>
 
-    <!--@deprecated since 5.9.2, use only routes of type 'graph'  -->
+    <!--@deprecated since 5.9.2, use only routes of type 'graph' -->
     <action id="MOVE_STEP_DOWN" label="command.selection.moveDown"
       link="#{routingActions.moveRouteElement('down')}" icon="/icons/routing_move_down.png">
       <category>EDIT_STEP_ACTIONS_LIST</category>
