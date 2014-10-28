@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,11 +12,12 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.impl;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.Map;
 
 import javax.mail.internet.MimeMultipart;
 
+import org.apache.commons.codec.Charsets;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -25,13 +26,13 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+
 import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Connector;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
@@ -85,7 +86,7 @@ public class HttpConnector implements Connector {
      */
     public HttpConnector(HttpClient http, HttpContext ctx,
             int httpConnectionTimeout) {
-        ctx.setAttribute(ClientContext.COOKIE_STORE, new BasicCookieStore());
+        ctx.setAttribute(HttpClientContext.COOKIE_STORE, new BasicCookieStore());
         this.http = http;
         this.httpConnectionTimeout = httpConnectionTimeout;
         this.ctx = ctx;
@@ -103,8 +104,9 @@ public class HttpConnector implements Connector {
                     entity = new MultipartRequestEntity((MimeMultipart) obj);
                 } else {
                     try {
-                        entity = new StringEntity(obj.toString(), "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
+                        entity = new StringEntity(obj.toString(),
+                                Charsets.UTF_8);
+                    } catch (UnsupportedCharsetException e) {
                         throw new Error("Cannot encode into UTF-8", e);
                     }
                 }
