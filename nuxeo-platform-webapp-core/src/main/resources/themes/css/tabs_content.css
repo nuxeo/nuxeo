@@ -423,6 +423,19 @@ author: lkemen@nuxeo.com
 #nxw_searchContentView .detail {
   display: inline-block }
 
+.thumbnailOptions input,
+.thumbnailOptions input[type="submit"] {
+  background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
+  border: medium none;
+  color: "link (__FLAVOR__ color)";
+  font-weight: normal;
+  font-size: 1em }
+
+.thumbnailOptions input:hover,
+.thumbnailOptions input[type="submit"]:hover {
+  box-shadow: none;
+  color: "link.hover (__FLAVOR__ color)" }
+
 /* TinyMce override */
 [class*='mce-'] {
   border-radius: 2px!important }
