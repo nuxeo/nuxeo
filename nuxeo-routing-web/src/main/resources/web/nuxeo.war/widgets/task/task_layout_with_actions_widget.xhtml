@@ -33,16 +33,16 @@
                     value="#{routingTaskActions.getTaskButtons(task)}"
                     cache="true">
                     <input type="hidden" name="button" value="" />
-                    <nxu:dataList var="btn_action" value="#{actions}"
-                      id="#{idPrefix}_versionActionsTable">
-                      <span id="#{sel_action.id}"> <h:commandButton
+                    <c:forEach var="btn_action" items="#{actions}">
+                      <span id="#{sel_action.id}">
+                        <h:commandButton
                           action="#{routingTaskActions.endTask(task)}"
                           value="#{messages[btn_action.label]}"
                           styleClass="button smallButton"
                           onclick="setClickButton('#{btn_action.id}');return true;">
                         </h:commandButton>
                       </span>
-                    </nxu:dataList>
+                    </c:forEach>
                   </nxu:set>
                 </p>
               </c:if>
