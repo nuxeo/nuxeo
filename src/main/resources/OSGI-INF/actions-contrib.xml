@@ -9,6 +9,8 @@
           /incl/action/spreadsheet_editor.xhtml
         </property>
         <property name="iframe">#{spreadsheetActions.urlFor(contentView)}</property>
+        <property name="width">100%</property>
+        <property name="height">100%</property>
       </properties>
       <filter-id>contentViewShowSpreadsheet</filter-id>
     </action>
