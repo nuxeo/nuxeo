@@ -118,30 +118,27 @@ public abstract class AbstractSelectWidgetTypeHandler extends
     protected FaceletHandler getFirstHandler(FaceletContext ctx,
             FaceletHandlerHelper helper, Widget widget,
             FaceletHandler nextHandler) {
-        if (!widget.isRequired()) {
-            Object doNotDisplay = widget.getProperty(SelectPropertyMappings.notDisplayDefaultOption.name());
-            if (doNotDisplay != null) {
-                if (Boolean.TRUE.equals(doNotDisplay)) {
+        Object doNotDisplay = widget.getProperty(SelectPropertyMappings.notDisplayDefaultOption.name());
+        if (doNotDisplay != null) {
+            if (Boolean.TRUE.equals(doNotDisplay)) {
+                return null;
+            }
+            if (doNotDisplay instanceof String) {
+                Object res = ComponentTagUtils.resolveElExpression(ctx,
+                        (String) doNotDisplay);
+                if ((res instanceof Boolean && Boolean.TRUE.equals(res))
+                        || (res instanceof String && Boolean.parseBoolean((String) res))) {
                     return null;
                 }
-                if (doNotDisplay instanceof String) {
-                    Object res = ComponentTagUtils.resolveElExpression(ctx,
-                            (String) doNotDisplay);
-                    if ((res instanceof Boolean && Boolean.TRUE.equals(res))
-                            || (res instanceof String && Boolean.parseBoolean((String) res))) {
-                        return null;
-                    }
-                }
             }
-            String bundleName = ctx.getFacesContext().getApplication().getMessageBundle();
-            String localizedExpression = String.format("#{%s['%s']}",
-                    bundleName, "label.vocabulary.selectValue");
-            WidgetSelectOption selectOption = new WidgetSelectOptionImpl("",
-                    "", localizedExpression, "", Boolean.TRUE, Boolean.TRUE);
-            return getBareOptionFaceletHandler(ctx, helper, widget,
-                    selectOption, nextHandler);
         }
-        return null;
+        String bundleName = ctx.getFacesContext().getApplication().getMessageBundle();
+        String localizedExpression = String.format("#{%s['%s']}", bundleName,
+                "label.vocabulary.selectValue");
+        WidgetSelectOption selectOption = new WidgetSelectOptionImpl("", "",
+                localizedExpression, "", Boolean.FALSE, Boolean.TRUE);
+        return getBareOptionFaceletHandler(ctx, helper, widget, selectOption,
+                nextHandler);
     }
 
     /**
