@@ -1981,6 +1981,9 @@
           </supportedTypes>
         </fields>
         <properties>
+          <defaultValues mode="edit">
+            <property name="notDisplayDefaultOption">true</property>
+          </defaultValues>
           <layouts mode="edit">
             <layout name="selectOneListbox_widget_type_properties_edit">
               <rows>
@@ -2032,6 +2035,9 @@
           </supportedTypes>
         </fields>
         <properties>
+          <defaultValues mode="edit">
+            <property name="notDisplayDefaultOption">true</property>
+          </defaultValues>
           <layouts mode="edit">
             <layout name="selectManyListbox_widget_type_properties_edit">
               <rows>
@@ -2134,6 +2140,9 @@
           </supportedTypes>
         </fields>
         <properties>
+          <defaultValues mode="edit">
+            <property name="notDisplayDefaultOption">true</property>
+          </defaultValues>
           <layouts mode="edit">
             <layout name="selectManyMenu_widget_type_properties_edit">
               <rows>
@@ -2185,6 +2194,9 @@
           </supportedTypes>
         </fields>
         <properties>
+          <defaultValues mode="edit">
+            <property name="notDisplayDefaultOption">true</property>
+          </defaultValues>
           <layouts mode="edit">
             <layout name="selectOneRadio_widget_type_properties_edit">
               <rows>
@@ -2239,6 +2251,9 @@
           </supportedTypes>
         </fields>
         <properties>
+          <defaultValues mode="edit">
+            <property name="notDisplayDefaultOption">true</property>
+          </defaultValues>
           <layouts mode="edit">
             <layout name="selectManyCheckbox_widget_type_properties_edit">
               <rows>
@@ -2389,6 +2404,7 @@
             <property name="var">item</property>
             <property name="itemValue">#{item.id}</property>
             <property name="ordering">label</property>
+            <property name="notDisplayDefaultOption">true</property>
           </defaultValues>
           <layouts mode="any">
             <layout name="selectOneRadioDirectory_widget_type_properties_any">
@@ -2486,6 +2502,7 @@
             <property name="var">item</property>
             <property name="itemValue">#{item.id}</property>
             <property name="ordering">label</property>
+            <property name="notDisplayDefaultOption">true</property>
           </defaultValues>
           <layouts mode="any">
             <layout name="selectManyDirectory_widget_type_properties_any">
