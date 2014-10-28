@@ -28,18 +28,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.security.auth.login.LoginContext;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
@@ -56,7 +60,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
     private static final Log log = LogFactory.getLog(TagServiceImpl.class);
 
     public static final String NXTAG = TagQueryMaker.NXTAG;
-
+ 
     private Boolean enabled;
 
     protected enum PAGE_PROVIDERS {
@@ -155,6 +159,18 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         UnrestrictedAddTagging r = new UnrestrictedAddTagging(session, docId,
                 label, username);
         r.runUnrestricted();
+        fireUpdateEvent(session, docId);
+    }
+
+    protected void fireUpdateEvent(CoreSession session, String docId) throws ClientException {
+        DocumentRef documentRef = new IdRef(docId);
+        if (session.exists(documentRef)) {
+            DocumentModel documentModel = session.getDocument(documentRef);
+            DocumentEventContext ctx = new DocumentEventContext(session,
+                    session.getPrincipal(), documentModel);
+            Event event = ctx.newEvent(DocumentEventTypes.DOCUMENT_TAG_UPDATED);
+            Framework.getLocalService(EventService.class).fireEvent(event);
+        }
     }
 
     protected static class UnrestrictedAddTagging extends
@@ -225,6 +241,9 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         UnrestrictedRemoveTagging r = new UnrestrictedRemoveTagging(session,
                 docId, label, username);
         r.runUnrestricted();
+        if (label != null) {
+            fireUpdateEvent(session, docId);
+        }
     }
 
     protected static class UnrestrictedRemoveTagging extends
