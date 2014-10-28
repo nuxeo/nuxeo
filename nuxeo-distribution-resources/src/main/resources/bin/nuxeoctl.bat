@@ -189,39 +189,6 @@ set PATH=%NUXEO_HOME%\3rdparty\ffmpeg\bin;%NUXEO_HOME%\3rdparty\ImageMagick;%PAT
 
 
 echo [%DATE%] Command: %0 %1 %2 %3 %4 >> "%NUXEO_LOG_DIR%\nuxeoctl.log"
-REM *****  Check for gui/nogui parameter *****
-if "%1" == "nogui" (
-  goto GUI_NO
-) else if "%1" == "gui" (
-  goto GUI_DONE
-) else if "%1" == "--gui=false" (
-  goto GUI_DONE
-) else if "%1" == "--gui=true" (
-  goto GUI_DONE
-) else if "%1" == "--gui" (
-  if "%2" == "false" (
-    SHIFT
-    goto GUI_NO
-  ) else if "%2" == "true" (
-    SHIFT
-    goto GUI_YES
-  ) else (
-    SHIFT
-    set GUI_OPTION=--gui=true
-    goto GUI_DONE
-  )
-) else goto ADD_GUI
-:GUI_NO
-SHIFT
-set GUI_OPTION=--gui=false
-goto GUI_DONE
-:GUI_YES
-SHIFT
-set GUI_OPTION=--gui=true
-goto GUI_DONE
-:ADD_GUI
-set GUI_OPTION=--gui=true
-:GUI_DONE
 
 REM set LAUNCHER_DEBUG=-Xdebug -Xrunjdwp:transport=dt_socket,address=8788,server=y,suspend=y
 
@@ -237,9 +204,9 @@ set LOGTIME=%LOGTIME:,=%
 set TMPLAUNCHER=%NUXEO_TMP_DIR%\nuxeo-launcher-%RANDOM%.jar
 if exist "%TMPLAUNCHER%" GOTO GETTMPLAUNCHER
 COPY /V "%NUXEO_LAUNCHER%" "%TMPLAUNCHER%"
-echo [%DATE%] Launcher command: "%JAVA%" -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_LOG_DIR%" -Dlog.id="-%LOGTIME%" -jar "%TMPLAUNCHER%" %GUI_OPTION% %1 %2 %3 %4 %5 %6 %7 %8 %9 >> "%NUXEO_LOG_DIR%\nuxeoctl.log"
+echo [%DATE%] Launcher command: "%JAVA%" -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_LOG_DIR%" -Dlog.id="-%LOGTIME%" -jar "%TMPLAUNCHER%" %1 %2 %3 %4 %5 %6 %7 %8 %9 >> "%NUXEO_LOG_DIR%\nuxeoctl.log"
 echo on
-"%JAVA%" %LAUNCHER_DEBUG% -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_LOG_DIR%" -Dlog.id="-%LOGTIME%" -jar "%TMPLAUNCHER%" %GUI_OPTION% %1 %2 %3 %4 %5 %6 %7 %8 %9
+"%JAVA%" %LAUNCHER_DEBUG% -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_LOG_DIR%" -Dlog.id="-%LOGTIME%" -jar "%TMPLAUNCHER%" %1 %2 %3 %4 %5 %6 %7 %8 %9
 @set exitcode=%ERRORLEVEL%
 @echo off
 del /F /Q "%TMPLAUNCHER%"
