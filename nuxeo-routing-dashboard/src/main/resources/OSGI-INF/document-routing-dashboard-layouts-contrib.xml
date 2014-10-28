@@ -500,7 +500,6 @@
           <property name="actionId">#{webActions.getActionForDocument("go_back_to_tasks_view",null,
             false)}
           </property>
-          <property name="styleClass">smallButton</property>
           <property name="actionsDisplay">buttons</property>
           <property name="useAjaxForm">true</property>
           <property name="ignoreTemplateProperty">true</property>
@@ -518,7 +517,6 @@
           <property name="actionId">#{webActions.getActionForDocument("reassignTask",null,
             false)}
           </property>
-          <property name="styleClass">smallButton</property>
           <property name="actionsDisplay">buttons</property>
           <property name="useAjaxForm">true</property>
           <property name="ignoreTemplateProperty">true</property>
@@ -540,7 +538,6 @@
           <property name="actionId">#{webActions.getActionForDocument("delegateTask",null,
             false)}
           </property>
-          <property name="styleClass">smallButton</property>
           <property name="actionsDisplay">buttons</property>
           <property name="useAjaxForm">true</property>
           <property name="ignoreTemplateProperty">true</property>
