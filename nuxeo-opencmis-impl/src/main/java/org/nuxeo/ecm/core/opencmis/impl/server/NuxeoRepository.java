@@ -65,6 +65,9 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.chemistry.opencmis.commons.data.CreatablePropertyTypes;
+import org.apache.chemistry.opencmis.commons.data.ExtensionFeature;
+import org.apache.chemistry.opencmis.commons.data.NewTypeSettableAttributes;
 import org.apache.chemistry.opencmis.commons.data.PermissionMapping;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.definitions.PermissionDefinition;
@@ -82,6 +85,8 @@ import org.apache.chemistry.opencmis.commons.enums.CapabilityRenditions;
 import org.apache.chemistry.opencmis.commons.enums.CmisVersion;
 import org.apache.chemistry.opencmis.commons.enums.SupportedPermissions;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AclCapabilitiesDataImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.CreatablePropertyTypesImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.NewTypeSettableAttributesImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PermissionDefinitionDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PermissionMappingDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.RepositoryCapabilitiesImpl;
@@ -255,6 +260,7 @@ public class NuxeoRepository {
         String version = Framework.getProperty(NUXEO_VERSION_PROP, "5.5 dev");
         repositoryInfo.setProductVersion(version);
         repositoryInfo.setRootFolder(rootFolderId);
+        repositoryInfo.setExtensionFeature(Collections.<ExtensionFeature> emptyList());
 
         // capabilities
 
@@ -274,6 +280,8 @@ public class NuxeoRepository {
         caps.setSupportsMultifiling(Boolean.FALSE);
         caps.setSupportsUnfiling(Boolean.FALSE);
         caps.setSupportsVersionSpecificFiling(Boolean.FALSE);
+        caps.setNewTypeSettableAttributes(new NewTypeSettableAttributesImpl());
+        caps.setCreatablePropertyTypes(new CreatablePropertyTypesImpl());
         repositoryInfo.setCapabilities(caps);
 
         // ACL capabilities
