@@ -31,7 +31,6 @@ import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
-import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
 public class FileUtils {
 
@@ -127,15 +126,6 @@ public class FileUtils {
             super(new FileSource(file), mimeType, encoding, filename, digest);
         }
 
-        /**
-         * @since 5.9.6
-         */
-        public TemporaryFileBlob(InputStream in, String mimeType,
-                String encoding, String filename, String digest) {
-            super(new InputStreamSource(in), mimeType, encoding, filename,
-                    digest);
-        }
-
         @Override
         public boolean isTemporary() {
             return true; // for SQLSession#getBinary
@@ -159,18 +149,6 @@ public class FileUtils {
             filename = FileUtils.getCleanFileName(filename);
         }
         Blob blob = new TemporaryFileBlob(file, mimeType, null, filename, null);
-        return configureFileBlob(blob, filename, mimeType);
-    }
-
-    /**
-     * @since 5.9.6
-     */
-    public static Blob createTemporaryFileBlob(InputStream in, String filename,
-            String mimeType) {
-        if (filename != null) {
-            filename = FileUtils.getCleanFileName(filename);
-        }
-        Blob blob = new TemporaryFileBlob(in, mimeType, null, filename, null);
         return configureFileBlob(blob, filename, mimeType);
     }
 
