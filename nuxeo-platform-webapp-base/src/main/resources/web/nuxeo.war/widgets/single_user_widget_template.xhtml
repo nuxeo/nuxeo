@@ -1,20 +1,18 @@
-<f:subview id="#{widget.id}"
+<c:if test="true"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxp="http://nuxeo.org/nxweb/pdf">
 <c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{nxu:userFullName(field)}</c:if>
 <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
-  <div class="#{widget.id}">
-    <h:outputText value="#{nxu:userFullName(field)}"
-      alt="#{field}" title="#{field}"
-      styleClass="tipsyShow tipsyGravityS"/>
-  </div>
+  <h:outputText value="#{nxu:userFullName(field)}"
+    alt="#{field}" title="#{field}"
+    styleClass="tipsyShow tipsyGravityS"
+    id="#{widget.id}" />
 </c:if>
 <c:if test="#{widget.mode == 'pdf'}">
   <nxp:html>#{nxu:userFullName(field)}</nxp:html>
 </c:if>
-</f:subview>
+</c:if>
