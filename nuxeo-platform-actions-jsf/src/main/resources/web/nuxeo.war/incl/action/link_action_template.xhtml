@@ -34,7 +34,7 @@
   <c:if test="#{useAjaxForm}">
     <h:commandButton
       id="#{widget.id}"
-      onclick="#{onclick}"
+      onclick="#{onclick};removeAllTinyMCEEditors();"
       value="#{messages[action.label]}"
       disabled="#{!action.available}"
       styleClass="#{actionStyleClass} #{action.properties.styleClass}"
@@ -73,7 +73,7 @@
   <c:if test="#{useAjaxForm}">
     <h:commandLink
       id="#{widget.id}"
-      onclick="#{onclick}"
+      onclick="#{onclick};removeAllTinyMCEEditors();"
       disabled="#{!action.available}"
       styleClass="#{actionStyleClass} #{action.properties.styleClass}"
       accesskey="#{action.accessKey}">
