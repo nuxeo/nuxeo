@@ -931,7 +931,7 @@
       </widget>
       <widget name="days" type="text">
         <labels>
-          <label mode="any">NUmber of days</label>
+          <label mode="any">Number of days</label>
         </labels>
         <translated>false</translated>
         <fields>
@@ -1267,7 +1267,7 @@
       </widget>
       <widget name="days" type="text">
         <labels>
-          <label mode="any">NUmber of days</label>
+          <label mode="any">Number of days</label>
         </labels>
         <translated>false</translated>
         <fields>
@@ -1554,7 +1554,7 @@
       </widget>
       <widget name="days" type="text">
         <labels>
-          <label mode="any">NUmber of days</label>
+          <label mode="any">Number of days</label>
         </labels>
         <translated>false</translated>
         <fields>
