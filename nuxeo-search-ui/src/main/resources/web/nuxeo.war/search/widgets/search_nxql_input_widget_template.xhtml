@@ -8,7 +8,7 @@
   <h:commandButton value="#{messages['command.search']}"
     action="#{searchUIActions.refreshAndRewind()}"
     styleClass="button">
-    <f:ajax execute="@form" render="#{widgetProperty_ajaxReRender}" />
+    <f:ajax execute="@form" render="#{nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender)}" />
   </h:commandButton>
 
 </div>
