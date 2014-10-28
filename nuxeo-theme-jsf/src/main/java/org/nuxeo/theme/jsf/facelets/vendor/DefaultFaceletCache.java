@@ -166,6 +166,13 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
             return null;
         }
 
+        // XXX only handle cases where Last Modified triggers an error first...
+        if (origError != null && origError.getMessage() != null
+                && !origError.getMessage().contains(Util.LAST_MODIFIED_ERROR)) {
+            _unwrapIOException(origError);
+            return null;
+        }
+
         try {
             // wrap with marker
             String path = url.getPath();

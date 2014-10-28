@@ -58,9 +58,11 @@ import com.sun.faces.util.FacesLogger;
  * <p>
  * Patch getLastModified for theme behaviour.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class Util {
+
+    public static final String LAST_MODIFIED_ERROR = "Error Checking Last Modified for ";
 
     // Log instance for this class
     private static final Logger LOGGER = FacesLogger.APPLICATION.getLogger();
@@ -93,8 +95,7 @@ public class Util {
                 lastModified = conn.getLastModified();
             }
         } catch (Exception e) {
-            throw new FacesException("Error Checking Last Modified for " + url,
-                    e);
+            throw new FacesException(LAST_MODIFIED_ERROR + url, e);
         } finally {
             if (is != null) {
                 try {
