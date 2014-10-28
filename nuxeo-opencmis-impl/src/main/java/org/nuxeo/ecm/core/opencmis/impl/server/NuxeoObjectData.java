@@ -73,6 +73,7 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
 import org.nuxeo.ecm.core.opencmis.impl.util.SimpleImageInfo;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
@@ -503,6 +504,9 @@ public class NuxeoObjectData implements ObjectData {
 
     protected static Acl getAcl(ACP acp, boolean onlyBasicPermissions,
             NuxeoCmisService service) {
+        if (acp == null) {
+            acp = new ACPImpl();
+        }
         Boolean exact = Boolean.TRUE;
         List<Ace> aces = new ArrayList<Ace>();
         for (ACL acl : acp.getACLs()) {
