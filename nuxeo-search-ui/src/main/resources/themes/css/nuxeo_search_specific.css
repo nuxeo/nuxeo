@@ -83,7 +83,9 @@ author: lkemen@nuxeo.com
 /* Studio forms specific */
 .nxSearchForm .studioFormTable .widgetLabel,
 .nxSearchForm .studioFormTable .containerWidgetPanel .widgetLabel {
-  font-weight: bold }
+  display: inline-block;
+  font-weight: bold;
+  padding: 0 0 0.2em }
 
 .nxSearchForm .studioFormTable .fieldColumn {
   padding-bottom: 1em !important }
