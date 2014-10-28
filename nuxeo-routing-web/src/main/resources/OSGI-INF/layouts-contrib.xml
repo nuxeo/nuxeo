@@ -332,7 +332,18 @@
       </controls>
     </widget>
 
-    <widget name="current_route_panel_left" type="documentActions">
+    <widget name="current_route_panel_left" type="container">
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="display">block_top</property>
+        <property name="ajaxPanelId">currentRoutePanelLeft</property>
+      </properties>
+      <subWidgetRefs>
+        <widget>current_route_tasks</widget>
+      </subWidgetRefs>
+    </widget>
+
+    <widget name="current_route_tasks" type="documentActions">
       <labels>
         <label mode="any"></label>
       </labels>

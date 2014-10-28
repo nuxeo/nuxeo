@@ -187,6 +187,19 @@
       </properties>
     </action>
 
+    <action id="current_route_refresh_tasks" link="#{taskActions.resetCache()}"
+      order="100" label="label.refresh" icon="/icons/refresh.png">
+      <category>CURRENT_ROUTE_PANEL_TOP</category>
+      <properties>
+        <property name="ajaxSupport">true</property>
+        <property name="addForm">true</property>
+        <property name="useAjaxForm">true</property>
+        <property name="ajaxReRender">
+          currentRoutePanelLeft
+        </property>
+      </properties>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
