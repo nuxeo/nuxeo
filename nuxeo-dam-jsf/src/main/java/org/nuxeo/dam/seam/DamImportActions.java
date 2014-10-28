@@ -68,8 +68,8 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.ecm.webapp.dnd.DndConfigurationHelper;
+import org.nuxeo.ecm.webapp.filemanager.NxUploadedFile;
 import org.nuxeo.runtime.api.Framework;
-import org.richfaces.model.UploadedFile;
 
 /**
  * Handles DAM import related actions.
@@ -115,7 +115,7 @@ public class DamImportActions implements Serializable {
 
     protected String currentBatchId;
 
-    protected Collection<UploadedFile> uploadedFiles = null;
+    protected Collection<NxUploadedFile> uploadedFiles = null;
 
     protected String selectedNewAssetType;
 
@@ -286,10 +286,10 @@ public class DamImportActions implements Serializable {
         }
         try {
             List<Blob> blobs = new ArrayList<>();
-            for (UploadedFile uploadItem : uploadedFiles) {
+            for (NxUploadedFile uploadItem : uploadedFiles) {
                 String filename = FileUtils.getCleanFileName(uploadItem.getName());
                 Blob blob = FileUtils.createTemporaryFileBlob(
-                        uploadItem.getInputStream(), filename,
+                        uploadItem.getFile(), filename,
                         uploadItem.getContentType());
                 blobs.add(blob);
             }
@@ -312,7 +312,7 @@ public class DamImportActions implements Serializable {
             log.error("Error while executing automation batch ", e);
             throw ClientException.wrap(e);
         } finally {
-            for (UploadedFile uploadItem : getUploadedFiles()) {
+            for (NxUploadedFile uploadItem : getUploadedFiles()) {
                 // FIXME: check if a temp file needs to be tracked for
                 // deletion
                 // File tempFile = uploadItem.getFile();
@@ -335,14 +335,14 @@ public class DamImportActions implements Serializable {
         currentBatchId = null;
     }
 
-    public Collection<UploadedFile> getUploadedFiles() {
+    public Collection<NxUploadedFile> getUploadedFiles() {
         if (uploadedFiles == null) {
             uploadedFiles = new ArrayList<>();
         }
         return uploadedFiles;
     }
 
-    public void setUploadedFiles(Collection<UploadedFile> uploadedFiles) {
+    public void setUploadedFiles(Collection<NxUploadedFile> uploadedFiles) {
         this.uploadedFiles = uploadedFiles;
     }
 
