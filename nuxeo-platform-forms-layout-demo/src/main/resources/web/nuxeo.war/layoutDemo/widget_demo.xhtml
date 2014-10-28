@@ -70,6 +70,7 @@ Needed parameters:
                     <h:commandButton
                       value="#{messages['label.layoutDemo.widgetDemo.submit']}"
                       styleClass="button"
+                      onclick="removeAllTinyMCEEditors();"
                       id="#{demoLayout.name}_edit_form_submitButton">
                       <f:ajax execute="@form"
                         render="#{demoLayout.name}_view_form #{demoLayout.name}_edit_form" />
