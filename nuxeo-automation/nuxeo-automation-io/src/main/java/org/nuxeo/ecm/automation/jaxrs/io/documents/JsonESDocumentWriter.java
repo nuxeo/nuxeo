@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.tag.Tag;
 import org.nuxeo.ecm.platform.tag.TagService;
@@ -97,6 +98,9 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
         List<String> browsePermissions = new ArrayList<String>(
                 Arrays.asList(securityService.getPermissionsToCheck(BROWSE)));
         ACP acp = doc.getACP();
+        if (acp == null) {
+            acp = new ACPImpl();
+        }
         jg.writeArrayFieldStart("ecm:acl");
         outerloop: for (ACL acl : acp.getACLs()) {
             for (ACE ace : acl.getACEs()) {
