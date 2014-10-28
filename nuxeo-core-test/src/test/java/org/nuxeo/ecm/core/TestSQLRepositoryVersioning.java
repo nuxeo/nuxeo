@@ -925,4 +925,51 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         ver.setACP(acp, true);
     }
 
+    @Test
+    public void testGetLastVersion() throws ClientException {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        session.save();
+        DocumentRef v1ref = session.checkIn(doc.getRef(),
+                VersioningOption.MAJOR, null);
+        session.checkOut(doc.getRef());
+        DocumentRef v2ref = session.checkIn(doc.getRef(),
+                VersioningOption.MINOR, null);
+
+        // last version on the doc
+        DocumentModel last = session.getLastDocumentVersion(doc.getRef());
+        assertEquals(v2ref.reference(), last.getId());
+        DocumentRef lastRef = session.getLastDocumentVersionRef(doc.getRef());
+        assertEquals(v2ref.reference(), lastRef.reference());
+
+        // last version on any version
+        last = session.getLastDocumentVersion(v2ref);
+        assertEquals(v2ref.reference(), last.getId());
+        lastRef = session.getLastDocumentVersionRef(v2ref);
+        assertEquals(v2ref.reference(), lastRef.reference());
+    }
+
+    @Test
+    public void testGetVersions() throws ClientException {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        session.save();
+        DocumentRef v1ref = session.checkIn(doc.getRef(),
+                VersioningOption.MAJOR, null);
+        session.checkOut(doc.getRef());
+        session.checkIn(doc.getRef(), VersioningOption.MINOR, null);
+
+        // versions on the doc
+        List<DocumentModel> vers = session.getVersions(doc.getRef());
+        assertEquals(2, vers.size());
+        List<DocumentRef> verRefs = session.getVersionsRefs(doc.getRef());
+        assertEquals(2, verRefs.size());
+
+        // versions on any version
+        vers = session.getVersions(v1ref);
+        assertEquals(2, vers.size());
+        verRefs = session.getVersionsRefs(v1ref);
+        assertEquals(2, verRefs.size());
+    }
+
 }

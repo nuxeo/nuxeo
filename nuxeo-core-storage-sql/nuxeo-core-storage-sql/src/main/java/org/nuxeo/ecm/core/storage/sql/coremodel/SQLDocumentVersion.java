@@ -203,16 +203,6 @@ public class SQLDocumentVersion extends SQLDocumentLive {
         return null;
     }
 
-    @Override
-    public List<Document> getVersions() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public Document getLastVersion() {
-        return null;
-    }
-
     /*
      * ----- property write overrides -----
      */
