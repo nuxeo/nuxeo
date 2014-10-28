@@ -210,19 +210,18 @@ public class ConversionServiceImpl extends DefaultComponent implements
             BlobHolder blobHolder, Map<String, Serializable> parameters)
             throws ConversionException {
 
-        String converterName;
+        String srcMt;
         try {
-            String srcMt = blobHolder.getBlob().getMimeType();
-            converterName = translationHelper.getConverterName(srcMt,
-                    destinationMimeType);
+            srcMt = blobHolder.getBlob().getMimeType();
         } catch (ClientException e) {
             throw new ConversionException(
                     "error while trying to determine converter name", e);
         }
-
+        String converterName = translationHelper.getConverterName(srcMt,
+                destinationMimeType);
         if (converterName == null) {
-            throw new ConversionException(
-                    "unable to find converter for target mime type");
+            throw new ConversionException("Cannot find converter from type "
+                    + srcMt + " to type " + destinationMimeType);
         }
 
         return convert(converterName, blobHolder, parameters);
