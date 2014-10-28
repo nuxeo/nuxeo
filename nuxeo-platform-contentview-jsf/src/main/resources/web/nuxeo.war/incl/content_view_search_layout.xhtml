@@ -32,8 +32,7 @@ empty:
   <nxu:set var="openBox" value="#{nxu:hasMessages(filterFormId) or contentView.searchLayout.filterUnfolded}"
     cache="true">
   <nxu:set var="elementsToReRender"
-    value="#{contentIdToBeReRendered} #{resetFilterFormId} #{filterFormId}"
-    cache="true">
+    value="#{contentIdToBeReRendered} #{nxu:componentAbsoluteId(component, resetFilterFormId)} #{nxu:componentAbsoluteId(component, filterFormId)}">
 
   <div class="foldableLightBox">
 
@@ -84,7 +83,7 @@ empty:
               value="#{jsfResetActions.resetComponents}" />
             <nxu:actionListenerMethod
               value="#{contentView.resetSearchDocumentModel()}" />
-            <f:ajax execute="@this" render="#{filterFormId}" />
+            <f:ajax execute="@this" render="#{elementsToReRender}" />
           </h:commandButton>
         </p>
       </h:form>

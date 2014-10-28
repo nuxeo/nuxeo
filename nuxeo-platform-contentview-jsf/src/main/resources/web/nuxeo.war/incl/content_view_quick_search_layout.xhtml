@@ -33,8 +33,7 @@ empty:
   <nxu:set var="filterFormId" value="#{cvid}_filterForm"
     cache="true">
   <nxu:set var="elementsToReRender"
-    value="#{contentIdToBeReRendered} #{resetFilterFormId} #{filterFormId} #{quickFilterFormId} #{filterFormId}_panel"
-    cache="true">
+    value="#{contentIdToBeReRendered} #{nxu:componentAbsoluteId(component, resetFilterFormId)} #{nxu:componentAbsoluteId(component, filterFormId)} #{quickFilterFormId} #{filterFormId}_panel">
 
   <h:panelGroup id="#{quickFilterFormId}_panel"
     layout="block"
