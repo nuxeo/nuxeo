@@ -75,12 +75,13 @@ Templating zones that can be filled when useAjaxForm is set to true:
     hideLabel="#{hideLabel}"
     useButton="#{useButton}"
     useAjaxForm="#{useAjaxForm and action.properties.ajaxSupport}"
-    ajaxReRender="#{nxu:joinRender(ajaxReRender, nxu:componentAbsoluteId(component, actionReRender))}"
     formAdded="#{formAdded}"
     actionStyleClass="#{actionStyleClass}"
     clickedActionIdHolder="#{clickedActionIdHolder}"
     value="#{fieldOrValue}"
     resolveOnly="true">
+    <nxu:set var="ajaxReRender"
+      value="#{nxu:joinRender(ajaxReRender, nxu:componentAbsoluteId(component, actionReRender))}">
     <nxu:set var="addForm"
       value="#{action.properties.containsKey('addForm') ? action.properties.addForm : addForm}"
       resolveTwice="true">
@@ -106,6 +107,7 @@ Templating zones that can be filled when useAjaxForm is set to true:
           <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
         </ui:define>
       </ui:decorate>
+    </nxu:set>
     </nxu:set>
     </nxu:set>
     </nxu:set>
