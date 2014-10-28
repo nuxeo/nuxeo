@@ -59,7 +59,6 @@
                   </p>
                 </c:if>
               </a4j:outputPanel>
-
               <c:if test="#{useHtml5DragAndDrop}">
                 <div class="damAssetImportZone dropArea" id="#{action.id}_dropzone" context="#{action.properties.dropContext}"
                     data-loadalreadyuploadedfiles="#{damImportActions.hasUploadedFiles()}">
@@ -70,13 +69,14 @@
               </c:if>
 
               <c:if test="#{!useHtml5DragAndDrop}">
-                <rich:fileUpload id="fileUploadForm" uploadData="#{damImportActions.uploadedFiles}"
+                <a4j:jsFunction name="clearUploaded" action="#{damImportActions.cancel()}"/>
+                <rich:fileUpload id="fileUploadForm" fileUploadListener="#{damImportActions.processUpload}"
                     maxFilesQuantity="10" immediateUpload="true"
                     locale="#{localeSelector.localeString}"
-                    execute="@this"
+                    execute="@this" onclear="nuxeo.dam.onClearPressed();clearUploaded();"
                     onadd="nuxeo.dam.disableBulkImportButton();"
                     onuploadcomplete="nuxeo.dam.enableBulkImportButton();"
-                    listWidth="60%" listHeight="150px">
+                    style="width:100%" listHeight="150px">
                 </rich:fileUpload>
               </c:if>
             </td>
