@@ -281,7 +281,7 @@ public class NuxeoTypeHelper {
         t.setIsQueryable(Boolean.TRUE);
         t.setIsIncludedInSupertypeQuery(Boolean.TRUE);
         t.setIsFulltextIndexed(Boolean.TRUE);
-        t.setIsControllableAcl(Boolean.FALSE);
+        t.setIsControllableAcl(Boolean.TRUE);
         t.setIsControllablePolicy(Boolean.FALSE);
         addBasePropertyDefinitions();
         if (t instanceof FolderTypeDefinitionImpl) {
