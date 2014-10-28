@@ -297,7 +297,7 @@ public class NuxeoObjectData implements ObjectData {
                 set.add(Action.CAN_DELETE_CONTENT_STREAM);
             }
             set.add(Action.CAN_UPDATE_PROPERTIES);
-            if (isFolder || isDocument) {
+            if (isFolder && !isRoot || isDocument) {
                 // Relationships are not fileable
                 set.add(Action.CAN_MOVE_OBJECT);
             }
