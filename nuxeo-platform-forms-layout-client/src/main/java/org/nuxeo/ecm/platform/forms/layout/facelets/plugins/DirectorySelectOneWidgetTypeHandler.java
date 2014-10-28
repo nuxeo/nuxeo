@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
-import javax.faces.component.html.HtmlSelectOneListbox;
+import javax.faces.component.html.HtmlSelectOneMenu;
 import javax.faces.view.facelets.ComponentHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
@@ -47,7 +47,7 @@ public class DirectorySelectOneWidgetTypeHandler extends
     private static final long serialVersionUID = 1L;
 
     protected String getEditComponentType() {
-        return HtmlSelectOneListbox.COMPONENT_TYPE;
+        return HtmlSelectOneMenu.COMPONENT_TYPE;
     }
 
     @Override
