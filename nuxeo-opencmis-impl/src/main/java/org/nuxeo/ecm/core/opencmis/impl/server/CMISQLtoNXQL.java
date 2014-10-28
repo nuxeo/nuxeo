@@ -80,6 +80,8 @@ public class CMISQLtoNXQL {
 
     protected static final String NXQL_DC_TITLE = "dc:title";
 
+    protected static final String NXQL_DC_DESCRIPTION = "dc:description";
+
     protected static final String NXQL_DC_CREATOR = "dc:creator";
 
     protected static final String NXQL_DC_CREATED = "dc:created";
@@ -294,6 +296,11 @@ public class CMISQLtoNXQL {
                 virtualColumns, service);
     }
 
+    protected boolean isFacetsColumn(String name) {
+        return PropertyIds.SECONDARY_OBJECT_TYPE_IDS.equals(name)
+                || NuxeoTypeHelper.NX_FACETS.equals(name);
+    }
+
     protected void addSystemColumns() {
         // additional references to cmis:objectId and cmis:objectTypeId
         for (String propertyId : Arrays.asList(PropertyIds.OBJECT_ID,
@@ -386,8 +393,7 @@ public class CMISQLtoNXQL {
 
         // fetch column and associate it to the selector
         String column = getColumn(col);
-        if (!NuxeoTypeHelper.NX_FACETS.equals(col.getPropertyId())
-                && column == null) {
+        if (!isFacetsColumn(col.getPropertyId()) && column == null) {
             throw new QueryParseException("Cannot use column in " + clauseType
                     + " clause: " + col.getPropertyQueryName());
         }
@@ -438,6 +444,7 @@ public class CMISQLtoNXQL {
             return NXQL.ECM_POS;
         case PropertyIds.OBJECT_TYPE_ID:
             return NXQL.ECM_PRIMARYTYPE;
+        case PropertyIds.SECONDARY_OBJECT_TYPE_IDS:
         case NuxeoTypeHelper.NX_FACETS:
             return NXQL.ECM_MIXINTYPE;
         case PropertyIds.VERSION_LABEL:
@@ -454,6 +461,8 @@ public class CMISQLtoNXQL {
             return NXQL.ECM_LIFECYCLESTATE;
         case PropertyIds.NAME:
             return NXQL_DC_TITLE;
+        case PropertyIds.DESCRIPTION:
+            return NXQL_DC_DESCRIPTION;
         case PropertyIds.CREATED_BY:
             return NXQL_DC_CREATOR;
         case PropertyIds.CREATION_DATE:

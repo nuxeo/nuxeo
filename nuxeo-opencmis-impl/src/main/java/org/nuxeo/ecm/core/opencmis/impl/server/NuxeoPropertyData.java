@@ -22,9 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
@@ -47,6 +45,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisStreamNotSupportedException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamHashImpl;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
+import org.apache.commons.collections.iterators.EmptyListIterator;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,7 +60,6 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
-import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.runtime.api.Framework;
@@ -75,22 +73,6 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
     protected final String name;
 
     protected final boolean readOnly;
-
-    // TODO unused
-    public static final Map<String, String> propertyNameToNXQL;
-    static {
-        Map<String, String> map = new HashMap<String, String>();
-        map.put(PropertyIds.OBJECT_ID, NXQL.ECM_UUID);
-        map.put(PropertyIds.OBJECT_TYPE_ID, NXQL.ECM_PRIMARYTYPE);
-        map.put(PropertyIds.PARENT_ID, NXQL.ECM_PARENTID);
-        map.put(PropertyIds.NAME, NXQL.ECM_NAME);
-        map.put(PropertyIds.CREATED_BY, NuxeoTypeHelper.NX_DC_CREATOR);
-        map.put(PropertyIds.CREATION_DATE, NuxeoTypeHelper.NX_DC_CREATED);
-        map.put(PropertyIds.LAST_MODIFIED_BY, "dc:contributors");
-        map.put(PropertyIds.LAST_MODIFICATION_DATE,
-                NuxeoTypeHelper.NX_DC_MODIFIED);
-        propertyNameToNXQL = Collections.unmodifiableMap(map);
-    }
 
     public NuxeoPropertyData(PropertyDefinition<T> propertyDefinition,
             DocumentModel doc, String name, boolean readOnly) {
@@ -118,6 +100,10 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             return (PropertyData<U>) new NuxeoPropertyIdDataFixed(
                     (PropertyDefinition<String>) pd,
                     NuxeoTypeHelper.getBaseTypeId(doc).value());
+        } else if (PropertyIds.DESCRIPTION.equals(name)) {
+            return (PropertyData<U>) new NuxeoPropertyStringData(
+                    (PropertyDefinition<String>) pd, doc,
+                    NuxeoTypeHelper.NX_DC_DESCRIPTION, true);
         } else if (PropertyIds.CREATED_BY.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyStringData(
                     (PropertyDefinition<String>) pd, doc,
@@ -188,6 +174,15 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             }
             return (PropertyData<U>) new NuxeoPropertyBooleanDataFixed(
                     (PropertyDefinition<Boolean>) pd, Boolean.valueOf(!co));
+        } else if (PropertyIds.IS_PRIVATE_WORKING_COPY.equals(name)) {
+            boolean co;
+            try {
+                co = doc.isCheckedOut();
+            } catch (ClientException e) {
+                throw new CmisRuntimeException(e.toString(), e);
+            }
+            return (PropertyData<U>) new NuxeoPropertyBooleanDataFixed(
+                    (PropertyDefinition<Boolean>) pd, Boolean.valueOf(co));
         } else if (PropertyIds.CHECKIN_COMMENT.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyDataCheckInComment(
                     (PropertyDefinition<String>) pd, doc);
@@ -248,6 +243,13 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         } else if (PropertyIds.POLICY_TEXT.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyStringDataFixed(
                     (PropertyDefinition<String>) pd, null);
+        } else if (PropertyIds.SECONDARY_OBJECT_TYPE_IDS.equals(name)) {
+            // secondary object types require that the types be
+            // actually registered through the type service
+            // -> return empty for now
+            return (PropertyData<U>) new NuxeoPropertyIdMultiDataFixed(
+                    (PropertyDefinition<String>) pd,
+                    Collections.<String> emptyList());
         } else if (NuxeoTypeHelper.NX_FACETS.equals(name)) {
             List<String> facets = new ArrayList<String>(doc.getFacets());
             Collections.sort(facets);

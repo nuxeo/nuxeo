@@ -139,6 +139,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -1403,6 +1404,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         // ----- Object -----
 
         checkWhereTerm("File", PropertyIds.NAME, "'testfile1_Title'");
+        checkWhereTerm("File", PropertyIds.DESCRIPTION, "'testfile1_description'");
         checkWhereTerm("File", PropertyIds.OBJECT_ID, NOT_NULL);
         checkWhereTerm("File", PropertyIds.OBJECT_TYPE_ID, "'File'");
         // checkWhereTerm("File", PropertyIds.BASE_TYPE_ID,
@@ -1491,6 +1493,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         // ----- Object -----
 
         checkReturnedValue(PropertyIds.NAME, "testfile1_Title");
+        checkReturnedValue(PropertyIds.DESCRIPTION, "testfile1_description");
         checkReturnedValue(PropertyIds.OBJECT_ID, NOT_NULL);
         checkReturnedValue(PropertyIds.OBJECT_TYPE_ID, "File");
         checkReturnedValue(PropertyIds.BASE_TYPE_ID, "cmis:document");
@@ -1524,7 +1527,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkReturnedValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL);
         checkReturnedValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT,
                 Boolean.TRUE);
+        checkReturnedValue(PropertyIds.IS_PRIVATE_WORKING_COPY, Boolean.TRUE);
         checkReturnedValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE);
+        checkReturnedValue(NuxeoTypeHelper.NX_ISCHECKEDIN, Boolean.FALSE);
         checkReturnedValue(NuxeoTypeHelper.NX_FACETS, NOT_NULL);
         checkReturnedValue(NuxeoTypeHelper.NX_LIFECYCLE_STATE, "project");
         checkReturnedValue(NuxeoTypeHelper.NX_DIGEST, NOT_NULL);
@@ -2608,6 +2613,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, id, ob);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME, ob);
         checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
+        checkValue(PropertyIds.IS_PRIVATE_WORKING_COPY, Boolean.TRUE, ob);
         checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, ob);
         checkValue(NuxeoTypeHelper.NX_ISCHECKEDIN, Boolean.FALSE, ob);
         String series = (String) getValue(ob, PropertyIds.VERSION_SERIES_ID);
@@ -2631,6 +2637,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ver);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ver);
         checkValue(PropertyIds.CHECKIN_COMMENT, "comment", ver);
+        checkValue(PropertyIds.IS_PRIVATE_WORKING_COPY, Boolean.FALSE, ver);
         checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.TRUE, ver);
         checkValue(NuxeoTypeHelper.NX_ISCHECKEDIN, Boolean.TRUE, ver); // hm
 
@@ -2651,6 +2658,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // not viewed as a version according to Nuxeo semantics though
         ob = getObjectByPath("/testfolder1/testfile1");
+        checkValue(PropertyIds.IS_PRIVATE_WORKING_COPY, Boolean.FALSE, ob);
         checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, ob);
         checkValue(NuxeoTypeHelper.NX_ISCHECKEDIN, Boolean.TRUE, ob);
 
@@ -2672,6 +2680,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, coid, co);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME, co);
         checkValue(PropertyIds.CHECKIN_COMMENT, null, co);
+        checkValue(PropertyIds.IS_PRIVATE_WORKING_COPY, Boolean.TRUE, co);
         checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, co);
         checkValue(NuxeoTypeHelper.NX_ISCHECKEDIN, Boolean.FALSE, co);
 
@@ -2694,6 +2703,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ver2);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ver2);
         checkValue(PropertyIds.CHECKIN_COMMENT, "comment2", ver2);
+        checkValue(PropertyIds.IS_PRIVATE_WORKING_COPY, Boolean.FALSE, ver2);
         checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.TRUE, ver2);
         checkValue(NuxeoTypeHelper.NX_ISCHECKEDIN, Boolean.TRUE, ver2);
 
@@ -2723,8 +2733,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         idHolder.setValue(id);
         verService.checkOut(repositoryId, idHolder, null, null);
         // atompub passes just object id, soap just version series id
-        List<ObjectData> vers = verService.getAllVersions(null, id, null, null,
-                null, null);
+        List<ObjectData> vers = verService.getAllVersions(repositoryId, id,
+                null, null, null, null);
         assertEquals(3, vers.size());
         assertEquals(id, vers.get(0).getId());
         assertEquals(ver2.getId(), vers.get(1).getId());
@@ -2733,12 +2743,20 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         // get latest version
 
         Boolean major = Boolean.FALSE;
-        ObjectData l = verService.getObjectOfLatestVersion(id, id, null, major,
-                null, null, null, null, null, null, null);
+        ObjectData l = verService.getObjectOfLatestVersion(repositoryId, id,
+                null, major, null, null, null, null, null, null, null);
         assertEquals(ver2.getId(), l.getId());
+        // also works on a version object
+        l = verService.getObjectOfLatestVersion(repositoryId, ver.getId(),
+                null, major, null, null, null, null, null, null, null);
+        assertEquals(ver2.getId(), l.getId());
+        // latest major version
         major = Boolean.TRUE;
-        l = verService.getObjectOfLatestVersion(id, id, null, major, null,
-                null, null, null, null, null, null);
+        l = verService.getObjectOfLatestVersion(repositoryId, id, null, major,
+                null, null, null, null, null, null, null);
+        assertEquals(ver.getId(), l.getId());
+        l = verService.getObjectOfLatestVersion(repositoryId, ver2.getId(),
+                null, major, null, null, null, null, null, null, null);
         assertEquals(ver.getId(), l.getId());
 
         major = Boolean.FALSE;

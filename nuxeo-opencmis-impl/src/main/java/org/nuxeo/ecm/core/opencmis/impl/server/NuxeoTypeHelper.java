@@ -89,6 +89,8 @@ public class NuxeoTypeHelper {
 
     public static final String NX_DC_TITLE = "dc:title";
 
+    public static final String NX_DC_DESCRIPTION = "dc:description";
+
     public static final String NX_DC_CREATED = "dc:created";
 
     public static final String NX_DC_CREATOR = "dc:creator";
@@ -318,9 +320,16 @@ public class NuxeoTypeHelper {
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.BASE_TYPE_ID,
                 "Base Type ID", PropertyType.ID, Cardinality.SINGLE,
                 Updatability.READONLY, false, false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(
+                PropertyIds.SECONDARY_OBJECT_TYPE_IDS, "Secondary Type IDs",
+                PropertyType.ID, Cardinality.MULTI, Updatability.READONLY,
+                false, false, false, false));
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.NAME, "Name",
                 PropertyType.STRING, Cardinality.SINGLE,
                 Updatability.READWRITE, false, true, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.DESCRIPTION,
+                "Description", PropertyType.STRING, Cardinality.SINGLE,
+                Updatability.READWRITE, false, false, true, true));
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.CREATED_BY,
                 "Created By", PropertyType.STRING, Cardinality.SINGLE,
                 Updatability.READONLY, false, false, true, true));
@@ -345,8 +354,8 @@ public class NuxeoTypeHelper {
                 "Lifecycle State", PropertyType.STRING, Cardinality.SINGLE,
                 Updatability.READONLY, false, false, true, true));
         t.addPropertyDefinition(newPropertyDefinition(NX_FACETS, "Facets",
-                PropertyType.STRING, Cardinality.MULTI, Updatability.READONLY,
-                true, false, true, false));
+                PropertyType.ID, Cardinality.MULTI, Updatability.READONLY,
+                false, false, true, false));
         t.addPropertyDefinition(newPropertyDefinition(NX_PARENT_ID,
                 "Nuxeo Parent ID", PropertyType.ID, Cardinality.SINGLE,
                 Updatability.READONLY, false, false, true, true));
@@ -461,6 +470,10 @@ public class NuxeoTypeHelper {
         t.addPropertyDefinition(newPropertyDefinition(NX_ISCHECKEDIN,
                 "Is Checked In PWC", PropertyType.BOOLEAN, Cardinality.SINGLE,
                 Updatability.READONLY, false, false, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(
+                PropertyIds.IS_PRIVATE_WORKING_COPY, "Is PWC",
+                PropertyType.BOOLEAN, Cardinality.SINGLE,
+                Updatability.READONLY, false, false, false, false));
     }
 
     protected static PropertyDefinition<?> newPropertyDefinition(String id,

@@ -98,6 +98,8 @@ public class CMISQLQueryMaker implements QueryMaker {
 
     public static final String DC_TITLE_KEY = "title";
 
+    public static final String DC_DESCRIPTION_KEY = "description";
+
     public static final String DC_CREATOR_KEY = "creator";
 
     public static final String DC_CREATED_KEY = "created";
@@ -690,6 +692,11 @@ public class CMISQLQueryMaker implements QueryMaker {
         }
     }
 
+    protected boolean isFacetsColumn(String name) {
+        return PropertyIds.SECONDARY_OBJECT_TYPE_IDS.equals(name)
+                || NuxeoTypeHelper.NX_FACETS.equals(name);
+    }
+
     // add main id to all qualifiers if
     // - we have no DISTINCT (in which case more columns don't matter), or
     // - we have virtual columns, or
@@ -868,8 +875,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         // fetch column and associate it to the selector
         Column column = getColumn(col);
-        if (!NuxeoTypeHelper.NX_FACETS.equals(col.getPropertyId())
-                && column == null) {
+        if (!isFacetsColumn(col.getPropertyId()) && column == null) {
             throw new QueryParseException("Cannot use column in " + clauseType
                     + " clause: " + col.getPropertyQueryName());
         }
@@ -883,8 +889,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             skipDeleted = false;
             lifecycleWhereClauseQualifiers.add(qual);
         }
-        if (clauseType == WHERE
-                && NuxeoTypeHelper.NX_FACETS.equals(col.getPropertyId())) {
+        if (clauseType == WHERE && isFacetsColumn(col.getPropertyId())) {
             mixinTypeWhereClauseQualifiers.add(qual);
         }
         // record as a needed fragment
@@ -1034,6 +1039,10 @@ public class CMISQLQueryMaker implements QueryMaker {
         }
         if (id.equals(PropertyIds.NAME)) {
             return database.getTable(DC_FRAGMENT_NAME).getColumn(DC_TITLE_KEY);
+        }
+        if (id.equals(PropertyIds.DESCRIPTION)) {
+            return database.getTable(DC_FRAGMENT_NAME).getColumn(
+                    DC_DESCRIPTION_KEY);
         }
         if (id.equals(PropertyIds.CREATED_BY)) {
             return database.getTable(DC_FRAGMENT_NAME).getColumn(DC_CREATOR_KEY);
@@ -1306,7 +1315,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         @Override
         public Boolean walkEquals(Tree opNode, Tree leftNode, Tree rightNode) {
-            if (NuxeoTypeHelper.NX_FACETS.equals(leftNode.getText())) {
+            if (isFacetsColumn(leftNode.getText())) {
                 walkFacets(opNode, leftNode, rightNode);
                 return null;
             }
@@ -1414,7 +1423,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         @Override
         public Boolean walkInAny(Tree opNode, Tree colNode, Tree listNode) {
-            if (NuxeoTypeHelper.NX_FACETS.equals(resolveColumnReference(colNode).getName())) {
+            if (isFacetsColumn(resolveColumnReference(colNode).getName())) {
                 walkFacets(opNode, colNode, listNode);
                 return null;
             }
@@ -1424,7 +1433,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         @Override
         public Boolean walkNotInAny(Tree opNode, Tree colNode, Tree listNode) {
-            if (NuxeoTypeHelper.NX_FACETS.equals(resolveColumnReference(colNode).getName())) {
+            if (isFacetsColumn(resolveColumnReference(colNode).getName())) {
                 walkFacets(opNode, colNode, listNode);
                 return null;
             }
@@ -1434,7 +1443,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         @Override
         public Boolean walkEqAny(Tree opNode, Tree literalNode, Tree colNode) {
-            if (NuxeoTypeHelper.NX_FACETS.equals(resolveColumnReference(colNode).getName())) {
+            if (isFacetsColumn(resolveColumnReference(colNode).getName())) {
                 walkFacets(opNode, colNode, literalNode);
                 return null;
             }
@@ -1645,7 +1654,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             if (opType == CmisQlStrictLexer.EQ_ANY) {
                 include = true;
                 if (literalNode.getType() != CmisQlStrictLexer.STRING_LIT) {
-                    throw new QueryMakerException(NuxeoTypeHelper.NX_FACETS
+                    throw new QueryMakerException(colNodel.getText()
                             + " = requires literal string as right argument");
                 }
                 String value = super.walkString(literalNode).toString();
@@ -1658,7 +1667,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                     mixins.add(super.walkString(literalNode.getChild(i)).toString());
                 }
             } else {
-                throw new QueryMakerException(NuxeoTypeHelper.NX_FACETS
+                throw new QueryMakerException(colNodel.getText()
                         + " unsupported operator: " + opNode.getText());
             }
 
