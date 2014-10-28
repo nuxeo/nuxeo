@@ -191,7 +191,7 @@
       <handlingLabels>false</handlingLabels>
       <properties widgetMode="any">
         <property name="hideSubLabels">true</property>
-        <property name="styleClass">infoViewDocContainer</property>
+        <property name="styleClass">infoViewAudioContainer</property>
         <property name="display">block_top</property>
       </properties>
       <subWidgets>
