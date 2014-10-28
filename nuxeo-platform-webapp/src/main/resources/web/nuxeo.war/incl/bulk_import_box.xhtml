@@ -60,10 +60,11 @@
               </c:if>
 
               <c:if test="#{!useHtml5DragAndDrop}">
+                <a4j:jsFunction name="clearUploaded" action="#{importActions.cancel()}"/>
                 <rich:fileUpload id="fileUploadForm" fileUploadListener="#{importActions.processUpload}"
                   maxFilesQuantity="10" immediateUpload="true"
                   locale="#{localeSelector.localeString}"
-                  execute="@this" onclear="nuxeo.documentsImport.onClearPressed();"
+                  execute="@this" onclear="nuxeo.documentsImport.onClearPressed();clearUploaded();"
                   onadd="nuxeo.documentsImport.disableBulkImportButton();"
                   onuploadcomplete="nuxeo.documentsImport.enableBulkImportButton();"
                   style="width:100%" listHeight="150px">
