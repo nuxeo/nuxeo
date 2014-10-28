@@ -58,6 +58,9 @@ export const WIDGET_TYPES = {
   text: {
     type: 'text'
   },
+  textarea: {
+    type: 'text'
+  },
   datetime: {
     type: 'date',
     dateFormat: 'yy-mm-ddT00:00:00.000'
