@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo</groupId>
@@ -117,7 +118,8 @@
             </goals>
             <configuration>
               <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"></transformer>
+                <transformer
+                  implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"></transformer>
               </transformers>
               <createSourcesJar>false</createSourcesJar>
               <createDependencyReducedPom>false</createDependencyReducedPom>
@@ -133,6 +135,7 @@
                   <exclude>org.apache.httpcomponents:httpclient</exclude>
                   <exclude>commons-codec:commons-codec</exclude>
                   <exclude>org.apache.httpcomponents:httpcore</exclude>
+                  <exclude>org.apache.httpcomponents:httpcore-osgi</exclude>
                 </excludes>
               </artifactSet>
               <filters>
@@ -203,10 +206,7 @@
               <goal>copy-dependencies</goal>
             </goals>
             <configuration>
-              <excludeArtifactIds>httpcore-nio,fluent-hc,httpclient-cache,httpmime,httpclient,commons-codec,httpcore,activation,commons-logging,org.osgi.core
-              </excludeArtifactIds>
               <includeScope>compile</includeScope>
-              <!-- other configurations here -->
             </configuration>
           </execution>
         </executions>
