@@ -20,7 +20,28 @@
 
     <script type="text/javascript">
       jQuery(document).ready(function() {
+        // focus inside the iframe
+        jQuery(".infoView.nxNext a").focus();
+
+        // allow fullscreen, mainly useful for the video player
         jQuery("#fancybox-frame", parent.document).attr("allowFullscreen", true);
+
+        jQuery(document).keydown(function(e) {
+          switch(e.which) {
+            case jQuery.ui.keyCode.LEFT:
+              previousInfoView();
+              break;
+            case jQuery.ui.keyCode.RIGHT:
+              nextInfoView();
+              break;
+            case jQuery.ui.keyCode.ESCAPE:
+              parent.jQuery.fancybox.close();
+              break;
+            default:
+              return;
+          }
+          e.preventDefault();
+        });
       });
 
       function previousInfoView() {
@@ -31,10 +52,6 @@
           // previous page
           parent.nuxeo.infoView.previousPageAndOpenInfoView();
         } else {
-          console.log("current url: " + window.location.href);
-          console.log("prev url: " + urls[index - 1] + "?conversationId=" + currentConversationId);
-          console.log("index of current: " + index);
-          console.log(urls);
           window.location.href = urls[index - 1] + "?conversationId=" + currentConversationId;
         }
       }
@@ -47,10 +64,6 @@
           // next page
           parent.nuxeo.infoView.nextPageAndOpenInfoView();
         } else {
-          console.log("current url: " + window.location.href);
-          console.log("next url: " + urls[index + 1] + "?conversationId=" + currentConversationId);
-          console.log("index of current: " + index);
-          console.log(urls);
           window.location.href = urls[index + 1] + "?conversationId=" + currentConversationId;
         }
       }
