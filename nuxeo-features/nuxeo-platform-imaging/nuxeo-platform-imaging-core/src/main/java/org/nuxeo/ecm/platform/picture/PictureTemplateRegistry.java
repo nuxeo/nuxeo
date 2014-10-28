@@ -39,8 +39,7 @@ public class PictureTemplateRegistry extends
 
     private static final Log log = LogFactory.getLog(PictureTemplateRegistry.class);
 
-    protected final Map<String, PictureTemplate> pictureTemplates = new HashMap<>(
-            10);
+    protected final Map<String, PictureTemplate> pictureTemplates = new HashMap<>();
 
     /**
      * Collection of picture template which can't be disabled

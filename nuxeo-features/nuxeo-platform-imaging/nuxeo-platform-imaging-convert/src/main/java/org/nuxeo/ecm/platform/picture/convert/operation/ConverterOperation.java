@@ -75,17 +75,7 @@ public class ConverterOperation {
 
         Map<String, Serializable> params = new HashMap<>(parameters.size());
         for (Entry<String, String> entry : parameters.entrySet()) {
-            Object value = entry.getValue();
-
-            // FIXME: What if it's an integer, a float, a double, etc ...
-            Serializable serializable = null;
-            try {
-                serializable = Integer.valueOf(value.toString());
-            } catch (NumberFormatException e) {
-                serializable = (Serializable) value;
-            }
-
-            params.put(entry.getKey(), serializable);
+            params.put(entry.getKey(), entry.getValue());
         }
 
         return params;
