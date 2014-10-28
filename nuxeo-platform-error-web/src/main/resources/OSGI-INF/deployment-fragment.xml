@@ -44,6 +44,18 @@
     </navigation-case>
 
     <navigation-case>
+      <from-outcome>error_ui_include_invalid_included</from-outcome>
+      <to-view-id>/error_test_web/error_ui_include_invalid_included.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>error_ui_include_relative_invalid_included</from-outcome>
+      <to-view-id>/error_test_web/error_ui_include_relative_invalid_included.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
       <from-outcome>error_jsf_function_checked</from-outcome>
       <to-view-id>/error_test_web/error_jsf_function_checked.xhtml</to-view-id>
       <redirect />
