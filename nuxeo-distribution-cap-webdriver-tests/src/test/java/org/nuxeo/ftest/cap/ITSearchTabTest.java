@@ -45,13 +45,14 @@ import org.openqa.selenium.By;
  */
 public class ITSearchTabTest extends AbstractTest {
 
-    /**
-     *
-     */
-    private static final String SEARCH_PATH = "/Default domain/Templates";
-
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle_"
+    private final static String WORKSPACE1_TITLE = "WorkspaceTitle1_"
             + new Date().getTime();
+
+    private final static String WORKSPACE2_TITLE = "WorkspaceTitle2_"
+            + new Date().getTime();
+
+    private static final String SEARCH_PATH = "/Default domain/Workspaces/"
+            + WORKSPACE2_TITLE;
 
     public final static String[] SUBJECTS = { "Comics", "Religion", "Education" };
 
@@ -76,45 +77,50 @@ public class ITSearchTabTest extends AbstractTest {
         usersTab.searchUser(TEST_USERNAME);
         assertTrue(usersTab.isUserFound(TEST_USERNAME));
 
-        // create a new wokspace and grant all rights to the test user
+        // create 2 workspaces and grant all rights to the test user
         documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
                 "Workspaces");
-        DocumentBasePage workspacePage = createWorkspace(documentBasePage,
-                WORKSPACE_TITLE, null);
-        AccessRightsSubPage accessRightSubTab = workspacePage.getManageTab().getAccessRightsSubTab();
-        // Need WriteSecurity (so in practice Manage everything) to edit a
-        // Workspace
-        if (!accessRightSubTab.hasPermissionForUser("Manage everything",
-                TEST_USERNAME)) {
-            accessRightSubTab.grantPermissionForUser("Manage everything",
-                    TEST_USERNAME);
-        }
-        // Create test File
-        FileDocumentBasePage filePage = createFile(workspacePage, "Test file",
-                "Test File description", false, null, null, null);
-        EditTabSubPage editTabSubPage = filePage.getEditTab();
-
-        Select2WidgetElement subjectsWidget = new Select2WidgetElement(
-                driver,
-                driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_1_select2']")),
-                true);
-        subjectsWidget.selectValues(SUBJECTS);
-
-        Select2WidgetElement coverageWidget = new Select2WidgetElement(
-                driver,
-                driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_coverage_1_select2']")),
-                false);
-        coverageWidget.selectValue(COVERAGE);
-
-        editTabSubPage.save();
-
-        editTabSubPage = filePage.getEditTab();
+        createTestWorkspace(documentBasePage, WORKSPACE1_TITLE, true);
+        createTestWorkspace(documentBasePage, WORKSPACE2_TITLE, false);
         logout();
     }
 
+    protected void createTestWorkspace(DocumentBasePage documentBasePage,
+            String title, boolean createTestFile) throws IOException {
+        DocumentBasePage workspacePage = createWorkspace(documentBasePage,
+                title, null);
+        if (createTestFile) {
+            AccessRightsSubPage accessRightSubTab = workspacePage.getManageTab().getAccessRightsSubTab();
+            // Need WriteSecurity (so in practice Manage everything) to edit a
+            // Workspace
+            if (!accessRightSubTab.hasPermissionForUser("Manage everything",
+                    TEST_USERNAME)) {
+                accessRightSubTab.grantPermissionForUser("Manage everything",
+                        TEST_USERNAME);
+            }
+            // Create test File
+            FileDocumentBasePage filePage = createFile(workspacePage,
+                    "Test file", "Test File description", false, null, null,
+                    null);
+            EditTabSubPage editTabSubPage = filePage.getEditTab();
+
+            Select2WidgetElement subjectsWidget = new Select2WidgetElement(
+                    driver,
+                    driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_1_select2']")),
+                    true);
+            subjectsWidget.selectValues(SUBJECTS);
+
+            Select2WidgetElement coverageWidget = new Select2WidgetElement(
+                    driver,
+                    driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_coverage_1_select2']")),
+                    false);
+            coverageWidget.selectValue(COVERAGE);
+            editTabSubPage.save();
+        }
+    }
+
     @Test
-    public void testSearch() throws UserNotConnectedException,
-            IOException {
+    public void testSearch() throws UserNotConnectedException, IOException {
         DocumentBasePage documentBasePage = loginAsTestUser();
         SearchPage searchPage = documentBasePage.goToSearchPage();
         SearchResultsSubPage resultPanelSubPage = searchPage.getSearchResultsSubPage();
@@ -136,7 +142,8 @@ public class ITSearchTabTest extends AbstractTest {
         resultPanelSubPage = searchPage.getSearchResultsSubPage();
         assertEquals(1, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
         searchPage = searchLayoutSubPage.selectCoverageAggregate(COVERAGE);
-        assertEquals(nbCurrentDoc, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
+        assertEquals(nbCurrentDoc,
+                resultPanelSubPage.getNumberOfDocumentInCurrentPage());
 
         // Test select path widget
         resultPanelSubPage = searchPage.getSearchResultsSubPage();
@@ -149,7 +156,8 @@ public class ITSearchTabTest extends AbstractTest {
         searchLayoutSubPage.deselectPath(SEARCH_PATH);
         searchPage = searchLayoutSubPage.filter();
         resultPanelSubPage = searchPage.getSearchResultsSubPage();
-        assertEquals(nbCurrentDoc, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
+        assertEquals(nbCurrentDoc,
+                resultPanelSubPage.getNumberOfDocumentInCurrentPage());
 
         logout();
     }
@@ -161,7 +169,8 @@ public class ITSearchTabTest extends AbstractTest {
         usersTab = usersTab.viewUser(TEST_USERNAME).deleteUser();
         DocumentBasePage documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
                 "Workspaces");
-        deleteWorkspace(documentBasePage, WORKSPACE_TITLE);
+        deleteWorkspace(documentBasePage, WORKSPACE1_TITLE);
+        deleteWorkspace(documentBasePage, WORKSPACE2_TITLE);
         logout();
     }
 }
