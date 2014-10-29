@@ -119,7 +119,7 @@ public class JSFDashboardActions implements Serializable {
     public String getSelectedDomainPath() throws ClientException {
         DocumentModel domain = getSelectedDomain();
         if (domain == null) {
-            return "";
+            return "/";
         }
         return domain.getPathAsString() + "/";
     }
