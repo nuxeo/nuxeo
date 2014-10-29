@@ -24,6 +24,7 @@ the specific language governing permissions and limitations under the Apache Lic
  *   - https://jira.nuxeo.com/browse/NXP-13715
  *   - https://jira.nuxeo.com/browse/NXP-15313
  *   - https://jira.nuxeo.com/browse/NXP-15452
+ *   - https://jira.nuxeo.com/browse/NXP-15498
  *
  * Please re-apply any patch when upgrading this script.
  */
@@ -1237,7 +1238,10 @@ the specific language governing permissions and limitations under the Apache Lic
             this.clearDropdownAlignmentPreference();
 
             if(this.dropdown[0] !== this.body().children().last()[0]) {
+                // NXP-15498
+                var ddWidth = this.dropdown.width();
                 this.dropdown.detach().appendTo(this.body());
+                this.dropdown.width(ddWidth);
             }
 
             // create the dropdown mask if doesnt already exist
@@ -1276,7 +1280,9 @@ the specific language governing permissions and limitations under the Apache Lic
             mask.css(maskCss).show();
 
             this.dropdown.show();
-            this.positionDropdown();
+            if (!this.opts.autocomplete || this.search.val().length > 0) {
+              this.positionDropdown();
+            }
 
             this.dropdown.addClass("select2-drop-active");
 
@@ -2847,7 +2853,8 @@ the specific language governing permissions and limitations under the Apache Lic
             }
 
             //If all results are chosen render formatNoMAtches
-            if(!this.opts.createSearchChoice && !choices.filter('.select2-result:not(.select2-selected)').length > 0){
+            // NXP-15498
+            if(!this.opts.autocomplete && !this.opts.createSearchChoice && !choices.filter('.select2-result:not(.select2-selected)').length > 0){
                 if(!data || data && !data.more && this.results.find(".select2-no-results").length === 0) {
                     if (checkFormatter(self.opts.formatNoMatches, "formatNoMatches")) {
                         this.results.append("<li class='select2-no-results'>" + self.opts.formatNoMatches(self.search.val()) + "</li>");
