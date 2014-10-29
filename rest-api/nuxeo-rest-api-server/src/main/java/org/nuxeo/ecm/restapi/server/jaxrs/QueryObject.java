@@ -25,10 +25,11 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.core.PageProviderServiceImpl;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+import org.nuxeo.ecm.restapi.server.jaxrs.adapters.SearchAdapter;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
@@ -203,17 +204,17 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
         }
 
         if (query != null) {
-            CoreQueryPageProviderDescriptor desc = new
-                    CoreQueryPageProviderDescriptor();
-            desc.setPattern(query);
+            PageProviderDefinition ppdefinition = pageProviderService
+                    .getPageProviderDefinition(SearchAdapter.pageProviderName);
+            ppdefinition.setPattern(query);
             if (maxResults != null && !maxResults.isEmpty()
                     && !maxResults.equals("-1")) {
                 // set the maxResults to avoid slowing down queries
-                desc.getProperties().put("maxResults", maxResults);
+                ppdefinition.getProperties().put("maxResults", maxResults);
             }
             return new PaginableDocumentModelListImpl(
                     (PageProvider<DocumentModel>) pageProviderService
-                            .getPageProvider(StringUtils.EMPTY, desc,
+                            .getPageProvider(StringUtils.EMPTY, ppdefinition,
                                     searchDocumentModel, sortInfoList,
                                     targetPageSize,
                                     targetPage, props, parameters), null);
