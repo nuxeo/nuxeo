@@ -59,7 +59,6 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
@@ -226,10 +225,6 @@ public abstract class NuxeoLauncher {
     static final Log log = LogFactory.getLog(NuxeoLauncher.class);
 
     private static Options launcherOptions = null;
-
-    private static final String JAVA_OPTS_PROPERTY = "launcher.java.opts";
-
-    private static final String JAVA_OPTS_DEFAULT = "-Xms512m -Xmx1024m -XX:MaxPermSize=512m";
 
     private static final String OVERRIDE_JAVA_TMPDIR_PARAM = "launcher.override.java.tmpdir";
 
@@ -635,12 +630,12 @@ public abstract class NuxeoLauncher {
      * It enables usage of property like ${nuxeo.log.dir} inside JAVA_OPTS.
      *
      * @return the java options string.
+     * @deprecated Since 5.9.6. Use {@link ConfigurationGenerator#getJavaOpts()}
+     *             instead
      */
+    @Deprecated
     protected String getJavaOptsProperty() {
-        String ret = System.getProperty(JAVA_OPTS_PROPERTY, JAVA_OPTS_DEFAULT);
-        ret = StrSubstitutor.replace(ret,
-                configurationGenerator.getUserConfig());
-        return ret;
+        return configurationGenerator.getJavaOpts();
     }
 
     /**
@@ -1880,16 +1875,11 @@ public abstract class NuxeoLauncher {
     public static void printLongHelp() {
         printShortHelp();
         log.error("\n\nJava usage:\n\tjava [-D"
-                + JAVA_OPTS_PROPERTY
-                + "=\"JVM options\"] [-D"
                 + Environment.NUXEO_HOME
                 + "=\"/path/to/nuxeo\"] [-D"
                 + ConfigurationGenerator.NUXEO_CONF
                 + "=\"/path/to/nuxeo.conf\"] [-Djvmcheck=nofail] -jar \"path/to/nuxeo-launcher.jar\""
-                + " \\ \n\t\t[options] <command> [command parameters]");
-        log.error("\n\t" + JAVA_OPTS_PROPERTY
-                + "\tParameters for the server JVM (default are "
-                + JAVA_OPTS_DEFAULT + ").");
+                + " \\ \n\t\t[options] <command> [command parameters]\n");
         log.error("\t"
                 + Environment.NUXEO_HOME
                 + "\t\tNuxeo server root path (default is parent of called script).");

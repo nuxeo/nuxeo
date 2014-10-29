@@ -214,9 +214,10 @@ set LOGTIME=%LOGTIME:,=%
 set TMPLAUNCHER=%NUXEO_TMP_DIR%\nuxeo-launcher-%RANDOM%.jar
 if exist "%TMPLAUNCHER%" GOTO GETTMPLAUNCHER
 COPY /V "%NUXEO_LAUNCHER%" "%TMPLAUNCHER%"
-echo [%DATE%] Launcher command: "%JAVA%" -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_LOG_DIR%" -Dlog.id="-%LOGTIME%" -jar "%TMPLAUNCHER%" %1 %2 %3 %4 %5 %6 %7 %8 %9 >> "%NUXEO_LOG_DIR%\nuxeoctl.log"
+echo "launcher.java.opts=%JAVA_OPTS%" >> "%NUXEO_CONF%"
+echo [%DATE%] Launcher command: "%JAVA%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_LOG_DIR%" -Dlog.id="-%LOGTIME%" -jar "%TMPLAUNCHER%" %1 %2 %3 %4 %5 %6 %7 %8 %9 >> "%NUXEO_LOG_DIR%\nuxeoctl.log"
 echo on
-"%JAVA%" %LAUNCHER_DEBUG% -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_LOG_DIR%" -Dlog.id="-%LOGTIME%" -jar "%TMPLAUNCHER%" %1 %2 %3 %4 %5 %6 %7 %8 %9
+"%JAVA%" %LAUNCHER_DEBUG% -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_LOG_DIR%" -Dlog.id="-%LOGTIME%" -jar "%TMPLAUNCHER%" %1 %2 %3 %4 %5 %6 %7 %8 %9
 @set exitcode=%ERRORLEVEL%
 @echo off
 del /F /Q "%TMPLAUNCHER%"

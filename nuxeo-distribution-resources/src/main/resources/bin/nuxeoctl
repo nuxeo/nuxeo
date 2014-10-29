@@ -118,9 +118,15 @@ done << EOF
 `grep "^JAVA_OPTS=" "$NUXEO_CONF"`
 EOF
 # Defaults
-: ${JAVA_OPTS:="-Xms512m -Xmx1024m -XX:MaxPermSize=512m -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Dfile.encoding=UTF-8"}
+if [ -z "$JAVA_OPTS" ]; then
+  JAVA_OPTS="-Xms512m -Xmx1024m -XX:MaxPermSize=512m -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Dfile.encoding=UTF-8"
+  echo 'JAVA_OPTS=-Xms512m -Xmx1024m -XX:MaxPermSize=512m -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Dfile.encoding=UTF-8' >> "$NUXEO_CONF"
+fi
 # Force IPv4
-JAVA_OPTS="$JAVA_OPTS -Djava.net.preferIPv4Stack=true"
+if ! [[ "x$JAVA_OPTS" =~ "-Djava.net.preferIPv4Stack=true" ]]; then
+  JAVA_OPTS="$JAVA_OPTS -Djava.net.preferIPv4Stack=true"
+  echo 'JAVA_OPTS=$JAVA_OPTS -Djava.net.preferIPv4Stack=true' >> "$NUXEO_CONF"
+fi
 
 if [[ ! "x$@" =~ --gui=true ]] && [[ ! "x$@" =~ " gui" ]]; then
   # Set AWT headless
@@ -134,6 +140,7 @@ if ! [[ "x$JAVA_OPTS" =~ -server ]]; then
     "$JAVA" -server -version >/dev/null 2>&1
     if [ $? -eq 0 ]; then
       JAVA_OPTS="-server $JAVA_OPTS"
+      echo 'JAVA_OPTS=-server $JAVA_OPTS' >> "$NUXEO_CONF"
     fi
   fi
 fi
@@ -198,9 +205,9 @@ while true; do
   done
   cp "$NUXEO_LAUNCHER" "$TMPLAUNCHER"
   [[ "x $@" =~ " -d" || "x $@" =~ " --debug" || -n "$LAUNCHER_DEBUG" ]] && \
-           echo Launcher command: $JAVA $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar $TMPLAUNCHER "$@"
-  echo [`date`] Launcher command: $JAVA $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar $TMPLAUNCHER "$@" >> "$LOG_DIR"/nuxeoctl.log
-  "$JAVA" $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar "$TMPLAUNCHER" "$@"
+           echo Launcher command: $JAVA $LAUNCHER_DEBUG -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar $TMPLAUNCHER "$@"
+  echo [`date`] Launcher command: $JAVA $LAUNCHER_DEBUG -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar $TMPLAUNCHER "$@" >> "$LOG_DIR"/nuxeoctl.log
+  "$JAVA" $LAUNCHER_DEBUG -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar "$TMPLAUNCHER" "$@"
   exitcode=$?
   rm -f "$TMPLAUNCHER"
   if [ "$exitcode" != "128" ]; then
