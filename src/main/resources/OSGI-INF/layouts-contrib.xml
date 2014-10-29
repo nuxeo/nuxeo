@@ -5,19 +5,6 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
 
-    <layout name="multi_tenant_faceted_search_configuration">
-      <templates>
-        <template mode="any">
-          /layouts/layout_default_template.xhtml
-        </template>
-      </templates>
-      <rows>
-        <row>
-          <widget>faceted_search_content_views_selection</widget>
-        </row>
-      </rows>
-    </layout>
-
    <layout name="multi_tenant_content_view_configuration">
       <templates>
         <template mode="any">
@@ -58,7 +45,7 @@
       </templates>
       <rows>
         <row>
-          <widget>advanced_search_selection</widget>
+          <widget>search_content_views_selection</widget>
         </row>
       </rows>
     </layout>

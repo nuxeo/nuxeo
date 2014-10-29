@@ -26,8 +26,8 @@
     </action>
 
     <!-- Tenant Administration tabs -->
-    <action id="TAB_TENANT_ADMINISTRATION" link="/incl/tabs/document_manage.xhtml"
-      order="240" label="action.view.manage" icon="/icons/file.gif" type="rest_document_link">
+    <action id="TAB_TENANT_ADMINISTRATION" type="rest_document_link" order="240"
+      label="action.view.manage" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>manage</filter-id>
       <filter-id>allowForTenantConfig</filter-id>
@@ -38,6 +38,10 @@
           </condition>
         </rule>
       </filter>
+      <properties>
+        <property name="ajaxSupport">true</property>
+        <property name="link">/incl/tabs/document_manage.xhtml</property>
+      </properties>
     </action>
 
     <action id="TAB_TENANT_CONFIGURATION" link="/incl/tabs/tenant_configuration.xhtml"
@@ -45,6 +49,9 @@
       <category>TAB_TENANT_ADMINISTRATION_sub_tab</category>
       <filter-id>tenantAdministrators</filter-id>
       <filter-id>allowForTenantConfig</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
     <action id="TAB_TENANT_RIGHTS" link="/incl/tabs/document_rights.xhtml"
@@ -53,6 +60,9 @@
       <filter-id>rights</filter-id>
       <filter-id>tenantAdministrators</filter-id>
       <filter-id>allowForTenantConfig</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
     <action id="TAB_TENANT_LOCAL_CONFIGURATION" link="/incl/tabs/local_configuration.xhtml"
@@ -61,14 +71,19 @@
       <filter-id>has_local_configuration_available</filter-id>
       <filter-id>tenantAdministrators</filter-id>
       <filter-id>allowForTenantConfig</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
-    <action id="TAB_TENANT_HISTORY" link="/incl/tabs/tenant_history.xhtml"
-      enabled="true" label="action.view.tenant.history" icon="/icons/file.gif"
-      order="100">
+    <action id="TAB_TENANT_HISTORY" link="/incl/tabs/tenant_history.xhtml" label="action.view.tenant.history"
+      icon="/icons/file.gif" order="100">
       <category>TAB_TENANT_ADMINISTRATION_sub_tab</category>
       <filter-id>tenantAdministrators</filter-id>
       <filter-id>allowForTenantConfig</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
     <action id="TAB_TENANT_TRASH_CONTENT" link="/incl/tabs/document_trash_content.xhtml"
@@ -83,6 +98,9 @@
           <condition>#{deleteActions.trashManagementEnabled}</condition>
         </rule>
       </filter>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
   </extension>
@@ -114,6 +132,15 @@
         <condition>#{multiTenantActions.isReadOnlyDirectory(directoryName)}</condition>
       </rule>
     </filter>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="typeCompatibility">
+
+    <typeCompatibility type="rest_document_link">
+      <category>TAB_TENANT_ADMINISTRATION_sub_tab</category>
+    </typeCompatibility>
 
   </extension>
 
