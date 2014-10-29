@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ ******************************************************************************/
 package org.nuxeo.ecm.directory;
 
 import java.io.Serializable;
@@ -12,6 +20,12 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.runtime.api.login.LoginComponent;
 
+/**
+ * Wraps a session, enforcing permission access
+ *
+ * @author Stephane Lacoin at Nuxeo (aka matic)
+ * @since 5.9.6
+ */
 public class SecuredSession implements Session {
 
     protected static final String POWER_USERS_GROUP = "powerusers";
