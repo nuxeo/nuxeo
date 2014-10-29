@@ -5,7 +5,6 @@
 
 <c:if test="#{widget.mode != 'edit'}">
 
-#{field}
   <c:choose>
     <c:when test="#{field == true or field == 'true'}">
       <h:outputText id="#{widget.id}"
