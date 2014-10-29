@@ -66,47 +66,9 @@ author: lkemen@nuxeo.com
   -webkit-transition: all 0.3s ease 0.1s;
   transition: all 0.3s ease 0.1s }
 
-.userSearchBlock input[type="text"] {
-  opacity: .85;
-  width: 140px }
-
-.userSearchBlock input[type="text"]:focus {
-  opacity: 1;
-  width: 160px }
-
-.userSearchBlock .directoryFilter {
-  background: #e4e4e4 url('${basePath}/icons/search.png') no-repeat 95% center;
-  box-sizing: border-box;
-  box-shadow: none;
-  border: 1px solid #e4e4e4;
-  border-radius: 1em;
-  font-size: 1em;
-  height: 25px;
-  line-height: normal;
-  padding: .4em 2em .3em .6em;
-  margin: 0 .6em 0 0;
-  transition: all 0.2s ease 0.1s }
-
-.userSearchBlock input.button {
-  background: transparent;
-  border:none;
-  box-shadow: none;
-  cursor:pointer;
-  height: 25px;
-  padding: 0;
-  margin: 0 0 0 -23px;
-  text-indent: -9999px;
-  vertical-align: top;
-  width: 20px }
-
-.userSearchBlock input.button:hover {
-  cursor:pointer }
-
 /* select2 search input */
 .userSearchBlock .select2-container {
-  margin-bottom: 0;
-  width: 260px!important;
-  transition: width 0.2s ease 0.1s }
+  margin-bottom: 0 }
 
 .userSearchBlock .select2-container-multi .select2-choices {
   background: #eee url('${basePath}/icons/search.png') no-repeat 98% center;
@@ -116,9 +78,6 @@ author: lkemen@nuxeo.com
 .userSearchBlock .select2-container-multi .select2-choices .select2-search-field input {
   box-shadow: none;
   margin: 0 }
-
-.userSearchBlock .select2-container-multi.select2-container-active {
-  width: 350px !important }
 
 /* =UserServices */
 .userServicesBlock {
