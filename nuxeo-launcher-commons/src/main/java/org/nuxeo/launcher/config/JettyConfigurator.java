@@ -46,7 +46,7 @@ public class JettyConfigurator extends ServerConfigurator {
 
     public JettyConfigurator(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
-        log.info("Detected Jetty server.");
+        log.debug("Detected Jetty server.");
     }
 
     /**
