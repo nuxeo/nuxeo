@@ -21,6 +21,6 @@
     </packageOptions>
   </install>
   <presets>
-    <preset id="nuxeo-cap-preset" label="Nuxeo CAP Preset">nuxeo-cap,nuxeo-dam,nuxeo-drive,nuxeo-web-mobile-dm</preset>
+    <preset id="nuxeo-cap-preset" label="Nuxeo CAP Preset">nuxeo-cap,nuxeo-dam,nuxeo-drive,nuxeo-web-mobile-cap</preset>
   </presets>
 </packages>
