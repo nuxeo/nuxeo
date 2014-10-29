@@ -77,10 +77,8 @@
         id="#{widget.id}_parent"
         ordering="#{empty widgetProperty_ordering?'label':widgetProperty_ordering}">
         <a4j:ajax event="change"
-          render="#{widget.id}_child,#{widget.id}_message"
-          immediate="true">
-          <a4j:ajaxListener type="org.ajax4jsf.ajax.ForceRender" />
-        </a4j:ajax>
+          render="#{widget.id}_child #{widget.id}_message"
+          immediate="true" />
       </nxdir:chainSelectListbox>
       <f:subview rendered="#{widgetProperty_on2rows}">
         <br />

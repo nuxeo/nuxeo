@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.platform.ui.web.directory;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -29,6 +31,7 @@ import java.util.Map;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
+import javax.faces.component.behavior.ClientBehaviorHolder;
 import javax.faces.context.FacesContext;
 import javax.faces.el.ValueBinding;
 
@@ -40,7 +43,8 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  */
-public class ChainSelectListboxComponent extends UIInput {
+public class ChainSelectListboxComponent extends UIInput implements
+        ClientBehaviorHolder {
 
     public static final String COMPONENT_TYPE = "nxdirectory.chainSelectListbox";
 
@@ -500,6 +504,22 @@ public class ChainSelectListboxComponent extends UIInput {
 
     public void setDisplay(String display) {
         this.display = display;
+    }
+
+    /**
+     * @since 6.0
+     */
+    private static final Collection<String> EVENT_NAMES = Collections.unmodifiableCollection(Arrays.asList(
+            "blur", "change", "valueChange", "click", "dblclick", "focus",
+            "keydown", "keypress", "keyup", "mousedown", "mousemove",
+            "mouseout", "mouseover", "mouseup", "select"));
+
+    public Collection<String> getEventNames() {
+        return EVENT_NAMES;
+    }
+
+    public String getDefaultEventName() {
+        return "valueChange";
     }
 
 }

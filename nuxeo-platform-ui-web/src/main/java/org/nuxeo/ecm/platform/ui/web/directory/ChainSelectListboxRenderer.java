@@ -34,6 +34,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 
+import com.sun.faces.renderkit.RenderKitUtils;
+
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  *
@@ -112,6 +114,7 @@ public class ChainSelectListboxRenderer extends Renderer {
         if (size != null && Integer.valueOf(size) > 0) {
             writer.writeAttribute("size", size, "size");
         }
+        RenderKitUtils.renderOnchange(context, comp, false);
 
         List<String> valueList = new ArrayList<String>();
 
