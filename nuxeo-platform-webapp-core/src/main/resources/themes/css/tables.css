@@ -114,7 +114,7 @@ table td {
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-style: solid none;
   border-width: 1px;
-  padding: .5em .6em .6em 0 }
+  padding: .5em .6em .4em 0 }
 
 .dataTableNoBorder,
 .dataTableNoBorder th,
@@ -304,6 +304,10 @@ table.palettePreviewColors td div {
 .dataInputGroup {
   margin: 0;
   padding: 0 }
+
+.complexWidgetTable .boldColumn,
+.complexWidgetTable .labelColumn {
+  width: 35% }
 
 /*  =Relations */
 .relationObjectColumn,
