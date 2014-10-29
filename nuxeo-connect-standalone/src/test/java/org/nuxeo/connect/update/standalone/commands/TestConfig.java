@@ -97,6 +97,10 @@ public class TestConfig extends AbstractCommandTest {
         writer.start("config");
         writer.attr("set", "alreadyset.property=new.value");
         writer.end();
+        // test specific case of JAVA_OPTS parameter
+        writer.start("config");
+        writer.attr("set", "JAVA_OPTS=$JAVA_OPTS -Djava.opts.custom.value");
+        writer.end();
     }
 
     @Override
@@ -115,22 +119,21 @@ public class TestConfig extends AbstractCommandTest {
         reader.close();
         log.info("END nuxeo.conf content:");
 
-        String templates = configurationGenerator.getUserConfig().getProperty(
-                ConfigurationGenerator.PARAM_TEMPLATES_NAME);
+        Properties userConfig = configurationGenerator.getUserConfig();
+        String templates = userConfig.getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME);
         assertTrue("newtemplate was not added",
                 templates != null && templates.contains("newtemplate"));
         assertTrue("oldtemplate was not removed", templates != null
                 && !templates.contains("oldtemplate"));
-        assertEquals(
-                "test.property was not set to some.value",
-                "some.value",
-                configurationGenerator.getUserConfig().getProperty(
-                        "test.property"));
-        assertEquals(
-                "alreadyset.property was not set to its new value",
-                "new.value",
-                configurationGenerator.getUserConfig().getProperty(
-                        "alreadyset.property"));
+        assertEquals("test.property was not set to some.value", "some.value",
+                userConfig.getProperty("test.property"));
+        assertEquals("alreadyset.property was not set to its new value",
+                "new.value", userConfig.getProperty("alreadyset.property"));
+        String java_opts = userConfig.getProperty(
+                ConfigurationGenerator.JAVA_OPTS_PROPERTY,
+                ConfigurationGenerator.JAVA_OPTS_DEFAULT);
+        assertTrue("Missing -Djava.opts.custom.value in: " + java_opts,
+                java_opts.contains("-Djava.opts.custom.value"));
     }
 
     @Override

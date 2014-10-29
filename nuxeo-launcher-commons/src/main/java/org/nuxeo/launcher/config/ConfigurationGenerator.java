@@ -58,10 +58,12 @@ import javax.naming.directory.InitialDirContext;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.NullEnumeration;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.launcher.commons.DatabaseDriverException;
 import org.nuxeo.launcher.commons.text.TextTemplate;
@@ -279,6 +281,10 @@ public class ConfigurationGenerator {
     private Environment env;
 
     private Properties storedConfig;
+
+    public static final String JAVA_OPTS_DEFAULT = "-Xms512m -Xmx1024m -XX:MaxPermSize=512m";
+
+    public static final String JAVA_OPTS_PROPERTY = "launcher.java.opts";
 
     /**
      * @since 5.7
@@ -507,6 +513,7 @@ public class ConfigurationGenerator {
             defaultConfig.putAll(System.getProperties());
             userConfig = new Properties(defaultConfig);
 
+            parseJavaOpts();
             // If Windows, replace backslashes in paths in nuxeo.conf
             if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
                 replaceBackslashes();
@@ -728,6 +735,41 @@ public class ConfigurationGenerator {
                 }
             }
         }
+    }
+
+    /**
+     *
+     * @throws ConfigurationException
+     *
+     * @since 5.9.6
+     */
+    protected void parseJavaOpts() throws ConfigurationException {
+        try (BufferedReader reader = new BufferedReader(new FileReader(
+                nuxeoConf))) {
+            String javaOpts = "";
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("JAVA_OPTS=")) {
+                    javaOpts = line.substring(line.indexOf("=") + 1).replace(
+                            "$JAVA_OPTS", javaOpts);
+                }
+            }
+            javaOpts = StrSubstitutor.replace(javaOpts, userConfig);
+            userConfig.setProperty(JAVA_OPTS_PROPERTY, javaOpts);
+        } catch (IOException e) {
+            throw new ConfigurationException("Error reading " + nuxeoConf, e);
+        }
+    }
+
+    /**
+     * Gets the Java options with 'nuxeo.*' properties substituted.
+     *
+     * It enables usage of property like ${nuxeo.log.dir} inside JAVA_OPTS.
+     *
+     * @return the java options string.
+     */
+    public String getJavaOpts() {
+        return userConfig.getProperty(JAVA_OPTS_PROPERTY, JAVA_OPTS_DEFAULT);
     }
 
     /**
@@ -1838,4 +1880,5 @@ public class ConfigurationGenerator {
         DirContext dirContext = new InitialDirContext(env);
         dirContext.close();
     }
+
 }
