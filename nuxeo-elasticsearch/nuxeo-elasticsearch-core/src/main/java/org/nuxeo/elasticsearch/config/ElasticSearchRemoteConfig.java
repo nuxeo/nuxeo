@@ -52,12 +52,6 @@ public class ElasticSearchRemoteConfig implements Serializable {
     @XNode("@clientTransportNodesSamplerInterval")
     protected String clientTransportNodesSamplerInterval = "5s";
 
-    @XNode("@indexNumberOfShards")
-    protected String numberOfShards = "1";
-
-    @XNode("@indexNumberOfReplicas")
-    protected String numberOfReplicas = "0";
-
     public String getClusterName() {
         return clusterName;
     }
@@ -89,14 +83,6 @@ public class ElasticSearchRemoteConfig implements Serializable {
         return clientTransportNodesSamplerInterval;
     }
 
-    public String getNumberOfShards() {
-        return numberOfShards;
-    }
-
-    public String getNumberOfReplicas() {
-        return numberOfReplicas;
-    }
-
     public boolean isEnabled() {
         return isEnabled;
     }
@@ -108,9 +94,8 @@ public class ElasticSearchRemoteConfig implements Serializable {
     @Override
     public String toString() {
         if (isEnabled()) {
-            return String.format("EsRemoteConfig(%s, [%s], %s, %s)",
-                    getClusterName(), addressList, getNumberOfReplicas(),
-                    getNumberOfShards());
+            return String.format("EsRemoteConfig(%s, [%s])",
+                    getClusterName(), addressList);
         }
         return "EsRemoteConfig disabled";
     }

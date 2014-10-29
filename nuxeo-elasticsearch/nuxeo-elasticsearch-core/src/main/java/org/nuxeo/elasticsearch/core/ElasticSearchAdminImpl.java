@@ -159,8 +159,6 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
                 .put("cluster.name", config.getClusterName())
                 .put("client.transport.nodes_sampler_interval",
                         config.getSamplerInterval())
-                .put("index.number_of_shards", config.getNumberOfShards())
-                .put("index.number_of_replicas", config.getNumberOfReplicas())
                 .put("client.transport.ping_timeout", config.getPingTimeout())
                 .put("client.transport.ignore_cluster_name",
                         config.isIgnoreClusterName())
