@@ -253,6 +253,7 @@
         <property name="subStyleClass">contextActions</property>
         <property name="overallDisplay">horizontal_block</property>
         <property name="actionsDisplay">icons</property>
+        <property name="actionStyleClass">button</property>
         <property name="useAjaxForm">true</property>
         <property name="ignoreTemplateProperty">true</property>
         <property name="maxActionsNumber">9</property>

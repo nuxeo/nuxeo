@@ -8,6 +8,9 @@ author: lkemen@nuxeo.com
 */
 
 /* =Grid */
+.nxMainContainer {
+  margin-top: 3.8em }
+
 .gridBox {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -36,6 +39,19 @@ author: lkemen@nuxeo.com
 
 /* =Faceted Search */
 .nxDamSearchForm { font-size: .82em }
+
+.compactLayout .fieldColumnn.containerField {
+  padding: 0 0 .5em }
+
+.searchFilterActions .horizontalAction:first-child input {
+  color: #fff;
+  border: 1px solid #00adff;
+  background-color: #00adff;
+  box-shadow: inset 0px 1px 0px rgba(255,255,255,0.3) }
+
+.searchFilterActions .horizontalAction:first-child input:hover {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 -30px 20px rgba(255, 255, 255, 0.2) inset, inset 0px 1px 0px rgba(255,255,255,0.4);
+  transition: all 150ms ease-in-out 0s }
 
 /* =Assets list */
 .nxMainContainer .globalActionBar {
@@ -79,9 +95,6 @@ author: lkemen@nuxeo.com
 
 .nxDamSearchResults .listingLayoutSelector {
   font-size: .9em }
-
-.nxDamSearchResults .pageNavigationControls {
-  border-style: solid none }
 
 .nxDamSearchResults .detail {
   clear: both;
@@ -147,6 +160,7 @@ author: lkemen@nuxeo.com
 
 /* Pictures and video thumbnails in bubbleBoxes */
 .thumbnailContainer { text-align: center;
+  margin: 0;
   height: 124px }
 .thumbnailContainer img {
   max-height: 100%;
@@ -178,6 +192,15 @@ author: lkemen@nuxeo.com
 .nxMainContainer .description_block span {
   color: "gray.dark (__FLAVOR__ color)";
 	font-weight: normal }
+
+.nxDamAssetView .actionsWidgetPanel a.button {
+  margin: 0 }
+
+.nxDamAssetView .actionsWidgetPanel .button.dropdown {
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  margin-left: 0.4em;
+  padding: 0.1em 1.5em 0.15em 0.8em !important }
 
 /* Smaller tables display in foldableBox, apply .dataTableLine styles */
 .nxMainContainer .dataInput,
@@ -214,6 +237,21 @@ author: lkemen@nuxeo.com
   padding: .3em;
   text-transform: none }
 
+.nxDamAssetView .s2tagContainerCssClass {
+  width: 100% !important }
+
+.nxDamAssetView .s2tagContainerCssClass .select2-choices {
+  background: none repeat scroll 0 0 transparent }
+
+.nxDamAssetView.compactLayout .sticker {
+  background: none repeat scroll 0 0 #bbb;
+  border: medium none;
+  border-radius: 2px;
+  box-shadow: none;
+  color: #fff;
+  font-size: .9em;
+  margin: .1em .2em .5em 0 }
+
 /* smaller buttons in Foldable boxes*/
 .foldableBox .buttonsGadget {
   margin: .1em 0 0.2em;
@@ -229,7 +267,7 @@ author: lkemen@nuxeo.com
   margin: 0;
   padding: 0 }
 
-/* Picture View -> TODO: move it to imaging styles ? */
+/* Picture View */
 .assetViewContainer {
   background-color: #fff;
   border: 1px solid;
@@ -286,7 +324,6 @@ author: lkemen@nuxeo.com
 .nxDamSingleAssetLeft .assetViewContainer .pictureContainer {
   height: 420px }
 
-/* TODO: move to box styles */
 .bubbleBox .bubbleHeader .documentTitle {
   font-size: 1.1em;
   display: inline;
