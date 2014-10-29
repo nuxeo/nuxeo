@@ -270,7 +270,8 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 
 .compactLayout .searchFilterActions .widgetPanel .button,
 .compactLayout .searchFilterActions .widgetPanel a.button,
-.compactLayout .searchFilterActions .widgetPanel input.button {
+.compactLayout .searchFilterActions .widgetPanel input.button,
+.compactLayout .searchFilterActions .widgetPanel input[type="submit"] {
   float: right;
   font-weight: bold;
   margin: .5em 0 1em;
@@ -433,18 +434,25 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .infoViewRight .infoViewInfoLayout .containerWidgetPanel {
   background-color: #fff;
   margin: 0 1em 1em;
-  padding: .5em }
+  padding: .5em 1em }
 
 .infoViewRight .containerWidgetPanel .labelColumn {
   color: #999;
   width: 30% }
 
+.infoViewRight .containerWidgetPanel .widgetLabel {
+  color: #999;
+  padding: 0 }
+
+.infoViewRight .containerWidgetPanel .summaryTitle .widgetLabel {
+  color: "default (__FLAVOR__ color)" }
+
 .infoViewRight .quote {
   border-bottom: 1px solid #eee;
-  padding: 0 .4em .7em }
+  padding: .3em .4em .7em 0 }
 
 .infoViewRight .infoBoxTable .labelColumn {
-  padding: 0 .7em .4em .3em }
+  padding: 0 .7em .4em 0 }
 
 .compactLayout .infoViewInfoLayout .widgetHeader.foldedDisabled {
   border: medium none;
@@ -452,6 +460,13 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   font-size: 1.2em;
   margin: 0 0 1em;
   padding: 0 }
+
+.compactLayout.infoViewRight .widgetLabel {
+  padding: 0 }
+
+.infoViewInfoLayout .fieldColumnn.containerField .fieldColumn,
+.infoViewInfoLayout .fieldColumnn.containerField .labelColumn {
+  padding-bottom: .5em }
 
 .infoViewRight .infoViewActions {
   background-color: #fff;
@@ -461,6 +476,9 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   position: fixed;
   width: 100%;
   z-index: 70 }
+
+.infoViewInfoLayout .dataInput .fieldColumn img {
+  margin: .1em .2em -0.2em 0 }
 
 .infoViewActions .horizontalAction {
   padding-right: 1em }
