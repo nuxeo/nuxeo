@@ -16,7 +16,10 @@
         <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
         <whereClause docType="DefaultSearch">
           <fixedPart>
-            ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0
+            ecm:primaryType NOT IN ('Domain', 'SectionRoot', 'TemplateRoot', 'WorkspaceRoot', 'Favorites')
+            AND ecm:mixinType != 'HiddenInNavigation'
+            AND NOT (ecm:mixinType = 'Collection' AND ecm:name = 'Locally Edited')
+            AND ecm:isCheckedInVersion = 0
             AND ecm:currentLifeCycleState != 'deleted'
             AND SORTED_COLUMN IS NOT NULL
           </fixedPart>
