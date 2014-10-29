@@ -106,22 +106,22 @@
   </extension-point>
 
   <extension-point name="responseHeaders">
-  <documentation>
+    <documentation>
       Define headers to apply to the HTTP response.
 
       -header
-        - name: name of the header.
-        - enabled: flag to enable/disable a header (default value is true)
+      - name: name of the header.
+      - enabled: flag to enable/disable a header (default value is true)
 
       Example of a response header Registration:
 
       <code>
-            <header name="WWW-Authenticate" enabled="true">basic</header>
+        <header name="WWW-Authenticate" enabled="true">basic</header>
       </code>
-    @author Thierry Martins (tm@nuxeo.com)
-  </documentation>
-  <object
-    class="org.nuxeo.ecm.platform.web.common.requestcontroller.service.NuxeoHeaderDescriptor" />
+      @author Thierry Martins (tm@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.web.common.requestcontroller.service.NuxeoHeaderDescriptor" />
   </extension-point>
 
 </component>
