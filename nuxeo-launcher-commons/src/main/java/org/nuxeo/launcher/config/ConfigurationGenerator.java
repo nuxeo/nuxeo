@@ -86,7 +86,8 @@ public class ConfigurationGenerator {
     /**
      * @since 5.7
      */
-    public static final String[] COMPLIANT_JAVA_VERSIONS = new String[] { "1.7" };
+    public static final String[] COMPLIANT_JAVA_VERSIONS = new String[] {
+            "1.7", "1.8" };
 
     /**
      * @since 5.6
