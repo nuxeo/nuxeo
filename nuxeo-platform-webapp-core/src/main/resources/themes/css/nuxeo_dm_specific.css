@@ -14,7 +14,7 @@ author: lkemen@nuxeo.com
   height: 660px }
 
 .nxMainContainer .content {
-  padding: 1em 3em 3em;
+  padding: 2em 3em 3em;
   background-color: "neutral.lighter (__FLAVOR__ background)"; }
 
 .nxMainContainer .column {
