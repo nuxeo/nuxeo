@@ -20,6 +20,7 @@ import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,8 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Helper component for tagging widget relying on select2.
+ *
  * @since 5.9.6
  */
 @Name("tagSelect2Support")
@@ -88,7 +91,14 @@ public class TagSelect2Support {
     }
 
     public String resolveTags(final List<String> list) {
-       return Select2Common.resolveDefaultEntries(list);
+        return Select2Common.resolveDefaultEntries(list);
+    }
+
+    public String resolveTags(final String[] array) {
+        if (array == null || array.length == 0) {
+            return Select2Common.resolveDefaultEntries(null);
+        }
+        return Select2Common.resolveDefaultEntries(Arrays.asList(array));
     }
 
     @Factory(value = "documentTagIds", scope = EVENT)
@@ -183,8 +193,8 @@ public class TagSelect2Support {
         return tagService.isEnabled() ? tagService : null;
     }
 
-
-    public String encodeParameters(final Map<String, Serializable> widgetProperties) {
+    public String encodeParameters(
+            final Map<String, Serializable> widgetProperties) {
         return encodeCommonParameters(widgetProperties).toString();
     }
 
