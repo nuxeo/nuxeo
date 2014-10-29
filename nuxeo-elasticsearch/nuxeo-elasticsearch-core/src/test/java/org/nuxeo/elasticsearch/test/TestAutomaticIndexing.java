@@ -435,4 +435,20 @@ public class TestAutomaticIndexing {
         Assert.assertEquals(3, searchResponse.getHits().getTotalHits());
     }
 
+    @Test
+    public void shouldHandleCreateDelete() throws Exception {
+        startTransaction();
+        startCountingCommandProcessed();
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel doc = session.createDocumentModel("/folder", "note", "Note");
+        doc = session.createDocument(doc);
+        TransactionHelper.commitOrRollbackTransaction();
+        // we don't wait for async
+        startTransaction();
+        session.removeDocument(folder.getRef());
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
+        startTransaction();
+    }
 }

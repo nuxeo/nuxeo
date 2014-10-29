@@ -178,11 +178,20 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         }
     }
 
-    void processIndexCommand(IndexingCommand cmd)
-            throws ClientException {
+    void processIndexCommand(IndexingCommand cmd) {
         String docId = cmd.getDocId();
-        assert (!cmd.getDocId().equals(IndexingCommand.UNKOWN_DOCUMENT_ID));
-        IndexRequestBuilder request = buildEsIndexingRequest(cmd);
+        if (IndexingCommand.UNKOWN_DOCUMENT_ID.equals(docId)
+                || cmd.getTargetDocument() == null) {
+            log.warn("Skipping cmd because targetDocument is null " + cmd);
+            return;
+        }
+        IndexRequestBuilder request;
+        try {
+            request = buildEsIndexingRequest(cmd);
+        } catch (ClientException e) {
+            log.error("Fail to create indexing request for cmd: " + cmd, e);
+            return;
+        }
         if (log.isDebugEnabled()) {
             log.debug(String
                     .format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
