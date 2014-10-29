@@ -23,7 +23,7 @@
     "merge-stream": "^0.1.6",
     "opn": "^0.1.1",
     "run-sequence": "^1.0.1",
-    "traceur": "^0.0.62"
+    "traceur": "^0.0.72"
   },
   "engines": {
     "node": ">=0.10.0"
