@@ -1,4 +1,4 @@
-<component name="org.nuxeo.ecm.platform.suggestbox.actions">
+ope<component name="org.nuxeo.ecm.platform.suggestbox.actions">
 
   <require>org.nuxeo.ecm.platform.actions</require>
 
@@ -30,7 +30,7 @@
         <property name="autocomplete">true</property>
         <property name="dropdownCssClass">nx-header-s2-dd</property>
         <property name="containerCssClass">nx-header-s2-ct</property>
-        <property name="width">200px</property>
+        <property name="width">300px</property>
         <property name="translatePlaceholder">true</property>
         <property name="onEnterKeyHandler">nxSuggestHandleEnterKey</property>
       </properties>
