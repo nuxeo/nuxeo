@@ -26,8 +26,8 @@
       <filter-id>not_anonymous</filter-id>
     </action>
 
-    <action id="CertificateView" link="edit_user_certificate.xhtml"
-      order="10">
+    <action id="CertificateView" link="/edit_user_certificate.xhtml"
+      order="10" type="home_rest_document_link">
       <category>Certificate_sub_tab</category>
     </action>
   </extension>
