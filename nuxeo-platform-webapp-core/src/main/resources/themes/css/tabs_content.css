@@ -47,6 +47,10 @@ author: lkemen@nuxeo.com
   text-overflow: ellipsis;
   word-wrap: break-word }
 
+.documentDownloadLink {
+  margin-left: 0.3em;
+  vertical-align: top }
+
 .description_block {
   color: "gray.medium (__FLAVOR__ color)";
   line-height: 155% }
@@ -407,7 +411,6 @@ author: lkemen@nuxeo.com
   cursor: pointer; }
 
 .bubbleBox.bubbleListing .documentTitle {
-  display: block;
   padding-bottom: .3em }
 
 .bubbleBox.bubbleListing span:not(.documentTitle) {
