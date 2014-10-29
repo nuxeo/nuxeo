@@ -29,6 +29,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Filter that sets encoding to UTF-8, before any other filter tries to parse
@@ -59,10 +61,14 @@ public class NuxeoEncodingFilter implements Filter {
                     log.error(e, e);
                 }
             }
-            if (response instanceof HttpServletResponse
-                    && !((HttpServletResponse) response).containsHeader("X-UA-Compatible")) {
-                ((HttpServletResponse) response).addHeader("X-UA-Compatible",
-                        "IE=Edge,chrome=1");
+            
+            RequestControllerManager rcm = Framework.getLocalService(RequestControllerManager.class);
+            for (String headerName : rcm.getResponseHeaders().keySet()) {
+                if (response instanceof HttpServletResponse
+                        && !((HttpServletResponse) response).containsHeader(headerName)) {
+                    ((HttpServletResponse) response).addHeader(headerName,
+                            rcm.getResponseHeaders().get(headerName));
+                }
             }
         }
 

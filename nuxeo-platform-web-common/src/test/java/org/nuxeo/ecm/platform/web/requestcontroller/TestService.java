@@ -19,10 +19,13 @@
 
 package org.nuxeo.ecm.platform.web.requestcontroller;
 
+import java.util.Map;
+
 import javax.servlet.FilterConfig;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager;
@@ -139,6 +142,21 @@ public class TestService extends NXRuntimeTestCase {
         assertEquals("3600", fc.getInitParameter("cors.maxAge"));
         assertEquals("http://example.com http://example.com:8080", fc.getInitParameter("cors.allowOrigin"));
         assertEquals("false", fc.getInitParameter("cors.supportsCredentials"));
+    }
+
+    @Test
+    public void testHeadersContrib() throws Exception {
+        deployContrib("org.nuxeo.ecm.platform.web.common",
+                "OSGI-INF/web-request-controller-contrib-test.xml");
+
+        RequestControllerManager rcm = Framework
+                .getLocalService(RequestControllerManager.class);
+        assertNotNull(rcm);
+
+        Map<String, String> rh = rcm.getResponseHeaders();
+        assertEquals(2, rh.size());
+        assertTrue(rh.containsKey("WWW-Authenticate"));
+        assertEquals("basic", rh.get("WWW-Authenticate"));
     }
 
 }

@@ -61,4 +61,13 @@
     </corsConfig>
   </extension>
 
+  <extension
+    target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
+    point="responseHeaders">
+    <header name="Warning">Some message</header>
+    <header name="WWW-Authenticate" enabled="true">basic</header>
+    <header name="X-UA-Compatible">IE=8; IE=9; IE=10</header>
+    <header name="Warning" enabled="false"/>
+  </extension>
+
 </component>

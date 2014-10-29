@@ -38,4 +38,9 @@
 
   </extension>
 
+  <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
+    point="responseHeaders">
+    <header name="X-UA-Compatible">IE=10; IE=11</header>
+  </extension>
+
 </component>

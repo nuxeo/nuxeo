@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.web.common.requestcontroller.service;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -46,6 +47,8 @@ public class RequestControllerService extends DefaultComponent implements
 
     public static final String CORS_CONFIG_EP = "corsConfig";
 
+    public static final String HEADERS_CONFIG_EP = "responseHeaders";
+
     private static final Log log = LogFactory.getLog(RequestControllerService.class);
 
     protected static final Map<String, FilterConfigDescriptor> grantPatterns = new LinkedHashMap<String, FilterConfigDescriptor>();
@@ -60,6 +63,10 @@ public class RequestControllerService extends DefaultComponent implements
 
     protected static final NuxeoCorsFilterDescriptorRegistry corsFilterRegistry = new NuxeoCorsFilterDescriptorRegistry();
 
+    protected static final NuxeoHeaderDescriptorRegistry headersRegistry = new NuxeoHeaderDescriptorRegistry();
+
+    protected Map<String, String> headersCache;
+
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
@@ -69,6 +76,8 @@ public class RequestControllerService extends DefaultComponent implements
             registerFilterConfig(desc);
         } else if (CORS_CONFIG_EP.equals(extensionPoint)) {
             corsFilterRegistry.addContribution((NuxeoCorsFilterDescriptor)contribution);
+        }  else if (HEADERS_CONFIG_EP.equals(extensionPoint)) {
+            headersRegistry.addContribution((NuxeoHeaderDescriptor)contribution);
         } else {
             log.error("Unknown ExtensionPoint " + extensionPoint);
         }
@@ -169,4 +178,17 @@ public class RequestControllerService extends DefaultComponent implements
                 "");
     }
 
+    public Map<String, String> getResponseHeaders() {
+        if (headersCache == null) {
+            buildHeadersCache();
+        }
+        return headersCache;
+    }
+
+    public void buildHeadersCache() {
+        headersCache = new HashMap<String, String>();
+        for (NuxeoHeaderDescriptor header : headersRegistry.descs.values()) {
+            headersCache.put(header.name, header.getValue());
+        }
+    }
 }

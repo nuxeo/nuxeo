@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.web.common.requestcontroller.service;
 
+import java.util.Map;
+
 import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
 
@@ -41,4 +43,10 @@ public interface RequestControllerManager {
      */
     FilterConfig getCorsConfigForRequest(HttpServletRequest request);
 
+    /**
+     * @since 6.0
+     * @return a map with the header names to add to the HTTP response with
+     *         their values
+     */
+    Map<String, String> getResponseHeaders();
 }
