@@ -62,6 +62,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.NullEnumeration;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.launcher.commons.DatabaseDriverException;
 import org.nuxeo.launcher.commons.text.TextTemplate;
@@ -1798,17 +1799,19 @@ public class ConfigurationGenerator {
      */
     public Hashtable<Object, Object> getContextEnv(String ldapUrl,
             String bindDn, String bindPassword, boolean checkAuthentication) {
-        Hashtable<Object, Object> env = new Hashtable<Object, Object>();
-        env.put(javax.naming.Context.INITIAL_CONTEXT_FACTORY,
+        Hashtable<Object, Object> contextEnv = new Hashtable<>();
+        contextEnv.put(javax.naming.Context.INITIAL_CONTEXT_FACTORY,
                 "com.sun.jndi.ldap.LdapCtxFactory");
-        env.put("com.sun.jndi.ldap.connect.timeout", "10000");
-        env.put(javax.naming.Context.PROVIDER_URL, ldapUrl);
+        contextEnv.put("com.sun.jndi.ldap.connect.timeout", "10000");
+        contextEnv.put(javax.naming.Context.PROVIDER_URL, ldapUrl);
         if (checkAuthentication) {
-            env.put(javax.naming.Context.SECURITY_AUTHENTICATION, "simple");
-            env.put(javax.naming.Context.SECURITY_PRINCIPAL, bindDn);
-            env.put(javax.naming.Context.SECURITY_CREDENTIALS, bindPassword);
+            contextEnv.put(javax.naming.Context.SECURITY_AUTHENTICATION,
+                    "simple");
+            contextEnv.put(javax.naming.Context.SECURITY_PRINCIPAL, bindDn);
+            contextEnv.put(javax.naming.Context.SECURITY_CREDENTIALS,
+                    bindPassword);
         }
-        return env;
+        return contextEnv;
     }
 
     /**
@@ -1833,9 +1836,9 @@ public class ConfigurationGenerator {
      * @oaram env Environment properties to build a {@link InitialDirContext}
      * @since 5.9.6
      */
-    public void checkLdapConnection(Hashtable<Object, Object> env)
+    public void checkLdapConnection(Hashtable<Object, Object> contextEnv)
             throws NamingException {
-        DirContext dirContext = new InitialDirContext(env);
+        DirContext dirContext = new InitialDirContext(contextEnv);
         dirContext.close();
     }
 }
