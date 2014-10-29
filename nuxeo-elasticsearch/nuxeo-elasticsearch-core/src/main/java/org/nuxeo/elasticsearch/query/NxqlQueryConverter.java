@@ -254,8 +254,11 @@ final public class NxqlQueryConverter {
             if ("NOT BETWEEN".equals(op)) {
                 filter = FilterBuilders.notFilter(filter);
             }
-        } else if ("IN".equals(op)) {
+        } else if ("IN".equals(op) || "NOT IN".equals(op)) {
             filter = FilterBuilders.inFilter(name, values);
+            if ("NOT IN".equals(op)) {
+                filter = FilterBuilders.notFilter(filter);
+            }
         } else if ("STARTSWITH".equals(op)) {
             if (name.equals(NXQL.ECM_PATH)) {
                 filter = FilterBuilders.termFilter(name + ".children", value);
