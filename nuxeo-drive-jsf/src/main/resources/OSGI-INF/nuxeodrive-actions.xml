@@ -42,6 +42,13 @@
       <filter-id>has_no_auth_token</filter-id>
     </action>
 
+    <action id="infoViewDriveEdit" link="#{nuxeoDriveActions.driveEditURL}"
+      order="35" label="command.driveEdit" type="bare_link" icon="/icons/drive_edit.png">
+      <category>INFO_VIEW_ACTIONS</category>
+      <filter-id>can_drive_edit</filter-id>
+      <filter-id>has_one_auth_token</filter-id>
+    </action>
+
     <action id="userCenterNuxeoDrive" link="/incl/nuxeodrive/user_center_nuxeo_drive.xhtml"
       label="user.center.nuxeoDrive" icon="/icons/drive_tab.png" order="100">
       <category>USER_CENTER</category>
