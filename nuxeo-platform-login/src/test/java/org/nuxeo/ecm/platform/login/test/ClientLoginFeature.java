@@ -21,10 +21,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Set;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
@@ -40,7 +38,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.login.LoginComponent;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -51,14 +48,14 @@ import com.google.inject.Binder;
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.directory.types.contrib",
         "org.nuxeo.ecm.platform.login",
-        "org.nuxeo.ecm.platform.login.test:dummy-client-login-config.xml" })
+        "org.nuxeo.ecm.platform.login.test:trusted-client-login-config.xml" })
 public class ClientLoginFeature extends SimpleFeature {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(value = { ElementType.TYPE, ElementType.METHOD })
-    public @interface User {
+    public @interface Identity {
 
-        String name() default LoginComponent.SYSTEM_USERNAME;
+        String name() default "ClientLoginFeature";
 
         boolean anonymous() default true;
 
@@ -67,8 +64,23 @@ public class ClientLoginFeature extends SimpleFeature {
         String[] groups() default {};
     }
 
-    protected interface UserCallback extends Callback {
-        void setUser(User value);
+    @Target(ElementType.TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface Opener {
+
+        Class<? extends Listener> value();
+    }
+
+    public interface Listener {
+        void onLogin(FeaturesRunner runner, FrameworkMethod method,
+                LoginContext context);
+
+        void onLogout(FeaturesRunner runner, FrameworkMethod method,
+                LoginContext context);
+    }
+
+    protected interface IdentityCallback extends Callback {
+        void identity(Identity value);
     }
 
     public static class Module implements LoginModule {
@@ -89,13 +101,12 @@ public class ClientLoginFeature extends SimpleFeature {
         @Override
         public boolean login() throws LoginException {
             try {
-                handler.handle(new Callback[] { new UserCallback() {
+                handler.handle(new Callback[] { new IdentityCallback() {
 
                     @Override
-                    public void setUser(User user) {
-                        identity = new NuxeoPrincipalImpl(user.name(),
-                                user.anonymous(), user
-                                    .administrator());
+                    public void identity(Identity user) {
+                        identity = new NuxeoPrincipalImpl(user.name(), user
+                            .anonymous(), user.administrator());
                         identity.setGroups(Arrays.asList(user.groups()));
                     }
 
@@ -131,33 +142,46 @@ public class ClientLoginFeature extends SimpleFeature {
 
     }
 
-    public ClientLoginFeature() {
-        super();
-    }
-
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
         binder.bind(ClientLoginFeature.class).toInstance(this);
     }
 
-    public LoginContext logContext;
+    @SuppressWarnings("rawtypes")
+    protected Listener listener;
 
-    public Principal principal() {
-        Subject subject = logContext.getSubject();
-        Set<Principal> principals = subject.getPrincipals();
-        return principals.iterator().next();
-    }
-
-    public void logout() throws LoginException {
-        logContext.logout();
-    }
+    protected LoginContext context;
 
     @Override
     public void beforeMethodRun(final FeaturesRunner runner,
             final FrameworkMethod method, final Object test) throws Exception {
-        final User credential = runner
-            .getConfig(method, User.class);
-        logContext = Framework.login(new CallbackHandler() {
+        Identity identity = runner.getConfig(method, Identity.class);
+        context = login(identity);
+        final Class<? extends Listener> type = runner.getConfig(Opener.class).value();
+        if (type == null) {
+            return;
+        }
+        listener = type
+            .getConstructor(test.getClass()).newInstance(test);
+        listener.onLogin(runner, method, context);
+    }
+
+    @Override
+    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method,
+            Object test) throws Exception {
+        try {
+            if (listener != null) {
+                listener.onLogout(runner, method, context);
+            }
+        } finally {
+            listener = null;
+            context.logout();
+        }
+    }
+
+    protected LoginContext login(final Identity credential)
+            throws LoginException {
+        return Framework.login(new CallbackHandler() {
 
             @Override
             public void handle(Callback[] callbacks) throws IOException,
@@ -165,17 +189,11 @@ public class ClientLoginFeature extends SimpleFeature {
                 for (Callback each : callbacks) {
                     if (each instanceof NameCallback) {
                         ((NameCallback) each).setName(credential.name());
-                    } else if (each instanceof UserCallback) {
-                        ((UserCallback) each).setUser(credential);
+                    } else if (each instanceof IdentityCallback) {
+                        ((IdentityCallback) each).identity(credential);
                     }
                 }
             }
         });
-    }
-
-    @Override
-    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method,
-            Object test) throws Exception {
-        logContext.logout();
     }
 }

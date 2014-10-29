@@ -28,6 +28,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
@@ -40,6 +43,8 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.directory.AbstractReference;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.SecuredSession;
+import org.nuxeo.runtime.api.Framework;
 
 @XObject(value = "tableReference")
 public class TableReference extends AbstractReference {
@@ -148,8 +153,8 @@ public class TableReference extends AbstractReference {
         Select select = new Select(table);
         select.setFrom(table.getQuotedName());
         select.setWhat("count(*)");
-        String whereString = String.format("%s = ? and %s = ?",
-                table.getColumn(sourceColumn).getQuotedName(),
+        String whereString = String.format("%s = ? and %s = ?", table
+            .getColumn(sourceColumn).getQuotedName(),
                 table.getColumn(targetColumn).getQuotedName());
 
         select.setWhere(whereString);
@@ -359,9 +364,9 @@ public class TableReference extends AbstractReference {
 
         // iterate over existing links to find what to add and what to remove
         String selectSql = String.format("SELECT %s FROM %s WHERE %s = ?",
-                table.getColumn(idsColumn).getQuotedName(),
-                table.getQuotedName(),
-                table.getColumn(filterColumn).getQuotedName());
+                table.getColumn(idsColumn).getQuotedName(), table
+                    .getQuotedName(), table.getColumn(filterColumn)
+                    .getQuotedName());
         PreparedStatement ps = null;
         try {
             ps = session.sqlConnection.prepareStatement(selectSql);
@@ -397,8 +402,8 @@ public class TableReference extends AbstractReference {
             // "DELETE FROM %s WHERE %s = ? AND %s = ?", tableName,
             // filterColumn, idsColumn);
             Delete delete = new Delete(table);
-            String whereString = String.format("%s = ? AND %s = ?",
-                    table.getColumn(filterColumn).getQuotedName(),
+            String whereString = String.format("%s = ? AND %s = ?", table
+                .getColumn(filterColumn).getQuotedName(),
                     table.getColumn(idsColumn).getQuotedName());
             delete.setWhere(whereString);
             String deleteSql = delete.getStatement();
@@ -407,9 +412,8 @@ public class TableReference extends AbstractReference {
                 ps = session.sqlConnection.prepareStatement(deleteSql);
                 for (String unwantedId : idsToDelete) {
                     if (session.logger.isLogEnabled()) {
-                        session.logger.logSQL(deleteSql,
-                                Arrays.<Serializable> asList(filterValue,
-                                        unwantedId));
+                        session.logger.logSQL(deleteSql, Arrays
+                            .<Serializable> asList(filterValue, unwantedId));
                     }
                     ps.setString(1, filterValue);
                     ps.setString(2, unwantedId);
@@ -479,15 +483,36 @@ public class TableReference extends AbstractReference {
 
     protected SQLSession getSQLSession() throws DirectoryException {
         if (!initialized) {
-            SQLSession sqlSession = (SQLSession) getSourceDirectory().getSession();
+            initialize();
+        }
+        return (SQLSession) SecuredSession.unwrap(getSourceDirectory()
+            .getSession());
+    }
+
+    protected void initialize() throws DirectoryException {
+        LoginContext lc;
+        try {
+            lc = Framework.login();
+        } catch (LoginException cause) {
+            throw new DirectoryException("Cannot acquire system privilege",
+                    cause);
+        }
+        try {
+            SQLSession session = (SQLSession) SecuredSession
+                .unwrap(getSourceDirectory().getSession());
             try {
-                initialize(sqlSession);
+                initialize(session);
                 initialized = true;
             } finally {
-                sqlSession.close();
+                session.close();
+            }
+        } finally {
+            try {
+                lc.logout();
+            } catch (LoginException e) {
+                throw new DirectoryException("Cannot logout from system");
             }
         }
-        return (SQLSession) getSourceDirectory().getSession();
     }
 
     /**

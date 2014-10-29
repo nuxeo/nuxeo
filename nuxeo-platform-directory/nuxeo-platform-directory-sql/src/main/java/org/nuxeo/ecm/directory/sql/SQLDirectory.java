@@ -44,6 +44,7 @@ import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryServiceImpl;
+import org.nuxeo.ecm.directory.SecuredSession;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.RuntimeService;
@@ -363,7 +364,7 @@ public class SQLDirectory extends AbstractDirectory {
         }
         SQLSession session = new SQLSession(this, config, managedSQLSession);
         addSession(session);
-        return session;
+        return SecuredSession.wrap(this,config.permissions,session);
     }
 
     protected synchronized void addSession(final SQLSession session)

@@ -21,29 +21,54 @@ package org.nuxeo.ecm.directory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.directory.Session.Right;
 
 /**
  * Common permission descriptor for all directory that use security check
- * 
+ *
  * @since 5.9.6
  */
 @XObject(value = "permission")
 public class PermissionDescriptor {
 
     @XNode("@name")
-    public String name;
+    public Right right;
 
     @XNodeList(value = "group", type = String[].class, componentType = String.class)
-    public String[] groups;
+    public String[] groups = {};
 
     @XNodeList(value = "user", type = String[].class, componentType = String.class)
-    public String[] users;
+    public String[] users = {};
 
+    @Override
     public PermissionDescriptor clone() {
         PermissionDescriptor clone = new PermissionDescriptor();
-        clone.name = name;
+        clone.right = right;
         clone.groups = groups;
         clone.users = users;
         return clone;
+    }
+
+    public boolean isAllowed(NuxeoPrincipal principal, Right tocheck) {
+        if (!right.equals(tocheck)) {
+            return false;
+        }
+        // checks users
+        final String user = principal.getName();
+        for (String other : users) {
+            if (user.equalsIgnoreCase(other)) {
+                return true;
+            }
+        }
+        // check groups
+        for (String each : principal.getGroups()) {
+            for (String other:groups) {
+                if (each.equalsIgnoreCase(other)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

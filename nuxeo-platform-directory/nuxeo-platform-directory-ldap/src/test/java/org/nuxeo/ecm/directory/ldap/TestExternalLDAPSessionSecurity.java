@@ -41,7 +41,7 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
-import org.nuxeo.ecm.platform.login.test.ClientLoginFeature.User;
+import org.nuxeo.ecm.platform.login.test.ClientLoginFeature.Identity;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -57,7 +57,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(ExternalLDAPDirectoryFeature.class)
 @LocalDeploy("org.nuxeo.ecm.directory.ldap.tests:ldap-directories-external-security.xml")
-@ClientLoginFeature.User(name=TestExternalLDAPSessionSecurity.READER_USER)
+@ClientLoginFeature.Identity(name=TestExternalLDAPSessionSecurity.READER_USER)
 public class TestExternalLDAPSessionSecurity {
 
     private static final String AN_EVERYONE_USER = "anEveryoneUser";
@@ -134,7 +134,7 @@ public class TestExternalLDAPSessionSecurity {
     }
 
     @Test
-    @User(name=SUPER_USER)
+    @Identity(name=SUPER_USER)
     public void superUserCanDeleteEntry() throws Exception {
         DocumentModel entry = userDirSession.getEntry("user1");
         assertNotNull(entry);
@@ -144,7 +144,7 @@ public class TestExternalLDAPSessionSecurity {
     }
 
     @Test
-    @User(name=SUPER_USER)
+    @Identity(name=SUPER_USER)
     public void superUserCanCreateEntry() throws Exception {
 
         Map<String, Object> map = new HashMap<String, Object>();
@@ -164,14 +164,14 @@ public class TestExternalLDAPSessionSecurity {
     }
 
     @Test
-    @User(name=UNAUTHORIZED_USER)
+    @Identity(name=UNAUTHORIZED_USER)
     public void unauthorizedUserCantGetEntry() throws Exception {
         DocumentModel entry = userDirSession.getEntry("Administrator");
         Assert.assertNull(entry);
     }
 
     @Test
-    @User(name=AN_EVERYONE_USER)
+    @Identity(name=AN_EVERYONE_USER)
     public void everyoneGroupCanGetEntry() throws Exception {
         DocumentModel entry = groupDirSession.getEntry("members");
         assertNotNull(entry);
@@ -179,7 +179,7 @@ public class TestExternalLDAPSessionSecurity {
     }
 
     @Test
-    @User(name=AN_EVERYONE_USER)
+    @Identity(name=AN_EVERYONE_USER)
     public void everyoneCanUpdateEntry() throws Exception {
         DocumentModel entry = groupDirSession.getEntry("members");
         assertNotNull(entry);

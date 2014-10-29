@@ -23,6 +23,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.security.auth.login.LoginContext;
+
 import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -84,39 +86,51 @@ public class SQLDirectoryFeature extends SimpleFeature {
     @Override
     public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method,
             Object test) throws Exception {
-        for (Directory dir : Framework.getService(DirectoryService.class)
-            .getDirectories()) {
-            Session session = dir.getSession();
-            try {
-                String field = session.getIdField();
-                Map<String, Serializable> filter = Collections.emptyMap();
-                savedContext.put(
-                        dir,
-                        new HashSet<String>(session
-                            .getProjection(filter, field)));
-            } finally {
-                session.close();
+        LoginContext lc = Framework.login();
+        try {
+            for (Directory dir : Framework.getService(DirectoryService.class)
+                .getDirectories()) {
+                Session session = dir.getSession();
+                try {
+                    String field = session.getIdField();
+                    Map<String, Serializable> filter = Collections.emptyMap();
+                    savedContext.put(
+                            dir,
+                            new HashSet<String>(session.getProjection(filter,
+                                    field)));
+                } finally {
+                    session.close();
+                }
             }
+        } finally {
+            lc.logout();
         }
     }
 
     @Override
     public void afterTeardown(FeaturesRunner runner) throws Exception {
-        for (Map.Entry<Directory, Set<String>> each : savedContext.entrySet()) {
-            Directory directory = each.getKey();
-            Session session = directory.getSession();
-            final Set<String> projection = each.getValue();
-            try {
-                String field = session.getIdField();
-                Map<String, Serializable> filter = Collections.emptyMap();
-                for (String id : session.getProjection(filter, field)) {
-                    if (!projection.contains(id)) {
-                        session.deleteEntry(id);
+        LoginContext lc = Framework.login();
+        try {
+            for (Map.Entry<Directory, Set<String>> each : savedContext
+                .entrySet()) {
+                Directory directory = each.getKey();
+                Session session = directory.getSession();
+                final Set<String> projection = each.getValue();
+                try {
+                    String field = session.getIdField();
+                    Map<String, Serializable> filter = Collections.emptyMap();
+                    for (String id : session.getProjection(filter, field)) {
+                        if (!projection.contains(id)) {
+                            session.deleteEntry(id);
+                        }
                     }
+                } finally {
+                    session.close();
                 }
-            } finally {
-                session.close();
             }
+        } finally {
+            lc.logout();
         }
+
     }
 }

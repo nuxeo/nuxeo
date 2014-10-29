@@ -26,23 +26,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Named;
-import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
+import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.DirectorySecurityException;
+import org.nuxeo.ecm.directory.SecuredSession;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
-import org.nuxeo.ecm.platform.login.test.ClientLoginFeature.User;
+import org.nuxeo.ecm.platform.login.test.ClientLoginFeature.Identity;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -54,9 +54,10 @@ import com.google.inject.Inject;
  * can be perform because the embedded server does not allow to write
  */
 @RunWith(FeaturesRunner.class)
-@Features(InternalLDAPDirectoryFeature.class)
+@Features({ ClientLoginFeature.class, InternalLDAPDirectoryFeature.class })
 @LocalDeploy("org.nuxeo.ecm.directory.ldap.tests:ldap-directories-internal-security.xml")
-@ClientLoginFeature.User(name=TestInternalLDAPSessionSecurity.READER_USER)
+@ClientLoginFeature.Identity(name = TestInternalLDAPSessionSecurity.READER_USER)
+@ClientLoginFeature.Opener(TestInternalLDAPSessionSecurity.Opener.class)
 public class TestInternalLDAPSessionSecurity {
 
     private static final String AN_EVERYONE_USER = "anEveryoneUser";
@@ -89,11 +90,27 @@ public class TestInternalLDAPSessionSecurity {
     @Named(SQLDirectoryFeature.GROUP_DIRECTORY_NAME)
     Directory groupDir;
 
-    @Before
-    public void setUp() {
+    public class Opener implements ClientLoginFeature.Listener {
+
+        @Override
+        public void onLogin(FeaturesRunner runner, FrameworkMethod method,
+                LoginContext context) {
+            open();
+        }
+
+        @Override
+        public void onLogout(FeaturesRunner runner, FrameworkMethod method,
+                LoginContext context) {
+            close();
+        }
+
+    }
+
+    public void open() {
         ((LDAPDirectory) userDir).setTestServer(embeddedLDAPserver);
         ((LDAPDirectory) groupDir).setTestServer(embeddedLDAPserver);
-        LDAPSession session = (LDAPSession) ((LDAPDirectory) userDir).getSession();
+        LDAPSession session = (LDAPSession) SecuredSession
+            .unwrap(((LDAPDirectory) userDir).getSession());
         try {
             DirContext ctx = session.getContext();
             for (String ldifFile : ldapFeature.getLdifFiles()) {
@@ -107,8 +124,7 @@ public class TestInternalLDAPSessionSecurity {
         groupDirSession = groupDir.getSession();
     }
 
-    @After
-    public void tearDown() throws NamingException {
+    public void close() {
         userDirSession.close();
         groupDirSession.close();
         if (embeddedLDAPserver != null) {
@@ -132,15 +148,14 @@ public class TestInternalLDAPSessionSecurity {
         assertEquals(1, entries.size());
     }
 
-    @Test
-    @User(name=UNAUTHORIZED_USER)
+    @Test(expected=DirectorySecurityException.class)
+    @Identity(name = UNAUTHORIZED_USER)
     public void unauthorizedUserCantGetEntry() throws Exception {
-        DocumentModel entry = userDirSession.getEntry("Administrator");
-        Assert.assertNull(entry);
+        userDirSession.getEntry("Administrator");
     }
 
     @Test
-    @User(name=AN_EVERYONE_USER)
+    @Identity(groups="everyone")
     public void everyoneGroupCanGetEntry() throws Exception {
         DocumentModel entry = groupDirSession.getEntry("members");
         assertNotNull(entry);

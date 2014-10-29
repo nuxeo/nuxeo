@@ -47,7 +47,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.storage.sql.ColumnSpec;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
@@ -65,7 +64,6 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.EntrySource;
 import org.nuxeo.ecm.directory.OperationNotAllowedException;
 import org.nuxeo.ecm.directory.PasswordHelper;
-import org.nuxeo.ecm.directory.PermissionDescriptor;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.directory.sql.filter.SQLComplexFilter;
@@ -119,6 +117,7 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     public SQLSession(SQLDirectory directory, SQLDirectoryDescriptor config,
             boolean managedSQLSession) throws DirectoryException {
+        super(directory);
         this.directory = directory;
         schemaName = config.getSchemaName();
         table = directory.getTable();
@@ -134,7 +133,6 @@ public class SQLSession extends BaseSession implements EntrySource {
         autoincrementIdField = config.isAutoincrementIdField();
         staticFilters = config.getStaticFilters();
         computeMultiTenantId = config.isComputeMultiTenantId();
-        permissions = config.permissions;
         acquireConnection();
     }
 
@@ -178,12 +176,8 @@ public class SQLSession extends BaseSession implements EntrySource {
     @Override
     public DocumentModel createEntry(Map<String, Object> fieldMap)
             throws ClientException {
-        
         if (isReadOnly()) {
             log.warn(READ_ONLY_VOCABULARY_WARN);
-            return null;
-        }
-        if(!isCurrentUserAllowed(SecurityConstants.WRITE)){
             return null;
         }
         Field schemaIdField = schemaFieldMap.get(idField);
@@ -326,10 +320,7 @@ public class SQLSession extends BaseSession implements EntrySource {
     @Override
     public DocumentModel getEntry(String id, boolean fetchReferences)
             throws DirectoryException {
-        if (isCurrentUserAllowed(SecurityConstants.READ)) {
-            return directory.getCache().getEntry(id, this, fetchReferences);
-        }
-        return null;
+        return directory.getCache().getEntry(id, this, fetchReferences);
     }
 
     protected String addFilterWhereClause(String whereClause)
@@ -466,10 +457,6 @@ public class SQLSession extends BaseSession implements EntrySource {
     @Override
     public void updateEntry(DocumentModel docModel) throws ClientException {
 
-        if(!isCurrentUserAllowed(SecurityConstants.WRITE)){
-            return ;
-        }
-        
         if (isReadOnly()) {
             log.warn(READ_ONLY_VOCABULARY_WARN);
             return;
@@ -596,10 +583,6 @@ public class SQLSession extends BaseSession implements EntrySource {
     public void deleteEntry(String id) throws ClientException {
         acquireConnection();
 
-        if(!isCurrentUserAllowed(SecurityConstants.WRITE)){
-            return;
-        }
-        
         if (isReadOnly()) {
             log.warn(READ_ONLY_VOCABULARY_WARN);
             return;
@@ -772,10 +755,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences, int limit, int offset)
             throws ClientException, DirectoryException {
-        
-        if(!isCurrentUserAllowed(SecurityConstants.READ)){
-            return new DocumentModelListImpl();
-        }
+
         acquireConnection();
         Map<String, Object> filterMap = new LinkedHashMap<String, Object>(
                 filter);

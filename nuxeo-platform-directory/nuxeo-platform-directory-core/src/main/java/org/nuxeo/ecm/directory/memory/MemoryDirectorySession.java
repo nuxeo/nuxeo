@@ -52,10 +52,12 @@ public class MemoryDirectorySession extends BaseSession {
     protected final Map<String, Map<String, Object>> data;
 
     public MemoryDirectorySession(MemoryDirectory directory) {
+        super(directory);
         this.directory = directory;
         data = Collections.synchronizedMap(new LinkedHashMap<String, Map<String, Object>>());
     }
 
+    @Override
     public boolean authenticate(String username, String password)
             throws DirectoryException {
         Map<String, Object> map = data.get(username);
@@ -69,6 +71,7 @@ public class MemoryDirectorySession extends BaseSession {
         return expected.equals(password);
     }
 
+    @Override
     public void close() {
     }
 
@@ -80,6 +83,7 @@ public class MemoryDirectorySession extends BaseSession {
         throw new RuntimeException("Not implemented");
     }
 
+    @Override
     public DocumentModel createEntry(Map<String, Object> fieldMap)
             throws DirectoryException {
         if (isReadOnly()) {
@@ -109,10 +113,12 @@ public class MemoryDirectorySession extends BaseSession {
         return getEntry(id);
     }
 
+    @Override
     public DocumentModel getEntry(String id) throws DirectoryException {
         return getEntry(id, true);
     }
 
+    @Override
     public DocumentModel getEntry(String id, boolean fetchReferences)
             throws DirectoryException {
         // XXX no references here
@@ -129,6 +135,7 @@ public class MemoryDirectorySession extends BaseSession {
         }
     }
 
+    @Override
     public void updateEntry(DocumentModel docModel) throws DirectoryException {
         String id = docModel.getId();
         DataModel dataModel;
@@ -163,6 +170,7 @@ public class MemoryDirectorySession extends BaseSession {
         dataModel.getDirtyFields().clear();
     }
 
+    @Override
     public DocumentModelList getEntries() throws DirectoryException {
         DocumentModelList list = new DocumentModelListImpl();
         for (String id : data.keySet()) {
@@ -171,53 +179,64 @@ public class MemoryDirectorySession extends BaseSession {
         return list;
     }
 
+    @Override
     public void deleteEntry(String id) throws DirectoryException {
         data.remove(id);
     }
 
     // given our storage model this doesn't even make sense, as id field is
     // unique
+    @Override
     public void deleteEntry(String id, Map<String, String> map)
             throws DirectoryException {
         throw new DirectoryException("Not implemented");
     }
 
+    @Override
     public void deleteEntry(DocumentModel docModel) throws DirectoryException {
         deleteEntry(docModel.getId());
     }
 
+    @Override
     public String getIdField() {
         return directory.idField;
     }
 
+    @Override
     public String getPasswordField() {
         return directory.passwordField;
     }
 
+    @Override
     public boolean isAuthenticating() {
         return directory.passwordField != null;
     }
 
+    @Override
     public boolean isReadOnly() {
         return directory.isReadOnly();
     }
 
+    @Override
     public DocumentModelList query(Map<String, Serializable> filter)
             throws DirectoryException {
         return query(filter, Collections.<String> emptySet());
     }
 
+    @Override
     public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext) throws DirectoryException {
         return query(filter, fulltext, Collections.<String, String> emptyMap());
     }
 
+    @Override
     public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext, Map<String, String> orderBy)
             throws DirectoryException {
         return query(filter, fulltext, orderBy, true);
     }
 
+    @Override
     public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences) throws DirectoryException {
@@ -266,12 +285,14 @@ public class MemoryDirectorySession extends BaseSession {
         return results;
     }
 
+    @Override
     public List<String> getProjection(Map<String, Serializable> filter,
             String columnName) throws DirectoryException {
         return getProjection(filter, Collections.<String> emptySet(),
                 columnName);
     }
 
+    @Override
     public List<String> getProjection(Map<String, Serializable> filter,
             Set<String> fulltext, String columnName) throws DirectoryException {
         DocumentModelList l = query(filter, fulltext);
@@ -292,12 +313,14 @@ public class MemoryDirectorySession extends BaseSession {
         return results;
     }
 
+    @Override
     public DocumentModel createEntry(DocumentModel entry)
             throws ClientException {
         Map<String, Object> fieldMap = entry.getProperties(directory.schemaName);
         return createEntry(fieldMap);
     }
 
+    @Override
     public boolean hasEntry(String id) throws ClientException {
         return data.containsKey(id);
     }

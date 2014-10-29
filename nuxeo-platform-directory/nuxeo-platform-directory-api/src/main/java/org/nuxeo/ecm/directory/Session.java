@@ -40,6 +40,18 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 
 public interface Session {
 
+    enum Right {
+        Read,
+        Write
+    }
+
+    /**
+     * Checks if rights is allowed
+     *
+     * @since 5.9.6
+     */
+    boolean isAllowed(Right right);
+
     /**
      * Retrieves a directory entry using its id.
      * <p>

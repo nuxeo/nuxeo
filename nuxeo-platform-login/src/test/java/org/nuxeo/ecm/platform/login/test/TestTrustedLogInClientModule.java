@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
-import org.nuxeo.ecm.platform.login.test.ClientLoginFeature.User;
+import org.nuxeo.ecm.platform.login.test.ClientLoginFeature.Identity;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -36,14 +36,14 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(ClientLoginFeature.class)
-@User(name = "dummyName")
+@Identity(name = "dummyName")
 public class TestTrustedLogInClientModule {
 
     @Inject
     ClientLoginFeature login;
 
     @Test
-    @User(name = "pfouh", administrator = true, anonymous = false, groups = { "administrators" })
+    @Identity(name = "pfouh", administrator = true, anonymous = false, groups = { "administrators" })
     public void canGetCurrentDummyPrincipal() throws LoginException {
         NuxeoPrincipal identity = ClientLoginModule.getCurrentPrincipal();
         Assert.assertEquals("pfouh", identity.getName());
