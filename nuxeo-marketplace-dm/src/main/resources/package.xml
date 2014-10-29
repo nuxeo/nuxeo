@@ -30,6 +30,7 @@
   <dependencies>
     <package>nuxeo-dam</package>
     <package>nuxeo-virtualnavigation</package>
+    <package>nuxeo-faceted-search</package>
     <package>nuxeo-imap-connector</package>
     <package>nuxeo-diff</package>
     <package>nuxeo-opensocial</package>
