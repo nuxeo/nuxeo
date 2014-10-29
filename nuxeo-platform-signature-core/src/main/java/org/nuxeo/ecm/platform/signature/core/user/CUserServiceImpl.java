@@ -46,11 +46,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Base implementation of the user certificate service.
  *
- *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- *
  */
-public class CUserServiceImpl  extends DefaultComponent implements CUserService {
+public class CUserServiceImpl extends DefaultComponent implements CUserService {
 
     private static final Log LOG = LogFactory.getLog(CUserServiceImpl.class);
 
@@ -74,7 +72,6 @@ public class CUserServiceImpl  extends DefaultComponent implements CUserService 
      * Configurable organizational unit name
      */
     protected String organizationalUnit;
-
 
     @Override
     public UserInfo getUserInfo(DocumentModel userModel) throws CertException {
@@ -107,8 +104,7 @@ public class CUserServiceImpl  extends DefaultComponent implements CUserService 
     public KeyStore getUserKeystore(String userID, String userKeystorePassword)
             throws CertException, ClientException {
         KeyStore keystore = null;
-        Session session = getDirectoryService().open(
-                CERTIFICATE_DIRECTORY_NAME);
+        Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME);
         try {
             DocumentModel entry = session.getEntry(userID);
             if (entry != null) {
@@ -136,13 +132,13 @@ public class CUserServiceImpl  extends DefaultComponent implements CUserService 
         // create an entry in the directory
         String userID = (String) user.getPropertyValue("user:username");
 
-        Session session = getDirectoryService().open(
-                CERTIFICATE_DIRECTORY_NAME);
+        Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME);
 
-        // make sure that no certificates are associated with the current userid
-        boolean certificateExists= session.hasEntry(userID);
-        if(certificateExists){
-            throw new CertException(userID+" already has a certificate");
+        // make sure that no certificates are associated with the current
+        // userid
+        boolean certificateExists = session.hasEntry(userID);
+        if (certificateExists) {
+            throw new CertException(userID + " already has a certificate");
         }
 
         LOG.info("Starting certificate generation for: " + userID);
@@ -211,10 +207,9 @@ public class CUserServiceImpl  extends DefaultComponent implements CUserService 
         return certificate;
     }
 
-
     @Override
     public byte[] getRootCertificateData() throws ClientException {
-        byte[] certificateData= getRootService().getRootPublicCertificate();
+        byte[] certificateData = getRootService().getRootPublicCertificate();
         return certificateData;
     }
 
@@ -248,16 +243,15 @@ public class CUserServiceImpl  extends DefaultComponent implements CUserService 
         }
     }
 
-
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (contribution instanceof CUserDescriptor) {
             CUserDescriptor desc = (CUserDescriptor) contribution;
-            countryCode=desc.getCountryCode();
-            organization=desc.getOrganization();
-            organizationalUnit=desc.getOrganizationalUnit();
+            countryCode = desc.getCountryCode();
+            organization = desc.getOrganization();
+            organizationalUnit = desc.getOrganizationalUnit();
         }
     }
 
