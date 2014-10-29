@@ -41,6 +41,7 @@ author: lkemen@nuxeo.com
   border: none; }
 
 .documentTitle {
+  display: inline-block;
   max-width: 25em;
   overflow: hidden;
   text-overflow: ellipsis;

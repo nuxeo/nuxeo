@@ -22,13 +22,16 @@ author: lkemen@nuxeo.com
   min-width: 20em;
   padding: 1.2em .75em }
 
-.nxMainContainer .tabsContent {
+.content .tabsContent {
   background: none #fff;
-  margin: 1px 1px 0;
+  margin: .1em;
   padding: 2em 1.5em }
 
 .tabsContent .tabsContent {
   padding: 1em 0 }
+
+.userClipboard .tabsContent {
+  padding: .8em .5em }
 
 /* =List of available servers  */
 .serverChoice {
@@ -57,6 +60,9 @@ author: lkemen@nuxeo.com
 .userClipboard {
   margin: 0 0 1.5em }
 
+.dropzone .userClipboard {
+  margin: -2px }
+
 .userClipboardContent {
   background-color: #fff;
   margin: 0;
@@ -71,26 +77,40 @@ author: lkemen@nuxeo.com
   border-radius: 3px }
 
 #clipboardCopy {
+  font-weight: bold;
   padding: .3em }
 
-.clipboardFunctions {
+.userClipboardContent .rf-ulst .smallIcon {
+  height: 13px;
+  padding-top: 0.3em;
+  vertical-align: top;
+  width: 13px }
+
+.userClipboardContent .rf-ulst-itm a {
+  display: inline-block;
+  white-space: normal;
+  word-break: break-all }
+
+.userClipboardContent .rf-ulst-itm .cell {
+  white-space: nowrap }
+
+.clipboardFunctions .rf-ulst-itm:first-of-type {
   border-width: 2px;
   border-style: solid none none;
   border-color:"neutral.lighter (__FLAVOR__ border)";
   margin-top: .5em;
   padding-top: .9em }
 
-.clipboardFunction {
-  padding: .2em }
-
 .clipboardFunction a,
 .clipboardFunction a:link,
 .clipboardFunction a:visited {
   color: "gray.medium (__FLAVOR__ color)" }
 
-.clipboardFunction a:hover,
-.clipboardFunction a:active {
+.column:hover .clipboardFunction a {
   color: "link (__FLAVOR__ color)" }
+
+.column:hover .clipboardFunction a:hover {
+  color: "link.hover (__FLAVOR__ color)" }
 
 .clipboardRemoveItem {
   bottom: 2px;

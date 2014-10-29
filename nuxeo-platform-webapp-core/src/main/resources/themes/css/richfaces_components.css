@@ -14,9 +14,17 @@ button, keygen, isindex, legend, a {
   font-family: "default (__FLAVOR__ font)" }
 
 /* =Tree */
+
+.menu .floatR {
+  margin-bottom: -2em }
+
 .menu dl,
 .menu dd {
   margin: 0 }
+
+.menu dl {
+  margin-left: -.2em;
+  display: inline-block }
 
 .column > .menu {
   background-color: #fff;
@@ -28,6 +36,7 @@ a.treeLink:link,
 a.treeLink:visited {
   border: 1px solid transparent;
   border-radius: 3px;
+  display: inline-block;
   padding: 0 .3em .1em;
   font-size: .9em;
   font-weight: normal }
@@ -39,14 +48,16 @@ a.treeLink:hover,
   text-decoration: none }
 
 .rf-trn-lbl {
-  padding: 0 0 0 1px }
+  padding: 0 }
 
 .rf-trn-lbl div {
   display: inline-block }
 
 .rf-trn-ico {
-  height: 13px;
-  width: 13px }
+  height: 12px;
+  padding-top: 0.3em;
+  vertical-align: top;
+  width: 12px }
 
 .rf-trn-hnd,
 .rf-trn-hnd-ldn-fct {
@@ -56,24 +67,28 @@ a.treeLink:hover,
 
 .rf-trn-hnd-exp,
 .rf-trn-hnd-colps {
-  background: #fff url("${basePath}/icons/arrow_unfolded.gif") no-repeat left center;
+  background: #fff url("${basePath}/icons/arrow_unfolded.gif") no-repeat scroll center center;
   display: inline-block;
   height: 16px;
+  vertical-align: top;
   width: 16px }
 
 .rf-trn-hnd-colps {
-  background: #fff url("${basePath}/icons/arrow_folded.gif") no-repeat left center; }
+  background: #fff url("${basePath}/icons/arrow_folded.gif") no-repeat scroll center 2px }
 
 .nx-no-trn-ico .rf-trn-ico {
-  display: none;
-}
+  display: none }
 
 .rf-trn {
   background: transparent url("${basePath}/img/tree_line.png") repeat-y 0 0 }
 
+.rf-tr-nd-exp .rf-trn {
+  background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
+  white-space: nowrap;
+  overflow: visible }
+
 .rf-tr-nd .rf-tr-nd {
-  margin-left: 12px;
-  background: none }
+  margin-left: 12px }
 
 .rf-trn-sel {
   background: none }
@@ -82,10 +97,14 @@ a.treeLink:hover,
 .clipboardFunction img {
   vertical-align: middle }
 
-.rf-trn,
-.rf-trn span,
 .rf-trn a.treeLink {
+  line-height: normal;
   white-space: normal }
+
+.rf-trn-cnt {
+  max-width: 85%;
+  white-space: nowrap;
+  word-break: break-all }
 
 .treeNodeHighlightedClass {
   text-decoration: none }
