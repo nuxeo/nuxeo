@@ -76,6 +76,7 @@ public class TestConfig extends AbstractCommandTest {
         configurationGenerator = new ConfigurationGenerator();
         assertTrue(configurationGenerator.init());
         configurationGenerator.addTemplate("oldtemplate");
+        configurationGenerator.addTemplate("oldtemplate1,oldtemplate2");
     }
 
     @Override
@@ -90,6 +91,12 @@ public class TestConfig extends AbstractCommandTest {
         writer.end();
         writer.start("config");
         writer.attr("rmtemplate", "oldtemplate");
+        writer.end();
+        writer.start("config");
+        writer.attr("addtemplate", "newtemplate1,newtemplate2");
+        writer.end();
+        writer.start("config");
+        writer.attr("rmtemplate", "oldtemplate1,oldtemplate2");
         writer.end();
         writer.start("config");
         writer.attr("set", "test.property=some.value");

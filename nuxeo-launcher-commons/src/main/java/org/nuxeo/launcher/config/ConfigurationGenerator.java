@@ -79,6 +79,11 @@ import freemarker.template.TemplateException;
 public class ConfigurationGenerator {
 
     /**
+     * @since 5.9.6
+     */
+    public static final String TEMPLATE_SEPARATOR = ",";
+
+    /**
      * @since 5.7
      */
     public static final String[] COMPLIANT_JAVA_VERSIONS = new String[] { "1.7" };
@@ -788,7 +793,8 @@ public class ConfigurationGenerator {
     private List<File> includeTemplates(String templatesList)
             throws IOException {
         List<File> orderedTemplates = new ArrayList<>();
-        StringTokenizer st = new StringTokenizer(templatesList, ",");
+        StringTokenizer st = new StringTokenizer(templatesList,
+                TEMPLATE_SEPARATOR);
         while (st.hasMoreTokens()) {
             String nextToken = st.nextToken();
             File chosenTemplate = new File(nextToken);
@@ -1460,7 +1466,7 @@ public class ConfigurationGenerator {
             currentDBTemplate = extractDatabaseTemplateName();
         }
         List<String> templatesList = new ArrayList<>();
-        templatesList.addAll(Arrays.asList(templates.split(",")));
+        templatesList.addAll(Arrays.asList(templates.split(TEMPLATE_SEPARATOR)));
         int dbIdx = templatesList.indexOf(currentDBTemplate);
         if (dbIdx < 0) {
             // current db template is implicit => override it
@@ -1469,7 +1475,7 @@ public class ConfigurationGenerator {
             // current db template is explicit => replace it
             templatesList.set(dbIdx, dbTemplate);
         }
-        return StringUtils.join(templatesList, ",");
+        return StringUtils.join(templatesList, TEMPLATE_SEPARATOR);
     }
 
     /**
@@ -1532,43 +1538,48 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Add a template to the {@link #PARAM_TEMPLATES_NAME} list if not already
+     * Add template(s) to the {@link #PARAM_TEMPLATES_NAME} list if not already
      * present
      *
-     * @param template Template to add
+     * @param templatesToAdd Comma separated templates to add
      * @throws ConfigurationException
      * @since 5.5
      */
-    public void addTemplate(String template) throws ConfigurationException {
-        HashMap<String, String> newParametersToSave = new HashMap<>();
-        String oldTemplates = userConfig.getProperty(PARAM_TEMPLATES_NAME);
-        String[] oldTemplatesSplit = oldTemplates.split(",");
-        if (!Arrays.asList(oldTemplatesSplit).contains(template)) {
-            String newTemplates = oldTemplates
-                    + (oldTemplates.length() > 0 ? "," : "") + template;
-            newParametersToSave.put(PARAM_TEMPLATES_NAME, newTemplates);
-            saveFilteredConfiguration(newParametersToSave);
-            changeTemplates(newTemplates);
+    public void addTemplate(String templatesToAdd)
+            throws ConfigurationException {
+        String currentTemplatesStr = userConfig.getProperty(PARAM_TEMPLATES_NAME);
+        List<String> templatesList = new ArrayList<>();
+        templatesList.addAll(Arrays.asList(currentTemplatesStr.split(TEMPLATE_SEPARATOR)));
+        List<String> templatesToAddList = Arrays.asList(templatesToAdd.split(TEMPLATE_SEPARATOR));
+        if (templatesList.addAll(templatesToAddList)) {
+            String newTemplatesStr = StringUtils.join(templatesList,
+                    TEMPLATE_SEPARATOR);
+            HashMap<String, String> parametersToSave = new HashMap<>();
+            parametersToSave.put(PARAM_TEMPLATES_NAME, newTemplatesStr);
+            saveFilteredConfiguration(parametersToSave);
+            changeTemplates(newTemplatesStr);
         }
     }
 
     /**
-     * Remove a template from the {@link #PARAM_TEMPLATES_NAME} list
+     * Remove template(s) from the {@link #PARAM_TEMPLATES_NAME} list
      *
-     * @param template
+     * @param templates Comma separated templates to remove
      * @throws ConfigurationException
      * @since 5.5
      */
-    public void rmTemplate(String template) throws ConfigurationException {
-        String oldTemplates = userConfig.getProperty(PARAM_TEMPLATES_NAME);
+    public void rmTemplate(String templatesToRm) throws ConfigurationException {
+        String currentTemplatesStr = userConfig.getProperty(PARAM_TEMPLATES_NAME);
         List<String> templatesList = new ArrayList<>();
-        templatesList.addAll(Arrays.asList(oldTemplates.split(",")));
-        if (templatesList.remove(template)) {
-            String newTemplates = StringUtils.join(templatesList, ",");
-            HashMap<String, String> newParametersToSave = new HashMap<>();
-            newParametersToSave.put(PARAM_TEMPLATES_NAME, newTemplates);
-            saveFilteredConfiguration(newParametersToSave);
-            changeTemplates(newTemplates);
+        templatesList.addAll(Arrays.asList(currentTemplatesStr.split(TEMPLATE_SEPARATOR)));
+        List<String> templatesToRmList = Arrays.asList(templatesToRm.split(TEMPLATE_SEPARATOR));
+        if (templatesList.removeAll(templatesToRmList)) {
+            String newTemplatesStr = StringUtils.join(templatesList,
+                    TEMPLATE_SEPARATOR);
+            HashMap<String, String> parametersToSave = new HashMap<>();
+            parametersToSave.put(PARAM_TEMPLATES_NAME, newTemplatesStr);
+            saveFilteredConfiguration(parametersToSave);
+            changeTemplates(newTemplatesStr);
         }
     }
 
