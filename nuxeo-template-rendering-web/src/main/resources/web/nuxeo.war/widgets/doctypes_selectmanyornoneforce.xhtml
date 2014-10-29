@@ -22,7 +22,7 @@
 
 
   <c:if test="#{widget.mode == 'edit' }">
-    <h:selectManyListbox value="#{field_0}"
+    <h:selectManyListbox value="#{field_0}" collectionType="java.util.ArrayList"
       styleClass="#{widget.properties['styleClass']}"
       required="#{widget.properties['required']}"
       id="#{widget.id}" size="5">
