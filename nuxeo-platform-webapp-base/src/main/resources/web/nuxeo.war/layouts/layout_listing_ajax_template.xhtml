@@ -47,7 +47,7 @@
                 <f:ajax event="click"
                   execute="@this"
                   listener="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, documents.selected)}"
-                  render="#{formId}_buttons:ajax_selection_buttons" />
+                  render="#{nxu:componentAbsoluteId(component, 'ajax_selection_buttons')}" />
               </h:selectBooleanCheckbox>
             </c:when>
             <c:when test="#{layoutColumn.properties.isListingSelectionBoxWithCurrentDocument}">
@@ -59,7 +59,7 @@
                 <f:ajax event="click"
                   execute="@this"
                   listener="#{documentListingActions.checkCurrentDocAndProcessSelectPage(contentView.name, contentView.selectionListName, documents.selected, currentDocument.ref)}"
-                  render="#{formId}_buttons:ajax_selection_buttons" />
+                  render="#{nxu:componentAbsoluteId(component, 'ajax_selection_buttons')}" />
               </h:selectBooleanCheckbox>
             </c:when>
             <c:when test="#{layoutColumn.properties.useFirstWidgetLabelAsColumnHeader}">

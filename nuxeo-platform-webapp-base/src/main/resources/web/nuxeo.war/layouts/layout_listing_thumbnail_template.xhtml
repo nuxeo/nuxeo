@@ -164,7 +164,7 @@
           value="#{messages['label.search.select.all']}">
           <nxu:actionListenerMethod value="#{documents.setSelected(true)}" />
           <nxu:actionListenerMethod value="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, true)}" />
-          <f:ajax execute="@this" render="@this #{layoutColumn.widgets[0].name}_deselectAll #{formId}_buttons:ajax_selection_buttons" />
+          <f:ajax execute="@this" render="@this #{layoutColumn.widgets[0].name}_deselectAll #{nxu:componentAbsoluteId(component, 'ajax_selection_buttons')}" />
         </h:commandButton>
         <h:commandButton
           id="#{layoutColumn.widgets[0].name}_deselectAll"
@@ -173,7 +173,7 @@
           value="#{messages['label.search.deselect.all']}">
           <nxu:actionListenerMethod value="#{documents.setSelected(false)}" />
           <nxu:actionListenerMethod value="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, false)}" />
-          <f:ajax execute="@this" render="@this #{layoutColumn.widgets[0].name}_selectAll #{formId}_buttons:ajax_selection_buttons" />
+          <f:ajax execute="@this" render="@this #{layoutColumn.widgets[0].name}_selectAll #{nxu:componentAbsoluteId(component, 'ajax_selection_buttons')}" />
         </h:commandButton>
       </a4j:outputPanel>
     </div>
