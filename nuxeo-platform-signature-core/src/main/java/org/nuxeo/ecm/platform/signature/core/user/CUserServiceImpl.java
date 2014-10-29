@@ -23,6 +23,9 @@ import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Base64;
@@ -103,67 +106,106 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
     @Override
     public KeyStore getUserKeystore(String userID, String userKeystorePassword)
             throws CertException, ClientException {
-        KeyStore keystore = null;
-        Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME);
+        // Log in as system user
+        LoginContext lc;
         try {
-            DocumentModel entry = session.getEntry(userID);
-            if (entry != null) {
-                String keystore64Encoded = (String) entry.getPropertyValue("cert:keystore");
-                byte[] keystoreBytes = Base64.decode(keystore64Encoded);
-                ByteArrayInputStream byteIS = new ByteArrayInputStream(
-                        keystoreBytes);
-                keystore = getCertService().getKeyStore(byteIS,
-                        userKeystorePassword);
-            } else {
-                throw new CertException("No directory entry for " + userID);
+            lc = Framework.login();
+        } catch (LoginException e) {
+            throw new ClientException("Cannot log in as system user", e);
+        }
+        try {
+            // Open directory session
+            final Session session = getDirectoryService().open(
+                    CERTIFICATE_DIRECTORY_NAME);
+            try {
+                KeyStore keystore = null;
+                DocumentModel entry = session.getEntry(userID);
+                if (entry != null) {
+                    String keystore64Encoded = (String) entry.getPropertyValue("cert:keystore");
+                    byte[] keystoreBytes = Base64.decode(keystore64Encoded);
+                    ByteArrayInputStream byteIS = new ByteArrayInputStream(
+                            keystoreBytes);
+                    keystore = getCertService().getKeyStore(byteIS,
+                            userKeystorePassword);
+                } else {
+                    throw new CertException("No directory entry for " + userID);
+                }
+                return keystore;
+            } finally {
+                session.close();
             }
         } finally {
-            session.close();
+            try {
+                // Login context may be null in tests
+                if (lc != null) {
+                    lc.logout();
+                }
+            } catch (LoginException e) {
+                throw new ClientException("Cannot log out system user", e);
+            }
         }
-        return keystore;
     }
 
     @Override
     public DocumentModel createCertificate(DocumentModel user,
             String userKeyPassword) throws CertException, ClientException {
-        String userKeystorePassword = userKeyPassword;
-        DocumentModel certificate = null;
-
-        // create an entry in the directory
-        String userID = (String) user.getPropertyValue("user:username");
-
-        Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME);
-
-        // make sure that no certificates are associated with the current
-        // userid
-        boolean certificateExists = session.hasEntry(userID);
-        if (certificateExists) {
-            throw new CertException(userID + " already has a certificate");
-        }
-
-        LOG.info("Starting certificate generation for: " + userID);
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("userid", userID);
-
-        // add a keystore to a directory entry
-        KeyStore keystore = getCertService().initializeUser(getUserInfo(user),
-                userKeyPassword);
-        ByteArrayOutputStream byteOS = new ByteArrayOutputStream();
-        getCertService().storeCertificate(keystore, byteOS,
-                userKeystorePassword);
-        String keystore64Encoded = Base64.encodeBytes(byteOS.toByteArray());
-        map.put("keystore", keystore64Encoded);
-        map.put("certificate", getUserCertInfo(keystore, user));
-        map.put("keypassword", userKeyPassword);
+        // Log in as system user
+        LoginContext lc;
         try {
-            certificate = session.createEntry(map);
-        } catch (DirectoryException e) {
-            LOG.error(e);
-            throw new CertException(e);
-        } finally {
-            session.close();
+            lc = Framework.login();
+        } catch (LoginException e) {
+            throw new ClientException("Cannot log in as system user", e);
         }
-        return certificate;
+        try {
+            Session session = getDirectoryService().open(
+                    CERTIFICATE_DIRECTORY_NAME);
+            try {
+                String userKeystorePassword = userKeyPassword;
+                DocumentModel certificate = null;
+
+                // create an entry in the directory
+                String userID = (String) user.getPropertyValue("user:username");
+
+                // make sure that no certificates are associated with the
+                // current userid
+                boolean certificateExists = session.hasEntry(userID);
+                if (certificateExists) {
+                    throw new CertException(userID
+                            + " already has a certificate");
+                }
+
+                LOG.info("Starting certificate generation for: " + userID);
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("userid", userID);
+
+                // add a keystore to a directory entry
+                KeyStore keystore = getCertService().initializeUser(
+                        getUserInfo(user), userKeyPassword);
+                ByteArrayOutputStream byteOS = new ByteArrayOutputStream();
+                getCertService().storeCertificate(keystore, byteOS,
+                        userKeystorePassword);
+                String keystore64Encoded = Base64.encodeBytes(byteOS.toByteArray());
+                map.put("keystore", keystore64Encoded);
+                map.put("certificate", getUserCertInfo(keystore, user));
+                map.put("keypassword", userKeyPassword);
+                certificate = session.createEntry(map);
+                return certificate;
+            } catch (DirectoryException e) {
+                LOG.error(e);
+                throw new CertException(e);
+            } finally {
+                session.close();
+            }
+        } finally {
+            try {
+                // Login context may be null in tests
+                if (lc != null) {
+                    lc.logout();
+                }
+            } catch (LoginException e) {
+                throw new ClientException("Cannot log out system user", e);
+            }
+        }
     }
 
     protected static DirectoryService getDirectoryService()
@@ -202,9 +244,33 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
 
     @Override
     public DocumentModel getCertificate(String userID) throws ClientException {
-        Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME);
-        DocumentModel certificate = session.getEntry(userID);
-        return certificate;
+        // Log in as system user
+        LoginContext lc;
+        try {
+            lc = Framework.login();
+        } catch (LoginException e) {
+            throw new ClientException("Cannot log in as system user", e);
+        }
+        try {
+            // Open directory session
+            final Session session = getDirectoryService().open(
+                    CERTIFICATE_DIRECTORY_NAME);
+            try {
+                DocumentModel certificate = session.getEntry(userID);
+                return certificate;
+            } finally {
+                session.close();
+            }
+        } finally {
+            try {
+                // Login context may be null in tests
+                if (lc != null) {
+                    lc.logout();
+                }
+            } catch (LoginException e) {
+                throw new ClientException("Cannot log out system user", e);
+            }
+        }
     }
 
     @Override
@@ -216,30 +282,66 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
     @Override
     public boolean hasCertificate(String userID) throws CertException,
             ClientException {
-        DocumentModel entry;
-        Session sqlSession = getDirectoryService().open(
-                CERTIFICATE_DIRECTORY_NAME);
+        // Log in as system user
+        LoginContext lc;
         try {
-            entry = sqlSession.getEntry(userID);
-        } finally {
-            sqlSession.close();
+            lc = Framework.login();
+        } catch (LoginException e) {
+            throw new ClientException("Cannot log in as system user", e);
         }
-        return entry != null;
+        try {
+            // Open directory session
+            final Session session = getDirectoryService().open(
+                    CERTIFICATE_DIRECTORY_NAME);
+            try {
+                return session.getEntry(userID) != null;
+            } finally {
+                session.close();
+            }
+        } finally {
+            try {
+                // Login context may be null in tests
+                if (lc != null) {
+                    lc.logout();
+                }
+            } catch (LoginException e) {
+                throw new ClientException("Cannot log out system user", e);
+            }
+        }
     }
 
     @Override
     public void deleteCertificate(String userID) throws CertException,
             ClientException {
-        Session sqlSession = getDirectoryService().open(
-                CERTIFICATE_DIRECTORY_NAME);
+        // Log in as system user
+        LoginContext lc;
         try {
-            DocumentModel certEntry = sqlSession.getEntry(userID);
-            sqlSession.deleteEntry(certEntry);
-            assert (null == sqlSession.getEntry(userID));
-        } catch (ClientException e) {
-            throw new CertException(e);
+            lc = Framework.login();
+        } catch (LoginException e) {
+            throw new ClientException("Cannot log in as system user", e);
+        }
+        try {
+            // Open directory session
+            final Session session = getDirectoryService().open(
+                    CERTIFICATE_DIRECTORY_NAME);
+            try {
+                DocumentModel certEntry = session.getEntry(userID);
+                session.deleteEntry(certEntry);
+                assert (null == session.getEntry(userID));
+            } catch (ClientException e) {
+                throw new CertException(e);
+            } finally {
+                session.close();
+            }
         } finally {
-            sqlSession.close();
+            try {
+                // Login context may be null in tests
+                if (lc != null) {
+                    lc.logout();
+                }
+            } catch (LoginException e) {
+                throw new ClientException("Cannot log out system user", e);
+            }
         }
     }
 
