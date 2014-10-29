@@ -25,6 +25,7 @@ import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATE_DB
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -273,6 +274,9 @@ public class SetupWizardActionBean implements Serializable {
             if (entry.getValue() instanceof Boolean) {
                 entry.setValue(((Boolean) entry.getValue()).toString());
             }
+            if(entry.getValue() instanceof BigDecimal){
+                entry.setValue(entry.getValue().toString());
+            }
         }
 
         // manage httpProxy settings (setting null is not accepted)
@@ -345,7 +349,7 @@ public class SetupWizardActionBean implements Serializable {
         String dbUser = (String) dbUserComp.getLocalValue();
         String dbPwd = (String) dbPwdComp.getLocalValue();
         String dbHost = (String) dbHostComp.getLocalValue();
-        Long dbPortLong = (Long) dbPortComp.getLocalValue();
+        Long dbPortLong = ((BigDecimal) dbPortComp.getLocalValue()).longValue();
         String dbPort = dbPortLong.toString();
 
         if (StringUtils.isEmpty(dbPwd)) {
