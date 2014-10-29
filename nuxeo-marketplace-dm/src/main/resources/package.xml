@@ -8,6 +8,7 @@
       <ul>
         <li>nuxeo-dam,</li>
         <li>nuxeo-virtualnavigation,</li>
+        <li>nuxeo-faceted-search,</li>
         <li>nuxeo-imap-connector,</li>
         <li>nuxeo-diff,</li>
         <li>nuxeo-opensocial</li>
