@@ -351,7 +351,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   left: 0;
   margin: 0;
   overflow: scroll;
-  padding: 1.4em 4em;
+  padding: 1.4em 5em;
   position: absolute;
   right: 0;
   top: 0 }
@@ -388,10 +388,10 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   left: 45%;
   top: 45% }
 
-.infoViewLeft #nxw_infoViewAudioPlayer {
-  left: 2em;
+.infoViewLeft .infoViewAudioContainer {
+  left: 5em;
   position: absolute;
-  right: 2em;
+  right: 5em;
   top: 50% }
 
 .infoViewRight {
@@ -487,3 +487,9 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   display: inline-block;
   height: 8em;
   width: 2em }
+
+.infoViewDocContainer .emptyResultBig {
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 43% }
