@@ -384,6 +384,7 @@ input.tinyButton {
   box-shadow: none;
   color: #fff;
   cursor: pointer;
+  margin: 0.5em 0 0;
   padding: 1em;
   text-transform: uppercase;
   width: 100% }
