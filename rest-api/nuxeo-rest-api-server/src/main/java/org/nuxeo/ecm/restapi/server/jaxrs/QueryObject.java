@@ -59,10 +59,6 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
 
     public static final String NXQL = "NXQL";
 
-    public static final String CMISQL = "CMISQL";
-
-    public static final String ESQL = "ESQL";
-
     public static final String QUERY = "query";
 
     public static final String PAGE_SIZE = "pageSize";
@@ -104,8 +100,6 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
         // Lang Path Enum Map
         langPathMap = new EnumMap<>(LangParams.class);
         langPathMap.put(LangParams.NXQL, NXQL);
-        langPathMap.put(LangParams.ESQL, ESQL);
-        langPathMap.put(LangParams.CMISQL, CMISQL);
     }
 
     @SuppressWarnings("unchecked")
@@ -240,11 +234,11 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
     }
 
     /**
-     * Perform query on the repository in specific language or specific
+     * Perform query on the repository in NXQL or specific
      * pageprovider name
      *
      * @param uriInfo            Query parameters
-     * @param langOrProviderName NXQL, CMISQL, ESQL, or specific provider name
+     * @param langOrProviderName NXQL or specific provider name
      * @return Document Listing
      */
     @GET
@@ -260,7 +254,7 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
     }
 
     public enum LangParams {
-        NXQL, CMISQL, ESQL
+        NXQL
     }
 
 }
