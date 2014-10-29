@@ -43,6 +43,7 @@ input[type="text"],
 input[type="password"],
 input[type="date"],
 textarea {
+  min-width: 4em;
   width: 100% }
 
 textarea {
