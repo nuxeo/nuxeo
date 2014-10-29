@@ -1,6 +1,6 @@
 <#escape x as x?xml>
 <?xml version="1.0"?>
-<component name="org.nuxeo.elasticsearch.index.defaultMarketPlaceContrib">
+<component name="org.nuxeo.elasticsearch.defaultConfig">
   <require>org.nuxeo.elasticsearch.ElasticSearchComponent</require>
 
 <#if "${elasticsearch.addressList}" == "">
@@ -19,8 +19,6 @@
     <elasticSearchRemote
       clusterName="${elasticsearch.clusterName}"
       addressList="${elasticsearch.addressList}"
-      indexNumberOfShards="${elasticsearch.indexNumberOfShards}"
-      indexNumberOfReplicas="${elasticsearch.indexNumberOfReplicas}"
       clientTransportSniff="false"
       clientTransportIgnoreClusterName="false"
       clientTransportPingTimeout="5s"
@@ -39,6 +37,10 @@
 
       <settings>
 {
+<#if "${elasticsearch.addressList}" != "">
+   "number_of_shards" : "${elasticsearch.indexNumberOfShards}",
+   "number_of_replicas" : "${elasticsearch.indexNumberOfReplicas}",
+</#if>
    "analysis" : {
       "filter" : {
          "en_stem_filter" : {
