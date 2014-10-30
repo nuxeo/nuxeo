@@ -440,6 +440,16 @@
       <artifactId>nuxeo-platform-preview</artifactId>
     </dependency>
 
+    <!-- Rendition -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-rendition-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-rendition-publisher</artifactId>
+    </dependency>
+
     <!-- Suggestion box -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
