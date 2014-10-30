@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.el.ELException;
+import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
@@ -63,6 +64,11 @@ import com.sun.faces.facelets.tag.jsf.ComponentSupport;
  * @since 5.4
  */
 public class AliasTagHandler extends ComponentHandler {
+
+    /**
+     * @since 6.0
+     */
+    public static String ANCHOR_ENABLED_VARIABLE = "nuxeoAliasAnchorEnabled";
 
     protected final TagAttribute cache;
 
@@ -139,11 +145,21 @@ public class AliasTagHandler extends ComponentHandler {
 
         // resolve the "anchor" attribute to decide whether variable should be
         // anchored in the tree as a UIAliasHolder
-        boolean createComponent = false;
-        if (anchor != null) {
-            createComponent = anchor.getBoolean(ctx);
-        }
+        boolean createComponent = isAnchored(ctx);
         applyAliasHandler(ctx, parent, alias, nextHandler, createComponent);
+    }
+
+    protected boolean isAnchored(FaceletContext ctx) {
+        ExpressionFactory eFactory = ctx.getExpressionFactory();
+        ValueExpression ve = eFactory.createValueExpression(ctx,
+                String.format("#{%s}", ANCHOR_ENABLED_VARIABLE), Boolean.class);
+        if (Boolean.TRUE.equals(ve.getValue(ctx))) {
+            return true;
+        }
+        if (anchor != null) {
+            return anchor.getBoolean(ctx);
+        }
+        return false;
     }
 
     protected void applyAliasHandler(FaceletContext ctx, UIComponent parent,

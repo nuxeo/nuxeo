@@ -486,7 +486,7 @@
         org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList
       </component-type>
       <handler-class>
-        org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler
+        org.nuxeo.ecm.platform.ui.web.binding.alias.AliasAnchorComponentHandler
       </handler-class>
     </component>
   </tag>
@@ -537,6 +537,9 @@
     <component>
       <component-type>javax.faces.HtmlDataTable</component-type>
       <renderer-type>javax.faces.Table</renderer-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.binding.alias.AliasAnchorComponentHandler
+      </handler-class>
     </component>
   </tag>
   <tag>
