@@ -89,7 +89,6 @@
     <module>nuxeo-platform-faceted-search</module>
     <module>nuxeo-platform-error-web</module>
     <module>nuxeo-platform-forms-layout-demo</module>
-    <module>nuxeo-platform-smart-search</module>
     <module>nuxeo-platform-audio</module>
     <module>nuxeo-platform-video</module>
     <module>nuxeo-platform-categorization</module>
