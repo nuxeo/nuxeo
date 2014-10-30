@@ -25,6 +25,7 @@ import java.util.Date;
 import org.junit.After;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -61,9 +62,14 @@ public class ITTaggingTest extends AbstractTest {
                 Locator.findElementWithTimeout(By.id(SELECT2_TAG_ELT_ID)),
                 true);
         assertTrue(tagWidget.getSelectedValues().isEmpty());
+        AjaxRequestManager a = new AjaxRequestManager(driver);
+        a.watchAjaxRequests();
         tagWidget.selectValue("first_tag");
+        a.waitForAjaxRequests();
         assertEquals(1, tagWidget.getSelectedValues().size());
+        a.watchAjaxRequests();
         tagWidget.selectValue("second_tag");
+        a.waitForAjaxRequests();
         assertEquals(2, tagWidget.getSelectedValues().size());
         fileDocumentBasePage.getEditTab();
         fileDocumentBasePage.getSummaryTab();
@@ -72,7 +78,9 @@ public class ITTaggingTest extends AbstractTest {
                 Locator.findElementWithTimeout(By.id(SELECT2_TAG_ELT_ID)),
                 true);
         assertEquals(2, tagWidget.getSelectedValues().size());
+        a.watchAjaxRequests();
         tagWidget.removeFromSelection("first_tag");
+        a.waitForAjaxRequests();
         assertEquals(1, tagWidget.getSelectedValues().size());
         fileDocumentBasePage.getEditTab();
         fileDocumentBasePage.getSummaryTab();
