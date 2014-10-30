@@ -64,7 +64,6 @@ class Spreadsheet {
           .filter((c) => c.hasSupportedWidgetType && c.field);
     });
 
-    this._dirty = {};
     this.container.handsontable(this.options);
     this.ht = this.container.data('handsontable');
   }
@@ -117,6 +116,8 @@ class Spreadsheet {
   }
 
   update() {
+    this._data.length = 0;
+    this._dirty = {};
     this.query.page = 0;
     return this._fetch();
   }
