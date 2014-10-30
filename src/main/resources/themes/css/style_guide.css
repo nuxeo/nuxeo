@@ -2,6 +2,11 @@
 Custom CSS for the Nuxeo Styles guide
 -- */
 
+/* Header */
+.nxHeader .logo {
+  padding: .6em 0 .6em 1.5em;
+  text-align: left }
+
 /* Style Guide app: style containers and vertical tabs */
 .demoGrid {
   background-color: "neutral.lighter (__FLAVOR__ background)" }
@@ -37,7 +42,7 @@ Custom CSS for the Nuxeo Styles guide
 
   .verticalTabs li.selected,
   .verticalTabs li:hover {
-    background-color: "color.major.stronger (__FLAVOR__ background)";
+    background-color: "color.major.strong (__FLAVOR__ background)";
     border-radius: 0 2em 2em 0;
     margin: 0 -1em .2em 0;
     transition: margin 0.1s ease 0.1s }
