@@ -19,19 +19,23 @@ package org.nuxeo.ecm.directory.sql;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.security.auth.login.LoginContext;
 
 import org.junit.runners.model.FrameworkMethod;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.directory.memory.MemoryDirectory;
+import org.nuxeo.ecm.directory.memory.MemoryDirectoryFactory;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -69,35 +73,53 @@ public class SQLDirectoryFeature extends SimpleFeature {
     }
 
     protected void bindDirectory(Binder binder, final String name) {
-        binder.bind(Directory.class).annotatedWith(Names.named(name))
-            .toProvider(new Provider<Directory>() {
+        binder.bind(Directory.class).annotatedWith(Names.named(name)).toProvider(
+                new Provider<Directory>() {
 
-                @Override
-                public Directory get() {
-                    return Framework.getService(DirectoryService.class)
-                        .getDirectory(name);
-                }
+                    @Override
+                    public Directory get() {
+                        return Framework.getService(DirectoryService.class).getDirectory(
+                                name);
+                    }
 
-            });
+                });
     }
 
-    protected final Map<Directory, Set<String>> savedContext = new HashMap<>();
+    protected final Map<Directory, Set<DocumentModel>> savedContext = new HashMap<>();
 
     @Override
     public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method,
             Object test) throws Exception {
         LoginContext lc = Framework.login();
         try {
-            for (Directory dir : Framework.getService(DirectoryService.class)
-                .getDirectories()) {
+            MemoryDirectoryFactory memoryDirectoryFactory = new MemoryDirectoryFactory();
+            Framework.getService(
+                    DirectoryService.class).registerDirectory("memdirs",
+                    memoryDirectoryFactory);
+            List<Directory> directories = Framework.getService(
+                    DirectoryService.class).getDirectories();
+            for (Directory dir : directories) {
+
+                MemoryDirectory memdir1 = new MemoryDirectory(dir.getName()
+                        + "-orig", dir.getSchema(), dir.getIdField(),
+                        dir.getPasswordField());
+                memoryDirectoryFactory.registerDirectory(memdir1);
+
                 Session session = dir.getSession();
                 try {
-                    String field = session.getIdField();
                     Map<String, Serializable> filter = Collections.emptyMap();
-                    savedContext.put(
-                            dir,
-                            new HashSet<String>(session.getProjection(filter,
-                                    field)));
+            
+                    DocumentModelList entries = session. query(filter);
+                    Session memdir1Session = memdir1.getSession();
+                    try {
+
+                        for (DocumentModel docModel : entries) {
+                            memdir1Session.createEntry(session.getEntry(docModel.getId(),true));
+                        }
+                    } finally {
+                        memdir1Session.close();
+                    }
+
                 } finally {
                     session.close();
                 }
@@ -111,23 +133,39 @@ public class SQLDirectoryFeature extends SimpleFeature {
     public void afterTeardown(FeaturesRunner runner) throws Exception {
         LoginContext lc = Framework.login();
         try {
-            for (Map.Entry<Directory, Set<String>> each : savedContext
-                .entrySet()) {
-                Directory directory = each.getKey();
-                Session session = directory.getSession();
-                final Set<String> projection = each.getValue();
-                try {
-                    String field = session.getIdField();
-                    Map<String, Serializable> filter = Collections.emptyMap();
-                    for (String id : session.getProjection(filter, field)) {
-                        if (!projection.contains(id)) {
-                            session.deleteEntry(id);
+            List<Directory> directories = Framework.getService(
+                    DirectoryService.class).getDirectories();
+            for (Directory dir : directories) {
+
+                if (!dir.getName().endsWith("-orig")) {
+                    Session session = dir.getSession();
+                    try {
+                        Map<String, Serializable> filter = Collections.emptyMap();
+
+                        DocumentModelList entries = session.query(filter);
+
+                        Session memdir1Session = Framework.getService(
+                                DirectoryService.class).getDirectory(
+                                dir.getName() + "-orig").getSession();
+                        DocumentModelList origEntries = memdir1Session.query(filter);
+                        try {
+
+                            for (DocumentModel docModel : entries) {
+                                session.deleteEntry(docModel.getId());
+                            }
+                            for (DocumentModel origEntry : origEntries) {
+                                session.createEntry(origEntry);
+                            }
+                        } finally {
+                            memdir1Session.close();
                         }
+
+                    } finally {
+                        session.close();
                     }
-                } finally {
-                    session.close();
                 }
             }
+         
         } finally {
             lc.logout();
         }
