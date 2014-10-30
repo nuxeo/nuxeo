@@ -26,15 +26,34 @@ author: lkemen@nuxeo.com
   padding: .7em 1em }
 
 .foldableBox .folded a.foldableHeaderLink,
-.foldableLightBox .folded a.foldableHeaderLink {
-  background:url("${basePath}/icons/unfold.png") no-repeat left top;
+.foldableLightBox .folded a.foldableHeaderLink,
+.foldableLightBox h3.folded a.foldableHeaderLink  {
+  background:url("${basePath}/icons/unfold.png") no-repeat left center;
   padding:0 1em 0 1.7em }
 
 .foldableBox .unfolded a.foldableHeaderLink,
-.foldableLightBox .unfolded a.foldableHeaderLink {
-  background:url("${basePath}/icons/fold.png") no-repeat left top;
+.foldableLightBox .unfolded a.foldableHeaderLink,
+.foldableLightBox h3.unfolded a.foldableHeaderLink {
+  background:url("${basePath}/icons/fold.png") no-repeat left center;
   padding:0 1em 0 1.7em;
   clear: both }
+
+.foldableBox div.folded,
+.foldableBox div.unfolded {
+  padding: 0 .6em }
+
+.foldableBox div.folded a.foldableHeaderLink,
+.foldableBox div.unfolded a.foldableHeaderLink,
+.foldableBox div.foldedDisabled a.foldableHeaderLink {
+  font-size: 1.15em;
+  border-bottom: 1px solid transparent;
+  color: "default (__FLAVOR__ color)";
+  display: inline-block;
+  min-height: 1.3em;
+  padding: .7em 1em .7em 1.7em }
+
+.foldableBox div.foldedDisabled a.foldableHeaderLink {
+  padding-left: 1em }
 
 .foldableBox h3 img.tipsyShow {
   cursor: help;
@@ -67,7 +86,6 @@ author: lkemen@nuxeo.com
 
 /* =Light boxes */
 .foldableLightBox {
-  background-color: #fff;
   margin-bottom: 1.8em }
 
 .foldableLightBox div.folded a,
@@ -88,6 +106,7 @@ author: lkemen@nuxeo.com
   height: 18px }
 
 .foldableLightBox .boxBody {
+  background-color: #fff;
   border: 1px solid;
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-top: none;
