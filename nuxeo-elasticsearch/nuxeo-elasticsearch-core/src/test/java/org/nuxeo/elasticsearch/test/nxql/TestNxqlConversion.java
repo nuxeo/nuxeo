@@ -545,7 +545,7 @@ public class TestNxqlConversion {
                 "    \"query\" : \"+foo -bar\",\n" +
                 "    \"fields\" : [ \"_all\" ],\n" +
                 "    \"analyzer\" : \"fulltext\",\n" +
-                "    \"default_operator\" : \"or\"\n" +
+                "    \"default_operator\" : \"and\"\n" +
                 "  }\n" +
                 "}", es);
         es = NxqlQueryConverter.toESQueryBuilder(
@@ -556,7 +556,7 @@ public class TestNxqlConversion {
                 "    \"query\" : \"+foo -bar\",\n" +
                 "    \"fields\" : [ \"_all\" ],\n" +
                 "    \"analyzer\" : \"fulltext\",\n" +
-                "    \"default_operator\" : \"or\"\n" +
+                "    \"default_operator\" : \"and\"\n" +
                 "  }\n" +
                 "}", es);
         es = NxqlQueryConverter.toESQueryBuilder(
@@ -572,7 +572,7 @@ public class TestNxqlConversion {
                 "              \"query\" : \"+foo -bar\",\n" +
                 "              \"fields\" : [ \"dc:title.fulltext\" ],\n" +
                 "              \"analyzer\" : \"fulltext\",\n" +
-                "              \"default_operator\" : \"or\"\n" +
+                "              \"default_operator\" : \"and\"\n" +
                 "            }\n" +
                 "          }\n" +
                 "        }\n" +
@@ -580,6 +580,21 @@ public class TestNxqlConversion {
                 "    }\n" +
                 "  }\n" +
                 "}", es);
+    }
+
+    @Test
+    public void testConverterFulltextElasticsearchPrefix() throws Exception {
+        // Given a search on a fulltext field with the
+        // elasticsearch-specific prefix
+        String es = NxqlQueryConverter.toESQueryBuilder(
+                "SELECT * FROM Document WHERE ecm:fulltext = 'es: foo bar'").toString();
+        // then we have a simple query text and not a filter
+        // and we have the OR operator
+        assertEqualsEvenUnderWindows("{\n" + "  \"simple_query_string\" : {\n"
+                + "    \"query\" : \"foo bar\",\n"
+                + "    \"fields\" : [ \"_all\" ],\n"
+                + "    \"analyzer\" : \"fulltext\",\n"
+                + "    \"default_operator\" : \"or\"\n" + "  }\n" + "}", es);
     }
 
     @Test

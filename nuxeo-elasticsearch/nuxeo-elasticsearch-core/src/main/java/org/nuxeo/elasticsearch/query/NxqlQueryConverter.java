@@ -68,6 +68,7 @@ final public class NxqlQueryConverter {
     private static final Log log = LogFactory.getLog(NxqlQueryConverter.class);
     private static final String SELECT_ALL = "SELECT * FROM Document";
     private static final String SELECT_ALL_WHERE = "SELECT * FROM Document WHERE ";
+    private static final String SIMPLE_QUERY_PREFIX = "es: ";
 
     private NxqlQueryConverter() {
     }
@@ -217,9 +218,19 @@ final public class NxqlQueryConverter {
                 // map ecm:fulltext_someindex to default
                 field = FULLTEXT_FIELD;
             }
-            query = QueryBuilders.simpleQueryString((String) value)
+            String queryString = (String) value;
+            org.elasticsearch.index.query.SimpleQueryStringBuilder.Operator defaultOperator;
+            if (queryString.startsWith(SIMPLE_QUERY_PREFIX)) {
+                // elasticsearch-specific syntax
+                queryString = queryString.substring(SIMPLE_QUERY_PREFIX.length());
+                defaultOperator = SimpleQueryStringBuilder.Operator.OR;
+            } else {
+                // TODO translate according to standard NXQL fulltext syntax
+                defaultOperator = SimpleQueryStringBuilder.Operator.AND;
+            }
+            query = QueryBuilders.simpleQueryString(queryString)
                     .field(field)
-                    .defaultOperator(SimpleQueryStringBuilder.Operator.OR)
+                    .defaultOperator(defaultOperator)
                     .analyzer("fulltext");
             if ("!=".equals(op) || "<>".equals(op) || "NOT LIKE".equals(op)) {
                 filter = FilterBuilders.notFilter(FilterBuilders

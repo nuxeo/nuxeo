@@ -627,7 +627,7 @@ public class TestPageProvider {
                 "        \"query\" : \"you know for search\",\n" +
                 "        \"fields\" : [ \"_all\" ],\n" +
                 "        \"analyzer\" : \"fulltext\",\n" +
-                "        \"default_operator\" : \"or\"\n" +
+                "        \"default_operator\" : \"and\"\n" +
                 "      }\n" +
                 "    } ]\n" +
                 "  }\n" +
