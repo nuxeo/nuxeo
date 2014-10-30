@@ -7,8 +7,8 @@
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  id="#{layout.id}"
-  styleClass="#{layoutProperty_styleClass}">
+  id="#{layout.id}">
+<h:panelGroup styleClass="#{layoutProperty_styleClass}" layout="block">
 
   <c:set var="isEditMode" value="#{nxl:isBoundToEditMode(layout.mode)}" />
   <nxu:set var="layoutWidgetsDisplay"
@@ -84,4 +84,5 @@
 
   </nxu:set>
 
+</h:panelGroup>
 </f:subview>
