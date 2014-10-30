@@ -223,7 +223,7 @@
     <priority value="WARN" />
   </category>
   <category name="org.jboss.ejb3">
-    <priority value="WARN />
+    <priority value="WARN" />
   </category>
   <category name="org.jboss.ejb3.cache.simple.StatefulSessionFilePersistenceManager">
     <priority value="WARN" />
