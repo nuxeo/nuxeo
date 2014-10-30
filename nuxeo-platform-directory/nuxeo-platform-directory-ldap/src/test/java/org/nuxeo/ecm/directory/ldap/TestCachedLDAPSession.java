@@ -60,23 +60,22 @@ public class TestCachedLDAPSession extends TestLDAPSession {
         for (String directoryName : directories) {
             LDAPDirectory dir = getLDAPDirectory(directoryName);
             DirectoryCache cache = dir.getCache();
-            cache.setEntryCacheName(ENTRY_CACHE_NAME);
-            cache.setEntryCacheWithoutReferencesName(ENTRY_CACHE_WITHOUT_REFERENCES_NAME);
+            cache.initialize(ENTRY_CACHE_NAME,ENTRY_CACHE_WITHOUT_REFERENCES_NAME);
         }
     }
-    
+
     @Test
     public void testGetFromCache() {
         Session ldapSession = getLDAPDirectory("userDirectory").getSession();
-        
+
         //First call will update cache
         DocumentModel entry = ldapSession.getEntry("user1");
         Assert.isNotNull(entry);
-        
+
         //Second call will use the cache
         entry = ldapSession.getEntry("user1");
         Assert.isNotNull(entry);
     }
-    
+
 
 }

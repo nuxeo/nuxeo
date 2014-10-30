@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.cache.InMemoryCacheFeature;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectorySecurityException;
 import org.nuxeo.ecm.directory.Session;
@@ -45,7 +46,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
-@Features({ ClientLoginFeature.class, SQLDirectoryFeature.class,  })
+@Features({ InMemoryCacheFeature.class, ClientLoginFeature.class, SQLDirectoryFeature.class,  })
 @LocalDeploy({
         "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-schema-override.xml",
         "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-bundle.xml" })

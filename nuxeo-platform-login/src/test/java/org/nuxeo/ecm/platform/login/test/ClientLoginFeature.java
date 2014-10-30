@@ -21,6 +21,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -157,25 +159,60 @@ public class ClientLoginFeature extends SimpleFeature {
             final FrameworkMethod method, final Object test) throws Exception {
         Identity identity = runner.getConfig(method, Identity.class);
         context = login(identity);
-        final Class<? extends Listener> type = runner.getConfig(Opener.class).value();
-        if (type == null) {
+        onLogin(runner, method, test);
+    }
+
+    protected void onLogin(final FeaturesRunner runner,
+            final FrameworkMethod method, final Object test)
+            throws InstantiationException, IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException,
+            NoSuchMethodException, SecurityException {
+        Class<?> testType = test.getClass();
+        final Class<? extends Listener> listenerType = runner.getConfig(
+                Opener.class).value();
+        if (listenerType == null) {
             return;
         }
-        listener = type
-            .getConstructor(test.getClass()).newInstance(test);
+        listener = constructor(listenerType, testType).newInstance(test);
         listener.onLogin(runner, method, context);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Constructor<? extends Listener> constructor(
+            Class<? extends Listener> type, Class<?> underType) {
+        for (Constructor<?> each : type.getDeclaredConstructors()) {
+            if (each.getParameterTypes().length != 1) {
+                continue;
+            }
+            if (!each.getParameterTypes()[0].isAssignableFrom(underType)) {
+                continue;
+            }
+            return (Constructor<? extends Listener>) each;
+        }
+
+        throw new IllegalArgumentException("Cannot find opener constructor of "
+                + type + " for " + underType);
+
     }
 
     @Override
     public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method,
             Object test) throws Exception {
         try {
-            if (listener != null) {
-                listener.onLogout(runner, method, context);
-            }
+            onLogout(runner, method);
+        } finally {
+            context.logout();
+        }
+    }
+
+    protected void onLogout(FeaturesRunner runner, FrameworkMethod method) {
+        if (listener == null) {
+            return;
+        }
+        try {
+            listener.onLogout(runner, method, context);
         } finally {
             listener = null;
-            context.logout();
         }
     }
 

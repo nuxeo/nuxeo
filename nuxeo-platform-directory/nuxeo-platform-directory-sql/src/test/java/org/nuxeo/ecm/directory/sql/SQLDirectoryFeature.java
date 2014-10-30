@@ -18,24 +18,25 @@ package org.nuxeo.ecm.directory.sql;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.security.auth.login.LoginContext;
 
+import org.apache.commons.logging.LogFactory;
 import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.cache.CacheFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.memory.MemoryDirectory;
-import org.nuxeo.ecm.directory.memory.MemoryDirectoryFactory;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -53,7 +54,7 @@ import com.google.inject.name.Names;
  *
  * @since 5.9.6
  */
-@Features({ ClientLoginFeature.class })
+@Features({ TransactionalFeature.class, CacheFeature.class, ClientLoginFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory",
         "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.directory.types.contrib",
@@ -73,56 +74,70 @@ public class SQLDirectoryFeature extends SimpleFeature {
     }
 
     protected void bindDirectory(Binder binder, final String name) {
-        binder.bind(Directory.class).annotatedWith(Names.named(name)).toProvider(
-                new Provider<Directory>() {
+        binder.bind(Directory.class).annotatedWith(Names.named(name))
+            .toProvider(new Provider<Directory>() {
 
-                    @Override
-                    public Directory get() {
-                        return Framework.getService(DirectoryService.class).getDirectory(
-                                name);
-                    }
+                @Override
+                public Directory get() {
+                    return Framework.getService(DirectoryService.class)
+                        .getDirectory(name);
+                }
 
-                });
+            });
     }
 
-    protected final Map<Directory, Set<DocumentModel>> savedContext = new HashMap<>();
+    protected final Set<Snapshot> snapshots = new HashSet<>();
+
+    protected class Snapshot {
+
+        final Directory dir;
+
+        final Session sql;
+
+        final Session mem;
+
+        Snapshot(Directory dir) {
+            this.dir = dir;
+            sql = dir.getSession();
+            mem = new MemoryDirectory(dir.getName(), dir.getSchema(),
+                    dir.getIdField(), dir.getPasswordField()).getSession();
+        }
+
+        Snapshot save() {
+            Map<String, Serializable> filter = Collections.emptyMap();
+            for (String each : sql.getProjection(filter, dir.getIdField())) {
+                DocumentModel entry = sql.getEntry(each,true);
+                mem.createEntry(entry);
+            }
+            return this;
+        }
+
+        void restore() {
+            Map<String, Serializable> filter = Collections.emptyMap();
+
+            for (String id : sql.getProjection(filter, dir.getIdField())) {
+                sql.deleteEntry(id);
+            }
+            for (DocumentModel each : mem.query(filter)) {
+                LogFactory.getLog(SQLDirectoryFeature.class).debug(
+                        "restore " + dir.getName() + ":" + each.getId());
+                sql.createEntry(each);
+            }
+            mem.close();
+            sql.close();
+        }
+
+    }
 
     @Override
     public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method,
             Object test) throws Exception {
         LoginContext lc = Framework.login();
         try {
-            MemoryDirectoryFactory memoryDirectoryFactory = new MemoryDirectoryFactory();
-            Framework.getService(
-                    DirectoryService.class).registerDirectory("memdirs",
-                    memoryDirectoryFactory);
             List<Directory> directories = Framework.getService(
                     DirectoryService.class).getDirectories();
             for (Directory dir : directories) {
-
-                MemoryDirectory memdir1 = new MemoryDirectory(dir.getName()
-                        + "-orig", dir.getSchema(), dir.getIdField(),
-                        dir.getPasswordField());
-                memoryDirectoryFactory.registerDirectory(memdir1);
-
-                Session session = dir.getSession();
-                try {
-                    Map<String, Serializable> filter = Collections.emptyMap();
-            
-                    DocumentModelList entries = session. query(filter);
-                    Session memdir1Session = memdir1.getSession();
-                    try {
-
-                        for (DocumentModel docModel : entries) {
-                            memdir1Session.createEntry(session.getEntry(docModel.getId(),true));
-                        }
-                    } finally {
-                        memdir1Session.close();
-                    }
-
-                } finally {
-                    session.close();
-                }
+                snapshots.add(new Snapshot(dir).save());
             }
         } finally {
             lc.logout();
@@ -131,44 +146,10 @@ public class SQLDirectoryFeature extends SimpleFeature {
 
     @Override
     public void afterTeardown(FeaturesRunner runner) throws Exception {
-        LoginContext lc = Framework.login();
-        try {
-            List<Directory> directories = Framework.getService(
-                    DirectoryService.class).getDirectories();
-            for (Directory dir : directories) {
-
-                if (!dir.getName().endsWith("-orig")) {
-                    Session session = dir.getSession();
-                    try {
-                        Map<String, Serializable> filter = Collections.emptyMap();
-
-                        DocumentModelList entries = session.query(filter);
-
-                        Session memdir1Session = Framework.getService(
-                                DirectoryService.class).getDirectory(
-                                dir.getName() + "-orig").getSession();
-                        DocumentModelList origEntries = memdir1Session.query(filter);
-                        try {
-
-                            for (DocumentModel docModel : entries) {
-                                session.deleteEntry(docModel.getId());
-                            }
-                            for (DocumentModel origEntry : origEntries) {
-                                session.createEntry(origEntry);
-                            }
-                        } finally {
-                            memdir1Session.close();
-                        }
-
-                    } finally {
-                        session.close();
-                    }
-                }
-            }
-         
-        } finally {
-            lc.logout();
+        for (Snapshot each : snapshots) {
+            each.restore();
         }
-
+        snapshots.clear();
     }
+
 }

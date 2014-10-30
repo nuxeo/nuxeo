@@ -4,7 +4,8 @@
   <implementation class="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" />
 
   <require>org.nuxeo.ecm.directory.DirectoryServiceImpl</require>
-
+  <require>org.nuxeo.ecm.core.cache.CacheService</require>
+  
   <documentation>
     SQL-based implementation for NXDirectory
   </documentation>

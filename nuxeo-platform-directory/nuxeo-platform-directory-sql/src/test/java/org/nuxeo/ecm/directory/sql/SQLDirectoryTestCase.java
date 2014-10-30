@@ -39,6 +39,9 @@ public abstract class SQLDirectoryTestCase extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.directory.sql");
 
+        deployBundle("org.nuxeo.ecm.core.cache");
+        deployContrib("org.nuxeo.ecm.core.cache","inmemory-cache-config.xml");
+
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
         // override user schema with intField & dateField
         deployContrib("org.nuxeo.ecm.directory.sql.tests",

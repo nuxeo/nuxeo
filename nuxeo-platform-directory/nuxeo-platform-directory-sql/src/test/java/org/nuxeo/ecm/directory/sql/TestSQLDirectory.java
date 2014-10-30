@@ -44,26 +44,24 @@ import org.junit.runner.RunWith;
 import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.cache.InMemoryCacheFeature;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
-import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.PasswordHelper;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature.Identity;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
-@Features({ ClientLoginFeature.class, SQLDirectoryFeature.class })
+@Features({ ClientLoginFeature.class, InMemoryCacheFeature.class, SQLDirectoryFeature.class })
 @LocalDeploy({"org.nuxeo.ecm.directory.sql.tests:test-sql-directories-schema-override.xml",
         "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-schema-override.xml",
         "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-bundle.xml" })

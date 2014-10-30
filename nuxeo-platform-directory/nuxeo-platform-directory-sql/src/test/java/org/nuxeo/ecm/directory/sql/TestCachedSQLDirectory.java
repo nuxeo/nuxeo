@@ -20,14 +20,19 @@
 package org.nuxeo.ecm.directory.sql;
 
 import org.eclipse.jdt.internal.core.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.cache.CacheFeature;
 import org.nuxeo.ecm.core.redis.RedisFeature;
-import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.DirectoryCache;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
 
+@Features({ RedisFeature.class, CacheFeature.class})
+@Deploy("org.nuxeo.ecm.directory:sql-directory-cache-config.xml")
 public class TestCachedSQLDirectory extends TestSQLDirectory {
 
     protected final static String CACHE_CONTRIB = "sql-directory-cache-config.xml";
@@ -38,31 +43,17 @@ public class TestCachedSQLDirectory extends TestSQLDirectory {
 
     protected final static String ENTRY_CACHE_WITHOUT_REFERENCES_NAME = "sql-entry-cache-without-references";
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp()  {
 
-        deployBundle("org.nuxeo.ecm.core.cache");
-
-        if (RedisFeature.setup(this)) {
-                deployTestContrib("org.nuxeo.ecm.directory.sql.tests",
-                        REDIS_CACHE_CONFIG);
-        } else {
-            deployTestContrib("org.nuxeo.ecm.directory.sql.tests",
-                    CACHE_CONTRIB);
-        }
-        fireFrameworkStarted();
-        AbstractDirectory dir = getSQLDirectory();
-
-        DirectoryCache cache = dir.getCache();
-        cache.setEntryCacheName(ENTRY_CACHE_NAME);
-        cache.setEntryCacheWithoutReferencesName(ENTRY_CACHE_WITHOUT_REFERENCES_NAME);
+        DirectoryCache cache = userDir.getCache();
+        cache.initialize(ENTRY_CACHE_NAME,ENTRY_CACHE_WITHOUT_REFERENCES_NAME);
 
     }
 
     @Test
     public void testGetFromCache() throws DirectoryException, Exception {
-        Session sqlSession = getSQLDirectory().getSession();
+        Session sqlSession = userDirSession;
 
         // First call will update cache
         DocumentModel entry = sqlSession.getEntry("user_1");

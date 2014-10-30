@@ -16,13 +16,10 @@
  */
 package org.nuxeo.ecm.directory.sql;
 
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+@LocalDeploy("org.nuxeo.ecm.directory.sql.tests:test-sql-directories-nativecase-config.xml")
 public class TestSQLDirectoryNativeCase extends TestSQLDirectory {
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "test-sql-directories-nativecase-config.xml");
-    }
 
 }
