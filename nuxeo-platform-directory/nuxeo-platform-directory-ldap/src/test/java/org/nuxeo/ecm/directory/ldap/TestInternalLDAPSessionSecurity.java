@@ -33,6 +33,7 @@ import javax.security.auth.login.LoginException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -52,6 +53,8 @@ import com.google.inject.Inject;
  * Test class on security based on LDAP embedded server. Only read based test
  * can be perform because the embedded server does not allow to write
  */
+/* Ignored due to NXP-15777, this feature causes failure in the next test */
+@Ignore
 @RunWith(FeaturesRunner.class)
 @Features(InternalLDAPDirectoryFeature.class)
 @LocalDeploy("org.nuxeo.ecm.directory.ldap.tests:ldap-directories-internal-security.xml")
