@@ -14,22 +14,19 @@
 }
 
 /* HEADER */
-div.nuxeoLogo {
-  float: left;
-  line-height: normal;
-  padding: 0 0 0 1em;
-}
+.header div.nuxeoLogo {
+  padding: .3em 0 .2em 1.5em }
 
 .nxHeader .nuxeoLogo>a:link {
   opacity: 1;
 }
 
 div.nuxeoLogo span {
-  color: #fff;
+  color: #213f7d;
   font: 18px/1.25em Arial, sans-serif;
   padding: 0 30px;
   text-transform: none;
-  vertical-align: super;
+  vertical-align: top;
 }
 
 div.customButtons {
@@ -47,8 +44,7 @@ div.customButtons p {
   padding: 2px 15px 5px;
 }
 
-div.customButtons a,div.customButtons a:link,div.customButtons a:visited
-  {
+div.customButtons a,div.customButtons a:link,div.customButtons a:visited {
   color: #ccc;
 }
 
@@ -94,6 +90,7 @@ ul.layoutDemoMenu li.selected a,ul.layoutDemoMenu li.selected a:hover,ul.layoutD
 
 /* MAIN CONTENT */
 .nxMainContainer .content {
+  background-color: #f1f4f8;
   padding: 1em;
 }
 
