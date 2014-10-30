@@ -4,7 +4,7 @@ Bundle-Category: web
 Bundle-Localization: plugin
 Bundle-Name: nuxeo-platform-spreadsheet
 Bundle-ManifestVersion: 2
-Bundle-SymbolicName: org.nuxeo.ecm.platform.spreadsheet,
+Bundle-SymbolicName: org.nuxeo.ecm.platform.spreadsheet;singleton:=true
 Nuxeo-Component: OSGI-INF/actions-contrib.xml,
  OSGI-INF/authentication-contrib.xml,
  OSGI-INF/content-enrichers-contrib.xml,
