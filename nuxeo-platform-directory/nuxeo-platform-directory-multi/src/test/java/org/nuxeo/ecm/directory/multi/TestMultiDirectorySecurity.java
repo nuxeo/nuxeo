@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.directory.DirectorySecurityException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.memory.MemoryDirectory;
@@ -88,7 +89,7 @@ public class TestMultiDirectorySecurity {
 
         // create and register mem directories
         Map<String, Object> e;
-
+        
         // dir 1
         Set<String> schema1Set = new HashSet<String>(
                 Arrays.asList("uid", "foo"));
@@ -164,17 +165,13 @@ public class TestMultiDirectorySecurity {
         assertNotNull(entry);
     }
 
-    @Test
+    @Test(expected=DirectorySecurityException.class)
     public void readerCantCreateEntry() throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("uid", "5");
         map.put("thefoo", "foo5");
         map.put("thebar", "bar5");
-        DocumentModel entry = dir.createEntry(map);
-        assertNull(entry);
-
-        entry = dir.getEntry("5");
-        assertNull(entry);
+        dir.createEntry(map);
     }
 
     @Test
@@ -206,7 +203,7 @@ public class TestMultiDirectorySecurity {
         assertEquals("babar1", e.getProperty("schema3", "thebar"));
     }
 
-    @Test
+    @Test(expected=DirectorySecurityException.class)
     public void readerUserCantUpdateEntry() throws Exception {
         // multi-subdirs update
         DocumentModel e = dir.getEntry("1");
@@ -215,9 +212,6 @@ public class TestMultiDirectorySecurity {
         e.setProperty("schema3", "thefoo", "fffooo1");
         e.setProperty("schema3", "thebar", "babar1");
         dir.updateEntry(e);
-        e = dir.getEntry("1");
-        assertEquals("foo1", e.getProperty("schema3", "thefoo"));
-        assertEquals("bar1", e.getProperty("schema3", "thebar"));
   }
 
     @Test
@@ -229,10 +223,9 @@ public class TestMultiDirectorySecurity {
         assertNull(dir.getEntry("3"));
    }
 
-    @Test
+    @Test(expected=DirectorySecurityException.class)
     public void readerUserCantDeleteEntry() throws Exception {
         dir.deleteEntry("1");
-        assertNotNull(dir.getEntry("1"));
    }
 
     @Test
@@ -248,7 +241,7 @@ public class TestMultiDirectorySecurity {
         assertEquals(4, entries.size());
     }
 
-    @Test
+    @Test(expected=DirectorySecurityException.class)
     @Identity(name=AN_EVERYONE_USER)
     public void everyoneUserCanCreateAndGet() throws Exception {
         // Given a user in the everyone group
@@ -260,12 +253,7 @@ public class TestMultiDirectorySecurity {
         map.put("thebar", "bar5");
 
         // When I call the multi-group dir
-        DocumentModel entry = dirGroup.createEntry(map);
-        assertNotNull(entry);
-
-        // I can create and then get entry
-        entry = dirGroup.getEntry("5");
-        assertNotNull(entry);
+       dirGroup.createEntry(map);
     }
 
 }

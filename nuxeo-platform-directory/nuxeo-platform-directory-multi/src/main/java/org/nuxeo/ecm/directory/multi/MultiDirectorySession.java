@@ -42,6 +42,8 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.PermissionDescriptor;
+import org.nuxeo.ecm.directory.SecuredSession;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -74,6 +76,8 @@ public class MultiDirectorySession extends BaseSession {
     private final String schemaPasswordField;
 
     private List<SourceInfo> sourceInfos;
+    
+    protected PermissionDescriptor[] permissions = new PermissionDescriptor[0];
 
     public MultiDirectorySession(MultiDirectory directory) {
         super(directory);
@@ -84,6 +88,7 @@ public class MultiDirectorySession extends BaseSession {
         schemaName = descriptor.schemaName;
         schemaIdField = descriptor.idField;
         schemaPasswordField = descriptor.passwordField;
+        permissions = descriptor.permissions;
     }
 
     protected class SubDirectoryInfo {
@@ -124,7 +129,7 @@ public class MultiDirectorySession extends BaseSession {
             if (session == null) {
                 session = directoryService.open(dirName);
             }
-            return session;
+            return SecuredSession.wrap(directoryService.getDirectory(dirName),permissions,session);
         }
 
         @Override
