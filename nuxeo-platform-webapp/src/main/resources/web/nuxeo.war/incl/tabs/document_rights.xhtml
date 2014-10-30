@@ -52,20 +52,20 @@
           <f:facet name="header">
             <h:outputText value="#{messages['label.security.grantedPerms']}"/>
           </f:facet>
-          <nxu:dataList var="perm"
+          <ui:repeat var="perm"
             value="#{securityActions.securityData.parentDocsGrantLabels[user]}">
             <h:outputText value="#{messages[perm]}"/>
-          </nxu:dataList>
+          </ui:repeat>
         </h:column>
 
         <h:column>
           <f:facet name="header">
             <h:outputText value="#{messages['label.security.deniedPerms']}"/>
           </f:facet>
-          <nxu:dataList var="perm"
+          <ui:repeat var="perm"
             value="#{securityActions.securityData.parentDocsDenyLabels[user]}">
             <h:outputText value="#{messages[perm]}"/>
-          </nxu:dataList>
+          </ui:repeat>
         </h:column>
       </h:dataTable>
     </h:form>
@@ -150,16 +150,16 @@
                   </nxu:set>
 
                   <td>
-                    <nxu:dataList var="perm"
+                    <ui:repeat var="perm"
                       value="#{securityActions.securityData.currentDocGrantLabels[user]}">
                       <h:outputText value="#{messages[perm]}"/>
-                    </nxu:dataList>
+                    </ui:repeat>
                   </td>
                   <td>
-                    <nxu:dataList var="perm"
+                    <ui:repeat var="perm"
                       value="#{securityActions.securityData.currentDocDenyLabels[user]}">
                       <h:outputText value="#{messages[perm]}"/>
-                    </nxu:dataList>
+                    </ui:repeat>
                   </td>
                 </nxu:set>
               </tr>
