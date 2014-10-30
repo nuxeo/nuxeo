@@ -32,7 +32,11 @@ public class SecuredSession implements Session {
 
     public static Session wrap(Directory directory,
             PermissionDescriptor[] permissions, Session session) {
-        return new SecuredSession(directory, permissions, session);
+        NuxeoPrincipal owner = ClientLoginModule.getCurrentPrincipal();
+        if (owner == null) {
+            return session;
+        }
+        return new SecuredSession(owner, directory, permissions, session);
     }
 
     public static Session unwrap(Session session) {
@@ -44,16 +48,16 @@ public class SecuredSession implements Session {
 
     protected final Directory directory;
 
-    protected final NuxeoPrincipal owner = ClientLoginModule
-        .getCurrentPrincipal();
+    protected final NuxeoPrincipal owner;
 
     protected final PermissionDescriptor[] permissions;
 
     protected final Session delegate;
 
-    protected SecuredSession(Directory directory, PermissionDescriptor[] perms,
+    protected SecuredSession(NuxeoPrincipal owner, Directory directory, PermissionDescriptor[] perms,
             Session delegate) {
         super();
+        this.owner = owner;
         this.delegate = delegate;
         this.directory = directory;
         permissions = perms;
