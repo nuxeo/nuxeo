@@ -220,10 +220,10 @@
   </category>
 
   <category name="org.jboss.seam">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
   <category name="org.jboss.ejb3">
-    <priority value="INFO" />
+    <priority value="WARN />
   </category>
   <category name="org.jboss.ejb3.cache.simple.StatefulSessionFilePersistenceManager">
     <priority value="WARN" />
@@ -294,6 +294,10 @@
     <priority value="INFO" />
   </category>
 
+  <category name="org.nuxeo">
+    <priority value="WARN" />
+  </category>
+
   <category name="org.nuxeo.elasticsearch.ElasticSearchComponent">
     <priority value="INFO" />
   </category>
@@ -302,9 +306,6 @@
     <priority value="INFO" />
   </category>
 
-  <category name="org.nuxeo">
-    <priority value="WARN" />
-  </category>
   <!-- Uncomment to debug SQL statements -->
   <!--
   <category name="org.nuxeo.ecm.core.storage.sql.jdbc">
