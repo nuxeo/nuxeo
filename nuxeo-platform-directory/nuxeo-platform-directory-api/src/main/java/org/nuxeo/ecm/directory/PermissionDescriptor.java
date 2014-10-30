@@ -57,14 +57,14 @@ public class PermissionDescriptor {
         // checks users
         final String user = principal.getName();
         for (String other : users) {
-            if (user.equalsIgnoreCase(other)) {
+            if (user.equals(other)) {
                 return true;
             }
         }
         // check groups
         for (String each : principal.getGroups()) {
             for (String other:groups) {
-                if (each.equalsIgnoreCase(other)) {
+                if (each.equals(other)) {
                     return true;
                 }
             }
