@@ -34,7 +34,7 @@
   <c:if test="#{useAjaxForm}">
     <h:commandButton
       id="#{widget.id}"
-      onclick="#{onclick};removeAllTinyMCEEditors();"
+      onclick="#{onclick};#{nxu:test(not empty onSubmit, onSubmit, '')};removeAllTinyMCEEditors();"
       value="#{messages[action.label]}"
       disabled="#{!action.available}"
       styleClass="#{actionStyleClass} #{action.properties.styleClass}"
