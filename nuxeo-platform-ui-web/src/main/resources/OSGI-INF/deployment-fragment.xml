@@ -2,7 +2,7 @@
 <fragment version="1">
 
   <require>org.nuxeo.runtime.nuxeo-runtime-deploy</require>
-  
+
   <extension target="web#LISTENER">
     <listener>
       <listener-class>
@@ -141,6 +141,12 @@
       <servlet-name>Faces Servlet</servlet-name>
       <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
       <load-on-startup>1</load-on-startup>
+      <multipart-config>
+        <location>${nuxeo.jsf.tmp.dir:=}</location>
+        <max-file-size>${nuxeo.jsf.maxFileSize:=-1}</max-file-size>
+        <max-request-size>${nuxeo.jsf.maxRequestSize:=-1}</max-request-size>
+        <file-size-threshold>${nuxeo.jsf.fileSizeThreshold:=0}</file-size-threshold>
+      </multipart-config>
     </servlet>
 
     <servlet-mapping>
@@ -304,6 +310,12 @@
     <context-param>
       <param-name>org.richfaces.queue.global.enabled</param-name>
       <param-value>true</param-value>
+    </context-param>
+
+    <!-- Rich fileupload -->
+    <context-param>
+      <param-name>org.richfaces.fileUpload.maxRequestSize</param-name>
+      <param-value>${nuxeo.jsf.maxRequestSize:=0}</param-value>
     </context-param>
 
     <!-- use the JS Minimizer built into RichFaces -->
