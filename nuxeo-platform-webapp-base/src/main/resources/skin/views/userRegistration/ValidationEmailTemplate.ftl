@@ -2,7 +2,7 @@
 <body>
 Hello ${registrationDoc.userinfo.firstName} ${registrationDoc.userinfo.lastName}, <br />
 <br />
-You have been invited to access.
+You have been invited to access the Nuxeo Platform.
 <br />
 <#if registrationDoc.registration.comment != "">
 <br/>
