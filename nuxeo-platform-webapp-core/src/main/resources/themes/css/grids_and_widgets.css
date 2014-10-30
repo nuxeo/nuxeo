@@ -196,9 +196,6 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .compactLayout .fieldColumnn.containerField .fieldColumn {
   padding: 0 }
 
-.compactLayout .widgetLabel {
-  padding: 0 .7em .4em .3em }
-
 .compactLayout input[type="image"],
 .compactLayout input[type="button"] {
   width: auto }
@@ -287,14 +284,12 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   padding: 0 }
 
 .compactLayout .widgetHeader.foldedDisabled {
-  border-style: none none solid;
-  border-width: 1px;
-  border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-style: none;
   color: "default (__FLAVOR__ color)";
   font-size: 1em;
   font-weight: bold;
-  margin: .5em 0;
-  padding: .4em .3em;
+  margin: .5em 0 .3em;
+  padding: 0;
   text-transform: none }
 
 .compactLayout .containerLabel {
