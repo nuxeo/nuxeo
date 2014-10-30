@@ -18,11 +18,10 @@
 package org.nuxeo.ecm.directory;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.cache.Cache;
 import org.nuxeo.ecm.core.cache.CacheService;
@@ -43,17 +42,41 @@ import com.codahale.metrics.SharedMetricRegistries;
  */
 public class DirectoryCache {
 
+    protected class NullCache implements Cache {
+        @Override
+        public String getName() {
+            return "none";
+        }
+
+        @Override
+        public Serializable get(String key) throws IOException {
+            return null;
+        }
+
+        @Override
+        public void invalidate(String key) throws IOException {
+
+        }
+
+        @Override
+        public void invalidateAll() throws IOException {
+
+        }
+
+        @Override
+        public void put(String key, Serializable value) throws IOException {
+
+        }
+    }
+
     protected final String name;
 
     protected Cache entryCache;
 
-    protected String entryCacheName = null;
-
     protected Cache entryCacheWithoutReferences;
 
-    protected String entryCacheWithoutReferencesName = null;
-
-    protected final MetricRegistry metrics = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+    protected final MetricRegistry metrics = SharedMetricRegistries
+        .getOrCreate(MetricsService.class.getName());
 
     protected final Counter hitsCounter;
 
@@ -63,9 +86,6 @@ public class DirectoryCache {
 
     protected final Counter sizeCounter;
 
-    private final static Log log = LogFactory.getLog(DirectoryCache.class);
-    
-    
     protected DirectoryCache(String name) {
         this.name = name;
         hitsCounter = metrics.counter(MetricRegistry.name("nuxeo",
@@ -76,10 +96,8 @@ public class DirectoryCache {
                 "directories", name, "cache", "size"));
         maxCounter = metrics.counter(MetricRegistry.name("nuxeo",
                 "directories", name, "cache", "max"));
-    }
-
-    protected boolean isCacheEnabled() {
-        return (entryCacheName != null && entryCacheWithoutReferencesName != null);
+        entryCache = new NullCache();
+        entryCacheWithoutReferences = new NullCache();
     }
 
     public DocumentModel getEntry(String entryId, EntrySource source)
@@ -89,86 +107,77 @@ public class DirectoryCache {
 
     public DocumentModel getEntry(String entryId, EntrySource source,
             boolean fetchReferences) throws DirectoryException {
-        if (!isCacheEnabled()) {
-            return source.getEntryFromSource(entryId, fetchReferences);
-        } else if (isCacheEnabled()
-                && (getEntryCache() == null || getEntryCacheWithoutReferences() == null)) {
-
-            log.warn("Your directory configuration for cache is wrong, directory cache will not be used.");
-            if (getEntryCache() == null) {
-                log.warn(String.format(
-                        "The cache for entry '%s' has not been found, please check the cache name or make sure you have deployed it",
-                        entryCacheName));
-            }
-            if (getEntryCacheWithoutReferences() == null) {
-                log.warn(String.format(
-                        "The cache for entry without references '%s' has not been found, please check the cache name or make sure you have deployed it",
-                        entryCacheWithoutReferencesName));
-            }
-
-            return source.getEntryFromSource(entryId, fetchReferences);
-        }
         try {
             DocumentModel dm = null;
             if (fetchReferences) {
-                dm = (DocumentModel) getEntryCache().get(entryId);
-                if (dm == null) {
-                    // fetch the entry from the backend and cache it for later
-                    // reuse
-                    dm = source.getEntryFromSource(entryId, fetchReferences);
-                    if (dm != null) {
-                        getEntryCache().put(entryId, dm);
-                    }
-                } else {
+                dm = (DocumentModel) entryCache.get(entryId);
+                if (dm != null) {
                     hitsCounter.inc();
+                    return dm;
                 }
-            } else {
-                dm = (DocumentModel) getEntryCacheWithoutReferences().get(
-                        entryId);
-                if (dm == null) {
-                    // fetch the entry from the backend and cache it for later
-                    // reuse
-                    dm = source.getEntryFromSource(entryId, fetchReferences);
-                    if (dm != null) {
-                        getEntryCacheWithoutReferences().put(entryId, dm);
-                    }
+                // fetch the entry from the backend and cache it for later
+                // reuse
+                dm = source.getEntryFromSource(entryId, fetchReferences);
+                dm = readonly(dm);
+                if (dm != null) {
+                    entryCache.put(entryId, dm);
                 } else {
-                    hitsCounter.inc();
+                    entryCache.invalidate(entryId);
                 }
+                return dm;
+
             }
-            try {
-                if (dm == null) {
-                    return null;
-                }
-                DocumentModel clone = dm.clone();
-                // DocumentModelImpl#clone does not copy context data, hence
-                // propagate the read-only flag manually
-                if (BaseSession.isReadOnlyEntry(dm)) {
-                    BaseSession.setReadOnlyEntry(clone);
-                }
-                return clone;
-            } catch (CloneNotSupportedException e) {
-                // will never happen as long a DocumentModelImpl is used
+
+            dm = (DocumentModel) entryCacheWithoutReferences.get(entryId);
+            if (dm != null) {
+                hitsCounter.inc();
                 return dm;
             }
+
+            dm = source.getEntryFromSource(entryId, fetchReferences);
+            dm = readonly(dm);
+            entryCacheWithoutReferences.put(entryId, dm);
+            if (dm != null) {
+                entryCacheWithoutReferences.put(entryId, dm);
+            } else {
+                entryCache.invalidate(entryId);
+            }
+            return dm;
+
         } catch (IOException e) {
             throw new DirectoryException(e);
         }
     }
 
+    protected DocumentModel readonly(DocumentModel dm) {
+        if (dm == null) {
+            return null;
+        }
+        try {
+            DocumentModel clone = dm.clone();
+            // DocumentModelImpl#clone does not copy context data, hence
+            // propagate the read-only flag manually
+            if (BaseSession.isReadOnlyEntry(dm)) {
+                BaseSession.setReadOnlyEntry(clone);
+            }
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            // will never happen as long a DocumentModelImpl is used
+            return dm;
+        }
+    }
+
     public void invalidate(List<String> entryIds) {
-        if (isCacheEnabled()) {
-            synchronized (this) {
-                try {
-                    for (String entryId : entryIds) {
-                        getEntryCache().invalidate(entryId);
-                        getEntryCacheWithoutReferences().invalidate(entryId);
-                        sizeCounter.dec();
-                        invalidationsCounter.inc();
-                    }
-                } catch (IOException e) {
-                    throw new DirectoryException(e);
+        synchronized (this) {
+            try {
+                for (String entryId : entryIds) {
+                    entryCache.invalidate(entryId);
+                    entryCacheWithoutReferences.invalidate(entryId);
+                    sizeCounter.dec();
+                    invalidationsCounter.inc();
                 }
+            } catch (IOException e) {
+                throw new DirectoryException(e);
             }
         }
     }
@@ -178,45 +187,31 @@ public class DirectoryCache {
     }
 
     public void invalidateAll() {
-        if (isCacheEnabled()) {
-            synchronized (this) {
-                try {
-                    long count = sizeCounter.getCount();
-                    sizeCounter.dec(count);
-                    invalidationsCounter.inc(count);
-                    getEntryCache().invalidateAll();
-                    getEntryCacheWithoutReferences().invalidateAll();
-                } catch (IOException e) {
-                    throw new DirectoryException(e);
-                }
+        synchronized (this) {
+            try {
+                long count = sizeCounter.getCount();
+                sizeCounter.dec(count);
+                invalidationsCounter.inc(count);
+                entryCache.invalidateAll();
+                entryCacheWithoutReferences.invalidateAll();
+            } catch (IOException e) {
+                throw new DirectoryException(e);
             }
         }
     }
 
-    public void setEntryCacheName(String entryCacheName) {
-        this.entryCacheName = entryCacheName;
-    }
-
-    public void setEntryCacheWithoutReferencesName(
-            String entryCacheWithoutReferencesName) {
-        this.entryCacheWithoutReferencesName = entryCacheWithoutReferencesName;
+    public void initialize(String name, String refname) {
+        entryCache = Framework.getLocalService(CacheService.class).getCache(
+                name);
+        entryCacheWithoutReferences = Framework.getLocalService(
+                CacheService.class).getCache(refname);
     }
 
     public Cache getEntryCache() {
-        if (entryCache == null) {
-            entryCache = Framework.getService(CacheService.class).getCache(
-                    entryCacheName);
-        }
         return entryCache;
     }
 
     public Cache getEntryCacheWithoutReferences() {
-
-        if (entryCacheWithoutReferences == null) {
-            entryCacheWithoutReferences = Framework.getService(
-                    CacheService.class).getCache(
-                    entryCacheWithoutReferencesName);
-        }
         return entryCacheWithoutReferences;
     }
 
