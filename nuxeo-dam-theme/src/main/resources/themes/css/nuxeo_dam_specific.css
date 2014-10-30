@@ -196,6 +196,10 @@ author: lkemen@nuxeo.com
 .nxDamAssetView .actionsWidgetPanel a.button {
   margin: 0 }
 
+.nxDamAssetView .foldableBox a.smallButton {
+  float: right;
+  margin-top: .7em }
+
 .nxDamAssetView .actionsWidgetPanel .button.dropdown {
   border: 1px solid #ccc;
   border-radius: 3px;
@@ -208,7 +212,8 @@ author: lkemen@nuxeo.com
   border-collapse: collapse;
   border-spacing: 0;
   margin: 0 }
-.nxMainContainer .dataInput td {
+
+.nxDamAssetView .dataInput td {
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-spacing: 0;
   border-style: none none solid;
@@ -216,6 +221,7 @@ author: lkemen@nuxeo.com
   padding: .1em .3em .2em;
   text-align: left;
   vertical-align: top }
+
 .nxMainContainer .dataInput td td { border: none }
 .nxMainContainer .dataInput tr:hover {
   background-color: "color.major.light (__FLAVOR__ background)" }
@@ -229,13 +235,6 @@ author: lkemen@nuxeo.com
 .nxMainContainer .widgetPanel .labelColumn {
   text-align: left;
   width: 28% }
-
-.nxMainContainer .summaryTitle {
-  background-color: "neutral.medium (__FLAVOR__ background)";
-  border-bottom: 0 none;
-  font-size: 1em;
-  padding: .3em;
-  text-transform: none }
 
 .nxDamAssetView .s2tagContainerCssClass {
   width: 100% !important }
