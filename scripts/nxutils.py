@@ -241,6 +241,8 @@ class Repository(object):
                 no_remote = False
             except urllib2.URLError:
                 no_remote = True
+            except ValueError:
+                no_remote = True
         mp_config = self.save_mp_config(mp_config, True, no_remote)
         return mp_config
 
