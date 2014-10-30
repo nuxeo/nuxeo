@@ -17,9 +17,10 @@ author: lkemen@nuxeo.com
 
 .foldableBox h3,
 .gridBox .foldableBox h3 {
+  border-bottom: 1px solid transparent;
+  display: inline-block;
   font-size: 1.15em;
   font-weight: normal;
-  border-bottom: 1px solid transparent;
   margin: 0;
   min-height: 1.3em;
   padding: .7em 1em }
