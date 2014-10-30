@@ -116,7 +116,8 @@ class ReleaseMP(object):
                                                 marketplace, "other_versions",
                                                 None))
                 mp_release.log_summary()
-                mp_release.prepare(dryrun=dryrun, upgrade_only=upgrade_only)
+                mp_release.prepare(dryrun=dryrun, upgrade_only=upgrade_only,
+                                   dodeploy=True)
                 prepared = True
             except Exception, e:
                 stack = traceback.format_exc()
