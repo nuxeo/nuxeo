@@ -14,8 +14,6 @@
         <property name="coreSession">#{documentManager}</property>
         <property name="generateUIComments">true</property>
         <parameter>#{currentDocument.id}</parameter>
-        <sort column="log.eventDate" ascending="false" />
-        <pageSize>10</pageSize>        
       </pageProvider>
 
       <searchLayout name="basicauditsearch" filterDisplayType="quick" />

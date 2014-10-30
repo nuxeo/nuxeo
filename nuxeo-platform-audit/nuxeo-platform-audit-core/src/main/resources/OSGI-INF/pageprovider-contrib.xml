@@ -52,8 +52,8 @@
           <field schema="basicauditsearch" name="principalNames" />
         </predicate>
       </whereClause>
-      <sort column="log.eventDate" ascending="true" />
-      <sort column="log.id" ascending="true" />
+      <sort column="log.eventDate" ascending="false" />
+      <sort column="log.id" ascending="false" />
       <pageSize>10</pageSize>
       <maxPageSize>1000</maxPageSize>
     </genericPageProvider>

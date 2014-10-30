@@ -149,8 +149,7 @@ public class TestDocumentAuditPageProvider  {
 
         // create, 15+1 update , 2 checkin
         assertEquals(19, entries.size());
-        long startIdx = entries.get(0).getId();
-        long endIdx = entries.get(17).getId();
+        long startId = entries.get(entries.size() - 1).getId();
 
         // Get Proxy history
         pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,
@@ -165,10 +164,10 @@ public class TestDocumentAuditPageProvider  {
         int proxyEntriesCount = 19 - 5 + 1 + 1;
         assertEquals(proxyEntriesCount, entries.size());
 
-        assertEquals(Long.valueOf(startIdx).longValue(), entries.get(0).getId());
+        assertEquals(Long.valueOf(startId).longValue(), entries.get(proxyEntriesCount - 1).getId());
         assertEquals(
-                Long.valueOf(startIdx + proxyEntriesCount + 1).longValue(),
-                entries.get(proxyEntriesCount - 1).getId());
+                Long.valueOf(startId + proxyEntriesCount + 1).longValue(),
+                entries.get(0).getId());
 
         // Get version 1 history
         pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,
@@ -180,11 +179,11 @@ public class TestDocumentAuditPageProvider  {
         // creation + 5 updates + update + checkin + created
         int version1EntriesCount = 1 + 5 + 1 + 1 + 1;
         if (version1EntriesCount == entries.size()) {
-            assertEquals(Long.valueOf(startIdx).longValue(),
-                    entries.get(0).getId());
-            assertEquals(
-                    Long.valueOf(startIdx + version1EntriesCount - 1).longValue(),
+            assertEquals(Long.valueOf(startId).longValue(),
                     entries.get(version1EntriesCount - 1).getId());
+            assertEquals(
+                    Long.valueOf(startId + version1EntriesCount - 1).longValue(),
+                    entries.get(0).getId());
         } else {
             // because update even may be 1ms behind checkin/created !
             assertEquals(version1EntriesCount - 1, entries.size());
@@ -202,9 +201,9 @@ public class TestDocumentAuditPageProvider  {
         // creation + 5x2 updates + checkin/update + checkin + created
         int versin2EntriesCount = 1 + 5 * 2 + 1 + 1 + 1 + 1;
         assertEquals(versin2EntriesCount, entries.size());
-        assertEquals(Long.valueOf(startIdx).longValue(), entries.get(0).getId());
-        assertEquals(Long.valueOf(startIdx + versin2EntriesCount).longValue(),
-                entries.get(versin2EntriesCount - 1).getId());
+        assertEquals(Long.valueOf(startId).longValue(), entries.get(versin2EntriesCount - 1).getId());
+        assertEquals(Long.valueOf(startId + versin2EntriesCount).longValue(),
+                entries.get(0).getId());
 
     }
 

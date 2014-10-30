@@ -73,9 +73,9 @@ public class AuditTest extends BaseTest {
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         List<JsonNode> nodes = getLogEntries(node);
         assertEquals(2, nodes.size());
-        assertEquals("documentCreated",
-                nodes.get(0).get("eventId").getValueAsText());
         assertEquals("documentModified",
+                nodes.get(0).get("eventId").getValueAsText());
+        assertEquals("documentCreated",
                 nodes.get(1).get("eventId").getValueAsText());
     }
 
@@ -382,8 +382,8 @@ public class AuditTest extends BaseTest {
         assertEquals(3, node.get("numberOfPages").getIntValue());
         nodes = getLogEntries(node);
         assertEquals(2, nodes.size());
-        assertEquals("firstEvent", nodes.get(0).get("eventId").getValueAsText());
-        assertEquals("secondEvent",
+        assertEquals("sixthEvent", nodes.get(0).get("eventId").getValueAsText());
+        assertEquals("fifthEvent",
                 nodes.get(1).get("eventId").getValueAsText());
 
         queryParams = new MultivaluedMapImpl();
@@ -400,10 +400,10 @@ public class AuditTest extends BaseTest {
         assertEquals(2, node.get("numberOfPages").getIntValue());
         nodes = getLogEntries(node);
         assertEquals(3, nodes.size());
-        assertEquals("fourthEvent",
+        assertEquals("thirdEvent",
                 nodes.get(0).get("eventId").getValueAsText());
-        assertEquals("fifthEvent", nodes.get(1).get("eventId").getValueAsText());
-        assertEquals("sixthEvent", nodes.get(2).get("eventId").getValueAsText());
+        assertEquals("secondEvent", nodes.get(1).get("eventId").getValueAsText());
+        assertEquals("firstEvent", nodes.get(2).get("eventId").getValueAsText());
 
         queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("category", "One");
