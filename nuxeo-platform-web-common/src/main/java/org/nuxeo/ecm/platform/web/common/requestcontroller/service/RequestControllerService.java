@@ -47,6 +47,9 @@ public class RequestControllerService extends DefaultComponent implements
 
     public static final String CORS_CONFIG_EP = "corsConfig";
 
+    /**
+     * @since 6.0
+     */
     public static final String HEADERS_CONFIG_EP = "responseHeaders";
 
     private static final Log log = LogFactory.getLog(RequestControllerService.class);

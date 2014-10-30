@@ -26,7 +26,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  * Header description registry model.
  *
  * @author <a href="mailto:tm@nuxeo.com">Thierry Martins</a>
- * @since6.0
+ * @since 6.0
  */
 public class NuxeoHeaderDescriptorRegistry extends
         ContributionFragmentRegistry<NuxeoHeaderDescriptor> {

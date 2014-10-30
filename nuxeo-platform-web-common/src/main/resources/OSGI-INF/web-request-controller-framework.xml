@@ -119,6 +119,7 @@
         <header name="WWW-Authenticate" enabled="true">basic</header>
       </code>
       @author Thierry Martins (tm@nuxeo.com)
+      @since 6.0
     </documentation>
     <object
       class="org.nuxeo.ecm.platform.web.common.requestcontroller.service.NuxeoHeaderDescriptor" />
