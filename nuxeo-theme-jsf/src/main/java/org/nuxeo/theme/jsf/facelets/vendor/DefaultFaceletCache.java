@@ -40,6 +40,7 @@
 
 package org.nuxeo.theme.jsf.facelets.vendor;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
@@ -166,9 +167,19 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
             return null;
         }
 
-        // XXX only handle cases where Last Modified triggers an error first...
-        if (origError != null && origError.getMessage() != null
-                && !origError.getMessage().contains(Util.LAST_MODIFIED_ERROR)) {
+        boolean errorShouldBeCaught = origError != null;
+        if (errorShouldBeCaught) {
+            String errorMessage = origError.getMessage();
+            if (errorMessage != null
+                    && errorMessage.contains(Util.LAST_MODIFIED_ERROR)) {
+                errorShouldBeCaught = false;
+            }
+            Throwable t = origError.getCause();
+            if (t instanceof FileNotFoundException) {
+                errorShouldBeCaught = false;
+            }
+        }
+        if (errorShouldBeCaught) {
             _unwrapIOException(origError);
             return null;
         }
