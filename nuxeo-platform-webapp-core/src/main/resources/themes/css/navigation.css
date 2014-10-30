@@ -144,7 +144,7 @@ author: lkemen@nuxeo.com
 
 .tabsBar.vertical li a,
 .tabsBar.vertical li a:visited {
-  color: "gray.light (__FLAVOR__ color)";
+  color: "link.vertical.tabs (__FLAVOR__ color)";
   display: block;
   font-size: 1.1em;
   border-top: none;

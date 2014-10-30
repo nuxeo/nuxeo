@@ -126,10 +126,10 @@ input[placeholder] {
 #document_create .buttonsGadget .horizontalAction:first-child .button,
 .button.primary,
 input.button.primary {
-  color: #fff;
-  border: 1px solid #00adff;
-  background-color: #00adff;
-  box-shadow: inset 0px 1px 0px rgba(255,255,255,0.3) }
+  background-color: "primary.button (__FLAVOR__ background)";
+  border: 1px solid;
+  box-shadow: inset 0px 1px 0px rgba(255,255,255,0.3);
+  color: #fff }
 
 #document_create .buttonsGadget .horizontalAction:first-child .button:hover,
 .button.primary:hover,

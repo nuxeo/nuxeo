@@ -378,7 +378,8 @@ input.tinyButton {
   display: block }
 
 .column .importButton {
-  background: url('${basePath}/icons/import.png') no-repeat scroll 29% center / 25px 25px #00adff;
+  background: url('${basePath}/icons/import.png') no-repeat scroll 29% center / 25px 25px;
+  background-color: "import.button (__FLAVOR__ background)";
   border: none;
   border-radius: 2px;
   box-shadow: none;
