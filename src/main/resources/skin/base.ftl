@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="${skinPath}/css/normalize.css">
   <link rel="stylesheet" href="${skinPath}/css/site.css">
   <link rel="shortcut icon" href="${skinPath}/img/favicon.ico" />
+  <link rel="stylesheet" href="//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/css/xnav.css" type="text/css">
 </head>
 
 <body>
