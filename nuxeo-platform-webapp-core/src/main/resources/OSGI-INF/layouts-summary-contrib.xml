@@ -656,6 +656,9 @@
         <control name="requireSurroundingForm">true</control>
         <control name="handleLabels">true</control>
       </controls>
+      <widgetModes>
+        <mode value="any">#{empty currentDocumentAsBlobHolder?'hidden':mode}</mode>
+      </widgetModes>
     </widget>
 
     <widget name="summary_current_document_view" type="summary_current_document_view">
