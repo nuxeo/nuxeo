@@ -33,7 +33,7 @@ public interface SearchConfiguration extends
      *
      * @return an unmodifiable list of String or null.
      */
-    List<String> getDeniedContentViewNames();
+    List<String> getAllowedContentViewNames();
 
     /**
      * Provide a filter to remove unauthorized content views name.

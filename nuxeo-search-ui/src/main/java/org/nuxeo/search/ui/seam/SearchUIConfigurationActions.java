@@ -22,7 +22,6 @@ import static org.nuxeo.search.ui.localconfiguration.Constants.SEARCH_CONFIGURAT
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,6 +31,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -59,8 +59,6 @@ public class SearchUIConfigurationActions implements Serializable {
     @In(create = true)
     protected transient ContentViewService contentViewService;
 
-    protected List<ContentViewHeader> registeredContentViewHeaders;
-
     public List<ContentViewHeader> getSelectedContentViewHeaders()
             throws Exception {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
@@ -73,17 +71,26 @@ public class SearchUIConfigurationActions implements Serializable {
             return Collections.emptyList();
         }
 
-        List<String> notAllowedContentView = getDeniedContentViewNames(document);
-        List<ContentViewHeader> allowedContentView = new ArrayList<>();
         SearchUIService searchUIService = Framework.getService(SearchUIService.class);
         List<ContentViewHeader> contentViewHeaders = searchUIService.getContentViewHeaders(actionContextProvider.createActionContext());
+
+        List<String> allowedContentViewNames = getAllowedContentViewNames(document);
+        if (allowedContentViewNames.isEmpty()) {
+            LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
+            SearchConfiguration configuration = localConfigurationService.getConfiguration(
+                    SearchConfiguration.class, SEARCH_CONFIGURATION_FACET,
+                    document);
+            allowedContentViewNames = configuration.getAllowedContentViewNames();
+        }
+
+        List<ContentViewHeader> selectedContentViewHeaders = new ArrayList<>();
         for (ContentViewHeader contentViewHeader : contentViewHeaders) {
-            if (!notAllowedContentView.contains(contentViewHeader.getName())) {
-                allowedContentView.add(contentViewHeader);
+            if (allowedContentViewNames.contains(contentViewHeader.getName())) {
+                selectedContentViewHeaders.add(contentViewHeader);
             }
         }
 
-        return allowedContentView;
+        return selectedContentViewHeaders;
     }
 
     public List<ContentViewHeader> getNotSelectedContentViewHeaders()
@@ -97,25 +104,26 @@ public class SearchUIConfigurationActions implements Serializable {
         if (!document.hasFacet(SEARCH_CONFIGURATION_FACET)) {
             return Collections.emptyList();
         }
-        return getContentViewHeaders(getDeniedContentViewNames(document));
+
+        List<ContentViewHeader> notSelectedContentViewHeaders = new ArrayList<>();
+        List<ContentViewHeader> selectedContentViewHeaders = getSelectedContentViewHeaders(document);
+        SearchUIService searchUIService = Framework.getService(SearchUIService.class);
+        List<ContentViewHeader> contentViewHeaders = searchUIService.getContentViewHeaders(actionContextProvider.createActionContext());
+        for (ContentViewHeader contentViewHeader : contentViewHeaders) {
+            if (!selectedContentViewHeaders.contains(contentViewHeader)) {
+                notSelectedContentViewHeaders.add(contentViewHeader);
+            }
+        }
+
+        return notSelectedContentViewHeaders;
     }
 
-    protected List<String> getDeniedContentViewNames(DocumentModel doc) {
+    protected List<String> getAllowedContentViewNames(DocumentModel doc) {
         SearchConfiguration adapter = doc.getAdapter(SearchConfiguration.class);
         if (adapter == null) {
             return Collections.emptyList();
         }
 
-        return adapter.getDeniedContentViewNames();
+        return adapter.getAllowedContentViewNames();
     }
-
-    protected List<ContentViewHeader> getContentViewHeaders(
-            Collection<String> contentViewsNames) throws Exception {
-        List<ContentViewHeader> contentViews = new ArrayList<>();
-        for (String name : contentViewsNames) {
-            contentViews.add(contentViewService.getContentViewHeader(name));
-        }
-        return contentViews;
-    }
-
 }

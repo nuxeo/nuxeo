@@ -17,7 +17,7 @@
 
 package org.nuxeo.search.ui.localconfiguration;
 
-import static org.nuxeo.search.ui.localconfiguration.Constants.SEARCH_CONFIGURATION_DENIED_CONTENT_VIEWS;
+import static org.nuxeo.search.ui.localconfiguration.Constants.SEARCH_CONFIGURATION_ALLOWED_CONTENT_VIEWS;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,14 +38,16 @@ public class SearchConfigurationAdapter extends
         AbstractLocalConfiguration<SearchConfiguration> implements
         SearchConfiguration {
 
-    protected List<String> deniedContentViews;
+    protected List<String> allowedContentViews;
 
     protected DocumentRef docRef;
 
+    protected boolean canMerge = true;
+
     public SearchConfigurationAdapter(DocumentModel doc) {
         docRef = doc.getRef();
-        deniedContentViews = getList(doc,
-                SEARCH_CONFIGURATION_DENIED_CONTENT_VIEWS);
+        allowedContentViews = getList(doc,
+                SEARCH_CONFIGURATION_ALLOWED_CONTENT_VIEWS);
     }
 
     protected List<String> getList(DocumentModel doc, String property) {
@@ -68,7 +70,7 @@ public class SearchConfigurationAdapter extends
 
     @Override
     public boolean canMerge() {
-        return true;
+        return canMerge;
     }
 
     @Override
@@ -77,34 +79,39 @@ public class SearchConfigurationAdapter extends
             return this;
         }
 
+        // set the documentRef to the other UITypesConfiguration to continue
+        // merging, if needed
         docRef = other.getDocumentRef();
-
-        List<String> deniedCV = new ArrayList<>(this.deniedContentViews);
-        deniedCV.addAll(other.getDeniedContentViewNames());
-        this.deniedContentViews = Collections.unmodifiableList(deniedCV);
+        if (allowedContentViews.isEmpty()
+                && !other.getAllowedContentViewNames().isEmpty()) {
+            this.allowedContentViews = Collections.unmodifiableList(other.getAllowedContentViewNames());
+            canMerge = false;
+        }
 
         return this;
     }
 
     @Override
-    public List<String> getDeniedContentViewNames() {
-        return deniedContentViews;
+    public List<String> getAllowedContentViewNames() {
+        return allowedContentViews;
     }
 
     protected boolean isAllowedName(String name) {
-        return !getDeniedContentViewNames().contains(name);
+        return getAllowedContentViewNames().contains(name);
     }
 
     @Override
     public List<String> filterAllowedContentViewNames(List<String> names) {
-        List<String> filtered = new ArrayList<>();
+        if (allowedContentViews.isEmpty()) {
+            return names;
+        }
 
+        List<String> filtered = new ArrayList<>();
         for (String name : names) {
             if (isAllowedName(name)) {
                 filtered.add(name);
             }
         }
-
         return filtered;
     }
 }

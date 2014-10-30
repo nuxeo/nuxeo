@@ -22,7 +22,7 @@
       </labels>
       <translated>true</translated>
       <fields>
-        <field>searchc:deniedContentViews</field>
+        <field>searchc:allowedContentViews</field>
       </fields>
       <properties mode="any">
         <property name="availableElementsLabel">

@@ -22,7 +22,7 @@ package org.nuxeo.search.ui.localconfiguration;
  */
 public class Constants {
 
-    public static final String SEARCH_CONFIGURATION_DENIED_CONTENT_VIEWS = "searchc:deniedContentViews";
+    public static final String SEARCH_CONFIGURATION_ALLOWED_CONTENT_VIEWS = "searchc:allowedContentViews";
 
     public static final String SEARCH_CONFIGURATION_FACET = "SearchConfiguration";
 }

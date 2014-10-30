@@ -7,6 +7,6 @@
     <xs:list itemType="xs:string" />
   </xs:simpleType>
 
-  <xs:element name="deniedContentViews" type="nxs:stringArray"/>
+  <xs:element name="allowedContentViews" type="nxs:stringArray"/>
 
 </xs:schema>
