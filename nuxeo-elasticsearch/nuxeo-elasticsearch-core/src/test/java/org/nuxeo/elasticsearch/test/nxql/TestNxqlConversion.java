@@ -206,6 +206,21 @@ public class TestNxqlConversion {
                 "  }\n" +
                 "}", es);
         es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where f1 NOT IN (1, '2', 3)").toString();
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"constant_score\" : {\n" +
+                "    \"filter\" : {\n" +
+                "      \"not\" : {\n" +
+                "        \"filter\" : {\n" +
+                "          \"terms\" : {\n" +
+                "            \"f1\" : [ \"1\", \"2\", \"3\" ]\n" +
+                "          }\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
+        es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1 LIKE 'foo%'").toString();
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"match\" : {\n" +
