@@ -133,7 +133,7 @@
             <c:choose>
               <c:when test="#{foldable}">
                 <div class="#{nxu:test(finalFolded, 'folded', 'unfolded')}">
-                  <a class="foldableHeaderLinkf" href="#nogo" onclick="return toggleBox(this)">
+                  <a class="foldableHeaderLink" href="#nogo" onclick="return toggleBox(this)">
                     <c:if test="#{not empty finalTitle}">
                       <c:if test="#{!empty contentViewIconPath}">
                         <nxu:graphicImage value="#{contentViewIconPath}"
