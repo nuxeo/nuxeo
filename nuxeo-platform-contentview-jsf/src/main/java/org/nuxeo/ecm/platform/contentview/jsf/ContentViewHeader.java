@@ -69,6 +69,28 @@ public class ContentViewHeader implements Serializable,
     }
 
     @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+        if (other == null) {
+            return false;
+        }
+        if (!(other instanceof ContentViewHeader)) {
+            return false;
+        }
+
+        ContentViewHeader otherContentViewHeader = (ContentViewHeader) other;
+        return name == null ? otherContentViewHeader.name == null
+                : name.equals(otherContentViewHeader.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
+    @Override
     public int compareTo(ContentViewHeader o) {
         if (o == null) {
             return 1;
