@@ -202,8 +202,7 @@ public class SAMLAuthenticationProvider
             }
 
         } catch (MetadataProviderException e) {
-            log.error("Failed to register IdP from " +
-                    parameters.get("metadata"));
+            log.warn("Failed to register IdP: " + e.getMessage());
         }
 
         // contribute icon and link to the Login Screen
@@ -226,9 +225,15 @@ public class SAMLAuthenticationProvider
 
     private void initializeMetadataProvider(Map<String, String> parameters)
             throws MetadataProviderException {
-        AbstractMetadataProvider metadataProvider = null;
+        AbstractMetadataProvider metadataProvider;
 
         String metadataUrl = parameters.get("metadata");
+        if (metadataUrl == null) {
+            throw new MetadataProviderException(
+                "No metadata URI set for provider " +
+                    ((parameters.containsKey("name")) ? parameters.get("name") : ""));
+        }
+
         int requestTimeout = parameters.containsKey("timeout") ?
                 Integer.parseInt(parameters.get("timeout")) : 5;
 
