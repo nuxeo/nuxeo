@@ -355,15 +355,15 @@
       </presetsList>
       <palettePreview>
         <colors>
-          <color>#cfecff</color>
-          <color>#70bbff</color>
-          <color>#4e9ae1</color>
+          <color>#17384e</color>
+          <color>#00adff</color>
+          <color>#00adff</color>
+          <color>#00adff</color>
           <color>#fff</color>
-          <color>#fff</color>
-          <color>#0079a6</color>
-          <color>#00416b</color>
-          <color>#332e2e</color>
+          <color>#00adff</color>
+          <color>#404040</color>
           <color>#cfecff</color>
+          <color>#e6f1ff</color>
         </colors>
       </palettePreview>
     </flavor>
@@ -386,15 +386,15 @@
       </presetsList>
       <palettePreview>
         <colors>
-          <color>#4a3a6e</color>
-          <color>#feffe6</color>
+          <color>#595ca1</color>
+          <color>#bdd4ef</color>
+          <color>#4095ff</color>
+          <color>#da4f70</color>
+          <color>#41b6ab</color>
+          <color>#b34f94</color>
+          <color>#332e2e</color>
           <color>#cfffd1</color>
-          <color>#aafff2</color>
-          <color>#99163e</color>
-          <color>#a9ff70</color>
-          <color>#e74c36</color>
-          <color>#00a2cb</color>
-          <color>#474747</color>
+          <color>#feffe6</color>
         </colors>
       </palettePreview>
     </flavor>
