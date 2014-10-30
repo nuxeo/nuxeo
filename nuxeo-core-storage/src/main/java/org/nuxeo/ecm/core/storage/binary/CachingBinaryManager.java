@@ -26,13 +26,14 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.file.FileCache;
 import org.nuxeo.common.file.LRUFileCache;
 import org.nuxeo.common.utils.SizeUtils;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -50,6 +51,8 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
 
     protected static final String LEN_DIGEST_SUFFIX = "-len";
 
+    protected File cachedir;
+
     public FileCache fileCache;
 
     protected FileStorage fileStorage;
@@ -62,11 +65,6 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
         descriptor.digest = getDigest();
         log.info("Repository '" + repositoryName + "' using "
                 + getClass().getSimpleName());
-    }
-
-    @Override
-    public void close() {
-        fileCache.clear();
     }
 
     /**
@@ -98,14 +96,25 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
     public void initializeCache(String cacheSizeStr,
             @SuppressWarnings("hiding") FileStorage fileStorage)
             throws IOException {
-        File dir = File.createTempFile("nxbincache.", "", null);
-        dir.delete();
-        dir.mkdir();
-        Framework.trackFile(dir, dir);
+        cachedir = File.createTempFile("nxbincache.", "", null);
+        cachedir.delete();
+        cachedir.mkdir();
         long cacheSize = SizeUtils.parseSizeInBytes(cacheSizeStr);
-        initializeCache(dir, cacheSize, fileStorage);
-        log.info("Using binary cache directory: " + dir.getPath() + " size: "
+        initializeCache(cachedir, cacheSize, fileStorage);
+        log.info("Using binary cache directory: " + cachedir.getPath() + " size: "
                 + cacheSizeStr);
+    }
+
+    @Override
+    public void close() {
+        fileCache.clear();
+        if (cachedir != null) {
+            try {
+                FileUtils.deleteDirectory(cachedir);
+            } catch (IOException e) {
+                throw new NuxeoException(e);
+            }
+        }
     }
 
     @Override
