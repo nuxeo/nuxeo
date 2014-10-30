@@ -80,6 +80,9 @@ author: lkemen@nuxeo.com
 .nxSearchForm .nx-less-more-ctrl:before {
   content: "+ ";}
 
+.nxSearchForm .widgetPanel .containerWidgetPanel {
+  padding-bottom: .5em }
+
 /* Studio forms specific */
 .nxSearchForm .studioFormTable .widgetLabel,
 .nxSearchForm .studioFormTable .containerWidgetPanel .widgetLabel {
