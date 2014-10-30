@@ -38,6 +38,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -71,6 +72,7 @@ import org.nuxeo.ecm.platform.ui.web.rest.FancyNavigationHandler;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.webapp.dnd.DndConfigurationHelper;
+import org.nuxeo.ecm.webapp.filemanager.FileManageActions;
 import org.nuxeo.ecm.webapp.filemanager.NxUploadedFile;
 import org.nuxeo.runtime.api.Framework;
 import org.richfaces.event.FileUploadEvent;
@@ -392,7 +394,13 @@ public class ImportActions implements Serializable {
             if (uploadedFiles == null) {
                 uploadedFiles = new ArrayList<NxUploadedFile>();
             }
-            File file = File.createTempFile("ImportActions", null);
+            String jstTmpFileDir = Framework.getProperty(FileManageActions.NUXEO_JSF_TMP_DIR_PROP);
+            File file = null;
+            if (StringUtils.isNotBlank(jstTmpFileDir)) {
+                file = File.createTempFile("ImportActions", null, new File(jstTmpFileDir));
+            } else {
+                file = File.createTempFile("ImportActions", null);
+            }
             InputStream in = uploadEvent.getUploadedFile().getInputStream();
             org.nuxeo.common.utils.FileUtils.copyToFile(in, file);
             uploadedFiles.add(new NxUploadedFile(

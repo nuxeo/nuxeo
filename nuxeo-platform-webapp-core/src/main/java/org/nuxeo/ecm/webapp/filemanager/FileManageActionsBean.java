@@ -587,7 +587,13 @@ public class FileManageActionsBean implements FileManageActions {
         try {
             if (fileUploadHolder != null) {
                 Collection<NxUploadedFile> temp = fileUploadHolder.getUploadedFiles();
-                File file = File.createTempFile("FileManageActionsFile", null);
+                File file = null;
+                String jstTmpFileDir = Framework.getProperty(NUXEO_JSF_TMP_DIR_PROP);
+                if (StringUtils.isNotBlank(jstTmpFileDir)) {
+                    file = File.createTempFile("FileManageActionsFile", null, new File(jstTmpFileDir));
+                } else {
+                    file = File.createTempFile("FileManageActionsFile", null);
+                }
                 InputStream in = uploadEvent.getUploadedFile().getInputStream();
                 org.nuxeo.common.utils.FileUtils.copyToFile(in, file);
                 temp.add(new NxUploadedFile(uploadEvent.getUploadedFile().getName(), uploadEvent.getUploadedFile().getContentType(), file));

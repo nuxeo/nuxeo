@@ -29,6 +29,11 @@ import org.nuxeo.ecm.platform.ui.web.api.SimpleFileManager;
 
 public interface FileManageActions extends SimpleFileManager {
 
+    /**
+     * @since 6.0
+     */
+    public static final String NUXEO_JSF_TMP_DIR_PROP = "nuxeo.jsf.tmp.dir";
+
     String display();
 
     /**
