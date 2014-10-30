@@ -69,12 +69,12 @@ public class ComponentRenderUtils {
         UIComponent target = null;
         UIComponent parent = component;
         UIComponent root = component;
-        while (null == target && null != parent) {
-            target = parent.findComponent(id);
+        while (target == null && parent != null) {
+            target = findUIComponentBelow(parent, id);
             root = parent;
             parent = parent.getParent();
         }
-        if (null == target) {
+        if (target == null) {
             target = findUIComponentBelow(root, id);
         }
         return target;
