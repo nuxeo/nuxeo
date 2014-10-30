@@ -415,8 +415,23 @@ public class SearchUIActions implements Serializable {
                 }
             }
 
-            contentViewActions.restoreContentView(getCurrentContentViewName(),
-                    finalCurrentPage, finalPageSize, null, state);
+            String cvName = getCurrentContentViewName();
+            List<ContentViewHeader> contentViewHeaders = getContentViewHeaders();
+            if (cvName != null && contentViewHeaders != null) {
+                boolean canRestore = false;
+                for (ContentViewHeader contentViewHeader : getContentViewHeaders()) {
+                    if (cvName.equals(contentViewHeader.getName())) {
+                        canRestore = true;
+                    }
+                }
+
+                if (canRestore) {
+                    contentViewActions.restoreContentView(getCurrentContentViewName(),
+                            finalCurrentPage, finalPageSize, null, state);
+                } else {
+                    invalidateContentViewsName();
+                }
+            }
         }
     }
 

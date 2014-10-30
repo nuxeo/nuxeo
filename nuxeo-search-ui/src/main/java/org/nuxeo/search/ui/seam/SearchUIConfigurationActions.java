@@ -80,7 +80,14 @@ public class SearchUIConfigurationActions implements Serializable {
             SearchConfiguration configuration = localConfigurationService.getConfiguration(
                     SearchConfiguration.class, SEARCH_CONFIGURATION_FACET,
                     document);
+            if (configuration == null) {
+                return contentViewHeaders;
+            }
             allowedContentViewNames = configuration.getAllowedContentViewNames();
+        }
+
+        if (allowedContentViewNames.isEmpty()) {
+            return contentViewHeaders;
         }
 
         List<ContentViewHeader> selectedContentViewHeaders = new ArrayList<>();
