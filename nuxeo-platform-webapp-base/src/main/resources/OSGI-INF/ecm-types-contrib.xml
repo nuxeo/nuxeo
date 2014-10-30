@@ -155,8 +155,8 @@
 
     <type id="SectionRoot">
       <label>SectionRoot</label>
-      <icon>/icons/folder.gif</icon>
-      <bigIcon>/icons/folder_100.png</bigIcon>
+      <icon>/icons/section.png</icon>
+      <bigIcon>/icons/section_100.png</bigIcon>
       <category>SuperDocument</category>
       <description>SectionRoot.description</description>
       <default-view>view_documents</default-view>
@@ -182,8 +182,8 @@
 
     <type id="Section">
       <label>Section</label>
-      <icon>/icons/folder.gif</icon>
-      <bigIcon>/icons/folder_100.png</bigIcon>
+      <icon>/icons/section.png</icon>
+      <bigIcon>/icons/section_100.png</bigIcon>
       <category>Collaborative</category>
       <description>Section.description</description>
       <default-view>view_documents</default-view>
