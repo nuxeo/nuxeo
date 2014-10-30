@@ -98,7 +98,7 @@ public final class FaceletHandlerHelper {
     /**
      * @since 6.0
      */
-    public static String DEV_MODE_DISABLED_VARIABLE = "nuxeolayoutDevModeDisabled";
+    public static String DEV_MODE_DISABLED_VARIABLE = "nuxeoLayoutDevModeDisabled";
 
     static final String LAYOUT_ID_COUNTERS = "org.nuxeo.ecm.platform.layouts.LAYOUT_ID_COUNTERS";
 
