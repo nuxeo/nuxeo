@@ -209,58 +209,7 @@ ready on `nuxeo_v2` you switch atomically
 
 ## Limitations
 
-- ACL filtering works only on simplified ACL. We don't support
-  negative ACE other than `Deny Everyone`. Documents with negative ACL
-  will not be accessible for non administrator accounts.
-
-  This simplified ACL is the default mode since 5.9.6 visit
-  [NXP-14045](https://jira.nuxeo.com/browse/NXP-14045) for more
-  information.
-
-- NXQL Limitations:
-
-  - Fulltext
-
-      - The fulltext syntax accepted is different from the default
-        NXQL.  It is the Elasticsearch [simple query string
-        syntax](http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html#_simple_query_string_syntax).
-
-      - The `ecm:fulltext` matches the Elasticsearch `_all` field
-        which is the concatenation of all fields. This is different
-        from the NXQL `ecm:fulltext` which matches only some explicit
-        fields. You can adapt the mapping to exclude some field see
-        above section for example.
-
-      - Custom fulltext indexes are not supported.
-        `ecm:fulltext_someindex` will match the `_all` field.
-
-      - Fulltext search on field is supported if the Elasticsearch
-        mapping is properly defined. For instance
-	`ecm:fulltext.dc:title = 'foo*'` works if there is a multi
-	field `dc:title.fulltext`. See above section for example.
-
-  - Fields are case-sensitive: `ecm:primaryType` vs `ecm:primarytype`
-
-  - The is no select clause support, so NO: DISTINCT, COUNT, AVERAGE,
-    MAX, MIN, operators like: + - / *.
-
-  - ILIKE will work only with a proper mapping with an analyzer
-    configured to lowercase index.
-
-  - There is no support of complex list correlations or indices support
-    we always search on all elements so this kind of query can not be done:
-
-        files:files/*1/file/name LIKE '%.txt' AND files:files/*1/file/length = 0
-        dc:subjects/3 = 'foo'
-
-    These previous queries will not match any documents. Note that the
-    match any `/*` is supported.
-
-  - No support of canonical name for complex properties without
-    prefix, so you need to write `file:content/name` and not just
-    `content/name`.  See
-    [NXP-15426](https://jira.nuxeo.com/browse/NXP-15426) for more
-    information.
+See http://doc.nuxeo.com/display/NXDOC/NXQL#NXQL-ElasticsearchLimitations
 
 
 ## Reporting Problems
