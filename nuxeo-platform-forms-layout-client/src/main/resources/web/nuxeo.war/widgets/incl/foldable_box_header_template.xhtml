@@ -9,7 +9,7 @@
   <c:if test="#{not hideHeader}">
 
     <c:if test="#{empty headerFormId}">
-      <h3 class="#{headerStyleClass} #{nxu:test(foldable, nxu:test(foldedByDefault, 'folded', 'unfolded'), 'foldedDisabled')}">
+      <div class="#{headerStyleClass} #{nxu:test(foldable, nxu:test(foldedByDefault, 'folded', 'unfolded'), 'foldedDisabled')}">
         <c:choose>
           <c:when test="#{foldable}">
             <a class="foldableHeaderLink" href="#nogo" onclick="return toggleBox(this)">
@@ -20,12 +20,12 @@
             <ui:insert name="foldable_box_header_content" />
           </c:otherwise>
         </c:choose>
-      </h3>
+      </div>
     </c:if>
 
     <c:if test="#{not empty headerFormId}">
       <h:form id="#{headerFormId}">
-        <h3 class="#{headerStyleClass} #{nxu:test(foldable, nxu:test(foldedByDefault, 'folded', 'unfolded'), 'foldedDisabled')}">
+        <div class="#{headerStyleClass} #{nxu:test(foldable, nxu:test(foldedByDefault, 'folded', 'unfolded'), 'foldedDisabled')}">
           <c:choose>
             <c:when test="#{foldable}">
               <a class="foldableHeaderLink" href="#nogo" onclick="return toggleBoxFor(this.parentNode, this.parentNode.parentNode.parentNode.children[1])">
@@ -36,7 +36,7 @@
               <ui:insert name="foldable_box_header_content" />
             </c:otherwise>
           </c:choose>
-        </h3>
+        </div>
       </h:form>
     </c:if>
   </c:if>

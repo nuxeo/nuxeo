@@ -132,8 +132,8 @@
             value="#{nxu:test(empty contentViewIconPath, contentView.iconPath, contentViewIconPath)}">
             <c:choose>
               <c:when test="#{foldable}">
-                <h3 class="#{nxu:test(finalFolded, 'folded', 'unfolded')}">
-                  <a class="foldableHeaderLink" href="#nogo" onclick="return toggleBox(this)">
+                <div class="#{nxu:test(finalFolded, 'folded', 'unfolded')}">
+                  <a class="foldableHeaderLinkf" href="#nogo" onclick="return toggleBox(this)">
                     <c:if test="#{not empty finalTitle}">
                       <c:if test="#{!empty contentViewIconPath}">
                         <nxu:graphicImage value="#{contentViewIconPath}"
@@ -149,7 +149,15 @@
                       #{messages['label.foldableBox.foldUnfold']}
                     </c:if>
                   </a>
-                </h3>
+                  <ui:insert name="content_view_selector">
+                    <ui:include src="/incl/content_view_upper_actions.xhtml">
+                      <ui:param name="contentIdToBeReRendered"
+                        value="#{nxu:joinRender(nxu:componentAbsoluteId(component, resultsPanelId), ajaxReRender)}" />
+                      <ui:param name="actionStyleClass" value="smallButton" />
+                    </ui:include>
+                    <div style="clear:both;" />
+                  </ui:insert>
+                </div>
               </c:when>
               <c:otherwise>
                 <nxu:set var="finalShowTitle"
@@ -188,13 +196,15 @@
             </c:if>
           </ui:insert>
 
-          <ui:insert name="content_view_selector">
-            <ui:include src="/incl/content_view_upper_actions.xhtml">
-              <ui:param name="contentIdToBeReRendered"
-                value="#{nxu:joinRender(nxu:componentAbsoluteId(component, resultsPanelId), ajaxReRender)}" />
-            </ui:include>
-            <div style="clear:both;" />
-          </ui:insert>
+          <c:if test="#{not foldable}">
+            <ui:insert name="content_view_selector">
+              <ui:include src="/incl/content_view_upper_actions.xhtml">
+                <ui:param name="contentIdToBeReRendered"
+                  value="#{nxu:joinRender(nxu:componentAbsoluteId(component, resultsPanelId), ajaxReRender)}" />
+              </ui:include>
+              <div style="clear:both;" />
+            </ui:insert>
+          </c:if>
 
           <ui:insert name="content_view_search_layout">
             <c:if test="#{contentView.searchLayout.filterDisplayType == 'default' or empty contentView.searchLayout.filterDisplayType}">
