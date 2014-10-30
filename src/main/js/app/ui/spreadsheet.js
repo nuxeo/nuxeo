@@ -39,7 +39,7 @@ class Spreadsheet {
       startRows: 0,
       currentRowClassName: 'currentRow',
       currentColClassName: 'currentCol',
-      contextMenu: ['undo', 'redo', 'sep1', 'sep2', 'sep3'],
+      contextMenu: ['undo', 'redo'],
       afterChange: this.onChange.bind(this),
       search: true,
       cells: this.createCell.bind(this)
@@ -119,6 +119,7 @@ class Spreadsheet {
     this._data.length = 0;
     this._dirty = {};
     this.query.page = 0;
+    this.ht.clearUndo();
     return this._fetch();
   }
 
@@ -149,6 +150,7 @@ class Spreadsheet {
     ).catch((err) => {
       console.log(err);
     }).then((result) => {
+      this.ht.clearUndo();
       this.ht.render();
       return result;
     });
