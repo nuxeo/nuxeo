@@ -161,6 +161,10 @@ input.tinyButton {
 .contentViewUpperActions .actionsWidgetPanel {
   padding: 0 }
 
+.contentViewUpperAction img {
+  max-width: 16px;
+  max-height: 16px }
+
 .contentViewUpperAction {
   display: inline-block;
   padding: 0 0 0 .1em;
