@@ -8,14 +8,13 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   id="#{layout.id}">
-<h:panelGroup styleClass="#{layoutProperty_styleClass}" layout="block">
 
   <c:set var="isEditMode" value="#{nxl:isBoundToEditMode(layout.mode)}" />
   <nxu:set var="layoutWidgetsDisplay"
     value="#{layout.properties.widgetsDisplay}"
     resolveTwice="true">
 
-    <table class="dataInput">
+    <table class="#{nxu:joinRender('dataInput', layoutProperty_styleClass)}">
       <tbody>
 
         <nxl:layoutRow>
@@ -84,5 +83,4 @@
 
   </nxu:set>
 
-</h:panelGroup>
 </f:subview>
