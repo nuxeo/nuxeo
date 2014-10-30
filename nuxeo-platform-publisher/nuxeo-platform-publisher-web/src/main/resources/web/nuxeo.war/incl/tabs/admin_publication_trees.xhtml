@@ -43,11 +43,11 @@
                       iconExpanded="/icons/toggle_minus.png"
                       iconCollapsed="/icons/toggle_plus.png"
                       rowKeyVar="rowKey"
-                      stateVar="nodeState">
+                      stateVar="nodeState"
+                      var="node">
                 <rich:treeModelRecursiveAdaptor
                         roots="#{adminPublishActions.currentSectionsTree}"
-                        nodes="#{node.children}"
-                        var="node">
+                        nodes="#{node.children}">
                   <rich:treeNode
                           highlightedClass="treeNodeHighlightedClass"
                           selectedClass="treeNodeSelectedClass">

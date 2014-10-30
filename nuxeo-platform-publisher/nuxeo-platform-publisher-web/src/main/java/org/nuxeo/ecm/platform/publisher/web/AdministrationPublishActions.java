@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.publisher.web;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -95,7 +96,7 @@ public class AdministrationPublishActions extends AbstractPublishActions
         return currentSectionRootId;
     }
 
-    public DocumentTreeNode getCurrentSectionsTree() throws ClientException {
+    public List<DocumentTreeNode> getCurrentSectionsTree() throws ClientException {
         DocumentModel sectionsRoot = null;
 
         sectionRoots = getSectionRoots();
@@ -110,7 +111,7 @@ public class AdministrationPublishActions extends AbstractPublishActions
 
         sectionsTree = getDocumentTreeNode(sectionsRoot);
 
-        return sectionsTree;
+        return Collections.singletonList(sectionsTree);
     }
 
     public void setCurrentSectionRootId(String currentSectionRootId) {
