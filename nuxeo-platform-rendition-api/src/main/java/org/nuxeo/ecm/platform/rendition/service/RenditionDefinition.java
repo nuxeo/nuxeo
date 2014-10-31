@@ -50,13 +50,13 @@ public class RenditionDefinition {
     protected String operationChain;
         
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @XNode("allowEmptyBlob")
     protected boolean allowEmptyBlob = false;
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @XNode("@visible")
     protected boolean visible = true;
