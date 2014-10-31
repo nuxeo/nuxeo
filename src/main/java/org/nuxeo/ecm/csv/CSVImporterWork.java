@@ -284,7 +284,7 @@ public class CSVImporterWork extends AbstractWork {
      * @return {@code true} if a document has been created or updated,
      *         {@code false} otherwise.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     protected boolean importRecord(CSVRecord record, Map<String, Integer> header) {
         final String name = record.get(CSV_NAME_COL);
@@ -319,7 +319,7 @@ public class CSVImporterWork extends AbstractWork {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     protected Map<String, Serializable> computePropertiesMap(CSVRecord record,
             DocumentType docType, Map<String, Integer> header) {
