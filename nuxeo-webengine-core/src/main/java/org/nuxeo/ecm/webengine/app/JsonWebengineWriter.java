@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class JsonWebengineWriter {
 

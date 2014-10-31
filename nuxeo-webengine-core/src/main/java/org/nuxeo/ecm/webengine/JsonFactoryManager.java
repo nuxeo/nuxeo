@@ -19,7 +19,7 @@ package org.nuxeo.ecm.webengine;
 import org.codehaus.jackson.JsonFactory;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public interface JsonFactoryManager {
     JsonFactory getJsonFactory();

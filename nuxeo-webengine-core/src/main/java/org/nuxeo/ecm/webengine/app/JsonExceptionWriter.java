@@ -31,7 +31,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 @Provider
 @Produces({ MediaType.APPLICATION_JSON,
