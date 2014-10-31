@@ -6,7 +6,7 @@
 
     <widgetType name="selectManyCheckboxAggregate">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>Checkbox</title>
         <description>
           A widget to display aggregate result with checkboxes.
@@ -63,7 +63,7 @@
 
     <widgetType name="selectManyListboxAggregate">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>Select</title>
         <description>
           A widget to display aggregate result with select2.
@@ -121,7 +121,7 @@
 
     <widgetType name="selectManyCheckboxDirectoryAggregate">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>Directory Checkbox</title>
         <description>
           A widget to display aggregate result with checkboxes.
@@ -209,7 +209,7 @@
 
     <widgetType name="selectManyListboxDirectoryAggregate">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>Directory Select</title>
         <description>
           A widget to display aggregate result with select2.
@@ -298,7 +298,7 @@
 
     <widgetType name="selectManyCheckboxDocumentAggregate">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>Document Checkbox</title>
         <description>Select Many Checkbox Document Aggregate</description>
         <description>
@@ -358,7 +358,7 @@
 
     <widgetType name="selectManyListboxDocumentAggregate">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>Document Select</title>
         <description>Select2 Document Aggregate Widget</description>
         <description>
@@ -420,7 +420,7 @@
 
     <widgetType name="selectManyCheckboxUserAggregate">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>User Checkbox</title>
         <description>Select Many Checkbox User Aggregate</description>
         <description>
@@ -480,7 +480,7 @@
 
     <widgetType name="selectManyListboxUserAggregate">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>User Select</title>
         <description>Select2 User Aggregate Widget</description>
         <description>
@@ -542,7 +542,7 @@
 
     <widgetType name="selectManyCheckboxHistogramAggregate">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>Histogram Checkbox</title>
         <description>
           A widget to display histogram aggregate result with checkboxes.
@@ -602,7 +602,7 @@
 
     <widgetType name="selectManyListboxHistogramAggregate">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>Histogram Select</title>
         <description>
           A widget to display histogram aggregate result with select2.
@@ -661,7 +661,7 @@
 
     <widgetType name="selectManyCheckboxDateHistogramAggregate">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>Date Histogram Checkbox</title>
         <description>
           A widget to display date histogram aggregate result with checkboxes.
@@ -721,7 +721,7 @@
 
     <widgetType name="selectManyListboxDateHistogramAggregate">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>Date Histogram Select</title>
         <description>
           A widget to display date histogram aggregate result with select2.
@@ -780,7 +780,7 @@
 
     <widgetType name="selectManyCheckboxDateRangeAggregate">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>Date Range Checkbox</title>
         <description>
           A widget to display date range aggregate result with checkboxes.
@@ -842,7 +842,7 @@
 
     <widgetType name="selectManyListboxDateRangeAggregate">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>Date Range Select</title>
         <description>
           A widget to display date range aggregate result with select2.
@@ -903,7 +903,7 @@
 
     <widgetType name="selectManyCheckboxRangeAggregate">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>Range Checkbox</title>
         <description>
           A widget to display range aggregate result with checkboxes.
@@ -965,7 +965,7 @@
 
     <widgetType name="selectManyListboxRangeAggregate">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>Range Select</title>
         <description>
           A widget to display date range aggregate result with select2.

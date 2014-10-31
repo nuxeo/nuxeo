@@ -44,7 +44,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  *
  * @author Anahide Tchertchian
  * @since 5.4
- * @deprecated since 5.9.6. Not used anymore, see NXP-14992.
+ * @deprecated since 6.0. Not used anymore, see NXP-14992.
  */
 @Deprecated
 @Name("documentSearchActions")

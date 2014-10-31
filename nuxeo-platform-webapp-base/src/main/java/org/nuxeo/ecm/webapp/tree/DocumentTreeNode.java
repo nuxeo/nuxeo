@@ -65,12 +65,12 @@ public interface DocumentTreeNode extends Serializable {
     void fetchChildren();
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     void setExpanded(boolean expanded);
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     boolean isExpanded();
 

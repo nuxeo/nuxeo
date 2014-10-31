@@ -126,7 +126,7 @@ public class JSONLayoutExporter {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static void exportLayoutType(LayoutTypeDefinition def,
             OutputStream out) throws IOException {
@@ -135,7 +135,7 @@ public class JSONLayoutExporter {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static void exportLayoutTypes(List<LayoutTypeDefinition> defs,
             OutputStream out) throws IOException {
@@ -466,7 +466,7 @@ public class JSONLayoutExporter {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static JSONObject exportToJson(LayoutTypeDefinition def) {
         JSONObject json = new JSONObject();
@@ -494,7 +494,7 @@ public class JSONLayoutExporter {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @SuppressWarnings("unchecked")
     public static LayoutTypeDefinition importLayoutTypeDefinition(
@@ -514,7 +514,7 @@ public class JSONLayoutExporter {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static JSONObject exportToJson(LayoutTypeConfiguration conf) {
         JSONObject json = new JSONObject();
@@ -600,7 +600,7 @@ public class JSONLayoutExporter {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @SuppressWarnings("unchecked")
     public static LayoutTypeConfiguration importLayoutTypeConfiguration(

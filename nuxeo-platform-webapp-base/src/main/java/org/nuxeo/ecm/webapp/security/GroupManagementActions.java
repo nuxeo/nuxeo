@@ -82,21 +82,21 @@ public class GroupManagementActions extends AbstractUserGroupManagement
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public String getSelectedGroupName() {
         return selectedGroup.getId();
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public void setSelectedGroupName(String groupName) throws ClientException {
         setSelectedGroup(groupName);
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public void setShowGroup(String showGroup) {
         showUserOrGroup = Boolean.valueOf(showGroup);

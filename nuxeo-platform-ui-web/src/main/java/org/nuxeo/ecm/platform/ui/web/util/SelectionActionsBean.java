@@ -384,7 +384,7 @@ public class SelectionActionsBean implements Serializable {
      *
      * @since 5.5
      * @param event
-     * @deprecated since 5.9.6: use
+     * @deprecated since 6.0: use
      *             {@link #onSelection(AjaxBehaviorEvent)} instead.
      */
     @Deprecated
@@ -398,7 +398,7 @@ public class SelectionActionsBean implements Serializable {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public void onSelection(AjaxBehaviorEvent event) {
         onSelection((FacesEvent) event);
@@ -426,7 +426,7 @@ public class SelectionActionsBean implements Serializable {
      * possible to use the same logic in command buttons that do not make it
      * possible to pass request parameters).
      *
-     * @deprecated since 5.9.6: use {@link #onClick(AjaxBehaviorEvent)}
+     * @deprecated since 6.0: use {@link #onClick(AjaxBehaviorEvent)}
      *             instead.
      * @since 5.5
      * @param event
@@ -490,7 +490,7 @@ public class SelectionActionsBean implements Serializable {
      * {@link EditableValueHolder}, its submitted value is set. Otherwise, its
      * local value is set.
      *
-     * @since 5.9.6
+     * @since 6.0
      * @param event
      */
     public void setValueFromComponent(AjaxBehaviorEvent event) {
@@ -499,7 +499,7 @@ public class SelectionActionsBean implements Serializable {
 
     /**
      * @see #setValueFromComponent(ActionEvent)
-     * @since 5.9.6
+     * @since 6.0
      */
     public void setValueFromComponent(ActionEvent event) {
         setValueFromComponent((FacesEvent) event);
@@ -526,7 +526,7 @@ public class SelectionActionsBean implements Serializable {
      * {@link EditableValueHolder}, its submitted value is set. Otherwise, its
      * local value is set.
      *
-     * @since 5.9.6
+     * @since 6.0
      * @param event
      */
     public void setStaticValue(AjaxBehaviorEvent event) {
@@ -535,7 +535,7 @@ public class SelectionActionsBean implements Serializable {
 
     /**
      * @see #setStaticValue(ActionEvent)
-     * @since 5.9.6
+     * @since 6.0
      */
     public void setStaticValue(ActionEvent event) {
         setStaticValue((FacesEvent) event);

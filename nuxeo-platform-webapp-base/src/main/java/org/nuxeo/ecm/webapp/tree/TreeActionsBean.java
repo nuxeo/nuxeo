@@ -315,7 +315,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public void toggleListener() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
@@ -324,7 +324,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public boolean isNodeExpandEvent() {
         FacesContext facesContext = FacesContext.getCurrentInstance();

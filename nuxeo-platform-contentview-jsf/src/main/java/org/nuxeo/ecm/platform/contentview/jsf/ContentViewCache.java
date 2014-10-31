@@ -206,7 +206,7 @@ public class ContentViewCache implements Serializable {
     /**
      * Resets page providers aggregates.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public void resetPageProviderAggregates(String contentViewName) {
         ContentView cv = namedContentViews.get(contentViewName);

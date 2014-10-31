@@ -25,7 +25,7 @@ import javax.faces.view.facelets.TagConfig;
 /**
  * Legacy class for nxdir:selectOneListbox tag
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class DirectorySelectManyListboxHandler extends
         DirectorySelectOneListboxHandler {

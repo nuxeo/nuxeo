@@ -35,7 +35,7 @@ import org.nuxeo.theme.themes.ThemeManager;
 import com.sun.faces.renderkit.html_basic.ScriptStyleBaseRenderer;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class ThemeStylesRenderer extends ScriptStyleBaseRenderer {
 

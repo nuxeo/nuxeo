@@ -42,7 +42,7 @@ import com.sun.faces.facelets.tag.TagAttributesImpl;
 /**
  * Legacy class for nxdir:selectOneListbox tag
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class DirectorySelectOneListboxHandler extends MetaTagHandler {
 

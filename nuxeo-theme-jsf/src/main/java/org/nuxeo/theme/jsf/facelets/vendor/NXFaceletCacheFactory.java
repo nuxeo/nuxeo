@@ -28,7 +28,7 @@ import com.sun.faces.config.WebConfiguration;
  * Overrides the default JSF facelet cache factory to customize cache
  * behaviour.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class NXFaceletCacheFactory extends FaceletCacheFactory {
 

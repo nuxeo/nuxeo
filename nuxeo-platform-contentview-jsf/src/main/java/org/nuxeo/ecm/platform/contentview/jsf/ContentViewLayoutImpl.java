@@ -50,25 +50,25 @@ public class ContentViewLayoutImpl implements ContentViewLayout {
     protected boolean showSyndicationLinks = false;
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @XNode("@showSlideshow")
     protected boolean showSlideshow = false;
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @XNode("@showEditColumns")
     protected boolean showEditColumns = false;
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @XNode("@showEditRows")
     protected boolean showEditRows = false;
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @XNode("@showSpreadsheet")
     protected boolean showSpreadsheet = false;

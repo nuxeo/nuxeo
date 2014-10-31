@@ -26,7 +26,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.ui.web.renderer.NxListboxRenderer;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class SelectManyListboxDirectoryAggregateWidgetTypeHandler extends
         SelectDirectoryAggregateWidgetTypeHandler {

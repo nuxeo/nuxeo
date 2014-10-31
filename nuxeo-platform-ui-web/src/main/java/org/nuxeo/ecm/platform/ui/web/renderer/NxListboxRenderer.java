@@ -31,7 +31,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import com.sun.faces.renderkit.html_basic.ListboxRenderer;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 @ResourceDependencies({
         @ResourceDependency(library = "org.richfaces", name = "jquery.js"),

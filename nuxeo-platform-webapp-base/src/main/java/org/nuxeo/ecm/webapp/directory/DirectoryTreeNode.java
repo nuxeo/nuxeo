@@ -429,7 +429,7 @@ public class DirectoryTreeNode {
     }
 
     /**
-     * @deprecated since 5.9.6, use {@link #isOpen()} instead
+     * @deprecated since 6.0, use {@link #isOpen()} instead
      */
     @Deprecated
     public boolean isOpened() {

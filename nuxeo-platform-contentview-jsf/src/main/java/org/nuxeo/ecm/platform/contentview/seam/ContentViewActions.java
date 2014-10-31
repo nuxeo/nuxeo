@@ -361,7 +361,7 @@ public class ContentViewActions implements Serializable {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @BypassInterceptors
     public void resetAggregates(String contentViewName) {
@@ -410,7 +410,7 @@ public class ContentViewActions implements Serializable {
      * Boolean values are declared as objects to avoid conversion to "false"
      * when variable is not defined, and keep "null" value.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public List<Action> getActionsList(String category,
             DocumentModel currentDocument, ContentView contentView,

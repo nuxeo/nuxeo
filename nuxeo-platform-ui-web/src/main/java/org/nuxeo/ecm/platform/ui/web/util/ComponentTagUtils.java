@@ -157,7 +157,7 @@ public final class ComponentTagUtils {
     /**
      * Resolves given value expression as string and sets given value on it.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public static void applyValueExpression(FacesContext context,
             String elExpression, Object value) {

@@ -98,7 +98,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     public static final String WIDGET_TYPES_EP_NAME = LayoutStoreImpl.WIDGET_TYPES_EP_NAME;
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static final String LAYOUT_TYPES_EP_NAME = LayoutStoreImpl.LAYOUT_TYPES_EP_NAME;
 

@@ -170,7 +170,7 @@ public interface URLPolicyService {
      * the given servlet context.
      *
      * @since 5.5
-     * @since 5.9.6, passes the request and response too
+     * @since 6.0, passes the request and response too
      */
     void initViewIdManager(ServletContext context, HttpServletRequest request,
             HttpServletResponse response);

@@ -113,7 +113,7 @@ public abstract class AbstractSelectWidgetTypeHandler extends
      * Adds a default disabled "select a value" option if widget is not
      * required.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     protected FaceletHandler getFirstHandler(FaceletContext ctx,
             FaceletHandlerHelper helper, Widget widget,
@@ -148,7 +148,7 @@ public abstract class AbstractSelectWidgetTypeHandler extends
      * This default implementation requires the selectOptions widget property
      * to be filled.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     protected boolean shouldAddWidgetPropsHandler(Widget widget) {
         if (widget.getProperties().containsKey(
@@ -161,7 +161,7 @@ public abstract class AbstractSelectWidgetTypeHandler extends
     /**
      * Computes select options from widget properties.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     protected FaceletHandler getWidgetPropsHandler(FaceletContext ctx,
             FaceletHandlerHelper helper, Widget widget,

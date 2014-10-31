@@ -22,7 +22,7 @@ import javax.faces.render.ResponseStateManager;
 import com.sun.faces.renderkit.RenderKitImpl;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class NuxeoRenderKitImpl extends RenderKitImpl {
 

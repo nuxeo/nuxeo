@@ -29,7 +29,7 @@ import com.sun.faces.renderkit.html_basic.HiddenRenderer;
  * Extend hidden renderer to provide client behaviours (onchange events
  * management).
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class ValueHolderRenderer extends HiddenRenderer {
 

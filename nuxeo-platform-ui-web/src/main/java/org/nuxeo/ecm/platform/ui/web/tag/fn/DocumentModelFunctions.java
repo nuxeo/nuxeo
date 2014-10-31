@@ -317,7 +317,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static String titleFromId(final String documentId)
             throws ClientException {

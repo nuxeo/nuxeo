@@ -147,7 +147,7 @@ public interface ContentView extends Serializable {
     void setCurrentResultLayout(String resultLayoutName);
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     boolean hasResultLayoutBinding();
 
@@ -186,7 +186,7 @@ public interface ContentView extends Serializable {
     void setCurrentResultLayoutColumns(List<String> resultColumns);
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     boolean hasResultLayoutColumnsBinding();
 
@@ -301,7 +301,7 @@ public interface ContentView extends Serializable {
     /**
      * Reset the page provider aggregates.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     void resetPageProviderAggregates();
 

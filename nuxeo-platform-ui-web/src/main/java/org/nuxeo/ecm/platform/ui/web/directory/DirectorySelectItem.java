@@ -66,7 +66,7 @@ public class DirectorySelectItem extends SelectItem {
     /**
      * Gets the label as it should be displayed.
      *
-     * @deprecated as of 5.9.6, use {@link #getLabel()} instead.
+     * @deprecated as of 6.0, use {@link #getLabel()} instead.
      */
     @Deprecated
     public String getDisplayedLabel() {
@@ -74,7 +74,7 @@ public class DirectorySelectItem extends SelectItem {
     }
 
     /**
-     * @deprecated as of 5.9.6, use {@link #setLabel(String)} instead.
+     * @deprecated as of 6.0, use {@link #setLabel(String)} instead.
      */
     @Deprecated
     public void setDisplayedLabel(String displayedLabel) {
@@ -84,7 +84,7 @@ public class DirectorySelectItem extends SelectItem {
     /**
      * Gets the label as it should be displayed.
      *
-     * @deprecated as of 5.9.6, use {@link #getLabel()} instead.
+     * @deprecated as of 6.0, use {@link #getLabel()} instead.
      */
     @Deprecated
     public String getLocalizedLabel() {
@@ -92,7 +92,7 @@ public class DirectorySelectItem extends SelectItem {
     }
 
     /**
-     * @deprecated as of 5.9.6, use {@link #setLabel(String)} instead.
+     * @deprecated as of 6.0, use {@link #setLabel(String)} instead.
      */
     @Deprecated
     public void setLocalizedLabel(String localizedLabel) {
@@ -104,7 +104,7 @@ public class DirectorySelectItem extends SelectItem {
     }
 
     /**
-     * @deprecated since 5.9.6, seems useless
+     * @deprecated since 6.0, seems useless
      */
     @Deprecated
     public String getSortLabel() {

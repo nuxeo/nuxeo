@@ -84,7 +84,7 @@ public final class ComponentUtils {
      * When adding sub components dynamically, the tree fetching could be a
      * problem so all possible sub components must be added.
      * <p>
-     * Since 5.9.6, does not mark component as not rendered anymore, calls
+     * Since 6.0, does not mark component as not rendered anymore, calls
      * {@link #hookSubComponent(FacesContext, UIComponent, UIComponent, String)}
      * directly.
      *
@@ -101,7 +101,7 @@ public final class ComponentUtils {
     /**
      * Add a sub component to a UI component.
      * <p>
-     * Since 5.9.6, does not the set the component as rendered anymore.
+     * Since 6.0, does not the set the component as rendered anymore.
      *
      * @param context
      * @param parent

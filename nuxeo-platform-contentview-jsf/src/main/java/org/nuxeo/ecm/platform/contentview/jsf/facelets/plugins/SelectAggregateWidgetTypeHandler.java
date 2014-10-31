@@ -37,7 +37,7 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.plugins.AbstractSelectWidget
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public abstract class SelectAggregateWidgetTypeHandler extends
         AbstractSelectWidgetTypeHandler {

@@ -45,12 +45,12 @@ public interface TreeActions {
     void reset();
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     void toggleListener();
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     boolean isNodeExpandEvent();
 

@@ -810,7 +810,7 @@ public final class Functions {
     /**
      * Joins two strings to get a valid render attribute for ajax components.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public static String joinRender(String render1, String render2) {
         if (StringUtils.isBlank(render1) && StringUtils.isBlank(render2)) {
@@ -836,7 +836,7 @@ public final class Functions {
      * If given targetId parameter contains spaces, consider several ids should
      * be resolved and split them.
      *
-     * @since 5.9.6
+     * @since 6.0
      * @param anchor the component anchor, used a localization for the target
      *            component in the tree.
      * @param targetId the component to look for locally so as to return its

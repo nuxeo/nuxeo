@@ -91,7 +91,7 @@ public class ContentViewDescriptor {
     String resultColumns;
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @XNode("resultLayout")
     String resultLayout;
@@ -142,10 +142,10 @@ public class ContentViewDescriptor {
         return referencePageProvider;
     }
 
-    // @since 5.9.6
+    // @since 6.0
     protected String pageProviderName;
 
-    // @since 5.9.6
+    // @since 6.0
     protected Map<String, String> pageProviderProperties;
 
     public String getSelectionListName() {
@@ -213,7 +213,7 @@ public class ContentViewDescriptor {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public String getResultLayoutBinding() {
         return resultLayout;
@@ -282,7 +282,7 @@ public class ContentViewDescriptor {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public String getPageProviderName() {
         if (pageProviderName == null) {
@@ -305,7 +305,7 @@ public class ContentViewDescriptor {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public Map<String, String> getPageProviderProperties() {
         if (pageProviderProperties == null) {

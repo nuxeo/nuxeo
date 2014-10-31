@@ -21,7 +21,7 @@ import javax.faces.model.SelectItem;
 /**
  * Helper for select items management
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public abstract class SelectItemFactory {
 

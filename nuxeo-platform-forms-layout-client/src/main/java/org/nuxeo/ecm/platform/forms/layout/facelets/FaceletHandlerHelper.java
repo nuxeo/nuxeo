@@ -456,7 +456,7 @@ public final class FaceletHandlerHelper {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public TagAttributes getTagAttributes(WidgetSelectOption selectOption,
             Map<String, Serializable> additionalProps) {

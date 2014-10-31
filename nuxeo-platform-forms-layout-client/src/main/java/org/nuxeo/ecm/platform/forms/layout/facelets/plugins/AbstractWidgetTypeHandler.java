@@ -127,7 +127,7 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
      * {@link RenderVariables.widgetTemplatingZones#inside_input_widget} when
      * widget is in edit mode.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     protected FaceletHandler getNextHandler(FaceletContext ctx,
             TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers,
@@ -139,7 +139,7 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
     /**
      * Returns sub handlers as computed from tag information
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     protected FaceletHandler getNextHandler(FaceletContext ctx,
             TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers,

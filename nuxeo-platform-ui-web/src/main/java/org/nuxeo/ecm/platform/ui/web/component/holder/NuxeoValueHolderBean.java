@@ -31,7 +31,7 @@ import org.apache.commons.logging.LogFactory;
  * View scoped bean keeping values held by {@link UIValueHolder} component
  * instances when their value is set.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 // FIXME: annotations do not trigger registration, need to figure out why
 // @ViewScoped

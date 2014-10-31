@@ -28,7 +28,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 import org.nuxeo.ecm.platform.forms.layout.facelets.plugins.AbstractDirectorySelectWidgetTypeHandler;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public abstract class SelectDirectoryAggregateWidgetTypeHandler extends
         AbstractDirectorySelectWidgetTypeHandler {

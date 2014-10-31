@@ -58,7 +58,7 @@ public class PermissionActionListManager implements Serializable {
     /**
      * Returns true if negative ACLs are allowed.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public boolean getAllowNegativeACL() {
         return documentManager == null ? false

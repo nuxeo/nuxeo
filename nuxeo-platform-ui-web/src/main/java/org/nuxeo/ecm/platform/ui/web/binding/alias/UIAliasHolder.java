@@ -64,7 +64,7 @@ public class UIAliasHolder extends UIOutput {
      * Keep the alias transient: it's supposed to be set at build time by
      * facelet handlers and does not need to be restored/saved.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     protected transient AliasVariableMapper alias;
 
@@ -223,14 +223,14 @@ public class UIAliasHolder extends UIOutput {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public AliasVariableMapper getAlias() {
         return alias;
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public void setAlias(AliasVariableMapper alias) {
         this.alias = alias;

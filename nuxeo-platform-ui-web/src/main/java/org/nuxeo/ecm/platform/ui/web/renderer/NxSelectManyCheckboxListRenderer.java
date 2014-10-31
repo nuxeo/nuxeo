@@ -33,7 +33,7 @@ import com.sun.faces.renderkit.RenderKitUtils;
 import com.sun.faces.renderkit.html_basic.SelectManyCheckboxListRenderer;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 @ResourceDependencies({
         @ResourceDependency(library = "org.richfaces", name = "jquery.js"),

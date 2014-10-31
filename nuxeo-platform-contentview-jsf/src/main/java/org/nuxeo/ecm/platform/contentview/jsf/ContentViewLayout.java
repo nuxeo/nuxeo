@@ -74,7 +74,7 @@ public interface ContentViewLayout extends Serializable {
      * Returns true if 'slide show' link is enabled for this layout. Defaults
      * to false.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     boolean getShowSlideshow();
 
@@ -82,7 +82,7 @@ public interface ContentViewLayout extends Serializable {
      * Returns true if 'edit columns' link is enabled for this layout. Defaults
      * to false.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     boolean getShowEditColumns();
 
@@ -94,7 +94,7 @@ public interface ContentViewLayout extends Serializable {
      * columns are actually rows (or display content differently that using
      * columns).
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     boolean getShowEditRows();
 
@@ -102,7 +102,7 @@ public interface ContentViewLayout extends Serializable {
      * Returns true if 'spreadsheet' link is enabled for this layout. Defaults
      * to false.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     boolean getShowSpreadsheet();
 

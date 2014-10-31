@@ -33,7 +33,7 @@ import com.sun.faces.config.ConfigureListener;
  * Delays configuration until runtime is initialized to handle correctly dev
  * mode.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class JSFConfigureListener implements ServletContextListener,
         RuntimeServiceListener {

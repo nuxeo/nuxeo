@@ -710,7 +710,7 @@
           Activate retrieval of localized labels in the
           vocabulary database, when translations are held by the directory
           itself, in fields with a label_[lang] pattern, and defaulting to
-          label_en. Available since 5.9.6.
+          label_en. Available since 6.0.
         </label>
       </helpLabels>
       <fields>
@@ -2011,7 +2011,7 @@
 
     <widgetType name="selectManyListbox">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>Select Many Listbox</title>
         <description></description>
         <categories>
@@ -2116,7 +2116,7 @@
 
     <widgetType name="selectManyMenu">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>Select Many Menu</title>
         <description></description>
         <categories>
@@ -2227,7 +2227,7 @@
 
     <widgetType name="selectManyCheckbox">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>Select Many Checkbox</title>
         <description></description>
         <categories>
