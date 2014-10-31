@@ -52,7 +52,7 @@ import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class ElasticsearchServiceImpl implements ElasticSearchService {
     private static final Log log = LogFactory

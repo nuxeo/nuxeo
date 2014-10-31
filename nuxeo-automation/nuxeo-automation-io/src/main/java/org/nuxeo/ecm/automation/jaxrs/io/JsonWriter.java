@@ -291,7 +291,7 @@ public class JsonWriter {
     }
 
     /**
-     * @deprecated since 5.9.6 - use {@link org.nuxeo.ecm.webengine.app
+     * @deprecated since 6.0 - use {@link org.nuxeo.ecm.webengine.app
      * .JsonWebengineWriter#writeException(java.io.OutputStream,
      * org.nuxeo.ecm.webengine.WebException)} instead
      */
@@ -302,7 +302,7 @@ public class JsonWriter {
     }
 
     /**
-     * @deprecated since 5.9.6 - use {@link org.nuxeo.ecm.webengine.app
+     * @deprecated since 6.0 - use {@link org.nuxeo.ecm.webengine.app
      * .JsonWebengineWriter#writeException(org.codehaus.jackson.JsonGenerator,
      * org.nuxeo.ecm.webengine.WebException)} instead
      */

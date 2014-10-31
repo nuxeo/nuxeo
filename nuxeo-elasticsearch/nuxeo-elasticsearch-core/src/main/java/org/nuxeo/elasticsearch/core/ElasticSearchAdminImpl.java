@@ -54,7 +54,7 @@ import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     private static final Log log = LogFactory

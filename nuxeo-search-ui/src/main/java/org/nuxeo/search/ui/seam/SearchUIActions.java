@@ -78,7 +78,7 @@ import org.nuxeo.search.ui.SearchUIService;
 /**
  * Seam bean handling Search main tab actions.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 @Name("searchUIActions")
 @Scope(CONVERSATION)

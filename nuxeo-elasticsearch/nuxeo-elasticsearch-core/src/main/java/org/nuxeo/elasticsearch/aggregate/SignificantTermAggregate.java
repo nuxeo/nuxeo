@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.core.BucketTerm;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class SignificantTermAggregate extends AggregateEsBase<BucketTerm> {
 

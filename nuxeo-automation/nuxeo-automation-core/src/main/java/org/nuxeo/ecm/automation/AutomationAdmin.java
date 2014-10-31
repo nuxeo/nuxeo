@@ -17,7 +17,7 @@
 package org.nuxeo.ecm.automation;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public interface AutomationAdmin {
 

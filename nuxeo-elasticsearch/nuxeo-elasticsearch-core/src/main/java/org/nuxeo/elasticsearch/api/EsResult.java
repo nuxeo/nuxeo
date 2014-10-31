@@ -22,7 +22,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class EsResult {
     private final DocumentModelList documents;

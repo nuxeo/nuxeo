@@ -323,7 +323,7 @@ public class NxQueryBuilder {
      *
      * Default search is done on the session repository only.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public NxQueryBuilder addSearchRepository(String repositoryName) {
         repositories.add(repositoryName);
@@ -333,7 +333,7 @@ public class NxQueryBuilder {
     /**
      * Search on all available repositories.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public NxQueryBuilder searchOnAllRepositories() {
         searchOnAllRepo = true;
@@ -344,7 +344,7 @@ public class NxQueryBuilder {
      * Return the list of repositories to search, or an empty list to search on
      * all available repositories;
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public List<String> getSearchRepositories() {
         if (searchOnAllRepo) {
@@ -355,7 +355,7 @@ public class NxQueryBuilder {
 
     /**
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public Fetcher getFetcher(SearchResponse response,
             Map<String, String> repoNames) {

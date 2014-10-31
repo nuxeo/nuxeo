@@ -28,12 +28,12 @@ import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 @Operation(id = JsonStackToggleDisplayOperation.ID,
         category = Constants.CAT_EXECUTION, label = "Json Error Stack Display",
         description = "Toggle stack display in json response for all rest api" +
-                " calls in Nuxeo", addToStudio = false, since = "5.9.6")
+                " calls in Nuxeo", addToStudio = false, since = "6.0")
 public class JsonStackToggleDisplayOperation {
 
     public static final String ID = "JsonStack.ToggleDisplay";

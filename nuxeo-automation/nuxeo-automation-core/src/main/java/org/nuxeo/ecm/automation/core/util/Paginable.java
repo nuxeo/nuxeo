@@ -84,12 +84,12 @@ public interface Paginable<T> extends List<T> {
     String getErrorMessage();
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     Map<String, Aggregate> getAggregates();
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     boolean hasAggregateSupport();
 

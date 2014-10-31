@@ -31,7 +31,7 @@ import javax.ws.rs.ext.Provider;
 import org.nuxeo.ecm.platform.forms.layout.io.JSONLayoutExporter;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 @Provider
 @Produces({ "application/json", "text/plain" })

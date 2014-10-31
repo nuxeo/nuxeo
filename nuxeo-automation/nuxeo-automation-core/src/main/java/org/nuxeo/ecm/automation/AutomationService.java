@@ -304,7 +304,7 @@ public interface AutomationService {
      * @param chainParameters       chain parameters.
      * @param timeout               Transaction timeout.
      * @param rollbackGlobalOnError Rollback or not transaction after failing.
-     * @since 5.9.6
+     * @since 6.0
      */
     Object runInNewTx(OperationContext ctx, String chainId, Map chainParameters,
             Integer timeout, boolean rollbackGlobalOnError) throws Exception;

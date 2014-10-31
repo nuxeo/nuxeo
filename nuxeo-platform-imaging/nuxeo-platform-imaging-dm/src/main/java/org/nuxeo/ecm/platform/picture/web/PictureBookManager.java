@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.api.ClientException;
  * Provide Creation Book related actions.
  *
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
- * @deprecated since 5.9.6. See NXP-15370.
+ * @deprecated since 6.0. See NXP-15370.
  */
 @Deprecated
 public interface PictureBookManager {

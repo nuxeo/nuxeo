@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.api.localconfiguration.AbstractLocalConfiguration;
 /**
  * Default implementation of {@link SearchConfiguration}
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class SearchConfigurationAdapter extends
         AbstractLocalConfiguration<SearchConfiguration> implements

@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.elasticsearch.io.DocumentModelReaders;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class EsFetcher extends Fetcher {
 

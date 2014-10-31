@@ -42,7 +42,7 @@ public interface ElasticSearchService {
     /**
      * Returns documents and aggregates.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     EsResult queryAndAggregate(NxQueryBuilder queryBuilder)
             throws ClientException;
@@ -53,7 +53,7 @@ public interface ElasticSearchService {
      * Fetch documents from the VCS repository.
      *
      * @since 5.9.3
-     * @deprecated since 5.9.6, use query with NxQueryBuilder
+     * @deprecated since 6.0, use query with NxQueryBuilder
      */
     @Deprecated
     DocumentModelList query(CoreSession session, String nxql, int limit,
@@ -65,7 +65,7 @@ public interface ElasticSearchService {
      * Fetch documents from the VCS repository.
      *
      * @since 5.9.3
-     * @deprecated since 5.9.6, use query with NxQueryBuilder
+     * @deprecated since 6.0, use query with NxQueryBuilder
      */
     @Deprecated
     DocumentModelList query(CoreSession session, QueryBuilder queryBuilder,

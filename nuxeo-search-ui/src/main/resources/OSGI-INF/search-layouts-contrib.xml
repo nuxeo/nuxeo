@@ -6,7 +6,7 @@
 
     <widgetType name="search_view_title">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>Search View Title</title>
         <description>
           <p>

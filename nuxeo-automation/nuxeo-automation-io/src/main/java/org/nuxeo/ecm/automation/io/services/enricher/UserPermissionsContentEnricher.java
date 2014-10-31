@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * This enricher adds a list of the permissions granted to the user on the document
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class UserPermissionsContentEnricher extends AbstractContentEnricher {
 

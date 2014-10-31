@@ -636,7 +636,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
      * {@link CoreSession#queryAndFetch(String, String, Object...)} using page
      * providers.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     @SuppressWarnings("unchecked")
     protected static List<Map<String, Serializable>> getItems(

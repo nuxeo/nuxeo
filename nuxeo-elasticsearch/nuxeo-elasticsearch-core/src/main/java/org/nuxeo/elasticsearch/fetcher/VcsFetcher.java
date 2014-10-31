@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class VcsFetcher extends Fetcher {
 

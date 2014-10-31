@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 /**
  * Factory class to instantiate a {@link SearchConfiguration}.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class SearchConfigurationFactory implements DocumentAdapterFactory {
     @Override

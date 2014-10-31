@@ -6,7 +6,7 @@
 
     <widgetType name="documentPreview">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>Document Preview</title>
         <description>
           <p>This widget type displays the document preview.</p>

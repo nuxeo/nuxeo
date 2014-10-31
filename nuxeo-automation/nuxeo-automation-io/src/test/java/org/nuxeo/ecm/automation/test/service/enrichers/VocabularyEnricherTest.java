@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 @RunWith(FeaturesRunner.class)
 @Features({ PlatformFeature.class })

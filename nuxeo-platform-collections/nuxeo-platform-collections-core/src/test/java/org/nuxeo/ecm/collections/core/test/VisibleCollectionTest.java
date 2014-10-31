@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PathRef;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class VisibleCollectionTest extends CollectionTestCase {
 

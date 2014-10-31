@@ -349,7 +349,7 @@ public class Select2Common {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static String resolveDefaultEntries(final List<String> list) {
         if (list == null || list.isEmpty()) {

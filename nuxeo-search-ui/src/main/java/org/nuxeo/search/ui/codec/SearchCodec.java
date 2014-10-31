@@ -25,7 +25,7 @@ import org.nuxeo.ecm.platform.url.codec.DocumentPathCodec;
 /**
  * Codec used for 'nxsearch' URLs.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class SearchCodec extends DocumentPathCodec {
 

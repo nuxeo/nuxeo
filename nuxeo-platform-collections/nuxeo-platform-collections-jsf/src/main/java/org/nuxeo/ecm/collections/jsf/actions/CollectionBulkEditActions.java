@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 @Name("collectionBulkEditActions")
 @Scope(CONVERSATION)

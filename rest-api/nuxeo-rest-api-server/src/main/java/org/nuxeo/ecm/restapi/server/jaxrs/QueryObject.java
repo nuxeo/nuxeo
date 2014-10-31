@@ -49,7 +49,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  * Search endpoint to perform queries on the repository through rest api.
  */
 @WebObject(type = "query")

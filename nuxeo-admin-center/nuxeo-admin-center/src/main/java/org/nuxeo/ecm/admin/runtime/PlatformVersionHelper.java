@@ -58,7 +58,7 @@ public class PlatformVersionHelper {
     }
 
     /**
-     * @deprecated Since 5.9.6. Badly duplicates
+     * @deprecated Since 6.0. Badly duplicates
      *             {@link TargetPlatformFilterHelper#isCompatibleWithTargetPlatform(org.nuxeo.connect.update.Package, String)}
      */
     @Deprecated

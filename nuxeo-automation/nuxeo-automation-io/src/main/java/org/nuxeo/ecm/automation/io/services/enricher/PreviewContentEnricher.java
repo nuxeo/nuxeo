@@ -27,7 +27,7 @@ import java.io.IOException;
 /**
  * This content enricher adds a document Preview URL.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class PreviewContentEnricher extends AbstractContentEnricher {
 

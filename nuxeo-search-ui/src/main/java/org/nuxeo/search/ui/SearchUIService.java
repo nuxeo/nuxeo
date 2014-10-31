@@ -29,7 +29,7 @@ import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
 /**
  * Service handling contributed searches and related saved searches.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public interface SearchUIService {
 

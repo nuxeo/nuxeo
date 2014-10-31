@@ -79,7 +79,7 @@ public class ResultSetPageProviderOperation {
     protected String providerName;
 
     /**
-     * @deprecated since 5.9.6 use instead {@link org.nuxeo.ecm.automation
+     * @deprecated since 6.0 use instead {@link org.nuxeo.ecm.automation
      * .core.operations.services.query.ResultSetQuery}
      */
     @Param(name = "query", required = false)
@@ -96,7 +96,7 @@ public class ResultSetPageProviderOperation {
     protected Integer pageSize;
 
     /**
-     * @deprecated since 5.9.6 use instead {@link #sortBy and @link #sortOrder}
+     * @deprecated since 6.0 use instead {@link #sortBy and @link #sortOrder}
      */
     @Deprecated
     @Param(name = "sortInfo", required = false)
@@ -115,7 +115,7 @@ public class ResultSetPageProviderOperation {
     protected String maxResults = "100";
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @Param(name = PageProviderServiceImpl.NAMED_PARAMETERS, required = false,
             description = "Named parameters to pass to the page provider to " +
@@ -123,14 +123,14 @@ public class ResultSetPageProviderOperation {
     protected Properties namedParameters;
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @Param(name = "sortBy", required = false, description = "Sort by " +
             "properties (separated by comma)")
     protected String sortBy;
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @Param(name = "sortOrder", required = false, description = "Sort order, " +
             "ASC or DESC", widget = Constants.W_OPTION,

@@ -24,7 +24,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 /**
  * Helper class representing a list of layout type definitions.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class LayoutTypeDefinitions extends ArrayList<LayoutTypeDefinition> {
 

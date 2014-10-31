@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
  * Class for the operation getting the elements present in the Favorites
  * collection.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 @Operation(id = GetDocumentsFromFavoritesOperation.ID, category = Constants.CAT_DOCUMENT, label = "Get documents from favorites", description = "Get the list "
         + "of documents visible from the currentUser's favorites. This is returning a list of documents.")

@@ -31,7 +31,7 @@ import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.ecm.platform.query.core.AggregateBase;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public abstract class AggregateEsBase<B extends Bucket> extends
         AggregateBase<B> {

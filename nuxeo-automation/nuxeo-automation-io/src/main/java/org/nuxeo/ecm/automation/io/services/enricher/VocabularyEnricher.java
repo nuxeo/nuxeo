@@ -42,7 +42,7 @@ import java.util.Map;
  * This enricher adds the labels for each value of a property referencing
  * dbl10n vocabularies.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class VocabularyEnricher extends AbstractContentEnricher {
 

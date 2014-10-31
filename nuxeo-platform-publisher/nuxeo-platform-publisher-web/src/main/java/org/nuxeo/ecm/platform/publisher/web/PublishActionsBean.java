@@ -304,7 +304,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
      * Needed on top of {@link #getCurrentPublicationTreeForPublishing()}
      * because RichFaces tree now requires roots to be a list.
      *
-     * @since 5.9.6
+     * @since 6.0
      * @throws ClientException
      */
     public List<PublicationTree> getCurrentPublicationTreesForPublishing()

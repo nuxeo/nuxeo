@@ -40,13 +40,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  * Document query operation to perform queries on the repository.
  */
 @Operation(id = DocumentPaginatedQuery.ID, category = Constants.CAT_FETCH,
         label = "Query", description = "Perform a query on the repository. " +
         "The document list returned will become the input for the next " +
-        "operation.", since = "5.9.6", addToStudio = true)
+        "operation.", since = "6.0", addToStudio = true)
 public class DocumentPaginatedQuery {
 
     public static final String ID = "Document.Query";

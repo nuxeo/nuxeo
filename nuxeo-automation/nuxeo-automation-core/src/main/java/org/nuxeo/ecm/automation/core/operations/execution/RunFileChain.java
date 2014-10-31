@@ -58,21 +58,21 @@ public class RunFileChain {
     protected Properties chainParameters;
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      * Define if the chain in parameter should be executed in new transaction.
      */
     @Param(name = "newTx", required = false, values = "false", description = "Define if the chain in parameter should be executed in new transaction.")
     protected boolean newTx = false;
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      * Define transaction timeout (default to 60 sec).
      */
     @Param(name = "timeout", required = false, description = "Define transaction timeout (default to 60 sec).")
     protected Integer timeout = 60;
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      * Define if transaction should rollback or not (default to true).
      */
     @Param(name = "rollbackGlobalOnError", required = false, values = "true", description = "Define if transaction should rollback or not (default to true)")

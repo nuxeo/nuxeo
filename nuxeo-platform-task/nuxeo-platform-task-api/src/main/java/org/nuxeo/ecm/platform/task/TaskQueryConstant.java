@@ -27,24 +27,24 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 public class TaskQueryConstant {
 
     /**
-     * @deprecated since 5.9.6: use page providers instead.
+     * @deprecated since 6.0: use page providers instead.
      */
     @Deprecated
     public static final String TASK_VARIABLES_WHERE_CLAUSE = "nt:task_variables/*/key = '%s' AND nt:task_variables/*/value = '%s'";
 
     /**
-     * @deprecated since 5.9.6: use page providers instead.
+     * @deprecated since 6.0: use page providers instead.
      */
     @Deprecated
     public static final String TASK_ACTORS_WHERE_CLAUSE = " nt:actors IN (%s) ";
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static final String GET_TASKS_FOR_ACTORS_PP = "GET_TASKS_FOR_ACTORS";
 
     /**
-     * @deprecated since 5.9.6: use page providers instead.
+     * @deprecated since 6.0: use page providers instead.
      */
     @Deprecated
     public static final String GET_TASKS_QUERY = "SELECT * FROM Document WHERE ecm:mixinType = '"
@@ -54,116 +54,116 @@ public class TaskQueryConstant {
             + " AND ecm:isProxy = 0";
 
     /**
-     * @deprecated since 5.9.6: use page providers instead.
+     * @deprecated since 6.0: use page providers instead.
      */
     @Deprecated
     public static final String GET_TASKS_FOR_ACTORS_QUERY = GET_TASKS_QUERY
             + " AND nt:actors IN (%s) ";
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static final String GET_TASKS_FOR_TARGET_DOCUMENT_PP = "GET_TASKS_FOR_TARGET_DOCUMENT";
 
     /**
-     * @deprecated since 5.9.6: use page providers instead.
+     * @deprecated since 6.0: use page providers instead.
      */
     @Deprecated
     public static final String GET_TASKS_FOR_TARGET_DOCUMENT_QUERY = GET_TASKS_QUERY
             + " AND nt:targetDocumentId = '%s'";
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static final String GET_TASKS_FOR_TARGET_DOCUMENTS_PP = "GET_TASKS_FOR_TARGET_DOCUMENTS";
 
     /**
      * @since 5.8
-     * @deprecated since 5.9.6: use page providers instead.
+     * @deprecated since 6.0: use page providers instead.
      */
     @Deprecated
     public static final String GET_TASKS_FOR_TARGET_DOCUMENTS_QUERY = GET_TASKS_QUERY
             + " AND ( nt:targetDocumentId = '%s' OR nt:targetDocumentsIds IN ('%s') )";
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static final String GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS_PP = "GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS";
 
     /**
-     * @deprecated since 5.9.6: use page providers instead.
+     * @deprecated since 6.0: use page providers instead.
      */
     @Deprecated
     public static final String GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS_QUERY = GET_TASKS_QUERY
             + " AND nt:targetDocumentId = '%s' AND nt:actors IN (%s) ";
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static final String GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_PP = "GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS";
 
     /**
      * @since 5.8
-     * @deprecated since 5.9.6: use page providers instead.
+     * @deprecated since 6.0: use page providers instead.
      */
     @Deprecated
     public static final String GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_QUERY = GET_TASKS_QUERY
             + " AND ( nt:targetDocumentId = '%s' OR nt:targetDocumentsIds IN ('%s') ) AND nt:actors IN (%s) ";
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static final String GET_TASKS_FOR_PROCESS_PP = "GET_TASKS_FOR_PROCESS";
 
     /**
      * @since 5.6
-     * @deprecated since 5.9.6: use page providers instead.
+     * @deprecated since 6.0: use page providers instead.
      */
     @Deprecated
     public static final String GET_TASKS_FOR_PROCESS_ID_QUERY = GET_TASKS_QUERY
             + " AND nt:processId = '%s' ";
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static final String GET_TASKS_FOR_PROCESS_AND_ACTORS_PP = "GET_TASKS_FOR_PROCESS_AND_ACTORS";
 
     /**
      * @since 5.6
-     * @deprecated since 5.9.6: use page providers instead.
+     * @deprecated since 6.0: use page providers instead.
      */
     @Deprecated
     public static final String GET_TASKS_FOR_PROCESS_ID_AND_ACTORS_QUERY = GET_TASKS_QUERY
             + " AND nt:processId = '%s' AND nt:actors IN (%s) ";
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static final String GET_TASKS_FOR_PROCESS_AND_NODE_PP = "GET_TASKS_FOR_PROCESS_AND_NODE";
 
     /**
      * @since 5.7
-     * @deprecated since 5.9.6: use page providers instead.
+     * @deprecated since 6.0: use page providers instead.
      */
     @Deprecated
     public static final String GET_TASKS_FOR_PROCESS_ID_AND_NODE_ID_QUERY = GET_TASKS_FOR_PROCESS_ID_QUERY
             + " AND nt:task_variables/*/key = 'nodeId' AND nt:task_variables/*/value =  '%s' ";
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static final String GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_OR_DELEGATED_ACTORS_PP = "GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_OR_DELEGATED_ACTORS";
 
     /**
      * @since 5.8
-     * @deprecated since 5.9.6: use page providers instead.
+     * @deprecated since 6.0: use page providers instead.
      */
     @Deprecated
     public static final String GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS_QUERY_OR_DELEGATED_ACTORS_QUERY = GET_TASKS_QUERY
             + " AND ( nt:targetDocumentId = '%s' OR nt:targetDocumentsIds IN ('%s') ) AND ( nt:actors IN (%s) OR nt:delegatedActors IN (%s) ) ";
 
     /**
-     * @deprecated since 5.9.6: page providers implement this logic instead.
+     * @deprecated since 6.0: page providers implement this logic instead.
      */
     @Deprecated
     public static String getVariableWhereClause(String key, String value) {
@@ -171,7 +171,7 @@ public class TaskQueryConstant {
     }
 
     /**
-     * @deprecated since 5.9.6: page providers implement this logic instead.
+     * @deprecated since 6.0: page providers implement this logic instead.
      */
     @Deprecated
     public static String getActorsWhereClause(List<String> actors) {
@@ -179,7 +179,7 @@ public class TaskQueryConstant {
     }
 
     /**
-     * @deprecated since 5.9.6: page providers implement this logic instead.
+     * @deprecated since 6.0: page providers implement this logic instead.
      */
     @Deprecated
     public static String formatStringList(List<String> actors) {

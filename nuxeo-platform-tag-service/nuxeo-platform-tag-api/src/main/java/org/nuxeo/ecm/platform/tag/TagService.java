@@ -87,7 +87,7 @@ public interface TagService {
      * @param username the user name, or {@code null} for all users
      * @param useCore if true, the core should be used to retrieve tags.
      * @return the list of tags
-     * @since 5.9.6
+     * @since 6.0
      */
     List<Tag> getDocumentTags(CoreSession session, String docId,
             String username, boolean useCore) throws ClientException;

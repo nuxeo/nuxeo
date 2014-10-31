@@ -173,7 +173,7 @@ public class DocumentTaskProvider implements TaskProvider {
     /**
      * Converts a {@link DocumentModelList} to a list of {@link Task}s.
      *
-     * @since 5.9.6
+     * @since 6.0
      * @param taskDocuments
      */
     public static List<Task> wrapDocModelInTask(
@@ -186,7 +186,7 @@ public class DocumentTaskProvider implements TaskProvider {
     }
 
     /**
-     * @deprecated since 5.9.6, use {@link #wrapDocModelInTask(List)} instead.
+     * @deprecated since 6.0, use {@link #wrapDocModelInTask(List)} instead.
      */
     @Deprecated
     public static List<Task> wrapDocModelInTask(DocumentModelList taskDocuments)
@@ -199,7 +199,7 @@ public class DocumentTaskProvider implements TaskProvider {
      *
      * @param detach if {@code true}, detach each document before converting it
      *            to a {@code Task}.
-     * @deprecated since 5.9.6, use {@link #wrapDocModelInTask(List)} instead.
+     * @deprecated since 6.0, use {@link #wrapDocModelInTask(List)} instead.
      */
     @Deprecated
     public static List<Task> wrapDocModelInTask(
@@ -328,7 +328,7 @@ public class DocumentTaskProvider implements TaskProvider {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @SuppressWarnings("unchecked")
     public static List<Task> getTasks(String pageProviderName,

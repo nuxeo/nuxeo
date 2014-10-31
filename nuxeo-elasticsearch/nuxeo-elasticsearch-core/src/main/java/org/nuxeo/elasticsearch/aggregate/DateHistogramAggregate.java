@@ -54,7 +54,7 @@ import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
 

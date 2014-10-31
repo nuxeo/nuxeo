@@ -252,7 +252,7 @@ public class CoreProviderTest {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @Test
     public void testPageProviderWithNamedParameters() throws Exception {

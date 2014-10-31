@@ -39,13 +39,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  * Result set query operation to perform queries on the repository.
  */
 @Operation(id = ResultSetPaginatedQuery.ID, category = Constants.CAT_FETCH,
         label = "ResultSet Query", description = "Perform a query on the " +
         "repository. The result set returned will become the input for the " +
-        "next operation.", since = "5.9.6", addToStudio = true)
+        "next operation.", since = "6.0", addToStudio = true)
 public class ResultSetPaginatedQuery {
 
     public static final String ID = "ResultSet.PaginatedQuery";

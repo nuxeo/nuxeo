@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class BaseRestTest {
     protected static final String[] NO_SCHEMA = new String[] {};

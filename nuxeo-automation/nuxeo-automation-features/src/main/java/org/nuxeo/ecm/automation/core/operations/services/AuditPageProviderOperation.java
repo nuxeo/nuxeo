@@ -84,7 +84,7 @@ public class AuditPageProviderOperation {
     protected Integer pageSize;
 
     /**
-     * @deprecated since 5.9.6 use instead {@link #sortBy and @link #sortOrder}.
+     * @deprecated since 6.0 use instead {@link #sortBy and @link #sortOrder}.
      */
     @Deprecated
     @Param(name = "sortInfo", required = false)
@@ -97,21 +97,21 @@ public class AuditPageProviderOperation {
     protected Properties namedQueryParams;
 
     /**
-     * @deprecated since 5.9.6, not used in operation.
+     * @deprecated since 6.0, not used in operation.
      */
     @Deprecated
     @Param(name = "maxResults", required = false)
     protected Integer maxResults = 100;
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @Param(name = "sortBy", required = false, description = "Sort by " +
             "properties (separated by comma)")
     protected String sortBy;
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @Param(name = "sortOrder", required = false, description = "Sort order, " +
             "ASC or DESC", widget = Constants.W_OPTION,

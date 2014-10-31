@@ -45,7 +45,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.search.ui.localconfiguration.SearchConfiguration;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class SearchUIServiceImpl implements SearchUIService {
 

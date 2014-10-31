@@ -33,7 +33,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.RequestInterceptor;
 public interface AutomationClient {
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      * @param interceptor
      */
     void setRequestInterceptor(RequestInterceptor interceptor);

@@ -51,7 +51,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Helper component for tagging widget relying on select2.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 @Name("tagSelect2Support")
 @Scope(EVENT)
