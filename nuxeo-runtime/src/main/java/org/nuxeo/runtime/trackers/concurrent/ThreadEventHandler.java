@@ -15,7 +15,7 @@ import org.nuxeo.runtime.services.event.EventService;
  * be enlisted in the @{link {@link EventService} through the use of a
  * {@link ThreadEventListener}.
  *
- * @since 5.9.6
+ * @since 6.0
  * @author Stephane Lacoin at Nuxeo (aka matic)
  *
  */

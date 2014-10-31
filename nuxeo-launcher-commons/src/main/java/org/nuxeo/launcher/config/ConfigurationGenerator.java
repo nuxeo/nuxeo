@@ -79,7 +79,7 @@ import freemarker.template.TemplateException;
 public class ConfigurationGenerator {
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static final String TEMPLATE_SEPARATOR = ",";
 
@@ -1807,7 +1807,7 @@ public class ConfigurationGenerator {
      * Build a {@link Hashtable} which contains environment properties to
      * instantiate a {@link InitialDirContext}
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public Hashtable<Object, Object> getContextEnv(String ldapUrl,
             String bindDn, String bindPassword, boolean checkAuthentication) {
@@ -1836,7 +1836,7 @@ public class ConfigurationGenerator {
      * @param ldapBindPwd
      * @param authenticate Indicates if authentication against LDAP should be
      *            checked.
-     * @since 5.9.6
+     * @since 6.0
      */
     public void checkLdapConnection(String ldapUrl, String ldapBindDn,
             String ldapBindPwd, boolean authenticate) throws NamingException {
@@ -1846,7 +1846,7 @@ public class ConfigurationGenerator {
 
     /**
      * @oaram env Environment properties to build a {@link InitialDirContext}
-     * @since 5.9.6
+     * @since 6.0
      */
     public void checkLdapConnection(Hashtable<Object, Object> contextEnv)
             throws NamingException {

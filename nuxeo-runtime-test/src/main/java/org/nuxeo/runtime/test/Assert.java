@@ -25,7 +25,7 @@ import org.nuxeo.common.utils.FileUtils;
 /**
  * Extension to {@link org.junit.Assert}
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class Assert {
 

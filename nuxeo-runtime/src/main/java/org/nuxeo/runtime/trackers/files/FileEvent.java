@@ -27,7 +27,7 @@ import org.nuxeo.runtime.services.event.EventService;
  * wrapper.
  *
  * @author Stephane Lacoin at Nuxeo (aka matic)
- * @since 5.9.6
+ * @since 6.0
  */
 public class FileEvent extends Event {
 

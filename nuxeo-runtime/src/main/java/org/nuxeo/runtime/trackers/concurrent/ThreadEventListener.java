@@ -16,7 +16,7 @@ import org.nuxeo.runtime.services.event.EventService;
  * Wrap a {@link ThreadEventHandler} for being enlisted in the
  * {@link EventService}.
  *
- * @since 5.9.6
+ * @since 6.0
  * @author Stephane Lacoin at Nuxeo (aka matic)
  *
  */

@@ -170,7 +170,7 @@ public class LogCaptureFeature extends SimpleFeature {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     protected void enable(Class<? extends Filter> filterClass)
             throws InstantiationException, IllegalAccessException {
@@ -183,7 +183,7 @@ public class LogCaptureFeature extends SimpleFeature {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     protected void disable() {
         if (setupCaptureFiler != null) {

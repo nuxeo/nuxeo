@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class TestFramework {
 

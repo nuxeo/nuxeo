@@ -26,7 +26,7 @@ import org.nuxeo.runtime.trackers.files.FileEventTracker;
  * register it in the {@link EventService} using the {@link ThreadEventListener}
  * wrapper.
  *
- * @since 5.9.6
+ * @since 6.0
  * @author Stephane Lacoin at Nuxeo (aka matic)
  *
  */

@@ -37,7 +37,7 @@ import org.nuxeo.runtime.trackers.concurrent.ThreadEventListener;
  * on your test class.
  *
  * @author Stephane Lacoin at Nuxeo (aka matic)
- * @since 5.9.6
+ * @since 6.0
  * @see ThreadEventHandler
  */
 public class FileEventTracker extends DefaultComponent {

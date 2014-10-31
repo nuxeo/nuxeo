@@ -99,7 +99,7 @@ public class TransactionHelper {
     /**
      * Checks if there is no transaction
      *
-     * @5.9.6
+     * @6.0
      */
     public static boolean isNoTransaction() {
         try {

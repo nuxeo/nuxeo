@@ -524,7 +524,7 @@ public final class Framework {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     protected static void checkRuntimeInitialized() {
         if (runtime == null) {
