@@ -45,7 +45,7 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 /**
  * Restful actions for Nuxeo Spreadsheet
  *
- * @since 5.9.6
+ * @since 6.0
  */
 @Name("spreadsheetActions")
 @Scope(EVENT)
