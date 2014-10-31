@@ -16,7 +16,7 @@
  */
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 package org.nuxeo.ecm.webapp.filemanager;
 

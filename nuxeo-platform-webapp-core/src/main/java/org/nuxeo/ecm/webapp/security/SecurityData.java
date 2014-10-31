@@ -110,7 +110,7 @@ public class SecurityData implements Serializable {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public Map<String, List<String>> getCurrentDocDenyLabels() {
         return buildLabelMap(currentDocDeny);
@@ -133,7 +133,7 @@ public class SecurityData implements Serializable {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public Map<String, List<String>> getCurrentDocGrantLabels() {
         return buildLabelMap(currentDocGrant);

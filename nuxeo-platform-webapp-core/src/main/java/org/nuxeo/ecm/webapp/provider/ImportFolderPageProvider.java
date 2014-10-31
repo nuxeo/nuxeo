@@ -24,7 +24,7 @@ import org.nuxeo.ecm.core.api.impl.PermissionFilter;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class ImportFolderPageProvider extends CoreQueryDocumentPageProvider {
 

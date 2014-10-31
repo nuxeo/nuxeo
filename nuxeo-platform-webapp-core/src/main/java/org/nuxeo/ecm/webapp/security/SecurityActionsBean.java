@@ -424,7 +424,7 @@ public class SecurityActionsBean extends InputController implements
     /**
      * @return The list of selected rows in the local rights table.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     private List<PageSelection<String>> getSelectedRows() {
         List<PageSelection<String>> selectedRows = new ArrayList<PageSelection<String>>();

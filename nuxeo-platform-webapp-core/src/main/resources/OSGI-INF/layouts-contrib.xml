@@ -7,7 +7,7 @@
 
     <widgetType name="info_box">
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>Info box</title>
         <description>
           <p>

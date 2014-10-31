@@ -262,7 +262,7 @@
     <widgetType name="summary_current_document_description">
       <configuration>
         <sinceVersion>5.3.1</sinceVersion>
-        <deprecatedVersion>5.9.6</deprecatedVersion>
+        <deprecatedVersion>6.0</deprecatedVersion>
         <title>Description</title>
         <description>
           <p>This widget displays the description of the currentDocument.</p>

@@ -78,7 +78,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.richfaces.event.FileUploadEvent;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 @Name("importActions")
 @Scope(CONVERSATION)
@@ -387,7 +387,7 @@ public class ImportActions implements Serializable {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public void processUpload(FileUploadEvent uploadEvent) {
         try {
