@@ -276,7 +276,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     protected void loadConfig() throws Exception {
         Environment env = Environment.getDefault();
         if (env != null) {
-            log.info("Configuration: host application: "
+            log.debug("Configuration: host application: "
                     + env.getHostApplicationName());
         } else {
             log.warn("Configuration: no host application");
@@ -545,7 +545,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     private void printStatusMessage() {
         StringBuilder msg = new StringBuilder();
-        msg.append("Nuxeo EP Started\n"); // greppable
+        msg.append("Nuxeo Platform Started\n");
         if (getStatusMessage(msg)) {
             log.info(msg);
         } else {

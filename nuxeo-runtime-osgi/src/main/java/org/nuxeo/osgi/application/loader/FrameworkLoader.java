@@ -414,12 +414,11 @@ public class FrameworkLoader {
     protected static StringBuilder getStartMessage() {
         String newline = System.getProperty("line.separator");
         Environment env = Environment.getDefault();
-        String hr = newline
-                + "======================================================================"
-                + newline;
-        StringBuilder msg = new StringBuilder(hr);
+        String hr = "======================================================================";
+        StringBuilder msg = new StringBuilder(newline);
+        msg.append(hr + newline);
         msg.append("= Starting Nuxeo Framework" + newline);
-        msg.append(hr);
+        msg.append(hr + newline);
         msg.append("  * Server home = " + env.getServerHome() + newline);
         msg.append("  * Runtime home = " + env.getRuntimeHome() + newline);
         msg.append("  * Data Directory = " + env.getData() + newline);
