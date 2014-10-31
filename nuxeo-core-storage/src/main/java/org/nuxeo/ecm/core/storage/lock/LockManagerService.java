@@ -34,7 +34,7 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
  * <p>
  * Actual instantiation is done by storage backends.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class LockManagerService extends DefaultComponent {
 
@@ -125,7 +125,7 @@ public class LockManagerService extends DefaultComponent {
      *
      * @param name the lock manager name
      * @return the lock manager, or {@code null} if none is registered
-     * @since 5.9.6
+     * @since 6.0
      */
     public synchronized LockManager getLockManager(String name) {
         LockManager lockManager = lockManagers.get(name);

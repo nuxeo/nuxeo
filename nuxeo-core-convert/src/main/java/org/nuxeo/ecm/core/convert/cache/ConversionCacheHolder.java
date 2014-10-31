@@ -183,7 +183,7 @@ public class ConversionCacheHolder {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static void deleteCache() {
         cacheLock.writeLock().lock();

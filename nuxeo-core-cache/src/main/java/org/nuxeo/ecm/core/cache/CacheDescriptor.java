@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 /**
  * Descriptor of cache contrib
  *
- * @since 5.9.6
+ * @since 6.0
  */
 @XObject("cache")
 public class CacheDescriptor {

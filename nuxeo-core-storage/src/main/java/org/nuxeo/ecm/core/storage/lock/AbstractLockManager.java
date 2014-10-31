@@ -16,7 +16,7 @@ import org.nuxeo.ecm.core.api.Lock;
 /**
  * Base implementation for lock managers.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public abstract class AbstractLockManager implements LockManager {
 

@@ -36,7 +36,7 @@ import redis.clients.jedis.Jedis;
 /**
  * Redis-based lock manager.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class RedisLockManager extends AbstractLockManager {
 

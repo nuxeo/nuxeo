@@ -314,7 +314,7 @@ public interface WorkManager {
      * @see #init()
      * @see #shutdown(long, TimeUnit)
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     boolean isStarted();
 

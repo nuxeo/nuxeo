@@ -169,7 +169,7 @@ public interface NuxeoPrincipal extends Principal, Serializable {
      * user), or if there is none this principal's user.
      *
      * @return the acting user
-     * @since 5.9.6
+     * @since 6.0
      */
     String getActingUser();
 

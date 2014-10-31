@@ -19,7 +19,7 @@ public interface RedisAdmin {
      *
      * @throws IOException
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     String load(String bundle, String name) throws IOException;
 
@@ -29,7 +29,7 @@ public interface RedisAdmin {
      *
      * @throws IOException
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public Long clear(String prefix) throws IOException;
 

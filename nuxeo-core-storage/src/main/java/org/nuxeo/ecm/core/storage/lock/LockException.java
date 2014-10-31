@@ -16,7 +16,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 /**
  * Nuxeo exception related to locking.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class LockException extends NuxeoException {
 

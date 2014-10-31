@@ -61,7 +61,7 @@ public class RedisFeature extends SimpleFeature {
      * This defines configuration that can be used to run Redis tests with a
      * given Redis configured.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.TYPE, ElementType.METHOD })

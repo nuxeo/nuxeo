@@ -29,7 +29,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 /**
  * Registry to register cache
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public final class CacheRegistry extends
         ContributionFragmentRegistry<CacheDescriptor> {

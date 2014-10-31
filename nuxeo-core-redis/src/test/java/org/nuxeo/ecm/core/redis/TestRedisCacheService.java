@@ -24,7 +24,7 @@ import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
- * Unit test of cache implementation on top of redis since 5.9.6
+ * Unit test of cache implementation on top of redis since 6.0
  */
 @RunWith(ContributableFeaturesRunner.class)
 @Features({ RedisFeature.class })

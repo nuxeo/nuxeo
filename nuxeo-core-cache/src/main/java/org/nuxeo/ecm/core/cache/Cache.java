@@ -24,7 +24,7 @@ import java.io.Serializable;
  * The nuxeo cache interface that define generic methods to use cache
  * technologies
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public interface Cache {
 
@@ -32,7 +32,7 @@ public interface Cache {
      * Get cache name as specified in the descriptor
      *
      * @return the cache name
-     * @since 5.9.6
+     * @since 6.0
      */
     public String getName();
 
@@ -43,7 +43,7 @@ public interface Cache {
      * @param key the string key
      * @return the {@link Serializable} value, return null if the key does not
      *         exist or if the key is null
-     * @since 5.9.6
+     * @since 6.0
      */
     public Serializable get(String key) throws IOException;
 
@@ -51,7 +51,7 @@ public interface Cache {
      * Invalidate the given key
      *
      * @param key, the key to remove from the cache, if null will do nothing
-     * @since 5.9.6
+     * @since 6.0
      */
     public void invalidate(String key) throws IOException;
 
@@ -59,7 +59,7 @@ public interface Cache {
      * Invalidate all key-value stored in the cache
      *
      * @throws IOException
-     * @since 5.9.6
+     * @since 6.0
      */
     public void invalidateAll() throws IOException;
 
@@ -68,7 +68,7 @@ public interface Cache {
      *
      * @param key the string key, if null, the value will not be stored
      * @param value the value to store, if null, the value will not be stored
-     * @since 5.9.6
+     * @since 6.0
      */
     public void put(String key, Serializable value) throws IOException;
 

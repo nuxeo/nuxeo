@@ -18,7 +18,7 @@ import org.nuxeo.ecm.core.api.Lock;
  * <p>
  * The method {@link #close} must be called when done with the lock manager.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public interface LockManager {
 

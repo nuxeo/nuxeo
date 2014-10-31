@@ -68,6 +68,6 @@ Prerequisite to use the cache :
 
 ## History
 
-This code was initially written against a Nuxeo 5.9.6 
+This code was initially written against a Nuxeo 6.0
 
 

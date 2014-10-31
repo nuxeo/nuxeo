@@ -29,7 +29,7 @@ import com.google.common.cache.CacheBuilder;
 /**
  * Default in memory implementation for cache management based on guava
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class InMemoryCacheImpl extends AbstractCache {
 
@@ -56,7 +56,7 @@ public class InMemoryCacheImpl extends AbstractCache {
      * Get the instance cache
      *
      * @return the Guava instance cache used in this nuxeo cache
-     * @since 5.9.6
+     * @since 6.0
      */
     public Cache<String, Serializable> getGuavaCache() {
         return cache;

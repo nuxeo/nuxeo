@@ -44,7 +44,7 @@ public interface WorkQueuing {
     void init();
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      * @param queueId
      * @return
      */

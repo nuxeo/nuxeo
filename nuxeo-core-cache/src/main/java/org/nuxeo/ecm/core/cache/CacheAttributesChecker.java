@@ -25,7 +25,7 @@ import java.io.Serializable;
  * of cache This enable to have the same behavior for any use of cache for all
  * implementation of cache
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class CacheAttributesChecker extends AbstractCache {
 

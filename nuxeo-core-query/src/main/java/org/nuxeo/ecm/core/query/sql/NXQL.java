@@ -57,7 +57,7 @@ public class NXQL {
 
     public static final String ECM_FULLTEXT_JOBID = "ecm:fulltextJobId";
 
-    /** @since 5.9.6 */
+    /** @since 6.0 */
     public static final String ECM_FULLTEXT_SCORE = "ecm:fulltextScore";
 
     /** @deprecated since 5.4.2, use {@link #ECM_LOCK_OWNER} instead */
@@ -97,7 +97,7 @@ public class NXQL {
     /** @since 5.7.3 */
     public static final String ECM_VERSION_VERSIONABLEID = "ecm:versionVersionableId";
 
-    /** @since 5.9.6 */
+    /** @since 6.0 */
     public static final String ECM_ANCESTORID = "ecm:ancestorId";
 
     /**

@@ -24,7 +24,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 @Features(RuntimeFeature.class)
 @Deploy({ "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.core.convert.api",

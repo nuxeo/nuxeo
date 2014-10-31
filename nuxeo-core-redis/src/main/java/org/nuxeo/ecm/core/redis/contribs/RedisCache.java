@@ -39,7 +39,7 @@ import redis.clients.jedis.Jedis;
 /**
  * Cache implementation on top of Redis
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class RedisCache extends AbstractCache {
 

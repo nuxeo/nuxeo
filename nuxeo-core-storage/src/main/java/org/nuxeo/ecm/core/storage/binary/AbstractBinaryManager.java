@@ -137,7 +137,7 @@ public abstract class AbstractBinaryManager implements BinaryManager {
     /**
      * Gets the message digest to use to hash binaries.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     protected String getDigest() {
         return DEFAULT_DIGEST;

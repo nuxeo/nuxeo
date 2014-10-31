@@ -89,7 +89,7 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
      * @param cacheSizeStr the maximum size of the cache (as a String)
      * @param fileStorage the file storage mechanism to use to store and fetch
      *            files
-     * @since 5.9.6
+     * @since 6.0
      * @see #initializeCache(File, long, FileStorage)
      * @see SizeUtils#parseSizeInBytes(String)
      */

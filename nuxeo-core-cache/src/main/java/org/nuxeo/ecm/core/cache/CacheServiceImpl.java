@@ -34,7 +34,7 @@ import org.nuxeo.runtime.model.Extension;
 /**
  * Cache service implementation to manage nuxeo cache
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
