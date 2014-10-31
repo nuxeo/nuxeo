@@ -253,6 +253,9 @@
   <category name="org.apache" additivity="true">
     <priority value="INFO" />
   </category>
+  <category name="org.apache.cxf">
+    <priority value="WARN" />
+  </category>
   <category name="org.apache.myfaces.renderkit.html.util.DefaultAddResource">
     <priority value="ERROR" />
   </category>
@@ -279,6 +282,9 @@
   <category name="org.hibernate.hql.ast.tree.FromElementType">
     <priority value="ERROR" />
   </category>
+  <category name="org.hibernate.ejb.Ejb3Configuration">
+    <priority value="ERROR" />
+  </category>
 
   <category name="org.jbpm">
     <priority value="INFO" />
@@ -287,12 +293,6 @@
     <priority value="ERROR" />
   </category>
 
-  <category name="org.compass.core.transaction">
-    <priority value="INFO" />
-  </category>
-  <category name="org.compass.core.lucene.engine.optimizer.ScheduledLuceneSearchEngineOptimizer">
-    <priority value="INFO" />
-  </category>
 
   <category name="org.nuxeo">
     <priority value="WARN" />
@@ -326,9 +326,6 @@
   </category>
   -->
   <category name="org.nuxeo.runtime.reload">
-    <priority value="INFO" />
-  </category>
-  <category name="org.nuxeo.ecm.platform.ui.web.auth">
     <priority value="INFO" />
   </category>
   <category name="org.nuxeo.runtime.osgi.OSGiRuntimeService">
@@ -381,9 +378,9 @@
     <priority value="WARN" />
   </category>
 
-  <!-- Limit the org.quartz category to INFO as its DEBUG is verbose -->
+  <!-- Limit the org.quartz category to WARN as its DEBUG is verbose -->
   <category name="org.quartz" additivity="true">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
 
   <!-- make Jersey less noisy -->
