@@ -28,7 +28,7 @@ import org.opensaml.ws.transport.http.HTTPTransport;
 /**
  * HTTP Redirect Binding
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class HTTPRedirectBinding extends SAMLBinding {
 

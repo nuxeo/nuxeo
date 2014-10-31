@@ -31,7 +31,7 @@ import org.opensaml.xml.validation.ValidationException;
 /**
  * WebSLO (Single Log Out) profile implementation.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class SLOProfileImpl extends AbstractSAMLProfile implements SLOProfile {
 

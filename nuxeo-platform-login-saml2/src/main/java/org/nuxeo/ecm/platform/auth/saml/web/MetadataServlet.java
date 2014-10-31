@@ -52,7 +52,7 @@ import java.util.LinkedList;
 /**
  * Servlet that return local SP metadata for configuring IdPs.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class MetadataServlet extends HttpServlet {
 

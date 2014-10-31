@@ -25,7 +25,7 @@ import java.util.Set;
 /**
  * A manager for {@link Credential}s.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public interface KeyManager extends CredentialResolver {
 

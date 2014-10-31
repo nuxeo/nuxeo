@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class SAMLCredential {
     private final NameID nameID;

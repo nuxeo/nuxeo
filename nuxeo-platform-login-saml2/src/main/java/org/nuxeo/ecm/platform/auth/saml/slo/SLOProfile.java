@@ -25,7 +25,7 @@ import org.opensaml.saml2.metadata.Endpoint;
 /**
  * WebSLO (Single Log Out) profile.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public interface SLOProfile {
 

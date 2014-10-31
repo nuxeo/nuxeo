@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * WebSSO (Single Sign On) profile.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public interface WebSSOProfile {
 

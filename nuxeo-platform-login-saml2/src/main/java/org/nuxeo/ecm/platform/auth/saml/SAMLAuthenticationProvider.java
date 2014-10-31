@@ -89,7 +89,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
 /**
  * A SAML2 authentication provider.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class SAMLAuthenticationProvider
         implements NuxeoAuthenticationPlugin, LoginProviderLinkComputer,

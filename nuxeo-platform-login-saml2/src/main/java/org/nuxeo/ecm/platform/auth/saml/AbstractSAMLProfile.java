@@ -53,7 +53,7 @@ import java.util.UUID;
 /**
  * Base abstract class for SAML profile processors.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public abstract class AbstractSAMLProfile {
     protected final static Log log = LogFactory.getLog(AbstractSAMLProfile.class);

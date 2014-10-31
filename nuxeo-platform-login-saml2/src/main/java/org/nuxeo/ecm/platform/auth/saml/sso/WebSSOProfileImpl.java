@@ -40,7 +40,7 @@ import java.util.List;
 /**
  * WebSSO (Single Sign On) profile implementation.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProfile {
 
