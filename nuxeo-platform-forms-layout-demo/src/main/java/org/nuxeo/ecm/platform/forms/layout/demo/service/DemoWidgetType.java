@@ -43,7 +43,7 @@ public interface DemoWidgetType extends Serializable {
     boolean isPreviewEnabled();
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     boolean isPreviewHideViewMode();
 

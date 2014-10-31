@@ -122,7 +122,7 @@ public class LayoutDemoContext implements Serializable {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @Factory(value = "aggregateWidgetTypes", scope = SESSION)
     public List<DemoWidgetType> getAggregateWidgetTypes() {
@@ -343,7 +343,7 @@ public class LayoutDemoContext implements Serializable {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @Factory(value = "layoutDemoAggregates", scope = EVENT)
     public Map<String, Aggregate<Bucket>> getLayoutDemoAggregates()
