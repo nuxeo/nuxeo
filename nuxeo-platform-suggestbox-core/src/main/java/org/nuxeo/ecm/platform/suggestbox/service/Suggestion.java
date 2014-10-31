@@ -52,7 +52,7 @@ public abstract class Suggestion implements Serializable {
     /**
      * The id of the object associated to the suggestion.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public String getId() {
         return id;
@@ -112,7 +112,7 @@ public abstract class Suggestion implements Serializable {
     /**
      * @return the url to access to the object. It used by the navigation in the select2.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public abstract String getObjectUrl();
 

@@ -37,7 +37,7 @@ import org.nuxeo.ecm.platform.suggestbox.service.SuggestionService;
  * Operation used to suggest result by getting and calling all the suggesters
  * defined in contributions.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 @Operation(id = SuggestOperation.ID, category = Constants.CAT_UI, label = "Suggesters launcher", description = "Get and launch the suggesters defined and return a list of Suggestion objects.", addToStudio = false)
 public class SuggestOperation {
