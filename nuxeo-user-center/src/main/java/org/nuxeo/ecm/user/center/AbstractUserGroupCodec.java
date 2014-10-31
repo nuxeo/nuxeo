@@ -36,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Abstract class for the User and Group codec.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public abstract class AbstractUserGroupCodec extends AbstractDocumentViewCodec {
 

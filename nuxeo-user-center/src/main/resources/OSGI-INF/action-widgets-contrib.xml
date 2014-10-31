@@ -1,7 +1,7 @@
 <component name="org.nuxeo.ecm.user.center.action.widgets">
 
   <documentation>
-    @since 5.9.6, global widgets used to render actions/tabs
+    @since 6.0, global widgets used to render actions/tabs
     in Home.
   </documentation>
 
@@ -46,7 +46,7 @@
         <category>jsfAction</category>
       </categories>
       <configuration>
-        <sinceVersion>5.9.6</sinceVersion>
+        <sinceVersion>6.0</sinceVersion>
         <title>Document Home Rest Link</title>
         <description>
           Widget displaying a restful document link for an action

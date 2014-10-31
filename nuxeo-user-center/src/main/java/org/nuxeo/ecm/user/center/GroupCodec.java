@@ -22,7 +22,7 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
  * Codec handling a groupname, an optional view and additional request
  * parameters.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class GroupCodec extends
         AbstractUserGroupCodec {
