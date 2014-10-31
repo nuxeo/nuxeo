@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.query.sql.model.WhereClause;
 /**
  * Test security policy that forbids titles starting with SECRET.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class TitleFilteringSecurityPolicy3 extends TitleFilteringSecurityPolicy {
 

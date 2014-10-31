@@ -213,7 +213,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
      * Constructs a Nuxeo CMIS Service from an existing {@link CoreSession}.
      *
      * @param coreSession the session
-     * @since 5.9.6
+     * @since 6.0
      */
     public NuxeoCmisService(CoreSession coreSession) {
         this(coreSession, coreSession.getRepositoryName());
@@ -223,7 +223,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
      * Constructs a Nuxeo CMIS Service.
      *
      * @param repositoryName the repository name
-     * @since 5.9.6
+     * @since 6.0
      */
     public NuxeoCmisService(String repositoryName) {
         this(null, repositoryName);
@@ -1667,7 +1667,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
      * @return an {@link IterableQueryResult}, which MUST be closed in a
      *         {@code finally} block
      * @throws CmisRuntimeException if the query cannot be parsed or is invalid
-     * @since 5.9.6
+     * @since 6.0
      */
     public IterableQueryResult queryAndFetch(String query,
             boolean searchAllVersions,
@@ -1709,7 +1709,7 @@ public class NuxeoCmisService extends AbstractCmisService implements
      * @return an {@link IterableQueryResult}, which MUST be closed in a
      *         {@code finally} block
      * @throws CmisRuntimeException if the query cannot be parsed or is invalid
-     * @since 5.9.6
+     * @since 6.0
      */
     public IterableQueryResult queryAndFetch(String query,
             boolean searchAllVersions) {

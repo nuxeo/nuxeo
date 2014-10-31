@@ -40,7 +40,7 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
  * Test service wrapper that adds "Last-Modified" header to GetChildren
  * NavigationService response.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class LastModifiedServiceWrapper extends AbstractCmisServiceWrapper {
 
