@@ -24,7 +24,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class MonitoringPage extends AdminCenterBasePage {
 

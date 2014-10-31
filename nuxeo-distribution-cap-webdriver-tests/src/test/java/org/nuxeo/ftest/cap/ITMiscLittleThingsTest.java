@@ -32,7 +32,7 @@ import org.openqa.selenium.WebElement;
 /**
  * ITTest class to test very simple things.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class ITMiscLittleThingsTest extends AbstractTest {
 

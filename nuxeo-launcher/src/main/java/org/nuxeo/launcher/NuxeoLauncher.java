@@ -198,14 +198,14 @@ public abstract class NuxeoLauncher {
     protected static final String OPTION_HIDE_DEPRECATION_DESC = "Hide deprecation warnings. Not advised on production platforms.";
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     protected static final String OPTION_IGNORE_MISSING = "ignore-missing";
 
     protected static final String OPTION_IGNORE_MISSING_DESC = "Ignore unknown packages on mp-add/install/set commands.";
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     protected static final String OPTION_CLID = "clid";
 

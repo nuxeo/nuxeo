@@ -27,7 +27,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class CheckBoxAggregateElements {
 

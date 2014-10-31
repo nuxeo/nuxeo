@@ -34,7 +34,7 @@ import org.openqa.selenium.WebElement;
 /**
  * Test Logs Viewer tab
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class ITLogsViewerTest extends AbstractTest {
 

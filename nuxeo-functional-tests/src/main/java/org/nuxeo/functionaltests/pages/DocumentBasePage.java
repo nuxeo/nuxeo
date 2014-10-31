@@ -366,7 +366,7 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public SearchPage goToSearchPage() {
         searchPageLink.click();

@@ -77,14 +77,14 @@ public class UserViewTabSubPage extends UsersGroupsBasePage {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public void checkUserName(String expectedName) {
         assertEquals(expectedName, getCurrentUserName().getText());
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public WebElement getCurrentUserName() {
         return currentUserName;

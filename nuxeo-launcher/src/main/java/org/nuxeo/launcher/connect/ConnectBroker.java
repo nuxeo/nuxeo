@@ -139,7 +139,7 @@ public class ConnectBroker {
 
     /**
      * @throws NoCLID
-     * @since 5.9.6
+     * @since 6.0
      */
     public void setCLID(String file) throws NoCLID {
         try {
@@ -702,7 +702,7 @@ public class ConnectBroker {
      * Add a list of packages into the cache, downloading them if needed and
      * possible.
      *
-     * @since 5.9.6
+     * @since 6.0
      * @param pkgsToAdd
      * @param ignoreMissing
      * @return true if command succeeded
@@ -766,7 +766,7 @@ public class ConnectBroker {
     /**
      * Add a package file into the cache
      *
-     * @since 5.9.6
+     * @since 6.0
      * @param packageFileName
      * @param ignoreMissing
      * @return The added LocalPackage or null if failed
@@ -831,7 +831,7 @@ public class ConnectBroker {
      * (versus an ID), only the considered as best matching package is
      * installed.
      *
-     * @since 5.9.6
+     * @since 6.0
      * @param packageIdsToInstall The list can contain package IDs and names
      * @param ignoreMissing If true, doesn't throw an exception on unkown
      *            packages
@@ -864,7 +864,7 @@ public class ConnectBroker {
     /**
      * Install a local package.
      *
-     * @since 5.9.6
+     * @since 6.0
      * @param pkgId Package ID or Name
      * @param ignoreMissing If true, doesn't throw an exception on unkown
      *            packages
@@ -1417,7 +1417,7 @@ public class ConnectBroker {
     /**
      * Installs a list of packages and uninstalls the rest (no dependency check)
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public boolean pkgSet(List<String> pkgList, boolean ignoreMissing) {
         boolean cmdOK = true;
@@ -1466,7 +1466,7 @@ public class ConnectBroker {
      *         and {@code "ask"} if answer values {@code "ask"}, else
      *         return {@code "false"}
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public static String parseAnswer(String answer) {
         if ("ask".equalsIgnoreCase(answer)) {

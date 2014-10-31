@@ -39,7 +39,7 @@ import org.openqa.selenium.WebElement;
 /**
  * Test of the suggestbox defined with a select2.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class ITSuggestBoxTest extends
         AbstractTest {

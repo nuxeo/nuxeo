@@ -576,7 +576,7 @@ public abstract class AbstractTest {
      * Do not wait for page load. Do not handle error. Do not give explicit
      * error in case of failure. This is a very raw get.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public static <T> T getWithoutErrorHandler(String url,
             Class<T> pageClassToProxy) throws IOException {

@@ -27,7 +27,7 @@ import org.openqa.selenium.support.ui.Wait;
 import com.google.common.base.Function;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class AjaxRequestManager {
 

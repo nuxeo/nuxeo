@@ -215,7 +215,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
      * @param value The value to type in the select2.
      * @return The suggested values for the parameter.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public List<WebElement> typeAndGetResult(final String value) {
 
@@ -237,7 +237,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
     /**
      * Click on the select2 field.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     private void clickOnSelect2Field() {
         WebElement select2Field = null;
@@ -252,7 +252,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
     /**
      * @return The suggest input element.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     private WebElement getSuggestInput() {
         WebElement suggestInput = null;
@@ -270,7 +270,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
      *
      * @throws TimeoutException
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     private void waitSelect2()
             throws TimeoutException {
@@ -289,7 +289,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
     /**
      * Clear the input of the select2.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public void clearSuggestInput() {
         WebElement suggestInput = null;
@@ -307,7 +307,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
     /**
      * Click on the select2 element.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public void clickSelect2Field() {
         WebElement select2Field = null;
@@ -322,7 +322,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
     /**
      * Type a value in the select2 and then simulate the enter key.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public SearchPage typeValueAndTypeEnter(String value) {
         clickOnSelect2Field();

@@ -24,7 +24,7 @@ import org.junit.runners.Suite;
 /**
  * IT suite of CAP distribution tests for inclusion in other suites
  *
- * @since 5.9.6
+ * @since 6.0
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ ITSearchTabTest.class, ITArchivedVersionsTest.class,

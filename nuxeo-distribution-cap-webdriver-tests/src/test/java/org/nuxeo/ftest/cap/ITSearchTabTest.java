@@ -41,7 +41,7 @@ import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.openqa.selenium.By;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class ITSearchTabTest extends AbstractTest {
 

@@ -19,7 +19,7 @@ package org.nuxeo.functionaltests.pages.search;
 import org.openqa.selenium.WebDriver;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class NXQLSearchSubPage extends AbstractSearchSubPage  {
 

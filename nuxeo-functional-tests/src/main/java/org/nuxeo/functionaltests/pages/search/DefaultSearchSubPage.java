@@ -31,7 +31,7 @@ import org.openqa.selenium.support.FindBy;
 import com.google.common.base.Function;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class DefaultSearchSubPage extends AbstractSearchSubPage {
 
