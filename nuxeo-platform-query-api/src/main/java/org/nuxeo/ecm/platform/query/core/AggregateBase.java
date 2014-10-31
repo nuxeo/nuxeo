@@ -32,7 +32,7 @@ import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class AggregateBase<B extends Bucket> implements Aggregate<B> {
 

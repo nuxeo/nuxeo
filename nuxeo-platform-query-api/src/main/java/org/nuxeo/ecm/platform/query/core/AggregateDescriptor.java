@@ -32,7 +32,7 @@ import org.nuxeo.ecm.platform.query.api.AggregateRangeDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 @XObject(value = "aggregate")
 public class AggregateDescriptor implements AggregateDefinition {

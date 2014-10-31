@@ -298,7 +298,7 @@ public class WidgetImpl implements Widget {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public void setControls(Map<String, Serializable> controls) {
         this.controls = controls;

@@ -69,7 +69,7 @@ public interface Session {
      * partial results up to that limit, the method
      * {@code DocumentModelList#totalsize} on the returned list will return -2
      * as a special marker for truncated results.
-     * @deprecated since 5.9.6 Use query method instead with parameters
+     * @deprecated since 6.0 Use query method instead with parameters
      * @return a collection with all the entries in the directory
      * @throws DirectoryException
      * @throws SizeLimitExceededException if the number of results is larger

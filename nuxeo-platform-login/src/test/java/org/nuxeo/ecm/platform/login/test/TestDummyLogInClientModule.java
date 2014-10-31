@@ -32,7 +32,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 /**
  * Test on the {@link DummyNuxeoLoginModule}
  *
- * @since 5.9.6
+ * @since 6.0
  */
 @RunWith(FeaturesRunner.class)
 @Features(ClientLoginFeature.class)

@@ -27,7 +27,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeConfiguration;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class LayoutTypeConfigurationImpl implements LayoutTypeConfiguration {
 

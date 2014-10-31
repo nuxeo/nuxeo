@@ -32,7 +32,7 @@ import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 /**
  * Base class for page provider descriptors.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public abstract class BasePageProviderDescriptor {
 
@@ -78,7 +78,7 @@ public abstract class BasePageProviderDescriptor {
     protected WhereClauseDescriptor whereClause;
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @XNode("searchDocumentType")
     protected String searchDocumentType;
@@ -92,7 +92,7 @@ public abstract class BasePageProviderDescriptor {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @XNodeList(value = "aggregates/aggregate", type = ArrayList.class, componentType = AggregateDescriptor.class)
     protected List<AggregateDescriptor> aggregates;
@@ -160,7 +160,7 @@ public abstract class BasePageProviderDescriptor {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public void setName(String name) {
         this.name = name;
@@ -171,7 +171,7 @@ public abstract class BasePageProviderDescriptor {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @SuppressWarnings("unchecked")
     public List<AggregateDefinition> getAggregates() {
@@ -182,7 +182,7 @@ public abstract class BasePageProviderDescriptor {
      * Returns the search document type used for wher clause, aggregates and
      * named parameters.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public String getSearchDocumentType() {
         if (searchDocumentType == null) {

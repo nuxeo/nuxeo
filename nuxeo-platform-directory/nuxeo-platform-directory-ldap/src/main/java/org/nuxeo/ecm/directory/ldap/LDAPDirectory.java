@@ -126,7 +126,7 @@ public class LDAPDirectory extends AbstractDirectory {
     /**
      * Lazy init method for ldap config
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     protected void initLDAPConfig()
     {

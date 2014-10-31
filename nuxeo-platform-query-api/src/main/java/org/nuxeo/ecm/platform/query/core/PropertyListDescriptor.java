@@ -22,7 +22,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 @XObject("propertyList")
 public class PropertyListDescriptor implements Serializable {

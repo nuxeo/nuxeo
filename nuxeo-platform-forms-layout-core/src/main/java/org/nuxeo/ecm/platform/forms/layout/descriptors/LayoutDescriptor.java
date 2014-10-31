@@ -48,13 +48,13 @@ public class LayoutDescriptor {
     String name;
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @XNode("@type")
     String type;
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @XNode("@typeCategory")
     String typeCategory;
@@ -81,7 +81,7 @@ public class LayoutDescriptor {
     String[] categories = new String[0];
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @XNodeList(value = "aliases/alias", type = ArrayList.class, componentType = String.class)
     List<String> aliases;
@@ -176,7 +176,7 @@ public class LayoutDescriptor {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public List<String> getAliases() {
         return aliases;

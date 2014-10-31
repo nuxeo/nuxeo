@@ -25,7 +25,7 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
 /**
  * Regiustry for layoyut type definitions.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class LayoutTypeDefinitionRegistry extends
         SimpleContributionRegistry<LayoutTypeDefinition> {

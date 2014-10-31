@@ -121,12 +121,12 @@ public interface PageProviderService extends Serializable {
             throws ClientException;
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     void registerPageProviderDefinition(PageProviderDefinition desc);
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     void unregisterPageProviderDefinition(PageProviderDefinition desc);
 
@@ -135,7 +135,7 @@ public interface PageProviderService extends Serializable {
      * Returns all the registered page provider names, or an empty set if no
      * page provider is registered.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     Set<String> getPageProviderDefinitionNames();
 

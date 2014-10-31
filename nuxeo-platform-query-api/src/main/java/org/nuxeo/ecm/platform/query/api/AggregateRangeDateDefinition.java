@@ -18,7 +18,7 @@
 package org.nuxeo.ecm.platform.query.api;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public interface AggregateRangeDateDefinition extends AggregateRangeDefinition {
 

@@ -24,7 +24,7 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 @XObject("properties")
 public class PropertiesDescriptor implements Serializable {

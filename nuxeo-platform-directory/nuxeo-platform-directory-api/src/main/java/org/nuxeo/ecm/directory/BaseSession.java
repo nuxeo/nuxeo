@@ -68,7 +68,7 @@ public abstract class BaseSession implements Session {
      * 
      * @return true if the user
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public boolean isCurrentUserAllowed(String permissionTocheck) {
         PermissionDescriptor[] permDescriptors = permissions;

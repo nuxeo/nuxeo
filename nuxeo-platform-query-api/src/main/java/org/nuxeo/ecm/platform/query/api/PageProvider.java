@@ -55,7 +55,7 @@ public interface PageProvider<T> extends Serializable {
 
     /**
      * Default maximum page size value.
-     * @since 5.9.6, default value is 1000.
+     * @since 6.0, default value is 1000.
      */
     public static final long DEFAULT_MAX_PAGE_SIZE = 1000;
 
@@ -403,17 +403,17 @@ public interface PageProvider<T> extends Serializable {
     boolean hasChangedParameters(Object[] parameters);
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     List<AggregateDefinition> getAggregateDefinitions();
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     Map<String, Aggregate> getAggregates();
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     boolean hasAggregateSupport();
 

@@ -22,7 +22,7 @@ import java.util.Locale;
 
 /**
  * Immutable bucket for range.
- * @since 5.9.6
+ * @since 6.0
  */
 public final class BucketRange implements Bucket {
 

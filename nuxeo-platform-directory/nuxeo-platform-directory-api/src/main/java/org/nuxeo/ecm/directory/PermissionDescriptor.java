@@ -25,7 +25,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 /**
  * Common permission descriptor for all directory that use security check
  * 
- * @since 5.9.6
+ * @since 6.0
  */
 @XObject(value = "permission")
 public class PermissionDescriptor {

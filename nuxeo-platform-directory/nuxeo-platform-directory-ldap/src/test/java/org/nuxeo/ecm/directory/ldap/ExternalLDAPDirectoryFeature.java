@@ -56,7 +56,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 /**
  * Feature for External LDAP directory unit tests
  *
- * @since 5.9.6
+ * @since 6.0
  */
 @Features({ SQLDirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)

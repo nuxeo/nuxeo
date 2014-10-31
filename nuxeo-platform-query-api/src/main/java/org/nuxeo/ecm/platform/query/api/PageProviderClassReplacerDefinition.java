@@ -24,7 +24,7 @@ import java.util.List;
  * Class replacer descriptor interface enable to supersede a class of an
  * existing Page provider.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public interface PageProviderClassReplacerDefinition extends Serializable {
 

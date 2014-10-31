@@ -123,7 +123,7 @@ public class WidgetDescriptor {
     String[] categories = new String[0];
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @XNodeList(value = "aliases/alias", type = ArrayList.class, componentType = String.class)
     List<String> aliases;
@@ -353,7 +353,7 @@ public class WidgetDescriptor {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public List<String> getAliases() {
         return aliases;

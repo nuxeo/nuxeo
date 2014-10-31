@@ -22,7 +22,7 @@ import org.nuxeo.ecm.platform.query.api.Bucket;
  * A mock bucket used to present preselected bucket that are no longer returned
  * by es post filtering.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class MockBucket implements Bucket {
 

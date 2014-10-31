@@ -605,7 +605,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     protected boolean getBooleanProperty(String propName, boolean defaultValue) {
         Map<String, Serializable> props = getProperties();

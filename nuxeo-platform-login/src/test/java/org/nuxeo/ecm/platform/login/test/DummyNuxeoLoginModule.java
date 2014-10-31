@@ -62,7 +62,7 @@ import org.nuxeo.runtime.api.login.LoginComponent;
  * where it's not possible to use the usermanager in the test due to the cyclic
  * dependency between projects
  * 
- * @since 5.9.6
+ * @since 6.0
  */
 public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
 

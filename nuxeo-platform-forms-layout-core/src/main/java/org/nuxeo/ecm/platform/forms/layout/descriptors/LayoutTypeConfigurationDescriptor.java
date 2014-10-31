@@ -38,7 +38,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutTypeConfigurationImpl;
 import org.w3c.dom.DocumentFragment;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 @XObject("configuration")
 public class LayoutTypeConfigurationDescriptor {

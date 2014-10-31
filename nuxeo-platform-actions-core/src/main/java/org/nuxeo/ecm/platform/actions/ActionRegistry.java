@@ -156,10 +156,10 @@ public class ActionRegistry implements Serializable {
     /**
      * Displays specific help messages for migration of actions.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     protected boolean applyCustomCompatibility(String compatType, Action action) {
-        // 5.9.6 BBB: home/admin tab actions migrated to widgets
+        // 6.0 BBB: home/admin tab actions migrated to widgets
         if ("admin_rest_document_link".equals(compatType)
                 || "home_rest_document_link".equals(compatType)) {
             boolean applied = false;

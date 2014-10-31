@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
  * Unrestricted session runner providing API for retrieving the result
  * documents list.
  *
- * @since 5.9.6
+ * @since 6.0
  */
 public class CoreQueryUnrestrictedSessionRunner extends
         UnrestrictedSessionRunner {

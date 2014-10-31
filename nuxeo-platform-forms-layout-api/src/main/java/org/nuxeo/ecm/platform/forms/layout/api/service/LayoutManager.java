@@ -71,14 +71,14 @@ public interface LayoutManager extends Serializable {
      * Returns the layout type definition with given name, or null if no layout
      * type with this name is found.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     LayoutTypeDefinition getLayoutTypeDefinition(String typeName);
 
     /**
      * Returns the layout type definitions for all the registered layout types.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     List<LayoutTypeDefinition> getLayoutTypeDefinitions();
 

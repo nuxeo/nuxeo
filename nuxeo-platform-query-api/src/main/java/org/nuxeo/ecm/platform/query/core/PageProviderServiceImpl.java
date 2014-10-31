@@ -49,14 +49,14 @@ public class PageProviderServiceImpl extends DefaultComponent implements
 
     public static final String PROVIDER_EP = "providers";
 
-    // @since 5.9.6
+    // @since 6.0
     public static final String REPLACER_EP = "replacers";
 
     public static final String NAMED_PARAMETERS = "namedParameters";
 
     protected PageProviderRegistry providerReg = new PageProviderRegistry();
 
-    // @since 5.9.6
+    // @since 6.0
     protected PageProviderClassReplacerRegistry replacersReg = new PageProviderClassReplacerRegistry();
 
     private static final Log log = LogFactory.getLog(PageProviderServiceImpl.class);

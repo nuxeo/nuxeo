@@ -408,14 +408,14 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public Map<String, Map<String, Serializable>> getDefaultControlValues() {
         return defaultControlValues;
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public Map<String, Serializable> getDefaultControlValues(String mode) {
         if (defaultControlValues != null) {
@@ -434,7 +434,7 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public void setDefaultControlValues(
             Map<String, Map<String, Serializable>> values) {

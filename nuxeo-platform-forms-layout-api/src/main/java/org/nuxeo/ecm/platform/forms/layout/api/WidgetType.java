@@ -42,7 +42,7 @@ public interface WidgetType extends Serializable {
      * Return alias names for this widget type (useful for compatibility
      * on old widget types).
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     List<String> getAliases();
 

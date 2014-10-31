@@ -47,7 +47,7 @@ import org.nuxeo.runtime.api.Framework;
  * optional property {@link #CHECK_QUERY_CACHE_PROPERTY} can be set to "true"
  * to avoid performing the query again if it did not change.
  * <p>
- * Since 5.9.6, the page provider property named
+ * Since 6.0, the page provider property named
  * {@link #USE_UNRESTRICTED_SESSION_PROPERTY} allows specifying whether the
  * query should be run as unrestricted. When such a property is set to "true",
  * the additional property {@link #DETACH_DOCUMENTS_PROPERTY} is used to detach
@@ -78,7 +78,7 @@ public class CoreQueryDocumentPageProvider extends
     /**
      * Boolean property stating that query should be unrestricted.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public static final String USE_UNRESTRICTED_SESSION_PROPERTY = "useUnrestrictedSession";
 
@@ -88,7 +88,7 @@ public class CoreQueryDocumentPageProvider extends
      * <p>
      * When an unrestricted session is used, this property defaults to true.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public static final String DETACH_DOCUMENTS_PROPERTY = "detachDocuments";
 

@@ -26,7 +26,7 @@ import org.nuxeo.ecm.platform.query.api.PageProviderClassReplacerDefinition;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class PageProviderClassReplacerRegistry extends
         ContributionFragmentRegistry<PageProviderClassReplacerDefinition> {

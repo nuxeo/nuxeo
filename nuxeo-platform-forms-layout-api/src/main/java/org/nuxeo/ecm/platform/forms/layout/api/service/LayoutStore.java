@@ -63,13 +63,13 @@ public interface LayoutStore extends Serializable {
     List<WidgetTypeDefinition> getWidgetTypeDefinitions(String category);
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     LayoutTypeDefinition getLayoutTypeDefinition(String category,
             String typeName);
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     List<LayoutTypeDefinition> getLayoutTypeDefinitions(String category);
 
@@ -103,12 +103,12 @@ public interface LayoutStore extends Serializable {
     void unregisterWidgetType(String category, WidgetTypeDefinition desc);
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     void registerLayoutType(String category, LayoutTypeDefinition desc);
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     void unregisterLayoutType(String category, LayoutTypeDefinition desc);
 

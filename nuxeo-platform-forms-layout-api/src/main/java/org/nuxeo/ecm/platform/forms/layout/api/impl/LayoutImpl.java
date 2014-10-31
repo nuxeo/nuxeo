@@ -222,28 +222,28 @@ public class LayoutImpl implements Layout {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public String getType() {
         return type;
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public void setType(String type) {
         this.type = type;
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public String getTypeCategory() {
         return typeCategory;
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public void setTypeCategory(String typeCategory) {
         this.typeCategory = typeCategory;

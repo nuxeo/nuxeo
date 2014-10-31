@@ -64,7 +64,7 @@ public interface PageProviderDefinition extends Serializable {
      * Returns the search document type used for wher clause, aggregates and
      * named parameters.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     String getSearchDocumentType();
 
@@ -86,7 +86,7 @@ public interface PageProviderDefinition extends Serializable {
     PageProviderDefinition clone();
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     List<AggregateDefinition> getAggregates();
 }

@@ -27,7 +27,7 @@ public class WidgetTypeDefinitionImpl implements WidgetTypeDefinition {
     protected String name;
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     protected List<String> aliases;
 

@@ -74,7 +74,7 @@ public class PageSelections<T> {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public void add(PageSelection<T> entry) {
         if (entries == null) {

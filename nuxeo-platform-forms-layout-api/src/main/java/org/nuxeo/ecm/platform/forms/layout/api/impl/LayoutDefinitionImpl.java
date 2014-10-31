@@ -146,28 +146,28 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public String getType() {
         return type;
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public void setType(String type) {
         this.type = type;
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public String getTypeCategory() {
         return typeCategory;
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public void setTypeCategory(String typeCategory) {
         this.typeCategory = typeCategory;
@@ -197,7 +197,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static String getTemplate(Map<String, String> templates, String mode) {
         if (templates != null) {

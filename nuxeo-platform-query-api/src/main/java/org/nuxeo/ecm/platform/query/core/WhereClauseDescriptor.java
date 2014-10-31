@@ -37,7 +37,7 @@ import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 public class WhereClauseDescriptor implements WhereClauseDefinition {
 
     /**
-     * @deprecated since 5.9.6: doc type moved up to the page provider
+     * @deprecated since 6.0: doc type moved up to the page provider
      *             descriptor.
      */
     @Deprecated
@@ -69,7 +69,7 @@ public class WhereClauseDescriptor implements WhereClauseDefinition {
     protected boolean escapeFixedPartParameters = true;
 
     /**
-     * @deprecated since 5.9.6: use
+     * @deprecated since 6.0: use
      *             {@link BasePageProviderDescriptor#getSearchDocumentType()}
      */
     @Deprecated

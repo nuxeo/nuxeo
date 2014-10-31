@@ -45,7 +45,7 @@ import com.google.inject.name.Names;
 /**
  *
  *
- * @since 5.9.6
+ * @since 6.0
  */
 @Features({ ClientLoginFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)

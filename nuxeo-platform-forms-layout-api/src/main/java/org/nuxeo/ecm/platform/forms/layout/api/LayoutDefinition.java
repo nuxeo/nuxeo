@@ -43,15 +43,15 @@ public interface LayoutDefinition extends Serializable {
     /**
      * Return the layout type, or null if not defined.
      * <p>
-     * Since 5.9.6, the layout type can hold templates and properties
+     * Since 6.0, the layout type can hold templates and properties
      * configuration, so that layout does not need to define them again.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     String getType();
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     String getTypeCategory();
 
@@ -137,7 +137,7 @@ public interface LayoutDefinition extends Serializable {
      * Return alias names for this layout definition (useful for compatibility
      * on old layout names).
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     List<String> getAliases();
 

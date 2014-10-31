@@ -23,7 +23,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDefinition;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 @XObject("range")
 public class AggregateRangeDescriptor implements AggregateRangeDefinition,

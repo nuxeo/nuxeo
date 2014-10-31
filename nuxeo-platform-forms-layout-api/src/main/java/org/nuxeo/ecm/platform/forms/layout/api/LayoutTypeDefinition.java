@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public interface LayoutTypeDefinition extends Serializable {
 

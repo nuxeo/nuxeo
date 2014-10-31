@@ -34,7 +34,7 @@ public interface WidgetTypeDefinition extends Serializable {
      * Return alias names for this widget type definition (useful for
      * compatibility on old widget type names).
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     List<String> getAliases();
 

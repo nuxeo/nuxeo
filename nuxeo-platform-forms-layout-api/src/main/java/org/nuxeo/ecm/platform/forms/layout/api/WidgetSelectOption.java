@@ -58,14 +58,14 @@ public interface WidgetSelectOption extends Serializable {
     /**
      * Getter to handle l10n localization of select options.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     String getItemLabel(String locale);
 
     /**
      * Getter to handle l10n localization of select options.
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     Map<String, String> getItemLabels();
 

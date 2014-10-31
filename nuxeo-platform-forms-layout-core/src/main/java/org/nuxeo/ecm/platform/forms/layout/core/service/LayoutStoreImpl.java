@@ -65,7 +65,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
     public static final String WIDGET_TYPES_EP_NAME = "widgettypes";
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static final String LAYOUT_TYPES_EP_NAME = "layouttypes";
 

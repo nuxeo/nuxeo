@@ -21,7 +21,7 @@ import org.nuxeo.ecm.platform.query.api.Bucket;
 
 /**
  * Immutable bucket for date range.
- * @since 5.9.6
+ * @since 6.0
  */
 public class BucketRangeDate implements Bucket {
 

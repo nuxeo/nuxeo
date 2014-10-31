@@ -20,7 +20,7 @@ import org.nuxeo.ecm.platform.query.api.Bucket;
 
 /**
  * Immutable Bucket for terms.
- * @since 5.9.6
+ * @since 6.0
  */
 public final class BucketTerm implements Bucket {
 

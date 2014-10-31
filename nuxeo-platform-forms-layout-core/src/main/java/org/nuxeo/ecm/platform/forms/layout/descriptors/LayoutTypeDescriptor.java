@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutTypeDefinitionImpl;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 @XObject("layoutType")
 public class LayoutTypeDescriptor {

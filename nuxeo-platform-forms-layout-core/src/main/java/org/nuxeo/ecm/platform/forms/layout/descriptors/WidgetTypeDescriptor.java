@@ -44,7 +44,7 @@ public class WidgetTypeDescriptor {
     String name;
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @XNodeList(value = "aliases/alias", type = ArrayList.class, componentType = String.class)
     List<String> aliases;

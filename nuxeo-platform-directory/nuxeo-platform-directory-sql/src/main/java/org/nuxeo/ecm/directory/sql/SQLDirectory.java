@@ -154,7 +154,7 @@ public class SQLDirectory extends AbstractDirectory {
     /**
      * Lazy init connection
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     protected void initConnection() {
         Connection sqlConnection = getConnection();
