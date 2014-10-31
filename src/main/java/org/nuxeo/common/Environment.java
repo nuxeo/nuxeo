@@ -195,22 +195,22 @@ public class Environment {
 
     // proxy
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static final String NUXEO_HTTP_PROXY_HOST = "nuxeo.http.proxy.host";
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static final String NUXEO_HTTP_PROXY_PORT = "nuxeo.http.proxy.port";
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static final String NUXEO_HTTP_PROXY_LOGIN = "nuxeo.http.proxy.login";
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     public static final String NUXEO_HTTP_PROXY_PASSWORD = "nuxeo.http.proxy.password";
 
