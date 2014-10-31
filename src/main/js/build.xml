@@ -13,7 +13,20 @@
     <os family="windows"/>
   </condition>
 
-  <target name="init" description="Download all node and web dependencies">
+  <target name="clean-cache" description="Clean npm and bower cache"
+          unless="skipCleanCache">
+    <exec executable="${cmd.npm}" failonerror="true">
+      <arg value="cache" />
+      <arg value="clean" />
+    </exec>
+    <exec executable="${cmd.bower}" failonerror="true">
+      <arg value="cache" />
+      <arg value="clean" />
+    </exec>
+  </target>
+
+  <target name="init" description="Download all node and web dependencies"
+          depends="clean-cache">
     <exec executable="${cmd.npm}" failonerror="true">
       <arg value="install" />
     </exec>
