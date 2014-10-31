@@ -36,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
  * {@link FolderItem}.
  *
  * @author Antoine Taillefer
- * @since 5.9.6
+ * @since 6.0
  */
 public class CollectionSyncRootFolderItemFactory extends
         DefaultSyncRootFolderItemFactory {

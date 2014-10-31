@@ -31,7 +31,7 @@ import org.nuxeo.runtime.api.Framework;
  * {@link NuxeoDriveManager#LOCALLY_EDITED_COLLECTION_NAME} collection.
  *
  * @author Antoine Taillefer
- * @since 5.9.6
+ * @since 6.0
  */
 @Operation(id = NuxeoDriveAddToLocallyEditedCollection.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Add document to the 'Locally Edited' collection")
 public class NuxeoDriveAddToLocallyEditedCollection {

@@ -106,7 +106,7 @@ public interface FileSystemItemManager {
      *             the given {@link FileSystemItem} ids or if an error occurs
      *             while retrieving the item
      * @see #getFileSystemItemById(String, Principal)
-     * @since 5.9.6
+     * @since 6.0
      */
     FileSystemItem getFileSystemItemById(String id, String parentId,
             Principal principal) throws ClientException;
@@ -181,7 +181,7 @@ public interface FileSystemItemManager {
      *             {@link FileItem} or if an error occurs while updating the
      *             file
      * @see #updateFile(String, Blob, Principal)
-     * @since 5.9.6
+     * @since 6.0
      */
     FileItem updateFile(String id, String parentId, Blob blob,
             Principal principal) throws ClientException;
@@ -205,7 +205,7 @@ public interface FileSystemItemManager {
      *             and parent id cannot be retrieved or if an error occurs while
      *             deleting the item
      * @see #delete(String, Principal)
-     * @since 5.9.6
+     * @since 6.0
      */
     void delete(String id, String parentId, Principal principal)
             throws ClientException;

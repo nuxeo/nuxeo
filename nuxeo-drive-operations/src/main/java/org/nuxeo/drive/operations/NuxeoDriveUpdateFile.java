@@ -51,7 +51,7 @@ public class NuxeoDriveUpdateFile {
     protected String id;
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     @Param(name = "parentId", required = false)
     protected String parentId;

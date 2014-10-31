@@ -227,7 +227,7 @@ public interface NuxeoDriveManager {
      *
      * @throws ClientException
      *
-     * @since 5.9.6
+     * @since 6.0
      */
     public void addToLocallyEditedCollection(CoreSession session,
             DocumentModel doc) throws ClientException;
