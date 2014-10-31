@@ -65,9 +65,9 @@ import org.nuxeo.targetplatforms.core.service.DirectoryUpdater;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core",
-        "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
-        "org.nuxeo.targetplatforms.core" })
+@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.core.schema",
+        "org.nuxeo.ecm.core", "org.nuxeo.ecm.directory",
+        "org.nuxeo.ecm.directory.sql", "org.nuxeo.targetplatforms.core" })
 @LocalDeploy("org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml")
 public class TestTargetPlatformService {
 
@@ -88,7 +88,6 @@ public class TestTargetPlatformService {
                 return con;
             }
         };
-        NuxeoContainer.installNaming();
         NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxsqldirectory",
                 datasourceAutocommit);
     }
@@ -105,7 +104,6 @@ public class TestTargetPlatformService {
                 }
             }
         }.run();
-        NuxeoContainer.uninstallNaming();
     }
 
     @Test

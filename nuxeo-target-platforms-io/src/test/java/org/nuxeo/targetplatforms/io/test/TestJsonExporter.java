@@ -62,9 +62,10 @@ import org.skyscreamer.jsonassert.JSONAssert;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core",
-        "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
-        "org.nuxeo.targetplatforms.core", "org.nuxeo.targetplatforms.io" })
+@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.core.schema",
+        "org.nuxeo.ecm.core", "org.nuxeo.ecm.directory",
+        "org.nuxeo.ecm.directory.sql", "org.nuxeo.targetplatforms.core",
+        "org.nuxeo.targetplatforms.io" })
 @LocalDeploy("org.nuxeo.targetplatforms.io:OSGI-INF/test-targetplatforms-contrib.xml")
 public class TestJsonExporter {
 
@@ -82,7 +83,6 @@ public class TestJsonExporter {
                 return con;
             }
         };
-        NuxeoContainer.installNaming();
         NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxsqldirectory",
                 datasourceAutocommit);
     }
@@ -99,7 +99,6 @@ public class TestJsonExporter {
                 }
             }
         }.run();
-        NuxeoContainer.uninstallNaming();
     }
 
     protected void checkJsonEquals(String filepath, ByteArrayOutputStream out)

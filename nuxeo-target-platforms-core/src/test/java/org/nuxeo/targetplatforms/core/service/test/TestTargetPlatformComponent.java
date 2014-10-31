@@ -49,6 +49,7 @@ public class TestTargetPlatformComponent extends NXRuntimeTestCase {
 
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.runtime.jtajca");
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.targetplatforms.core");
@@ -75,14 +76,12 @@ public class TestTargetPlatformComponent extends NXRuntimeTestCase {
                 return con;
             }
         };
-        NuxeoContainer.installNaming();
         NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxsqldirectory",
                 datasourceAutocommit);
     }
 
     @Override
     public void tearDown() throws Exception {
-        NuxeoContainer.uninstallNaming();
         super.tearDown();
     }
 
