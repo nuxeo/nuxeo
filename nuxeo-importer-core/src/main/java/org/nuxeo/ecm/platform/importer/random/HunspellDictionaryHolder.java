@@ -59,7 +59,7 @@ public class HunspellDictionaryHolder implements DictionaryHolder {
     }
 
     /**
-     * @deprecated since 5.9.6
+     * @deprecated since 6.0
      */
     @Deprecated
     protected void loadDic(String dicName) throws Exception {
@@ -68,7 +68,7 @@ public class HunspellDictionaryHolder implements DictionaryHolder {
     }
 
     /**
-     * @since 5.9.6
+     * @since 6.0
      */
     protected void loadDic() throws IOException {
         URL url = Thread.currentThread().getContextClassLoader().getResource(
