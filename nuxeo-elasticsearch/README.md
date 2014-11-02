@@ -15,31 +15,7 @@ To build and run the tests, simply start the Maven build:
     mvn clean install
 
 ## Elasticsearch configuration
-
-The default configuration uses an embedded Elasticsearch instance
-which is running in the same JVM as the Nuxeo Platform. By default the
-Elasticsearch indexes will be located in
-`nxserver/data/elasticsearch`.
-
-This embedded mode **is only for testing purpose** and should not be used
-in production.
-
-For production you need setup an Elasticsearch cluster version 1.1.2.
-To join the cluster edit the `nuxeo.conf` and add the following lines:
-
-    elasticsearch.addressList=somenode:9300,anothernode:9300
-    elasticsearch.clusterName=elasticsearch
-
-
-Where:
-
-- `addressList` points to one or many Elasticsearch nodes. Note that we
-   connect to the API port **9300** and not the http port 9200.
-
-- `clusterName` is the cluster name to join, `elasticsearch` being the
-   default cluster name of a debian package.
-
-You can find all the available options in the [nuxeo.defaults](https://github.com/nuxeo/nuxeo-distribution/blob/master/nuxeo-distribution-resources/src/main/resources/templates-tomcat/common-base/nuxeo.defaults).
+See http://doc.nuxeo.com/display/NXDOC/Indexing+and+Query#IndexingandQuery-ElasticsearchConfigurationElasticsearchConfiguration
 
 
 ## Reindexing
