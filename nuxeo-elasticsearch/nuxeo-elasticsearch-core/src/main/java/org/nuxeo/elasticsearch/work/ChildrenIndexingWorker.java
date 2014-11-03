@@ -57,6 +57,8 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements
         DocumentModel doc = cmd.getTargetDocument();
         DocumentModelIterator iter = session.getChildrenIterator(doc.getRef());
         while (iter.hasNext()) {
+            // Add a session save to process cache invalidation
+            session.save();
             DocumentModel child = iter.next();
 
             IndexingCommand childCommand = cmd.clone(child);
