@@ -66,6 +66,8 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements
 
         while (documentsToBeIndexed != null && !documentsToBeIndexed.isEmpty()) {
 
+            session.save(); // Process cache invalidation
+
             for (DocumentModel child : documentsToBeIndexed) {
 
                 IndexingCommand childCommand = cmd.clone(child);
