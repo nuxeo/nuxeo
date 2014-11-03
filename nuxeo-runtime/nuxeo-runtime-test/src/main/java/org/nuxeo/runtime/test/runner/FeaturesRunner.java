@@ -78,7 +78,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
         @Override
         public Statement apply(final Statement base, Description description) {
-            return onStatement(base);
+            return base;
         }
 
         protected Statement onStatement(final Statement base) {
@@ -93,7 +93,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
                         public void configure(Binder binder) {
                             for (Object each : rules) {
                                 binder.bind((Class) each.getClass())
-                                    .annotatedWith(Names.named("test"))
                                     .toInstance(each);
                                 binder.requestInjection(each);
                             }
@@ -139,7 +138,8 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
                         public void configure(Binder binder) {
                             for (Object each : rules) {
                                 binder.bind((Class) each.getClass())
-                                    .annotatedWith(Names.named("method")).toInstance(each);
+                                    .annotatedWith(Names.named("method"))
+                                    .toInstance(each);
                                 binder.requestInjection(each);
                             }
                         }
@@ -181,6 +181,11 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
                 type = aType;
                 testClass = new TestClass(aType);
                 feature = aType.newInstance();
+            }
+
+            @Override
+            public String toString() {
+                return "Holder [type=" + type + "]";
             }
 
         }
@@ -296,10 +301,13 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         protected Module onModule() {
             return new Module() {
 
+                @SuppressWarnings("unchecked")
                 @Override
                 public void configure(Binder aBinder) {
                     for (Holder each : holders) {
                         each.feature.configure(FeaturesRunner.this, aBinder);
+                        aBinder.bind((Class) each.feature.getClass())
+                            .toInstance(each.feature);
                         aBinder.requestInjection(each.feature);
                     }
                 }
@@ -508,6 +516,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     protected Injector onInjector(final RunNotifier aNotifier) {
         return Guice.createInjector(Stage.DEVELOPMENT, new Module() {
 
+            @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
             public void configure(Binder aBinder) {
                 aBinder.bind(FeaturesRunner.class).toInstance(
@@ -534,14 +543,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             next.evaluate();
         }
 
-    }
-
-    @Override
-    protected Statement withBeforeClasses(Statement statement) {
-        Statement actual = statement;
-        actual = super.withBeforeClasses(actual);
-        actual = new BeforeClassStatement(actual);
-        return actual;
     }
 
     protected class AfterClassStatement extends Statement {
@@ -594,11 +595,18 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             @Override
             public void call(Holder holder) throws Exception {
                 actual.addAll(classRulesFactory.onRules(holder.testClass, null));
-
             }
         });
         actual.addAll(super.classRules());
         actual.add(new BindTestRules(actual));
+        actual.add(new TestRule() {
+
+            @Override
+            public Statement apply(Statement base, Description description) {
+                return new BeforeClassStatement(base);
+            }
+
+        });
         return actual;
     }
 
@@ -700,8 +708,8 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     protected Statement withAfters(FrameworkMethod method, Object target,
             Statement statement) {
         Statement actual = statement;
-        actual = new AfterMethodRunStatement(method, target, statement);
-        actual = super.withAfters(method, target, statement);
+        actual = new AfterMethodRunStatement(method, target, actual);
+        actual = super.withAfters(method, target, actual);
         actual = new AfterTeardownStatement(actual);
         return actual;
     }
@@ -759,9 +767,10 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     @Override
-    protected Statement methodBlock(FrameworkMethod method) {
-        final Statement base = super.methodBlock(method);
+    protected Statement methodBlock(final FrameworkMethod method) {
         return new Statement() {
+
+            final Statement base = FeaturesRunner.super.methodBlock(method);
 
             @Override
             public void evaluate() throws Throwable {
@@ -777,31 +786,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         };
     }
 
-    @Override
-    protected Statement methodInvoker(FrameworkMethod method, Object test) {
-        return new InvokeMethod(method, test);
-    }
-
-    protected class InvokeMethod extends Statement {
-        protected final FrameworkMethod testMethod;
-
-        protected final Object target;
-
-        protected InvokeMethod(FrameworkMethod testMethod, Object target) {
-            this.testMethod = testMethod;
-            this.target = target;
-        }
-
-        @Override
-        public void evaluate() throws Throwable {
-            beforeMethodRun(testMethod, target);
-            try {
-                testMethod.invokeExplosively(target);
-            } finally {
-                afterMethodRun(testMethod, target);
-            }
-        }
-    }
 
     @Override
     public String toString() {
@@ -824,12 +808,15 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             for (R each : aType.getAnnotatedFieldValues(aTest, annotationType,
                     ruleType)) {
                 actual.add(each);
+                injector.injectMembers(each);
             }
 
             for (FrameworkMethod each : aType
                 .getAnnotatedMethods(annotationType)) {
                 if (ruleType.isAssignableFrom(each.getMethod().getReturnType())) {
-                    actual.add(onRule(ruleType, each, aTest));
+                    R onRule = onRule(ruleType, each, aTest);
+                    injector.injectMembers(onRule);
+                    actual.add(onRule);
                 }
             }
 

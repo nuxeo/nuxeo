@@ -18,42 +18,35 @@
  */
 package org.nuxeo.runtime.test.runner;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.net.URL;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.junit.Rule;
+import org.junit.rules.MethodRule;
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.Statement;
 import org.nuxeo.common.utils.URLStreamHandlerFactoryInstaller;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-import org.osgi.framework.Bundle;
 
-import com.google.common.base.Supplier;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.SetMultimap;
 import com.google.inject.Binder;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Features({MDCFeature.class, ConditionalIgnoreRule.Feature.class, RandomBug.Feature.class})
+@Features({ MDCFeature.class, ConditionalIgnoreRule.Feature.class,
+        RandomBug.Feature.class })
 public class RuntimeFeature extends SimpleFeature {
-
-    private static final Log log = LogFactory.getLog(RuntimeFeature.class);
 
     protected RuntimeHarness harness;
 
-    protected final DeploymentSet deploy;
+    protected RuntimeDeployment deployment;
 
     /**
      * Providers contributed by other features to override the default service
@@ -62,7 +55,6 @@ public class RuntimeFeature extends SimpleFeature {
     protected final Map<Class<?>, ServiceProvider<?>> serviceProviders;
 
     public RuntimeFeature() {
-        deploy = new DeploymentSet();
         serviceProviders = new HashMap<Class<?>, ServiceProvider<?>>();
     }
 
@@ -74,133 +66,31 @@ public class RuntimeFeature extends SimpleFeature {
         return harness;
     }
 
-    public DeploymentSet deployments() {
-        return deploy;
-    }
-
-    protected void scanDeployments(FeaturesRunner runner) {
-        for (RunnerFeature feature : runner.getFeatures()) {
-            deploy.load(FeaturesRunner.getScanner(), feature.getClass());
-        }
-        // load deployments from class to run
-        deploy.load(FeaturesRunner.getScanner(), runner.getTestClass()
-            .getJavaClass());
-    }
-
-    public String[] getDeployments() {
-        return deploy.getDeployments().toArray(
-                new String[deploy.getDeployments().size()]);
-    }
-
-    public String[] getLocalDeployments() {
-        return deploy.getLocalDeployments().toArray(
-                new String[deploy.getLocalDeployments().size()]);
-    }
-
-    protected void indexBundleResources(FeaturesRunner runner,
-            Set<String> bundles, SetMultimap<String, String> resources,
-            String[] directives) throws IOException {
-        for (String directive : directives) {
-            int sepIndex = directive.indexOf(':');
-            if (sepIndex == -1) {
-                bundles.add(directive);
-            } else {
-                String bundle = directive.substring(0, sepIndex);
-                String resource = directive.substring(sepIndex + 1);
-                resources.put(bundle, resource);
-            }
-        }
-    }
-
-    /**
-     * Deploys bundles specified in the @Bundles annotation.
-     */
-    protected void deployTestClassBundles(FeaturesRunner runner)
-            throws Exception {
-        Set<String> bundles = new HashSet<String>();
-        Map<String, Collection<String>> mainDeployments = new HashMap<>();
-        SetMultimap<String, String> mainIndex = Multimaps.newSetMultimap(
-                mainDeployments, new Supplier<Set<String>>() {
-                    @Override
-                    public Set<String> get() {
-                        return new HashSet<String>();
-                    }
-                });
-        Map<String, Collection<String>> localDeployments = new HashMap<>();
-        SetMultimap<String, String> localIndex = Multimaps.newSetMultimap(
-                localDeployments, new Supplier<Set<String>>() {
-                    @Override
-                    public Set<String> get() {
-                        return new HashSet<String>();
-                    }
-                });
-        indexBundleResources(runner, bundles, mainIndex, getDeployments());
-        indexBundleResources(runner, bundles, localIndex, getLocalDeployments());
-        AssertionError errors = new AssertionError("cannot deploy components");
-        for (String name : bundles) {
-            Bundle bundle = null;
-            try {
-                harness.deployBundle(name);
-                bundle = harness.getOSGiAdapter().getBundle(name);
-            } catch (Exception error) {
-                errors.addSuppressed(error);
-                continue;
-            }
-            try {
-                // deploy bundle contribs
-                for (String resource : mainIndex.removeAll(name)) {
-                    try {
-                        harness.deployContrib(name, resource);
-                    } catch (Exception error) {
-                        errors.addSuppressed(error);
-                    }
-                }
-                // deploy local contribs
-                for (String resource : localIndex.removeAll(name)) {
-                    URL url = runner.getTargetTestResource(name);
-                    if (url == null) {
-                        url = bundle.getEntry(resource);
-                    }
-                    if (url == null) {
-                        url = runner.getTargetTestClass().getClassLoader()
-                            .getResource(resource);
-                    }
-                    if (url == null) {
-                        throw new AssertionError("Cannot find " + resource
-                                + " in " + name);
-                    }
-                    harness.deployTestContrib(name, url);
-                }
-            } catch (Exception error) {
-                errors.addSuppressed(error);
-            }
-        }
-
-        for (Map.Entry<String, String> resource : mainIndex.entries()) {
-            try {
-                harness.deployContrib(resource.getKey(), resource.getValue());
-            } catch (Exception error) {
-                errors.addSuppressed(error);
-            }
-        }
-        for (Map.Entry<String, String> resource : localIndex.entries()) {
-            try {
-                harness.deployTestContrib(resource.getKey(),
-                        resource.getValue());
-            } catch (Exception error) {
-                errors.addSuppressed(error);
-            }
-        }
-
-        if (errors.getSuppressed().length > 0) {
-            throw errors;
-        }
-    }
-
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
         harness = new NXRuntimeTestCase(runner.getTargetTestClass());
-        scanDeployments(runner);
+        deployment = RuntimeDeployment.onTest(runner);
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public void configure(FeaturesRunner runner, Binder binder) {
+        binder.bind(RuntimeHarness.class).toInstance(getHarness());
+        binder.bind(RuntimeFeature.class).toInstance(this);
+        for (String svc : Framework.getRuntime().getComponentManager()
+            .getServices()) {
+            try {
+                Class clazz = Thread.currentThread().getContextClassLoader()
+                    .loadClass(svc);
+                ServiceProvider<?> provider = serviceProviders.get(clazz);
+                if (provider == null) {
+                    provider = new ServiceProvider(clazz);
+                }
+                binder.bind(clazz).toProvider(provider).in(provider.getScope());
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to bind service: " + svc, e);
+            }
+        }
     }
 
     @Override
@@ -216,12 +106,42 @@ public class RuntimeFeature extends SimpleFeature {
                 blacklistComponents(runner);
             }
         });
-        // Starts Nuxeo Runtime
-        if (!harness.isStarted()) {
-            harness.start();
-        }
-        // Deploy bundles
-        deployTestClassBundles(runner);
+
+        harness.start();
+        deployment.deploy(runner, harness);
+    }
+
+    @Override
+    public void stop(FeaturesRunner runner) throws Exception {
+        harness.stop();
+    }
+
+    @Rule
+    public MethodRule onCleanupURLStreamHandlers() {
+        return new MethodRule() {
+
+            @Override
+            public Statement apply(final Statement base,
+                    FrameworkMethod method, Object target) {
+                return new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        try {
+                            base.evaluate();
+                        } finally {
+                            URLStreamHandlerFactoryInstaller
+                                .resetURLStreamHandlers();
+                        }
+                    }
+                };
+            }
+
+        };
+    }
+
+    @Rule
+    public MethodRule onMethodDeployment() {
+        return RuntimeDeployment.onMethod();
     }
 
     protected void blacklistComponents(FeaturesRunner aRunner) {
@@ -239,62 +159,6 @@ public class RuntimeFeature extends SimpleFeature {
     @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
         harness.fireFrameworkStarted();
-    }
-
-    @Override
-    public void stop(FeaturesRunner runner) throws Exception {
-        try {
-            // Stops the harness if needed
-            if (harness.isStarted()) {
-                // TODO NXP-10915 should undeploy test class bundles
-                harness.stop();
-                // harness = null;
-            }
-        } finally {
-            cleanupClassLoader();
-        }
-    }
-
-    protected void cleanupClassLoader() {
-        URLStreamHandlerFactoryInstaller.resetURLStreamHandlers();
-    }
-
-    protected void resetStaticField(Class<?> clazz, String name) {
-        try {
-            Field f = clazz.getDeclaredField(name);
-            f.setAccessible(true);
-            f.set(null, null);
-        } catch (NoSuchFieldException | SecurityException
-                | IllegalArgumentException | IllegalAccessException e) {
-            log.error("Cannot reset field " + clazz.getName() + "." + name, e);
-        }
-    }
-
-    // TODO this is not ok. we should not force 2 modules layers - we should be
-    // able to load any number of module layers.
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Override
-    public void configure(FeaturesRunner runner, Binder binder) {
-        for (String svc : Framework.getRuntime().getComponentManager()
-            .getServices()) {
-            try {
-                Class clazz = Thread.currentThread().getContextClassLoader()
-                    .loadClass(svc);
-                ServiceProvider provider = serviceProviders.get(clazz);
-                if (provider == null) {
-                    provider = new ServiceProvider(clazz);
-                }
-                bind0(binder, clazz, provider);
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to bind service: " + svc, e);
-            }
-        }
-        binder.bind(RuntimeHarness.class).toInstance(getHarness());
-    }
-
-    protected <T> void bind0(Binder binder, Class<T> type,
-            ServiceProvider<T> provider) {
-        binder.bind(type).toProvider(provider).in(provider.getScope());
     }
 
 }
