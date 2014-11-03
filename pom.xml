@@ -141,7 +141,7 @@
     <nxjsf.version>2.2.6-NX01</nxjsf.version>
     <richfaces.version>4.5.0.Alpha3</richfaces.version>
     <seam.version>2.3.1.Final</seam.version>
-    <nxseam.version>2.3.1.Final.NX01-SNAPSHOT</nxseam.version>
+    <nxseam.version>2.3.1.Final.NX01</nxseam.version>
 
     <tomcat.version>7.0.56</tomcat.version>
     <lucene.version>4.7.2</lucene.version>
@@ -4783,7 +4783,7 @@
                   <!-- <exclude>org.nuxeo.build:nuxeo-distribution-tools</exclude> -->
                   <!-- <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude> -->
                   <!-- <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude> -->
-                  <exclude>org.jboss.seam:*</exclude>
+                  <!-- <exclude>org.jboss.seam:*</exclude> -->
                 </excludes>
               </requireReleaseDeps>
               <requireMavenVersion>
