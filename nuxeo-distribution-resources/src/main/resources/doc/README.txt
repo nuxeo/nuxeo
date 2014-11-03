@@ -117,7 +117,7 @@ community of professional and individual contributors:
 
 ## Release Notes
 
-See [http://nuxeo.github.io/releasenotes/5.9.1-SNAPSHOT/][25].
+See [http://nuxeo.github.io/releasenotes/6.0-SNAPSHOT/][25].
 
 ## Issues
 
