@@ -76,7 +76,7 @@
       </p>
 
       <p>
-        Since 6.0, you can use Automation to control how Documents are created from email. 
+        Since 6.0-HF01-SNAPSHOT, you can use Automation to control how Documents are created from email. 
         For that you need to redefine the ActionPipe.
         <code>
          <pipe name="nxmail"  override="true">

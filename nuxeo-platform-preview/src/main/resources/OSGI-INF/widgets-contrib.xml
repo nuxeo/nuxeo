@@ -6,7 +6,7 @@
 
     <widgetType name="documentPreview">
       <configuration>
-        <sinceVersion>6.0</sinceVersion>
+        <sinceVersion>6.0-HF01-SNAPSHOT</sinceVersion>
         <title>Document Preview</title>
         <description>
           <p>This widget type displays the document preview.</p>
