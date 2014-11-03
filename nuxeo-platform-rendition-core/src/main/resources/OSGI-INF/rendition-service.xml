@@ -27,7 +27,7 @@
         </renditionDefinition>
       </code>
       
-      Since 6.0 : 
+      Since 6.0-HF01-SNAPSHOT : 
       <ul>
          <li> a new allowEmptyBlob tag has been added. Setting it's value to true will allow the rendition to be available even if the target Document does not contains a Blob.</li>
          <li> a new visible attribute has been added. Setting it's value to false will allow the rendition to be hidden from the UI services.</li>
