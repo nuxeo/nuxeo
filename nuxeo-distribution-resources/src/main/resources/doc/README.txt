@@ -3,13 +3,13 @@
 Welcome to the Nuxeo Platform 6.0-SNAPSHOT.
 
 You can always download the latest releases of Nuxeo packages (distributions, 
-installers, virtual machine images, ...) from [http://www.nuxeo.com/en/downloads][1].
+installers, virtual machine images, ...) from [http://www.nuxeo.com/downloads/][1].
 Previous releases are available at [http://nuxeo.github.com/downloads.html][2]
 
 ## Requirements
 
 The applications based on the Nuxeo Platform need Java. Please install and set up a
-Java Development Kit 7 (JDK 7, also called Java 1.7; JRE is not enough)* if it's not
+Java Development Kit 7 or 8 (JDK 7 or 8, also called Java 1.7 and Java 1.8; JRE is not enough)* if it's not
 already installed on your computer.  
 * We currently support Oracle's JDK[3] and OpenJDK[4] as a default Java setup. 
 Don't hesitate to contact us if you need us to support a JDK from another vendor.
@@ -20,12 +20,9 @@ earlier versions of the JDK. Nuxeo won't work with any previous release of Java 
 Under Windows, virus scan should be configured to avoid scanning
 Nuxeo's installation folder.  See [lock problems leading to server errors][5].
 
-## Getting Started
+Read the [Hardware and Software Requirements][34] for more information.
 
-For Internet Explorer 9 users: you need to add the Nuxeo server URL in the trusted
-sites list to be able to complete the installation and configuration steps.
-In the Internet Options > Security > Trusted Sites menu, click on the 
-Sites button, type the Nuxeo server URL and add it.
+## Getting Started
 
 After you have installed the Nuxeo Platform, either follow the Quick configuration
 steps described on the online [Installation and Administration Guide][6] or the instructions below:
@@ -51,23 +48,12 @@ the Installation and Administration Guide][11].
 
 ## Complementary Features
 
-The following features depend on the environment where you installed
-your Nuxeo application:
+The Nuxeo Platform uses some third party software for complementary features. Check out [Installing and Setting up Related Software][35] for the complete list.
 
-* PDF transformation: this feature requires OpenOffice started as
-  server, complete the installation by following [the OpenOffice
-  instructions on the related software page][12].
-* Preview and annotations: requires the installation of third-party software
- [pdftohtml][13], see [the pdftohtml instructions on the related
-  software page][14].
-* Image tiling: requires the installation of third-party software [ImageMagick][15],
-  see [the ImageMagick instructions on the related software page][16].
-* Document thumbnails: requires the installation of third-party software [Ghostscript][33]
+We also provide some extensions:
 * Drag and drop plugins: [Firefox][17], [Internet Explorer][18].
 * Desktop integration thanks to LiveEdit: see the [plugins
   documentation page][19].
-* Video features: requires install of third-party software [FFmpeg][20].
-
 
 ## About Nuxeo
 
@@ -121,7 +107,7 @@ See [http://nuxeo.github.io/releasenotes/6.0-SNAPSHOT/][25].
 
 ## Issues
 
-Please go to the [JIRA issue tracker][26] for the Nuxeo ECM Platform
+Please go to the [JIRA issue tracker][26] for the Nuxeo Platform
 project to check the [fixed and currently known bugs and issues
 with this release][27].
 
@@ -138,13 +124,13 @@ More specifically:
 
 ## Licenses
 
-The Nuxeo Platform is copyright 2006-2013 Nuxeo SA. It is released under the LGPL license. 
+The Nuxeo Platform is copyright 2006-2014 Nuxeo SA. It is released under the LGPL license. 
 The Nuxeo Platform includes third-party libraries, licensed under compatible open source licenses.
 
 ## Acknowledgments
 
 This release contains code developed by the Nuxeo Team, the Leroy Merlin team 
-and Jean-Marc from Chalmers University in Goteborg. 
+and Jean-Marc from Chalmers University in Goteborg.
 Many more people have suggested improvements, spotted issues or contributed patches.
 
 The following translations are contributions from the community:
@@ -180,7 +166,7 @@ Ant, Maven, JIRA, Hudson, YourKit Java Profiler (thanks to free
 licenses donated by YourKit), etc.
 
 
-[1]: http://www.nuxeo.com/en/downloads
+[1]: http://www.nuxeo.com/downloads/
 [2]: http://nuxeo.github.com/downloads.html
 [3]: http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html
 [4]: http://openjdk.java.net/install/index.html
@@ -191,15 +177,9 @@ licenses donated by YourKit), etc.
 [9]: http://localhost:8080/nuxeo/nxhome/default@view_admin?tabIds=NUXEO_ADMIN%3AConnectApps
 [10]: https://marketplace.nuxeo.com/
 [11]: https://doc.nuxeo.com/x/PwA7
-[12]: https://doc.nuxeo.com/x/zgJc
-[13]: http://sourceforge.net/projects/pdftohtml/
-[14]: https://doc.nuxeo.com/x/zgJc
-[15]: http://www.imagemagick.org/script/index.php
-[16]: https://doc.nuxeo.com/x/zgJc
 [17]: https://download.nuxeo.com/browser/firefox/nuxeo-dragdrop-ff-extension.xpi
 [18]: http://download.nuxeo.org/desktop-integration/drag-drop/msie/
 [19]: http://doc.nuxeo.com/x/K4Wo
-[20]: http://ffmpeg.org/download.html
 [21]: http://www.nuxeo.com/en/products/enterprise-platform/
 [22]: http://www.nuxeo.com/en/products/document-management
 [23]: http://www.nuxeo.com/en/products/dam
@@ -212,5 +192,5 @@ licenses donated by YourKit), etc.
 [30]: http://doc.nuxeo.com/x/E4AO
 [31]: https://doc.nuxeo.com/x/PIAO
 [32]: https://doc.nuxeo.com/x/G4AO
-[33]: http://www.ghostscript.com/download/gsdnld.html
-
+[34]: http://doc.nuxeo.com/x/OwA7
+[35]: http://doc.nuxeo.com/x/zgJc
