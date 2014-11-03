@@ -45,7 +45,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.platform.ui.web.application.NuxeoResponseStateManagerImpl;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.util.MessageFactory;
 
@@ -630,6 +632,9 @@ public class UIInputFile extends UIInput implements NamingContainer {
 
     @Override
     public void encodeBegin(FacesContext context) throws IOException {
+
+        notifyPreviousErrors(context);
+
         ResponseWriter writer = context.getResponseWriter();
         Blob blob = getCurrentBlob();
         String filename = getCurrentFilename();
@@ -805,6 +810,31 @@ public class UIInputFile extends UIInput implements NamingContainer {
         writer.endElement("tbody");
         writer.endElement("table");
         writer.flush();
+    }
+
+    /**
+     * @since 6.1.1
+     */
+    private void notifyPreviousErrors(FacesContext context) {
+        final Object hasError = context.getAttributes().get(
+                NuxeoResponseStateManagerImpl.MULTIPART_SIZE_ERROR_FLAG);
+        final String componentId = (String) context.getAttributes().get(
+                NuxeoResponseStateManagerImpl.MULTIPART_SIZE_ERROR_COMPONENT_ID);
+        if (hasError != null && (boolean) hasError) {
+            if (StringUtils.isBlank(componentId)) {
+                ComponentUtils.addErrorMessage(
+                        context,
+                        this,
+                        "error.inputFile.maxRequestSize",
+                        new Object[] { Framework.getProperty("nuxeo.jsf.maxRequestSize") });
+            } else if (componentId.equals(getFacet(UPLOAD_FACET_NAME).getClientId())) {
+                ComponentUtils.addErrorMessage(
+                        context,
+                        this,
+                        "error.inputFile.maxSize",
+                        new Object[] { Framework.getProperty("nuxeo.jsf.maxFileSize") });
+            }
+        }
     }
 
     // state holder
