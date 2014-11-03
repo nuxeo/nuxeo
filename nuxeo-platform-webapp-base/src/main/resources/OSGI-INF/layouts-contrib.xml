@@ -79,7 +79,7 @@
           Activate retrieval of localized labels in the
           vocabulary database, when translations are held by the directory
           itself, in fields with a label_[lang] pattern, and defaulting to
-          label_en. Available since 6.0.
+          label_en. Available since 6.0-HF01-SNAPSHOT.
         </label>
       </helpLabels>
       <fields>
@@ -1960,7 +1960,7 @@
 
     <widgetType name="title_link">
       <configuration>
-        <sinceVersion>6.0</sinceVersion>
+        <sinceVersion>6.0-HF01-SNAPSHOT</sinceVersion>
         <title>Title with link</title>
         <description>
           <p>
@@ -3611,7 +3611,7 @@
 
     <widgetType name="documentLayout">
       <configuration>
-        <sinceVersion>6.0</sinceVersion>
+        <sinceVersion>6.0-HF01-SNAPSHOT</sinceVersion>
         <title>Document Layouts</title>
         <description>
           This widget displays the document layouts of a document
@@ -4920,7 +4920,7 @@
     <widgetType name="shuttle">
       <configuration>
         <title>Shuttle widget</title>
-        <sinceVersion>6.0</sinceVersion>
+        <sinceVersion>6.0-HF01-SNAPSHOT</sinceVersion>
         <supportedModes>
           <mode>edit</mode>
         </supportedModes>

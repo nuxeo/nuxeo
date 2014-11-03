@@ -245,7 +245,7 @@
       </templates>
       <configuration>
         <title>Test layout type for a custom type category</title>
-        <sinceVersion>6.0</sinceVersion>
+        <sinceVersion>6.0-HF01-SNAPSHOT</sinceVersion>
         <properties>
           <defaultValues mode="any">
             <property name="showListingHeader">true</property>
