@@ -362,8 +362,8 @@ public class SessionImpl implements Session, XAResource {
                 // as we don't have a way to know when the next
                 // non-transactional
                 // statement will start, process invalidations immediately
-                processReceivedInvalidations();
             }
+            processReceivedInvalidations();
         } finally {
             timerContext.stop();
         }
