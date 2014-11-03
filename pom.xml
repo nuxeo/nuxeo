@@ -109,6 +109,7 @@
     <module>nuxeo-exalead-connector</module>
     <module>nuxeo-signature</module>
     <module>nuxeo-rating</module>
+    <module>nuxeo-agenda</module>
     <module>nuxeo-multi-tenant</module>
     <module>nuxeo-core-binarymanager-s3</module>
     <module>nuxeo-core-binarymanager-jclouds</module>
