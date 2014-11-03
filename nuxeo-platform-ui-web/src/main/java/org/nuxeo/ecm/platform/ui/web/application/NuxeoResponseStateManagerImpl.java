@@ -48,9 +48,10 @@ import javax.faces.FacesException;
 import javax.faces.application.StateManager;
 import javax.faces.context.FacesContext;
 import javax.faces.render.ResponseStateManager;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 
 import com.sun.faces.config.WebConfiguration;
-
 import com.sun.faces.renderkit.ClientSideStateHelper;
 import com.sun.faces.renderkit.ResponseStateManagerImpl;
 import com.sun.faces.renderkit.StateHelper;
@@ -62,7 +63,9 @@ import com.sun.faces.util.RequestStateManager;
  */
 public class NuxeoResponseStateManagerImpl extends ResponseStateManagerImpl {
 
-    private StateHelper helper;
+    public static final String MULTIPART_SIZE_ERROR_FLAG = "NX_MULTIPART_SIZE_ERROR";
+    public static final Object MULTIPART_SIZE_ERROR_COMPONENT_ID = "NX_MULTIPART_SIZE_COMPONENTID";
+    private final StateHelper helper;
 
     public NuxeoResponseStateManagerImpl() {
 
@@ -145,5 +148,55 @@ public class NuxeoResponseStateManagerImpl extends ResponseStateManagerImpl {
     @Override
     public boolean isStateless(FacesContext facesContext, String viewId) {
         return helper.isStateless(facesContext, viewId);
+    }
+
+    /**
+     * @since 6.1.1
+     */
+    @Override
+    public boolean isPostback(FacesContext context) {
+        boolean result = super.isPostback(context);
+        if (!result) {
+            HttpServletRequest req = (HttpServletRequest) context.getExternalContext().getRequest();
+            final String contentType =req.getContentType();
+            if (contentType != null && contentType.contains("multipart/form-data")) {
+                try {
+                    req.getParts();
+                } catch (IllegalStateException e) {
+                    context.getAttributes().put(MULTIPART_SIZE_ERROR_FLAG, true);
+                    if (e.getCause() != null) {
+                        final String componentId = getComponentId(e.getCause().getMessage());
+                        if (componentId != null) {
+                            context.getAttributes().put(MULTIPART_SIZE_ERROR_COMPONENT_ID, componentId);
+                        }
+                    }
+                } catch (IOException e) {
+                    // Do nothing
+                } catch (ServletException e) {
+                    // Do nothing
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @since 6.1.1
+     */
+    private static String getComponentId(final String excetionMessage) {
+        String sep = ":";
+        if (excetionMessage.indexOf(sep) > 0) {
+            String[] split = excetionMessage.split(sep);
+            String result = "";
+            if (split != null && split.length > 0) {
+                result += split[0].substring(split[0].lastIndexOf(" ") + 1);
+                for (int i = 1; i < split.length - 1; ++i) {
+                    result +=  sep + split[i];
+                }
+                result += sep + split[split.length - 1].substring(0, split[split.length - 1].indexOf(' '));
+            }
+            return result;
+        }
+        return null;
     }
 }
