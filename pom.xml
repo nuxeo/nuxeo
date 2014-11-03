@@ -83,7 +83,6 @@
     <module>nuxeo-business-days-management</module>
     <module>nuxeo-core-binarymanager-sql</module>
     <module>nuxeo-http-client</module>
-    <module>nuxeo-platform-classification</module>
     <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-document-routing</module>
     <module>nuxeo-platform-faceted-search</module>
