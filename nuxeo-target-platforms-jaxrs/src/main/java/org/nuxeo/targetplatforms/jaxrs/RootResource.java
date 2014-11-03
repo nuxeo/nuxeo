@@ -46,10 +46,11 @@ public class RootResource {
     public Object doGet(@QueryParam("filterDisabled")
     boolean filterDisabled, @QueryParam("filterRestricted")
     boolean filterRestricted, @QueryParam("filterDeprecated")
-    boolean filterDeprecated, @QueryParam("filterType")
+    boolean filterDeprecated, @QueryParam("filterDefault")
+    Boolean filterDefault, @QueryParam("filterType")
     String filterType) throws Exception {
         return getPlatforms(filterDisabled, filterRestricted, filterDeprecated,
-                filterType);
+                filterDefault, filterType);
     }
 
     @GET
@@ -69,11 +70,14 @@ public class RootResource {
     public Object getPlatforms(@QueryParam("filterDisabled")
     boolean filterDisabled, @QueryParam("filterRestricted")
     boolean filterRestricted, @QueryParam("filterDeprecated")
-    boolean filterDeprecated, @QueryParam("filterType")
+    boolean filterDeprecated, @QueryParam("filterDefault")
+    Boolean filterDefault, @QueryParam("filterType")
     String filterType) throws Exception {
         TargetPlatformService tps = Framework.getService(TargetPlatformService.class);
+        boolean doFilterDefault = Boolean.TRUE.equals(filterDefault);
         List<TargetPlatform> res = tps.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
-                filterDisabled, filterRestricted, filterDeprecated, false, filterType));
+                filterDisabled, filterRestricted, filterDeprecated,
+                doFilterDefault, filterType));
         if (res == null) {
             return new TargetPlatforms();
         } else {
@@ -98,11 +102,14 @@ public class RootResource {
     public Object getPlatformInfos(@QueryParam("filterDisabled")
     boolean filterDisabled, @QueryParam("filterRestricted")
     boolean filterRestricted, @QueryParam("filterDeprecated")
-    boolean filterDeprecated, @QueryParam("filterType")
+    boolean filterDeprecated, @QueryParam("filterDefault")
+    Boolean filterDefault, @QueryParam("filterType")
     String filterType) throws Exception {
         TargetPlatformService tps = Framework.getService(TargetPlatformService.class);
+        boolean doFilterDefault = Boolean.TRUE.equals(filterDefault);
         List<TargetPlatformInfo> res = tps.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(
-                filterDisabled, filterRestricted, filterDeprecated, false, filterType));
+                filterDisabled, filterRestricted, filterDeprecated,
+                doFilterDefault, filterType));
         if (res == null) {
             return new TargetPlatformsInfo();
         } else {
