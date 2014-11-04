@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Filter that sets encoding to UTF-8, before any other filter tries to parse
@@ -44,6 +45,16 @@ import org.apache.commons.logging.LogFactory;
 public class NuxeoEncodingFilter implements Filter {
 
     private static final Log log = LogFactory.getLog(NuxeoEncodingFilter.class);
+
+    /**
+     * @since 5.8.0-HF25
+     */
+    private static final String SUPPORTED_IE_LEGACY_MODE_PROPERTY = "nuxeo.ie.mode";
+
+    /**
+     * @since 5.8.0-HF25
+     */
+    private static final String SUPPORTED_IE_LEGACY_MODE_DEFAULT = "IE=8,chrome=1; IE=9,chrome=1; IE=10,chrome=1";
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
@@ -62,7 +73,9 @@ public class NuxeoEncodingFilter implements Filter {
             if (response instanceof HttpServletResponse
                     && !((HttpServletResponse) response).containsHeader("X-UA-Compatible")) {
                 ((HttpServletResponse) response).addHeader("X-UA-Compatible",
-                        "IE=Edge,chrome=1");
+                        Framework.getProperty(
+                                SUPPORTED_IE_LEGACY_MODE_PROPERTY,
+                                SUPPORTED_IE_LEGACY_MODE_DEFAULT));
             }
         }
 
