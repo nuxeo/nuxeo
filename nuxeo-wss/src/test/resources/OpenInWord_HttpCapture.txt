@@ -6,7 +6,7 @@ GET /_vti_inf.html HTTP/1.1.
 Date: Fri, 04 Sep 2009 13:51:37 GMT.
 MIME-Version: 1.0.
 Accept: */*.
-User-Agent: Mozilla/4.0 (compatible; MS FrontPage 6.0-HF01-SNAPSHOT).
+User-Agent: Mozilla/4.0 (compatible; MS FrontPage 6.0).
 Host: vm2k3.
 Accept: auth/sicily.
 Content-Length: 0.
@@ -20,7 +20,7 @@ T 192.168.2.75:80 -> 192.168.2.119:36495 [A]
 HTTP/1.1 401 Unauthorized.
 Content-Length: 1656.
 Content-Type: text/html.
-Server: Microsoft-IIS/6.0-HF01-SNAPSHOT.
+Server: Microsoft-IIS/6.0.
 WWW-Authenticate: Basic realm="vm2k3".
 X-Powered-By: ASP.NET.
 MicrosoftSharePointTeamServices: 12.0.0.6219.
@@ -66,7 +66,7 @@ GET /_vti_inf.html HTTP/1.1.
 Date: Fri, 04 Sep 2009 13:51:37 GMT.
 MIME-Version: 1.0.
 Accept: */*.
-User-Agent: Mozilla/4.0 (compatible; MS FrontPage 6.0-HF01-SNAPSHOT).
+User-Agent: Mozilla/4.0 (compatible; MS FrontPage 6.0).
 Host: vm2k3.
 Accept: auth/sicily.
 Content-Length: 0.
@@ -80,7 +80,7 @@ Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=.
 T 192.168.2.75:80 -> 192.168.2.119:36495 [AP]
 HTTP/1.1 200 OK.
 Date: Fri, 04 Sep 2009 13:51:41 GMT.
-Server: Microsoft-IIS/6.0-HF01-SNAPSHOT.
+Server: Microsoft-IIS/6.0.
 X-Powered-By: ASP.NET.
 MicrosoftSharePointTeamServices: 12.0.0.6219.
 Exires: Thu, 20 Aug 2009 13:51:41 GMT.
@@ -105,7 +105,7 @@ T 192.168.2.119:36495 -> 192.168.2.75:80 [AP]
 POST /_vti_bin/shtml.dll/_vti_rpc HTTP/1.1.
 Date: Fri, 04 Sep 2009 13:51:45 GMT.
 MIME-Version: 1.0.
-User-Agent: MSFrontPage/6.0-HF01-SNAPSHOT.
+User-Agent: MSFrontPage/6.0.
 Host: vm2k3.
 Accept: auth/sicily.
 Content-Length: 41.
@@ -122,7 +122,7 @@ T 192.168.2.75:80 -> 192.168.2.119:36495 [AP]
 HTTP/1.1 200 OK.
 Connection: close.
 Date: Fri, 04 Sep 2009 13:51:41 GMT.
-Server: Microsoft-IIS/6.0-HF01-SNAPSHOT.
+Server: Microsoft-IIS/6.0.
 X-Powered-By: ASP.NET.
 MicrosoftSharePointTeamServices: 12.0.0.6219.
 
@@ -133,7 +133,7 @@ Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
 .
 <html><head><title>vermeer RPC packet</title></head>
 <body>
-<p>method=server version:6.0-HF01-SNAPSHOT.2.5523
+<p>method=server version:6.0.2.5523
 <p>server version=
 <ul>
 <li>major ver=12
@@ -150,7 +150,7 @@ T 192.168.2.119:36496 -> 192.168.2.75:80 [AP]
 POST /_vti_bin/_vti_aut/author.dll HTTP/1.1.
 Date: Fri, 04 Sep 2009 13:51:45 GMT.
 MIME-Version: 1.0.
-User-Agent: MSFrontPage/6.0-HF01-SNAPSHOT.
+User-Agent: MSFrontPage/6.0.
 Host: vm2k3.
 Accept: auth/sicily.
 Content-Length: 58.
@@ -167,7 +167,7 @@ T 192.168.2.75:80 -> 192.168.2.119:36496 [AP]
 HTTP/1.1 200 OK.
 Connection: close.
 Date: Fri, 04 Sep 2009 13:51:41 GMT.
-Server: Microsoft-IIS/6.0-HF01-SNAPSHOT.
+Server: Microsoft-IIS/6.0.
 X-Powered-By: ASP.NET.
 MicrosoftSharePointTeamServices: 12.0.0.6219.
 
@@ -178,7 +178,7 @@ Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
 .
 <html><head><title>vermeer RPC packet</title></head>
 <body>
-<p>method=open service:6.0-HF01-SNAPSHOT.2.5523
+<p>method=open service:6.0.2.5523
 <p>service=
 <ul>
 <li>service_name=
@@ -231,7 +231,7 @@ Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
 <li>vti_hasfulltextsearch
 <li>IX|0
 <li>vti_httpdversion
-<li>SX|Microsoft-IIS/6.0-HF01-SNAPSHOT
+<li>SX|Microsoft-IIS/6.0
 <li>vti_serverlanguages
 <li>VX|en-us
 <li>vti_sourcecontrolproject
@@ -278,7 +278,7 @@ Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=.
 T 192.168.2.75:80 -> 192.168.2.119:36497 [AP]
 HTTP/1.1 200 OK.
 Date: Fri, 04 Sep 2009 13:51:41 GMT.
-Server: Microsoft-IIS/6.0-HF01-SNAPSHOT.
+Server: Microsoft-IIS/6.0.
 X-Powered-By: ASP.NET.
 MicrosoftSharePointTeamServices: 12.0.0.6219.
 Cache-Control: no-cache.
@@ -293,7 +293,7 @@ GET /_vti_bin/owssvr.dll?location=&dialogview=FileOpen&FileDialogFilterValue=*.d
 Accept: */*.
 Accept-Language: en-us.
 Accept-Encoding: gzip, deflate.
-User-Agent: Mozilla/4.0 (compatible; MSIE 6.0-HF01-SNAPSHOT; Windows NT 5.1; SV1; .NET CLR 2.0.50727).
+User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727).
 Host: vm2k3.
 Connection: Keep-Alive.
 Cookie: MSOWebPartPage_AnonymousAccessCookie=80; WSS_KeepSessionAuthenticated=80.
@@ -306,7 +306,7 @@ HTTP/1.1 200 OK.
 Cache-Control: no-cache.
 Content-Length: 4883.
 Content-Type: text/html.
-Server: Microsoft-IIS/6.0-HF01-SNAPSHOT.
+Server: Microsoft-IIS/6.0.
 X-Powered-By: ASP.NET.
 MicrosoftSharePointTeamServices: 12.0.0.6219.
 Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
@@ -472,7 +472,7 @@ Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=.
 T 192.168.2.75:80 -> 192.168.2.119:36497 [AP]
 HTTP/1.1 200 OK.
 Date: Fri, 04 Sep 2009 13:51:47 GMT.
-Server: Microsoft-IIS/6.0-HF01-SNAPSHOT.
+Server: Microsoft-IIS/6.0.
 X-Powered-By: ASP.NET.
 MicrosoftSharePointTeamServices: 12.0.0.6219.
 Cache-Control: no-cache.
@@ -487,7 +487,7 @@ GET /_vti_bin/owssvr.dll?location=MyDocList&dialogview=FileOpen&FileDialogFilter
 Accept: application/x-shockwave-flash, image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, application/vnd.ms-excel, application/vnd.ms-powerpoint, application/msword, */*.
 Accept-Language: en-us.
 Accept-Encoding: gzip, deflate.
-User-Agent: Mozilla/4.0 (compatible; MSIE 6.0-HF01-SNAPSHOT; Windows NT 5.1; SV1; .NET CLR 2.0.50727).
+User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727).
 Host: vm2k3.
 Connection: Keep-Alive.
 Cookie: MSOWebPartPage_AnonymousAccessCookie=80; WSS_KeepSessionAuthenticated=80.
@@ -500,7 +500,7 @@ HTTP/1.1 200 OK.
 Cache-Control: no-cache.
 Content-Length: 5440.
 Content-Type: text/html.
-Server: Microsoft-IIS/6.0-HF01-SNAPSHOT.
+Server: Microsoft-IIS/6.0.
 X-Powered-By: ASP.NET.
 MicrosoftSharePointTeamServices: 12.0.0.6219.
 Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
@@ -611,7 +611,7 @@ T 192.168.2.119:36497 -> 192.168.2.75:80 [AP]
 POST /_vti_bin/_vti_aut/author.dll HTTP/1.1.
 Date: Fri, 04 Sep 2009 13:51:54 GMT.
 MIME-Version: 1.0.
-User-Agent: MSFrontPage/6.0-HF01-SNAPSHOT.
+User-Agent: MSFrontPage/6.0.
 Host: vm2k3.
 Accept: auth/sicily.
 Content-Length: 206.
@@ -628,7 +628,7 @@ T 192.168.2.75:80 -> 192.168.2.119:36497 [AP]
 HTTP/1.1 200 OK.
 Connection: close.
 Date: Fri, 04 Sep 2009 13:51:49 GMT.
-Server: Microsoft-IIS/6.0-HF01-SNAPSHOT.
+Server: Microsoft-IIS/6.0.
 X-Powered-By: ASP.NET.
 MicrosoftSharePointTeamServices: 12.0.0.6219.
 
@@ -639,7 +639,7 @@ Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
 .
 <html><head><title>vermeer RPC packet</title></head>
 <body>
-<p>method=get document:6.0-HF01-SNAPSHOT.2.5523
+<p>method=get document:6.0.2.5523
 <p>message=successfully retrieved document 'MyDocList/Nuxeo Annotation Service.doc' from 'MyDocList/Nuxeo Annotation Service.doc'
 <p>document=
 <ul>
@@ -726,7 +726,7 @@ T 192.168.2.119:58823 -> 192.168.2.75:80 [AP]
 POST /_vti_bin/_vti_aut/author.dll HTTP/1.1.
 Date: Fri, 04 Sep 2009 13:51:55 GMT.
 MIME-Version: 1.0.
-User-Agent: MSFrontPage/6.0-HF01-SNAPSHOT.
+User-Agent: MSFrontPage/6.0.
 Host: vm2k3.
 Accept: auth/sicily.
 Content-Length: 163.
@@ -743,7 +743,7 @@ T 192.168.2.75:80 -> 192.168.2.119:58823 [AP]
 HTTP/1.1 200 OK.
 Connection: close.
 Date: Fri, 04 Sep 2009 13:51:50 GMT.
-Server: Microsoft-IIS/6.0-HF01-SNAPSHOT.
+Server: Microsoft-IIS/6.0.
 X-Powered-By: ASP.NET.
 MicrosoftSharePointTeamServices: 12.0.0.6219.
 
@@ -754,7 +754,7 @@ Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
 .
 <html><head><title>vermeer RPC packet</title></head>
 <body>
-<p>method=getDocsMetaInfo:6.0-HF01-SNAPSHOT.2.5523
+<p>method=getDocsMetaInfo:6.0.2.5523
 <p>document_list=
 <ul>
 <ul>
@@ -845,7 +845,7 @@ Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=.
 T 192.168.2.75:80 -> 192.168.2.119:58824 [AP]
 HTTP/1.1 200 OK.
 Date: Fri, 04 Sep 2009 13:51:52 GMT.
-Server: Microsoft-IIS/6.0-HF01-SNAPSHOT.
+Server: Microsoft-IIS/6.0.
 X-Powered-By: ASP.NET.
 MicrosoftSharePointTeamServices: 12.0.0.6219.
 X-AspNet-Version: 2.0.50727.
@@ -874,7 +874,7 @@ Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=.
 T 192.168.2.75:80 -> 192.168.2.119:58824 [A]
 HTTP/1.1 200 OK.
 Date: Fri, 04 Sep 2009 13:51:52 GMT.
-Server: Microsoft-IIS/6.0-HF01-SNAPSHOT.
+Server: Microsoft-IIS/6.0.
 X-Powered-By: ASP.NET.
 MicrosoftSharePointTeamServices: 12.0.0.6219.
 X-AspNet-Version: 2.0.50727.
@@ -902,7 +902,7 @@ Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=.
 T 192.168.2.75:80 -> 192.168.2.119:58824 [AP]
 HTTP/1.1 410 Gone.
 Date: Fri, 04 Sep 2009 13:51:56 GMT.
-Server: Microsoft-IIS/6.0-HF01-SNAPSHOT.
+Server: Microsoft-IIS/6.0.
 X-Powered-By: ASP.NET.
 MicrosoftSharePointTeamServices: 12.0.0.6219.
 Cache-Control: no-cache.
@@ -916,7 +916,7 @@ T 192.168.2.119:58824 -> 192.168.2.75:80 [AP]
 POST /_vti_bin/_vti_aut/author.dll HTTP/1.1.
 Date: Fri, 04 Sep 2009 13:52:01 GMT.
 MIME-Version: 1.0.
-User-Agent: MSFrontPage/6.0-HF01-SNAPSHOT.
+User-Agent: MSFrontPage/6.0.
 Host: vm2k3.
 Accept: auth/sicily.
 Content-Length: 487694.
@@ -948,7 +948,7 @@ T 192.168.2.75:80 -> 192.168.2.119:58824 [AP]
 HTTP/1.1 200 OK.
 Connection: close.
 Date: Fri, 04 Sep 2009 13:52:52 GMT.
-Server: Microsoft-IIS/6.0-HF01-SNAPSHOT.
+Server: Microsoft-IIS/6.0.
 X-Powered-By: ASP.NET.
 MicrosoftSharePointTeamServices: 12.0.0.6219.
 
@@ -959,7 +959,7 @@ Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
 .
 <html><head><title>vermeer RPC packet</title></head>
 <body>
-<p>method=put document:6.0-HF01-SNAPSHOT.2.5523
+<p>method=put document:6.0.2.5523
 <p>message=successfully put document 'MyDocList/Nuxeo Annotation Service.doc' as 'MyDocList/Nuxeo Annotation Service.doc'
 <p>document=
 <ul>
@@ -1037,7 +1037,7 @@ T 192.168.2.119:58826 -> 192.168.2.75:80 [AP]
 POST /_vti_bin/_vti_aut/author.dll HTTP/1.1.
 Date: Fri, 04 Sep 2009 13:53:00 GMT.
 MIME-Version: 1.0.
-User-Agent: MSFrontPage/6.0-HF01-SNAPSHOT.
+User-Agent: MSFrontPage/6.0.
 Host: vm2k3.
 Accept: auth/sicily.
 Content-Length: 151.
@@ -1054,7 +1054,7 @@ T 192.168.2.75:80 -> 192.168.2.119:58826 [AP]
 HTTP/1.1 200 OK.
 Connection: close.
 Date: Fri, 04 Sep 2009 13:52:55 GMT.
-Server: Microsoft-IIS/6.0-HF01-SNAPSHOT.
+Server: Microsoft-IIS/6.0.
 X-Powered-By: ASP.NET.
 MicrosoftSharePointTeamServices: 12.0.0.6219.
 
@@ -1065,7 +1065,7 @@ Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
 .
 <html><head><title>vermeer RPC packet</title></head>
 <body>
-<p>method=uncheckout document:6.0-HF01-SNAPSHOT.2.5523
+<p>method=uncheckout document:6.0.2.5523
 <p>meta_info=
 <ul>
 <li>Subject
