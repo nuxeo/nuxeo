@@ -478,7 +478,7 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Available since 6.0-HF01-SNAPSHOT. The target attribute
+                    Available since 6.0. The target attribute
                     of the link.
                   </label>
                 </helpLabels>
@@ -524,7 +524,7 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Available since 6.0-HF01-SNAPSHOT. Flag indicating that
+                    Available since 6.0. Flag indicating that
                     the download link must be hidden.
                   </label>
                 </helpLabels>
