@@ -36,6 +36,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
@@ -100,6 +102,8 @@ import org.apache.chemistry.opencmis.commons.impl.server.AbstractCmisService;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.server.CmisService;
 import org.apache.chemistry.opencmis.commons.server.ObjectInfo;
+import org.apache.chemistry.opencmis.commons.server.ProgressControlCmisService;
+import org.apache.chemistry.opencmis.commons.server.ProgressControlCmisService.Progress;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
 import org.apache.chemistry.opencmis.server.support.wrapper.AbstractCmisServiceWrapper;
@@ -148,12 +152,13 @@ import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Nuxeo implementation of the CMIS Services, on top of a {@link CoreSession}.
  */
 public class NuxeoCmisService extends AbstractCmisService implements
-        CallContextAwareCmisService {
+        CallContextAwareCmisService, ProgressControlCmisService {
 
     public static final int DEFAULT_TYPE_LEVELS = 2;
 
@@ -249,6 +254,32 @@ public class NuxeoCmisService extends AbstractCmisService implements
             coreSession = null;
         }
         clearObjectInfos();
+    }
+
+    @Override
+    public Progress beforeServiceCall() {
+        return Progress.CONTINUE;
+    }
+
+    @Override
+    public Progress afterServiceCall() {
+        // check if there is a transaction timeout
+        // if yes, abort and return a 503 (Service Unavailable)
+        if (!TransactionHelper.setTransactionRollbackOnlyIfTimedOut()) {
+            return Progress.CONTINUE;
+        }
+        HttpServletResponse response = (HttpServletResponse) getCallContext().get(
+                CallContext.HTTP_SERVLET_RESPONSE);
+        if (response != null) {
+            try {
+                response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                        "Transaction timeout");
+            } catch (IOException e) {
+                throw new CmisRuntimeException("Failed to set timeout status",
+                        e);
+            }
+        }
+        return Progress.STOP;
     }
 
     protected static NuxeoRepository getNuxeoRepository(String repositoryName) {
