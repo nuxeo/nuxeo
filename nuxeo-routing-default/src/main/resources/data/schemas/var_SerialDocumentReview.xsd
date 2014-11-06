@@ -32,7 +32,7 @@
       <xs:element name="item" type="nxs:content" minOccurs="0" maxOccurs="unbounded"/> 
     </xs:sequence> 
   </xs:complexType>  
-  <xs:element name="index" type="xs:integer"/>
+  <xs:element name="index" type="xs:integer" default="0"/>
   <xs:element name="initiatorComment" type="xs:string"/>
   <xs:element name="participants" type="nxs:stringList"/>
   <xs:element name="validationOrReview" type="xs:string"/>
