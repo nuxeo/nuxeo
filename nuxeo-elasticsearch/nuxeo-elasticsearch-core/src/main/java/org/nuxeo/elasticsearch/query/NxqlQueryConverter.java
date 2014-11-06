@@ -246,6 +246,9 @@ final public class NxqlQueryConverter {
                 || "NOT LIKE".equals(op) || "NOT ILIKE".equals(op)) {
             // ILIKE will work only with a correct mapping
             String likeValue = ((String) value).replace("%", "*");
+            if (op.contains("ILIKE")) {
+                likeValue = likeValue.toLowerCase();
+            }
             if (StringUtils.countMatches(likeValue, "*") == 1
                     && likeValue.endsWith("*")) {
                 query = QueryBuilders.matchPhrasePrefixQuery(name,

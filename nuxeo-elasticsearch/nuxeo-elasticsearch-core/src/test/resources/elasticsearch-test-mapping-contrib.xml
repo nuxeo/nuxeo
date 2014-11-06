@@ -27,6 +27,115 @@
 
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchIndex">
     <elasticSearchIndex name="nxutest" type="doc" repository="test">
+      <settings>
+{
+   "analysis" : {
+      "filter" : {
+         "en_stem_filter" : {
+            "name" : "minimal_english",
+            "type" : "stemmer"
+         },
+         "en_stop_filter" : {
+            "stopwords" : [
+               "_english_"
+            ],
+            "type" : "stop"
+         }
+      },
+      "tokenizer" : {
+         "path_tokenizer" : {
+            "delimiter" : "/",
+            "type" : "path_hierarchy"
+         }
+      },
+      "analyzer" : {
+         "en_analyzer" : {
+            "alias" : "fulltext",
+            "filter" : [
+               "lowercase",
+               "en_stop_filter",
+               "en_stem_filter",
+               "asciifolding"
+            ],
+            "type" : "custom",
+            "tokenizer" : "standard"
+         },
+         "path_analyzer" : {
+            "type" : "custom",
+            "tokenizer" : "path_tokenizer"
+         },
+        "lowercase_analyzer" : {
+          "type" : "custom",
+          "filter" : ["lowercase", "asciifolding"],
+          "tokenizer" : "keyword"
+        },
+         "default" : {
+            "type" : "custom",
+            "tokenizer" : "keyword"
+         }
+      }
+   }
+}
+      </settings>
+      <mapping>
+{
+   "_size" : {
+      "enabled" : true
+   },
+   "_all" : {
+      "analyzer" : "fulltext"
+   },
+   "properties" : {
+      "dc:title" : {
+         "type" : "multi_field",
+         "fields" : {
+           "dc:title" : {
+             "index" : "not_analyzed",
+             "type" : "string"
+           },
+           "fulltext" : {
+             "boost": 2,
+             "type": "string",
+             "analyzer" : "fulltext"
+          }
+        }
+      },
+      "dc:description" : {
+         "type" : "string",
+         "analyzer" : "lowercase_analyzer"
+      },
+      "ecm:binarytext*" : {
+         "type" : "string",
+         "analyzer" : "fulltext"
+      },
+      "ecm:path" : {
+         "type" : "multi_field",
+         "fields" : {
+            "children" : {
+               "search_analyzer" : "keyword",
+               "index_analyzer" : "path_analyzer",
+               "type" : "string"
+            },
+            "ecm:path" : {
+               "index" : "not_analyzed",
+               "type" : "string"
+            }
+         }
+      },
+      "ecm:pos": {
+         "type": "integer"
+      },
+      "dc:created": {
+         "format": "dateOptionalTime",
+        "type": "date"
+      },
+      "dc:modified": {
+         "format": "dateOptionalTime",
+        "type": "date"
+      }
+   }
+}
+      </mapping>
 
     </elasticSearchIndex>
 
