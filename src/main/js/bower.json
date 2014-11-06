@@ -9,5 +9,9 @@
     "system.js": "~0.9.3",
     "jquery-ui": "~1.11.2"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "resolutions": {
+    "traceur": "0.0.72",
+    "es6-module-loader": "~0.9.4"
+  }
 }
