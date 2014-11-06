@@ -16,7 +16,7 @@
     <var_SerialDocumentReview:initiatorComment/>
     <var_SerialDocumentReview:participants/>
     <var_SerialDocumentReview:validationOrReview/>
-    <var_SerialDocumentReview:index/>
+    <var_SerialDocumentReview:index><![CDATA[0]]></var_SerialDocumentReview:index>
   </schema>
   <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
     <dc:creator/>
