@@ -25,7 +25,6 @@ included in the default full build). Thus they are not deprecated.</description>
     <module>nuxeo-platform-sync</module>
     <module>nuxeo-cm-demo-utils</module>
     <module>nuxeo-fsexporter</module>
-    <module>nuxeo-platform-spreadsheet</module>
     <module>nuxeo-poll</module>
     <module>nuxeo-rss-reader</module>
     <module>nuxeo-platform-smart-search</module>
