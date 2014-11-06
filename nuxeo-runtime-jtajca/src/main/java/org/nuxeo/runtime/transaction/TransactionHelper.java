@@ -12,6 +12,7 @@
 
 package org.nuxeo.runtime.transaction;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -141,6 +142,39 @@ public class TransactionHelper {
                     || status == Status.STATUS_MARKED_ROLLBACK;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    /**
+     * Checks if the current User Transaction has already timed out, i.e.,
+     * whether a commit would immediately abort with a timeout exception.
+     *
+     * @return {@code true} if there is a current transaction that has timed
+     *         out, {@code false} otherwise
+     * @since 7.1
+     */
+    public static boolean isTransactionTimedOut() {
+        TransactionManager tm = NuxeoContainer.getTransactionManager();
+        if (tm == null) {
+            return false;
+        }
+        try {
+            Transaction tx = tm.getTransaction();
+            if (tx == null || tx.getStatus() != Status.STATUS_ACTIVE) {
+                return false;
+            }
+            if (tx instanceof org.apache.geronimo.transaction.manager.TransactionImpl) {
+                // Geronimo Transaction Manager
+                Field f = tx.getClass().getDeclaredField("timeout");
+                f.setAccessible(true);
+                Long timeout = (Long) f.get(tx);
+                return System.currentTimeMillis() > timeout.longValue();
+            } else {
+                // unknown transaction manager
+                return false;
+            }
+        } catch (SystemException | ReflectiveOperationException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -350,7 +384,13 @@ public class TransactionHelper {
      *         only, {@code false} otherwise
      */
     public static boolean setTransactionRollbackOnly() {
-        log.info("Setting transaction as rollback only", new Throwable("rollback stack trace"));
+        if (log.isDebugEnabled()) {
+            log.debug("Setting transaction as rollback only");
+            if (log.isTraceEnabled()) {
+                log.trace("Rollback stack trace", new Throwable(
+                        "Rollback stack trace"));
+            }
+        }
         UserTransaction ut = NuxeoContainer.getUserTransaction();
         if (ut == null) {
             return false;
@@ -360,6 +400,20 @@ public class TransactionHelper {
             return true;
         } catch (Exception cause) {
             log.error("Could not mark transaction as rollback only", cause);
+        }
+        return false;
+    }
+
+    /**
+     * Sets the current User Transaction as rollback only if it has timed out.
+     *
+     * @return {@code true} if the transaction was successfully marked rollback
+     *         only, {@code false} otherwise
+     * @since 7.1
+     */
+    public static boolean setTransactionRollbackOnlyIfTimedOut() {
+        if (isTransactionTimedOut()) {
+            return setTransactionRollbackOnly();
         }
         return false;
     }
