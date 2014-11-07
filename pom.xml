@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>7.1-SNAPSHOT</version>
+    <version>6.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.ecm</groupId>
@@ -12,7 +12,7 @@
   <description>Anonymous File Sharing</description>
 
   <properties>
-    <easyshare.studio.version>1.0.4-593</easyshare.studio.version>
+    <easyshare.studio.version>1.0.5-6</easyshare.studio.version>
   </properties>
 
   <dependencies>
