@@ -54,6 +54,20 @@
       </rule>
     </filter>
 
+    <filter id="create" append="true">
+      <rule grant="true">
+        <permission>AddChildren</permission>
+        <type>PictureBook</type>
+      </rule>
+    </filter>
+
+    <filter id="importFile" append="true">
+      <rule grant="true">
+        <permission>AddChildren</permission>
+        <type>PictureBook</type>
+      </rule>
+    </filter>
+
     <filter id="contentViewShowSlideshow">
       <rule grant="true">
         <condition>
