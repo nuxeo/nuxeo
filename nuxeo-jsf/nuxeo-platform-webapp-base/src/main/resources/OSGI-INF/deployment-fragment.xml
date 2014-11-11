@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <extension target="pages#PAGES">
+    <page view-id="/view_users.xhtml">breadcrumb=command.manageMembers</page>
+
+    <page view-id="/view_many_users.xhtml">
+      breadcrumb=command.manageMembers
+    </page>
+
+    <!--  bind url for forced invalidation of nav tree -->
+    <page view-id="/invalidateTree.xhtml"
+      action="#{treeInvalidator.forceTreeRefresh}">
+    </page>
+    <page view-id="/invalidateConversationTree.xhtml"
+      action="#{treeActions.forceTreeRefresh}">
+    </page>
+
+  </extension>
+
+  <extension target="faces-config#NAVIGATION">
+    <!-- users ang groups -->
+
+    <navigation-case>
+      <from-outcome>view_users</from-outcome>
+      <to-view-id>/view_users.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_many_users</from-outcome>
+      <to-view-id>/view_many_users.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>edit_user</from-outcome>
+      <to-view-id>/edit_user.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>edit_user_password</from-outcome>
+      <to-view-id>/edit_user_password.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_user</from-outcome>
+      <to-view-id>/view_user.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>create_user</from-outcome>
+      <to-view-id>/create_user.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_groups</from-outcome>
+      <to-view-id>/view_groups.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_group</from-outcome>
+      <to-view-id>/view_group.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>edit_group</from-outcome>
+      <to-view-id>/edit_group.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>create_group</from-outcome>
+      <to-view-id>/create_group.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <!-- export links -->
+
+    <navigation-case>
+      <from-outcome>export</from-outcome>
+      <to-view-id>/incl/export/export.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>csv</from-outcome>
+      <to-view-id>/incl/export/content_view_csv.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>xl</from-outcome>
+      <to-view-id>/incl/export/content_view_xl.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>atom</from-outcome>
+      <to-view-id>/incl/export/content_view_atom.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>rss</from-outcome>
+      <to-view-id>/incl/export/content_view_rss.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>pdf</from-outcome>
+      <to-view-id>/incl/export/document_view_pdf.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>content_view_pdf</from-outcome>
+      <to-view-id>/incl/export/content_view_pdf.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <!-- end of export links -->
+
+  </extension>
+
+  <extension target="faces-config#CONVERTER">
+
+    <!-- This converter is now deprecated, see NXP-6249 -->
+    <converter>
+      <converter-id>org.nuxeo.SearchDeletedDocumentsConverter</converter-id>
+      <converter-class>
+        org.nuxeo.ecm.webapp.search.SearchDeletedDocumentsConverter
+      </converter-class>
+    </converter>
+
+  </extension>
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+  </install>
+
+</fragment>
+

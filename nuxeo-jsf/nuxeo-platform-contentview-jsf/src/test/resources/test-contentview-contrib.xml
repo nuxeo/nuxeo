@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.ui.web.ContentViewService.testContrib">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="CURRENT_DOCUMENT_CHILDREN">
+      <title>current document children</title>
+      <iconPath>/icons/document_listing_icon.png</iconPath>
+
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <property name="checkQueryCache">true</property>
+        <pattern>
+          SELECT * FROM Document WHERE ecm:parentId = ? AND
+          ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
+          AND ecm:currentLifeCycleState != 'deleted'
+        </pattern>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>2</pageSize>
+        <parameter>#{currentDocument.id}</parameter>
+      </coreQueryPageProvider>
+
+      <cacheKey>#{currentDocument.id}</cacheKey>
+
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <pagination>simple</pagination>
+      <actions category="CURRENT_SELECTION_LIST" />
+      <resultLayouts>
+        <layout name="document_listing" title="label.document_listing.layout"
+          translateTitle="true" iconPath="/icons/myicon.png"
+          showCSVExport="true" />
+      </resultLayouts>
+      <searchLayout name="search_layout" />
+      <refresh>
+        <event>documentChildrenChanged</event>
+      </refresh>
+
+      <flags>
+        <flag>foo</flag>
+        <flag>bar</flag>
+      </flags>
+
+    </contentView>
+
+    <contentView name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT">
+      <searchDocument>#{searchDocument}</searchDocument>
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <property name="checkQueryCache">true</property>
+        <whereClause docType="File">
+          <fixedPart>
+            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
+            'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'
+          </fixedPart>
+          <predicate parameter="dc:title" operator="FULLTEXT">
+            <field schema="dublincore" name="title" />
+          </predicate>
+        </whereClause>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>2</pageSize>
+      </coreQueryPageProvider>
+    </contentView>
+
+    <contentView name="CURRENT_DOCUMENT_CHILDREN_FETCH">
+      <genericPageProvider
+        class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+        <property name="coreSession">#{documentManager}</property>
+        <pattern>
+          SELECT dc:title FROM Document WHERE ecm:parentId = ? AND
+          ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
+          AND ecm:currentLifeCycleState != 'deleted'
+        </pattern>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>2</pageSize>
+      </genericPageProvider>
+
+      <flags>
+        <flag>foo</flag>
+      </flags>
+
+    </contentView>
+
+    <!-- content views referencing a named page provider -->
+
+    <contentView name="CURRENT_DOCUMENT_CHILDREN_REF">
+      <title>current document children</title>
+      <iconPath>/icons/document_listing_icon.png</iconPath>
+
+      <pageProvider name="CURRENT_DOCUMENT_CHILDREN_PP">
+        <property name="coreSession">#{documentManager}</property>
+        <property name="checkQueryCache">true</property>
+        <parameter>#{currentDocument.id}</parameter>
+      </pageProvider>
+
+      <cacheKey>#{currentDocument.id}</cacheKey>
+
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <pagination>simple</pagination>
+      <actions category="CURRENT_SELECTION_LIST" />
+      <resultLayouts>
+        <layout name="document_listing" title="label.document_listing.layout"
+          translateTitle="true" iconPath="/icons/myicon.png" />
+      </resultLayouts>
+      <searchLayout name="search_layout" />
+      <refresh>
+        <event>documentChildrenChanged</event>
+      </refresh>
+    </contentView>
+
+    <contentView name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF">
+      <searchDocument>#{searchDocument}</searchDocument>
+      <pageProvider name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_PP">
+        <property name="coreSession">#{documentManager}</property>
+        <property name="checkQueryCache">true</property>
+      </pageProvider>
+    </contentView>
+
+    <contentView name="CURRENT_DOCUMENT_CHILDREN_FETCH_REF">
+      <pageProvider name="CURRENT_DOCUMENT_CHILDREN_FETCH_PP">
+        <property name="coreSession">#{documentManager}</property>
+        <property name="checkQueryCache">true</property>
+      </pageProvider>
+    </contentView>
+
+    <contentView name="QUERY_WITH_SUBCLAUSE">
+      <searchDocument>#{searchDocument}</searchDocument>
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <property name="checkQueryCache">true</property>
+        <whereClause docType="File">
+          <fixedPart>
+            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
+            'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'
+          </fixedPart>
+          <predicate parameter="dc:title" operator="FULLTEXT">
+            <field schema="dublincore" name="title" />
+          </predicate>
+          <predicate type="subClause">
+            <field schema="dublincore" name="description" />
+          </predicate>
+        </whereClause>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>2</pageSize>
+      </coreQueryPageProvider>
+    </contentView>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN_PP">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:isCheckedInVersion
+        = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider
+      name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_PP">
+      <whereClause docType="File">
+        <fixedPart>
+          ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
+          'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'
+        </fixedPart>
+        <predicate parameter="dc:title" operator="FULLTEXT">
+          <field schema="dublincore" name="title" />
+        </predicate>
+      </whereClause>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+    </coreQueryPageProvider>
+
+    <genericPageProvider name="CURRENT_DOCUMENT_CHILDREN_FETCH_PP"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <pattern>
+        SELECT dc:title FROM Document WHERE ecm:parentId = ? AND
+        ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+    </genericPageProvider>
+
+  </extension>
+
+</component>
