@@ -1,0 +1,12 @@
+/*
+Styles for default borders and background image
+author: lkemen@nuxeo.com
+*/
+
+.nxMainContainer { width: 100%; font-size: .8em }
+.nxMainContainer .column { border-width: 1px; border-style: none solid none none; border-color: "neutral.lighter (__FLAVOR__ border)"; font-size: .85em; padding: .5em; width: 18% }
+.nxMainContainer .content { padding: 0 }
+.mainFragment { padding: .6em }
+
+.currentDocumentDescription { display: block; font-size: .9em; font-weight: bold; padding: 0 0 1em }
+.currentItemDescription { display: block; font-size: 13px }
