@@ -1,0 +1,26 @@
+Export-Package: org.nuxeo.webengine.sites.listeners,
+ schemas
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Category: core
+Bundle-Name: WebEngine Sites Module core contribution
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 0.0.0.SNAPSHOT
+Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
+ OSGI-INF/permissions-contrib.xml,
+ OSGI-INF/webengine-sites-listener-contrib.xml
+Bundle-ManifestVersion: 2
+Import-Package: javax.annotation;version="1.0",
+ org.apache.commons.lang,
+ org.apache.commons.logging,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.event,
+ org.nuxeo.ecm.core.event,
+ org.nuxeo.ecm.core.event.impl,
+ org.nuxeo.ecm.directory;api=split,
+ org.nuxeo.webengine.sites.utils
+Bundle-SymbolicName: org.nuxeo.ecm.platform.webengine.sites.core.contrib

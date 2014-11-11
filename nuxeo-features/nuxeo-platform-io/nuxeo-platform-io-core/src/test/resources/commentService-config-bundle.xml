@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.comment.service.CommentServiceConfig">
+
+  <!-- memory graph -->
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="graphs">
+    <graph name="documentComments" type="jena">
+      <option name="backend">sql</option>
+      <option name="databaseType">
+        HSQL
+      </option>
+      <option name="datasource">java:/comment-relations</option>
+      <option name="databaseDoCompressUri">false</option>
+      <option name="databaseTransactionEnabled">
+        false
+      </option>
+      <namespaces>
+        <namespace name="comment">http://www.nuxeo.org/comments/uid</namespace>
+        <namespace name="isCommentFor">
+          http://www.nuxeo.org/predicates/isCommentFor
+        </namespace>
+        <namespace name="document">http://www.nuxeo.org/document/uid</namespace>
+      </namespaces>
+    </graph>
+  </extension>
+
+</component>
