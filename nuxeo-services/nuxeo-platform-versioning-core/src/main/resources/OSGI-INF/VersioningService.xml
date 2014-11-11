@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.versioning.service.VersioningService">
+  <documentation>
+    A component through whose extension point one can define incrementation
+    rules for the two version fields defined in uid (by default) schema. The
+    fields "major_version" and "minor_version" are positive integers
+    representing logical version of a document (normal format is xx:xx like
+    01:23).
+    <p />
+    The rules can specify options to be presented to the user for versions
+    incrementation like "increment minor", "increment major", "no increment"
+    etc, or can specify what to be incremented silently (without user direct
+    interaction) when a document is updated.
+
+    @version 1.0
+    @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+    @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+  </documentation>
+
+  <property name="defaultMajorVersion" value="uid:major_version" />
+  <property name="defaultMinorVersion" value="uid:minor_version" />
+
+  <implementation
+    class="org.nuxeo.ecm.platform.versioning.service.VersioningService" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.versioning.api.VersioningManager" />
+  </service>
+
+  <extension-point name="rules">
+    <documentation>
+      EP 'rules' - one can define rules that will be applied in different cases
+      when a request for version incrementation appears.
+      <p />
+      May contain any number of 'docModifier' elements of the form:
+
+      <code>
+
+        <versioningRuleEdit name="sampleEditRuleAnyState" action="ask_user"
+          lifecycleState="*">
+          <includeDocType>File</includeDocType>
+          <option value="no_inc" default="true"/>
+          <option value="inc_minor"/>
+          <option value="inc_major" lifecycleTransition="transition-name"/>
+        </versioningRuleEdit>
+
+      </code>
+
+      The &lt;versioningRuleAuto&gt; is applied in the following situations:
+      <li>
+        When a document is being restored - so the version will be automatically
+        incremented
+      </li>
+      <li>
+        If there are no versioningRulEdit options defined for user selection
+      </li>
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.versioning.service.EditBasedRuleDescriptor" />
+    <object
+      class="org.nuxeo.ecm.platform.versioning.service.AutoBasedRuleDescriptor" />
+    <object
+      class="org.nuxeo.ecm.platform.versioning.service.CreateSnapshotDescriptor" />
+  </extension-point>
+
+  <extension-point name="properties">
+    <documentation>
+      This extension point allows to define which properties should be used to
+      set versions given a document type.
+
+      If no property definition is found for the document type, default
+      properties set on the service will be used (uid:major_version and
+      uid:minor_version).
+
+      <code>
+
+        <versioningProperties>
+          <majorVersion>my:major_version</majorVersion>
+          <minorVersion>my:minor_version</minorVersion>
+          <documentType>File</documentType>
+          <documentType>Note</documentType>
+        </versioningProperties>
+
+      </code>
+
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.versioning.service.VersioningPropertiesDescriptor" />
+  </extension-point>
+
+  <extension-point name="initialVersionNumber">
+    <documentation>
+      This extension point allows to define the version number that the versioning set
+      for a new document.
+
+      <code>
+
+        <initialVersionNumber>
+          <majorVersion>1</majorVersion>
+          <minorVersion>0</minorVersion>
+        </initialVersionNumber>
+
+      </code>
+
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.versioning.service.InitialVersionNumberDescriptor" />
+  </extension-point>
+
+</component>

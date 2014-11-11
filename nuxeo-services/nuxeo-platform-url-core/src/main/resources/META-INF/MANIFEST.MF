@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo URL Core
+Bundle-SymbolicName: org.nuxeo.ecm.platform.url.core;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateless
+Require-Bundle: org.nuxeo.ecm.core.api, org.nuxeo.ecm.platform.url.api
+Nuxeo-component: OSGI-INF/docviewurlservice-framework.xml,
+ OSGI-INF/docviewurlservice-contrib.xml,
