@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="test.jena.contribs">
+
+
+  <!-- relation adapters -->
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="resourceadapters">
+    <adapter namespace="http://www.nuxeo.org/comments/uid/"
+      class="org.nuxeo.ecm.platform.relations.adapters.DocumentModelResourceAdapter" />
+    <adapter namespace="http://www.nuxeo.org/document/uid/"
+      class="org.nuxeo.ecm.platform.relations.adapters.DocumentModelResourceAdapter" />
+  </extension>
+
+  <!-- relation graph -->
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="graphs">
+    <graph name="default" type="jena">
+      <namespaces>
+        <namespace name="rdf">
+          http://www.w3.org/1999/02/22-rdf-syntax-ns#
+        </namespace>
+        <namespace name="dcterms">http://purl.org/dc/terms/</namespace>
+        <namespace name="nuxeo">http://www.nuxeo.org/document/uid/</namespace>
+      </namespaces>
+    </graph>
+  </extension>
+
+</component>

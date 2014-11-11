@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.annotations.test.coreContrib">
+  <require>org.nuxeo.ecm.platform.relations.jena
+  </require>
+  <extension target="org.nuxeo.ecm.platform.annotations.services.AnnotationsService"
+    point="eventListener">
+    <listener class="org.nuxeo.ecm.platform.annotations.FakeEventListener" />
+  </extension>
+</component>
