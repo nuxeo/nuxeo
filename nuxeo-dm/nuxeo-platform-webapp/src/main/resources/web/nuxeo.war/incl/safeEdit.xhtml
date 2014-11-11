@@ -1,0 +1,46 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+ xmlns:nxu="http://nuxeo.org/nxweb/util"
+ xmlns:ui="http://java.sun.com/jsf/facelets"
+ xmlns:c="http://java.sun.com/jstl/core">
+
+<c:if test="false">
+  Parameters:
+  - safeEdit_form: id of the form to make save
+  - safeEdit_mode: mode of the for create/edit
+  - safeEdit_message: warning message
+</c:if>
+
+<c:if test="#{safeEdit_form==null}">
+  <c:set var="safeEdit_form" value="document_edit" />
+</c:if>
+<c:if test="#{safeEdit_mode==null}">
+  <c:set var="safeEdit_mode" value="edit" />
+</c:if>
+<c:if test="#{safeEdit_message==null}">
+  <c:set var="safeEdit_message" value="safeedit.page.has.unsaved.changes" />
+</c:if>
+
+<script src="#{contextPath}/scripts/safeEdit.js"></script>
+<script src="#{contextPath}/scripts/safeEditUI.js"></script>
+
+<span id="confirmRestore" style="display:none;" class="infoMessage">
+ <h:outputText value="#{messages['safeedit.recovereddata.prompt']}"/> :
+ <A id="confirmRestoreYes" href="#confirmRestoreYes"> <h:outputText value="#{messages['safeedit.recover.yes']}"/> </A>
+ <A id="confirmRestoreNo" href="#confirmRestoreNo" > <h:outputText value="#{messages['safeedit.recover.no']}"/> </A> ?
+</span>
+<span id="savedFeedback" style="display:none;" class="facesStatusMessage infoMessage">
+ <h:outputText value="#{messages['safeedit.saved']}"/>
+</span>
+
+<script>
+    jQuery(document).ready(function() {
+       // define  the formKey
+       var formKey ='#{currentDocument.id}';
+       <c:if test="#{safeEdit_mode == 'create'}">
+       formKey ='create-' + formKey + '-#{changeableDocument.type}';
+       </c:if>
+       setTimeout(function() {initSafeEditOnForm('#{safeEdit_form}', formKey, '#{messages[safeEdit_message]}')}, 200);
+    });
+</script>
+
+</div>
