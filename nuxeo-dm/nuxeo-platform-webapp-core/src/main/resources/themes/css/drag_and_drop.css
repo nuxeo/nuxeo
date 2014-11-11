@@ -1,0 +1,175 @@
+/*
+HTML5 Drag and Drop styles
+author: lkemen@nuxeo.com, tdelprat@nuxeo.com
+*/
+
+#dropzone-info-panel {
+  display: none }
+
+#dropzone-info-panel td {
+  vertical-align: top }
+
+.dndControlMessage {
+  display: none }
+
+.loadingComplete {
+  background: transparent url("${basePath}/icons/checked.gif") no-repeat left center;
+  padding: .2em 0 0 1.6em }
+
+.dropPanel {
+  padding: 1em;
+  background: #bbc;
+  border-radius: 5px;
+  height: 250px }
+
+.dropzone {
+  display: block }
+
+.dropzoneHL {
+  border: 2px dashed;
+  border-color: "neutral.light (__FLAVOR__ border)";
+  background-color: #f5f5f5 }
+
+.dropzoneTarget {
+  border: 2px dashed;
+  border-color: "info (__FLAVOR__ border)" }
+
+.dropzoneTargetExtended {
+  border: 2px dashed;
+	border-color: "success (__FLAVOR__ border)" }
+
+.dropzoneTargetOverlay {
+  position: absolute }
+
+.dropezoneTargetOverlay:hover {
+  background-color : rgba(200,220,250,0.3) }
+
+.dropzone-info-block {
+  display: block;
+  margin: .4em 0 0;
+  text-align: center }
+
+.dropzone-info-summary {
+  display: block;
+  margin: .6em .9em 1.8em 4em }
+
+.dropzone-info-progress {
+  background-color: "color.major.stronger (__FLAVOR__ background)";
+  height: 3px;
+  width: 0% }
+
+.dropzone-info-item {
+  margin: 0 auto 1em;
+  width: 80% }
+
+.dropzone-info-name {
+  text-align: center;
+  margin-bottom: .2em }
+
+.dropzone-bar {
+  height: 20px }
+
+input.dropzone-bar-btn {
+  visibility:hidden;
+  margin-top: 2em !important }
+
+.dropzone-bar-msg {
+  display: block;
+  padding-top: .2em }
+
+.dndFormPanel {
+  display: none;
+  position: absolute;
+  z-index: 5000;
+  max-height: 350px;
+  overflow: auto }
+
+.dndProgressPanel {
+  display: none;
+  text-align: center;
+  z-index: 10000 }
+
+.dndFormPanel,
+.dndProgressPanel {
+  border: 1px solid #adadad;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
+  background-color: #fff;
+  font-size: 12px;
+  padding : 2em;
+  min-height: 8em;
+  max-height: 25em;
+  min-width: 35em;
+  max-width: 60em }
+
+.dndFormPanel th {
+  text-align: left;
+  padding-bottom: 1em;
+  font-size: 1.1em;
+  font-weight: bold }
+
+.dndFormPanel td {
+  vertical-align: top;
+  padding: 0 3.2em 1em 0 }
+
+.dndFormPanel input {
+  margin: 1em 0 }
+
+.dndFormPanel body {
+  margin: 0 }
+
+#uploadedFileList div {
+  color: #a0a0a0;
+  margin : 0 0 .5em }
+
+.importOperationForm iframe {
+  margin: 2.3em 0 0 }
+
+.importOperationForm .dataInput {
+  margin: 0 0 1.4em }
+
+.importOperationForm .dataInput input {
+  margin: 1.8em 0 0 }
+
+#dndContinueButton {
+  display: none;
+  cursor: hand;
+  padding: 5px  }
+
+#operationForm {
+  border-style: none none none solid;
+  border-color: #444;
+  border-width: 2px }
+
+/* Drag and drop in DAM */
+.dropzoneFilled {
+	text-align: left;
+	padding: .5em }
+
+.dropzoneTarget .simpleBox {
+  margin: .5em .2em .5em .5em }
+
+.droppedItem,
+.droppedItemInProgress {
+  color: "default (__FLAVOR__ color)";
+  display: inline-block;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100% }
+
+.droppedItemInProgress {
+  color: "gray.medium (__FLAVOR__ color)";
+  font-weight: normal;
+  width: 66% }
+
+.progressBarContainer {
+  display: inline-block;
+  margin: 0.3em;
+  vertical-align: top;
+  width: 30% }
+
+.progressBar {
+  background-color: "color.major.stronger (__FLAVOR__ background)";
+	display: inline-block;
+	height: 13px }

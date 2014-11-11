@@ -1,0 +1,46 @@
+<f:subview xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  id="footer">
+
+<ui:insert name="prefooter">
+  <c:if test="#{connectUpdateStatusInfo.bannerPath!=null}">
+    <ui:include src="#{connectUpdateStatusInfo.bannerPath}" />
+  </c:if>
+</ui:insert>
+
+<ui:insert name="footer">
+  <div class="footerDefaultLinks">
+
+    <nxl:widget name="footerLinks" mode="view" value="#{currentDocument}" />
+
+    <div class="copyrights">
+      <h:outputFormat value="#{messages['label.login.copyright']}">
+        <f:param value="#{copyrightCurrentYear}" />
+      </h:outputFormat>
+    </div>
+
+    <div class="clear"></div>
+
+  </div>
+
+  <ui:insert name="language_selector">
+    <h:form id="langSelectForm">
+      <h:outputText value="#{messages['label.selectLocale']}" />
+      <h:selectOneMenu value="#{localeSelector.localeString}"
+        styleClass="langSelect" id="langSelectMenu">
+        <f:selectItems value="#{localeSelector.supportedLocales}"/>
+      </h:selectOneMenu>
+      <h:commandButton action="#{localeSelector.select}"
+        value="#{messages['command.changeLocale']}"
+        class="langSubmit"
+        id="langSelectSubmitButton" />
+    </h:form>
+  </ui:insert>
+
+</ui:insert>
+
+</f:subview>

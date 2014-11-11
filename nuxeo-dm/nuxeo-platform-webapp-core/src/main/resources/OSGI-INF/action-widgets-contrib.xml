@@ -1,0 +1,126 @@
+<component name="org.nuxeo.ecm.platform.action.widgets">
+
+  <documentation>
+    @since 5.8, global widgets used to render actions/tabs in
+    default UI.
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="documentTabs" type="tabs">
+      <properties mode="view">
+        <property name="actionsDisplay">links</property>
+        <property name="addForm">true</property>
+        <property name="useAjaxForm">#{useAjaxTabs}</property>
+        <property name="actions">#{tabsActionsList}</property>
+        <property name="currentTabAction">#{webActions.currentTabAction}</property>
+      </properties>
+    </widget>
+
+    <widget name="documentActionsUpperButtons" type="documentActionsWithForms">
+      <properties mode="view">
+        <property name="category">DOCUMENT_UPPER_ACTION</property>
+        <property name="actionsDisplay">icons</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="maxActionsNumber">5</property>
+        <property name="styleClass">globalActions contextActions</property>
+        <property name="actionStyleClass">button</property>
+      </properties>
+    </widget>
+
+    <widget name="documentActionSubviewUpperList" type="documentActionsWithForms">
+      <properties mode="view">
+        <property name="category">
+          SUBVIEW_UPPER_LIST, SUBVIEW_UPPER_LIST_HREF
+        </property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="maxActionsNumber">5</property>
+        <property name="styleClass">action_bar</property>
+        <property name="actionStyleClass">button</property>
+      </properties>
+    </widget>
+
+    <widget name="headerSearch" type="documentActionsWithForms">
+      <properties mode="view">
+        <property name="category">SEARCH_ACTIONS</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="styleClass">userSearchBlock</property>
+        <property name="actionStyleClass">advancedSearchLink</property>
+      </properties>
+    </widget>
+
+    <widget name="mainTabs" type="documentActionsWithForms">
+      <properties mode="view">
+        <property name="category">MAIN_TABS</property>
+        <property name="overallDisplay">menu</property>
+        <property name="styleClass">mainTabs</property>
+        <property name="currentAction">
+          #{webActions.getCurrentTabAction('MAIN_TABS')}
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="userMenuActions" type="documentActionsWithForms">
+      <labels>
+        <label mode="any">#{messages['label.loggedAsUser']}</label>
+      </labels>
+      <properties mode="view">
+        <property name="category">USER_MENU_ACTIONS</property>
+        <property name="actionsDisplay">links</property>
+        <property name="overallDisplay">rollover_menu</property>
+        <property name="styleClass">userMenuActions</property>
+      </properties>
+    </widget>
+
+    <widget name="userActions" type="documentActionsWithForms">
+      <properties mode="view">
+        <property name="category">
+          USER_SERVICES, USER_SERVICES_BOTTOM
+        </property>
+        <property name="actionsDisplay">links</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="styleClass">userActions</property>
+      </properties>
+    </widget>
+
+    <widget name="footerLinks" type="documentActionsWithForms">
+      <properties mode="view">
+        <property name="category">FOOTER</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="separator"> | </property>
+        <property name="styleClass">nuxLinks</property>
+      </properties>
+    </widget>
+
+    <widget name="documentEditButtons" type="documentActions">
+      <properties mode="view">
+        <property name="actionsDisplay">buttons</property>
+        <property name="category">EDIT_DOCUMENT_FORM</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="actionStyleClass">button</property>
+      </properties>
+    </widget>
+
+    <widget name="documentCreateButtons" type="documentActions">
+      <properties mode="view">
+        <property name="actionsDisplay">buttons</property>
+        <property name="category">CREATE_DOCUMENT_FORM</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="actionStyleClass">button</property>
+      </properties>
+    </widget>
+
+    <widget name="breadcrumbActions" type="documentActionsWithForms">
+      <properties mode="view">
+        <property name="category">LIVEEDIT_CREATE_ACTIONS,BREADCRUMB_ACTIONS</property>
+        <property name="actionsDisplay">icons</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="styleClass">action_bar</property>
+        <property name="actionStyleClass">button</property>
+      </properties>
+    </widget>
+
+  </extension>
+
+</component>

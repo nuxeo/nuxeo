@@ -1,0 +1,201 @@
+/*
+Corporate header styles.
+=Header -> define links colors, backgrounds, logo position, alignments
+=Search -> search and advanced search links styles
+=UserServices -> link and menu relative to the user
+=MainTabs -> navigation links between applications pages
+=Studio header link -> Small button for Administrators to access Nuxeo Studio
+author: lkemen@nuxeo.com
+*/
+
+/* =Header */
+.nxHeader {
+  background-color: "header (__FLAVOR__ background)";
+  box-shadow: 0 1px 2px #ccc;
+  overflow: auto;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1041 }
+
+.nxHeader .logo {
+  padding: .1em 0;
+  text-align: center;
+  vertical-align: middle;
+  width: 18% }
+
+.nxHeader .content {
+  font-size: 12px;
+  font-family: Arial;
+  line-height: 280%;
+  padding: .85em 0;
+  text-transform: uppercase;
+  vertical-align: middle;
+  width: 82% }
+
+.nxHeader .includes {
+  width: 0 }
+
+.nxHeader a,
+.nxHeader a:link,
+.nxHeader a:visited,
+.nxHeader a:hover,
+.nxHeader a:active {
+  color: "link.header (__FLAVOR__ color)";
+  text-decoration: none;
+  opacity: .6;
+  -moz-transition: none;
+  -webkit-transition: none;
+  transition: none }
+
+.userMenuActions li > .widgetLabel {
+  font-weight: normal;
+  opacity: .6 }
+
+.nxHeader a:hover,
+.nxHeader a:active,
+.nxHeader .logo a:link,
+.nxHeader .logo a:hover,
+.nxHeader .logo a:visited,
+.userMenuActions li:hover > .widgetLabel {
+  opacity: 1 }
+
+.nxHeader .actionsWidgetPanel {
+  padding: 0 }
+
+.nxHeader .actionLink {
+  margin: inherit }
+
+/* =Search */
+.userSearchBlock {
+  float: right;
+  line-height: 200%;
+  margin: 0 1em 0 .5em;
+  text-transform: none;
+  -moz-transition: all 0.3s ease 0.1s;
+  -webkit-transition: all 0.3s ease 0.1s;
+  transition: all 0.3s ease 0.1s }
+
+.userSearchBlock input[type="text"] {
+  opacity: .85;
+  width: 140px }
+
+.userSearchBlock input[type="text"]:focus {
+  opacity: 1;
+  width: 160px }
+
+.userSearchBlock .directoryFilter {
+  background: #fff url('${basePath}/icons/search.png') no-repeat 98% center;
+  box-sizing: border-box;
+  box-shadow: none;
+  border: 1px solid #ddd;
+  border-radius: .25em;
+  font-size: 1em;
+  height: 25px;
+  line-height: normal;
+  padding: .4em 1.8em .3em .3em;
+  margin: 0 .6em 0 0;
+  transition: all 0.2s ease 0.1s }
+
+.userSearchBlock input.button {
+  background: transparent;
+  border:none;
+  box-shadow: none;
+  cursor:pointer;
+  height: 25px;
+  padding: 0;
+  margin: 0 0 0 -23px;
+  text-indent: -9999px;
+  vertical-align: top;
+  width: 20px }
+
+.userSearchBlock input.button:hover {
+  cursor:pointer }
+
+/* =UserServices */
+.userServicesBlock {
+  float: left }
+
+.userServicesBlock a:hover {
+  text-decoration: none }
+
+/* =MainTabs */
+.mainTabs {
+  float: left;
+  font-size: .9em;
+  font-weight: normal }
+
+.mainTabs li {
+  border-radius: .2em;
+  display: inline;
+  float: left;
+  line-height: 2em;
+  margin: 0 .05em }
+
+.mainTabs a:link,
+.mainTabs a:visited {
+  color: "link.header (__FLAVOR__ color)";
+  display: inline-block;
+  font-size: 1.1em;
+  padding: .15em .4em }
+
+.mainTabs li:hover,
+.mainTabs li.selected {
+  background-color: "header.tabs.selected (__FLAVOR__ background)"; } 
+
+.mainTabs li a:hover,
+.mainTabs li.selected a,
+.mainTabs li.selected a:visited {
+  opacity: 1 }
+
+.mainTabs li.selected a {
+  font-weight: bold }
+
+.nxHeader .userActions {
+  float: left;
+  line-height: 2.1em;
+  padding: 0 .5em;
+  text-transform: none }
+
+.nxHeader .userMenuActions {
+  float: left;
+  font-size: 1.1em;
+  padding: 0 }
+
+.nxHeader .userMenuActions a {
+  background-color: #fff;
+  font-size: 1.1em;
+  display: block }
+
+/* Override default dropdown button styles */
+.userMenuActions .dropdown {
+  background: url("${basePath}/icons/user_menu.png") no-repeat scroll 1px center transparent }
+
+.userMenuActions .button {
+  background-color: rgba(0, 0, 0, 0);
+  border: medium none;
+  box-shadow: none;
+  color: "link.header (__FLAVOR__ color)";
+  line-height: 1.7em;
+  padding: .15em .5em .1em 1.7em !important;
+  text-transform: none }
+
+.userMenuActions .dropDownMenu .widget {
+  font-weight: normal }
+
+.nxHeader .userMenuActions ul:hover .dropDownMenu {
+  background-color: "header.tabs.selected (__FLAVOR__ background)";
+  color: "link.header (__FLAVOR__ color)" }
+
+.nxHeader .actionList .actionSubList li a {
+  color: "black (__FLAVOR__ color)" }
+
+/* =Studio header link */
+.studioButton {
+  font-weight: normal }
+
+/* =Connect header links */
+.updateNotificationArea {
+  float: right;
+  line-height: normal;
+  vertical-align: middle }

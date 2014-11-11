@@ -1,0 +1,49 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+ xmlns:nxu="http://nuxeo.org/nxweb/util"
+ xmlns:ui="http://java.sun.com/jsf/facelets"
+ xmlns:c="http://java.sun.com/jstl/core">
+
+<script type="text/javascript"
+  src="#{baseURL}seam/resource/remoting/interface.js?#{SeamRemotingBeanNames}">
+</script>
+<script type="text/javascript">
+  var currentConversationId = '#{nxu:javaScriptEscape(nxu:htmlEscape(org.jboss.seam.core.manager.currentConversationId))}';
+  var currentDocURL = '#{currentServerLocation.name}/#{currentDocument.id}';
+  // set the conversation id before doing any call
+  Seam.Remoting.getContext().setConversationId(currentConversationId);
+  Seam.Remoting.contextPath = '#{contextPath}';
+  Seam.Remoting.resourcePath = '#{contextPath}/seam/resource/remoting';
+</script>
+
+<ui:include src="/incl/confirm-alerts.xhtml" />
+<ui:include src="/incl/custom-confirm-alerts.xhtml" />
+<ui:include src="/incl/studio-confirm-alerts.xhtml" />
+<script type="text/javascript"
+  src="#{baseURL}js/?scripts=confirmAlerts.js%7CDragAndDrop.js%7CtableSelections.js%7CcustomSeamRemotingWaiter.js%7Ccustom-javascript.js%7Cdefault-contextmenu-actions.js%7Ccustom-contextmenu-actions.js">
+</script>
+
+<!-- FIXME: tiny mce scripts inclusion is not ok when using theme resources -->
+<script type="text/javascript" src="tinymce/tinymce.js">
+</script>
+<script type="text/javascript" src="tinymce/tinymce_init.js">
+</script>
+
+<ui:include src="/incl/dnd/dnd-common.xhtml" />
+
+<c:if test="#{useHtml5DragAndDrop}">
+  <ui:include src="/incl/dnd/dnd.xhtml" />
+</c:if>
+
+<c:if test="#{!useHtml5DragAndDrop}">
+  <ui:include src="/incl/dnd/legacyDnd.xhtml" />
+</c:if>
+
+<ui:include src="/incl/konami.xhtml" />
+<ui:include src="/incl/doubleClick_shield.xhtml" />
+
+<ui:include src="/incl/tipsy.xhtml" />
+
+<link href="#{contextPath}/css/custom-css.css" rel="stylesheet" type="text/css" />
+<ui:include src="/incl/custom-includes.xhtml" />
+
+</div>
