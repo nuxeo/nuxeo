@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<connection-factories>
+  <tx-connection-factory>
+    <jndi-name>NXRepository/default</jndi-name>
+    <xa-transaction/>
+    <track-connection-by-tx/>
+    <adapter-display-name>Nuxeo SQL Repository DataSource</adapter-display-name>
+    <rar-name>nuxeo.ear#nuxeo-core-storage-sql-ra-1.6.2-SNAPSHOT.rar</rar-name>
+    <connection-definition>org.nuxeo.ecm.core.storage.sql.Repository</connection-definition>
+    <config-property name="name">default</config-property>
+    <max-pool-size>20</max-pool-size>
+    
+    <!-- Default configuration (HSQL) -->
+    <config-property name="xaDataSource" type="java.lang.String">org.h2.jdbcx.JdbcDataSource</config-property>
+    <config-property name="property" type="java.lang.String">URL=jdbc:h2:${jboss.server.data.dir}/h2/nuxeo;AUTO_SERVER=true</config-property>
+    <config-property name="property" type="java.lang.String">User=sa</config-property>
+    <config-property name="property" type="java.lang.String">Password=</config-property>
+
+    <!-- Configuration for PostgreSQL:
+    <config-property name="xaDataSource" type="java.lang.String">org.postgresql.xa.PGXADataSource</config-property>
+    <config-property name="property" type="java.lang.String">ServerName=localhost</config-property>
+    <config-property name="property" type="java.lang.String">PortNumber/Integer=5432</config-property>
+    <config-property name="property" type="java.lang.String">DatabaseName=nuxeo</config-property>
+    <config-property name="property" type="java.lang.String">User=postgres</config-property>
+    <config-property name="property" type="java.lang.String">Password=</config-property>
+    -->
+
+    <!-- Configuration for Derby:
+    <config-property name="xaDataSource" type="java.lang.String">org.apache.derby.jdbc.EmbeddedXADataSource</config-property>
+    <config-property name="property" type="java.lang.String">createDatabase=create</config-property>
+    <config-property name="property" type="java.lang.String">databaseName=${jboss.server.data.dir}/derby/nuxeo</config-property>
+    <config-property name="property" type="java.lang.String">user=sa</config-property>
+    <config-property name="property" type="java.lang.String">password=</config-property>
+    -->
+
+  </tx-connection-factory>
+</connection-factories>
