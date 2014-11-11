@@ -1,0 +1,110 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>rechercherUtilisateur</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">rechercherUtilisateur</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>bree</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>bree1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>You are logged as bree</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Users & groups</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@id="searchForm:clearButton"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id="searchForm:searchText"]</td>
+	<td>j</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@id="searchForm:searchButton"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=jdoe</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>John</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Doe</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=jsmith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Smith</td>
+	<td></td>
+</tr>
+<!--Réinitialisation de la recherche-->
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@id="searchForm:clearButton"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id="searchForm:searchText"]</td>
+	<td>thing</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@id="searchForm:searchButton"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>No user matching the entered criteria</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
