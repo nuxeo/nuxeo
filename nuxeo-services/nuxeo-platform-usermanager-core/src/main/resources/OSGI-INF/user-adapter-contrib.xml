@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.usermanager.adapter">
+  <documentation>Adapters for UserModel</documentation>
+
+  <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService"
+    point="adapters">
+    <adapter class="org.nuxeo.ecm.platform.usermanager.UserAdapter"
+      factory="org.nuxeo.ecm.platform.usermanager.UserAdapterFactory" />
+  </extension>
+
+</component>
