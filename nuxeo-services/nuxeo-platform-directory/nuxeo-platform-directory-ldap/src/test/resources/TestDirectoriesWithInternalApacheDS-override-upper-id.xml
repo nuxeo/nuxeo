@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+
+<!--
+  NXP-7000: for case for ldap directories that are case-insensitive
+  
+  override default configuration, adding the idFieldCase attribute
+-->
+
+<component name="org.nuxeo.ecm.directory.ldap.storage.override.upperId">
+
+  <implementation class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor" />
+  <require>org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory</require>
+  <require>org.nuxeo.ecm.directory.ldap.storage</require>
+
+  <extension target="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"
+    point="directories">
+
+    <directory name="userDirectory">
+      <server>default</server>
+      <schema>user</schema>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+
+      <searchBaseDn>ou=people</searchBaseDn>
+      <searchClass>person</searchClass>
+      <searchScope>onelevel</searchScope>
+
+      <readOnly>false</readOnly>
+
+      <creationBaseDn>ou=people</creationBaseDn>
+      <creationClass>top</creationClass>
+      <creationClass>person</creationClass>
+      <creationClass>organizationalPerson</creationClass>
+      <creationClass>inetOrgPerson</creationClass>
+      <rdnAttribute>uid</rdnAttribute>
+      <!-- add id case configuration -->
+      <idCase>upper</idCase>
+
+      <fieldMapping name="username">uid</fieldMapping>
+      <fieldMapping name="firstName">givenName</fieldMapping>
+      <fieldMapping name="lastName">sn</fieldMapping>
+      <fieldMapping name="password">userPassword</fieldMapping>
+      <fieldMapping name="email">mail</fieldMapping>
+      <fieldMapping name="company">o</fieldMapping>
+
+      <!-- LDAP references do not work with the internal server  -->
+
+    </directory>
+
+  </extension>
+
+</component>
