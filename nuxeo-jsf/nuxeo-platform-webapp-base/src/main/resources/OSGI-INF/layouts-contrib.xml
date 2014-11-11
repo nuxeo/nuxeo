@@ -1,0 +1,925 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.forms.layouts.webapp.base">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="select_path_tree">
+      <configuration>
+        <sinceVersion>5.4.0</sinceVersion>
+        <title>Path tree</title>
+        <description>
+          Widget allowing to select one or more values from a Tree constructed
+          from the navigation tree.
+
+          Set 'showAllDomains' property to true if you want to be able to select
+          a path from an other domain than the current one.
+        </description>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/select_path_tree_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="singleUserSuggestion">
+      <configuration>
+        <title>Single user/group suggestion</title>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <categories>
+          <category>document</category>
+          <category>studio</category>
+        </categories>
+        <properties>
+          <layouts mode="view">
+            <layout
+              name="singleUserSuggestion_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>userSuggestionSearchType</widget>
+                </row>
+                <row>
+                  <widget>firstLabelField</widget>
+                </row>
+                <row>
+                  <widget>secondLabelField</widget>
+                </row>
+                <row>
+                  <widget>hideFirstLabel</widget>
+                </row>
+                <row>
+                  <widget>hideSecondLabel</widget>
+                </row>
+                <row>
+                  <widget>displayAction</widget>
+                </row>
+              </rows>
+              <widget name="userSuggestionSearchType" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Search type</label>
+                </labels>
+                <fields>
+                  <field>userSuggestionSearchType</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="Users" itemValue="USER_TYPE" />
+                  <option itemLabel="Groups" itemValue="GROUP_TYPE" />
+                </selectOptions>
+              </widget>
+              <widget name="firstLabelField" type="text">
+                <labels>
+                  <label mode="any">First label field</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Field to use as the first label when displaying
+                    the selected user. Default to 'firstName'.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>firstLabelField</field>
+                </fields>
+              </widget>
+              <widget name="secondLabelField" type="text">
+                <labels>
+                  <label mode="any">Second label field</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Field to use as the second label when displaying
+                    the selected user. Default to 'lastName'.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>secondLabelField</field>
+                </fields>
+              </widget>
+              <widget name="hideFirstLabel" type="checkbox">
+                <labels>
+                  <label mode="any">Hide first label</label>
+                </labels>
+                <fields>
+                  <field>hideFirstLabel</field>
+                </fields>
+              </widget>
+              <widget name="hideSecondLabel" type="checkbox">
+                <labels>
+                  <label mode="any">Hide second label</label>
+                </labels>
+                <fields>
+                  <field>hideSecondLabel</field>
+                </fields>
+              </widget>
+              <widget name="displayAction" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Display action</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The display action to use when rendering the user or group.
+                    Can be 'nothing' to just display text only, 'view' to have
+                    a link going to the user or group view, or 'edit' to have a
+                    link going to the user or group edition.
+                    The 'edit' action assumes the widget is used in the Users
+                    and Groups management.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>displayAction</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="Nothing"
+                    itemValue="nothing" />
+                  <option itemLabel="View" itemValue="view" />
+                  <option itemLabel="Edit" itemValue="edit" />
+                </selectOptions>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout
+              name="singleUserSuggestion_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>required</widget>
+                </row>
+                <row>
+                  <widget>userSuggestionSearchType</widget>
+                </row>
+                <row>
+                  <widget>userSuggestionMaxSearchResults</widget>
+                </row>
+                <row>
+                  <widget>minChars</widget>
+                </row>
+                <row>
+                  <widget>frequency</widget>
+                </row>
+                <row>
+                  <widget>requestDelay</widget>
+                </row>
+                <row>
+                  <widget>width</widget>
+                </row>
+              </rows>
+              <widget name="required" type="checkbox">
+                <labels>
+                  <label mode="any">Required</label>
+                </labels>
+                <fields>
+                  <field>required</field>
+                </fields>
+              </widget>
+              <widget name="userSuggestionSearchType" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Search type</label>
+                </labels>
+                <fields>
+                  <field>userSuggestionSearchType</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="Users and groups"
+                    itemValue="USER_GROUP_TYPE" />
+                  <option itemLabel="Users" itemValue="USER_TYPE" />
+                  <option itemLabel="Groups" itemValue="GROUP_TYPE" />
+                </selectOptions>
+              </widget>
+              <widget name="userSuggestionMaxSearchResults" type="int">
+                <labels>
+                  <label mode="any">Max search results</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Number of maximum search results in the suggestion (defaults
+                    to 0 that means no limit).
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>userSuggestionMaxSearchResults</field>
+                </fields>
+              </widget>
+              <widget name="minChars" type="int">
+                <labels>
+                  <label mode="any">Minimum characters</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The minimal number of characters to type for the suggestion
+                    to be active. Defaults to 3.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>minChars</field>
+                </fields>
+              </widget>
+              <widget name="frequency" type="int">
+                <labels>
+                  <label mode="any">Frequency</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Delay (in seconds) before activating the suggestion pop-up.
+                    Default value is 0ms.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>frequency</field>
+                </fields>
+              </widget>
+              <widget name="requestDelay" type="int">
+                <labels>
+                  <label mode="any">Request delay</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The requestDelay attribute specifies an amount of time in
+                    milliseconds for the request to wait in the queue before
+                    being sent to the server. If a similar request is added to
+                    the queue before the delay is over, the original request is
+                    removed from the queue and not sent.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>requestDelay</field>
+                </fields>
+              </widget>
+              <widget name="width" type="int">
+                <labels>
+                  <label mode="any">Width</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">The suggestion width.</label>
+                </helpLabels>
+                <fields>
+                  <field>width</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/single_user_suggestion_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="multipleUsersSuggestion">
+      <configuration>
+        <title>Multiple users/groups suggestion</title>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <categories>
+          <category>document</category>
+          <category>studio</category>
+        </categories>
+        <properties>
+          <layouts mode="edit">
+            <layout
+              name="multipleUsersSuggestion_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>required</widget>
+                </row>
+                <row>
+                  <widget>userSuggestionSearchType</widget>
+                </row>
+                <row>
+                  <widget>userSuggestionMaxSearchResults</widget>
+                </row>
+                <row>
+                  <widget>minChars</widget>
+                </row>
+                <row>
+                  <widget>frequency</widget>
+                </row>
+                <row>
+                  <widget>requestDelay</widget>
+                </row>
+                <row>
+                  <widget>width</widget>
+                </row>
+              </rows>
+              <widget name="required" type="checkbox">
+                <labels>
+                  <label mode="any">Required</label>
+                </labels>
+                <fields>
+                  <field>required</field>
+                </fields>
+              </widget>
+              <widget name="userSuggestionSearchType" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Search type</label>
+                </labels>
+                <fields>
+                  <field>userSuggestionSearchType</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="Users and groups"
+                    itemValue="USER_GROUP_TYPE" />
+                  <option itemLabel="Users" itemValue="USER_TYPE" />
+                  <option itemLabel="Groups" itemValue="GROUP_TYPE" />
+                </selectOptions>
+              </widget>
+              <widget name="userSuggestionMaxSearchResults" type="int">
+                <labels>
+                  <label mode="any">Max search results</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Number of maximum search results in the suggestion (defaults
+                    to 0 that means no limit).
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>userSuggestionMaxSearchResults</field>
+                </fields>
+              </widget>
+              <widget name="minChars" type="int">
+                <labels>
+                  <label mode="any">Minimum characters</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The minimal number of characters to type for the suggestion
+                    to be active. Defaults to 3.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>minChars</field>
+                </fields>
+              </widget>
+              <widget name="frequency" type="int">
+                <labels>
+                  <label mode="any">Frequency</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Delay (in seconds) before activating the suggestion pop-up.
+                    Default value is 0ms.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>frequency</field>
+                </fields>
+              </widget>
+              <widget name="requestDelay" type="int">
+                <labels>
+                  <label mode="any">Request delay</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The requestDelay attribute specifies an amount of time in
+                    milliseconds for the request to wait in the queue before
+                    being sent to the server. If a similar request is added to
+                    the queue before the delay is over, the original request is
+                    removed from the queue and not sent.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>requestDelay</field>
+                </fields>
+              </widget>
+              <widget name="width" type="int">
+                <labels>
+                  <label mode="any">Width</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">The suggestion width.</label>
+                </helpLabels>
+                <fields>
+                  <field>width</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/user_suggestion_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="multiplePrefixedUsersSuggestion">
+      <configuration>
+        <title>Multiple prefixed users/groups suggestion</title>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <categories>
+          <category>document</category>
+          <category>studio</category>
+        </categories>
+        <properties>
+          <layouts mode="edit">
+            <layout
+              name="multiplePrefixedUsersSuggestion_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>required</widget>
+                </row>
+                <row>
+                  <widget>userSuggestionSearchType</widget>
+                </row>
+                <row>
+                  <widget>userSuggestionMaxSearchResults</widget>
+                </row>
+                <row>
+                  <widget>minChars</widget>
+                </row>
+                <row>
+                  <widget>frequency</widget>
+                </row>
+                <row>
+                  <widget>requestDelay</widget>
+                </row>
+                <row>
+                  <widget>width</widget>
+                </row>
+              </rows>
+              <widget name="required" type="checkbox">
+                <labels>
+                  <label mode="any">Required</label>
+                </labels>
+                <fields>
+                  <field>required</field>
+                </fields>
+              </widget>
+              <widget name="userSuggestionSearchType" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Search type</label>
+                </labels>
+                <fields>
+                  <field>userSuggestionSearchType</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="Users and groups"
+                    itemValue="USER_GROUP_TYPE" />
+                  <option itemLabel="Users" itemValue="USER_TYPE" />
+                  <option itemLabel="Groups" itemValue="GROUP_TYPE" />
+                </selectOptions>
+              </widget>
+              <widget name="userSuggestionMaxSearchResults" type="int">
+                <labels>
+                  <label mode="any">Max search results</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Number of maximum search results in the suggestion (defaults
+                    to 0 that means no limit).
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>userSuggestionMaxSearchResults</field>
+                </fields>
+              </widget>
+              <widget name="minChars" type="int">
+                <labels>
+                  <label mode="any">Minimum characters</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The minimal number of characters to type for the suggestion
+                    to be active. Defaults to 3.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>minChars</field>
+                </fields>
+              </widget>
+              <widget name="frequency" type="int">
+                <labels>
+                  <label mode="any">Frequency</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Delay (in seconds) before activating the suggestion pop-up.
+                    Default value is 0ms.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>frequency</field>
+                </fields>
+              </widget>
+              <widget name="requestDelay" type="int">
+                <labels>
+                  <label mode="any">Request delay</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The requestDelay attribute specifies an amount of time in
+                    milliseconds for the request to wait in the queue before
+                    being sent to the server. If a similar request is added to
+                    the queue before the delay is over, the original request is
+                    removed from the queue and not sent.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>requestDelay</field>
+                </fields>
+              </widget>
+              <widget name="width" type="int">
+                <labels>
+                  <label mode="any">Width</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">The suggestion width.</label>
+                </helpLabels>
+                <fields>
+                  <field>width</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/user_prefixed_suggestion_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="user">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>username</widget>
+        </row>
+        <row>
+          <widget>firstname</widget>
+        </row>
+        <row>
+          <widget>lastname</widget>
+        </row>
+        <row>
+          <widget>company</widget>
+        </row>
+        <row>
+          <widget>email</widget>
+        </row>
+        <row>
+          <widget>firstPassword</widget>
+        </row>
+        <row>
+          <widget>secondPassword</widget>
+        </row>
+        <row>
+          <widget>passwordMatcher</widget>
+        </row>
+        <row>
+          <widget>groups</widget>
+        </row>
+        <row>
+          <widget>vgroups</widget>
+        </row>
+      </rows>
+      <widget name="username" type="text">
+        <labels>
+          <label mode="any">username</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">username</field>
+        </fields>
+        <widgetModes>
+          <mode value="create">edit</mode>
+          <mode value="editPassword">hidden</mode>
+          <mode value="any">view</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="validator">
+            #{userManagementActions.validateUserName}
+          </property>
+        </properties>
+      </widget>
+      <widget name="firstname" type="text">
+        <labels>
+          <label mode="any">firstName</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">firstName</field>
+        </fields>
+        <widgetModes>
+          <mode value="editPassword">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="lastname" type="text">
+        <labels>
+          <label mode="any">lastName</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">lastName</field>
+        </fields>
+        <widgetModes>
+          <mode value="editPassword">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="company" type="text">
+        <labels>
+          <label mode="any">company</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">company</field>
+        </fields>
+        <widgetModes>
+          <mode value="editPassword">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="email" type="text">
+        <labels>
+          <label mode="any">email</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">email</field>
+        </fields>
+        <widgetModes>
+          <mode value="editPassword">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="firstPassword" type="secret">
+        <labels>
+          <label mode="any">password</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">password</field>
+        </fields>
+        <widgetModes>
+          <mode value="create">edit</mode>
+          <mode value="editPassword">edit</mode>
+          <mode value="any">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="secondPassword" type="secret">
+        <labels>
+          <label mode="any">password.verify</label>
+        </labels>
+        <translated>true</translated>
+        <widgetModes>
+          <mode value="create">edit</mode>
+          <mode value="editPassword">edit</mode>
+          <mode value="any">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="passwordMatcher" type="template">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>true</translated>
+        <widgetModes>
+          <mode value="create">edit</mode>
+          <mode value="editPassword">edit</mode>
+          <mode value="any">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <!-- XXX: depends on firstPassword and secondPassword widget names -->
+          <property name="template">
+            /widgets/user_password_validation_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="groups" type="template">
+        <labels>
+          <label mode="any">label.userManager.userGroups</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">groups</field>
+        </fields>
+        <widgetModes>
+          <mode value="edit">
+            #{nxu:test(currentUser.administrator, 'edit', 'view')}
+          </mode>
+          <mode value="editPassword">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="any">
+          <property name="template">
+            /widgets/user_suggestion_widget_template.xhtml
+          </property>
+          <property name="hideVirtualGroups">true</property>
+          <property name="userSuggestionSearchType">GROUP_TYPE</property>
+        </properties>
+      </widget>
+      <widget name="vgroups" type="template">
+        <labels>
+          <label mode="any">label.userManager.userVirtualGroups</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">username</field>
+        </fields>
+        <widgetModes>
+          <mode value="create">hidden</mode>
+          <mode value="editPassword">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="any">
+          <property name="template">
+            /widgets/user_vgoups_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="group">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>groupname</widget>
+        </row>
+        <row>
+          <widget>members</widget>
+        </row>
+        <row>
+          <widget>subgroups</widget>
+        </row>
+      </rows>
+      <widget name="groupname" type="text">
+        <labels>
+          <label mode="any">label.groupManager.groupName</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="group">groupname</field>
+        </fields>
+        <widgetModes>
+          <mode value="create">edit</mode>
+          <mode value="any">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="any">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="members" type="template">
+        <labels>
+          <label mode="any">label.groupManager.userMembers</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="group">members</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="template">
+            /widgets/user_suggestion_widget_template.xhtml
+          </property>
+          <property name="userSuggestionSearchType">USER_TYPE</property>
+        </properties>
+      </widget>
+      <widget name="subgroups" type="template">
+        <labels>
+          <label mode="any">label.groupManager.groupMembers</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="group">subGroups</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="template">
+            /widgets/user_suggestion_widget_template.xhtml
+          </property>
+          <property name="userSuggestionSearchType">GROUP_TYPE</property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="user_group_suggestion">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>selection</widget>
+        </row>
+      </rows>
+      <widget name="selection" type="template">
+        <!-- add empty field to map layout value directly -->
+        <fields>
+          <field></field>
+        </fields>
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <properties mode="any">
+          <property name="template">
+            /widgets/user_suggestion_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="user_group_prefixed_suggestion">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>selection</widget>
+        </row>
+      </rows>
+      <widget name="selection" type="template">
+        <!-- add empty field to map layout value directly -->
+        <fields>
+          <field></field>
+        </fields>
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <properties mode="any">
+          <property name="template">
+            /widgets/user_prefixed_suggestion_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="document_content_filter">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>search_all_words</widget>
+        </row>
+        <row>
+          <widget>search_title</widget>
+        </row>
+        <row>
+          <widget>search_modified_min</widget>
+          <widget>search_modified_max</widget>
+        </row>
+      </rows>
+    </layout>
+
+  </extension>
+
+</component>
