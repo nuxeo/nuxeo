@@ -1,0 +1,109 @@
+<c:if test="true" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:nxu="http://nuxeo.org/nxweb/util"
+    xmlns:nxp="http://nuxeo.org/nxweb/pdf"
+    xmlns:c="http://java.sun.com/jstl/core"
+    xmlns:rich="http://richfaces.org/rich">
+  <c:if test="#{tagServiceEnabled}">
+
+    <c:if test="#{nxl:isLikePlainMode(widget.mode)}">
+      <nxu:inputList id="#{widget.id}_list" value="#{field}" model="model">
+        <h:outputText value="#{model.rowData}" />
+        <h:outputText rendered="#{model.rowIndex != model.rowCount -1}"
+            value=", " />
+      </nxu:inputList>
+    </c:if>
+
+    <c:if test="#{widget.mode == 'pdf'}">
+      <nxp:html>
+        <nxu:inputList
+            value="#{field}" model="model" rendered="#{not empty field}">
+          <h:outputText value="#{model.rowData}" />
+          <h:outputText rendered="#{model.rowIndex != model.rowCount -1}"
+              value=", " />
+        </nxu:inputList>
+      </nxp:html>
+    </c:if>
+
+    <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+      <nxu:inputList id="#{widget.id}_list" value="#{field}" model="model">
+        <h:panelGroup id="#{widget.id}_listItem">
+            <span class="tag tagLink">
+              <h:commandLink value="#{model.rowData}"
+                  action="#{tagActions.listDocumentsForTag(model.rowData)}" />
+            </span>
+        </h:panelGroup>
+      </nxu:inputList>
+    </c:if>
+
+    <c:if test="#{widget.mode == 'edit'}">
+      <a4j:outputPanel id="#{widget.id}_panel" layout="block">
+        <span id="#{widget.id}_suggestDiv">
+          <h:inputText id="#{widget.id}_suggest"
+              onkeydown="if (event.keyCode == 13) {return false;}"
+              onclick="#{widgetProperty_onclick}"
+              onchanged="#{widgetProperty_onclick}"
+              placeholder="#{widgetProperty_placeholder}"/>
+        </span>
+        <rich:suggestionbox id="#{widget.id}_suggestionBox"
+            for="#{widget.id}_suggest" tokens=""
+            suggestionAction="#{tagActions.getSuggestions}"
+            var="sugtag" fetchValue=""
+            nothingLabel="#{messages['label.suggestion.noSearchResults']}"
+            minChars="1" frequency="0" requestDelay="100">
+          <f:param name="canSelectNewTag" value="#{widgetProperty_canSelectNewTag}" />
+          <a4j:support event="onselect"
+              focus="#{widget.id}_suggest"
+              bypassUpdates="true"
+              reRender="#{widget.id}_listRegion"
+              id="#{widget.id}_listRegion_select">
+            <f:setPropertyActionListener value="#{sugtag.label}"
+                target="#{suggestionActions.selectedValue}" />
+            <nxu:actionListenerMethod value="#{suggestionActions.addBoundSelectionToList}" />
+            <f:param name="suggestionSelectionListId" value="#{widget.id}_list" />
+            <f:param name="canSelectNewTag" value="#{widgetProperty_canSelectNewTag}" />
+          </a4j:support>
+          <h:column>
+            <f:subview rendered="#{sugtag.weight eq -1}">
+              <span class="tag newTag">
+                <h:outputText value="${sugtag.label}" />
+              </span>
+            </f:subview>
+            <f:subview rendered="#{sugtag.weight gt -1}">
+              <span class="tag tagLink">
+                <h:outputText value="${sugtag.label}" />
+              </span>
+            </f:subview>
+          </h:column>
+        </rich:suggestionbox>
+
+        <a4j:outputPanel ajaxRendered="false" id="#{widget.id}_listRegion"
+            layout="block">
+          <nxu:inputList id="#{widget.id}_list" value="#{field}" model="model"
+              required="#{widget.required}">
+            <h:panelGroup id="#{widget.id}_listItem">
+            <span class="tag tagLink">
+              <h:outputText value="#{model.rowData}" />
+              <a4j:commandLink immediate="true"
+                  actionListener="#{editableListBean.performAction}"
+                  id="#{widget.id}_delete" reRender="#{widget.id}_panel"
+                  bypassUpdates="true">
+                <h:graphicImage value="/icons/action_tag_delete.png" />
+                <f:param name="for" value="#{widget.id}_list" />
+                <f:param name="index" value="#{model.rowIndex}" />
+                <f:param name="type" value="remove" />
+              </a4j:commandLink>
+            </span>
+            </h:panelGroup>
+          </nxu:inputList>
+          <h:message styleClass="errorMessage" for="#{widget.id}_list"
+              id="#{widget.id}_message" />
+        </a4j:outputPanel>
+      </a4j:outputPanel>
+    </c:if>
+
+  </c:if>
+
+</c:if>
