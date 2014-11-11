@@ -1,0 +1,24 @@
+<package type="addon" name="nuxeo-social-collaboration" version="@VERSION@">
+  <title>Nuxeo Social Collaboration</title>
+  <description>
+    Nuxeo Social Collaboration
+  </description>
+  <home-page>http://doc.nuxeo.com/x/QoGN</home-page>
+  <vendor>Nuxeo</vendor>
+  <installer restart="true" />
+  <uninstaller restart="true" />
+  <!-- <hotreload-support>false</hotreload-support> -->
+  <!-- <require-terms-and-conditions-acceptance>false -->
+  <!-- </require-terms-and-conditions-acceptance> -->
+  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
+  <production-state>production_ready</production-state>
+  <supported>true</supported>
+  <platforms>
+    <platform>cap-@VERSION@</platform>
+  </platforms>
+  <dependencies>
+    <package>nuxeo-dm:@VERSION@</package>
+  </dependencies>
+  <license>LGPL</license>
+  <license-url>http://www.gnu.org/licenses/lgpl.html</license-url>
+</package>

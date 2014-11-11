@@ -1,0 +1,41 @@
+<project name="nuxeo-dam-tests"
+         default="run-selenium-tests"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <property name="suites" value="suite" />
+  <property name="wizard.preset" value="nuxeo-dam" />
+  <property name="out.dir" value="${maven.project.build.directory}" />
+  <unzip dest="${out.dir}/" overwrite="false">
+    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
+  </unzip>
+  <import file="${out.dir}/nuxeo-ftest.xml" />
+  
+  <target name="add-dam-importer-bundles">
+    <copy todir="${nuxeo.nxserver}/bundles/" overwrite="true" flatten="true">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-importer-jaxrs::jar" />
+    </copy>
+    <copy todir="${nuxeo.nxserver}/bundles/" overwrite="true" flatten="true">
+      <artifact:resolveFile key="org.nuxeo.dam:nuxeo-dam-importer-jaxrs::jar" />
+    </copy>
+  </target>
+
+  <target name="copy-test-config">
+    <copy file="resources/deactivate-automatic-video-conversions-config.xml"
+      todir="${nuxeo.home}/templates/common/config" />
+  </target>
+
+  <target name="add-dam-test-data">
+	<delete dir="data/"/>
+    <unzip dest="data/" overwrite="true">
+      <artifact:resolveFile key="org.nuxeo.dam:test-data:1.1:zip" />
+    </unzip>
+  </target>
+
+  <target name="run-selenium-tests" depends="run-selenium" />
+
+</project>

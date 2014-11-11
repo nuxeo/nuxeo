@@ -1,0 +1,9 @@
+<projectDescription>
+  <name>nuxeo-distribution-jboss</name>
+  <comment>Nuxeo Distribution JBoss</comment>
+  <projects/>
+  <buildSpec>
+  </buildSpec>
+  <natures>
+  </natures>
+</projectDescription>

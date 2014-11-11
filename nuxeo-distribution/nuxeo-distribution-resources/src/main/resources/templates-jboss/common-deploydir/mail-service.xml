@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!-- $Id: mail-service.xml 62349 2007-04-15 16:48:15Z dimitris@jboss.org $ -->
+<server>
+
+  <!-- ==================================================================== -->
+  <!-- Mail Connection Factory                                              -->
+  <!-- ==================================================================== -->
+
+  <mbean code="org.jboss.mail.MailService" name="jboss:service=Mail">
+    <attribute name="JNDIName">${jndi.base}/Mail</attribute>
+    <attribute name="User">${mail.transport.username}</attribute>
+    <attribute name="Password">${mail.transport.password}</attribute>
+
+    <attribute name="Configuration">
+      <configuration>
+        <property name="mail.store.protocol" value="${mail.store.protocol}" />
+        <property name="mail.transport.protocol" value="${mail.transport.protocol}" />
+        <property name="mail.${mail.store.protocol}.host" value="${mail.store.host}" />
+        <property name="mail.${mail.store.protocol}.port" value="${mail.store.port}" />
+        <property name="mail.${mail.store.protocol}.user" value="${mail.store.user}" />
+        <property name="mail.${mail.store.protocol}.password" value="${mail.store.password}" />
+        <property name="mail.${mail.transport.protocol}.host" value="${mail.transport.host}" />
+        <property name="mail.${mail.transport.protocol}.port" value="${mail.transport.port}" />
+        <property name="mail.${mail.transport.protocol}.user" value="${mail.transport.user}" />
+        <property name="mail.${mail.transport.protocol}.password" value="${mail.transport.password}" />
+        <property name="mail.${mail.transport.protocol}.starttls.enable" value="${mail.transport.usetls}" />
+        <property name="mail.${mail.transport.protocol}.auth" value="${mail.transport.auth}" />
+        <property name="mail.from" value="${mail.from}" />
+        <property name="mail.debug" value="${mail.debug}" />
+      </configuration>
+    </attribute>
+    <depends>jboss:service=Naming</depends>
+  </mbean>
+
+</server>
