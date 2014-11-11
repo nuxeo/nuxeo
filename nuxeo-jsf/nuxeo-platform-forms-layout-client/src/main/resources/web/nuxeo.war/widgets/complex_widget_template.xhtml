@@ -1,0 +1,108 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  id="#{widget.id}">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">
+  <nxl:subWidget>
+    <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+  </nxl:subWidget>
+</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode) or widget.mode == 'edit'}">
+
+  <c:set var="displaySubLabels" value="#{not widgetProperty_hideSubLabels}" />
+  <c:set var="isEditMode" value="#{widget.mode == 'edit'}" />
+
+  <table class="dataInput complexTable #{widgetProperty_styleClass}">
+    <tbody>
+      <c:choose>
+
+        <c:when test="#{widgetProperty_display == 'inline'}">
+          <tr>
+            <nxl:subWidget>
+              <td class="boldColumn #{widgetProperty_subStyleClass}">
+                <c:if test="#{displaySubLabels and not widget.handlingLabels}">
+                  <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                    <ui:param name="labelStyleClass" value="labelColumn" />
+                  </ui:include>
+                </c:if>
+              </td>
+              <td class="fieldColumn #{widgetProperty_subStyleClass}">
+                <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+              </td>
+            </nxl:subWidget>
+          </tr>
+        </c:when>
+
+        <c:when test="#{widgetProperty_display == 'block_top'}">
+          <nxl:subWidget>
+            <c:if test="#{displaySubLabels and not widget.handlingLabels}">
+              <tr>
+                <td class="boldColumn #{widgetProperty_subStyleClass}">
+                  <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                    <ui:param name="labelStyleClass" value="labelColumn" />
+                  </ui:include>
+                </td>
+              </tr>
+            </c:if>
+            <tr>
+              <td class="fieldColumn #{widgetProperty_subStyleClass}">
+                <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+              </td>
+            </tr>
+          </nxl:subWidget>
+        </c:when>
+
+        <c:when test="#{widgetProperty_display == 'block_left'}">
+          <nxl:subWidget>
+            <tr>
+              <c:if test="#{displaySubLabels and not widget.handlingLabels}">
+                <td class="labelColumn #{widgetProperty_subStyleClass}">
+                  <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+                </td>
+              </c:if>
+              <td class="fieldColumn #{widgetProperty_subStyleClass}">
+                <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+              </td>
+            </tr>
+          </nxl:subWidget>
+        </c:when>
+
+        <c:otherwise>
+          <c:if test="#{displaySubLabels}">
+            <tr>
+              <c:if test="#{not widget.handlingLabels}">
+                <nxl:subWidget>
+                  <td class="boldColumn #{widgetProperty_subStyleClass}">
+                    <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+                  </td>
+                </nxl:subWidget>
+              </c:if>
+            </tr>
+          </c:if>
+          <tr>
+            <nxl:subWidget>
+              <td class="fieldColumn #{widgetProperty_subStyleClass}">
+                <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+              </td>
+            </nxl:subWidget>
+          </tr>
+        </c:otherwise>
+
+      </c:choose>
+    </tbody>
+  </table>
+
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:html>
+    <nxl:subWidget>
+      <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+    </nxl:subWidget>
+  </nxp:html>
+</c:if>
+</f:subview>
