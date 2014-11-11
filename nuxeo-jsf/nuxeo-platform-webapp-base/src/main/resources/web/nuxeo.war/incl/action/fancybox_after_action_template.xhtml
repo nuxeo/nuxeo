@@ -1,0 +1,106 @@
+<ui:composition
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+<nxu:set var="iframe"
+  value="#{action.properties.iframe}"
+  resolveTwice="true" cache="true">
+  <c:if test="#{empty iframe}">
+
+  <ui:decorate template="fancybox_properties_template.xhtml">
+    <ui:define name="fancybox_properties_include">
+
+      <nxu:set var="fancyboxId"
+        value="#{idPrefix}#{action.id}"
+        cache="true">
+      <nxu:set var="include"
+        value="#{action.properties.include}"
+        resolveTwice="true" cache="true">
+
+        <a4j:outputPanel id="#{fancyboxId}_ajax_panel" layout="block">
+
+          <nxu:set var="fancyboxFormId"
+            value="#{fancyboxId}_fancyform"
+            cache="true">
+          <nxu:set
+            var="actionClicked"
+            value="#{clickedActionId == action.id or nxu:hasMessages(fancyboxFormId)}"
+            cache="true">
+
+            <c:if test="#{actionClicked}">
+
+              <a4j:form>
+                <a4j:jsFunction name="#{fancyboxId}_closeFancybox">
+                  <f:setPropertyActionListener value="#{nxu:test(addForm,'2','1')}"
+                    target="#{selectionActions.lookupLevelValue}" />
+                  <f:setPropertyActionListener value=""
+                    target="#{selectionActions.selectedValue}" />
+                  <f:setPropertyActionListener
+                    value="#{idPrefix}clickedActionIdHolder"
+                    target="#{selectionActions.selectedValueHolder}" />
+                  <nxu:actionListenerMethod
+                    value="#{selectionActions.onClick}" />
+                </a4j:jsFunction>
+              </a4j:form>
+
+              <script>
+                jQuery(document).ready(function() {
+                  openFancyBox('##{fancyboxId}_box', {
+                    width: '#{fancy_width}',
+                    height: '#{fancy_height}',
+                    scrolling: '#{fancy_scrolling}',
+                    autoScale: #{fancy_autoScale},
+                    autoDimensions: #{fancy_autoDimensions},
+                    modal: #{fancy_modal},
+                    centerOnScroll: #{fancy_centerOnScroll},
+                    enableEscapeButton: #{fancy_enableEscapeButton},
+                    onClosed: #{fancyboxId}_closeFancybox
+                  });
+                });
+              </script>
+              <div style="display:none">
+                <div id="#{fancyboxId}_box">
+                  <ui:include src="#{include}" />
+                </div>
+
+                <script type="text/javascript">
+                  (function() {
+                    jQuery(document).ready(function() {
+                      var content = jQuery('#fancybox-content .content'),
+                        computedHeight = jQuery('#fancybox-content').height() || 0
+
+                      if (content !== null) {
+                        computedHeight -= jQuery('#fancybox-content h3').outerHeight(true) || 0
+                        computedHeight -= jQuery('#fancybox-content .buttonsGadget').outerHeight(true) || 0
+                        computedHeight -= parseInt(content.css('padding-top'), 10)
+                        computedHeight -= parseInt(content.css('padding-bottom'), 10)
+                        computedHeight -= parseInt(content.css('margin-top'), 10)
+                        computedHeight -= parseInt(content.css('margin-bottom'), 10)
+                        content.height(computedHeight)
+                      }
+                    })
+                  })()
+                </script>
+              </div>
+            </c:if>
+
+          </nxu:set>
+          </nxu:set>
+
+        </a4j:outputPanel>
+
+      </nxu:set>
+      </nxu:set>
+
+    </ui:define>
+  </ui:decorate>
+
+</c:if>
+</nxu:set>
+
+</ui:composition>
