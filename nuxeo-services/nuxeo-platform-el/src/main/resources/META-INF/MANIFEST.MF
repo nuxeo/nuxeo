@@ -1,0 +1,21 @@
+Export-Package: org.nuxeo.ecm.platform.el
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Localization: plugin
+Bundle-Name: Nuxeo Platform Expression Language
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Import-Package: javax.annotation;version="1.0",
+ javax.ejb,
+ javax.el,
+ org.apache.commons.logging,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.model,
+ org.nuxeo.ecm.core.api.model.impl,
+ org.nuxeo.ecm.directory;api=split
+Bundle-SymbolicName: org.nuxeo.ecm.platform.el;singleton:=true
