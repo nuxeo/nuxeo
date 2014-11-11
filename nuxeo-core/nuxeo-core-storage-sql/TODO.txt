@@ -1,0 +1,11 @@
+SQL Storage TODO
+
+Optimizations:
+
+- blob storage GC
+
+- hierarchy management, children optimizations
+
+- table aggregation and optimization
+
+- search apis and implementation
