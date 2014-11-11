@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.tests.backend.core-types">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="testschema" src="schemas/testschema.xsd" prefix="tst" />
+    <schema name="testschema2" src="schemas/testschema2.xsd" prefix="tst2" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="Root" extends="Document" />
+    <doctype name="TestDoc" extends="Document">
+      <schema name="testschema" />
+    </doctype>
+    <doctype name="TestDoc2" extends="Document">
+      <schema name="testschema2" />
+    </doctype>
+  </extension>
+
+</component>

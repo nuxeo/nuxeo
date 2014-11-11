@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Schemas
+Bundle-SymbolicName: org.nuxeo.ecm.core.schema;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Bundle-ClassPath: .,
+ lib/xsom-20060306.jar,
+ lib/relaxngDatatype-1.0.jar
+Export-Package: org.nuxeo.ecm.core.schema,
+ org.nuxeo.ecm.core.schema.types,
+ org.nuxeo.ecm.core.schema.types.constraints,
+ org.nuxeo.ecm.core.schema.types.primitives,
+ org.nuxeo.ecm.core.schema.utils
+Eclipse-LazyStart: true
+Nuxeo-Component: OSGI-INF/SchemaService.xml
+Require-Bundle: org.nuxeo.runtime
