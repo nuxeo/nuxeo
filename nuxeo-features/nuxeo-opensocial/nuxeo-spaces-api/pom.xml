@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo.ecm.opensocial</groupId>
+    <artifactId>nuxeo-opensocial-parent</artifactId>
+    <version>5.4.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-spaces-api</artifactId>
+  <name>Nuxeo OpenSocial - Spaces API</name>
+  <description>Introduce concepts of Universe, Space and Gadgets. A Universe contains Spaces and a
+  Space contains Gadgets. The service defines how to reach a Universe, what are the Spaces and what
+  are their Gadgets.
+  Usage: SpaceManager spaceManagerService=Framework.getService(SpaceManager.class)</description>
+
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core</artifactId>
+    </dependency>
+  </dependencies>
+
+</project>

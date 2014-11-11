@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-webengine-features</artifactId>
+    <version>5.4.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.nuxeo.ecm.webengine</groupId>
+  <artifactId>nuxeo-webengine-blogs-core</artifactId>
+  <name>Nuxeo Webengine Blogs Core contributions</name>
+  <description>Core Module to handle blogs.</description>
+
+  <properties>
+    <nuxeo.distribution.version>5.4.0-SNAPSHOT</nuxeo.distribution.version>
+  </properties>
+
+  <dependencies>
+     
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-blogs-api</artifactId>
+      </dependency>
+
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-sites-api</artifactId>
+      </dependency>
+
+      <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-event</artifactId>
+    </dependency>
+
+  </dependencies>
+
+  <profiles>
+    <profile>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <id>dev</id>
+      <properties>
+        <assembly.name>${assembly.tests.name}</assembly.name>
+      </properties>
+    </profile>
+  </profiles>
+
+  <build>
+    <plugins>
+      <!-- APT plugin for annotation preprocessing -->
+      <plugin>
+        <groupId>org.apache.myfaces.tobago</groupId>
+        <artifactId>maven-apt-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-bindings</id>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- end APT plugin -->
+      <!-- manual testing purpose -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-nuxeo-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <runPreprocessor>false</runPreprocessor>
+          <format>directory</format>
+          <outputDirectory>target</outputDirectory>
+          <targetFile>blogs.ear</targetFile>
+          <descriptor>${basedir}/src/main/resources/assemble/blogs.xml</descriptor>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

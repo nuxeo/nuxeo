@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-features-parent</artifactId>
+    <version>5.4.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.nuxeo.ecm.opensocial</groupId>
+  <artifactId>nuxeo-opensocial-parent</artifactId>
+  <name>Nuxeo OpenSocial - Parent</name>
+  <description>Nuxeo OpenSocial is the integration of the Shindig (OpenSocial) into Nuxeo</description>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>nuxeo-opensocial-server</module>
+    <module>nuxeo-opensocial-features</module>
+    <!--
+    <module>nuxeo-platform-login-oauth</module>
+    -->
+    <module>nuxeo-spaces-api</module>
+    <module>nuxeo-spaces-core</module>
+    <module>nuxeo-spaces-web</module>
+    <module>nuxeo-opensocial-gadgets-core</module>
+    <module>nuxeo-opensocial-gadgets</module>
+    <module>nuxeo-webengine-spaces</module>
+    <module>nuxeo-webengine-gadgets</module>
+    <module>nuxeo-opensocial-container-space-config</module>
+    <module>nuxeo-opensocial-dashboard</module>
+    <module>nuxeo-opensocial-mydocs-gadget</module>
+  </modules>
+
+  <developers>
+    <developer>
+      <id>dmetzler</id>
+      <name>Damien Metzler</name>
+      <email>damien.metzler@leroymerlin.fr</email>
+      <organization>Leroy Merlin</organization>
+      <organizationUrl>http://www.leroymerlin.fr</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <id>gcusnieux</id>
+      <name>Guillaume Cusnieux</name>
+      <email>guillaume.cusnieux@leroymerlin.fr</email>
+      <organization>Leroy Merlin</organization>
+      <organizationUrl>http://www.leroymerlin.fr</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <id>ddesaintlaurent</id>
+      <name>Damien De Saint Laurent</name>
+      <email>damien.desaintlaurent@leroymerlin.fr</email>
+      <organization>Leroy Merlin</organization>
+      <organizationUrl>http://www.leroymerlin.fr</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
+
+  <profiles>
+    <profile>
+      <id>gwt</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>nuxeo-opensocial-container</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>nogwt</id>
+      <activation>
+        <property>
+          <name>nogwt</name>
+        </property>
+      </activation>
+    </profile>
+  </profiles>
+
+</project>
