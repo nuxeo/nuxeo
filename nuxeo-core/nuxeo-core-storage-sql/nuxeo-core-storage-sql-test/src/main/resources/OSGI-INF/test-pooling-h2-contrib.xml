@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.test.repo.repository.${nuxeo.test.vcs.repository}">
+  <extension target="org.nuxeo.ecm.core.storage.sql.RepositoryService"
+    point="repository">
+    <repository name="${nuxeo.test.vcs.repository}"
+      factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
+      <indexing>
+        <fulltext analyzer="org.apache.lucene.analysis.fr.FrenchAnalyzer">
+          <index> <!-- name="default" implied -->
+            <!-- all props implied -->
+          </index>
+          <index name="title">
+            <field>dc:title</field>
+          </index>
+        </fulltext>
+      </indexing>
+      <xa-datasource>org.h2.jdbcx.JdbcDataSource</xa-datasource>
+      <property name="URL">${nuxeo.test.vcs.url}</property>
+      <property name="User">${nuxeo.test.vcs.user}</property>
+      <property name="Password">${nuxeo.test.vcs.password}</property>
+    </repository>
+  </extension>
+</component>

@@ -1,0 +1,380 @@
+-- Copyright (c) 2013 Nuxeo SA (http://nuxeo.com/) and others.
+--
+-- All rights reserved. This program and the accompanying materials
+-- are made available under the terms of the Eclipse Public License v1.0
+-- which accompanies this distribution, and is available at
+-- http://www.eclipse.org/legal/epl-v10.html
+--
+-- Contributors:
+--     Florent Guillaume
+--
+-- SQL Server _oid and nvarchar upgrade v1.3
+-- upgrades the database from Nuxeo 5.6 to Nuxeo 5.8 format
+--
+-- see https://jira.nuxeo.com/browse/NXP-10934
+-- see https://jira.nuxeo.com/browse/NXP-10862
+
+-- This script roughly executes the following:
+--   DROP FULLTEXT INDEX ON [fulltext]
+-- then for all tables that have a primary key and a foreign key to hierarchy.id (includes hierarchy.parentid itself)
+-- for example with [common]:
+--   ALTER TABLE [common] DROP CONSTRAINT [common_id_hierarchy_fk]
+--   ALTER TABLE [common] DROP CONSTRAINT [common_pk];
+--   ALTER TABLE [common] ALTER COLUMN [id] NVARCHAR(36) NOT NULL
+--   ALTER TABLE [common] ADD [_oid] INT NOT NULL IDENTITY;
+--   CREATE UNIQUE CLUSTERED INDEX [_oid_idx] ON [common] ([_oid]);
+--   ALTER TABLE [common] ADD CONSTRAINT [common_pk] PRIMARY KEY ([id]);
+--   ALTER TABLE [common] ADD CONSTRAINT [common_id_hierarchy_fk] FOREIGN KEY ([id]) REFERENCES [hierarchy] ([id]) ON DELETE CASCADE
+-- and for all tables that have just a foreign key to hiearchy.id
+-- for example with [dc_subjects]:
+--   ALTER TABLE [dc_subjects] DROP CONSTRAINT [dc_subjects_hierarchy_fk]
+--   DROP INDEX [id_idx] ON [dc_subjects]
+--   ALTER TABLE [dc_subjects] ALTER COLUMN [id] NVARCHAR(36) NOT NULL
+--   ALTER TABLE [dc_subjects] ADD [_oid] INT NOT NULL IDENTITY;
+--   CREATE UNIQUE CLUSTERED INDEX [_oid_idx] ON [dc_subjects] ([_oid]);
+--   ALTER TABLE [dc_subjects] ADD CONSTRAINT [dc_subjects_hierarchy_fk] FOREIGN KEY ([id]) REFERENCES [hierarchy] ([id]) ON DELETE CASCADE
+--   CREATE INDEX [id_idx] ON [dc_subjects] ([id])
+-- a few other special-cases for multi-column or other indexes are also executed:
+--   DROP INDEX [parentid_idx] ON [hierarchy]
+--   DROP INDEX [parentid_name_idx] ON [hierarchy]
+--   DROP INDEX [primarytype_idx] ON [hierarchy]
+--   DROP INDEX [targetid_idx] ON [proxies]
+--   DROP INDEX [versionableid_idx] ON [proxies]
+--   DROP INDEX [versionableid_idx] ON [versions]
+--   CREATE INDEX [parentid_idx] ON [hierarchy] ([parentid])
+--   CREATE INDEX [parentid_name_idx] ON [hierarchy] ([parentid], [name])
+--   CREATE INDEX [primarytype_idx] ON [hierarchy] ([primarytype])
+--   CREATE INDEX [targetid_idx] ON [proxies] ([targetid])
+--   CREATE INDEX [versionableid_idx] ON [proxies] ([versionableid])
+--   CREATE INDEX [versionableid_idx] ON [versions] ([versionableid])
+-- then:
+--   CREATE FULLTEXT INDEX ON [fulltext] ([simpletext] LANGUAGE 'French', [binarytext] LANGUAGE 'French') KEY INDEX [fulltext_pk] ON [nuxeo]
+
+
+BEGIN
+
+  DECLARE @cur CURSOR;
+  DECLARE @cur2 CURSOR;
+  DECLARE @tbl NVARCHAR(255);
+  DECLARE @col NVARCHAR(255);
+  DECLARE @casc NVARCHAR(255);
+  DECLARE @fkname NVARCHAR(255);
+  DECLARE @pkname NVARCHAR(255);
+  DECLARE @idx NVARCHAR(255);
+  DECLARE @len INTEGER;
+  DECLARE @first INTEGER;
+  DECLARE @nul NVARCHAR(255);
+  DECLARE @ftcat NVARCHAR(255);
+  DECLARE @sql NVARCHAR(MAX);
+
+
+  -- find foreign keys to hierarchy.id
+
+  DECLARE @fkinfo TABLE(fkname NVARCHAR(255), tbl NVARCHAR(255), col NVARCHAR(255), casc NVARCHAR(255));
+  INSERT INTO @fkinfo
+    SELECT fk.name, OBJECT_NAME(fk.parent_object_id), c.name,
+      CASE WHEN delete_referential_action_desc = 'CASCADE' THEN 'ON DELETE CASCADE' ELSE '' END
+    FROM sys.foreign_keys fk
+    JOIN sys.foreign_key_columns fkc ON fk.object_id = fkc.constraint_object_id
+    JOIN sys.columns c ON c.object_id = fk.parent_object_id
+                      AND c.column_id = fkc.parent_column_id
+    JOIN sys.columns d ON d.object_id = fk.referenced_object_id
+                      AND d.column_id = fkc.referenced_column_id
+    WHERE fk.referenced_object_id = OBJECT_ID('dbo.hierarchy') AND d.name = 'id'
+    ORDER BY OBJECT_NAME(fk.parent_object_id);
+  -- SELECT * FROM @fkinfo;
+
+
+  -- find primary keys in the foreign keys to hierarchy.id
+
+  DECLARE @pkinfo TABLE(pkname NVARCHAR(255), tbl NVARCHAR(255));
+  INSERT INTO @pkinfo
+    SELECT name, OBJECT_NAME(object_id) FROM sys.indexes
+    WHERE type_desc = 'CLUSTERED' AND is_primary_key = 1
+    AND OBJECT_NAME(object_id) IN (SELECT tbl FROM @fkinfo)
+    ORDER BY OBJECT_NAME(object_id);
+  -- SELECT * from @pkinfo
+
+
+  -- find indexes
+
+  DECLARE @idxinfo TABLE(tbl NVARCHAR(255), idx NVARCHAR(255), ic INTEGER, col NVARCHAR(255), typ NVARCHAR(255));
+  INSERT INTO @idxinfo
+    SELECT t.name AS table_name,
+      ind.name AS index_name,
+      ic.index_column_id,
+      col.name AS col_name,
+      types.name
+    FROM sys.indexes ind
+    JOIN sys.index_columns ic ON ic.object_id = ind.object_id AND ic.index_id = ind.index_id
+    JOIN sys.columns col      ON col.object_id = ic.object_id  AND col.column_id = ic.column_id
+    JOIN sys.tables t         ON t.object_id = ind.object_id
+    JOIN sys.types types      ON types.user_type_id = col.user_type_id
+    WHERE ind.is_primary_key = 0 AND ind.is_unique = 0 AND ind.is_unique_constraint = 0 AND t.is_ms_shipped = 0
+    ORDER BY t.name, ind.name, ic.index_column_id
+  -- SELECT * from @idxinfo
+
+
+  -- find indexes on varchar
+
+  DECLARE @vcidxinfo TABLE(tbl NVARCHAR(255), idx NVARCHAR(255), col NVARCHAR(255), ic INTEGER);
+  INSERT INTO @vcidxinfo
+    SELECT tbl, idx, col, ic from @idxinfo A
+    WHERE EXISTS (SELECT * FROM @idxinfo B WHERE B.idx = A.idx AND B.typ = 'varchar')
+    ORDER BY idx, ic;
+  -- SELECT * FROM @vcidxinfo
+
+
+  -- find all varchar columns
+
+  DECLARE @vccol TABLE(tbl NVARCHAR(255), col NVARCHAR(255), len INT, nul NVARCHAR(255));
+  INSERT INTO @vccol
+    SELECT t.name, col.name, col.max_length,
+      CASE WHEN col.is_nullable = 1 THEN 'NULL' ELSE 'NOT NULL' END
+    FROM sys.tables t
+    JOIN sys.columns col ON col.object_id = t.object_id
+    JOIN sys.types types ON types.user_type_id = col.user_type_id
+    WHERE t.type_desc = 'USER_TABLE' AND types.name = 'varchar'
+      AND t.name NOT LIKE 'NXP_%'
+      AND t.name NOT LIKE 'JBPM_%'
+    ORDER BY t.name, col.name
+  -- SELECT * FROM @vccol
+
+
+  -- find fulltext catalog
+
+  SET @ftcat = (SELECT ctlg.name FROM sys.fulltext_catalogs ctlg
+                JOIN sys.fulltext_indexes ft ON ft.fulltext_catalog_id = ctlg.fulltext_catalog_id
+                WHERE ft.object_id = OBJECT_ID('dbo.fulltext'));
+  -- PRINT @ftcat;
+
+
+  -- find fulltext columns
+
+  DECLARE @ftcol TABLE(name NVARCHAR(255), lang NVARCHAR(255));
+  INSERT INTO @ftcol
+    SELECT c.name, lang.name AS lang
+    FROM sys.fulltext_index_columns ftc
+    JOIN sys.columns c ON c.object_id = ftc.object_id AND c.column_id = ftc.column_id
+    JOIN sys.fulltext_languages lang ON lang.lcid = ftc.language_id
+    WHERE ftc.object_id = OBJECT_ID('dbo.fulltext');
+  -- SELECT * FROM @ftcol;
+
+
+  -- drop foreign keys to hierarchy.id
+
+  -- PRINT 'drop foreign keys to hierarchy.id'
+  SET @cur = CURSOR FOR
+    SELECT tbl, fkname FROM @fkinfo
+  OPEN @cur;
+  FETCH FROM @cur INTO @tbl, @fkname;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    SET @sql = 'ALTER TABLE [' + @tbl + '] DROP CONSTRAINT [' + @fkname + ']';
+    -- PRINT @sql;
+    EXEC sp_executesql @sql;
+    FETCH FROM @cur INTO @tbl, @fkname;
+  END;
+  CLOSE @cur;
+  DEALLOCATE @cur;
+
+
+  -- drop fulltext index before its primary key
+
+  -- PRINT 'drop fulltext index'
+  SET @sql = 'DROP FULLTEXT INDEX ON [fulltext]'
+  -- PRINT @sql
+  EXEC sp_executesql @sql;
+
+
+  -- drop primary keys to hierarchy.id
+
+  -- PRINT 'drop primary keys to hierarchy.id'
+  SET @cur = CURSOR FOR
+    SELECT tbl, pkname FROM @pkinfo;
+  OPEN @cur;
+  FETCH FROM @cur INTO @tbl, @pkname;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    SET @sql = 'ALTER TABLE [' + @tbl + '] DROP CONSTRAINT [' + @pkname + ']';
+    -- PRINT @sql;
+    EXEC sp_executesql @sql;
+    FETCH FROM @cur INTO @tbl, @pkname;
+  END;
+  CLOSE @cur;
+  DEALLOCATE @cur;
+
+
+  -- find remaining primary keys
+
+  DECLARE @rpkinfo TABLE(pkname NVARCHAR(255), tbl NVARCHAR(255), col NVARCHAR(255));
+  INSERT INTO @rpkinfo
+    SELECT ind.name AS idx,
+      OBJECT_NAME(ic.object_id) AS tbl,
+      COL_NAME(ic.object_id, ic.column_id) AS col
+    FROM sys.indexes ind
+    JOIN sys.index_columns ic ON ic.object_id = ind.object_id AND ic.index_id = ind.index_id
+    WHERE ind.is_primary_key = 1
+      AND OBJECT_NAME(ic.object_id) NOT LIKE 'NXP_%'
+      AND OBJECT_NAME(ic.object_id) NOT LIKE 'JBPM_%'
+  -- SELECT * FROM @rpkinfo
+
+
+  -- drop indexes on varchar
+
+  -- PRINT 'drop indexes on varchar'
+  SET @cur = CURSOR FOR
+    SELECT DISTINCT tbl, idx FROM @vcidxinfo;
+  OPEN @cur;
+  FETCH FROM @cur INTO @tbl, @idx;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    SET @sql = 'DROP INDEX [' + @idx + '] ON [' + @tbl + ']';
+    -- PRINT @sql;
+    EXEC sp_executesql @sql;
+    FETCH FROM @cur INTO @tbl, @idx;
+  END;
+  CLOSE @cur;
+  DEALLOCATE @cur;
+
+
+  -- drop remaining primary keys
+
+  -- PRINT 'drop remaining primary keys'
+  SET @cur = CURSOR FOR
+    SELECT tbl, pkname FROM @rpkinfo;
+  OPEN @cur;
+  FETCH FROM @cur INTO @tbl, @pkname;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    SET @sql = 'ALTER TABLE [' + @tbl + '] DROP CONSTRAINT [' + @pkname + ']';
+    -- PRINT @sql;
+    EXEC sp_executesql @sql;
+    FETCH FROM @cur INTO @tbl, @pkname;
+  END;
+  CLOSE @cur;
+  DEALLOCATE @cur;
+
+
+  -- alter varchar to nvarchar
+
+  -- PRINT 'alter varchar to nvarchar'
+  SET @cur = CURSOR FOR
+    SELECT tbl, col, len, nul FROM @vccol;
+  OPEN @cur;
+  FETCH FROM @cur INTO @tbl, @col, @len, @nul;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    SET @sql = 'ALTER TABLE [' + @tbl + '] ALTER COLUMN [' + @col + '] NVARCHAR(' + CAST(@len AS VARCHAR(255)) + ') ' + @nul;
+    -- PRINT @sql;
+    EXEC sp_executesql @sql;
+    FETCH FROM @cur INTO @tbl, @col, @len, @nul;
+  END;
+  CLOSE @cur;
+  DEALLOCATE @cur;
+
+
+  -- add _oid column and clustered index
+
+  -- PRINT 'add _oid column and clustered index'
+  SET @cur = CURSOR FOR
+    SELECT DISTINCT tbl FROM @fkinfo;
+  OPEN @cur;
+  FETCH FROM @cur INTO @tbl;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    SET @sql = 'ALTER TABLE [' + @tbl + '] ADD [_oid] INT NOT NULL IDENTITY';
+    -- PRINT @sql;
+    EXEC sp_executesql @sql;
+    SET @sql = 'CREATE UNIQUE CLUSTERED INDEX [_oid_idx] ON [' + @tbl + '] ([_oid])';
+    -- PRINT @sql;
+    EXEC sp_executesql @sql;
+    FETCH FROM @cur INTO @tbl;
+  END;
+  CLOSE @cur;
+  DEALLOCATE @cur;
+
+
+  -- recreate primary keys non clustered
+
+  -- PRINT 'recreate primary keys non clustered'
+  SET @cur = CURSOR FOR
+    SELECT tbl, pkname FROM @pkinfo;
+  OPEN @cur;
+  FETCH FROM @cur INTO @tbl, @pkname;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    SET @sql = 'ALTER TABLE [' + @tbl + '] ADD CONSTRAINT [' + @pkname + '] PRIMARY KEY ([id])';
+    -- PRINT @sql;
+    EXEC sp_executesql @sql;
+    FETCH FROM @cur INTO @tbl, @pkname;
+  END;
+  CLOSE @cur;
+  DEALLOCATE @cur;
+
+
+  -- recreate foreign keys
+
+  -- PRINT 'recreate foreign keys'
+  SET @cur = CURSOR FOR
+    SELECT tbl, fkname, col, casc FROM @fkinfo;
+  OPEN @cur;
+  FETCH FROM @cur INTO @tbl, @fkname, @col, @casc;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    SET @sql = 'ALTER TABLE [' + @tbl + '] ADD CONSTRAINT [' + @fkname + '] FOREIGN KEY ([' + @col + ']) REFERENCES [hierarchy] ([id]) ' + @casc;
+    -- PRINT @sql;
+    EXEC sp_executesql @sql;
+    FETCH FROM @cur INTO @tbl, @fkname, @col, @casc;
+  END;
+  CLOSE @cur;
+  DEALLOCATE @cur;
+
+
+  -- recreate remaining indexes on varchar
+
+  -- PRINT 'recreate remaining indexes on varchar'
+  SET @cur = CURSOR FOR
+    SELECT DISTINCT tbl, idx FROM @vcidxinfo;
+  OPEN @cur;
+  FETCH FROM @cur INTO @tbl, @idx;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    SET @sql = 'CREATE INDEX [' + @idx + '] ON [' + @tbl + '] (';
+    SET @first = 1;
+
+    SET @cur2 = CURSOR FOR
+      SELECT col FROM @vcidxinfo WHERE tbl = @tbl AND idx = @idx ORDER BY ic;
+    OPEN @cur2;
+    FETCH FROM @cur2 INTO @col;
+    WHILE @@FETCH_STATUS = 0 BEGIN
+       SET @sql = @sql + CASE WHEN @first = 1 THEN '' ELSE ', ' END;
+       SET @first = 0;
+       SET @sql = @sql + '[' + @col + ']';
+       FETCH FROM @cur2 INTO @col;
+    END;
+    CLOSE @cur2;
+    DEALLOCATE @cur2;
+
+    SET @sql = @sql + ')';
+    -- PRINT @sql;
+    EXEC sp_executesql @sql;
+    FETCH FROM @cur INTO @tbl, @idx;
+  END;
+  CLOSE @cur;
+  DEALLOCATE @cur;
+
+
+  -- recreate fulltext index
+
+  -- PRINT 'recreate fulltext index'
+  DECLARE @name NVARCHAR(255);
+  DECLARE @lang NVARCHAR(255);
+  SET @sql = '';
+  SET @cur = CURSOR FOR
+    SELECT name, lang FROM @ftcol;
+  OPEN @cur;
+  FETCH FROM @cur INTO @name, @lang;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    SET @sql = @sql + '[' + @name + '] LANGUAGE ''' + @lang + ''', ';
+    FETCH FROM @cur INTO @name, @lang;
+  END;
+  CLOSE @cur;
+  DEALLOCATE @cur;
+  SET @sql = 'CREATE FULLTEXT INDEX ON [fulltext] (' + SUBSTRING(@sql, 1, LEN(@sql) - 1) + ') KEY INDEX [fulltext_pk] ON [' + @ftcat + ']';
+  -- PRINT @sql;
+  EXEC sp_executesql @sql;
+
+END
+

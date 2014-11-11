@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.api.DocumentAdapterService" version="1.0.0">
+  <documentation>
+    Service providing a dynamic adapter mechanism to adapt documents to random interfaces.
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.api.adapter.DocumentAdapterService"/>
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.core.api.adapter.DocumentAdapterService"/>
+  </service>
+
+  <extension-point name="adapters">
+
+    <documentation>
+      Extension Point for registering new document adapters
+      XML extensions may contain any number of 'adapter' elements of the form:
+      <adapter facet="Versionable"
+        class="org.nuxeo.ecm.sample.adapter.Versionable"
+        factory="org.nuxeo.ecm.sample.adapter.VersionableFactory"/>
+      This means any document having the facet 'facet' can be adapted to a 'class' object using the factory 'factory'
+      <p/>
+      The facet attribute is optional and serve to restrict the applicability of the adapter.
+      If no facet is specified the adapter will be applicable on any document.
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.api.adapter.DocumentAdapterDescriptor"/>
+
+  </extension-point>
+
+</component>
