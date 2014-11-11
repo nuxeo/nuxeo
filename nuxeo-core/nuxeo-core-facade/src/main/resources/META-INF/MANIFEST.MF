@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXCoreFacade
+Bundle-SymbolicName: org.nuxeo.ecm.core.facade
+Bundle-Localization: plugin
+Require-Bundle: org.nuxeo.ecm.core
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/CoreServiceBindings.xml
