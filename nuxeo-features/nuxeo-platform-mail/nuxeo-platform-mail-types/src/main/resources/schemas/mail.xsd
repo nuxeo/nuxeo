@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<xs:schema
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/mail/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:mail="http://www.nuxeo.org/ecm/schemas/mail/">
+
+  <xs:include schemaLocation="base.xsd" />
+  <xs:element name="messageId" type="xs:string"/>
+  <xs:element name="sender" type="xs:string"/>
+  <xs:element name="sending_date" type="xs:date"/>  
+  <xs:element name="recipients" type="mail:stringList"/>
+  <xs:element name="cc_recipients" type="mail:stringList"/>
+  <xs:element name="text" type="xs:string"/>
+  <xs:element name="htmlText" type="xs:string"/>
+</xs:schema>
