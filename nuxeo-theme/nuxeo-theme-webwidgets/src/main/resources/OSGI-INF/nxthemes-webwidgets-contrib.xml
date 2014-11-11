@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.theme.webwidgets">
+  <documentation>
+    @author Jean-Marc Orliaguet (jmo@chalmers.se)
+  </documentation>
+
+  <require>org.nuxeo.theme.core</require>
+  <require>org.nuxeo.theme.webwidgets.Service</require>
+    
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="models">
+
+    <model name="web widget region">
+      <class>org.nuxeo.theme.webwidgets.RegionModel</class>
+    </model>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="fragments">
+
+    <fragment name="web widget area">
+      <class>org.nuxeo.theme.webwidgets.AreaFragment</class>
+      <model-type>web widget region</model-type>
+      <dynamic>false</dynamic>
+    </fragment>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.webwidgets.Service"
+    point="providers">
+
+    <provider name="default">
+      <description>non-persistent provider that stores information in the user session.</description>
+      <class>org.nuxeo.theme.webwidgets.DefaultProvider</class>
+    </provider>
+
+  </extension>
+
+</component>
+
