@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.webapp.seam.debug.action">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="seamReload" link="#{seamReload.doReload}" enabled="true"
+      label="SeamReload" order="10">
+      <category>USER_SERVICES</category>
+      <filter-id>seamHotReloadIsEnabled</filter-id>
+    </action>
+
+    <action id="pdfExport" link="pdf" order="18"
+      label="label.exportview.pdfExport" icon="/icons/pdf_export.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+    </action>
+
+    <action id="exportViewPDFExport"
+      link="#{restHelper.getDocumentUrl(currentDocument, 'pdf', true)}"
+      order="0" label="label.exportview.pdfExport"
+      icon="/icons/pdf_export.png">
+      <category>DOCUMENT_EXPORT_VIEW_ACTION</category>
+    </action>
+
+    <action id="exportViewZipBlobExport"
+      link="#{clipboardActions.exportWorklistAsZip(currentDocument)}"
+      label="label.exportview.zipBlobExport"
+      icon="/icons/action_export_zip.gif">
+      <category>DOCUMENT_EXPORT_VIEW_COMMAND_ACTION</category>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="seamHotReloadIsEnabled">
+      <rule grant="true">
+        <condition>#{seamHotReloadIsEnabled}</condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>
