@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.forum.layouts">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="forum_post_info">
+      <configuration>
+        <sinceVersion>5.8</sinceVersion>
+        <title>Forum post information</title>
+        <description>
+          <p>This widget type displays information about a post</p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps the document representing the forum post.
+              </li>
+            </ul>
+          </p>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+        </fields>
+        <categories>
+          <category>configuration_not_ready</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/forum_post_info.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="forum_thread_listing_title_link" type="listing_title_link">
+      <labels>
+        <label mode="any">label.forum.content.header.thread</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data</field>
+        <field>data.ref</field>
+        <field>data.dc.description</field>
+      </fields>
+    </widget>
+
+    <widget name="forum_thread_listing_last_post" type="forum_post_info">
+      <labels>
+        <label mode="any">label.forum.content.header.last_added</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>
+          #{threadAction.getAdapter(layoutValue.data).lastPublishedPost}
+        </field>
+      </fields>
+    </widget>
+
+    <widget name="forum_thread_listing_nb_published_posts" type="int">
+      <labels>
+        <label mode="any">label.forum.content.header.nb_published_posts</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>
+          #{threadAction.getAdapter(layoutValue.data).publishedPosts.size()}
+        </field>
+      </fields>
+    </widget>
+
+    <widget name="forum_thread_listing_nb_pending_posts" type="int">
+      <labels>
+        <label mode="any">label.forum.content.header.nb_pending_posts</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>
+          #{threadAction.getAdapter(layoutValue.data).pendingPosts.size()}
+        </field>
+      </fields>
+    </widget>
+
+    <widget name="forum_thread_listing_moderation" type="checkbox">
+      <labels>
+        <label mode="any">label.forum.content.header.moderated</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.thread.moderated</field>
+      </fields>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="forum_listing_ajax">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+        <property name="display">table</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="isListingSelectionBoxWithCurrentDocument">
+              true
+            </property>
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_ajax_selection_box_with_current_document</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_icon_type</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:title</property>
+          </properties>
+          <widget>forum_thread_listing_title_link</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_lock_icon</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>forum_thread_listing_last_post</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>forum_thread_listing_nb_published_posts</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>forum_thread_listing_nb_pending_posts</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">thread:moderated</property>
+          </properties>
+          <widget>forum_thread_listing_moderation</widget>
+        </column>
+      </columns>
+    </layout>
+
+  </extension>
+
+</component>

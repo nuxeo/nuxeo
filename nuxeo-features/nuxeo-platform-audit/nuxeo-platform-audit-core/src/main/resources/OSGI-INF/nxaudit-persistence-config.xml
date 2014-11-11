@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.audit.service.persistence">
+
+  <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
+    point="hibernate">
+    <hibernateConfiguration name="nxaudit-logs">
+      <datasource>nxaudit-logs</datasource>
+      <properties>
+        <property name="hibernate.hbm2ddl.auto">update</property>
+      </properties>
+    </hibernateConfiguration>
+  </extension>
+
+</component>
