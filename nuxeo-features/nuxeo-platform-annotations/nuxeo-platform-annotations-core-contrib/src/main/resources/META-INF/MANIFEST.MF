@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Annotations core contribs
+Bundle-SymbolicName: org.nuxeo.ecm.annotations.contrib;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: core,stateful
+Nuxeo-Component: OSGI-INF/annotations-relations-contrib.xml,
+  OSGI-INF/annotations-audit-contrib.xml
+Require-Bundle: org.nuxeo.ecm.relations

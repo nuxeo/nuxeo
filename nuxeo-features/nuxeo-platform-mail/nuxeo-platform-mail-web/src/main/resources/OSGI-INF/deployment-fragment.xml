@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+
+<fragment version="1">
+
+  <require>org.nuxeo.ecm.platform.lang</require>
+  <require>org.nuxeo.ecm.webapp.core</require>
+  
+  <extension target="faces-config#CONVERTER">
+
+    <converter>
+      <converter-id>org.nuxeo.ecm.platform.mail.web.converter.mailconverter</converter-id>
+      <converter-class>org.nuxeo.ecm.platform.mail.web.converter.MailAddressConverter
+      </converter-class>
+    </converter>
+
+  </extension>
+
+  <extension target="faces-config#NAVIGATION">
+
+    <navigation-case>
+      <from-outcome>create_mail_folder</from-outcome>
+      <to-view-id>/create_mail_folder.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>edit_mail_folder</from-outcome>
+      <to-view-id>/edit_mail_folder.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+  </extension>
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+  </install>
+
+</fragment>
+

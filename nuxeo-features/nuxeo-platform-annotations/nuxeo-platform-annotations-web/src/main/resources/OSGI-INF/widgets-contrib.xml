@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.annotations.widgets">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+    <widgetType name="summary_document_annotations_status">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Annotations Summary</title>
+        <description>
+          <p>This widgets displays how many annotations a document has</p>
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/annotations_status_widget_template.xhtml
+      </property>
+    </widgetType>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="summary_document_annotations_status" type="summary_document_annotations_status" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="summary_document_annotations_status" type="widget" order="20">
+      <category>SUMMARY_INDICATORS</category>
+      <properties>
+        <property name="widgetName">summary_document_annotations_status</property>
+      </properties>
+    </action>
+
+  </extension>
+
+</component>
