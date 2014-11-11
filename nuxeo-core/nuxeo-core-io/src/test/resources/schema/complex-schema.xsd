@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:ml="http://nuxeo.org/schemas/model/"
+           elementFormDefault="qualified"
+           targetNamespace="http://nuxeo.org/schemas/model/">
+
+    <xs:simpleType name="modelType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Behavior"/>
+            <xs:enumeration value="Collection"/>
+            <xs:enumeration value="Insurance"/>
+            <xs:enumeration value="Originations"/>
+            <xs:enumeration value="Expert"/>
+            <xs:enumeration value="Overdraft"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="modelOrigin">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Internal"/>
+            <xs:enumeration value="ThirdParty"/>
+            <xs:enumeration value="VendorScore"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="roleType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="NoRole"/>
+            <xs:enumeration value="ScoreDate"/>
+            <xs:enumeration value="Score"/>
+            <xs:enumeration value="Target"/>
+            <xs:enumeration value="ModelID"/>
+            <xs:enumeration value="SegmentID"/>
+            <xs:enumeration value="ComparisonScore"/>
+            <xs:enumeration value="SampleWeight"/>
+            <xs:enumeration value="ModelCharacteristic"/>
+            <xs:enumeration value="Decision"/>
+            <xs:enumeration value="OverrideCode"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="dataType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="string"/>
+            <xs:enumeration value="date"/>
+            <xs:enumeration value="integer"/>
+            <xs:enumeration value="real"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="variableType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="rawVariable"/>
+            <xs:enumeration value="targetVariable"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="variable">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="target" type="xs:string"/>
+            <xs:element name="description" type="xs:string"/>
+            <xs:element name="variableType" type="ml:variableType"/>
+            <xs:element name="dataType" type="ml:dataType"/>
+            <xs:element name="roles">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="role" type="ml:roleType" minOccurs="0" maxOccurs="10000"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="currentVersion" type="xs:string"/>
+    <xs:element name="initialRelease" type="xs:dateTime"/>
+    <xs:element name="modelType" type="ml:modelType"/>
+    <xs:element name="origin" type="ml:modelOrigin"/>
+    <xs:element name="segmentVariable" type="ml:variable"/>
+
+  </xs:schema>
+
