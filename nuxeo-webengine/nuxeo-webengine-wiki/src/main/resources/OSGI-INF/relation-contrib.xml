@@ -1,0 +1,27 @@
+<component name="org.nuxeo.ecm.wiki.relation">
+  <!-- relation graph -->
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="graphs">
+    <graph name="wiki" type="jena">
+      <option name="backend">sql</option>
+      <option name="databaseType">
+        Derby
+      </option>
+      <option name="datasource">java:/comment-relations</option>
+      <option name="databaseDoCompressUri">false</option>
+      <option name="databaseTransactionEnabled">
+        false
+      </option>
+      <namespaces>
+        <namespace name="document">http://www.nuxeo.org/document/uid/</namespace>
+      </namespaces>
+    </graph>
+  </extension>
+
+  <!--  extension target="org.nuxeo.ecm.platform.relations.services.RelationService" point="resourceadapters">
+    <adapter namespace="http://www.nuxeo.org/document/uid"
+      class="org.nuxeo.ecm.platform.relations.adapters.DocumentModelResourceAdapter" />
+  </extension-->
+
+
+</component>

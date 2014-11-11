@@ -1,0 +1,9 @@
+#!/bin/sh
+COREDIR=../nuxeo-webengine-gwt-core
+UIDIR=../nuxeo-webengine-gwt-ui
+APPDIR=`dirname $0`;
+if [ "x$GWT_HOME" = "x" ] ; then
+    echo GWT_HOME not defined
+    exit 1;
+fi
+java  -Xmx256M -cp "$APPDIR/src:$APPDIR/bin:$COREDIR/src:$COREDIR/bin:$UIDIR/src:$UIDIR/bin:$GWT_HOME/gwt-user.jar:$GWT_HOME/gwt-dev-linux.jar" com.google.gwt.dev.GWTCompiler -out "$APPDIR/target/www" "$@" org.nuxeo.ecm.webengine.gwt.test.Main;

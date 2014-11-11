@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.webengine.deployment">
+
+  <require>org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService</require>
+  <extension target="org.nuxeo.runtime.server" point="webapp">
+    <webapp name="nuxeo" path="/">
+      <root>web</root>
+    </webapp>
+  </extension>
+
+
+	<!-- extension
+		target="org.nuxeo.ecm.webengine.WebEngineComponent"
+		point="install">
+
+	    <install guard="/WEB-INF/webengine-config.xml">
+	      <copy path="OSGI-INF/webengine-config.xml" target="/WEB-INF/webengine-config.xml" />
+	      do not copy the web directory it will be copied in the activate method
+	      of WebEngineComponent. This is needed because the WebEngine may need some
+	      resource files from this directory when initializing and cannot wait for
+	      this extension to be contributed 
+	      <copy path="web/*" target="/" /> 
+	    </install>
+
+	</extension-->
+
+  <!-- extension
+            target="org.nuxeo.ecm.webengine.WebEngineComponent"
+            point="configuration">
+
+    <configuration path="/WEB-INF/default-webapp.xml" />
+    <configuration path="/WEB-INF/admin-webapp.xml" />
+
+  </extension -->
+
+</component>
