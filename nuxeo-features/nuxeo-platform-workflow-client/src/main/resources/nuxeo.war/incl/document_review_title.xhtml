@@ -1,0 +1,52 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <div class="closedContent">
+
+    <table class="dataInput">
+      <tr>
+        <td class="labelColumn">
+          <h:outputText value="#{messages['label.workflow.task.Creator']}"/>
+        </td>
+        <td class="fieldColumn">
+          <h:outputText
+            value="#{nxu:userFullName(reviewModel.processInstanceCreatorName)}"/>
+        </td>
+        <td class="labelColumn">
+          <h:outputText value="#{messages['label.review.prop.modification']}"/>
+        </td>
+        <td class="fieldColumn">
+          <h:outputText
+            value="#{messages[reviewModel.modificationPolicy]}"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="labelColumn">
+          <h:outputText value="#{messages['label.review.type']}"/>
+        </td>
+        <td class="fieldColumn">
+          <h:outputText
+            value="#{messages[reviewModel.processInstanceName]}"/>
+        </td>
+        <f:subview rendered="false">
+          NXP-2016: versioning props disabled for now: not working
+        <td class="labelColumn">
+          <h:outputText value="#{messages['label.review.prop.version.scheme']}"/>
+        </td>
+        <td class="fieldColumn">
+
+          <h:outputText
+            rendered="#{reviewModel.modificationPolicy != 'workflowDocumentModificationNotAllowed'}"
+            value="#{messages[reviewModel.versioningPolicy]}"/>
+
+          <h:outputText
+            rendered="#{reviewModel.modificationPolicy == 'workflowDocumentModificationNotAllowed'}"
+            value="#{messages['label.review.prop.version.scheme.none']}"/>
+
+        </td>
+        </f:subview>
+      </tr>
+    </table>
+  </div>
+</div>

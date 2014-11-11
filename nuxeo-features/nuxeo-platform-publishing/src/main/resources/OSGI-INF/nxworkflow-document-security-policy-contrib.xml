@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+
+<component
+	name="org.nuxeo.ecm.platform.publishing.workflow.security.policy">
+
+	<documentation>
+
+		Publishing related workflow security policy contributions.
+
+
+		@version 1.0 @author
+		<a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+	</documentation>
+
+	<extension
+		target="org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService"
+		point="workflowDocumentSecurityPolicyRelation">
+
+		<documentation>
+
+			Contribute security policies to workflow definitions
+			associations for NXP.
+
+		</documentation>
+
+		<workflowDocumentSecurityPolicyRelation
+			for="document_publishing">
+			<workflowName>document_publishing</workflowName>
+		</workflowDocumentSecurityPolicyRelation>
+
+	</extension>
+
+	<extension
+		target="org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService"
+		point="workflowDocumentSecurityPolicy">
+
+		<documentation>
+
+			This security policy distributes ACEs to the workflow
+			participants (i.e : the users with active work items) in an
+			homogeneous way. Every participant gets the same rights.
+
+		</documentation>
+
+		<workflowDocumentSecurityPolicy name="document_publishing"
+			class="org.nuxeo.ecm.platform.publishing.workflow.security.policy.PublishingSecurityPolicy" />
+
+	</extension>
+</component>

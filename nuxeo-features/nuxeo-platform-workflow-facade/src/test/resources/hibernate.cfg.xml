@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<!DOCTYPE hibernate-configuration PUBLIC
+          "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+          "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+  <session-factory>
+
+    <!-- jdbc connection properties -->
+    <property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property>
+    <property name="hibernate.connection.driver_class">org.hsqldb.jdbcDriver</property>
+    <property name="hibernate.connection.url">jdbc:hsqldb:mem:.;sql.enforce_strict_size=true</property>
+    <property name="hibernate.connection.username">sa</property>
+    <property name="hibernate.connection.password"></property>
+
+    <property name="hibernate.show_sql">false</property>
+
+    <!-- other hibernate properties
+    <property name="hibernate.format_sql">true</property>
+    <property name="hibernate.use_sql_comments">true</property>
+    -->
+
+    <!-- ############################################ -->
+    <!-- # mapping files with external dependencies # -->
+    <!-- ############################################ -->
+
+    <!-- following mapping file has a dependendy on   -->
+    <!-- 'bsh-{version}.jar'.                         -->
+    <!-- uncomment this if you don't have bsh on your -->
+    <!-- classpath.  you won't be able to use the     -->
+    <!-- script element in process definition files   -->
+    <mapping resource="org/jbpm/graph/action/Script.hbm.xml"/>
+
+    <!-- following mapping files have a dependendy on  -->
+    <!-- 'jbpm-identity-{version}.jar', mapping files  -->
+    <!-- of the pluggable jbpm identity component.     -->
+    <!-- comment out the following 3 lines if you don't-->
+    <!-- want to use the default jBPM identity mgmgt   -->
+    <!-- component                                     -->
+    <mapping resource="org/jbpm/identity/User.hbm.xml"/>
+    <mapping resource="org/jbpm/identity/Group.hbm.xml"/>
+    <mapping resource="org/jbpm/identity/Membership.hbm.xml"/>
+
+    <!-- ###################### -->
+    <!-- # jbpm mapping files # -->
+    <!-- ###################### -->
+
+    <!-- hql queries and type defs -->
+    <mapping resource="org/jbpm/db/hibernate.queries.hbm.xml" />
+
+    <!-- graph.def mapping files -->
+    <mapping resource="org/jbpm/graph/def/ProcessDefinition.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/def/Node.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/def/Transition.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/def/Event.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/def/Action.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/def/SuperState.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/def/ExceptionHandler.hbm.xml"/>
+    <mapping resource="org/jbpm/instantiation/Delegation.hbm.xml"/>
+
+    <!-- graph.node mapping files -->
+    <mapping resource="org/jbpm/graph/node/StartState.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/node/EndState.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/node/ProcessState.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/node/Decision.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/node/Fork.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/node/Join.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/node/State.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/node/TaskNode.hbm.xml"/>
+
+    <!-- context.def mapping files -->
+    <mapping resource="org/jbpm/context/def/ContextDefinition.hbm.xml"/>
+    <mapping resource="org/jbpm/context/def/VariableAccess.hbm.xml"/>
+
+    <!-- taskmgmt.def mapping files -->
+    <mapping resource="org/jbpm/taskmgmt/def/TaskMgmtDefinition.hbm.xml"/>
+    <mapping resource="org/jbpm/taskmgmt/def/Swimlane.hbm.xml"/>
+    <mapping resource="org/jbpm/taskmgmt/def/Task.hbm.xml"/>
+    <mapping resource="org/jbpm/taskmgmt/def/TaskController.hbm.xml"/>
+
+    <!-- module.def mapping files -->
+    <mapping resource="org/jbpm/module/def/ModuleDefinition.hbm.xml"/>
+
+    <!-- bytes mapping files -->
+    <mapping resource="org/jbpm/bytes/ByteArray.hbm.xml"/>
+
+    <!-- file.def mapping files -->
+    <mapping resource="org/jbpm/file/def/FileDefinition.hbm.xml"/>
+
+    <!-- scheduler.def mapping files -->
+    <mapping resource="org/jbpm/scheduler/def/CreateTimerAction.hbm.xml"/>
+    <mapping resource="org/jbpm/scheduler/def/CancelTimerAction.hbm.xml"/>
+
+    <!-- graph.exe mapping files -->
+    <mapping resource="org/jbpm/graph/exe/Comment.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/exe/ProcessInstance.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/exe/Token.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/exe/RuntimeAction.hbm.xml"/>
+
+    <!-- module.exe mapping files -->
+    <mapping resource="org/jbpm/module/exe/ModuleInstance.hbm.xml"/>
+
+    <!-- context.exe mapping files -->
+    <mapping resource="org/jbpm/context/exe/ContextInstance.hbm.xml"/>
+    <mapping resource="org/jbpm/context/exe/TokenVariableMap.hbm.xml"/>
+    <mapping resource="org/jbpm/context/exe/VariableInstance.hbm.xml"/>
+    <mapping resource="org/jbpm/context/exe/variableinstance/ByteArrayInstance.hbm.xml"/>
+    <mapping resource="org/jbpm/context/exe/variableinstance/DateInstance.hbm.xml"/>
+    <mapping resource="org/jbpm/context/exe/variableinstance/DoubleInstance.hbm.xml"/>
+    <mapping resource="org/jbpm/context/exe/variableinstance/HibernateLongInstance.hbm.xml"/>
+    <mapping resource="org/jbpm/context/exe/variableinstance/HibernateStringInstance.hbm.xml"/>
+    <mapping resource="org/jbpm/context/exe/variableinstance/LongInstance.hbm.xml"/>
+    <mapping resource="org/jbpm/context/exe/variableinstance/NullInstance.hbm.xml"/>
+    <mapping resource="org/jbpm/context/exe/variableinstance/StringInstance.hbm.xml"/>
+
+    <!-- msg.db mapping files -->
+    <mapping resource="org/jbpm/msg/Message.hbm.xml"/>
+    <mapping resource="org/jbpm/msg/db/TextMessage.hbm.xml"/>
+    <mapping resource="org/jbpm/command/ExecuteActionCommand.hbm.xml"/>
+    <mapping resource="org/jbpm/command/ExecuteNodeCommand.hbm.xml"/>
+    <mapping resource="org/jbpm/command/SignalCommand.hbm.xml"/>
+    <mapping resource="org/jbpm/command/TaskInstanceEndCommand.hbm.xml"/>
+
+    <!-- taskmgmt.exe mapping files -->
+    <mapping resource="org/jbpm/taskmgmt/exe/TaskMgmtInstance.hbm.xml"/>
+    <mapping resource="org/jbpm/taskmgmt/exe/TaskInstance.hbm.xml"/>
+    <mapping resource="org/nuxeo/ecm/platform/workflow/jbpm/tasks/ExtendedTaskInstance.hbm.xml"/>
+    <mapping resource="org/jbpm/taskmgmt/exe/PooledActor.hbm.xml"/>
+    <mapping resource="org/jbpm/taskmgmt/exe/SwimlaneInstance.hbm.xml"/>
+
+    <!-- scheduler.exe mapping files -->
+    <mapping resource="org/jbpm/scheduler/exe/Timer.hbm.xml"/>
+
+    <!-- logging mapping files -->
+    <mapping resource="org/jbpm/logging/log/ProcessLog.hbm.xml"/>
+    <mapping resource="org/jbpm/logging/log/MessageLog.hbm.xml"/>
+    <mapping resource="org/jbpm/logging/log/CompositeLog.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/log/ActionLog.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/log/NodeLog.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/log/ProcessInstanceCreateLog.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/log/ProcessInstanceEndLog.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/log/ProcessStateLog.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/log/SignalLog.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/log/TokenCreateLog.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/log/TokenEndLog.hbm.xml"/>
+    <mapping resource="org/jbpm/graph/log/TransitionLog.hbm.xml"/>
+    <mapping resource="org/jbpm/context/log/VariableLog.hbm.xml"/>
+    <mapping resource="org/jbpm/context/log/VariableCreateLog.hbm.xml"/>
+    <mapping resource="org/jbpm/context/log/VariableDeleteLog.hbm.xml"/>
+    <mapping resource="org/jbpm/context/log/VariableUpdateLog.hbm.xml"/>
+    <mapping resource="org/jbpm/context/log/variableinstance/ByteArrayUpdateLog.hbm.xml"/>
+    <mapping resource="org/jbpm/context/log/variableinstance/DateUpdateLog.hbm.xml"/>
+    <mapping resource="org/jbpm/context/log/variableinstance/DoubleUpdateLog.hbm.xml"/>
+    <mapping resource="org/jbpm/context/log/variableinstance/HibernateLongUpdateLog.hbm.xml"/>
+    <mapping resource="org/jbpm/context/log/variableinstance/HibernateStringUpdateLog.hbm.xml"/>
+    <mapping resource="org/jbpm/context/log/variableinstance/LongUpdateLog.hbm.xml"/>
+    <mapping resource="org/jbpm/context/log/variableinstance/StringUpdateLog.hbm.xml"/>
+    <mapping resource="org/jbpm/taskmgmt/log/TaskLog.hbm.xml"/>
+    <mapping resource="org/jbpm/taskmgmt/log/TaskCreateLog.hbm.xml"/>
+    <mapping resource="org/jbpm/taskmgmt/log/TaskAssignLog.hbm.xml"/>
+    <mapping resource="org/jbpm/taskmgmt/log/TaskEndLog.hbm.xml"/>
+    <mapping resource="org/jbpm/taskmgmt/log/SwimlaneLog.hbm.xml"/>
+    <mapping resource="org/jbpm/taskmgmt/log/SwimlaneCreateLog.hbm.xml"/>
+    <mapping resource="org/jbpm/taskmgmt/log/SwimlaneAssignLog.hbm.xml"/>
+
+  </session-factory>
+</hibernate-configuration>

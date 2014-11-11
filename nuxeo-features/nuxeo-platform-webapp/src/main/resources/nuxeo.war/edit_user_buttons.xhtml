@@ -1,0 +1,19 @@
+<div
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory">
+        <table class="dataInput">
+        <tbody>
+          <tr>
+            <td></td>
+            <td><h:commandButton type="submit"
+              value="#{messages['command.save']}"
+              action="#{userManagerActions.updateUser}" class="button" /></td>
+          </tr>
+        </tbody>
+        </table>
+</div>

@@ -1,0 +1,27 @@
+<div class="tabsBar subtabsBar"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <ul>
+
+  	<li class="selected">
+    <h:commandLink action="view_group">
+       <h:outputText value="#{messages['label.groupManager.viewGroup']}" />
+    </h:commandLink>
+    </li>
+
+	<f:subview rendered="#{groupManagerActions.allowEditGroup}">
+    <li>
+    <h:commandLink action="edit_group">
+       <h:outputText value="#{messages['label.groupManager.editGroup']}" />
+    </h:commandLink>
+	</li>
+	</f:subview>
+
+  </ul>
+</div>
+
+

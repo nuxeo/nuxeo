@@ -1,0 +1,28 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory">
+
+<t:inputText forceId="true" value="#{nxdir:getLabelFromId(directoryName, value)}" styleClass="inputdataText" id="#{id}" />
+
+<t:inputHidden forceId="true"  id="hidden#{id}" value="#{value}" />
+
+<script type="text/javascript">
+	var dirvalues ='"#{nxdir:getSuggestedValues(directoryName, '')}"';
+	var options = {
+		varname:"input",
+		cache:true,
+		minchars:0,
+		shownoresults:true,
+		noresults: "Aucun resultat valide",
+		maxentries:6,
+		directoryName:"#{directoryName}",
+		displayIdAndLabel:"#{displayIdAndLabel}",
+		timeout: 9999999999,
+		cacheDirectory:"#{cacheDirectory}",
+		directoryValues:dirvalues,
+	};
+	var as_json = new bsn.AutoSuggest("#{id}", options);
+</script>
+
+</div>

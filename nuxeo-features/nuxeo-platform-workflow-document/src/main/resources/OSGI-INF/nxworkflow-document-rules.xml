@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.workflow.document.service.WorkflowRulesService">
+
+    <documentation>
+      Core workflow related rules.
+
+      @version 1.0
+      @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.workflow.document.service.WorkflowRulesService"/>
+
+  <extension-point name="docTypeRule">
+
+    <documentation>
+
+      Extension allowing the contributions of workflow rules related to document
+      types.
+
+      <p/>
+      This is one of the most basic rule allowing to restrict the use of
+      a given workflow definition to given types.
+
+      <p/>
+
+      For instance, one can contribute a rule stating that for a document of
+      type <i>File</i> only the workflow definitions with names <i>Foo</i> and
+      <i>bar</i> can be applied.
+
+    </documentation>
+
+    <object class="org.nuxeo.ecm.platform.workflow.document.service.extensions.WorkflowDoctypeRuleDescriptor"/>
+
+  </extension-point>
+
+  <extension-point name="pathRule">
+
+    <documentation>
+
+      Extension allowing the contributions of workflow rules related to application
+      level paths.
+
+      <p/>
+
+      This rule is pretty useful for restricting the use of given workflows within
+      sub-paths of the application
+
+      <p/>
+
+      For instance, you could specify different workflow path rules for the same
+      document type within the <i>Workspaces</i> and <i>Sections</i> of NXP.
+      Typical case is for publication versus review on the same doc type in Sections
+      and Workspaces.
+
+    </documentation>
+
+    <object class="org.nuxeo.ecm.platform.workflow.document.service.extensions.WorkflowPathRuleDescriptor"/>
+
+  </extension-point>
+
+</component>

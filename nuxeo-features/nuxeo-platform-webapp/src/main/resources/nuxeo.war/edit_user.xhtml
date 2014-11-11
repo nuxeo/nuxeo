@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory">
+
+  <ui:define name="page title">Nuxeo 5 EP</ui:define>
+
+  <ui:define name="body">
+
+    <h:form>
+      <div>
+        <ui:include src="/userManager_action_tabs.xhtml" />
+        <div style="clear: both"></div>
+      </div>
+
+      <div class="tabsContent">
+        <br />
+
+        <ui:decorate template="/incl/back_link.xhtml">
+          <ui:param name="doAction" value="view_users" />
+        </ui:decorate>
+        <ui:include src="/incl/message_banner.xhtml" />
+
+        <br />
+
+        <h1><h:outputText value="#{selectedUser.name}" /></h1>
+
+        <ui:decorate template="/incl/delete_link.xhtml">
+          <ui:param name="doDelete" value="delete_user" />
+        </ui:decorate>
+
+        <div>
+          <ui:include src="/userManager_edit_subtabs.xhtml" />
+          <div style="clear: both" />
+        </div>
+
+        <div class="tabsContent">
+
+          <c:if test="#{empty userManagerActions.changeableUserType.layout}">
+            <nxl:layout name="user" mode="edit" value="#{selectedUser.model}" />
+          </c:if>
+
+          <c:if test="#{!empty userManagerActions.changeableUserType.layout}">
+
+            <h:dataTable class="dataInput" var="field"
+              value="#{userManagerActions.changeableUserType.layout}"
+              columnClasses="labelColumn, fieldColumn">
+              <h:column>
+                <h:outputText value="${messages[field.fieldName]}"
+                  styleClass="#{nxu:test(field.required, 'required', '')}" />
+              </h:column>
+
+              <h:column>
+                <h:inputText id="h_inputText"
+                  value="#{selectedUser.model[field.schemaName][field.fieldName]}"
+                  class="dataInputText" required="${field.required}"
+                  rendered="${field.jsfComponent=='h:inputText'}" />
+                <h:message styleClass="errorMessage" for="h_inputText" />
+
+                <h:outputText
+                  value="#{selectedUser.model[field.schemaName][field.fieldName]}"
+                  rendered="${field.jsfComponent=='h:inputTextReadOnly'}" />
+
+                <h:inputSecret id="h_inputSecret"
+                  value="#{selectedUser.model[field.schemaName][field.fieldName]}"
+                  class="dataInputText" required="${field.required}"
+                  rendered="${field.jsfComponent=='h:inputSecret'}" />
+                <h:message styleClass="errorMessage" for="h_inputSecret" />
+
+                <h:inputTextarea id="h_inputTextarea"
+                  value="#{selectedUser.model[field.schemaName][field.fieldName]}"
+                  required="${field.required}" class="dataInputText"
+                  rendered="${field.jsfComponent=='h:inputTextarea'}" />
+                <h:message styleClass="errorMessage" for="h_inputTextarea" />
+
+                <nxu:inputDateTime
+                  value="#{selectedUser.model[field.schemaName][field.fieldName]}"
+                  format="#{nxu:basicDateFormater()}"
+                  id="t_inputCalendar"
+                  rendered="${field.jsfComponent=='t:inputCalendar'}"
+                  required="${field.required}"
+                />
+
+                <h:message styleClass="errorMessage" for="t_inputCalendar" />
+
+                <nxu:editor id="nxeditor"
+                  rendered="${field.jsfComponent=='nxu:editor'}"
+                  value="#{selectedUser.model[field.schemaName][field.fieldName]}"
+                  required="${field.required}" />
+
+                <nxu:inputFile id="t_inputFileUpload"
+                  value="#{selectedUser.model[field.schemaName][field.fieldName]}"
+                  filename="#{selectedUser.model.file.filename}"
+                  editFilename="false"
+                  rendered="${field.jsfComponent=='t:inputFileUpload'}">
+                </nxu:inputFile>
+                <h:message styleClass="errorMessage" for="t_inputFileUpload" />
+
+                <nxdir:selectOneListbox id="nxdir_selectOneListbox"
+                  rendered="${field.jsfComponent=='nxdir:selectOneListbox'}"
+                  value="#{selectedUser.model[field.schemaName][field.fieldName]}"
+                  directoryName="#{field.directory}" required="${field.required}" />
+                <h:message styleClass="errorMessage" for="nxdir_selectOneListbox" />
+
+                <nxdir:selectManyListbox id="nxdir_selectManyListbox"
+                  rendered="${field.jsfComponent=='nxdir:selectManyListbox'}"
+                  value="#{selectedUser.model[field.schemaName][field.fieldName]}"
+                  directoryName="#{field.directory}" required="${field.required}" />
+                <h:message styleClass="errorMessage" for="nxdir_selectManyListbox" />
+
+              </h:column>
+            </h:dataTable>
+
+          </c:if>
+          <f:subview rendered="#{currentNuxeoPrincipal.administrator}">
+            <table class="dataInput">
+              <tbody>
+                <tr>
+                  <td class="labelColumn">
+                    <h:outputText
+                      value="#{messages['label.userManager.userGroups']}" />
+                  </td>
+                  <td class="fieldColumn">
+                    <h:selectManyListbox
+                      value="#{selectedUser.groups}"
+                      id="userGroups">
+                      <f:selectItems value="#{userManagerActions.availableGroups}" />
+                    </h:selectManyListbox>
+                    <h:message styleClass="errorMessage" for="userGroups" />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </f:subview>
+          <f:subview rendered="#{!currentNuxeoPrincipal.administrator}">
+            <table class="dataInput">
+              <tbody>
+                <tr>
+                  <td class="labelColumn">
+                    <h:outputText
+                      value="#{messages['label.userManager.userGroups']}" />
+                  </td>
+                  <td class="fieldColumn">
+                    <t:dataList var="group"
+                      value="#{selectedUser.groups}" layout="simple"
+                      rowCountVar="rowCount" rowIndexVar="rowIndex">
+                      <h:outputText value="#{group}" />
+                      <h:outputText value=", "
+                        rendered="#{rowIndex + 1 &lt; rowCount}" />
+                    </t:dataList>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </f:subview>
+          <f:subview rendered="false">
+            XXX AT: this template is useless with the layout system in place
+          </f:subview>
+          <ui:include src="edit_user_custom_fields.xhtml" />
+          <ui:include src="edit_user_buttons.xhtml" />
+        </div>
+        <!--  inner tabsContent -->
+      </div>
+      <!-- outer tabsContent -->
+    </h:form>
+
+  </ui:define>
+
+</nxthemes:composition>

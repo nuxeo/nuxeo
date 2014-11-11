@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="treeManagerComponentContribute">
+  <documentation>
+  Default configuration for Nuxeo5 tree
+  </documentation>
+  <extension target="treeManagerComponentBase" point="display">
+    <documentation>
+    Default configuration for the Nuxeo5 tree.
+    Displays only Folderish objects.
+    </documentation>
+    <treeManagerPlugin>
+      <showFiles>false</showFiles>
+      <showSection>true</showSection>
+    </treeManagerPlugin>
+  </extension>
+</component>

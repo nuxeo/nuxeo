@@ -1,0 +1,38 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+  <h:form
+    rendered="#{reviewModel.processInstanceCreatorName == currentUser.name}">
+    <div class="closedContent">
+      <h3>
+        <h:outputText value="#{messages['label.review.my.tasks']}"/></h3>
+      <br/>
+      <table class="dataInput">
+        <tr>
+          <td class="labelColumn">
+            <h:outputText class="required"
+              value="#{messages['label.review.user.comment']}"/>
+          </td>
+          <td>
+            <h:inputTextarea id="userWorkflowComment" rows="5" cols="50"
+              required="true" value="#{documentWorkflowActions.userComment}"/>
+            <h:message styleClass="errorMessage" for="userWorkflowComment"/>
+          </td>
+        </tr>
+        <tr>
+          <td/>
+          <td>
+            <h:commandButton type="submit"
+              value="#{messages['label.review.abandon.workflow']}"
+              styleClass="button"
+              action="#{documentWorkflowActions.abandonWorkflow}"/>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </h:form>
+</div>

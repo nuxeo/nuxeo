@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.webapp.treesorter.TreeSorterService"
+  version="1.0">
+  <documentation>
+    @author Catalin Baican (cbaican@nuxeo.com)
+  </documentation>
+  <implementation
+    class="org.nuxeo.ecm.webapp.treesorter.TreeSorterService" />
+  <service>
+    <provide interface="org.nuxeo.ecm.webapp.treesorter.TreeSorter" />
+  </service>
+
+  <documentation>
+    Tree Sorter Service - the tree elements are sorted based on the
+    implementation defined in nxtreesorter-contrib.xml. The default NXP
+    implementation can be overriden by a customer's one. @author Catalin
+    Baican (cbaican@nuxeo.com)
+  </documentation>
+
+  <extension-point name="descriptor">
+    <object
+      class="org.nuxeo.ecm.webapp.treesorter.TreeSorterDescriptor" />
+  </extension-point>
+
+
+</component>

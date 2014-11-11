@@ -1,0 +1,37 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:s="http://jboss.com/products/seam/taglib"
+  class="clipboard">
+
+<script type="text/javascript">
+function confirmDeleteDocuments() {
+    return confirm("#{messages['label.documents.confirmDeleteDocuments']}");
+}
+function confirmUndeleteDocuments() {
+    return confirm("#{messages['label.documents.confirmUndeleteDocuments']}");
+}
+function confirmDeleteDocumentsForever() {
+    return confirm("#{messages['label.documents.confirmDeleteDocumentsForever']}");
+}
+</script>
+
+  <div id="selection_buttons" class="trashButtons">
+    <t:dataList var="sel_action" value="#{deleteActions.actionsForTrashSelection}">
+    <span id="#{sel_action.id}">
+      <nxh:commandButton
+        styleClass="button" type="submit"
+        action="#{sel_action.getLink()}"
+        value="#{messages[sel_action.label]}"
+        onclick="#{sel_action.confirm}"
+        disabled="#{!sel_action.available}"
+        />
+     </span>
+    </t:dataList>
+  </div>
+  <div style="clear:both"></div>
+</div>

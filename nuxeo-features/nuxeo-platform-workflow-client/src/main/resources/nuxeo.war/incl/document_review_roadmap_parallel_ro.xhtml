@@ -1,0 +1,68 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <h:dataTable var="workflowTaskInstance" value="${documentTasks}"
+    class="dataOutput" rowClasses="dataRowEven,dataRowOdd"
+    columnClasses="iconColumn,,,,,,,,,"
+    rendered="#{documentTasks.size > 0}">
+
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.workflow.task.validated']}"/>
+      </f:facet>
+      <h:graphicImage value="/icons/review_refused.png"
+        rendered="#{workflowTaskInstance.rejected}"/>
+      <h:graphicImage value="/icons/review_accepted.png"
+        rendered="#{workflowTaskInstance.ended}"/>
+      <h:graphicImage value="/icons/review_pending.gif"
+        rendered="#{!workflowTaskInstance.ended and !workflowTaskInstance.rejected}"/>
+    </h:column>
+
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.workflow.task.principal']}"/>
+      </f:facet>
+      <h:outputText value="#{nxu:userFullName(workflowTaskInstance.participantName)}"/>
+    </h:column>
+
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.workflow.task.directive']}"/>
+      </f:facet>
+      <h:outputText value="#{messages[workflowTaskInstance.directive]}"/>
+    </h:column>
+
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.review.user.comment']}"/>
+      </f:facet>
+      <h:outputText value="#{messages[workflowTaskInstance.comment]}"/>
+    </h:column>
+
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.workflow.task.startdate']}"/>
+      </f:facet>
+      <h:outputText value="#{workflowTaskInstance.startDate}">
+        <f:convertDateTime pattern="#{nxu:dateAndTimeFormater('medium')}" />
+      </h:outputText>
+    </h:column>
+
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.workflow.task.duedate']}"/>
+      </f:facet>
+      <h:outputText value="#{workflowTaskInstance.dueDate}">
+        <f:convertDateTime pattern="#{nxu:dateAndTimeFormater('medium')}" />
+      </h:outputText>
+    </h:column>
+
+  </h:dataTable>
+
+</div>
