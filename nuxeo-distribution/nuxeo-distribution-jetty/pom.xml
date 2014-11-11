@@ -1,0 +1,79 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.distribution</groupId>
+    <artifactId>nuxeo-distribution</artifactId>
+    <version>5.3.2-I20100423_1432</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>nuxeo-distribution-jetty</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo Jetty Distribution</name>
+  <description>Package Nuxeo EP or DM into Jetty</description>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Nuxeo parent POM defines version 3.3.GA -->
+      <dependency>
+        <groupId>jboss</groupId>
+        <artifactId>javassist</artifactId>
+        <version>4.2.3.GA</version>
+      </dependency>
+      <!-- Nuxeo parent POM defines version 2.4 -->
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>2.5</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <profiles>
+    <profile>
+      <id>all-distributions</id>
+      <!-- profile for building all classifiers -->
+    </profile>
+    <profile>
+      <id>all</id>
+      <!-- profile for building all classifiers -->
+    </profile>
+    <profile>
+      <id>nuxeo-ep</id>
+      <!-- profile for building only JBoss with Nuxeo EP -->
+    </profile>
+    <profile>
+      <id>nuxeo-dm</id>
+      <!-- default profile for building only JBoss with Nuxeo DM -->
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
+  </profiles>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>nuxeo-distribution-tools</artifactId>
+        <executions>
+          <execution>
+            <id>antbuild</id>
+            <phase>package</phase>
+            <configuration>
+              <buildFiles>
+                <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
+              </buildFiles>
+            </configuration>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
