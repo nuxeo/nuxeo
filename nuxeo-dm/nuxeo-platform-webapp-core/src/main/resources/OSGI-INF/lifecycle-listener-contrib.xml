@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.webapp.lifecycle.listener" version="1.0">
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+
+    <listener name="bulkLifeCycleChangeListener" async="true" postCommit="true" class="org.nuxeo.ecm.webapp.lifecycle.BulkLifeCycleChangeListener">
+    </listener>
+
+  </extension>
+</component>
