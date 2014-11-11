@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.audit.io.contrib">
+
+  <documentation>
+    Sample contribution for audit logs copy.
+
+    @author Dragos Mihalache
+    <pre>
+      <extension target="org.nuxeo.ecm.platform.io.IOManager"
+          point="adapters">
+
+        <adapter name="audit_logs"
+            class="org.nuxeo.ecm.platform.audit.io.IOAuditAdapter">
+          <property name="nothing">default</property>
+        </adapter>
+
+      </extension>
+    </pre>
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.io.IOManager"
+      point="adapters">
+
+    <adapter name="audit_logs"
+        class="org.nuxeo.ecm.platform.audit.io.IOAuditAdapter">
+      <property name="nothing">default</property>
+    </adapter>
+
+  </extension>
+
+</component>

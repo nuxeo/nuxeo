@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Platform Imaging Preview
+Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.preview;singleton=true
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.ecm.platform.preview
+Nuxeo-Component: OSGI-INF/preview-adapter-contrib.xml
