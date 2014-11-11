@@ -1,0 +1,34 @@
+#picture{
+ width:100%;
+}
+
+#pictureContainer{
+width:49%;
+padding:0 1%;
+float:left;
+}
+
+#text{
+ float:left;
+ width:49%;
+}
+
+#title{
+  width:100%;
+  color:#13506B;
+  font-size:14px;
+  font-weight:bold;
+  text-align:center;
+  padding:3px 0;
+}
+
+
+
+#show{
+ text-align:right;
+}
+
+#legend{
+  font-size:10px;
+  color:#333333;
+}

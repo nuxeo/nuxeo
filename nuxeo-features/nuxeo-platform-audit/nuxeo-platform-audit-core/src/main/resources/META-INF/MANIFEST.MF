@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXAudit Core
+Bundle-SymbolicName: org.nuxeo.ecm.platform.audit
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateful
+Nuxeo-Component: OSGI-INF/nxaudit-service.xml
+Export-Package: org.nuxeo.ecm.platform.audit,
+ org.nuxeo.ecm.platform.audit.service,
+ org.nuxeo.ecm.platform.audit.service.extension
+Require-Bundle: org.nuxeo.ecm.platform.audit.api,
+ org.nuxeo.ecm.platform.el,
+ org.nuxeo.ecm.core.event,
+ org.nuxeo.ecm.core.persistence

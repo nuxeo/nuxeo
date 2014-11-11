@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
+	version="1.0" xmlns:o="urn:schemas-microsoft-com:office:office">
+	
+	<xsl:preserve-space elements="*" />
+
+	<xsl:template match="o:Revision">
+		<xsl:copy>
+			<xsl:copy-of select="@*" />
+			<xsl:text>02.15</xsl:text>
+		</xsl:copy>
+		<!-- xsl:copy-of select="." /-->
+	</xsl:template>
+
+	<xsl:template match="o:CreateurDocument">
+		<xsl:copy>
+			<xsl:copy-of select="@*" />
+			<xsl:text>DM</xsl:text>
+		</xsl:copy>
+	</xsl:template>
+
+	<!-- This is a simple identity function -->
+
+	<xsl:template match="@*|*|processing-instruction()|comment()"
+		priority="-2">
+		<xsl:copy>
+			<xsl:apply-templates
+				select="*|@*|text()|processing-instruction()|comment()" />
+		</xsl:copy>
+	</xsl:template>
+
+</xsl:stylesheet>

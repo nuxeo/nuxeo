@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.picture.web.plugins">
+
+  <documentation>
+    Component to carry various extension points.
+  </documentation>
+
+  <extension
+      target="org.nuxeo.ecm.webapp.pagination.ResultsProviderService"
+      point="model">
+    <resultsProvider name="CURRENT_PICTUREBOOK_CHILDREN" farm="documentChildrenSearchFarm"/>
+  </extension>
+
+  <extension
+      target="org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService"
+      point="model">
+    <queryModel name="CURRENT_PICTUREBOOK_CHILDREN">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:parentId = ? AND
+        ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
+      </pattern>
+      <sortable value="true" defaultSortColumn="dc:title"
+                defaultSortAscending="true"/>
+      <max>20</max>
+    </queryModel>
+  </extension>
+
+  <extension
+      target="org.nuxeo.ecm.platform.url.service.DocumentViewCodecService"
+      point="codecs">
+    <documentViewCodec name="downloadPicture" enabled="true"
+                       prefix="nxpicsfile"
+                       class="org.nuxeo.ecm.platform.url.codec.DocumentFileCodec"/>
+  </extension>
+
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="startURL">
+    <startURLPattern>
+      <patterns>
+        <pattern>nxpicsfile/</pattern>
+      </patterns>
+    </startURLPattern>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.rest.URLService"
+             point="urlpatterns">
+    <urlPattern name="downloadPicture" enabled="true">
+      <defaultURLPolicy>false</defaultURLPolicy>
+      <needBaseURL>true</needBaseURL>
+      <needRedirectFilter>false</needRedirectFilter>
+      <needFilterPreprocessing>true</needFilterPreprocessing>
+      <codecName>downloadPicture</codecName>
+      <actionBinding>#{pictureManager.download}</actionBinding>
+      <documentViewBinding>
+        #{restHelper.documentView}
+      </documentViewBinding>
+      <newDocumentViewBinding>
+        #{restHelper.newDocumentView}
+      </newDocumentViewBinding>
+    </urlPattern>
+  </extension>
+
+</component>
+
