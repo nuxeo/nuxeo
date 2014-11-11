@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Bundle-SymbolicName: org.nuxeo.ecm.platform.seam.debug
+Bundle-Name: Nuxeo ECM Platform Seam Debug
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
