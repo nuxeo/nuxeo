@@ -1,0 +1,94 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  class="reviewers">
+
+<c:if test="#{jbpmActions.canManageParticipants}">
+
+  <div class="foldableBox">
+
+    <c:choose>
+      <c:when test="#{jbpmActions.showAddVirtualTaskForm}">
+        <c:set var="h3Class" value="unfolded"/>
+        <c:set var="boxBodyStyle" value=""/>
+      </c:when>
+      <c:otherwise>
+        <c:set var="h3Class" value="folded"/>
+        <c:set var="boxBodyStyle" value="display: none"/>
+      </c:otherwise>
+    </c:choose>
+
+    <h3 class="#{h3Class}">
+      <h:form>
+        <h:commandLink actionListener="#{jbpmActions.toggleShowAddVirtualTaskForm}">
+          <h:outputText value="#{messages['label.review.choose.reviewer']}"/>
+        </h:commandLink>
+      </h:form>
+    </h3>
+
+    <div class="boxBody" style="#{boxBodyStyle}">
+
+      <h:form id="loadTaskList">
+         <table class="dataInput">
+            <tr>
+              <td class="labelColumn">
+                <h:outputText value="#{messages['label.review.list.load.title']}" />
+              </td>
+              <td>  
+                <h:selectOneMenu id="selectedList"
+                    value="#{jbpmTaskListActions.selectedListId}">
+                    <f:selectItem itemValue="" itemLabel="#{messages['label.templates.none']}"/>
+                    <nxu:selectItems value="#{availableLists}" var="list"
+                             itemValue="#{list.UUID}" itemLabel="#{list.name}"/>
+                </h:selectOneMenu>
+              </td>
+            </tr>
+            <tr>
+              <td class="labelColumn">
+              </td>
+              <td>
+                <h:commandButton
+                    value="#{messages['label.review.list.delete']}"
+                    action="#{jbpmTaskListActions.deleteTaskList()}"
+                    styleClass="button" />
+
+                <h:commandButton
+                  value="#{messages['label.review.list.load']}"
+                  action="#{jbpmTaskListActions.loadTaskList()}"
+                  styleClass="button" />
+               </td>            
+            </tr>
+        </table>
+      </h:form>
+
+      <h:form id="addReviewers">
+
+        <nxl:layout name="add_workflow_task" mode="create"
+          value="#{jbpmActions.newVirtualTask}" />
+
+        <table class="dataInput">
+          <tbody>
+            <tr>
+              <td class="labelColumn"></td>
+              <td class="fieldColumn">
+                <h:commandButton
+                  value="#{messages['label.review.create.task']}"
+                  styleClass="button"
+                  action="#{jbpmActions.addNewVirtualTask}"/>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </h:form>
+
+    </div>
+  
+  </div>
+
+</c:if>
+
+</div>

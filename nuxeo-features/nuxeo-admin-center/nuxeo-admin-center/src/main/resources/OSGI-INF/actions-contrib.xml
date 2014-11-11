@@ -1,0 +1,178 @@
+<component name="org.nuxeo.connect.client.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="admin" link="view_admin" label="label.main.tab.admin.center" order="100">
+      <category>MAIN_TABS</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="SystemInfo" link="view_admin-fragment.xhtml"
+      label="admcommand.systeminfo" order="10">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="HostInfo" link="/incl/sysinfo/hostInfo.xhtml"
+      label="tab.sysinfo.host" order="20">
+      <category>SystemInfo_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="NuxeoInfo" link="/incl/sysinfo/nuxeoInfo.xhtml"
+      label="tab.sysinfo.nuxeo" order="30">
+      <category>SystemInfo_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="Setup" link="/incl/sysinfo/setup.xhtml"
+      label="tab.sysinfo.setup" order="40">
+      <category>SystemInfo_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="ReposInfo" link="/incl/sysinfo/reposInfo.xhtml"
+      label="tab.sysinfo.reposInfo" order="50">
+      <category>SystemInfo_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="BinariesInfo" link="/incl/sysinfo/binariesInfo.xhtml"
+      label="tab.sysinfo.binariesInfo" order="60">
+      <category>SystemInfo_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <!-- <action id="ReposUsage" link="/incl/sysinfo/reposUsage.xhtml" label="tab.sysinfo.reposStats"
+      order="60"> <category>NUXEO_ADMIN_SystemInfo</category> <filter-id>only_for_manager</filter-id>
+      </action> -->
+
+    <action id="UsersActivity" link="view_admin-fragment.xhtml"
+      label="admcommand.useractivity" order="15">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="UsersSessions" link="/incl/usersActivity/usersSessions.xhtml"
+      label="tab.useractivity.usersSessions" order="10">
+      <category>UsersActivity_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="EventActivity" link="/incl/usersActivity/usersActivity.xhtml"
+      label="tab.useractivity.usersActivity" order="20">
+      <category>UsersActivity_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="ActivityCharts" link="/incl/usersActivity/activityCharts.xhtml"
+      label="tab.useractivity.charts" order="30">
+      <category>UsersActivity_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+      <filter id="isOpenSocialAvailable">
+        <rule grant="true">
+          <condition>#{systemInfo.isBundleDeployed("org.nuxeo.opensocial.service")}</condition>
+        </rule>
+      </filter>
+
+    </action>
+
+    <action id="ConnectClient" link="view_admin-fragment.xhtml"
+      label="admcommand.nuxeoconnect" order="20">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="ConnectClientStatus" link="/incl/connect/connectStatus.xhtml"
+      label="tab.nuxeoconnect.status" order="20">
+      <category>ConnectClient_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="ConnectClientTickets" link="/incl/connect/connectTickets.xhtml"
+      label="tab.nuxeoconnect.tickets" order="30">
+      <category>ConnectClient_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="ConnectApps" link="view_updatecenter-fragment.xhtml"
+      label="admcommand.appstore" order="30">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="ConnectAppsUpdates" link="/incl/appcenter/connectUpdates.xhtml"
+      label="tab.appstore.updates" order="20">
+      <category>ConnectApps_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="ConnectAppsStudio" link="/incl/appcenter/studio.xhtml"
+      label="tab.appstore.studio" order="30">
+      <category>ConnectApps_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="ConnectAppsRemote" link="/incl/appcenter/connectRemote.xhtml"
+      label="tab.appstore.remote" order="40">
+      <category>ConnectApps_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="ConnectAppsLocal" link="/incl/appcenter/connectLocal.xhtml"
+      label="tab.appstore.local" order="50">
+      <category>ConnectApps_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <!-- Users and Groups management -->
+    <action id="UsersGroupsManager" link="view_admin-fragment.xhtml"
+      label="command.manageMembers" order="45">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
+      <filter-id>user_manager</filter-id>
+      <filter-id>not_readonly</filter-id>
+    </action>
+    <action id="UsersManager" link="users/view_users.xhtml"
+      label="label.userManager.users" order="10">
+      <category>UsersGroupsManager_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+      <filter-id>user_manager</filter-id>
+      <filter-id>not_readonly</filter-id>
+    </action>
+    <action id="GroupsManager" link="users/view_groups.xhtml"
+      label="label.groupManager.groups" order="20">
+      <category>UsersGroupsManager_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+      <filter-id>user_manager</filter-id>
+      <filter-id>not_readonly</filter-id>
+    </action>
+
+    <action id="ThemesManager" link="/incl/theme/themes_manager.xhtml"
+      label="tab.themes.management" order="70">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
+      <filter-id>not_readonly</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="seamHotReloadIsEnabled">
+      <rule grant="true">
+        <condition>#{seamHotReloadIsEnabled}</condition>
+      </rule>
+    </filter>
+
+    <filter id="user_manager">
+      <rule grant="true">
+        <condition>#{userServicesContext.userManagerEnabled}</condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

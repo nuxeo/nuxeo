@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM JBPM task migration
+Bundle-SymbolicName: org.nuxeo.ecm.platform.jbpm.task.migration;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateful
+Nuxeo-Component: OSGI-INF/task-provider-contrib.xml
+Require-Bundle: org.nuxeo.ecm.core.api,
+  org.nuxeo.ecm.platform.jbpm.api,
+  org.nuxeo.ecm.platform.task.api,
+  org.nuxeo.ecm.platform.usermanager
