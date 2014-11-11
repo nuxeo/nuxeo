@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<fragment>
+
+  <extension target="application#MODULE">
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
+
+
+  <install>
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+  </install>
+
+
+  <extension target="faces-config#NAVIGATION">
+      <navigation-case>
+      <from-outcome>opensocial_dashboard</from-outcome>
+      <to-view-id>/opensocial-dashboard.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+  </extension>
+
+</fragment>

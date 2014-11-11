@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.tag.TagService">
+
+  <implementation class="org.nuxeo.ecm.platform.tag.TagServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.tag.TagService" />
+  </service>
+
+</component>

@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.restpack.contrib">
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.restAPI.service.PluggableRestletService"
+    point="restlets">
+
+    <documentation>GET /nuxeo/restAPI/vocabulary/{vocName}/</documentation>
+    <restletPlugin name="vocabulary"
+      class="org.nuxeo.ecm.platform.syndication.restAPI.VocabularyRestlet"
+      enabled="true" useSeam="false" useConversation="false">
+      <urlPatterns>
+        <urlPattern>/vocabulary/{vocName}</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+
+    <documentation>GET /nuxeo/restAPI/execQueryModel/{QMName}/</documentation>
+    <restletPlugin name="QueryModel"
+      class="org.nuxeo.ecm.platform.syndication.restAPI.QueryModelRestlet"
+      enabled="true" useSeam="false" useConversation="false">
+      <urlPatterns>
+        <urlPattern>/execQueryModel/{QMName}</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+
+    <documentation>GET /nuxeo/restAPI/dashboard/{QMName}</documentation>
+    <restletPlugin name="DashBoard"
+      class="org.nuxeo.ecm.platform.syndication.restAPI.DashBoardRestlet"
+      enabled="true" useSeam="false" useConversation="false">
+      <urlPatterns>
+        <urlPattern>/dashboard/{QMName}</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+
+    <documentation>
+      Simple restlet to syndication content with RSS 2.0 or ATOM 0.3 GET
+      /nuxeo/restAPI/default/*/(rss|atom) N.B : default format is RSS if nothing
+      is specified
+    </documentation>
+    <restletPlugin name="syndicationRestletPlugin"
+      class="org.nuxeo.ecm.platform.syndication.restAPI.SyndicationRestlet"
+      enabled="true" useSeam="false" useConversation="false">
+      <urlPatterns>
+        <urlPattern>/{repo}/{docid}/rss</urlPattern>
+        <urlPattern>/{repo}/{docid}/atom</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+
+    <documentation>GET /nuxeo/restAPI/workflowTasks/default/</documentation>
+    <restletPlugin name="workflowTaskRestlet"
+      class="org.nuxeo.ecm.platform.syndication.restAPI.TasksRestlet"
+      enabled="true" useSeam="false" useConversation="false">
+      <urlPatterns>
+        <urlPattern>/workflowTasks/{repo}</urlPattern>
+        <urlPattern>/workflowTasks/{repo}/</urlPattern>
+        <urlPattern>/workflowTasks/</urlPattern>
+        <urlPattern>/workflowTasks</urlPattern>
+        <!-- <urlPattern>/workflowTasks/{repo}/{username}</urlPattern> -->
+      </urlPatterns>
+    </restletPlugin>
+
+  </extension>
+
+</component>
