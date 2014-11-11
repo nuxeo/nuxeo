@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.management.tests">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <listener name="administrativeStatusChangeListener" async="false"
+      postCommit="false"
+      class="org.nuxeo.ecm.core.management.test.statuses.AdministrativeStatusChangeListener">
+      <event>serviceActivated</event>
+      <event>servicePassivated</event>
+    </listener>
+
+  </extension>
+
+  <extension target="org.nuxeo.runtime.EventService" point="listeners">
+    <listener
+      class="org.nuxeo.ecm.core.management.test.statuses.RuntimeListener">
+      <topic>administrativeStatus</topic>
+    </listener>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.management.CoreManagementComponent"
+    point="storageConfiguration">
+    <configuration repository="test" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.management.CoreManagementComponent"
+    point="storageHandlers">
+    <handler id="test"
+      class="org.nuxeo.ecm.core.management.test.FakeDocumentStoreHandler" />
+  </extension>
+
+</component>
