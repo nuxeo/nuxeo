@@ -1,0 +1,44 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<c:if test="false">
+ Template rendering a content view defined on a document
+
+ Parameters:
+ - contentViewCategory
+
+</c:if>
+
+<script type="text/javascript">
+function confirmDeleteDocuments() {
+    return confirm("#{messages['label.documents.confirmDeleteDocuments']}");
+}
+function confirmUndeleteDocuments() {
+    return confirm("#{messages['label.documents.confirmUndeleteDocuments']}");
+}
+function confirmDeleteDocumentsForever() {
+    return confirm("#{messages['label.documents.confirmDeleteDocumentsForever']}");
+}
+</script>
+
+<c:forEach var="contentViewHeader"
+  items="#{documentContentViewActions.getAvailableContentViewsForCurrentDocument(contentViewCategory)}"
+  varStatus="contentViewListStatus">
+
+  <nxu:set var="contentViewId" value="#{contentViewListStatus.index}">
+  <nxu:set var="contentViewName" value="#{contentViewHeader.name}">
+
+    <ui:decorate template="/incl/content_view.xhtml" />
+
+  </nxu:set>
+  </nxu:set>
+
+</c:forEach>
+
+</div>

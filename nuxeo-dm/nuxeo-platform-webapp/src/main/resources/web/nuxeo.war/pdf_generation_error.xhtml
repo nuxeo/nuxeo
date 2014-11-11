@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+  <ui:define name="page title">
+    <h:outputText value="#{nuxeoApplicationName} - #{currentDocument.dublincore.title}" />
+  </ui:define>
+
+  <ui:define name="body">
+    <div>
+
+    <h1><h:outputText
+      value="#{messages['heading.error.pdf.openOffice']}" /></h1>
+
+    <p><h:outputText
+      value="#{messages['message.error.pdf.openOffice']}" /></p>
+    <br />
+
+    <p>Linux</p>
+    <textarea readonly="readonly" cols="80" rows="3">/path/to/openoffice/program/soffice.bin -headless -nofirststartwizard -accept="socket,host=localhost,port=8100;urp;StarOffice.Service"
+    </textarea>
+
+    <p>Windows</p>
+    <textarea readonly="readonly" cols="80" rows="3">soffice.exe -headless -nofirststartwizard -accept="socket,host=localhost,port=8100;urp;StarOffice.Service"
+    </textarea>
+
+    </div>
+  </ui:define>
+</nxthemes:composition>

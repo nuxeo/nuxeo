@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/common/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/common/">
+
+  <xs:element name="id" type="xs:string" />
+  <xs:element name="userid" type="xs:string"/>
+  <xs:element name="listid" type="xs:string"/>
+  <xs:element name="repo" type="xs:string"/>
+  <xs:element name="ref" type="xs:string"/>
+  <xs:element name="reftype" type="xs:integer"/>
+
+</xs:schema>
