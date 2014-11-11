@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.server">
+
+  <implementation class="org.nuxeo.runtime.jetty.JettyComponent"/>
+
+  <documentation>
+    Jetty Server.
+
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide interface="org.mortbay.jetty.Server"/>
+  </service>
+
+  <extension-point name="webapp">
+    <object class="org.nuxeo.common.server.WebApplication"/>
+  </extension-point>
+
+  <extension-point name="datasource">
+    <object class="org.nuxeo.common.server.DataSource"/>
+  </extension-point>
+
+</component>
