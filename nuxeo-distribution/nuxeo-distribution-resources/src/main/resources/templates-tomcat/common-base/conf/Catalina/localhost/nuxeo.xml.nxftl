@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Licensed to the Apache Software Foundation (ASF) under one or more contributor
+  license agreements. See the NOTICE file distributed with this work for additional
+  information regarding copyright ownership. The ASF licenses this file to You under
+  the Apache License, Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software distributed under
+  the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
+  OF ANY KIND, either express or implied. See the License for the specific language
+  governing permissions and limitations under the License. -->
+<Context antiResourceLocking="false" privileged="true"
+  path="${org.nuxeo.ecm.contextPath}" docBase="../nxserver/nuxeo.war">
+
+  <!-- Disable HTTP Session persistence between restart since webengine session objects
+    are not serializable -->
+  <Manager pathname="" />
+
+  <!-- define custom loader that is responsible to start nuxeo runtime (it extends
+    the default one) -->
+<#if "${nuxeo.server.sdk}" == "false">
+  <Loader className="org.nuxeo.runtime.tomcat.NuxeoWebappLoader"
+    loaderClass="org.nuxeo.runtime.tomcat.NuxeoWebappClassLoader" />
+<#else>
+  <Valve className="org.nuxeo.runtime.tomcat.dev.DevValve" />
+  <Loader className="org.nuxeo.runtime.tomcat.NuxeoWebappLoader"
+    loaderClass="org.nuxeo.runtime.tomcat.dev.NuxeoDevWebappClassLoader" />
+</#if>
+
+<#if "${nuxeo.server.ContextSecurityGrabber.disable}" != "true">
+  <Listener className="org.nuxeo.runtime.tomcat.ContextSecurityGrabber" />
+</#if>
+<#noparse>
+  <Listener className="org.nuxeo.runtime.tomcat.NuxeoLauncher" home="${catalina.base}/nxserver" />
+</#noparse>
+
+  <!-- Define JDBC datasources: the JNDI names will be: java:comp/env/jdbc/DATABASE_NAME.
+    For example java:comp/env/jdbc/nxsqldirectory This means you need to update corresponding
+    JNDI bindings in nuxeo data source definitions in the config directory -->
+
+  <ResourceLink name="jdbc/NuxeoDS" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+  <ResourceLink name="jdbc/nxsqldirectory" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+  <ResourceLink name="jdbc/nxrelations-default-jena" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+  <ResourceLink name="jdbc/comment-relations" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+  <ResourceLink name="jdbc/nxaudit-logs" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+  <ResourceLink name="jdbc/nxjbpm" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+  <ResourceLink name="jdbc/placeful_service_ds" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+  <ResourceLink name="jdbc/nxwebwidgets" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+  <ResourceLink name="jdbc/nxuidsequencer" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+
+  <Resource name="TransactionManager" auth="Container"
+    type="javax.transaction.TransactionManager" factory="org.nuxeo.runtime.jtajca.NuxeoTransactionManagerFactory"
+    transactionTimeoutSeconds="${nuxeo.db.transactiontimeout}" />
+  <Transaction factory="org.nuxeo.runtime.jtajca.NuxeoUserTransactionFactory" />
+
+  <Resource auth="Container" name="Mail" type="javax.mail.Session" factory="org.nuxeo.ecm.platform.ec.notification.email.EmailResourceFactory"
+        mail.from="${mail.from}"
+<#if "${mail.debug}" == "true">
+	mail.debug="${mail.debug}" />
+</#if>
+	mail.store.protocol="${mail.store.protocol}"
+	mail.${mail.store.protocol}.host="${mail.store.host}"
+<#if "${mail.store.port}" != "-1">
+        mail.${mail.store.protocol}.port="${mail.store.port}"
+</#if>
+        mail.${mail.store.protocol}.user="${mail.store.user}"
+        mail.${mail.store.protocol}.password="${mail.store.password}"
+	mail.transport.protocol="${mail.transport.protocol}"
+	mail.${mail.transport.protocol}.host="${mail.transport.host}"
+<#if "${mail.transport.port}" != "-1">
+        mail.${mail.transport.protocol}.port="${mail.transport.port}"
+</#if>
+<#if "${mail.transport.auth}" == "true">
+        mail.${mail.transport.protocol}.user="${mail.transport.user}"
+        mail.${mail.transport.protocol}.password="${mail.transport.password}"
+	mail.${mail.transport.protocol}.auth="${mail.transport.auth}"
+</#if>
+<#if "${mail.transport.usetls}" == "true">
+	mail.${mail.transport.protocol}.starttls.enable="${mail.transport.usetls}"
+</#if>
+  />
+
+</Context>
