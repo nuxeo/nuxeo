@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <ui:define name="page title"><h:outputText value="#{nuxeoApplicationName} - #{messages['label.userManager.users']}" /></ui:define>
+
+  <ui:define name="body">
+
+    <div>
+      <ui:include src="/incl/userManager_action_tabs.xhtml">
+        <ui:param name="currentUserTab" value="users" />
+      </ui:include>
+      <div style="clear:both"></div>
+    </div>
+
+    <div class="tabsContent">
+
+      <h:form rendered="#{userManagerActions.allowCreateUser and notReadOnly}"
+        id="createUserActionsForm">
+        <div class="action_bar">
+          <ul>
+            <li class="selected">
+              <h:commandLink action="create_user"
+                immediate="true"
+                 id="createUserButton">
+                <h:graphicImage value="/icons/action_add_user.gif" />
+                <h:outputText value="#{messages['command.createUser']}"  />
+              </h:commandLink>
+            </li>
+          </ul>
+        </div>
+      </h:form>
+
+      <ui:include src="/incl/message_banner.xhtml"/>
+
+      <div style="clear:both" />
+
+      <h:form id="searchForm" >
+        <h:inputText id="searchText"
+          value="#{userManagerActions.searchString}"
+          onkeydown="trapEnter(event, 'searchForm:searchButton');"
+          class="directoryFilter" />
+        &nbsp;
+        <h:commandButton id="searchButton"
+          value="#{messages['command.search']}"
+          action="#{userManagerActions.searchUsers}" styleClass="button"/>
+        <h:commandButton id="clearButton"
+          value="#{messages['command.clearSearch']}"
+          action="#{userManagerActions.clearSearch}" styleClass="button"/>
+      </h:form>
+
+      <ui:insert name="letters" />
+
+      <div class="#{userListStyleClass}">
+
+        <h:outputText value="#{messages['label.userManager.emptyUserList']}"
+          rendered="#{userList.rowCount == 0 and userManagerActions.searchOverflow == false and !empty userManagerActions.searchString}" />
+
+        <h:outputText value="#{messages['label.security.searchOverFlow']}"
+          class="infoFeedback"
+          rendered="#{userManagerActions.searchOverflow}" />
+
+        <c:set var="userSchema" value="#{userManager.userSchemaName}" />
+
+        <h:form rendered="#{userList.rowCount > 0}">
+
+          <h:dataTable var="userModel" value="#{userList}"
+            styleClass="dataOutput">
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="#{messages['label.userManager.user']}" />
+              </f:facet>
+              <h:commandLink value="#{userModel[userSchema].username}"
+                action="#{userManagerActions.viewUser}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="#{messages['label.userManager.firstName']}" />
+              </f:facet>
+              <h:outputText value="#{userModel[userSchema].firstName}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="#{messages['label.userManager.lastName']}" />
+              </f:facet>
+              <h:outputText value="#{userModel[userSchema].lastName}" />
+            </h:column>
+          </h:dataTable>
+        </h:form>
+
+      </div>
+
+    </div>
+
+  </ui:define>
+
+</nxthemes:composition>
+
