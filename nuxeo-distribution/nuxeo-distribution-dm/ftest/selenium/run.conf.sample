@@ -1,0 +1,9 @@
+## DEPRECATED: see https://github.com/nuxeo/tools-nuxeo-ftest
+
+# Configure selenium tests
+URL=http://127.0.0.1:8080/nuxeo/
+
+# Uncomment the line if you don't have an X server
+#HIDE_FF=true
+
+#SUITES="suite1 suite2"
