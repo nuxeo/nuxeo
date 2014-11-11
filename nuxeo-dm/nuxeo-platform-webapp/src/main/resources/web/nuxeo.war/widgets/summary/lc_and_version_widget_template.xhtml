@@ -1,0 +1,21 @@
+<div class="lcAndVersion"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <table width="100%">
+   <tr>
+      <td class="boldLabel">
+        <h:outputText value="#{messages['label.content.header.currentLifecycleState']}"/>
+      </td>
+      <td>
+        <h:outputText value="#{messages[currentDocument.currentLifeCycleState]}" />
+      </td>
+      <td class="boldLabel">
+        <h:outputText value="#{messages['label.version']}"/>
+      </td>
+      <td>
+        <h:outputText value="#{currentDocumentVersionInfo.versionLabel}"/>
+      </td>
+    </tr>
+  </table>
+
+</div>
