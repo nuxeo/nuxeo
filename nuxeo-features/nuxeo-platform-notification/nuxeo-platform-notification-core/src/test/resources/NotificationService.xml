@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.ec.notification.service.NotificationService">
+  <implementation class="org.nuxeo.ecm.platform.ec.notification.service.NotificationService" />
+  <documentation>
+    This component provides a registry for notifications
+    <p>
+    By registring to it's extention point one can specify the possible notifications
+    a user can subscribe to.
+    </p>
+  </documentation>
+  <extension-point name="notifications">
+    <documentation>
+      This extension point can be used to specify the notifications.
+
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ec.notification.service.NotificationDescriptor" />
+    <object
+      class="org.nuxeo.ecm.platform.ec.notification.service.NotificationEventDescriptor" />
+  </extension-point>
+
+  <extension-point name="templates">
+    <documentation>
+      This extension point can be used to define templates for notifications.
+
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ec.notification.service.TemplateDescriptor" />
+  </extension-point>
+
+  <extension-point name="generalSettings">
+    <documentation>
+      This extension point can be used to define general settings.
+      For now only server prefix
+      E.g. : http://server:port/appName/
+
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ec.notification.service.GeneralSettingsDescriptor" />
+  </extension-point>
+
+  <extension-point name="notificationListenerVeto">
+    <object
+      class="org.nuxeo.ecm.platform.ec.notification.service.NotificationListenerVetoDescriptor" />
+  </extension-point>
+
+</component>

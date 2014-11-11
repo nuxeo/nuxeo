@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.mail.service.PropertiesFetcherTest">
+  <require>org.nuxeo.ecm.platform.mail.service.MailServiceContrib</require>
+  <extension target="org.nuxeo.ecm.platform.MailService"
+    point="sessionFactory">
+    <sessionFactory name="testFactory" fetcherName="simple">
+      <properties>
+        <property name="mail.store.protocol">pop3</property>
+        <property name="mail.transport.protocol">smtp</property>
+        <property name="mail.smtp.port">60025</property>
+        <property name="mail.host">localhost</property>
+        <property name="mail.user">alex@localhost</property>
+        <property name="mail.from">alex@localhost</property>
+        <property name="mail.pop3.port">60110</property>
+        <property name="password">mdpalex</property>
+        <property name="user">alex@localhost</property>
+      </properties>
+    </sessionFactory>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.MailService" point="actionPipes">
+    <pipe name="nxmail">
+      <action id="ExtractMessageInformationAction" to="OtherAction">
+        org.nuxeo.ecm.platform.mail.listener.action.ExtractMessageInformationAction
+      </action>
+      <action id="OtherAction" to="CreateDocumentsAction">
+        org.nuxeo.ecm.platform.mail.listener.action.CreateDocumentsAction
+      </action>
+    </pipe>
+  </extension>
+
+</component>
