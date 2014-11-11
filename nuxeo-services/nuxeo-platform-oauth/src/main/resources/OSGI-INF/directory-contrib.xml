@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.oauth.directoryContrib">
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+    point="directories">
+
+    <directory name="oauthConsumers">
+      <schema>oauthConsumer</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>oauthConsumers</table>
+      <idField>consumerKey</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+    <directory name="oauthServiceProviders">
+      <schema>oauthServiceProvider</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>oauthServiceProviders</table>
+      <idField>id</idField>
+      <autoincrementIdField>true</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <substringMatchType>subfinal</substringMatchType>
+    </directory>
+
+
+    <directory name="oauthTokens">
+      <schema>oauthToken</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>oauthTokens</table>
+      <idField>token</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+  </extension>
+
+
+</component>

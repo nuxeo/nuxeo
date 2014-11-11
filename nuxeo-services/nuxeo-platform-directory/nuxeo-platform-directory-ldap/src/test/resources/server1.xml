@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<server name="server1Name">
+  <!-- minimal description to test default values -->
+  <ldapUrl>ldap://localhost</ldapUrl>
+</server>
