@@ -1,0 +1,35 @@
+<f:subview id="#{widget.id}"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+<nxu:set var="typeLabel" value="#{nxd:typeLabel(field)}">
+<nxu:set var="label" value="#{empty field_2 ? messages[typeLabel] : field_2}">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{label}</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+
+  <div id="docRefTarget:#{field_1}"
+    class="#{nxu:test(field_3, 'nxDropTarget', '')}">
+    <div id="docRef:#{field_1}"
+      class="cell popupTarget dropout nxDraggable"
+      docRef="#{field_1}">
+      <nxu:graphicImage
+        value="#{nxd:iconPath(field_0)}" alt="#{label}" title="#{label}"
+        rendered="#{!empty nxd:iconPath(field_0)}"
+        styleClass="smallIcon" />
+    </div>
+  </div>
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:html>
+      <nxu:graphicImage
+        value="#{nxd:iconPath(field_0)}" alt="#{label}" title="#{label}"
+        rendered="#{!empty nxd:iconPath(field_0)}"
+        styleClass="smallIcon" />
+  </nxp:html>
+</c:if>
+</nxu:set></nxu:set>
+</f:subview>
