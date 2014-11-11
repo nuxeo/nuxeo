@@ -1,0 +1,17 @@
+<packages>
+ <packageDefinitions baseUrl="http://community.nuxeo.com/static/releases/">
+  <package id="cap" label="Basic / Naked (CAP)" filename="nuxeo-cap.zip" md5="" />
+  <package id="dm" label="Advanced Document Management (DM)" filename="nuxeo-dm.zip" md5=""/>
+  <package id="dam" label="Digital Assets Management features (DAM)" filename="nuxeo-dam.zip" md5=""/>
+  <package id="collab" label="Collaboration features (social collab)" filename="nuxeo-collab.zip" md5=""/>
+  <package id="cmf" label="Case Management Framework (CMF)" filename="nuxeo-cmf.zip" md5=""/>
+ </packageDefinitions>
+ <packageOptions>
+  <package ref="cap" exclusive="true"/>
+  <package ref="dm" exclusive="true">
+     <package ref="dam" exclusive="false"/>
+     <package ref="collab" exclusive="false"/>
+  </package>
+  <package ref="cmf" exclusive="true"/>
+ </packageOptions>
+</packages>

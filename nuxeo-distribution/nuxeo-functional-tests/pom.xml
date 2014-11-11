@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-ecm</artifactId>
+    <version>5.5-I20111104_1115</version>
+  </parent>
+
+  <groupId>org.nuxeo.ecm.distribution</groupId>
+  <artifactId>nuxeo-functional-tests</artifactId>
+  <name>Nuxeo Functional Tests</name>
+  <description>Nuxeo Functional Tests. Framework for testing nuxeo
+    distribution projects</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-server-standalone</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>firebug</groupId>
+      <artifactId>firebug</artifactId>
+      <type>xpi</type>
+    </dependency>
+  </dependencies>
+
+</project>
