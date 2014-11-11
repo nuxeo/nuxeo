@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.rest.URLService.contrib">
+  <documentation>
+    Contributions for basic rest navigation through the application.
+
+    @version 1.0
+    @author Anahide Tchertchian (at@nuxeo.com)
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.rest.URLService"
+      point="urlpatterns">
+
+    <documentation>
+      Basic url pattern using the doc id codec: it places the application in the
+      document context described by the url and sets a current tab.
+
+      Additional url pattern using the doc path codec.
+    </documentation>
+
+    <urlPattern name="id" enabled="true">
+      <defaultURLPolicy>false</defaultURLPolicy>
+      <needBaseURL>true</needBaseURL>
+      <needRedirectFilter>true</needRedirectFilter>
+      <needFilterPreprocessing>true</needFilterPreprocessing>
+      <codecName>docid</codecName>
+      <actionBinding>#{restHelper.initContextFromRestRequest}</actionBinding>
+      <documentViewBinding>#{restHelper.documentView}</documentViewBinding>
+      <newDocumentViewBinding>#{restHelper.newDocumentView}</newDocumentViewBinding>
+      <bindings>
+        <binding name="tabId">#{webActions.currentTabId}</binding>
+        <binding name="subTabId">#{webActions.currentSubTabId}</binding>
+      </bindings>
+    </urlPattern>
+
+    <urlPattern name="default" enabled="true">
+      <defaultURLPolicy>true</defaultURLPolicy>
+      <needBaseURL>true</needBaseURL>
+      <needRedirectFilter>true</needRedirectFilter>
+      <needFilterPreprocessing>true</needFilterPreprocessing>
+      <codecName>docpath</codecName>
+      <actionBinding>#{restHelper.initContextFromRestRequest}</actionBinding>
+      <documentViewBinding>#{restHelper.documentView}</documentViewBinding>
+      <newDocumentViewBinding>#{restHelper.newDocumentView}</newDocumentViewBinding>
+      <bindings>
+        <binding name="tabId">#{webActions.currentTabId}</binding>
+        <binding name="subTabId">#{webActions.currentSubTabId}</binding>
+      </bindings>
+    </urlPattern>
+
+  </extension>
+
+</component>
