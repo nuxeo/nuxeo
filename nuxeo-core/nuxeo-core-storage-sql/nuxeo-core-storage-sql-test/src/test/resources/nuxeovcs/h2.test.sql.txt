@@ -1,0 +1,197 @@
+# Copyright (c) 2008-2012 Nuxeo SA (http://nuxeo.com/) and others.
+#
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License v1.0
+# which accompanies this distribution, and is available at
+# http://www.eclipse.org/legal/epl-v10.html
+#
+# Contributors:
+#     Florent Guillaume
+
+# Variables used:
+# ${idType} VARCHAR(36)
+
+############################################################
+
+
+#CATEGORY: testUpgrade
+
+# here use a CLOB instead of a VARCHAR to test compatibility
+CREATE TABLE testschema2 (
+  id ${idType} NOT NULL PRIMARY KEY,
+  title CLOB
+);
+
+# create the old structure for tags tables
+
+CREATE TABLE tag (
+  id ${idType} NOT NULL, -- actually foreign key to hierarchy
+  private BIGINT,
+  label VARCHAR
+);
+
+CREATE TABLE nxp_tagging (
+  id VARCHAR(255) NOT NULL,
+  tag_id VARCHAR(255),
+  author VARCHAR(255),
+  document_id VARCHAR(255),
+  creation_date DATE,
+  is_private INTEGER
+);
+
+# create old table dublincore schema
+
+CREATE TABLE dublincore (
+  id ${idType} NOT NULL,
+  creator VARCHAR(255),
+  nature VARCHAR(255),
+  source VARCHAR(255),
+  created TIMESTAMP,
+  description VARCHAR(255),
+  rights VARCHAR(255),
+  format VARCHAR(255),
+  issued TIMESTAMP,
+  modified TIMESTAMP,
+  coverage VARCHAR(255),
+  expired TIMESTAMP,
+  title VARCHAR(255)
+);
+
+# create old table locks with constraints
+
+CREATE TABLE locks (
+  id ${idType} NOT NULL,
+  lock VARCHAR(255)
+);
+
+ALTER TABLE locks ADD CONSTRAINT locks_pk PRIMARY KEY (id);
+
+
+############################################################
+
+
+#CATEGORY: testUpgradeOldTables
+
+# old foreign keys
+
+ALTER TABLE locks ADD CONSTRAINT locks_id_hierarchy_fk FOREIGN KEY (id)
+  REFERENCES hierarchy ON DELETE CASCADE;
+
+# create old values in old tables
+
+# root & repository
+INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype)
+  VALUES ('00000000-0000-0000-0000-000000000000', null, '', 0, 'Root')
+
+INSERT INTO repositories (id, name) VALUES ('00000000-0000-0000-0000-000000000000', 'default')
+
+# fake doc to tag
+INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype)
+  VALUES ('dddddddd-dddd-dddd-dddd-dddddddddddd', null, 'mydoc', 0, 'TestDoc')
+
+# tags root
+INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype)
+  VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '00000000-0000-0000-0000-000000000000', 'tags', 0, 'HiddenFolder')
+
+# tag hier
+INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype)
+  VALUES ('11111111-2222-3333-4444-555555555555', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'mytag', 0, 'Tag')
+
+# tag
+INSERT INTO tag (id, private, label) VALUES ('11111111-2222-3333-4444-555555555555', 0, 'mytag');
+
+# tag dublincore
+INSERT INTO dublincore (id, creator, title) VALUES ('11111111-2222-3333-4444-555555555555', 'Administrator', 'mytag');
+
+# tag 2 (unused) hier
+INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype)
+  VALUES ('ffffffff-ffff-ffff-1111-111111111111', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'othertag', 0, 'Tag')
+
+# tag 2
+INSERT INTO tag (id, private, label) VALUES ('ffffffff-ffff-ffff-1111-111111111111', 0, 'othertag');
+
+# tag 2 dublincore
+INSERT INTO dublincore (id, creator, title) VALUES ('ffffffff-ffff-ffff-1111-111111111111', 'Administrator', 'othertag');
+
+# tagging
+INSERT INTO nxp_tagging (id, tag_id, author, document_id, creation_date, is_private)
+  VALUES (123123123, '11111111-2222-3333-4444-555555555555', 'Administrator', 'dddddddd-dddd-dddd-dddd-dddddddddddd', DATE '2010-06-01', 0);
+
+
+# ver 1
+#IF: testUpgradeVersions
+INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype, majorversion, minorversion)
+  VALUES ('11111111-0000-0000-2222-000000000000', null, 'mydoc2', 0, 'TestDoc', 0, 1);
+
+# ver 1 version
+#IF: testUpgradeVersions
+INSERT INTO versions (id, versionableid, created)
+  VALUES ('11111111-0000-0000-2222-000000000000', '11111111-0000-0000-1111-000000000000', DATE '2010-01-01');
+
+# ver 2
+#IF: testUpgradeVersions
+INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype, majorversion, minorversion)
+  VALUES ('11111111-0000-0000-2222-000000000001', null, 'mydoc2', 0, 'TestDoc', 1, 0);
+
+# ver 2 version
+#IF: testUpgradeVersions
+INSERT INTO versions (id, versionableid, created)
+  VALUES ('11111111-0000-0000-2222-000000000001', '11111111-0000-0000-1111-000000000000', DATE '2010-01-02');
+
+# ver 3
+#IF: testUpgradeVersions
+INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype, majorversion, minorversion)
+  VALUES ('11111111-0000-0000-2222-000000000002', null, 'mydoc2', 0, 'TestDoc', 1, 1);
+
+# ver 3 version
+#IF: testUpgradeVersions
+INSERT INTO versions (id, versionableid, created)
+  VALUES ('11111111-0000-0000-2222-000000000002', '11111111-0000-0000-1111-000000000000', DATE '2010-01-04');
+
+# ver 4 for other doc
+#IF: testUpgradeVersions
+INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype, majorversion, minorversion)
+  VALUES ('11111111-0000-0000-3333-000000000001', null, 'mydoc3', 0, 'TestDoc', 1, 0);
+
+# ver 4 version
+#IF: testUpgradeVersions
+INSERT INTO versions (id, versionableid, created)
+  VALUES ('11111111-0000-0000-3333-000000000001', '11111111-0000-0000-3333-000000000000', DATE '2010-01-03');
+
+# fake doc 2
+#IF: testUpgradeLastContributor
+INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype)
+  VALUES ('12121212-dddd-dddd-dddd-000000000000', null, 'mynddoc', 0, 'Tag');
+
+# fake doc 2 dublincore
+#IF: testUpgradeLastContributor
+INSERT INTO dublincore (id, creator, title) VALUES ('12121212-dddd-dddd-dddd-000000000000', 'Administrator', 'othertag');
+
+# fake doc 2 contributors
+#IF: testUpgradeLastContributor
+INSERT INTO dc_contributors (id, pos, item) VALUES ('12121212-dddd-dddd-dddd-000000000000', 0, 'Administrator');
+
+# fake doc 3
+#IF: testUpgradeLastContributor
+INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype)
+  VALUES ('12121212-dddd-dddd-dddd-000000000001', null, 'myrddoc', 0, 'Tag');
+
+# fake doc 3 dublincore
+#IF: testUpgradeLastContributor
+INSERT INTO dublincore (id, creator, title) VALUES ('12121212-dddd-dddd-dddd-000000000001', 'Administrator', 'othertag');
+
+# fake doc 3 contributors
+#IF: testUpgradeLastContributor
+INSERT INTO dc_contributors (id, pos, item) VALUES ('12121212-dddd-dddd-dddd-000000000001', 0, 'Administrator');
+
+#IF: testUpgradeLastContributor
+INSERT INTO dc_contributors (id, pos, item) VALUES ('12121212-dddd-dddd-dddd-000000000001', 1, 'FakeOne');
+
+# lock doc
+#IF: testUpgradeLocks
+INSERT INTO locks (id, lock)
+  VALUES ('dddddddd-dddd-dddd-dddd-dddddddddddd', 'bob:Jan 26, 2011');
+
+#IF: testUpgradeLocks
+INSERT INTO locks (id, lock)
+  VALUES ('11111111-2222-3333-4444-555555555555', NULL);
