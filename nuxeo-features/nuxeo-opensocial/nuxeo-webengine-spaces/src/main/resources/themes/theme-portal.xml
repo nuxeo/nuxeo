@@ -1,0 +1,590 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<theme name="portal">
+  <layout>
+    <page name="default">
+      <!-- Top bar -->
+      <section>
+        <cell/>
+        <cell/>
+      </section>
+      <section>
+        <cell>
+          <fragment type="region fragment"/>
+        </cell>
+      </section>
+      <section>
+        <cell/>
+      </section>
+      <section>
+        <cell>
+          <fragment type="region fragment"/>
+          <fragment type="region fragment"/>
+        </cell>
+      </section>
+      <section>
+        <cell>
+          <fragment type="region fragment"/>
+        </cell>
+      </section>
+      <section>
+        <cell/>
+      </section>
+      <section>
+        <cell/>
+      </section>
+    </page>
+
+  </layout>
+  <properties element="page[1]/section[2]/cell[1]/fragment[1]">
+    <name>navTabs</name>
+    <defaultBody/>
+    <defaultSrc>Space/navTabs.ftl</defaultSrc>
+  </properties>
+  <properties element="page[1]/section[4]/cell[1]/fragment[1]">
+    <name>gadgetManager</name>
+    <defaultBody/>
+    <defaultSrc>Space/gadgetManager.ftl</defaultSrc>
+  </properties>
+  <properties element="page[1]/section[4]/cell[1]/fragment[2]">
+    <name>layoutManager</name>
+    <defaultBody/>
+    <defaultSrc>Space/layoutManager.ftl</defaultSrc>
+  </properties>
+  <properties element="page[1]/section[5]/cell[1]/fragment[1]">
+    <name>content</name>
+    <defaultBody>Main content block</defaultBody>
+    <defaultSrc/>
+  </properties>
+
+
+  <formats>
+    <layout element="page[1]"/>
+    <layout element="page[1]/section[1]">
+      <margin-left>auto</margin-left>
+      <margin-right>auto</margin-right>
+      <width>100%</width>
+    </layout>
+    <layout element="page[1]/section[1]/cell[1]">
+      <width>30%</width>
+    </layout>
+    <layout element="page[1]/section[1]/cell[2]">
+      <width>70%</width>
+      <text-align>right</text-align>
+    </layout>
+    <layout element="page[1]/section[7]">
+      <margin-left>auto</margin-left>
+      <margin-right>auto</margin-right>
+      <width>100%</width>
+    </layout>
+    <layout element="page[1]/section[7]/cell[1]">
+      <width>100%</width>
+    </layout>
+    <layout element="page[1]/section[2]">
+      <margin-left>auto</margin-left>
+      <margin-right>auto</margin-right>
+      <width>100%</width>
+    </layout>
+    <layout element="page[1]/section[2]/cell[1]">
+      <width>100%</width>
+      <text-align>right</text-align>
+    </layout>
+    <layout element="page[1]/section[5]">
+      <margin-left>auto</margin-left>
+      <margin-right>auto</margin-right>
+      <width>100%</width>
+    </layout>
+    <layout element="page[1]/section[5]/cell[1]">
+      <width>100%</width>
+    </layout>
+    <layout element="page[1]/section[3]">
+      <margin-left>auto</margin-left>
+      <margin-right>auto</margin-right>
+      <width>100%</width>
+    </layout>
+    <layout element="page[1]/section[3]/cell[1]">
+      <width>100%</width>
+    </layout>
+    <layout element="page[1]/section[6]">
+      <margin-left>auto</margin-left>
+      <margin-right>auto</margin-right>
+      <width>100%</width>
+    </layout>
+    <layout element="page[1]/section[6]/cell[1]">
+      <width>100%</width>
+    </layout>
+    <layout element="page[1]/section[4]">
+      <margin-left>auto</margin-left>
+      <margin-right>auto</margin-right>
+      <width>100%</width>
+    </layout>
+    <layout element="page[1]/section[4]/cell[1]">
+      <width>100%</width>
+    </layout>
+    <widget element="page[1]">
+      <view>page frame</view>
+    </widget>
+    <widget element="page[1]/section[1]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[1]/section[1]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[1]/section[1]/cell[2]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="">
+      <view>theme view</view>
+      <icon>/skin/spaces/favicon.ico</icon>
+      <charset>utf-8</charset>
+    </widget>
+    <widget element="page[1]/section[7]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[1]/section[7]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[1]/section[2]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[1]/section[2]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[1]/section[2]/cell[1]/fragment[1]">
+      <view>module onglets</view>
+    </widget>
+    <widget element="page[1]/section[5]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[1]/section[5]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[1]/section[5]/cell[1]/fragment[1]">
+      <view>contenu principal</view>
+    </widget>
+    <widget element="page[1]/section[3]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[1]/section[3]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[1]/section[6]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[1]/section[6]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[2]">
+      <view>page frame</view>
+    </widget>
+    <widget element="page[1]/section[4]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[1]/section[4]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[1]/section[4]/cell[1]/fragment[1]">
+      <view>module layout manager</view>
+    </widget>
+    <widget element="page[1]/section[4]/cell[1]/fragment[2]">
+      <view>module gadget manager</view>
+    </widget>
+    <style name="onglets">
+      <selector path="ul.listOnglets">
+        <margin-left>10px</margin-left>
+        <font>bold 10px arial, verdana, sans-serif</font>
+        <padding-top>3px</padding-top>
+        <list-style-type>none</list-style-type>
+        <margin>0px 0px 0px 5px</margin>
+        <padding>0</padding>
+      </selector>
+      <selector path="a">
+        <color>rgb(255, 255, 255)</color>
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path="a.current">
+        <color>rgb(105, 149, 96)</color>
+      </selector>
+      <selector path="a.accueil, a.rayon, a.perso">
+        <height>16px</height>
+        <padding-left>28px</padding-left>
+        <text-decoration>none</text-decoration>
+        <float>left</float>
+      </selector>
+      <selector path="span.accueil">
+        <height>16px</height>
+        <padding-left>28px</padding-left>
+        <text-decoration>none</text-decoration>
+        <float>left</float>
+      </selector>
+      <selector path="ul li.current">
+        <background>transparent url(/skin/spaces/images/themes/common/tab_current_right.gif) no-repeat scroll right top</background>
+      </selector>
+      <selector path="li.onglet">
+        <margin-right>7px</margin-right>
+        <padding-top>4px</padding-top>
+        <padding-left>7px</padding-left>
+        <background>transparent url(/skin/spaces/images/themes/common/tab_right.gif) no-repeat scroll right top</background>
+        <margin-top>0px</margin-top>
+        <padding-right>12px</padding-right>
+      </selector>
+      <selector path="a:hover">
+        <color>rgb(105, 149, 96)</color>
+        <text-decoration>underline</text-decoration>
+      </selector>
+      <selector path="li">
+        <height>21px</height>
+        <float>left</float>
+      </selector>
+      <selector path="li.current">
+        <height>21px</height>
+        <float>left</float>
+      </selector>
+      <selector path="ul.menuAction li">
+        <border>1px solid #000000</border>
+        <background>rgb(255, 255, 255)</background>
+      </selector>
+      <selector path="ul.menuAction li a">
+        <color>rgb(0, 0, 0)</color>
+        <text-decoration>none</text-decoration>
+        <display>block</display>
+      </selector>
+      <selector path="ul.menuAction">
+        <position>absolute</position>
+        <display>none</display>
+      </selector>
+      <selector path="ul.menuAction li a:hover">
+        <font-weight>bold</font-weight>
+      </selector>
+    </style>
+    <style name="layoutManager">
+      <selector path="*#layoutManagerContainer">
+        <height>130px</height>
+        <width>100%</width>
+        <padding-bottom>7px</padding-bottom>
+        <background-color>rgb(214, 213, 211)</background-color>
+      </selector>
+      <selector path="*#closeLayoutManager">
+        <padding-top>2px</padding-top>
+        <width>100%</width>
+        <padding-bottom>2px</padding-bottom>
+        <background-color>rgb(214, 213, 211)</background-color>
+        <text-align>right</text-align>
+      </selector>
+      <selector path="*#getLayoutManager">
+        <padding-top>2px</padding-top>
+        <width>100%</width>
+        <padding-bottom>2px</padding-bottom>
+        <background-color>rgb(214, 213, 211)</background-color>
+        <text-align>left</text-align>
+      </selector>
+      <selector path="*#openLayoutManager">
+        <padding-left>5px</padding-left>
+      </selector>
+      <selector path="*#listColumns">
+        <padding-left>5px</padding-left>
+        <width>5%</width>
+        <float>left</float>
+      </selector>
+      <selector path="*#listLayouts">
+        <height>131px</height>
+        <width>92%</width>
+        <background-color>rgb(187, 187, 187)</background-color>
+        <float>left</float>
+      </selector>
+      <selector path="*.nv-layout">
+        <text-decoration>none</text-decoration>
+        <margin>auto</margin>
+        <color>rgb(51, 51, 51)</color>
+        <border-style>solid</border-style>
+        <border-width>1px</border-width>
+        <display>block</display>
+        <border-color>rgb(221, 221, 221)</border-color>
+        <padding>0.1em 3px</padding>
+        <cursor>pointer</cursor>
+      </selector>
+      <selector path="*.listBoxes div.selected">
+        <background-color>rgb(187, 187, 187)</background-color>
+      </selector>
+      <selector path="*#listColumns div button.selected">
+        <border-color>rgb(187, 187, 187)</border-color>
+      </selector>
+      <selector path="*#listColumns div.selected">
+        <background-color>rgb(187, 187, 187)</background-color>
+      </selector>
+      <selector path="*#tabLayout li a.selected">
+        <border>2px solid rgb(0,0,0)</border>
+      </selector>
+      <selector path="div.button-container">
+        <padding>5px</padding>
+      </selector>
+      <selector path="*#x-1-default">
+        <background-image>url(/skin/spaces/images/themes/common/x-1-default.png)</background-image>
+      </selector>
+      <selector path="*#x-2-default">
+        <background-image>url(/skin/spaces/images/themes/common/x-2-default.png)</background-image>
+      </selector>
+      <selector path="*#x-3-default">
+        <background-image>url(/skin/spaces/images/themes/common/x-3-default.png)</background-image>
+      </selector>
+      <selector path="*#x-3-header2cols">
+        <background-image>url(/skin/spaces/images/themes/common/x-3-header2cols.png)</background-image>
+      </selector>
+      <selector path="*#x-4-footer3cols">
+        <background-image>url(/skin/spaces/images/themes/common/x-4-footer3cols.png)</background-image>
+      </selector>
+      <selector path="*#closeLinkLayoutManager">
+        <background-image>url(/skin/spaces/images/themes/common/close.gif)</background-image>
+        <color>rgb(0, 0, 0)</color>
+        <margin-right>10px</margin-right>
+        <padding-left>15px</padding-left>
+        <background-repeat>no-repeat</background-repeat>
+      </selector>
+      <selector path="*.invisible">
+        <display>none</display>
+      </selector>
+      <selector path="*.typeLayout">
+        <height>75px</height>
+        <border>2px solid rgb(255,255,255)</border>
+        <width>100px</width>
+        <background-color>rgb(255, 255, 255)</background-color>
+        <display>block</display>
+      </selector>
+      <selector path="ul.option li">
+        <list-style-type>none</list-style-type>
+        <margin>0 7px 7px 0</margin>
+        <padding>2px 0</padding>
+        <float>left</float>
+      </selector>
+      <selector path="ul.option">
+        <height>120px</height>
+        <margin-left>7px</margin-left>
+        <margin-top>5px</margin-top>
+        <padding>0</padding>
+        <overflow>auto</overflow>
+      </selector>
+      <selector path="*#generalOptions">
+        <width>22%</width>
+        <background-color>rgb(187, 187, 187)</background-color>
+        <margin>5px</margin>
+        <float>left</float>
+      </selector>
+      <selector path="*#tabDescription">
+        <height>35px</height>
+        <margin-left>30px</margin-left>
+        <font-family>arial</font-family>
+        <width>175px</width>
+        <margin-bottom>5px</margin-bottom>
+        <font-size>11px</font-size>
+      </selector>
+      <selector path="*#modifyOptions">
+        <margin-right>5px</margin-right>
+        <margin-bottom>5px</margin-bottom>
+        <display>block</display>
+        <float>right</float>
+      </selector>
+      <selector path="*#tabTitle">
+        <font-family>arial</font-family>
+        <width>175px</width>
+        <margin-bottom>5px</margin-bottom>
+        <margin-top>5px</margin-top>
+        <font-size>11px</font-size>
+      </selector>
+      <selector path="span">
+        <margin-left>2px</margin-left>
+      </selector>
+      <selector path="*#theme-list li">
+        <width>50px</width>
+        <float>left</float>
+      </selector>
+      <selector path="*#theme-list">
+        <margin-left>30px</margin-left>
+      </selector>
+    </style>
+    <style name="gadgetManager">
+      <selector path="*#gadgetManagerContainer">
+        <height>130px</height>
+        <width>100%</width>
+        <padding-bottom>7px</padding-bottom>
+        <background-color>rgb(214, 213, 211)</background-color>
+      </selector>
+      <selector path="*#closeGadgetManager">
+        <padding-top>2px</padding-top>
+        <width>100%</width>
+        <padding-bottom>2px</padding-bottom>
+        <background-color>rgb(214, 213, 211)</background-color>
+        <text-align>right</text-align>
+      </selector>
+      <selector path="*#getGadgetManager">
+        <padding-top>2px</padding-top>
+        <width>100%</width>
+        <padding-bottom>2px</padding-bottom>
+        <background-color>rgb(214, 213, 211)</background-color>
+        <text-align>left</text-align>
+      </selector>
+      <selector path="*#openGadgetManager">
+        <padding-left>5px</padding-left>
+      </selector>
+      <selector path="*#listCategories">
+        <padding-left>5px</padding-left>
+        <width>10%</width>
+        <float>left</float>
+      </selector>
+      <selector path="*#listGadgets">
+        <height>131px</height>
+        <width>89%</width>
+        <background-color>rgb(187, 187, 187)</background-color>
+        <float>left</float>
+      </selector>
+      <selector path="*.nv-category">
+        <color>rgb(51, 51, 51)</color>
+        <text-decoration>none</text-decoration>
+        <font-weight>bold</font-weight>
+        <margin>auto</margin>
+        <padding>1px</padding>
+        <display>block</display>
+        <font-size>11px</font-size>
+        <cursor>pointer</cursor>
+      </selector>
+      <selector path="*.nv-category:hover">
+        <text-decoration>underline</text-decoration>
+      </selector>
+      <selector path="*#listCategories div button.selected">
+        <border-color>rgb(187, 187, 187)</border-color>
+      </selector>
+      <selector path="*#listCategories div.selected">
+        <background-color>rgb(187, 187, 187)</background-color>
+      </selector>
+      <selector path="*#tabGadgets li a.selected">
+        <border>2px solid rgb(0,0,0)</border>
+      </selector>
+      <selector path="div.button-container">
+        <padding>5px</padding>
+      </selector>
+      <selector path="*#closeLinkGadgetManager">
+        <background-image>url(/skin/spaces/images/themes/common/close.gif)</background-image>
+        <color>rgb(0, 0, 0)</color>
+        <margin-right>10px</margin-right>
+        <padding-left>15px</padding-left>
+        <background-repeat>no-repeat</background-repeat>
+      </selector>
+      <selector path="*.invisible">
+        <display>none</display>
+      </selector>
+      <selector path="*.typeGadget">
+        <height>64px</height>
+        <border>2px solid rgb(255,255,255)</border>
+        <width>64px</width>
+        <background-color>rgb(255, 255, 255)</background-color>
+        <display>block</display>
+      </selector>
+      <selector path="ul.option li">
+        <list-style-type>none</list-style-type>
+        <margin>0 7px 7px 0</margin>
+        <padding>2px 0</padding>
+        <float>left</float>
+      </selector>
+      <selector path="ul.option">
+        <height>130px</height>
+        <margin-left>7px</margin-left>
+        <margin-top>5px</margin-top>
+        <padding>0</padding>
+        <overflow>auto</overflow>
+      </selector>
+      <selector path="*.directAdd">
+        <height>18px</height>
+        <bottom>-19px</bottom>
+        <width>68px</width>
+        <margin-top>10px</margin-top>
+        <line-height>18px</line-height>
+        <display>block</display>
+        <cursor>default</cursor>
+        <text-align>center</text-align>
+      </selector>
+      <selector path="*.directAdd a">
+        <color>rgb(255, 255, 255)</color>
+        <display>inline-block</display>
+        <cursor>pointer</cursor>
+        <padding-right>8px</padding-right>
+      </selector>
+      <selector path="*.directAdd a.linkAdd">
+        <background-position>right 0</background-position>
+        <background>transparent url(/skin/spaces/images/themes/common/bt-green-18px.png) no-repeat scroll 0 0</background>
+      </selector>
+      <selector path="*.directAdd a.linkAdded">
+        <padding-left>6px</padding-left>
+        <background>transparent url(/skin/spaces/images/themes/common/ok.png) no-repeat scroll 0 0</background>
+      </selector>
+      <selector path="*.directAdd span.addGadgetButton">
+        <background-position>left 0</background-position>
+        <background>transparent url(/skin/spaces/images/themes/common/bt-green-18px.png) no-repeat scroll 0 0</background>
+        <padding>0 2px 0 10px</padding>
+        <display>inline-block</display>
+        <cursor>pointer</cursor>
+      </selector>
+      <selector path="*.directAdd span.addedGadgetButton">
+        <background-position>left 0</background-position>
+        <padding>0 2px 0 10px</padding>
+        <display>inline-block</display>
+        <cursor>pointer</cursor>
+      </selector>
+      <selector path="*.directAdd a:hover span.addGadgetButton">
+        <background-position>left -18px</background-position>
+      </selector>
+      <selector path="div.nameGadget">
+        <text-align>center</text-align>
+      </selector>
+    </style>
+    <style name="loading">
+      <selector path="*">
+        <margin>auto</margin>
+        <padding>0</padding>
+      </selector>
+    </style>
+    <!-- Body -->
+    <style element="page[1]">
+      <selector path="" view="page frame">
+        <font preset="default (intralm fonts)"/>
+      </selector>
+    </style>
+    <!-- Actions de la top bar -->
+    <style element="page[1]/section[1]">
+      <selector path="" view="section frame">
+        <background preset="header (intralm background)"/>
+      </selector>
+    </style>
+    <style element="page[1]/section[7]"/>
+    <style element="page[1]/section[7]/cell[1]">
+      <selector path="" view="cell frame">
+        <background preset="fond_gris (intralm background)"/>
+      </selector>
+    </style>
+    <style element="page[1]/section[1]/cell[1]"/>
+
+    <style element="page[1]/section[2]/cell[1]"/>
+    <style element="page[1]/section[2]/cell[1]/fragment[1]" inherit="onglets"/>
+    <style element="page[1]/section[5]"/>
+    <style element="page[1]/section[5]/cell[1]">
+      <selector path="" view="cell frame">
+        <background preset="fond_gris (intralm background)"/>
+      </selector>
+    </style>
+    <style element="page[1]/section[3]"/>
+    <style element="page[1]/section[3]/cell[1]"/>
+    <style element="page[1]/section[5]/cell[1]/fragment[1]" inherit="loading">
+      <selector path="*" view="contenu principal">
+        <margin>0</margin>
+        <padding>0</padding>
+      </selector>
+    </style>
+    <style element="page[1]/section[6]"/>
+    <style element="page[1]/section[6]/cell[1]">
+      <selector path="" view="cell frame">
+        <background preset="fond_gris (intralm background)"/>
+      </selector>
+    </style>
+    <style element="page[1]/section[4]"/>
+    <style element="page[1]/section[4]/cell[1]"/>
+    <style element="page[1]/section[4]/cell[1]/fragment[1]" inherit="layoutManager"/>
+    <style element="page[1]/section[4]/cell[1]/fragment[2]" inherit="gadgetManager"/>
+  </formats>
+</theme>

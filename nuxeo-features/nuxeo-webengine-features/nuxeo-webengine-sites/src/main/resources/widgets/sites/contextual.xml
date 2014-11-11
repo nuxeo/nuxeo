@@ -1,0 +1,13 @@
+<div class="contextualLinks">
+  <#if (!nxthemesInfo.model.items.empty)>
+    <h4>${Context.getMessage("title.contextual.links.pages")}</h4>
+  </#if>  
+  <ul>  
+    <#list nxthemesInfo.model.items as item>
+      <div class="contextualLinkBlock">
+        <div class="contextualLink"><a href="${item.link}" target="_blank"> ${item.title?xml} &nbsp; </a></div>
+        <div class="contextualLinkText">${item.description?xml}</div>
+      </div>
+    </#list>
+  </ul>
+</div>
