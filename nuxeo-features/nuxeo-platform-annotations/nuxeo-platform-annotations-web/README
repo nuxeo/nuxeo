@@ -1,0 +1,51 @@
+The html client is a light weigth client for viewing urls to
+annotate. The original design was a single HTML page with an IFrame
+included. This desing is difficult to implement because of the Cross
+Site Scripting security in the Web Browsers. This security makes it
+impossible for 2 windows not loaded from the same page to interact. A
+call to frames['includedFrame'].document will create a security
+exception.
+There are known work around this situation:
+- Cross Domain Frame Communication with Fragment Identifiers
+- CrossFrame Communication Mechanism Across Documents and Across
+Domains(an extension from the previous using frame proxy to
+communicate)
+
+However all those implementation imply that both source pages 'know'
+they will participate in cross domain communication. They need to load
+JavaScript files. This situation is not acceptable for the HTML
+client.
+
+A solution would be to use a proxy to either make the browser believe
+all pages come from the same site(the proxy) or to include a
+JavaScript page that would allow cross domain communication such as:
+
+<IfModule mod_proxy.c>
+        #turning ProxyRequests on and allowing proxying from all may allow
+        #spammers to use your proxy to send email.
+
+        ProxyRequests On
+        SetOutputFilter line-editor
+        SetEnv LineEdit "text/plain;text/html;text/xml;*/*"
+        LERewriteRule </body>  <script src="xss.js"/></body> [i]
+        <Proxy *>
+                AddDefaultCharset off
+                Order deny,allow
+                #Deny from all
+                Allow from all
+        </Proxy>
+        # Enable/disable the handling of HTTP/1.1 "Via:" headers.
+        # ("Full" adds the server version; "Block" removes all outgoing Via: headers)
+        # Set to one of: Off | On | Full | Block
+
+        ProxyVia On
+</IfModule>
+
+Also, such a setting is useful to create a quick model and test the
+annotation JavaScript, the HTML Client would probably need to use
+Flex.
+
+References:
+http://tagneto.blogspot.com/2006/06/cross-domain-frame-communication-with.html
+http://www.adobe.com/devnet/air/flex/getting_started.html
+http://www.julienlecomte.net/blog/2007/11/31/

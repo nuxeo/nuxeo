@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<component
+	name="org.nuxeo.ecm.platform.annotations.services.AnnotationsService">
+	<implementation
+		class="org.nuxeo.ecm.platform.annotations.service.AnnotationsComponent" />
+	<service>
+		<provide
+			interface="org.nuxeo.ecm.platform.annotations.api.AnnotationsService" />
+		<provide interface="org.nuxeo.ecm.platform.annotations.service.AnnotationConfigurationService"/>
+	</service>
+	<extension-point name="uriResolver">
+		<documentation>
+			Contribute uriResolver. A uriResolver maps from URI send to
+			the annotea server and maps them to the URI stored in the
+			graph. The aim is to be able to treat as the same document,
+			2 different URL. An example could be annotation on a
+			javadoc class. You want to be able to annotates it, wherever
+			is the server showing the javadoc.
+
+			You need to map from the source URI to the URI stored in the
+			server, but also to map from a source URI to all the URI
+			that will be considered 'same' when doing a search.
+		</documentation>
+		<object
+			class="org.nuxeo.ecm.platform.annotations.descriptors.UriResolverDescriptor" />
+	</extension-point>
+	<extension-point name="urlPatternFilter">
+		<documentation>
+			A set of filter based on the HTTPD filter Allow,Deny. Allows
+			to filter the URL the server will process.
+		</documentation>
+		<object
+			class="org.nuxeo.ecm.platform.annotations.descriptors.URLPatternFilterDescriptor" />
+	</extension-point>
+	<extension-point name="metadataMapper">
+		<documentation>
+			Contribute a class responsible to add metadata to an
+			annotation.
+		</documentation>
+		<object
+			class="org.nuxeo.ecm.platform.annotations.descriptors.MetadataMapperDescriptor" />
+	</extension-point>
+	<extension-point name="permissionManager">
+		<documentation>
+			Contribute the component that will check the permission
+			before crud operation on annotation.
+		</documentation>
+		<object
+			class="org.nuxeo.ecm.platform.annotations.descriptors.PermissionManagerDescriptor" />
+	</extension-point>
+	<extension-point name="annotabilityManager">
+		<documentation>
+			Check if a URI is annotable. Offer finer grain filtering
+			than the URL filter. It is done after the URI has been translated to repo form.
+		</documentation>
+		<object
+			class="org.nuxeo.ecm.platform.annotations.descriptors.AnnotabilityManagerDescriptor" />
+	</extension-point>
+	<extension-point name="eventListener">
+		<documentation>
+			Contribute event listener to the annotation server to be
+			notified on crud operation.
+		</documentation>
+		<object
+			class="org.nuxeo.ecm.platform.annotations.descriptors.EventListenerDescriptor" />
+	</extension-point>
+	<extension-point name="annotationIDGenerator">
+		<documentation>
+			Contribute the generator of IDs for the annotation.
+		</documentation>
+		<object
+			class="org.nuxeo.ecm.platform.annotations.descriptors.AnnotationIDGeneratorDescriptor" />
+	</extension-point>
+	<extension-point name="permissionMapper">
+		<documentation>
+			Check the name of the permission that will be check before
+			CRUD operation.
+		</documentation>
+		<object
+			class="org.nuxeo.ecm.platform.annotations.descriptors.PermissionMapperDescriptor" />
+	</extension-point>
+</component>
