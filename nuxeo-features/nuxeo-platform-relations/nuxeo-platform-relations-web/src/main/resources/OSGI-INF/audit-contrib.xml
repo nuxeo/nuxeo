@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.audit.relations.web">
+
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+    point="event">
+    <documentation>Log after relation events</documentation>
+    <event name="afterRelationCreation" />
+    <event name="afterRelationModification" />
+    <event name="afterRelationRemoval" />
+  </extension>
+
+</component>

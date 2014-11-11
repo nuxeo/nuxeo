@@ -1,0 +1,18 @@
+<module>
+  <inherits name='com.google.gwt.user.User' />
+  <inherits name='com.google.gwt.user.theme.standard.Standard' />
+  <inherits name='com.google.gwt.xml.XML' />
+  <entry-point
+    class='org.nuxeo.ecm.platform.annotations.gwt.client.AnnotationModule' />
+  <stylesheet src='AnnotationModule.css' />
+
+    <servlet path="/webConfiguration" class="org.nuxeo.ecm.platform.annotations.gwt.server.configuration.WebConfigurationServiceImpl" />
+
+    <!-- Add gwt-log support, default level `DEBUG` -->
+    <inherits name="com.allen_sauer.gwt.log.gwt-log-OFF" />
+    <extend-property name="log_level" values="DEBUG"/>
+
+    <inherits name="com.google.gwt.i18n.I18N"/>
+    <extend-property name="locale" values="fr"/>
+    <extend-property name="locale" values="en"/>
+</module>
