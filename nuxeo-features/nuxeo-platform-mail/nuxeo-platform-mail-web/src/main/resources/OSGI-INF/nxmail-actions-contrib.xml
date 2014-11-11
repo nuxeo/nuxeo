@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.platform.mail.web.actions.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+    
+    <action id="TAB_FILES_EDIT">
+      <filter-id>not_mail_message_document</filter-id>
+    </action>
+    
+    <action id="TAB_EDIT">
+      <filter-id>not_mail_message_document</filter-id>
+    </action>
+    
+    <action id="TAB_METADATA_EDIT">
+      <filter-id>not_mail_folder_document</filter-id>
+    </action>
+    
+    <action id="TAB_METADATA_VIEW">
+      <filter-id>not_mail_folder_document</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="not_mail_message_document">
+      <rule grant="false">
+        <type>MailMessage</type>
+      </rule>
+    </filter>
+    
+    <filter id="not_mail_folder_document">
+      <rule grant="false">
+        <type>MailFolder</type>
+      </rule>
+    </filter>
+
+  </extension>
+  
+    <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+      point="actions">
+
+	  <action id="user_inbox" link="#{mailActions.checkCurrentInbox}" enabled="true"
+	    label="command.check.mail.connection" order="10">
+	    <category>SUBVIEW_UPPER_LIST</category>
+	    <filter>
+	      <rule grant="true">
+	        <type>MailFolder</type>
+	      </rule>
+	    </filter>
+	  </action>
+
+    </extension>
+  
+</component>

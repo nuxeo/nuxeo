@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.notification.service.NotificationVetoContrib-overridden">
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="notificationListenerVeto">
+
+    <veto class="org.nuxeo.ecm.platform.ec.notification.veto.NotificationVeto20" name="veto2" />
+
+    <veto name="veto3" remove="true" />
+
+  </extension>
+</component>

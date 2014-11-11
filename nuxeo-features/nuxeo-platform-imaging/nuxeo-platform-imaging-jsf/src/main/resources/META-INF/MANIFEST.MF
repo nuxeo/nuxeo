@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Picture Imaging DM
+Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.jsf;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateless
+Nuxeo-Component: OSGI-INF/imaging-types-contrib.xml,
+ OSGI-INF/imaging-layouts-contrib.xml,
+ OSGI-INF/imaging-codec-contrib.xml,
+ OSGI-INF/imaging-querymodel-contrib.xml,
+ OSGI-INF/imaging-resultsprovider-contrib.xml
+Eclipse-LazyStart: true
+Require-Bundle: org.nuxeo.ecm.platform.types.api,
+ org.nuxeo.ecm.webapp.base,
+ org.nuxeo.ecm.platform.search.api,
+ org.nuxeo.ecm.platform.web.common,
+ org.nuxeo.ecm.platform.url.core

@@ -1,0 +1,176 @@
+<div xmlns:h="http://java.sun.com/jsf/html" xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax" xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <script type="text/javascript" src="#{baseURL}scripts/jquery/jquery.tablesorter.js"></script>
+  <script type="text/javascript" src="#{baseURL}scripts/jquery/jquery.tablesorter_filter.js"></script>
+  <style>
+.tablesorter .header {
+  background-position: center left;
+  background-repeat: no-repeat;
+  padding-left:20px;
+}
+
+.tablesorter .headerSortDown {
+  background-image: url(#{baseURL}icons/sort_down.png);
+}
+
+.tablesorter .headerSortUp {
+  background-image: url(#{baseURL}icons/sort_up.png);
+}
+
+.tablesorter .odd {
+  background-color: #fff;
+}
+
+.tablesorter .even {
+  background-color: #ECF6FF;
+}
+
+.tablesorter {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border:1px solid #ccc;
+}
+
+.tablesorter td, .tablesorter th {
+  padding:5px;
+}
+
+.tablesorter th {
+  background: none repeat scroll 0 0 #333;
+  color: white;
+  text-align: left;
+  text-shadow: none;
+  font-weight: bold;
+}
+  </style>
+
+  <a4j:outputPanel id="workManagerListing">
+
+    <p/>
+    <h:form>
+      <a4j:commandLink value="Refresh" reRender="workManagerListing" styleClass="button" />
+      <a4j:commandLink value="Start test work" reRender="workManagerListing" styleClass="button"
+        action="#{workManagerAdmin.startTestWork}"/>
+    </h:form>
+
+    <c:set var="infos" value="#{workManagerAdmin.workQueuesInfo}" />
+    <c:set var="currentTimeMillis" value="#{workManagerAdmin.currentTimeMillis}" />
+
+    <ui:repeat var="info" value="#{infos}">
+      <h2 class="workManagerQueueTitle">Queue <em>#{info.id}</em> (#{info.threads}/#{info.maxThreads})</h2>
+      <div class="workManagerQueueInfo">
+      <f:subview rendered="#{info.running.size > 0}">
+        <p><strong>Running</strong></p>
+        <h:dataTable var="work" value="#{info.running}" styleClass="tablesorter">
+          <h:column>
+            <f:facet name="header">Work</f:facet>
+            #{work.title}
+          </h:column>
+          <h:column>
+            <f:facet name="header">Started</f:facet>
+            <h:outputText value="#{work.startTime}" title="#{work.startTime}">
+              <f:convertDateTime
+                pattern="#{nxu:dateAndTimeFormater('medium')}"
+                timeZone="#{timeZone}" />
+            </h:outputText>
+          </h:column>
+          <h:column>
+            <f:facet name="header">Duration (ms)</f:facet>
+            #{currentTimeMillis - work.startTime}
+          </h:column>
+          <h:column>
+            <f:facet name="header">Status</f:facet>
+            #{work.status}
+          </h:column>
+          <h:column>
+            <f:facet name="header">Progress</f:facet>
+            <h:outputText rendered="#{work.progress.isWithPercent}"
+                value="#{work.progress.percent}%" />
+            <h:outputText
+              rendered="#{work.progress.isWithCurrentAndTotal}"
+              value="#{work.progress.current}/#{work.progress.total}" />
+            <h:outputText rendered="#{work.progress.isIndeterminate}"
+              value="..." />
+            </h:column>
+        </h:dataTable>
+      </f:subview>
+      <f:subview rendered="#{info.scheduled.size > 0}">
+        <p><strong>Scheduled</strong></p>
+        <h:dataTable var="work" value="#{info.scheduled}" styleClass="tablesorter">
+          <h:column>
+            <f:facet name="header">Work</f:facet>
+            #{work.title}
+          </h:column>
+          <h:column>
+            <f:facet name="header">Scheduled</f:facet>
+            <h:outputText value="#{work.schedulingTime}" title="#{work.schedulingTime}">
+              <f:convertDateTime
+                pattern="#{nxu:dateAndTimeFormater('medium')}"
+                timeZone="#{timeZone}" />
+            </h:outputText>
+          </h:column>
+        </h:dataTable>
+      </f:subview>
+      <f:subview rendered="#{info.completed.size > 0}">
+        <p><strong>Completed</strong></p>
+        <h:form>
+          <a4j:commandLink value="Clear" reRender="workManagerListing" styleClass="button"
+            action="#{workManagerAdmin.clearQueueCompletedWork}">
+            <f:param name="queueId" value="#{info.id}" />
+          </a4j:commandLink>
+        </h:form>
+        <p/>
+        <h:dataTable var="work" value="#{info.completed}" styleClass="tablesorter">
+          <h:column>
+            <f:facet name="header">Work</f:facet>
+            #{work.title}
+          </h:column>
+          <h:column>
+            <f:facet name="header">Started</f:facet>
+            <h:outputText value="#{work.startTime}" title="#{work.startTime}">
+              <f:convertDateTime
+                pattern="#{nxu:dateAndTimeFormater('medium')}"
+                timeZone="#{timeZone}" />
+            </h:outputText>
+          </h:column>
+          <h:column>
+            <f:facet name="header">Completed</f:facet>
+            <h:outputText value="#{work.completionTime}" title="#{work.completionTime}">
+              <f:convertDateTime
+                pattern="#{nxu:dateAndTimeFormater('medium')}"
+                timeZone="#{timeZone}" />
+            </h:outputText>
+          </h:column>
+          <h:column>
+            <f:facet name="header">Duration (ms)</f:facet>
+            #{work.completionTime - work.startTime}
+          </h:column>
+          <h:column>
+            <f:facet name="header">Status</f:facet>
+            #{work.status}
+          </h:column>
+          <h:column>
+            <f:facet name="header">State</f:facet>
+            #{work.state}
+          </h:column>
+        </h:dataTable>
+      </f:subview>
+      </div>
+    </ui:repeat>
+
+    <script type="text/javascript">
+      // console.log("FOO");
+      // $(document).ready(function(){
+        jQuery(".tablesorter").tablesorter();
+        jQuery(".workManagerQueueTitle").click(function() {
+          $(this).next(".workManagerQueueInfo").toggle();
+        });
+      // });
+    </script>
+
+  </a4j:outputPanel>
+</div>
