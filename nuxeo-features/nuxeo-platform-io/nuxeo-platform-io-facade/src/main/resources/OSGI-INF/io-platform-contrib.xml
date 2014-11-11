@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.io.IOManagerBean">
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement"
+      point="services">
+
+    <documentation>
+      Defines the IO Manager bean as a platform service.
+    </documentation>
+
+    <service class="org.nuxeo.ecm.platform.io.api.IOManager"
+        group="platform/io">
+      <locator>%IOManagerBean</locator>
+    </service>
+
+  </extension>
+</component>
