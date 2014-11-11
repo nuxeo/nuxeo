@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.forum.lifecycle">
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+      point="lifecycle">
+
+    <lifecycle name="post_moderation" defaultInitial="moderation_pending">
+
+      <transitions>
+        <transition name="moderation_publish" destinationState="moderation_published">
+          <description>Approve the post</description>
+        </transition>
+        <transition name="moderation_reject" destinationState="moderation_rejected">
+          <description>Reject the post</description>
+        </transition>
+      </transitions>
+      <states>
+        <state name="moderation_pending" description="Default state">
+          <transitions>
+            <transition>moderation_publish</transition>
+            <transition>moderation_reject</transition>
+          </transitions>
+        </state>
+        <state name="moderation_published" description="Post published"/>
+        <state name="moderation_rejected" description="Post Rejected"/>
+      </states>
+
+    </lifecycle>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+      point="types">
+    <types>
+      <type name="Post">post_moderation</type>
+      <type name="Forum">default</type>
+      <type name="Thread">default</type>
+    </types>
+  </extension>
+
+</component>
