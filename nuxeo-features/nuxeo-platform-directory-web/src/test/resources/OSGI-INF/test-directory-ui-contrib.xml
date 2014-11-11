@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.webapp.directory.directoryUI.tests">
+
+  <extension target="org.nuxeo.ecm.directory.ui.DirectoryUIManager"
+    point="directories">
+
+    <directory name="continent" layout="vocabulary" sortField="label">
+      <deleteConstraint
+        class="org.nuxeo.ecm.directory.api.ui.HierarchicalDirectoryUIDeleteConstraint">
+        <property name="targetDirectory">country</property>
+        <property name="targetDirectoryField">parent</property>
+      </deleteConstraint>
+    </directory>
+    <directory name="country" layout="country_vocabulary" sortField="parent"
+      view="foo" />
+
+  </extension>
+
+</component>

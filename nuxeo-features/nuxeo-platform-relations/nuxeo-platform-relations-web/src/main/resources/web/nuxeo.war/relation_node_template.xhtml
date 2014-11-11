@@ -1,0 +1,35 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:g="http://nuxeo.org/geide">
+
+  <table border="0" style="dataOutput">
+    <tr>
+      <td class="iconColumn">
+        <f:subview rendered="#{node.documentModel != null}">
+          <nxu:graphicImage value="#{nxd:iconPath(node.documentModel)}" />
+        </f:subview>
+        <nxu:graphicImage rendered="#{node.resource and not node.QNameResource}" value="/icons/html.png" />
+        <nxu:graphicImage rendered="#{node.QNameResource and not node.documentVisible}" value="/icons/relation_not_visible.png" />
+        <nxu:graphicImage rendered="#{node.literal}" value="/icons/page_text.gif" />
+      </td>
+      <td>
+        <f:subview rendered="#{node.QNameResource}">
+          <nxh:commandLink rendered="#{node.documentVisible}"
+            value="#{node.title}" action="#{node.getAction()}" />
+          <h:outputText rendered="#{not node.documentVisible}" value="#{messages['label.relation.document.not.visible']}" />
+        </f:subview>
+        
+        <h:outputLink rendered="#{node.resource and not node.QNameResource}" value="#{node.href}" target="_blank">
+          <h:outputText value="#{node.title}" />
+        </h:outputLink>
+        <h:outputText rendered="#{node.literal}" value="#{node.title}" />
+      </td>
+    </tr>
+  </table>
+
+</div>

@@ -1,0 +1,51 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <c:if test="#{widget.mode == 'edit'}">
+    <script>
+    function toggleLogin(wid, value) {
+
+      var loginSpan = document.getElementById(wid + '_loginBox');
+      if  (value=="nuxeo:user") {
+        loginSpan.style.display='block';
+      } else {
+        loginSpan.style.display='none';
+      }
+    }
+    </script>
+    <h:selectOneListbox value="#{field}" id="#{widget.id}_checkbox" onchange="toggleLogin('#{widget.id}', this.value)" size="1">
+      <f:selectItem itemValue="none" itemLabel="#{messages['label.signedfetch.none']}" />
+      <f:selectItem itemValue="opensocial:viewer" itemLabel="#{messages['label.signedfetch.opensocialViewer']}" />
+      <f:selectItem itemValue="opensocial:owner" itemLabel="#{messages['label.signedfetch.opensocialOwner']}" />
+      <f:selectItem itemValue="nuxeo:user" itemLabel="#{messages['label.signedfetch.dedicatedUser']}" />
+    </h:selectOneListbox>
+    <h:message styleClass="errorMessage" for="#{widget.id}_checkbox" id="#{widget.id}_message" />
+    <span id="#{widget.id}_loginBox" style="display:none">
+      <h:outputText value="#{messages['label.signedfetch.dedicatedUser.login']}"/>
+      <h:inputText value="#{field_1}" id="#{widget.id}_login"></h:inputText>
+    </span>
+  </c:if>
+
+  <c:if test="#{widget.mode == 'view' }">
+
+    <c:if test="#{field_0 == null or field_0 == 'none'}">
+       <h:outputText value="#{messages['label.signedfetch.none']}"/>
+    </c:if>
+    <c:if test="#{field_0 == 'opensocial:viewer'}">
+      <h:outputText value="#{messages['label.signedfetch.opensocialViewer']}"/>
+    </c:if>
+    <c:if test="#{field_0 == 'opensocial:owner'}">
+      <h:outputText value="#{messages['label.signedfetch.opensocialOwner']}"/>
+    </c:if>
+    <c:if test="#{field_0 == 'nuxeo:user'}">
+      <h:outputText value="#{messages['label.signedfetch.dedicatedUser']}"/>
+        <h:outputText value="( #{field_1} )"/>
+    </c:if>
+  </c:if>
+
+</div>
