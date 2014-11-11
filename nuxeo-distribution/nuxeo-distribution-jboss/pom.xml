@@ -1,0 +1,62 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.distribution</groupId>
+    <artifactId>nuxeo-distribution</artifactId>
+    <version>5.3.1-I20100203_1548</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>nuxeo-distribution-jboss</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo JBoss Distribution</name>
+  <description>Package Nuxeo EP or DM EAR with JBoss</description>
+
+  <profiles>
+    <profile>
+      <id>all-distributions</id>
+      <!-- profile for building all classifiers -->
+    </profile>
+    <profile>
+      <id>all</id>
+      <!-- profile for building all classifiers -->
+    </profile>
+    <profile>
+      <id>nuxeo-ep</id>
+      <!-- profile for building only JBoss with Nuxeo EP -->
+    </profile>
+    <profile>
+      <id>nuxeo-dm</id>
+      <!-- default profile for building only JBoss with Nuxeo DM -->
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
+  </profiles>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>nuxeo-distribution-tools</artifactId>
+        <configuration>
+          <buildFiles>
+            <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
+          </buildFiles>
+        </configuration>
+        <executions>
+          <execution>
+            <id>packaging</id>
+            <goals>
+              <goal>build</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
