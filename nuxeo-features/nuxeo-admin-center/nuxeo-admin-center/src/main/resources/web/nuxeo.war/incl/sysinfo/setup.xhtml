@@ -1,0 +1,162 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  class="setupPanel">
+
+<a4j:outputPanel id="setupPanel">
+
+  <c:if test="false">
+    <h:outputText value="DEBUG: Configurable: #{setupConfigurable}" />
+    <br />
+    <h:outputText
+      value="DEBUG: nuxeo.dbtemplate #{setupParams['nuxeo.dbtemplate']}" />
+  </c:if>
+
+  <h:panelGroup rendered="#{!setupConfigurable}">
+    <div class="warningMessage">
+      <h:outputText value="#{messages['label.setup.notconfigurable']}" />
+    </div>
+    <br />
+  </h:panelGroup>
+
+  <nxu:set var="setupLayoutMode" value="#{nxu:test(setupConfigurable, 'edit', 'view')}">
+
+    <a4j:form id="setupForm" ajaxSubmit="true" reRender="setupPanel">
+
+      <nxl:layout name="admin_setup_main"
+        mode="#{setupLayoutMode}" value="#{setupParams}" />
+
+      <nxl:layout name="admin_choose_proxy"
+        mode="#{setupLayoutMode}" value="#{setupParams}" />
+
+      <nxl:layout name="admin_setup_mail"
+        mode="#{setupLayoutMode}" value="#{setupParams}" />
+
+      <nxl:layout name="admin_setup_custom_properties"
+        mode="#{setupLayoutMode}" value="#{setupParams}" />
+
+      <c:if test="#{setupConfigurable}">
+        <div class="actionBar">
+          <a4j:region id="setupForm_submitTopRegion">
+            <h:commandButton value="#{messages['action.setup.save']}"
+              action="#{setupWizardAction.save()}"
+              styleClass="button"
+              oncomplete="jQuery('html, body').animate({scrollTop:0}, 'slow')" />
+            <a4j:commandButton value="#{messages['action.setup.cancel']}"
+              action="#{setupWizardAction.resetParameters()}"
+              immediate="true"
+              reRender="setupPanel" styleClass="button" />
+            <a4j:status>
+              <f:facet name="start">
+                <h:graphicImage value="/img/standart_waiter.gif" />
+              </f:facet>
+            </a4j:status>
+          </a4j:region>
+        </div>
+      </c:if>
+
+      <nxu:valueHolder
+        id="advancedParams_valueHolder"
+        var="advancedParamsPanelStatus"
+        defaultValue="off">
+
+        <a4j:outputPanel id="advancedParams_panel">
+
+          <c:if test="#{advancedParamsPanelStatus != 'on'}">
+            <f:subview>
+              <a4j:commandButton
+                value="#{messages['adminsubtab.sysinfo.advancedsetup']}"
+                reRender="advancedParams_panel"
+                immediate="true"
+                styleClass="button">
+                <f:setPropertyActionListener
+                  value="on"
+                  target="#{selectionActions.selectedValue}" />
+                <f:param name="valueHolderId"
+                  value="advancedParams_valueHolder" />
+                <nxu:actionListenerMethod
+                  value="#{selectionActions.onClick}" />
+              </a4j:commandButton>
+            </f:subview>
+          </c:if>
+
+          <c:if test="#{advancedParamsPanelStatus == 'on'}">
+
+            <div>
+              <h2>
+                <h:outputText value="#{messages['adminsubtab.sysinfo.advancedsetup']}" />
+              </h2>
+            </div>
+
+            <c:if test="#{setupConfigurable}">
+              <p>
+                <h:outputText styleClass="warningLabel"
+                  value="#{messages['label.setup.advancedSearch.warning']} " />
+                <f:subview>
+                  <a4j:commandButton
+                    value="#{messages['adminsubtab.sysinfo.advancedsetup.close']}"
+                    reRender="advancedParams_panel"
+                    immediate="true"
+                    styleClass="button">
+                    <f:setPropertyActionListener
+                      value="off"
+                      target="#{selectionActions.selectedValue}" />
+                    <f:param name="valueHolderId"
+                      value="advancedParams_valueHolder" />
+                    <nxu:actionListenerMethod
+                      value="#{selectionActions.onClick}" />
+                  </a4j:commandButton>
+                </f:subview>
+              </p>
+            </c:if>
+
+            <table class="dataOutput">
+              <c:forEach var="advancedParamKey"
+                items="#{advancedParams.keySet().toArray()}">
+                <tr>
+                  <td class="wideLabel">
+                    <h:outputText value="#{advancedParamKey}" />
+                  </td>
+                  <td id="#{advancedParamKey}">
+                    <nxl:widgetType name="text" mode="#{setupLayoutMode}"
+                      styleClass="dataInputText" size="100"
+                      value="#{advancedParams[advancedParamKey]}" />
+                  </td>
+                </tr>
+              </c:forEach>
+            </table>
+
+            <c:if test="#{setupConfigurable}">
+              <div class="actionBar">
+                <a4j:region id="setupForm_submitBottonRegion">
+                  <h:commandButton value="#{messages['action.setup.save']}"
+                    action="#{setupWizardAction.save()}"
+                    styleClass="button"
+                    oncomplete="jQuery('html, body').animate({scrollTop:0}, 'slow')" />
+                  <a4j:commandButton value="#{messages['action.setup.cancel']}"
+                    action="#{setupWizardAction.resetParameters()}"
+                    immediate="true"
+                    reRender="setupPanel" styleClass="button" />
+                  <a4j:status>
+                    <f:facet name="start">
+                      <h:graphicImage value="/img/standart_waiter.gif" />
+                    </f:facet>
+                  </a4j:status>
+                </a4j:region>
+              </div>
+            </c:if>
+
+          </c:if>
+        </a4j:outputPanel>
+
+      </nxu:valueHolder>
+
+    </a4j:form>
+  </nxu:set>
+
+</a4j:outputPanel>
+</div>
