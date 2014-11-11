@@ -1,0 +1,259 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>bulkEdit</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">bulkEdit</td></tr>
+</thead><tbody>
+<!--Identification-->
+<tr>
+        <td>open</td>
+        <td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium bulkEdit</td>
+        <td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/workspaces/testworkspace1/testfolder1@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>linnet</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>linnet1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>You are logged as linnet</td>
+	<td></td>
+</tr>
+<!--Selecting documents-->
+<tr>
+	<td>click</td>
+	<td>//input[@title="Select all / deselect all"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>//input[@value="Add to worklist"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyEditable</td>
+	<td>//input[@value="Add to worklist"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Add to worklist"]</td>
+	<td></td>
+</tr>
+<!--Verifying documents are added to worklist-->
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>No document in clipboard</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Edit documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Edit documents</td>
+	<td></td>
+</tr>
+<!--verifying bulk edition form is displayed-->
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Edit common fields for documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Documents to be altered:</td>
+	<td></td>
+</tr>
+<!--verifying folding list of documents works-->
+<tr>
+	<td>click</td>
+	<td>link=Documents to be altered:</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForNotVisible</td>
+	<td>//div[@class="boxBody"]</td>
+	<td></td>
+</tr>
+<!--verifying fields available-->
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Title</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Description</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//table[@class="mceEditor"]</td>
+	<td></td>
+</tr>
+<!--modifying documents-->
+<tr>
+	<td>click</td>
+	<td>//div[@class="massEditForm"]//table[@class="dataInput"]/tbody/tr[2]//input[@type="checkbox"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//div[@class="massEditForm"]//table[@class="dataInput"]/tbody/tr[2]//select</td>
+	<td>ALL</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//div[@class="massEditForm"]//table[@class="dataInput"]/tbody/tr[2]//textarea</td>
+	<td>bulk modified description</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Next"]</td>
+	<td></td>
+</tr>
+<!--verifying that user is on step 2-->
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Documents that will remain unchanged:</td>
+	<td></td>
+</tr>
+<!--verifying that "Back" button works correctly-->
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Back"]</td>
+	<td></td>
+</tr>
+<!--verifying that form is still filled in-->
+<tr>
+	<td>verifyChecked</td>
+	<td>//div[@class="massEditForm"]//table[@class="dataInput"]/tbody/tr[2]//input[@type="checkbox"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifySelectedValue</td>
+	<td>//div[@class="massEditForm"]//table[@class="dataInput"]/tbody/tr[2]//select</td>
+	<td>SELECT_ITEM_ID_ALL</td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>bulk modified description</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Next"]</td>
+	<td></td>
+</tr>
+<!--verifying that user is on step 2-->
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Documents that will remain unchanged:</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyVisible</td>
+	<td>//div[@class="massEditForm"]/table/tbody/tr/td[1]//table</td>
+	<td></td>
+</tr>
+<!--verifying values-->
+<tr>
+	<td>verifyText</td>
+	<td>//td[@class="boldColumn"]/span</td>
+	<td>Description</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//table[@class="dataOutput"]//tr[@class="dataRowEven"]//td[2]</td>
+	<td>ALL</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//td[@class="focusColumn"]</td>
+	<td>bulk modified description</td>
+</tr>
+<!--verifying checkbox is checked-->
+<tr>
+	<td>verifyChecked</td>
+	<td>//input[@type="checkbox"]</td>
+	<td></td>
+</tr>
+<!--Approving form-->
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Approve"]</td>
+	<td></td>
+</tr>
+<!--verifying documents are modified-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testFolder1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyNotChecked</td>
+	<td>//tr[@class="dataRowEven"]//input[@type="checkbox"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyNotChecked</td>
+	<td>//tr[@class="dataRowOdd"]//input[@type="checkbox"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Note to be modified</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>bulk modified description</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testNote1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>bulk modified description</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

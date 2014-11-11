@@ -1,0 +1,93 @@
+<project name="nuxeo-shell-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+
+
+  <target name="init" unless="init.done">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <property name="stagedir" value="${outdir}/stage" />
+    <property name="output" value="${stagedir}/${maven.project.artifactId}-${maven.project.version}" />
+
+    <antcall target="expand" />
+    <property name="init.done" value="true" />
+  </target>
+
+  <target name="expand" unless="no.build">
+    <artifact:nuxeo-expand />
+    <!--artifact:print output="dependency-tree.log" /-->
+  </target>
+
+  <target name="build" depends="init,clean" unless="no.build">
+    <echo>Building Nuxeo Distribution Base</echo>
+    <mkdir dir="${output}" />
+
+    <copy todir="${output}" overwrite="true">
+      <fileset dir="src/main/resources" />
+    </copy>
+    
+    <copy todir="${output}/" overwrite="true">
+      <artifact:file artifactId="nuxeo-runtime-launcher" />
+    </copy>
+    
+    <copy todir="${output}/bundles" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="org.nuxeo*" />
+        </includes>
+        <excludes>
+          <artifact artifactId="nuxeo-apt-extensions" />
+          <artifact artifactId="nuxeo-runtime-test" />
+          <artifact artifactId="nuxeo-runtime-launcher" />
+        </excludes>
+      </artifact:set>
+    </copy>
+
+    <antcall target="third-party-libraries" />
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+         basedir="${output}" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="zip" />
+  </target>
+
+  <target name="third-party-libraries">
+    <copy todir="${output}/lib" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="!org.nuxeo*" />
+        </includes>
+      </artifact:set>
+    </copy>
+    <!-- Remove duplicates -->
+    <delete>
+      <fileset dir="${output}/lib">
+        <include name="backport-util-concurrent-*" />
+        <include name="commons-collections-*" />
+        <include name="commons-logging-*" />
+        <include name="jline-*" />
+        <include name="junit-*" />
+        <include name="log4j-*" />
+        <include name="xml-apis-*" />
+      </fileset>
+    </delete>
+    <copy todir="${output}/lib" overwrite="true">
+      <artifact:resolveFile key="backport-util-concurrent:backport-util-concurrent" />
+      <artifact:resolveFile key="commons-collections:commons-collections" />
+      <artifact:resolveFile key="commons-logging:commons-logging" />
+      <artifact:resolveFile key="jline:jline" />
+      <artifact:resolveFile key="junit:junit" />
+      <artifact:resolveFile key="log4j:log4j" />
+      <artifact:resolveFile key="xml-apis:xml-apis" />
+    </copy>
+  </target>
+
+  <target name="clean">
+    <delete dir="${stagedir}" />
+  </target>
+
+</project>
