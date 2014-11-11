@@ -1,0 +1,15 @@
+<f:subview
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{field.versionLabel}</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+  <h:outputText value="#{field.versionLabel}"
+    id="#{widget.id}" />
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:html>#{field.versionLabel}</nxp:html>
+</c:if>
+</f:subview>
