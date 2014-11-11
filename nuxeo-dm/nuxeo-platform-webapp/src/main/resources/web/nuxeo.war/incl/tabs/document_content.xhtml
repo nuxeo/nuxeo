@@ -1,0 +1,51 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <c:if test="#{currentDocument.currentLifeCycleState != 'deleted'}">
+
+    <ui:include src="/incl/document_actions.xhtml" />
+
+    <c:choose>
+      <c:when test="#{documentContentViewActions.hasContentViewSupport(currentDocument, 'content')}">
+
+        <ui:include src="/incl/document_content_view.xhtml">
+          <ui:param name="contentViewCategory" value="content" />
+        </ui:include>
+  
+      </c:when>
+      <c:otherwise>
+  
+        <nxu:set var="provider" value="#{resultsProvidersCache.get('CURRENT_DOC_CHILDREN')}"
+          cache="true">
+        <nxu:set var="layoutName" value="#{currentListingLayoutName}"
+          cache="true">
+    
+          <ui:decorate template="/incl/documents_layout_table.xhtml">
+            <ui:param name="documents" value="#{currentChildrenSelectModel}" />
+            <ui:param name="listName" value="CURRENT_SELECTION" />
+            <ui:param name="layoutName" value="#{layoutName}" />
+            <ui:define name="buttons">
+              <ui:include src="/incl/clipboard.xhtml" />
+            </ui:define>
+          </ui:decorate>
+        </nxu:set>
+        </nxu:set>
+    
+      </c:otherwise>
+    </c:choose>
+
+  </c:if>
+  
+  <c:if test="#{currentDocument.currentLifeCycleState == 'deleted'}">
+
+    <ui:include src="/incl/tabs/document_trash_content.xhtml" />
+
+  </c:if>
+  
+</div>

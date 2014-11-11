@@ -1,0 +1,85 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  id="#{widget.id}">
+
+  <c:if test="#{widget.mode != 'edit'}">
+
+    <h:outputText value="#{messages['label.files.noAttachedFiles']}"
+      rendered="#{empty field}" />
+
+    <table>
+      <tbody>
+        <nxu:inputList value="#{field}" id="#{widget.id}_table" model="model"
+          rendered="#{not empty field}">
+          <nxl:subWidget>
+            <tr>
+              <td class="fieldColumn">
+                <nxl:widget widget="#{widget}"
+                  value="#{model.rowData}" />
+              </td>
+            </tr>
+          </nxl:subWidget>
+        </nxu:inputList>
+      </tbody>
+    </table>
+
+  </c:if>
+
+  <c:if test="#{widget.mode == 'edit'}">
+
+    <script type="text/javascript"
+      src="#{baseURL}scripts/contextKeeper.js"></script>
+    <script type="text/javascript">
+      document.NXContextKeeper = new InputContextKeeper();
+    </script>
+
+    <a4j:region renderRegionOnly="true" id="#{widget.id}_region">
+      <a4j:outputPanel ajaxRendered="true">
+        <nxu:inputList value="#{field}" id="#{widget.id}_input" model="model"
+          template="#{nxd:propertyDefaultValue(widget.fieldDefinitions[0].propertyName)}"
+          required="#{widget.required}" diff="#{widget.properties['diff']}">
+
+          <h:panelGrid columns="2">
+            <a4j:commandLink immediate="true"
+              onclick="document.NXContextKeeper.removeFromKeeper(#{model.rowIndex});"
+              oncomplete="document.NXContextKeeper.onReturnAnswer();"
+              actionListener="#{editableListBean.performAction}"
+              id="#{widget.id}_delete" reRender="#{widget.id}_input"
+              bypassUpdates="true">
+              <h:graphicImage value="/icons/action_delete.gif" />
+              <f:param name="for" value="#{widget.id}_input" />
+              <f:param name="index" value="#{model.rowIndex}" />
+              <f:param name="type" value="remove" />
+            </a4j:commandLink>
+
+            <nxl:subWidget>
+              <nxl:widget widget="#{widget}"
+                value="#{model.rowData}" />
+            </nxl:subWidget>
+
+          </h:panelGrid>
+
+        </nxu:inputList>
+        <h:message styleClass="errorMessage" for="#{widget.id}_input"
+          id="#{widget.id}_message" />
+      </a4j:outputPanel>
+
+      <a4j:commandLink immediate="true"
+        oncomplete="document.NXContextKeeper.onReturnAnswer();" 
+        onclick="document.NXContextKeeper.onAddFile();"
+        actionListener="#{editableListBean.performAction}" id="#{widget.id}_add">
+        <f:param name="for" value="#{widget.id}_input" />
+        <f:param name="type" value="add" />
+        <h:graphicImage value="/icons/action_add.gif" />
+        <h:outputText value="#{messages['command.addNewAttachedFile']}" />
+      </a4j:commandLink>
+
+    </a4j:region>
+
+  </c:if>
+
+</f:subview>

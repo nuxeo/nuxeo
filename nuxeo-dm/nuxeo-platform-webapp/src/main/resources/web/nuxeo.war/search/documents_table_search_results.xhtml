@@ -1,0 +1,87 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+<c:if test="false">
+  This template is deprecated
+</c:if>
+
+<script type="text/javascript" src="#{contextPath}/scripts/utils.js"></script>
+<a4j:region rendered="#{documents != null}">
+  <h:form id="#{documents.name}">
+    <h:outputText value="#{messages['label.content.empty.search']}"
+                  rendered="#{documents.rowCount == 0}" />
+
+    <h:commandLink action="#{searchResults.downloadCSV}"
+      rendered="#{documents.rowCount != 0}">
+      <f:param name="providerName" value="#{providerName}" />
+      <h:outputText value="#{messages['label.search.export.excel']}" />
+    </h:commandLink>
+
+    <ui:insert name="extra_info" />
+
+    <ui:include src="/pagination/pageNavigationControls.xhtml" />
+
+    <nxu:dataTable
+      id="dataTable"
+      value="#{documents.rows}"
+      var="row"
+      rowClasses="dataRowEven,dataRowOdd"
+      styleClass="dataOutput"
+      rendered="#{documents.rowCount > 0}">
+
+      <!-- id and selection -->
+      <nxu:column styleClass="iconColumn">
+        <f:facet name="header">
+          <h:selectBooleanCheckbox rendered="true"
+              onclick="selectDataTablePage('#{documents.name}', '#{providerName}', this.checked)" title="#{messages['tooltip.content.select.all']}">
+          </h:selectBooleanCheckbox>
+        </f:facet>
+         <h:selectBooleanCheckbox
+            value="#{row.selected}"
+            onclick="selectDataTableRow('#{row.data.ref}', '#{providerName}', this)">
+        </h:selectBooleanCheckbox>
+      </nxu:column>
+
+      <!-- Icon + Type -->
+      <nxu:column styleClass="iconColumn">
+         <div id="docRefTarget:#{row.data.ref}">
+          <div id="docRef:#{row.data.ref}" class="cell popupTarget" docRef="#{row.data.ref}">
+            <nxu:graphicImage
+              value="#{nxd:iconPath(row.data)}" alt="#{row.data.type}"  />
+          </div>
+          </div>
+        <script type="text/javascript">
+          <h:outputText
+            value="new Draggable('docRef:#{row.data.ref}', {revert:true});"/>
+          <h:outputText rendered="#{row.data.folder}"
+            value="Droppables.add('docRef:#{row.data.ref}', {accept:'cell', onDrop:function(element){moveElement(element,'docRef:#{row.data.ref}')}, hoverclass:'dropInto'});"/>
+        </script>
+      </nxu:column>
+
+      <ui:include src="/search/search_results_custom_columns.xhtml">
+        <ui:param name="columns" value="#{searchColumns.resultColumns}" />
+        <ui:param name="doc" value="#{row.data}" />
+        <ui:param name="providerName" value="#{provider.name}" />
+      </ui:include>
+
+    </nxu:dataTable>
+
+    <a4j:outputPanel ajaxRendered="true">
+      <ui:insert name="buttons" />
+    </a4j:outputPanel>
+
+  </h:form>
+</a4j:region>
+  <ui:include src="/incl/popupMenu.xhtml"/>
+  <script>
+  // init menu
+    setupContextMenu("table td div div.popupTarget");
+  </script>
+
+</div>
