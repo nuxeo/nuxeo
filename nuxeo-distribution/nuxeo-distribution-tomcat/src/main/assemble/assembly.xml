@@ -1,0 +1,43 @@
+<assembly>
+
+  <zipEntrySet id="base-template">
+    <artifact>org.nuxeo.ecm.distribution:nuxeo-distribution-server:${project.version}:zip</artifact>
+  </zipEntrySet>
+
+  <fileSet id="template">
+    <directory>src/main/resources</directory>
+  </fileSet>
+
+  <artifactSet id="bundles">
+    <artifacts>
+      <artifact group="org.nuxeo.runtime" name="nuxeo-runtime-tomcat-adapter" version="${nuxeo.runtime.version}"/>
+    </artifacts>
+  </artifactSet>
+
+  <zipEntrySet id="tomcat-files">
+    <artifact>org.nuxeo.runtime:nuxeo-runtime-tomcat-adapter:${nuxeo.runtime.version}:jar</artifact>
+    <includes>
+	<include>WEB-INF/web.xml</include>
+	<include>META-INF/context.xml</include>	
+    </includes>
+  </zipEntrySet>
+
+
+  <assemble>
+    <set>tomcat-files</set>
+    <outputFile>tomcat/webapps/nuxeo</outputFile>
+  </assemble>
+
+  <assemble>
+    <set>base-template</set>
+    <set>template</set>
+    <outputFile>tomcat/webapps/nuxeo/nxserver</outputFile>
+  </assemble>
+
+  <assemble>
+    <set>bundles</set>
+    <outputFile>tomcat/lib</outputFile>
+  </assemble>
+
+</assembly>
+
