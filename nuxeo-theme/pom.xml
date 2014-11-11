@@ -1,0 +1,175 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-services-parent</artifactId>
+    <version>7.1-SNAPSHOT</version>
+    <relativePath>../nuxeo-services/pom.xml</relativePath>
+  </parent>
+
+  <groupId>org.nuxeo.theme</groupId>
+  <artifactId>nuxeo-theme-parent</artifactId>
+  <name>Nuxeo Theme Parent</name>
+  <packaging>pom</packaging>
+  <description>
+    Nuxeo Theme: Parent. Nuxeo Theme is a full-featured high-level web rendering
+    framework used to compose the UI and the look and feel of web applications.
+  </description>
+
+  <modules>
+    <module>nuxeo-theme-core</module>
+    <module>nuxeo-theme-fragments</module>
+    <module>nuxeo-theme-html</module>
+    <module>nuxeo-theme-styling</module>
+  </modules>
+
+  <organization>
+    <name>Chalmers University</name>
+    <url>http://www.chalmers.se/</url>
+  </organization>
+
+  <developers>
+    <developer>
+      <id>jmorliaguet</id>
+      <name>Jean-Marc Orliaguet</name>
+      <email>jmo@chalmers.se</email>
+      <organization>University of Chalmers</organization>
+      <organizationUrl>http://www.chalmers.se</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-theme.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-theme.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-theme</url>
+  </scm>
+
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <name>Nuxeo virtual release repository</name>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <name>Nuxeo virtual snapshot repository</name>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <profiles>
+    <!-- For use by Nuxeo internal QA -->
+    <profile>
+      <id>qa</id>
+      <repositories>
+        <repository>
+          <id>internal-releases</id>
+          <url>
+            http://maven.in.nuxeo.com/nexus/content/groups/internal-releases
+          </url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>internal-snapshots</id>
+          <url>
+            http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots
+          </url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </snapshots>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>internal-releases</id>
+          <url>
+            http://maven.in.nuxeo.com/nexus/content/groups/internal-releases
+          </url>
+          <name>Nuxeo virtual release repository</name>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+          <id>internal-snapshots</id>
+          <url>
+            http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots
+          </url>
+          <name>Nuxeo virtual snapshot repository</name>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <updatePolicy>always</updatePolicy>
+            <enabled>true</enabled>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+      <distributionManagement>
+        <snapshotRepository>
+          <id>daily-snapshots</id>
+          <url>
+            http://maven.in.nuxeo.com/nexus/content/repositories/daily-snapshots
+          </url>
+          <uniqueVersion>true</uniqueVersion>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+  </profiles>
+
+</project>
