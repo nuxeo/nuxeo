@@ -1,0 +1,12 @@
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: nuxeo-automation-restserver
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.7.2.qualifier
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: nuxeo-automation-restserver
+Nuxeo-WebModule: org.nuxeo.ecm.automation.rest.RestServerModule;name=api;extends=base;package=org/nuxeo/ecm/automation/rest/jaxrs
+Nuxeo-Component: OSGI-INF/pageprovider-contrib.xml,
+ OSGI-INF/docviewurl-service-contrib.xml

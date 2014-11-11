@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.webengine.sites">
+  <fragment>
+
+    <extension target="application#MODULE">
+      <module>
+        <java>${bundle.fileName}</java>
+      </module>
+    </extension>
+
+    <extension target="faces-config#MANAGED-BEAN">
+      <managed-bean>
+        <managed-bean-name>siteActions</managed-bean-name>
+        <managed-bean-class>
+          org.nuxeo.webengine.sites.SiteActionsBean
+        </managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+      </managed-bean>
+    </extension>
+
+
+    <install>
+      <!--  Unzip the war template -->
+      <unzip from="${bundle.fileName}" to="/">
+        <include>nuxeo.war/**</include>
+      </unzip>
+
+      <!--  Create a temp dir -->
+      <mkdir path="sites.tmp" />
+
+      <unzip from="${bundle.fileName}" to="sites.tmp" />
+
+      <append from="sites.tmp/OSGI-INF/l10n/messages.properties"
+        to="nuxeo.war/WEB-INF/classes/messages.properties" addNewLine="true" />
+
+      <append from="sites.tmp/OSGI-INF/l10n/messages_fr.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_fr.properties" addNewLine="true" />
+
+      <append from="sites.tmp/OSGI-INF/l10n/messages_en.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
+
+      <delete path="sites.tmp" />
+
+    </install>
+
+    <extension target="faces-config#NAVIGATION">
+
+    </extension>
+
+  </fragment>
+</component>
