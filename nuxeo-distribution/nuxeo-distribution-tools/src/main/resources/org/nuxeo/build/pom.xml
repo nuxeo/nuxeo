@@ -1,0 +1,69 @@
+<?xml version="1.0"?> 
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <name>Nuxeo Distribution Default Project</name>
+  
+  <repositories>
+    <repository>
+      <id>central</id>
+      <name>Maven Repository Switchboard</name>
+      <layout>default</layout>
+      <url>http://repo1.maven.org/maven2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      
+    </repository>
+        <repository>                                                                                                                                            
+      <id>public</id>                                                                                                                                       
+      <url>http://maven.nuxeo.org/public</url>                                                                                                              
+      <releases>                                                                                                                                            
+        <enabled>true</enabled>                                                                                                                             
+      </releases>                                                                                                                                           
+      <snapshots>                                                                                                                                           
+        <enabled>false</enabled>                                                                                                                            
+      </snapshots>                                                                                                                                          
+    </repository>                                                                                                                                           
+    <repository>                                                                                                                                            
+      <id>public-snapshot</id>                                                                                                                              
+      <url>http://maven.nuxeo.org/public-snapshot</url>                                                                                                     
+      <releases>                                                                                                                                            
+        <enabled>false</enabled>                                                                                                                            
+      </releases>                                                                                                                                           
+      <snapshots>                                                                                                                                           
+        <enabled>true</enabled>                                                                                                                             
+      </snapshots>                                                                                                                                          
+    </repository>
+                           
+  </repositories>
+                                                                                                                                           
+  <pluginRepositories>                                                                                                                                      
+    <pluginRepository>                                                                                                                                      
+      <id>public</id>                                                                                                                                       
+      <url>http://maven.nuxeo.org/public</url>                                                                                                              
+      <name>Nuxeo virtual release repository</name>                                                                                                         
+      <releases>                                                                                                                                            
+        <enabled>true</enabled>                                                                                                                             
+      </releases>                                                                                                                                           
+      <snapshots>                                                                                                                                           
+        <enabled>false</enabled>                                                                                                                            
+      </snapshots>                                                                                                                                          
+    </pluginRepository>                                                                                                                                     
+    <pluginRepository>                                                                                                                                      
+      <id>public-snapshot</id>                                                                                                                              
+      <url>http://maven.nuxeo.org/public-snapshot</url>                                                                                                     
+      <name>Nuxeo virtual snapshot repository</name>                                                                                                        
+      <releases>                                                                                                                                            
+        <enabled>false</enabled>                                                                                                                            
+      </releases>                                                                                                                                           
+      <snapshots>                                                                                                                                           
+        <enabled>true</enabled>                                                                                                                             
+      </snapshots>                                                                                                                                          
+    </pluginRepository>                                                                                                                                     
+  </pluginRepositories> 
+
+  
+  
+  </project>
+  
+  

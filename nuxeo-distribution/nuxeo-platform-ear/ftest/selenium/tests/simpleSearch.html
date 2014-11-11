@@ -1,0 +1,201 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>simpleSearch</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">simpleSearch</td></tr>
+</thead><tbody>
+<!--Identification-->
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//select[@class="langSelect"]</td>
+	<td>label=English (United Kingdom)</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@class='langSubmit']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>You are logged as jdoe</td>
+	<td></td>
+</tr>
+<!--Recherche rapide-->
+<tr>
+	<td>type</td>
+	<td>//input[@class="directoryFilter"]</td>
+	<td>t*</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Search"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Search results for keywords:</td>
+	<td></td>
+</tr>
+<!--Vérification des résultats-->
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=testNote1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=testTopicWithModeration</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=testTopicWithoutModeration</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Root of workspaces templates</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>desc testSection1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>desc testWorkspace2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>desc testWorskspace1 modified</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>desc testFolder1</td>
+	<td></td>
+</tr>
+<!--Vérification de la validité des liens des résultats-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testNote1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Document properties</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Summary</td>
+	<td></td>
+</tr>
+<!-- can't be sure : doc may be in a section
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Modify</td>
+	<td></td>
+</tr>
+-->
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Metadata</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Files</td>
+	<td></td>
+</tr>
+<!-- can't be sure : doc may be in a section
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Publish</td>
+	<td></td>
+</tr>-->
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Relations</td>
+	<td></td>
+</tr>
+<!-- can't be sure : doc may be in a section
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Workflow</td>
+	<td></td>
+</tr>-->
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=My subscriptions</td>
+	<td></td>
+</tr>
+<!-- can't be sure : doc may be in a section
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Comments</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=History</td>
+	<td></td>
+</tr-->
+<!--Test avec une recherche incorrecte-->
+<tr>
+	<td>type</td>
+	<td>//input[@class="directoryFilter"]</td>
+	<td>truc</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Search"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Search results for keywords:</td>
+	<td></td>
+</tr>
+<!--Vérification des résultats-->
+<tr>
+	<td>verifyTextPresent</td>
+	<td>No documents match your search criteria</td>
+	<td></td>
+</tr>
+<!--Déconnexion-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
