@@ -1,0 +1,23 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  id="#{widget.id}"
+  class="#{widgetProperty_styleClass}">
+
+  <nxu:set var="contentViewName"
+    value="#{widgetProperty_contentViewName}">
+  <nxu:set var="contentView"
+    value="#{contentViewActions.getContentViewWithProvider(contentViewName)}"
+    cache="true">
+
+      <c:if test="#{contentView != null}">
+        <nxl:layout name="#{contentView.searchLayout.name}" mode="search"
+          value="#{contentView.searchDocumentModel}" />
+      </c:if>
+
+  </nxu:set>
+  </nxu:set>
+
+</div>
