@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.core.LocalConfigurationService">
+
+  <documentation>
+    The LocalConfiguration service manages LocalConfiguration classes.
+    It provides a method to retrieve LocalConfiguration from a current document
+    and a given facet.
+
+    @author Thomas Roger (troger@nuxeo.com)
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationServiceImpl"/>
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService"/>
+  </service>
+</component>
