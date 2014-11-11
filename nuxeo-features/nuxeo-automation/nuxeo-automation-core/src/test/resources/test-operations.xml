@@ -1,0 +1,68 @@
+<component name="org.nuxeo.ecm.core.rules.test-operations" version="1.0">
+
+  <extension point="operations"
+    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    <operation class="org.nuxeo.ecm.automation.core.test.Operation1" />
+    <operation class="org.nuxeo.ecm.automation.core.test.Operation2" />
+    <operation class="org.nuxeo.ecm.automation.core.test.Operation3" />
+    <operation class="org.nuxeo.ecm.automation.core.test.Operation4" />
+    <operation class="org.nuxeo.ecm.automation.core.test.UnmatchedOperation" />
+    <operation class="org.nuxeo.ecm.automation.core.test.VoidOperation1" />
+    <operation class="org.nuxeo.ecm.automation.core.test.VoidOperation2" />
+    <operation class="org.nuxeo.ecm.automation.core.test.AdaptableOperation1" />
+    <operation class="org.nuxeo.ecm.automation.core.test.AdaptableOperation2" />
+    <operation class="org.nuxeo.ecm.automation.core.test.ControlOperation" />
+    <operation class="org.nuxeo.ecm.automation.core.test.GetVarOperation" />
+    <operation class="org.nuxeo.ecm.automation.core.test.StringListOperation" />
+  </extension>
+
+  <extension point="chains"
+    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    <chain id="mychain">
+      <operation id="o1">
+        <param type="string" name="message">Hello 1!</param>
+      </operation>
+      <operation id="o2">
+        <param type="string" name="message">Hello 2!</param>
+      </operation>
+      <operation id="o1">
+        <param type="string" name="message">Hello 3!</param>
+      </operation>
+    </chain>
+    <chain id="doc_subchain">
+      <operation id="Context.FetchDocument" />
+      <operation id="Document.Create">
+        <param type="string" name="type">Note</param>
+        <param type="string" name="name">MyDoc</param>
+        <param type="properties" name="properties">dc:title=My Doc</param>
+      </operation>
+    </chain>
+    <chain id="core_chain1">
+      <operation id="Context.FetchDocument" />
+      <operation id="Document.Create">
+        <param type="string" name="type">Note</param>
+        <param type="string" name="name">note</param>
+        <param type="properties" name="properties">dc:title=MyDoc</param>
+      </operation>
+      <operation id="Document.Copy">
+        <param type="document" name="target">../../dst</param>
+        <param type="string" name="name">note_copy</param>
+      </operation>
+      <operation id="Document.SetProperty">
+        <param type="string" name="xpath">dc:description</param>
+        <param type="serializable" name="value">mydesc</param>
+      </operation>
+    </chain>
+
+    <chain id="testDateCopy">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Document.SetProperty">
+        <param type="serializable" name="value">expr:Document.parent.getProperty("dc:issued")</param>
+        <param type="string" name="xpath">dc:issued</param>
+        <param type="boolean" name="save">true</param>
+      </operation>
+    </chain>
+
+  </extension>
+
+</component>

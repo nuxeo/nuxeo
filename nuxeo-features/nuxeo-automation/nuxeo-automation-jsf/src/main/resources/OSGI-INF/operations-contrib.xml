@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.automation.jsf.contrib" version="1.0">
+
+  <documentation>@author Thierry Delprat</documentation>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+
+    <operation
+      class="org.nuxeo.ecm.automation.jsf.operations.FetchDocumentFromSeamContext" />
+    <operation
+      class="org.nuxeo.ecm.automation.jsf.operations.FetchFromClipboard" />
+    <operation
+      class="org.nuxeo.ecm.automation.jsf.operations.FetchFromWorklist" />
+    <operation
+      class="org.nuxeo.ecm.automation.jsf.operations.GetCurrentDocument" />
+    <operation class="org.nuxeo.ecm.automation.jsf.operations.GetCurrentDomain" />
+    <operation
+      class="org.nuxeo.ecm.automation.jsf.operations.GetCurrentWorkspace" />
+    <operation
+      class="org.nuxeo.ecm.automation.jsf.operations.GetSelectedDocuments" />
+    <operation class="org.nuxeo.ecm.automation.jsf.operations.Navigate" />
+    <operation class="org.nuxeo.ecm.automation.jsf.operations.PushToClipboard" />
+    <operation
+      class="org.nuxeo.ecm.automation.jsf.operations.PushToSeamContext" />
+    <operation class="org.nuxeo.ecm.automation.jsf.operations.PushToWorklist" />
+    <operation class="org.nuxeo.ecm.automation.jsf.operations.ChangeTab" />
+    <operation class="org.nuxeo.ecm.automation.jsf.operations.ClearWorklist" />
+    <operation class="org.nuxeo.ecm.automation.jsf.operations.ClearClipboard" />
+    <operation class="org.nuxeo.ecm.automation.jsf.operations.DownloadFile" />
+    <operation class="org.nuxeo.ecm.automation.jsf.operations.AddErrorMessage" />
+    <operation class="org.nuxeo.ecm.automation.jsf.operations.AddInfoMessage" />
+    <operation class="org.nuxeo.ecm.automation.jsf.operations.RefreshUI" />
+    <operation class="org.nuxeo.ecm.automation.jsf.operations.CreateDocumentForm" />
+  </extension>
+
+</component>

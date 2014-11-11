@@ -1,0 +1,127 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core">
+
+
+<h2><h:outputText value="#{messages['adminsubtab.monitoring.adminStatus']}" /></h2>
+
+<br/>
+
+<a4j:outputPanel id="admStatusPanel" ajaxRendered="true">
+
+ <h:panelGroup rendered="#{isMultiServerInstallation}">
+  <h:outputText value="#{messages['label.monitoring.multiserver']}" /><br/>
+  <h:outputText value="#{messages['label.monitoring.instanceList']}" /><br/>
+  <nxu:repeat var="serverName" value="#{monitoringAction.listNuxeoInstances()}">
+   <h:outputText value="#{serverName}" /> <br/>
+  </nxu:repeat>
+ </h:panelGroup>
+
+ <h:panelGroup rendered="#{!isMultiServerInstallation}">
+  <h:outputText value="#{messages['label.monitoring.monoserver']}" /><br/>
+ </h:panelGroup>
+
+ <br/>
+
+  <h:dataTable var="status" value="#{monitoringAction.getAdministrativeStatuses()}" class="dataOutput"
+    rowClasses="dataRowEven,dataRowOdd" rendered="#{monitoringAction.editableStatus==null}">
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.monitoring.status.label']}" />
+      </f:facet>
+      <h:outputText value="#{status.label}" />
+    </h:column>
+    <h:column>
+      <f:facet name="header">
+      <h:outputText value="#{messages['label.monitoring.status.state']}" />
+      </f:facet>
+       <h:graphicImage url="/img/state_active.png"
+    alt="#{status.state}"  title="#{status.state}" rendered="#{status.isActive()}"/>
+       <h:graphicImage url="/img/state_inactive.png"
+    alt="#{status.state}" title="#{status.state}" rendered="#{!status.isActive()}"/>
+    </h:column>
+    <h:column>
+      <f:facet name="header">
+      <h:outputText value="#{messages['label.monitoring.status.message']}" />
+      </f:facet>
+      <h:outputText value="#{status.message}" />
+    </h:column>
+    <h:column>
+      <f:facet name="header">
+      <h:outputText value="#{messages['label.monitoring.status.description']}" />
+      </f:facet>
+      <h:outputText value="#{status.description}" />
+    </h:column>
+    <h:column>
+      <f:facet name="header">
+      <h:outputText value="#{messages['label.monitoring.status.action']}" />
+      </f:facet>
+
+     <a4j:form>
+        <a4j:commandButton  value="#{messages['action.monitoring.edit']}" action="#{monitoringAction.editStatus()}" reRender="admStatusPanel">
+            <f:param name="serviceIdentifier" value="#{status.serviceIdentifier}" />
+        </a4j:commandButton>
+     </a4j:form>
+
+    </h:column>
+  </h:dataTable>
+
+  <h:panelGroup rendered="#{monitoringAction.editableStatus!=null}">
+    <h:form>
+      <h:outputText value="#{messages['label.monitoring.status.currentState']}" />
+      <table>
+        <tr><td><h:outputText value="#{messages['label.monitoring.status.label']}" /></td>
+            <td><h:outputText value="#{monitoringAction.editableStatus.label}"/></td>
+        </tr>
+        <tr><td><h:outputText value="#{messages['label.monitoring.status.state']}" /></td>
+            <td><h:outputText value="#{monitoringAction.editableStatus.state}"/></td>
+        </tr>
+        <tr><td><h:outputText value="#{messages['label.monitoring.status.description']}" /></td>
+            <td><h:outputText value="#{monitoringAction.editableStatus.description}"/></td>
+        </tr>
+        <tr><td><h:outputText value="#{messages['label.monitoring.status.lastUpdate']}" /></td>
+            <td><h:outputText value="#{monitoringAction.editableStatus.modificationDate.time}">
+                  <f:convertDateTime type="both" dateStyle="short" timeStyle="short"/>
+                </h:outputText>
+            </td>
+        </tr>
+        <tr><td><h:outputText value="#{messages['label.monitoring.status.login']}" /></td>
+            <td><h:outputText value="#{monitoringAction.editableStatus.userLogin}"/></td>
+        </tr>
+        <tr><td><h:outputText value="#{messages['label.monitoring.status.message']}" /></td>
+            <td><h:outputText value="#{monitoringAction.editableStatus.message}"/></td>
+        </tr>
+
+      </table>
+
+      <br/><hr/><br/>
+
+      <h:outputText value="#{messages['label.monitoring.status.newState']}" />
+
+      <table>
+        <tr>
+            <td><h:outputText value="#{messages['label.monitoring.status.message']}"/></td>
+            <td><h:inputText value="#{monitoringAction.newStatusMessage}" size="100"/></td>
+        </tr>
+        <tr>
+            <td><h:outputText value="#{messages['label.monitoring.status.state']}" /></td>
+            <td>
+              <h:selectOneListbox class="dataInputText" size="1" value="#{monitoringAction.newStatusValue}">
+                    <f:selectItem itemValue = "active" itemLabel = "#{messages['label.status.active']}"/>
+                    <f:selectItem itemValue = "passive" itemLabel = "#{messages['label.status.passive']}"/>
+             </h:selectOneListbox>
+            </td>
+        </tr>
+      </table>
+
+      <a4j:commandButton  value="#{messages['action.monitoring.save']}" action="#{monitoringAction.saveStatus()}" reRender="admStatusPanel"/>
+      <a4j:commandButton  value="#{messages['action.monitoring.cancel']}" action="#{monitoringAction.cancelEdit()}" reRender="admStatusPanel"/>
+
+    </h:form>
+  </h:panelGroup>
+</a4j:outputPanel>
+
+</div>
