@@ -1,0 +1,7 @@
+id,label,obsolete,ordering
+"eventDocumentCategory","eventDocumentCategory","0","0"
+"eventWorkflowCategory","eventWorkflowCategory","0","10"
+"NuxeoAuthentication","NuxeoAuthentication","0","20"
+"eventLifeCycleCategory","eventLifeCycleCategory","0","30"
+"relationNotificationCategory","relationNotificationCategory","0","40"
+"document_review_approbation2","document_review_approbation2","0","50"
