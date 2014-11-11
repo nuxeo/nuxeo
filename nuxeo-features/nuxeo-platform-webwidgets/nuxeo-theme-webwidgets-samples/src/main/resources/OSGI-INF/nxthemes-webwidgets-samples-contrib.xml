@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.theme.webwidgets.samples">
+  <documentation>
+    @author Jean-Marc Orliaguet (jmo@chalmers.se)
+  </documentation>
+
+  <require>org.nuxeo.theme.webwidgets.ui</require>
+
+  <!-- Sample widgets -->
+  <extension target="org.nuxeo.theme.webwidgets.Service"
+    point="widgets">
+
+    <widget name="uwa module">
+      <category>modules</category>
+      <path>nxthemes/webwidgets/samples/uwa-module.html</path>
+      <icon>nxthemes/webwidgets/samples/uwa-module.png</icon>
+    </widget>
+
+    <widget name="image box">
+      <category>content</category>
+      <path>nxthemes/webwidgets/samples/imagebox.html</path>
+      <icon>nxthemes/webwidgets/samples/imagebox.png</icon>
+    </widget>
+    
+    <widget name="flash box">
+      <category>content</category>
+      <path>nxthemes/webwidgets/samples/flashbox.html</path>
+      <icon>nxthemes/webwidgets/samples/flashbox.png</icon>
+    </widget>
+
+    <widget name="sticky notes">
+      <category>content</category>
+      <path>nxthemes/webwidgets/samples/sticky-notes.html</path>
+      <icon>nxthemes/webwidgets/samples/sticky-notes.png</icon>
+    </widget>
+    
+    <widget name="feed reader">
+      <category>content</category>
+      <path>nxthemes/webwidgets/samples/feedreader.html</path>
+      <icon>nxthemes/webwidgets/samples/feed-reader.png</icon>
+    </widget>
+    
+    <widget name="Last created documents">
+      <category>content</category>
+      <path>nxthemes/webwidgets/samples/lastdocuments.html</path>
+    </widget>
+
+  </extension>
+
+</component>
+

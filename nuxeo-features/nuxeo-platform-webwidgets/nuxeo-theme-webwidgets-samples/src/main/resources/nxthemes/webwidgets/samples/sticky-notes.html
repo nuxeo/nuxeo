@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:widget="http://www.netvibes.com/ns/">
+<head>
+
+<title>Sticky notes</title>
+
+<meta name="author" content="Author name" />
+<meta name="version" content="0.0.1" />
+
+<widget:preferences>
+  <preference name="text" type="text" label="Text" defaultValue="" />
+  <preference name="link" type="text" label="Link" defaultValue="" />
+</widget:preferences>
+
+<style type="text/css">
+div.stickyNotes {
+  background: url(${basePath}/skin/nxthemes-webwidgets-samples/img/stickynotes-bg.png) top left no-repeat;
+  height: 135px;
+  text-align: left;
+  width: 135px;
+}
+div.stickyNotes p {
+  color: #006;
+  font: bold 16px Arial;
+  letter-spacing: -0.06em;
+  padding: 15px;
+}
+div.stickyNotes a {
+  color: #006;
+  text-decoration: underline;
+}
+</style>
+
+<script type="text/javascript">
+var StickyNotes = {};
+
+StickyNotes.display = function() {
+  var text = widget.getValue('text');
+  var link = widget.getValue('link');
+  if (text && link) {
+    widget.addBody('<div class="stickyNotes"><p><a href="' + link + '">' + text + '</a></p></div>'); 
+  }
+}
+
+widget.onLoad = function() {
+  StickyNotes.display();
+}
+
+widget.onRefresh = widget.onLoad;
+
+</script>
+
+</head>
+<body>
+</body>
+</html>

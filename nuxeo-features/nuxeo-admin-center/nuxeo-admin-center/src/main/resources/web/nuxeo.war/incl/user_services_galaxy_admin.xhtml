@@ -1,0 +1,40 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<ui:insert name="user">
+  <h:form id="userServicesForm">
+
+
+    <div class="userActions">
+      <h:outputText value="#{messages['label.loggedAsUser']}" />
+
+      <nxu:set var="actions"
+        value="#{webActions.getActionsList('NUXEO_ADMIN_USER_SERVICES')}"
+        cache="true">
+        <nxu:dataList layout="simple"
+                      var="action"
+                      value="#{actions}"
+                      rowIndexVar="row"
+                      rowCountVar="rowCount"
+                      id="userServicesBottomActionsTable">
+          <h:outputText value=" | " rendered="#{row!=rowCount}"/>
+
+          <nxh:commandLink action="#{action.getLink()}"
+            id="userServicesBottomActionCommandLink">
+            <h:outputText value="#{messages[action.label]}" />
+          </nxh:commandLink>
+
+        </nxu:dataList>
+      </nxu:set>
+
+    </div>
+
+  </h:form>
+</ui:insert>
+
+</div>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://project.nuxeo.org/schemas/webengine/site/blog"
+    xmlns:tns="http://project.nuxeo.org/schemas/webengine/site/blog">
+ 
+  <element name="accept_trackback" type="boolean"/>
+  <element name="accept_comment" type="boolean"/>
+  <element name="feedburner_id" type="string"/>
+  <element name="akismet_id" type="string"/>
+  <element name="google_analytics_id" type="string"/>
+
+</schema>
