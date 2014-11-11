@@ -1,0 +1,25 @@
+Export-Package: org.nuxeo.ecm.platform.test;version="1.0.0"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: nuxeo-platform-test
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Leroy Merlin
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Import-Package: com.google.inject,
+ javax.sql,
+ junit.framework,
+ org.hsqldb.jdbc,
+ org.junit,
+ org.junit.runner,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.schema,
+ org.nuxeo.ecm.core.schema.types,
+ org.nuxeo.ecm.core.test,
+ org.nuxeo.ecm.directory.api,
+ org.nuxeo.ecm.platform.usermanager,
+ org.nuxeo.runtime.test.runner
+Bundle-SymbolicName: org.nuxeo.ecm.platform.test;singleton:=true
