@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo-webengine-gadgets
+Bundle-SymbolicName: org.nuxeo.opensocial.webengine.gadgets;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Leroy Merlin, Nuxeo
+Provide-Package: org.nuxeo.opensocial.webengine.gadgets
+Require-Bundle: org.nuxeo.ecm.webengine.core
+Nuxeo-Require: org.nuxeo.ecm.webengine.core
+Nuxeo-WebModule: org.nuxeo.opensocial.webengine.gadgets.GadgetsApp; explode:=true; compat:=true

@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<fragment>
+
+  <extension target="application#MODULE">
+
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+
+  </extension>
+
+  <extension target="faces-config#NAVIGATION">
+
+    <navigation-case>
+      <from-outcome>create_mail_folder</from-outcome>
+      <to-view-id>/create_mail_folder.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>edit_mail_folder</from-outcome>
+      <to-view-id>/edit_mail_folder.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+  </extension>
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+  </install>
+    
+</fragment>
+
