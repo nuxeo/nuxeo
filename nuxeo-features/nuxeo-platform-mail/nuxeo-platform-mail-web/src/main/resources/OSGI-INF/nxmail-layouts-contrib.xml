@@ -1,0 +1,556 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.mail.web.layouts.contrib">
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="listing_mail_body">
+
+      <documentation>
+        This widget type displays the first words of the mail Body
+        <br />
+        It requires the following fields configuration:
+        <ul>
+          <li>
+            first field mapping the mail text property.
+          </li>
+          <li>
+            first field mapping the mail htmlText property.
+          </li>
+          <li>
+            first field mapping the document title property.
+          </li>
+        </ul>
+      </documentation>
+      
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_mail_body_widget_template.xhtml
+      </property>
+
+    </widgetType>
+
+    <widgetType name="listing_mail_contact">
+
+      <documentation>
+        This widget type displays the mail addresses within a mailTo link.
+        <br />
+        It requires the following fields configuration:
+        <ul>
+          <li>
+            first field mapping the mail sender property.
+          </li>
+          <li>
+            second field mapping the mail recipient property.
+          </li>
+          <li>
+            third field mapping the mail cc_recipient property.
+          </li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_mail_contact_widget_template.xhtml
+      </property>
+
+    </widgetType>
+
+    <widgetType name="listing_mail_object">
+
+      <documentation>
+        This widget type displays the mail object and the sending date.
+        <br />
+        It requires the following fields configuration:
+        <ul>
+          <li>
+            first field mapping the dublincore title property.
+          </li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_mail_object_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_mail_sending_date">
+
+      <documentation>
+        This widget type displays the sending date.
+        <br />
+        It requires the following fields configuration:
+        <ul>
+          <li>
+            First field mapping the mail sending_date property.
+          </li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_mail_sending_date_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_mail_attachments">
+
+      <documentation>
+        This widget type displays the mail attachments. This widget requires
+        a document with the files schema.
+        <br />
+        It requires the following fields configuration:
+        <ul>
+          <li>
+            first field mapping the files property.
+          </li>
+          <li>
+            second field mapping the document.
+          </li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_mail_attachments_widget_template.xhtml
+      </property>
+    </widgetType>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="mail_listing">
+      <templates>
+        <template mode="any">/layouts/layout_listing_template.xhtml</template>
+      </templates>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_selection_box_with_current_document</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_icon_type</widget>
+        </column>
+        <column>
+          <widget>listing_mail_object</widget>
+          <widget>listing_mail_sending_date</widget>
+          <widget>listing_mail_contact</widget>
+          <widget>listing_mail_body</widget>
+        </column>
+        <column>
+          <widget>listing_mail_attachments</widget>
+        </column>
+      </columns>
+
+      <widget name="listing_mail_object" type="listing_mail_object">
+        <labels>
+          <label mode="any">label.mail.sender</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data</field>
+          <field>data.ref</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">view</mode>
+        </widgetModes>
+      </widget>
+      <widget name="listing_mail_sending_date" type="listing_mail_sending_date">
+        <labels>
+          <label mode="any">label.mail.sendingDate</label>
+        </labels>
+        <widgetModes>
+          <mode value="any">view</mode>
+        </widgetModes>
+        <fields>
+          <field>data.mail.sending_date</field>
+        </fields>
+      </widget>
+      <widget name="listing_mail_contact" type="listing_mail_contact">
+        <labels>
+          <label mode="any">label.mail.sender</label>
+        </labels>
+        <widgetModes>
+          <mode value="any">view</mode>
+        </widgetModes>
+        <fields>
+          <field>data.mail.sender</field>
+          <field>data.mail.recipients</field>
+          <field>data.mail.cc_recipients</field>
+        </fields>
+      </widget>
+      <widget name="listing_mail_body" type="listing_mail_body">
+        <labels>
+          <label mode="any">label.mail.text</label>
+        </labels>
+        <widgetModes>
+          <mode value="any">view</mode>
+        </widgetModes>
+        <fields>
+          <field>data.mail.text</field>
+          <field>data.mail.htmlText</field>
+          <field>data.dc.title</field>
+        </fields>
+      </widget>
+      <widget name="listing_mail_attachments" type="listing_mail_attachments">
+        <labels>
+          <label mode="any">label.mail.attachments</label>
+        </labels>
+        <widgetModes>
+          <mode value="any">view</mode>
+        </widgetModes>
+        <fields>
+          <field>data.files.files</field>
+          <field>data</field>
+        </fields>
+      </widget>
+    </layout>
+
+    <layout name="mailMessage">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+      	<row>
+          <widget>title</widget>
+        </row>
+        <row>
+          <widget>sender</widget>
+        </row>
+        <row>
+          <widget>sending_date</widget>
+        </row>
+        <row>
+          <widget>recipients</widget>
+        </row>
+        <row>
+          <widget>cc_recipients</widget>
+        </row>
+        <row>
+          <widget>text</widget>
+        </row>
+      </rows>
+      <widget name="title" type="text">
+        <labels>
+          <label mode="any">label.mail.title</label>
+        </labels>
+        <widgetModes>
+          <mode value="any">view</mode>
+        </widgetModes>
+        <translated>true</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="sender" type="text">
+        <labels>
+          <label mode="any">label.mail.sender</label>
+        </labels>
+        <widgetModes>
+          <mode value="any">view</mode>
+        </widgetModes>
+        <fields>
+          <field>mail:sender</field>
+        </fields>
+      </widget>
+      <widget name="sending_date" type="datetime">
+        <labels>
+          <label mode="any">label.mail.sending_date</label>
+        </labels>
+        <widgetModes>
+          <mode value="any">view</mode>
+        </widgetModes>
+        <fields>
+          <field>mail:sending_date</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+        </properties>
+      </widget>
+      <widget name="recipients" type="template">
+        <labels>
+          <label mode="any">label.mail.recipients</label>
+        </labels>
+        <widgetModes>
+          <mode value="any">view</mode>
+        </widgetModes>
+        <fields>
+          <field>mail:recipients</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">/widgets/join_list_widget_template.xhtml</property>
+        </properties>
+      </widget>
+      <widget name="cc_recipients" type="template">
+        <labels>
+          <label mode="any">label.mail.cc_recipients</label>
+        </labels>
+        <widgetModes>
+          <mode value="any">view</mode>
+        </widgetModes>
+        <fields>
+          <field>mail:cc_recipients</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">/widgets/join_list_widget_template.xhtml</property>
+        </properties>
+      </widget>
+      <widget name="text" type="text">
+        <labels>
+          <label mode="any">label.mail.text</label>
+        </labels>
+        <widgetModes>
+          <mode value="any">view</mode>
+        </widgetModes>
+        <properties widgetMode="any">
+          <property name="escape">false</property>
+        </properties>
+        <fields>
+          <field>mail:text</field>
+        </fields>
+      </widget>
+    </layout>
+    
+    <layout name="noLabelFiles">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>files</widget>
+        </row>
+      </rows>
+      <widget name="files" type="template">
+        <labels>
+          <label mode="any">label.mail.files</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="files">files</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="diff">true</property>
+        </properties>
+        <properties mode="any">
+          <property name="template">/widgets/nolabel_list_widget_template.xhtml</property>
+        </properties>
+        <subWidgets>
+          <widget name="file" type="file">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>true</translated>
+            <fields>
+              <field>file</field>
+              <field>filename</field>
+            </fields>
+          </widget>
+        </subWidgets>
+      </widget>
+    </layout>
+    
+    <layout name="mail_folder">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>title</widget>
+        </row>
+        <row>
+          <widget>email</widget>
+        </row>
+        <row>
+          <widget>password</widget>
+        </row>
+        <row>
+          <widget>protocol_type</widget>
+        </row>
+        <row>
+          <widget>host</widget>
+        </row>
+        <row>
+          <widget>port</widget>
+        </row>
+        <row>
+          <widget>socket_factory_fallback</widget>
+        </row>
+        <row>
+          <widget>socket_factory_port</widget>
+        </row>
+        <row>
+          <widget>starttls_enable</widget>
+        </row>
+        <row>
+          <widget>ssl_protocols</widget>
+        </row>
+        <row>
+          <widget>emails_limit</widget>
+        </row>
+      </rows>
+      <widget name="title" type="text">
+        <labels>
+          <label mode="any">label.mail.folder.title</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="email" type="text">
+        <labels>
+          <label mode="any">label.mail.folder.email</label>
+        </labels>
+        <fields>
+          <field>prot:email</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="password" type="secret">
+        <labels>
+          <label mode="any">label.mail.folder.password</label>
+        </labels>
+        <fields>
+          <field>prot:password</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
+          <property name="redisplay">true</property>
+        </properties>
+      </widget>
+      <widget name="protocol_type" type="template">
+        <labels>
+          <label mode="any">label.mail.folder.protocol_type</label>
+        </labels>
+        <fields>
+          <field>prot:protocol_type</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+        <properties mode="any">
+          <property name="template">
+            /widgets/protocol_type_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="host" type="text">
+        <labels>
+          <label mode="any">label.mail.folder.host</label>
+        </labels>
+        <fields>
+          <field>prot:host</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="port" type="text">
+        <labels>
+          <label mode="any">label.mail.folder.port</label>
+        </labels>
+        <fields>
+          <field>prot:port</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="socket_factory_fallback" type="template">
+        <labels>
+          <label mode="any">label.mail.folder.socket_factory_fallback</label>
+        </labels>
+        <fields>
+          <field>prot:socket_factory_fallback</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/boolean_radio_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="socket_factory_port" type="text">
+        <labels>
+          <label mode="any">label.mail.folder.socket_factory_port</label>
+        </labels>
+        <fields>
+          <field>prot:socket_factory_port</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="starttls_enable" type="template">
+        <labels>
+          <label mode="any">label.mail.folder.starttls_enable</label>
+        </labels>
+        <fields>
+          <field>prot:starttls_enable</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/boolean_radio_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="ssl_protocols" type="text">
+        <labels>
+          <label mode="any">label.mail.folder.ssl_protocols</label>
+        </labels>
+        <fields>
+          <field>prot:ssl_protocols</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="emails_limit" type="template">
+        <labels>
+          <label mode="any">label.mail.folder.emails_limit</label>
+        </labels>
+        <fields>
+          <field>prot:emails_limit</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+        <properties mode="any">
+          <property name="template">
+            /widgets/emails_limit_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+    </layout>
+
+  </extension>
+
+</component>
