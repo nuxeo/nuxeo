@@ -1,0 +1,20 @@
+<component name="org.nuxeo.webengine.management">
+
+  <require>org.nuxeo.runtime.management.ManagementService</require>
+
+  <extension target="org.nuxeo.runtime.management.ManagementService"
+      point="factories">
+    <factory
+        name="repositorySessionMetric"
+        class="org.nuxeo.webengine.management.adapters.RepositorySessionMetricMBeanAdapterFactory"/>
+  </extension>
+
+  <extension
+      target="org.nuxeo.runtime.management.ManagementService"
+      point="factories">
+    <factory
+        name="inventory"
+        class="org.nuxeo.webengine.management.adapters.RuntimeInventoryMBeanAdapterFactory"/>
+  </extension>
+
+</component>

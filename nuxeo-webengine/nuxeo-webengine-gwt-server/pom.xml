@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.webengine</groupId>
+    <artifactId>nuxeo-webengine-parent</artifactId>
+    <version>5.2-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-webengine-gwt-server</artifactId>
+  <name>Nuxeo GWT Integration - Server Side</name>
+  <description>Server side elements for GWT integration</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sf.json-lib</groupId>
+      <artifactId>json-lib</artifactId>
+      <classifier>jdk15</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.resteasy</groupId>
+      <artifactId>jaxrs-api</artifactId>
+    </dependency>
+
+  </dependencies>
+</project>
