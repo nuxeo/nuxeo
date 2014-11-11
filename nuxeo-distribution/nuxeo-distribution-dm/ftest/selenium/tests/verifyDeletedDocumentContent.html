@@ -1,0 +1,202 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>verifyDeletedDocumentContent</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">verifyDeletedDocumentContent</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>You are logged as Administrator</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Workspaces</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testWorskspace1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//table[@id=&quot;CHILDREN_DOCUMENT_LIST:dataTable&quot;]/tbody/tr[1]/td[3]//a</td>
+	<td>testFolder1</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//table[@id=&quot;CHILDREN_DOCUMENT_LIST:dataTable&quot;]/tbody/tr[1]/td[1]//input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyChecked</td>
+	<td>//table[@id=&quot;CHILDREN_DOCUMENT_LIST:dataTable&quot;]/tbody/tr[1]/td[1]//input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>//span[@id="CURRENT_SELECTION_TRASH"]/input</td>
+	<td>12000</td>
+</tr>
+<tr>
+	<td>verifyEditable</td>
+	<td>//span[@id="CURRENT_SELECTION_TRASH"]/input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyEditable</td>
+	<td>//span[@id="CURRENT_SELECTION_ADDTOLIST"]/input</td>
+	<td></td>
+</tr>
+<!--Validation de la suppression-->
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Delete"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Delete selected document(s)?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>testFolder1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Trash</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>testFolder1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testFolder1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Note to be modified</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>testNote1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>New Document</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>Import a file</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//table[@id=&quot;CHILDREN_DOCUMENT_LIST:dataTable&quot;]/tbody/tr[1]/td[3]//a</td>
+	<td>Note to be modified</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//table[@id=&quot;CHILDREN_DOCUMENT_LIST:dataTable&quot;]/tbody/tr[1]/td[1]//input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyChecked</td>
+	<td>//table[@id=&quot;CHILDREN_DOCUMENT_LIST:dataTable&quot;]/tbody/tr[1]/td[1]//input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>//span[@id="CURRENT_SELECTION_DELETE"]/input</td>
+	<td>12000</td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>//span[@id="CURRENT_SELECTION_UNDELETE"]/input</td>
+	<td>12000</td>
+</tr>
+<!--Validation de la suppression-->
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Restore"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Undelete selected document(s)?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>1 Document(s) restored</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testWorskspace1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testFolder1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Note to be modified</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>testNote1</td>
+	<td></td>
+</tr>
+<!--Déconnexion-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
+
