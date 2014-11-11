@@ -1,0 +1,111 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  class="#{widgetProperty_styleClass}">
+
+<nxu:set var="actionStyleClass"
+  value="#{widgetProperty_actionStyleClass}"
+  cache="true">
+
+  <c:if test="#{not empty widgetProperty_actions}">
+
+    <c:if test="#{!empty widget.label}">
+      <h3 class="summaryTitle">
+        <ui:include src="/widgets/incl/widget_label_template.xhtml">
+          <ui:param name="labelStyleClass" value="#{widgetProperty_headerStyleClass}" />
+        </ui:include>
+      </h3>
+    </c:if>
+
+    <div class="#{empty widgetProperty_subStyleClass ? 'actions_block': widgetProperty_subStyleClass}">
+
+      <c:choose>
+
+        <c:when test="#{widgetProperty_overallDisplay == 'horizontal_block'}">
+          <div>
+            <c:forEach var="action" items="#{widgetProperty_actions}"
+              begin="0"
+              end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
+              step="1">
+              <ui:decorate template="/incl/action/action_template.xhtml">
+                <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+                <ui:param name="idPrefix" value="#{widget.id}_" />
+              </ui:decorate>
+            </c:forEach>
+          </div>
+        </c:when>
+
+        <c:when test="#{widgetProperty_overallDisplay == 'menu'}">
+          <ul>
+            <c:forEach var="action" items="#{widgetProperty_actions}"
+              begin="0"
+              end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
+              step="1">
+              <li class="#{nxu:test(widgetProperty_selectedExpression, 'selected', '')}">
+                <ui:decorate template="/incl/action/action_template.xhtml">
+                  <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+                  <ui:param name="idPrefix" value="#{widget.id}_" />
+                </ui:decorate>
+              </li>
+            </c:forEach>
+          </ul>
+        </c:when>
+
+        <!-- TODO: add rollover menu? -->
+
+        <c:otherwise>
+          <c:forEach var="action" items="#{widgetProperty_actions}"
+            begin="0"
+            end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
+            step="1">
+            <div>
+              <ui:decorate template="/incl/action/action_template.xhtml">
+                <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+                <ui:param name="idPrefix" value="#{widget.id}_" />
+              </ui:decorate>
+            </div>
+          </c:forEach>
+        </c:otherwise>
+
+      </c:choose>
+
+      <c:if test="#{not empty widgetProperty_maxActionsNumber and widgetProperty_actions.size > widgetProperty_maxActionsNumber}">
+        <ul class="actionList">
+          <li class="dropDownMenu button dropdown">
+            <h:outputText value="#{empty widgetProperty_moreMenuLabel ? messages['label.summary.actions.more'] : widgetProperty_moreMenuLabel}" />
+            <ul class="actionSubList">
+              <c:forEach var="action" begin="#{widgetProperty_maxActionsNumber}"
+                end="#{widgetProperty_actions.size-1}" step="1" items="#{widgetProperty_actions}">
+                <li>
+                  <ui:decorate template="/incl/action/generic_action_template.xhtml">
+                    <ui:param name="idPrefix" value="#{widget.id}_more_" />
+                  </ui:decorate>
+                </li>
+              </c:forEach>
+            </ul>
+          </li>
+        </ul>
+        <script type="text/javascript">
+        jQuery(document).ready(function($) {
+          jQuery('.dropDownMenu').click(function(e) {
+            jQuery(this).find('ul').hide();
+            jQuery(this).find("ul").show();
+            e.stopPropagation();
+          });
+          jQuery(document).click(function() {
+            jQuery('.dropDownMenu').find('ul').hide();
+          });
+        });
+        </script>
+      </c:if>
+
+    </div>
+
+  </c:if>
+
+</nxu:set>
+
+</div>
