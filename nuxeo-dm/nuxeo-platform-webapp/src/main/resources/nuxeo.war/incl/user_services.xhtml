@@ -1,0 +1,90 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<div class="userServices">
+
+  <ui:insert name="user">
+    <h:form id="userServicesForm">
+  
+      <h:outputText value="#{messages['label.loggedAsUser']}" />
+  
+      <nxu:set var="actions"
+        value="#{webActions.getActionsList('USER_SERVICES')}"
+        cache="true">
+        <nxu:dataList layout="simple"
+                      var="action"
+                      value="#{actions}"
+                      rowIndexVar="row"
+                      rowCountVar="rowCount"
+                      id="userServicesActionsTable">
+          <h:outputText value=" | " rendered="#{row!=rowCount}"/>
+          <nxh:commandLink action="#{action.getLink()}"
+            id="userServicesActionCommandLink">
+            <h:outputText value="#{messages[action.label]}" />
+          </nxh:commandLink>
+        </nxu:dataList>
+      </nxu:set>
+  
+      <br />
+  
+      <nxu:set var="actions"
+        value="#{webActions.getActionsList('USER_SERVICES_BOTTOM')}"
+        cache="true">
+        <nxu:dataList layout="simple"
+                      var="action"
+                      value="#{actions}"
+                      rowIndexVar="row"
+                      rowCountVar="rowCount"
+                      id="userServicesBottomActionsTable">
+          <h:outputText value=" | " rendered="#{row!=rowCount}"/>
+  
+          <nxh:commandLink action="#{action.getLink()}"
+            rendered="#{fn:startsWith(action.link,'#')}"
+            id="userServicesBottomActionCommandLink">
+            <h:outputText value="#{messages[action.label]}" />
+          </nxh:commandLink>
+  
+          <h:outputLink value="#{baseURL}#{action.link}"
+            rendered="#{!(fn:startsWith(action.link,'#'))}"
+            id="userServicesBottomActionLink">
+            <h:outputText value="#{messages[action.label]}" />
+          </h:outputLink>
+  
+        </nxu:dataList>
+      </nxu:set>
+
+      <br />
+  
+      <c:if test="#{userServicesContext.searchEnabled}">
+        <h:inputText value="#{searchActions.simpleSearchKeywords}" size="15"
+          class="directoryFilter"
+          onkeydown="if (event.keyCode == 13) {Element.next(Element.next(this)).click();} else return true;"
+          id="simpleSearchKeywordsInput" />
+        <h:inputHidden value="#{searchActions.searchTypeId}"
+          id="simpleSearchKeywordsInputHidden">
+          <f:attribute name="value" value="KEYWORDS"/>
+        </h:inputHidden>
+        <h:commandButton action="#{searchActions.performSearch}"
+          value="#{messages['command.search']}" styleClass="button"
+          id="simpleSearchSubmitButton" />
+    
+        <div class="advancedSearchLink">
+          <h:commandLink
+            action="#{searchActions.search}"
+            value="#{messages['command.advancedSearch']}"
+            id="advancedSearchButton" />
+        </div>
+
+      </c:if> 
+  
+    </h:form>
+  </ui:insert>
+
+</div>
+
+</div>
