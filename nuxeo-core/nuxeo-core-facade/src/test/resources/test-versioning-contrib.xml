@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.versioning.test.contrib">
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="versioningRules">
+
+    <versioningRule typeName="File">
+      <initialState major="1" minor="1" />
+      <options lifeCycleState="project">
+        <none />
+        <minor default="true" />
+      </options>
+      <options lifeCycleState="approved" />
+    </versioningRule>
+
+  </extension>
+</component>
