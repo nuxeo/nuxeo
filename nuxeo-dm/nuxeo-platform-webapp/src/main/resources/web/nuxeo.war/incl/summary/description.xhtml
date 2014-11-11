@@ -1,0 +1,12 @@
+<div class="description_block"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <c:if test="#{!empty currentDocument.dc.description}">
+    <h3 class="summaryTitle">
+      <h:outputText value="#{messages['label.description']}" />
+    </h3>
+    <h:outputText value="#{currentDocument.dc.description}" />
+  </c:if>
+
+</div>
