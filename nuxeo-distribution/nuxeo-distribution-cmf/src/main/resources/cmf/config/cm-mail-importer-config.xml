@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.casemanagement.default.mail.config">
+
+  <require>org.nuxeo.ecm.platform.mail.service.MailServiceContrib
+  </require>
+  <require>org.nuxeo.ecm.platform.mail.core.listener.contrib</require>
+
+  <!-- disable listener from platform-mail-core -->
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <listener name="mailReceivedListener" enabled="false" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.MailService"
+    point="sessionFactory">
+
+    <sessionFactory name="casemanagementImport"
+      fetcherName="simple">
+      <properties>
+        <property name="user">${cm.mail.import.server.user}</property>
+        <property name="password">${cm.mail.import.server.password}</property>
+        <property name="mail.store.protocol">${cm.mail.import.server.mail.store.protocol}</property>
+        <property name="mail.imap.host">${cm.mail.import.server.mail.imap.host}</property>
+        <property name="mail.imap.starttls.enable">${cm.mail.import.server.mail.imap.starttls.enable}</property>
+        <property name="mail.imap.ssl.protocols">${cm.mail.import.server.mail.imap.ssl.protocols}</property>
+        <property name="mail.imap.socketFactory.class">${cm.mail.import.server.mail.imap.socketFactory.class}</property>
+        <property name="mail.imap.port">${cm.mail.import.server.mail.imap.port}</property>
+        <property name="mail.imap.socketFactory.port">${cm.mail.import.server.mail.imap.socketFactory.port}</property>
+        <property name="mail.imap.socketFactory.fallback">${cm.mail.import.server.mail.imap.socketFactory.fallback}</property>
+      </properties>
+    </sessionFactory>
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService"
+    point="schedule">
+
+    <schedule id="correspEmailInjectionSchedule">
+      <username>Administrator</username>
+      <password>Administrator</password>
+      <eventId>CaseManagementEmailInjectionEvent</eventId>
+      <eventCategory>default</eventCategory>
+      <!-- every five minutes -->
+      <cronExpression>0 0/5 * * * ?</cronExpression>
+    </schedule>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <listener name="CmMailInjectionListener" async="false"
+      postCommit="false" class="org.nuxeo.cm.event.MailInjectionListener"
+      priority="120" enabled="${cm.mail.import.enable}">
+      <event>CaseManagementEmailInjectionEvent</event>
+    </listener>
+
+  </extension>
+
+</component>
