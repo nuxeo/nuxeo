@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>testAdvancedSearch</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">testAdvancedSearch</td></tr>
+</thead><tbody>
+<tr>
+	<td>setTimeout</td>
+	<td>30000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=WARN&amp;message=----- Selenium testAdvancedSearch</td>
+	<td></td>
+</tr>
+<!--Identification-->
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/workspaces/testWorkspace1/testFolder1@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>jdoe</td>
+	<td></td>
+</tr>
+<!-- create doc to search -->
+<tr>
+	<td>mouseDown</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Note</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>advancedSearchTest</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>document_create:create_doc_CREATE_DOCUMENT</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Edit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>document_edit:nxl_dublincore:nxw_subjects:nxw_subjects_topic</td>
+	<td>label=Art</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>document_edit:nxl_dublincore:nxw_subjects:nxw_subjects_subtopic</td>
+	<td>label=Cinema</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>document_edit:nxl_dublincore:nxw_subjects:nxw_subjects_add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>document_edit:nxl_dublincore:nxw_coverage:nxw_coverage_continent</td>
+	<td>label=Europe</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>document_edit:nxl_dublincore:nxw_coverage:nxw_coverage_country</td>
+	<td>label=Greece</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>document_edit:nxl_dublincore:nxw_nature</td>
+	<td>label=Article</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Save&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Note modified</td>
+	<td></td>
+</tr>
+<!-- advanced search -->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Advanced search</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>searchForm:nxl_advanced_search:nxw_search_all_words</td>
+	<td>advancedSearchTest</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>searchForm:nxl_advanced_search:nxw_search_nature</td>
+	<td>label=Article</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchForm:searchButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=advancedSearchTest</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>advanced_search:nxl_search_listing_ajax:listing_title_link_header_sort</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>advanced_search:nxl_search_listing_ajax:listing_modification_date_header_sort</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>advanced_search:nxl_search_listing_ajax:listing_lifecycle_header_sort</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>advanced_search:nxl_search_listing_ajax:listing_coverage_header_sort</td>
+	<td></td>
+</tr>
+<!-- select columns and sort info -->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Advanced search</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>searchForm:nxl_advanced_search:nxw_search_all_words</td>
+	<td>advancedSearchTest</td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>searchForm:nxl_search_listing_ajax:nxl_search_listing_ajax_targetSelect</td>
+	<td>label=State</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>searchForm:nxl_search_listing_ajax:nxl_search_listing_ajax_removeFormSelection</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>searchForm:nxl_search_listing_ajax:nxl_search_listing_ajax_sourceSelect</td>
+	<td>label=Coverage</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>searchForm:nxl_search_listing_ajax:nxl_search_listing_ajax_addToSelection</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>searchForm:nxl_search_listing_ajax_1:nxl_search_listing_ajax_1_add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>searchForm:nxl_search_listing_ajax_1:nxl_search_listing_ajax_1_input:0:nxl_search_listing_ajax_1_sort_info_colum</td>
+	<td>label=Modified</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>searchForm:nxl_search_listing_ajax_1:nxl_search_listing_ajax_1_input:0:nxl_search_listing_ajax_1_sort_info_ascending:1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>searchForm:nxl_search_listing_ajax_1:nxl_search_listing_ajax_1_add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>searchForm:nxl_search_listing_ajax_1:nxl_search_listing_ajax_1_input:1:nxl_search_listing_ajax_1_sort_info_colum</td>
+	<td>label=Title with link</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchForm:searchButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=advancedSearchTest</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>advanced_search:nxl_search_listing_ajax:listing_title_link_header_sort</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>advanced_search:nxl_search_listing_ajax:listing_modification_date_header_sort</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>advanced_search:nxl_search_listing_ajax:listing_lifecycle_header_sort</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>advanced_search:nxl_search_listing_ajax:listing_coverage_header_sort</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>advanced_search:nxl_search_listing_ajax:listing_modification_date_header_sort_asc</td>
+	<td>1</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>advanced_search:nxl_search_listing_ajax:listing_title_link_header_sort_desc</td>
+	<td>2</td>
+</tr>
+<!-- test sort can still be changed from this interface-->
+<tr>
+	<td>clickAndWait</td>
+	<td>//a[@id='advanced_search:nxl_search_listing_ajax:listing_coverage_header_sort_add']/img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>advanced_search:nxl_search_listing_ajax:listing_modification_date_header_sort_asc</td>
+	<td>1</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>advanced_search:nxl_search_listing_ajax:listing_title_link_header_sort_desc</td>
+	<td>2</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>advanced_search:nxl_search_listing_ajax:listing_coverage_header_sort_desc</td>
+	<td>3</td>
+</tr>
+<!-- test deleted documents selection -->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testFolder1</td>
+	<td></td>
+</tr>
+<!-- click twice on 'modified' to make sure advancedSearchText is the first doc in table -->
+<tr>
+	<td>clickAndWait</td>
+	<td>document_content:nxl_document_listing_ajax:listing_modification_date_header_sort</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>document_content:nxl_document_listing_ajax:listing_modification_date_header_sort</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//form[@id=&quot;document_content&quot;]//table/tbody/tr[1]/td[3]//span</td>
+	<td>advancedSearchTest</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>document_content:nxl_document_listing_ajax:nxw_listing_ajax_selection_box_with_current_document</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>document_content:clipboardActionsTable_0_0:3:clipboardActionsButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Delete selected document(s)?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>1 Document(s) deleted</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Advanced search</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>searchForm:nxl_advanced_search:nxw_search_all_words</td>
+	<td>advancedSearchTest</td>
+</tr>
+<tr>
+	<td>assertSelectedLabel</td>
+	<td>searchForm:nxl_advanced_search:nxw_search_deleted_documents</td>
+	<td>No</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchForm:searchButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>No documents match your search criteria</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>link=advancedSearchTest</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Advanced search</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>searchForm:nxl_advanced_search:nxw_search_all_words</td>
+	<td>advancedSearchTest</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>searchForm:nxl_advanced_search:nxw_search_deleted_documents</td>
+	<td>label=Yes</td>
+</tr>
+<tr>
+	<td>assertSelectedLabel</td>
+	<td>searchForm:nxl_advanced_search:nxw_search_deleted_documents</td>
+	<td>Yes</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchForm:searchButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>No documents match your search criteria</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=advancedSearchTest</td>
+	<td></td>
+</tr>
+<!-- reset search, columns and sort selection -->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Advanced search</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>searchForm:nxl_advanced_search:nxw_search_all_words</td>
+	<td>advancedSearchTest</td>
+</tr>
+<tr>
+	<td>assertSelectedLabel</td>
+	<td>searchForm:nxl_advanced_search:nxw_search_deleted_documents</td>
+	<td>Yes</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchForm:clearSearchButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>searchForm:nxl_advanced_search:nxw_search_all_words</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertSelectedLabel</td>
+	<td>searchForm:nxl_advanced_search:nxw_search_deleted_documents</td>
+	<td>No</td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//select[@id='searchForm:nxl_search_listing_ajax:nxl_search_listing_ajax_targetSelect']//option[@value='lifecycle']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//select[@id='searchForm:nxl_search_listing_ajax:nxl_search_listing_ajax_targetSelect']//option[@value='coverage']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchForm:resetSelectedColumnsButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//select[@id='searchForm:nxl_search_listing_ajax:nxl_search_listing_ajax_targetSelect']//option[@value='lifecycle']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//select[@id='searchForm:nxl_search_listing_ajax:nxl_search_listing_ajax_targetSelect']//option[@value='coverage']</td>
+	<td></td>
+</tr>
+<!-- log out-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+<!-- empty trash to be sure... -->
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/workspaces/testWorkspace1/testFolder1@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Administrator</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Trash</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>document_trash_content:nxl_document_listing_ajax:listing_ajax_selection_box_with_current_document_header</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>document_trash_content:clipboardActionsTable_0_0:0:clipboardActionsButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Permanently delete selected document(s)?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Document(s) deleted</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
