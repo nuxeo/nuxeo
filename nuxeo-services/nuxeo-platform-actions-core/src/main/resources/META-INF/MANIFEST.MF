@@ -1,0 +1,31 @@
+Export-Package: org.nuxeo.ecm.platform.actions,
+ org.nuxeo.ecm.platform.actions.ejb,
+ org.nuxeo.ecm.platform.actions.elcache
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Localization: bundle
+Bundle-Name: Nuxeo ECM Actions Manager
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: true
+Bundle-Version: 0.0.0.SNAPSHOT
+Nuxeo-Component: OSGI-INF/actions-framework.xml
+Bundle-ManifestVersion: 2
+Import-Package: javax.annotation;version="1.0",
+ javax.ejb,
+ org.apache.commons.logging,
+ org.jboss.seam.pageflow,
+ org.jbpm.graph.def,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.impl,
+ org.nuxeo.ecm.directory;api=split,
+ org.nuxeo.ecm.platform.actions,
+ org.nuxeo.runtime,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.expression,
+ org.nuxeo.runtime.model
+Bundle-SymbolicName: org.nuxeo.ecm.actions;singleton:=true
