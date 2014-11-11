@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+    <!--   install hot deployable beans -->
+    <seamHotDeploy>
+    	<include>**/ContentHistoryActionsBean*.class</include>
+    </seamHotDeploy>
+  </install>
+
+</fragment>

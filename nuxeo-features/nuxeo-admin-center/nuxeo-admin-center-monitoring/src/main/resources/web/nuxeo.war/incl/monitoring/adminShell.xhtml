@@ -1,0 +1,23 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+    xmlns:nxu="http://nuxeo.org/nxweb/util"
+    xmlns:nxd="http://nuxeo.org/nxweb/document"
+    xmlns:c="http://java.sun.com/jstl/core"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+    <a4j:outputPanel id="shellPanel">
+
+        <div class="shellBloc">
+            <c:set var="automationURL" value="#{baseURL}site/automation" />
+
+            <applet id="nxshell" width="800" height="600"
+                archive="#{baseURL}site/shell/shell.jar"
+                code="org.nuxeo.shell.swing.ShellApplet">
+                <param name="codebase_lookup" value="false" />
+                <param name="jnlp_href" value="#{baseURL}site/shell/applet.jnlp" />
+                <param name="host" value="#{automationURL}" />
+                <param name="user" value="#{currentUser}" />
+            </applet>
+        </div>
+    </a4j:outputPanel>
+</div>
