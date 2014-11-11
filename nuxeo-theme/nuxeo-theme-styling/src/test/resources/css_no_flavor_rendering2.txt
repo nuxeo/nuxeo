@@ -1,0 +1,52 @@
+<style type="text/css">
+/* CSS styles for theme 'testStyling' */
+
+
+/* CSS styles named 'testStyling/print Page Styles' */
+.${print_suid} {color:red;font-family:"default (* font)";}
+.${print_suid} h1 {margin:0;padding:0;}
+.${print_suid} h2 {margin:0;padding:0;}
+.${print_suid} h3 {margin:0;padding:0;}
+.${print_suid} h4 {margin:0;padding:0;}
+.${print_suid} h5 {margin:0;padding:0;}
+.${print_suid} h6 {margin:0;padding:0;}
+.${print_suid} .myAddonClassWithFlavor {color:"black (* color)";font-family:"default (* font)";}
+.${print_suid} .myAddonClass {margin:0;padding:0;}
+
+
+/* CSS styles named 'testStyling/default Page Styles' */
+.teststylingDefaultCss2077347671 {color:"default (* color)";font-family:"default (* font)";margin:0;line-height:1.125em;font-size:100%;padding:0;}
+.teststylingDefaultCss2077347671 textarea {font-family:"default (* font)";font-size:.95em;padding:5px;}
+.teststylingDefaultCss2077347671 form {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 div {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 p {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 ul {margin:0;padding:0;list-style:none;}
+.teststylingDefaultCss2077347671 a {color:"red";outline:medium none;text-decoration:none;margin:0;padding:0;}
+.teststylingDefaultCss2077347671 h1 {color:"title.major (* color)";font-weight:bold;margin:0;padding:.4em 0 .5em;font-size:1.4em;}
+.teststylingDefaultCss2077347671 h2 {color:"title.major (* color)";font-weight:bold;margin:0;padding:.5em 1em .5em 0;font-size:1.2em;}
+.teststylingDefaultCss2077347671 h3 {color:"title.major (* color)";font-weight:bold;margin:0;padding:.8em 0 .3em;font-size:1.2em;}
+.teststylingDefaultCss2077347671 h4 {color:"title.minor (* color)";margin:.2em 0 .2em 0;padding:0;font-size:.8em;}
+.teststylingDefaultCss2077347671 h5 {color:"title.minor (* color)";margin:.2em 0 .2em 0;padding:0;font-size:.8em;}
+.teststylingDefaultCss2077347671 h6 {color:"title.minor (* color)";margin:.2em 0 .2em 0;padding:0;font-size:.8em;}
+.teststylingDefaultCss2077347671 input {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 table {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 dd {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 dt {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 dl {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 img {border:0 none;outline:medium none;margin:0;padding:0;}
+.teststylingDefaultCss2077347671 hr {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 fieldset {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 iframe {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 a:link {color:"red";text-decoration:none;}
+.teststylingDefaultCss2077347671 a:visited {color:"red";text-decoration:none;}
+.teststylingDefaultCss2077347671 a:hover {color:"link.hover (* color)";text-decoration:underline;}
+.teststylingDefaultCss2077347671 .selectDocumentType {margin-top:10px;}
+.teststylingDefaultCss2077347671 .checkBox {margin-right:3px;}
+.teststylingDefaultCss2077347671 .required {background:transparent url(/nuxeo/myBasePath/icons/required.gif) top right no-repeat;padding:0 10px 0 0;}
+.teststylingDefaultCss2077347671 .boldLabel {font-weight:bold;}
+.teststylingDefaultCss2077347671 .button {background:linear-gradient(center top,#f5f2f5 5%,#dfdfdf 100%);box-shadow:inset 0 1px 0 0 #fff;border-radius:3px;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f2f5',endColorstr='#dfdfdf');text-decoration:none;background-color:"button (* background)";border:1px solid;margin:5px 10px 10px 0;color:"link.action (* color)";font-size:.9em;text-shadow:1px 1px 0 #fff;font-weight:bold;border-color:"button (* border)";padding:4px 10px;cursor:pointer;}
+.teststylingDefaultCss2077347671 input.button {background:linear-gradient(center top,#f5f2f5 5%,#dfdfdf 100%);box-shadow:inset 0 1px 0 0 #fff;border-radius:3px;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f2f5',endColorstr='#dfdfdf');text-decoration:none;background-color:"button (* background)";border:1px solid;margin:5px 10px 10px 0;color:"link.action (* color)";font-size:.9em;text-shadow:1px 1px 0 #fff;font-weight:bold;border-color:"button (* border)";padding:4px 10px;cursor:pointer;}
+.teststylingDefaultCss2077347671 .myAddonClassWithFlavor {color:"black (* color)";font-family:"default (* font)";}
+.teststylingDefaultCss2077347671 .myAddonClass {margin:0;padding:0;}
+
+</style>
