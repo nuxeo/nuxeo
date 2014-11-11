@@ -1,0 +1,138 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory">
+<c:if test="false">
+  This template is deprecated
+</c:if>
+
+   <nxdir:chainSelect
+     size="2"
+     value="#{searchColumns.newField}"
+     id="resultNewField"
+     cssStyle="display: inline"
+   >
+
+  <table class="dataInput">
+  <tbody>
+   <tr>
+     <td class="labelColumn">
+     <h:outputText value="#{messages['label.search.schema']}" />
+     </td>
+     <td>
+       <nxdir:chainSelectListbox
+           id="resultFieldGroups"
+           index="0"
+           size="5"
+           localize="true"
+           directoryValues="#{searchColumns.fieldGroupEntries}"
+       >
+       <a4j:support event="onchange" reRender="resultFields" />
+       </nxdir:chainSelectListbox>
+    </td>
+    <td class="labelColumn">
+     <h:outputText value="#{messages['label.search.field']}" />
+    </td>
+    <td>
+       <nxdir:chainSelectListbox
+           id="resultFields"
+           index="1"
+           size="5"
+           localize="true"
+           directoryValues="#{searchColumns.fieldEntries}"
+       >
+       </nxdir:chainSelectListbox>
+    </td>
+    <td>
+     <a4j:commandButton
+       value="#{messages['command.search.add_field']}"
+       styleClass="button"
+       action="#{searchColumns.addField}"
+       reRender="a4j_resultFieldList, result_messages, sortPanelGrid"
+     />
+    </td>
+  </tr>
+  </tbody>
+  </table>
+     </nxdir:chainSelect>
+
+  <a4j:outputPanel id="result_messages">
+  <h:message class="errorMessage" for="resultNewField" />
+  </a4j:outputPanel>
+
+  <div class="resultColumnsOrganize">
+  <script>
+    function swapColumns(id1, id2) {
+      var formName="searchForm";
+      var button = document.getElementById(formName + ":swapFieldsHiddenButton");
+      var col1 = document.getElementById(formName + ":fieldRef1");
+      var col2 = document.getElementById(formName + ":fieldRef2");
+      col1.value = id1;
+      col2.value = id2;
+      button.click();
+    }
+  </script>
+  <a4j:commandButton id="swapFieldsHiddenButton" value="click" style="display: none"
+    action="#{searchColumns.swapColumns}"
+    reRender="a4j_resultFieldList"/>
+
+  <h:inputHidden id="fieldRef1" value="#{searchColumns.fieldRef1}" />
+  <h:inputHidden id="fieldRef2" value="#{searchColumns.fieldRef2}" />
+
+  <a4j:outputPanel id="a4j_resultFieldList">
+  <nxu:dataList id="resultFieldList" var="field" layout="simple"
+        value="#{searchColumns.resultColumns}"
+    styleClass="resultColumnsContainer">
+
+    <div id="fieldRef:#{field.fullName}" class="cell" style="display: inline">
+      <h:outputText value="#{messages[field.label]}" />
+     <a4j:commandLink
+       reRender="a4j_resultFieldList, result_messages, sortPanelGrid"
+       styleClass="button"
+       action="#{searchColumns.removeField}"
+       >
+
+       <f:param name="removeField" value="#{field.fullName}" />
+       <h:graphicImage url="/icons/action_clipboard_remove.gif" />
+     </a4j:commandLink>
+    </div>
+
+        <script type="text/javascript">
+          <h:outputText
+            value="new Draggable('fieldRef:#{field.fullName}', {revert:true});"/>
+          <h:outputText
+            value="Droppables.add('fieldRef:#{field.fullName}', {accept:'cell', onDrop:function(element){swapColumns(element.id,'fieldRef:#{field.fullName}')}, hoverclass:'dropInto'});"/>
+        </script>
+
+  </nxu:dataList>
+  <br />
+  </a4j:outputPanel>
+  </div>
+
+  <h:panelGrid id="sortPanelGrid" columns="2" columnClasses="labelColumn,fieldColumn" styleClass="dataInput">
+
+    <h:outputText value="#{messages['label.search.orderBy']}" />
+    <h:selectOneMenu value="#{searchColumns.sortColumn}" >
+      <f:selectItem itemLabel="#{messages['label.vocabulary.selectValue']}" itemValue="" />
+      <nxu:selectItems value="#{searchColumns.resultColumns}" var="field"
+        itemLabel="#{messages[field.label]}" itemValue="#{field.prefixedName}" />
+    </h:selectOneMenu>
+
+    <h:outputText value="#{messages['label.search.orderDirection']}" />
+    <h:selectOneRadio value="#{searchColumns.sortAscending}" >
+      <f:selectItem itemLabel="#{messages['label.search.orderDirectionAsc']}"
+        itemValue='true' />
+      <f:selectItem itemLabel="#{messages['label.search.orderDirectionDesc']}"
+        itemValue='false' />
+    </h:selectOneRadio>
+
+    <h:panelGroup />
+
+  </h:panelGrid>
+  <h:messages globalOnly="true"/>
+</div>
