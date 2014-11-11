@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webengine.blogs.authConfig">
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="authenticators">
+    <authenticationPlugin name="BASIC_AUTH" enabled="true"
+      class="org.nuxeo.ecm.platform.ui.web.auth.plugins.BasicAuthenticator">
+      <parameters>
+         <parameter name="ForcePromptURL_RSS_WEBENGINE_BLOG">
+          site/blogs/@rss
+          </parameter>
+      </parameters>
+    </authenticationPlugin>
+  </extension>
+</component>

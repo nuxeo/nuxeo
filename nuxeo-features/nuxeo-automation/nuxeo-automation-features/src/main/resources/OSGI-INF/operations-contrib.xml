@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.automation.featuresContrib" version="1.0">
+
+  <documentation>@author Bogdan Stefanescu (bs@nuxeo.com)</documentation>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.AuditLog" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.AuditQuery" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.CreateRelation" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.GetRelations" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.users.GetDocumentPrincipalEmails" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.users.GetDocumentUsersAndGroups" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.notification.SendMail" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.GetPictureView" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.PictureResize" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.FileManagerImport" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.UserWorkspaceCreateFromBlob" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.BlobHolderAttach" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.GetActions" />
+
+  </extension>
+
+  <extension point="chains"
+    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    <chain id="AttachFiles">
+      <operation id="BlobHolder.Attach">
+        <param type="boolean" name="useMainBlob">false</param>
+      </operation>
+    </chain>
+    <chain id="FileManager.ImportWithMetaData">
+      <operation id="FileManager.Import">
+      </operation>
+      <operation id="Document.Update">
+        <param type="properties" name="properties">expr:Context.get("docMetaData")</param>
+      </operation>
+    </chain>
+  </extension>
+
+</component>

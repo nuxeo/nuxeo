@@ -1,0 +1,120 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+
+ <script type="text/javascript">
+      function confirmDeleteDirectoryEntry() {
+        return confirm("#{messages['label.entry.confirmDelete']}");
+      }
+ </script>
+
+<c:set value="command.#{detailMode}"
+          var="detailButtonLabel"/>
+
+ <c:if test="#{bean.editableEntry == null and showAddControl == 'true' }">
+        <h:form id="showHideAddDirectoryEntry">
+
+          <h4>
+            <h:commandLink
+              action="#{bean.toggleShowAddForm}">
+              <h:graphicImage url="/icons/toggle_plus.png"
+                rendered="#{!bean.showAddForm}" />
+              <h:graphicImage url="/icons/toggle_minus.png"
+                rendered="#{bean.showAddForm}" />
+              <h:outputText
+                value="#{messages['title.create.entry']}" />
+            </h:commandLink>
+          </h4>
+        </h:form>
+
+        <c:if test="#{bean.showAddForm}">
+          <div class="tabsContent">
+
+           <h:form id="addEntryForm">
+
+            <div class="vocabularyEntryContent">
+
+              <nxl:layout name="#{entryLayoutName}"
+                mode="create" value="#{bean.creationEntry}" />
+
+              <div class="buttons">
+                <h:commandButton value="#{messages['command.create']}"
+                  styleClass="button"
+                  action="#{bean.createEntry}" />
+                <h:commandButton value="#{messages['command.cancel']}"
+                  styleClass="button"
+                  action="#{bean.resetCreateEntry}"
+                  immediate="true" />
+              </div>
+
+            </div>
+          </h:form>
+          </div>
+        </c:if>
+ </c:if>
+
+ <c:if test="#{bean.editableEntry != null}">
+
+        <div class="vocabularyEntryContent">
+          <h:form id="editDirectoryEntry">
+
+            <nxl:layout name="#{entryLayoutName}" mode="#{detailMode}"
+              value="#{bean.editableEntry}" />
+            <div class="buttons">
+              <h:commandButton value="#{messages['command.save']}"
+                id="editDirectoryEntryButton"
+                styleClass="button"
+                action="#{bean.saveEntry}" rendered="#{detailMode == 'edit'}"/>
+              <h:commandButton value="#{messages['command.back']}"
+                id="cancelEditingDirectoryEntryButton"
+                styleClass="button"
+                action="#{bean.resetEditEntry}"
+                immediate="true" />
+            </div>
+
+          </h:form>
+
+        </div>
+
+ </c:if>
+
+<c:if test="#{bean.editableEntry == null}">
+
+<h:form id="entryList">
+
+<div style="float:right">
+<h:commandLink action="#{bean.refresh}">
+<h:outputText value="#{messages['command.refresh']}"/>
+</h:commandLink>
+</div>
+
+<table class="dataOutput">
+  <tbody>
+    <nxu:repeat var="entry"
+      value="#{bean.entries}" index="index">
+      <c:if test="#{index%2 == 0}">
+        <c:set var="directoryEntryClass" value="dataRowOdd" />
+      </c:if>
+      <c:if test="#{index%2 != 0}">
+        <c:set var="directoryEntryClass" value="dataRowEven" />
+      </c:if>
+      <c:if test="#{index == 0}">
+        <nxl:layout name="#{entryLayoutName}" mode="list_and_header"
+          value="#{entry}" />
+      </c:if>
+      <c:if test="#{index != 0}">
+        <nxl:layout name="#{entryLayoutName}" mode="list" value="#{entry}" />
+      </c:if>
+    </nxu:repeat>
+  </tbody>
+</table>
+</h:form>
+
+</c:if>
+
+</div>

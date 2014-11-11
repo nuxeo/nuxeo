@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+  <ui:define name="body">
+
+    <div class="downloadConfirmation">
+       <h1>You wanted to download a Nuxeo Package ? </h1>
+  
+       You clicked on a link to start the download of a Nuxeo Package but
+  
+       <c:if test="#{externalLinkManager.getPkg()==null}">
+        the package you asked for was not found.
+       </c:if>
+       <c:if test="#{externalLinkManager.getPkg()!=null}">
+        you are not administrator and can not continue this process.
+       </c:if>
+  
+      <h:form>
+        <h:commandButton value="Continue" action="#{adminViews.exit()}"/>
+      </h:form>
+  
+    </div>
+
+  </ui:define>
+
+</nxthemes:composition>
+
