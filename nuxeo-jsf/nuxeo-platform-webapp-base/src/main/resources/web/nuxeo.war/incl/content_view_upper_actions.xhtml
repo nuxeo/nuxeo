@@ -1,0 +1,42 @@
+<c:if xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  test="#{contentView != null}">
+
+<c:if test="false">
+Needed parameters:
+ - contentView: the content view instance, mandatory
+ - contentViewRenderId the unique identifier used in main
+   content view template
+
+Optional parameters used to override the content view definition when not
+empty:
+ - showPageSizeSelector
+ - showRefreshCommand
+ - showCSVExport
+ - showPDFExport
+</c:if>
+
+<a4j:region id="#{contentViewRenderId}_contentViewActionsRegion">
+<a4j:outputPanel id="#{contentViewRenderId}_contentViewActionsPanel" layout="block">
+
+<div class="contentViewUpperActions">
+
+  <ui:include src="content_view_page_size_selector.xhtml" />
+
+  <span class="contentViewUpperAction">
+    <a4j:form id="contentViewLayoutSelectForm_#{contentViewRenderId}"
+      ajaxSubmit="true">
+      <ui:include src="content_view_result_layout_actions.xhtml" />
+      <ui:include src="content_view_special_actions.xhtml" />
+    </a4j:form>
+  </span>
+
+  <ui:include src="content_view_export_actions.xhtml" />
+
+</div>
+
+</a4j:outputPanel>
+</a4j:region>
+
+</c:if>
