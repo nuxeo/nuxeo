@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.treeManager">
+
+  <documentation>
+    TreeManager component and service declaration.
+
+    @author Anahide Tchertchian (at@nuxeo.com)
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.webapp.tree.TreeManagerImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.webapp.tree.TreeManager" />
+  </service>
+
+  <extension-point name="plugin">
+    <documentation>
+      Plugin extension point for the tree manager service.
+
+      Enables registration of plugins that will control document filter and
+      sorting.
+
+      Example of a plugin registration:
+
+      <code>
+        <treeManagerPlugin name="navigation">
+          <excludedFacets>
+            <facet name="HiddenInNavigation" />
+          </excludedFacets>
+          <includedFacets>
+            <facet name="Folderish" />
+          </includedFacets>
+          <excludedTypes>
+            <type>Section</type>
+          </excludedTypes>
+          <sortPropertyPath>dc:title</sortPropertyPath>
+          <filterClass>org.example.com.MyFilterClass</filterClass>
+          <leafFilterClass>org.example.com.MyLeafFilterClass</leafFilterClass>
+          <sorterClass>org.example.com.MySorterClass</sorterClass>
+        </treeManagerPlugin>
+      </code>
+
+      Example of a plugin using a page provider:
+
+      <code>
+        <treeManagerPlugin name="navigation">
+          <leafFilterClass>
+            org.nuxeo.ecm.webapp.tree.BigFolderLeafFilter
+          </leafFilterClass>
+          <pageProvider>TREE_CHILDREN</pageProvider>
+        </treeManagerPlugin>
+      </code>
+
+      <ul>
+        <li>
+          excludedFacets: list of facets used to filter documents that should
+          not appear in the tree
+        </li>
+        <li>
+          includedFacets: list of facets used to filter documents that should
+          appear in the tree
+        </li>
+        <li>
+          excludedTypes: list of types used to filter documents that should not
+          appear in the tree
+        </li>
+        <li>
+          sortPropertyPath: property path used to sort tree node children when
+          using the default sorter
+        </li>
+        <li>
+          filterClass: the filter class has to implement the
+          org.nuxeo.ecm.core.api.Filter interface. If it implements the
+          org.nuxeo.ecm.webapp.tree.DocumentTreeFilter interface, the above
+          filter properties will be set on it.
+        </li>
+        <li>
+          leafFilterClass: filter that can decide that a document is shown with
+          no children. The leaf filter class has to implement the
+          org.nuxeo.ecm.core.api.Filter interface.
+        </li>
+        <li>
+          sorterClass: the sorter class has to implement the
+          org.nuxeo.ecm.core.api.Sorter interface. If it implements the
+          org.nuxeo.ecm.webapp.tree.DocumentTreeSorter interface, the above sort
+          property will be set on it.
+        </li>
+        <li>
+          queryModel: the page provider (with one free parameter that will be
+          replaced by the tree node id) to use to list the children of a
+          document in the tree. When not defined, a core query using the
+          filterClass and sorterClass is used.
+        </li>
+        <li>
+          queryModel: the query model (with one free parameter) to use to list
+          the children of a document in the tree. When not defined, a core query
+          using the filterClass and sorterClass is used. NOW DEPRECATED, use
+          pageProvider instead.
+        </li>
+        <li>
+          orderableQueryModel: the query model (with one free parameter) to use
+          to list the children of an orderable document in the tree. NOW
+          DEPRECATED, use pageProvider instead.
+        </li>
+      </ul>
+
+
+    </documentation>
+    <object class="org.nuxeo.ecm.webapp.tree.TreeManagerPluginDescriptor" />
+  </extension-point>
+
+</component>
