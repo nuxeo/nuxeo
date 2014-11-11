@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService">
+  <implementation
+          class="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService" />
+  <documentation>
+    The Request Controller service provides an extension point to apply specific configuration
+    to httpRequest mapping a defined URL pattern. It's possible to handle synchronization, transaction or cache
+    configuration.
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager" />
+  </service>
+
+  <extension-point name="filterConfig">
+  <documentation>
+      Define a new filterConfig.
+      
+      -filterConfig 
+        - name: name of the Filter.
+        - transactional: use transaction.
+        - synchonize: is synchronized
+        - cached: if true, add cache-control to header
+        - cacheTime: cache duration.
+        - private: if true, cache is private, public if false.
+
+      -pattern: url pattern to match
+
+      Example of a filterConfig Registration:
+      
+      <code>  
+		    <filterConfig name="filterName" transactional="true" synchonize="true"
+		     cached="true" private="true" cachetime="3600">
+		      <pattern>/nuxeo/urlPattern/.*</pattern>
+		    </filterConfig>
+      </code>
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.web.common.requestcontroller.service.FilterConfigDescriptor" />
+  </extension-point>
+
+</component>
