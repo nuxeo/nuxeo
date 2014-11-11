@@ -1,0 +1,104 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-ecm</artifactId>
+    <version>5.4.1-I20110308_0116</version>
+  </parent>
+
+  <artifactId>nuxeo-launcher</artifactId>
+  <name>Nuxeo multi-OS startup</name>
+  <description>Build a Nuxeo launcher working with all Nuxeo products</description>
+
+  <properties>
+    <nuxeo.runtime.version>5.4.1-I20110308_0116</nuxeo.runtime.version>
+    <nuxeo.shell.version>5.4.1-I20110308_0116</nuxeo.shell.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-launcher-commons</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.shell</groupId>
+        <artifactId>nuxeo-shell</artifactId>
+        <version>${nuxeo.shell.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-launcher-commons</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.shell</groupId>
+      <artifactId>nuxeo-shell</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.artofsolving.jodconverter</groupId>
+      <artifactId>jodconverter-core</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <!-- <createDependencyReducedPom>false</createDependencyReducedPom> -->
+              <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
+              <shadedArtifactAttached>true</shadedArtifactAttached>
+              <shadedClassifierName>jar-with-dependencies</shadedClassifierName>
+              <filters>
+                <filter>
+                  <artifact>org.nuxeo.shell:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
