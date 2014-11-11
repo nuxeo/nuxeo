@@ -1,0 +1,181 @@
+/*
+Navigation tabs, subtabs, and back links
+Header links to navigate between pages are styled in header.css
+=Tabs -> default tabs and subtabs
+=Navigation controls -> used to paginate document lists
+=Back Arrow -> link to go back to the previous view
+author: lkemen@nuxeo.com
+*/
+
+/* =Tabs */
+.tabsBar {
+  background: none #fff;
+  border-width: 1px; border-style: solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-radius: 3px;
+  float: left;
+  font-family: arial,sans-serif;
+  font-size: 1em;
+  width: 100% }
+
+.tabsBar ul {
+  list-style: none outside none;
+  margin: 0;
+  padding: 0 1em 0 0 }
+
+.tabsBar li {
+  border-width: 1px;
+  border-style: none solid none none;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  float: left;
+  padding: 0 }
+
+.tabsBar a,
+.tabsBar a:visited {
+  background: transparent;
+  border-top: 4px solid transparent;
+  color: "gray.dark (__FLAVOR__ color)";
+  display: block;
+  float: left;
+  padding: .3em .5em .6em;
+  text-decoration: none }
+
+.column .tabsBar li a,
+.modularTabs li a {
+  border-top: 3px solid transparent }
+
+.tabsBar li a:hover,
+.tabsBar li.selected a,
+.tabsBar li.selected a:visited,
+.modularTabs li a:hover,
+.modularTabs li.selected a,
+.modularTabs li.selected a:visited {
+  border-color: "color.major.stronger (__FLAVOR__ border)";
+  color: "tabs.selected (__FLAVOR__ color)" }
+
+
+.tabsBar li.selected a {
+  font-weight: bold }
+
+.subtabsBar {
+  background: none transparent;
+  border-style: none none solid;
+  border-width: 1px;
+  border-color: "subtabs.selected (__FLAVOR__ border)";
+  border-radius: 0;
+  font-size: .9em;
+  margin-top: .5em }
+
+.subtabsBar li {
+  border: none;
+  margin: 0 0 -0.1em .3em }
+
+.subtabsBar a,
+.subtabsBar a:visited {
+  background: none "neutral.lighter (__FLAVOR__ background)";
+  border-width: 1px;
+  border-style: solid solid none;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-radius: 2px 2px 0 0;
+  color: "gray.medium (__FLAVOR__ color)";
+  padding: .22em .4em }
+
+.subtabsBar li a:hover,
+.subtabsBar li.selected a,
+.subtabsBar li.selected a:visited {
+  background: none "subtabs.selected (__FLAVOR__ background)";
+  border-color: "subtabs.selected (__FLAVOR__ border)" "subtabs.selected (__FLAVOR__ border)" "noborder (__FLAVOR__ border)";
+  border-style: solid;
+  border-width: 1px;
+  color: "subtabs.selected (__FLAVOR__ color)";
+  padding: .2em .4em .3em;
+  text-shadow: none }
+
+/* Vertical tabs in home and admin Center */
+.adminTabsColumn {
+  height: auto!important;
+  padding: 0;
+  border-right: 1px solid #eee; }
+
+.adminTabBlock {
+  height: 100%;
+  margin: 0 }
+
+.adminTabsColumn ul {
+  margin: 0 -1px 0 8px;
+  padding: 2em 0 }
+
+.adminTabsColumn li {
+  font-size: .9em;
+  font-weight: bold;
+  margin: 0 0 .15em .1em;
+  padding: 0 }
+
+.adminTabsColumn li a {
+  color: "link (__FLAVOR__ color)";
+  display: block;
+  padding: .6em 0 .6em .5em;
+  text-decoration: none }
+
+.adminTabsColumn li a img {
+  margin: 0 .4em -0.15em 0 }
+
+.adminTabsColumn li:hover,
+.adminTabsColumn li.selected,
+.adminTabsColumn li.selected:hover {
+  background-color: #fff;
+  margin-left: .2em;
+  -moz-transition: margin 0.1s ease-in 0.1s;
+  -webkit-transition: margin 0.1s ease-in 0.1s;
+  transition: margin 0.1s ease-in 0.1s }
+
+.adminTabsColumn li.selected {
+  border: 1px solid #eee;
+  border-style: solid none }
+
+.adminTabsColumn li:hover a,
+.adminTabsColumn li.selected a {
+  border-left: 3px solid;
+  border-color: "color.major.stronger (__FLAVOR__ border)";
+  color: "black (__FLAVOR__ color)" }
+
+/* =Navigation controls */
+.pageNavigationControls,
+#pageNavigationControls {
+  border-width: 1px;
+  border-style: none none solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  margin: 0 0 .5em;
+  padding: 0;
+  text-align: center }
+
+.pageNavigationControls span,
+#pageNavigationControls span {
+  color: "gray.dark (__FLAVOR__ color)";
+  font-weight: bold;
+  font-size: .9em;
+  margin: 0 .5em;
+  vertical-align: middle }
+
+.pageNavigationControls input,
+#pageNavigationControls input {
+  border: medium none;
+  box-shadow: none;
+  margin: 0 .3em;
+  padding: 0;
+  vertical-align: middle }
+
+.pageNavigationControls input[disabled=disabled],
+#pageNavigationControls input[disabled=disabled] {
+  cursor: default;
+  filter: alpha(opacity=50);
+  opacity: .4 }
+
+/* =Back Arrow */
+.directoryBack {
+  display: inline;
+  float: right;
+  margin: 0 -0.9em 0 0 }
+
+.directoryBack:after {
+  clear: both }

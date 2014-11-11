@@ -1,0 +1,174 @@
+/*
+Styles for all the foldable boxes.
+=Default boxes -> foldable box with a colored header
+=Light boxes -> foldable box with a simple border, whithout any color
+=Bubble boxes > Simple box with rounded corner
+author: lkemen@nuxeo.com
+*/
+
+/* =Default boxes */
+.foldableBox {
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  border-color:"neutral.lighter (__FLAVOR__ border)";
+  font-size: .9em;
+  margin-bottom: 1.8em }
+
+.foldableBox h3,
+.gridBox .foldableBox h3 {
+  background-color: "neutral.medium (__FLAVOR__ background)";
+  border-bottom: none;
+  font-size: 1.1em;
+  height: 20px;
+  margin: 0;
+  padding: .3em }
+
+.foldableBox .folded a.foldableHeaderLink,
+.foldableLightBox .folded a.foldableHeaderLink {
+  background:url("${basePath}/icons/arrow_folded.gif") no-repeat left 1px;
+  padding:0 1em 0 1.7em }
+
+.foldableBox .unfolded a.foldableHeaderLink,
+.foldableLightBox .unfolded a.foldableHeaderLink {
+  background:url("${basePath}/icons/arrow_unfolded.gif") no-repeat left top;
+  padding:0 1em 0 1.7em;
+  clear: both }
+
+.foldableBox h3.foldedDisabled {
+  color: #555 }
+
+.foldableBox h3 a,
+.foldableBox h3 span,
+.foldableBox h3 a:visited {
+  color: "black (__FLAVOR__ color)";
+  display: block;
+  float: left;
+  text-decoration: none;
+  padding-right: 1em }
+
+.foldableBox h3 a.warningLink {
+  color: "warning.status (__FLAVOR__ color)" }
+
+.foldableBox .boxBody {
+  clear: both;
+  font-size: 1.1em;
+  padding: 1em;
+  overflow-x: auto  }
+
+.foldableBox .listingLayoutSelector {
+  margin: 0 0 0 .7em }
+
+/* =Light boxes */
+.foldableLightBox {
+  margin-bottom: 1.8em }
+
+.foldableLightBox div.folded,
+.foldableLightBox div.unfolded {
+  background: #fff }
+
+.foldableLightBox div.folded a,
+.foldableLightBox div.unfolded a {
+  color: "gray.dark (__FLAVOR__ color)";
+  float: left;
+  font-size: 1em;
+  margin: 0;
+  padding: 0 .4em;
+  text-decoration: none }
+
+.foldableLightBox div.folded,
+.foldableLightBox div.unfolded {
+  border-width: 1px; border-style: none none solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  color: "gray.dark (__FLAVOR__ color)";
+  font-size: .9em;
+  height: 18px }
+
+.foldableLightBox .boxBody {
+  border: 1px solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-top: none;
+  clear: both;
+  font-size: .85em;
+  padding: 1em }
+
+.massEditForm foldableBox {
+  margin-right: 1.4em }
+
+/* =Simple boxes */
+.grayBox,
+.simpleBox {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border-width: 1px; border-style: solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  color: "default (__FLAVOR__ color)";
+  margin: 0 .5em .5em 0;
+  padding: .5em;
+  text-align: left }
+
+.simpleBox {
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 350px }
+
+.grayBox {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
+  width: 100% }
+
+.widgetTable .grayBox,
+.widgetTable .simpleBox {
+  margin: .1em auto .5em }
+
+.grayBox .textBlock {
+  font-size: 1em;
+  padding: .6em .8em .8em }
+
+.grayBox .textBlock span {
+  line-height: 130% }
+
+/* =Bubble boxes */
+.bubbleBox {
+  border-width: 1px; border-style: solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-radius: 3px;
+  display: block;
+  margin: 0 1em 1em 0;
+  padding: 0 .8em .5em }
+
+.bubbleBoxSmall {
+  max-width: 300px }
+
+.bubbleBox .bubbleHeader {
+  border-width: 1px;
+  border-style: none none solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  margin: 0 0 1em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap }
+
+.bubbleBox .bubbleHeader h3 {
+  border: none;
+  display: inline-block;
+  margin: 0;
+  padding: .5em 0 }
+
+.bubbleBox .bubbleHeader input.button {
+  float: right;
+  margin: .3em 0 0 }
+
+.bubbleBox h3 img {
+  margin-bottom: -0.1em;
+  padding: 0 .5em 0 0 }
+
+.bubbleShadow {
+  box-shadow: 0 -5px 5px #eee inset, 0 1px 2px #eee }
+
+a.bubbleBox:hover {
+  background: none "color.major.light (__FLAVOR__ background)";
+  color: "black (__FLAVOR__ color)";
+  text-decoration: none }

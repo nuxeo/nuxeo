@@ -1,0 +1,32 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core" class="menu">
+<div class="siteLogo">
+  <h:form>
+    <h:commandLink action="#{navigationContext.goHome()}">
+      <nxu:set var="flavorLogo" value="#{themeActions.logo}"
+        cache="true">
+        <c:if test="#{empty flavorLogo}">
+          <h:graphicImage
+            value="/img/nuxeo_logo.png"
+            alt="Nuxeo"
+            title="Nuxeo"
+            width="118"
+            height="26" />
+        </c:if>
+        <c:if test="#{not empty flavorLogo}">
+          <nxh:graphicImage
+            value="#{flavorLogo.path}"
+            alt="#{flavorLogo.title}"
+            title="#{flavorLogo.title}"
+            width="#{flavorLogo.width}"
+            height="#{flavorLogo.height}" />
+        </c:if>
+      </nxu:set>        
+    </h:commandLink>
+  </h:form>
+</div>
+</div>
