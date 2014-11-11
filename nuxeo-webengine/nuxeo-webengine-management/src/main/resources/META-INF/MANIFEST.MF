@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo web engine management project
+Bundle-SymbolicName: org.nuxeo.ecm.webengine.management
+Bundle-Vendor: Nuxeo
+Provide-Package: org.nuxeo.ecm.webengine.management
+Require-Bundle: org.nuxeo.ecm.webengine.core
+ org.nuxeo.ecm.core,
+ org.nuxeo.ecm.platform.web.common,
+ org.nuxeo.ecm.platform.management
+Nuxeo-Require: org.nuxeo.ecm.core.api, 
+ org.nuxeo.ecm.webengine.core,
+ org.nuxeo.ecm.platform.management,
+ org.nuxeo.ecm.platform.ui.web.auth.service
+Nuxeo-Component: OSGI-INF/deployment-contrib.xml
