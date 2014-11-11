@@ -1,0 +1,152 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <h1>
+    <h:outputText styleClass="label"
+      value="#{userManagementActions.selectedUser.id}" />
+  </h1>
+
+  <a4j:outputPanel id="userDetailsPanel">
+
+  <h:form>
+    <p class="action_bar directoryBack">
+      <a4j:commandLink immediate="true"
+        action="#{userManagementActions.toggleShowUserOrGroup}"
+        reRender="usersPanel"
+        eventsQueue="adminCenterQueue">
+        <h:graphicImage value="/icons/arrow_left.gif" />
+        <h:outputText value="#{messages['command.directoryBack']}" />
+      </a4j:commandLink>
+    </p>
+  </h:form>
+
+  <a4j:form id="deleteUserForm" rendered="#{userManagementActions.allowDeleteUser and notReadOnly}">
+    <script type="text/javascript">
+    function confirmDeleteUser() {
+      return confirm("#{messages['label.userManager.confirmDeleteUser']}");
+    }
+    </script>
+    <div class="action_bar">
+      <ul>
+        <li class="selected">
+          <a4j:commandLink
+            action="#{userManagementActions.deleteUser}"
+            onclick="if (!confirmDeleteUser()) { return false; }"
+            reRender="usersPanel"
+            eventsQueue="adminCenterQueue">
+            <h:graphicImage value="/icons/action_delete.gif" />
+            <h:outputText value="#{messages['command.delete']}" />
+          </a4j:commandLink>
+        </li>
+      </ul>
+    </div>
+    <div style="clear: both" />
+  </a4j:form>
+
+  <div class="tabsBar subtabsBar">
+    <a4j:form>
+      <ul>
+        <li class="#{nxu:test(userManagementActions.detailsMode == 'view', 'selected', '')}">
+          <a4j:commandLink action="#{userManagementActions.setDetailsMode('view')}"
+            immediate="true" reRender="userDetailsPanel"
+            eventsQueue="adminCenterQueue">
+            <h:outputText value="#{messages['label.userManager.viewUser']}" />
+          </a4j:commandLink>
+        </li>
+
+        <f:subview rendered="#{userManagementActions.allowEditUser and notReadOnly}">
+          <li class="#{nxu:test(userManagementActions.detailsMode == 'edit', 'selected', '')}">
+            <a4j:commandLink
+              action="#{userManagementActions.setDetailsMode('edit')}" immediate="true"
+              reRender="userDetailsPanel"
+              eventsQueue="adminCenterQueue">
+              <h:outputText value="#{messages['label.userManager.editUser']}" />
+            </a4j:commandLink>
+          </li>
+        </f:subview>
+
+        <f:subview rendered="#{userManagementActions.allowChangePassword and notReadOnly}">
+          <li class="#{nxu:test(userManagementActions.detailsMode == 'editPassword', 'selected', '')}">
+            <a4j:commandLink action="#{userManagementActions.setDetailsMode('editPassword')}"
+              immediate="true"
+              reRender="userDetailsPanel"
+              eventsQueue="adminCenterQueue">
+              <h:outputText value="#{messages['command.change.password']}" />
+            </a4j:commandLink>
+          </li>
+        </f:subview>
+
+      </ul>
+    </a4j:form>
+  </div>
+  <div style="clear: both" />
+
+  <div class="tabsContent">
+    <ui:insert name="view_user_tab_content">
+      <a4j:form id="viewUser" rendered="#{userManagementActions.detailsMode == 'view'}">
+        <nxl:layout name="user" mode="view" value="#{userManagementActions.selectedUser}" />
+      </a4j:form>
+    </ui:insert>
+
+    <ui:insert name="edit_user_tab_content">
+      <a4j:form id="editUser" rendered="#{userManagementActions.detailsMode == 'edit' and userManagementActions.allowEditUser and notReadOnly}">
+        <script>
+         jQuery(document).ready(function() {
+           jQuery('#viewUserView\\:editUser').focusFirst();
+         });
+        </script>
+        <nxl:layout name="user" mode="edit" value="#{userManagementActions.selectedUser}" />
+        <table class="dataInput">
+          <tbody>
+            <tr>
+              <td class="iconColumn"></td>
+              <td class="labelColumn">
+                <a4j:commandButton
+                  value="#{messages['command.save']}"
+                  action="#{userManagementActions.updateUser}"
+                  styleClass="button"
+                  reRender="userDetailsPanel,facesStatusMessagePanel"
+                  eventsQueue="adminCenterQueue" />
+              </td>
+              <td class="fieldColumn"></td>
+            </tr>
+          </tbody>
+        </table>
+      </a4j:form>
+    </ui:insert>
+
+    <ui:insert name="edit_user_password_tab_content">
+      <a4j:form id="editUserPassword"
+        rendered="#{userManagementActions.detailsMode == 'editPassword' and userManagementActions.allowEditUser and notReadOnly}">
+        <script>
+         jQuery(document).ready(function() {
+           jQuery('#viewUserView\\:editUserPassword').focusFirst();
+         });
+        </script>
+        <nxl:layout name="user" mode="editPassword" value="#{userManagementActions.selectedUser}" />
+        <table class="dataInput">
+          <tbody>
+            <tr>
+              <td class="iconColumn"></td>
+              <td class="labelColumn">
+                <a4j:commandButton
+                  value="#{messages['command.save']}"
+                  action="#{userManagementActions.changePassword}"
+                  styleClass="button"
+                  reRender="userDetailsPanel,facesStatusMessagePanel"
+                  eventsQueue="adminCenterQueue" />
+              </td>
+              <td class="fieldColumn"></td>
+            </tr>
+          </tbody>
+        </table>
+      </a4j:form>
+    </ui:insert>
+
+  </div>
+  </a4j:outputPanel>
+
+</div>

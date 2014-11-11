@@ -1,0 +1,217 @@
+<ui:composition
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+<nxu:set var="fancyboxId"
+  value="#{idPrefix}#{action.id}"
+  cache="true">
+
+<nxu:set var="include"
+  value="#{action.properties.include}"
+  resolveTwice="true" cache="true">
+<nxu:set var="iframe"
+  value="#{action.properties.iframe}"
+  resolveTwice="true" cache="true">
+
+  <ui:insert name="action_template_content">
+
+    <f:subview id="#{fancyboxId}_subview">
+
+      <c:if test="#{empty iframe}">
+
+        <c:if test="#{not useButton}">
+          <a4j:commandLink id="#{fancyboxId}_link"
+            ajaxSingle="true"
+            ignoreDupResponses="true" requestDelay="100"
+            oncomplete="#{action.properties.onclick};return false;"
+            styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}"
+            disabled="#{!action.available}"
+            eventsQueue="#{eventsQueueId}"
+            reRender="#{fancyboxId}_ajax_panel">
+            <f:setPropertyActionListener value="#{nxu:test(addForm,'2','1')}"
+              target="#{selectionActions.lookupLevelValue}" />
+            <f:setPropertyActionListener value="#{action.id}"
+              target="#{selectionActions.selectedValue}" />
+            <f:setPropertyActionListener
+              value="#{idPrefix}clickedActionIdHolder"
+              target="#{selectionActions.selectedValueHolder}" />
+            <nxu:actionListenerMethod
+              value="#{selectionActions.onClick}" />
+            <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+            <ui:insert name="inside_action" />
+          </a4j:commandLink>
+        </c:if>
+
+        <c:if test="#{useButton}">
+          <a4j:commandButton id="#{fancyboxId}_link"
+            ajaxSingle="true"
+            ignoreDupResponses="true" requestDelay="100"
+            oncomplete="#{action.properties.onclick};return false;"
+            value="#{messages[action.label]}"
+            styleClass="button #{actionStyleClass} #{action.properties.styleClass}"
+            disabled="#{!action.available}"
+            eventsQueue="#{eventsQueueId}"
+            reRender="#{fancyboxId}_ajax_panel">
+            <f:setPropertyActionListener value="#{nxu:test(addForm,'2','1')}"
+              target="#{selectionActions.lookupLevelValue}" />
+            <f:setPropertyActionListener value="#{action.id}"
+              target="#{selectionActions.selectedValue}" />
+            <f:setPropertyActionListener
+              value="#{idPrefix}clickedActionIdHolder"
+              target="#{selectionActions.selectedValueHolder}" />
+            <nxu:actionListenerMethod
+              value="#{selectionActions.onClick}" />
+            <ui:include src="/incl/action/action_icon_label_template.xhtml">
+              <ui:param name="hideLabel" value="true" />
+            </ui:include>
+            <ui:insert name="inside_action" />
+          </a4j:commandButton>
+        </c:if>
+
+      </c:if>
+
+      <c:if test="#{not empty iframe}">
+
+        <nxu:set var="iframe_width"
+         value="#{action.properties.width}"
+         resolveTwice="true">
+        <nxu:set var="iframe_height"
+         value="#{action.properties.height}"
+         resolveTwice="true">
+        <nxu:set var="iframe_scrolling"
+         value="#{action.properties.scrolling}"
+         resolveTwice="true">
+
+          <c:if test="#{not useButton}">
+            <a4j:commandLink id="#{fancyboxId}_link"
+              ajaxSingle="true"
+              ignoreDupResponses="true" requestDelay="100"
+              onclick="javascript:showFancyBox('#{iframe}', '#{iframe_width}', '#{iframe_height}', '#{iframe_scrolling}');"
+              disabled="#{!action.available}"
+              eventsQueue="#{eventsQueueId}"
+              styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}">
+              <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+              <ui:insert name="inside_action" />
+            </a4j:commandLink>
+          </c:if>
+
+          <c:if test="#{useButton}">
+            <a4j:commandButton id="#{fancyboxId}_link"
+              ajaxSingle="true"
+              ignoreDupResponses="true" requestDelay="100"
+              onclick="javascript:showFancyBox('#{iframe}', '#{iframe_width}', '#{iframe_height}', '#{iframe_scrolling}');"
+              value="#{messages[action.label]}"
+              disabled="#{!action.available}"
+              eventsQueue="#{eventsQueueId}"
+              styleClass="button #{actionStyleClass} #{action.properties.styleClass}">
+              <ui:include src="/incl/action/action_icon_label_template.xhtml">
+                <ui:param name="hideLabel" value="true" />
+              </ui:include>
+              <ui:insert name="inside_action" />
+            </a4j:commandButton>
+          </c:if>
+
+        </nxu:set>
+        </nxu:set>
+        </nxu:set>
+
+      </c:if>
+
+    </f:subview>
+
+  </ui:insert>
+
+  <ui:insert name="after_action_template_content">
+    <a4j:outputPanel id="#{fancyboxId}_ajax_panel">
+
+      <nxu:set var="addForm"
+        value="#{action.properties.requireSurroundingForm}"
+        resolveTwice="true" cache="true">
+        <c:if test="#{clickedActionId == action.id and not addForm}">
+          <script>
+            showFancyBox('##{fancyboxId}_box');
+          </script>
+          <div style="display:none">
+            <div id="#{fancyboxId}_box">
+              <ui:include src="#{include}" />
+            </div>
+          </div>
+        </c:if>
+
+        <c:if test="#{addForm}">
+          <nxu:set var="fancyboxFormId"
+            value="#{fancyboxId}_form"
+            cache="true">
+          <nxu:set
+            var="actionClicked"
+            value="#{clickedActionId == action.id or nxu:hasMessages(fancyboxFormId)}">
+          <nxu:set var="elementsToReRender"
+            value="#{action.properties.reRender}"
+            resolveTwice="true" cache="true">
+
+            <c:if test="#{actionClicked}">
+              <script>
+                jQuery('<a href="##{fancyboxId}_box"></a>').fancybox({
+                  'autoDimensions': false,
+                  'autoScale': true,
+                  'width': 'auto',
+                  'height': '320',
+                  'transitionIn': 'none',
+                  'transitionOut': 'none',
+                  'enableEscapeButton': true,
+                  'centerOnScroll': true,
+                  'scrolling': 'auto'}).click();
+                jQuery('##{fancyboxId}_form').focusFirst();
+              </script>
+            </c:if>
+
+            <div style="display:none">
+              <div id="#{fancyboxId}_box">
+                <nxu:set var="useAjaxForm"
+                  value="#{action.properties.useAjaxForm}"
+                  resolveTwice="true" cache="true">
+
+                  <c:if test="#{useAjaxForm}">
+                    <a4j:form id="#{fancyboxFormId}"
+                      ajaxSubmit="true"
+                      reRender="#{elementsToReRender},#{fancyboxId}_ajax_panel"
+                      ignoreDupResponses="true"
+                      requestDelay="100"
+                      eventsQueue="#{eventsQueueId}"
+                      oncomplete="jQuery.fancybox.close();">
+                      <ui:include src="#{include}" />
+                    </a4j:form>
+                  </c:if>
+
+                  <c:if test="#{not useAjaxForm}">
+                    <h:form id="#{fancyboxFormId}"
+                      onsubmit="jQuery.fancybox.close();">
+                      <ui:include src="#{include}" />
+                    </h:form>
+                  </c:if>
+
+                </nxu:set>
+              </div>
+            </div>
+
+          </nxu:set>
+          </nxu:set>
+          </nxu:set>
+        </c:if>
+
+      </nxu:set>
+
+    </a4j:outputPanel>
+  </ui:insert>
+
+</nxu:set>
+</nxu:set>
+
+</nxu:set>
+
+</ui:composition>

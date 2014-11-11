@@ -1,0 +1,34 @@
+<c:if test="true"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <c:if test="#{canToggleMode}">
+    <a4j:commandLink
+      ignoreDupResponses="true"
+      eventsQueue="#{widget.id}_queue"
+      id="#{widget.id}_#{idPrefix}toggleAction"
+      immediate="true"
+      reRender="#{widget.id}_regionPanel"
+      value="#{initialActionLabel}"
+      styleClass="button #{toggleButtonStyleClass} #{widgetProperty_actionStyleClass} #{widgetProperty_toggleActionStyleClass}">
+      <f:setPropertyActionListener
+        value="#{toggledMode}"
+        target="#{selectionActions.selectedValue}" />
+      <f:param name="valueHolderId"
+        value="#{widget.id}_modeValueHolder" />
+      <nxu:actionListenerMethod
+        value="#{selectionActions.onClick}" />
+    </a4j:commandLink>
+    <a4j:status>
+      <f:facet name="start">
+        <h:graphicImage value="/img/standart_waiter.gif" />
+      </f:facet>
+    </a4j:status>
+  </c:if>
+
+</c:if>
