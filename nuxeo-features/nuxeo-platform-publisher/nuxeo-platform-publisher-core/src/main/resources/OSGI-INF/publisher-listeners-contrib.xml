@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.publisher.listeners.contrib">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+             point="listener">
+
+    <listener name="domainCreationListener" async="false" postCommit="true"
+              class="org.nuxeo.ecm.platform.publisher.listeners.DomainEventsListener"
+              priority="140">
+      <event>documentCreated</event>
+      <event>documentModified</event>
+      <event>documentRemoved</event>
+      <event>lifecycle_transition_event</event>
+    </listener>
+
+  </extension>
+
+</component>

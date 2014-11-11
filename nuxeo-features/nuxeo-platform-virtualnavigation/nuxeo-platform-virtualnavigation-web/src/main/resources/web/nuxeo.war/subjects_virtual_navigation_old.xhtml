@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes">
+
+  <ui:define name="body">
+
+    <ui:include src="/incl/message_banner.xhtml"/>
+
+    <div id="content">
+
+      <h3>
+        <h:outputText value="#{messages['label.virtualnavigation.subjects']}" />
+      </h3>
+
+      <nxu:methodResult name="provider"
+        value="#{searchResults.getProvider('bySubjectsNavQueryModel')}">
+        <nxu:methodResult name="documents"
+          value="#{searchResults.getResultsSelectModel('bySubjectsNavQueryModel')}">
+          <ui:decorate template="/incl/documents_table_virtual_nav.xhtml">
+            <ui:param name="provider" value="#{provider}" />
+            <ui:param name="providerName" value="#{provider.name}" />
+            <ui:param name="documents" value="#{documents}"/>
+            <ui:param name="showCheckboxes" value="#{true}" />
+            <ui:param name="listName" value="CURRENT_SELECTION" />
+            <ui:define name="buttons">
+              <ui:include src="/incl/clipboard.xhtml" />
+            </ui:define>
+            <ui:define name="extra_info">
+              <!-- empty, used in extension modules -->
+            </ui:define>
+          </ui:decorate>
+        </nxu:methodResult>
+      </nxu:methodResult>
+
+    </div>
+
+    <ui:include src="/incl/syndication_buttons.xhtml">
+      <ui:param name="type" value="search" />
+    </ui:include>
+
+  </ui:define>
+
+</nxthemes:composition>
