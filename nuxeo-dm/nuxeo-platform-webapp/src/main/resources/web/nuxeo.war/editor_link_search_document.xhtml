@@ -1,0 +1,136 @@
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <ui:define name="page title">
+    <h:outputText value="#{nuxeoApplicationName} - #{messages['title.search.form']}" />
+  </ui:define>
+
+  <ui:define name="body">
+    <div>
+    <h3><h:outputText
+      value="#{messages['label.search.form.simple']}" /></h3>
+    <h:form>
+      <h:inputText value="#{editorLinkActions.searchKeywords}" size="40"
+        class="searchField"
+        onkeydown="if (event.keyCode == 13) {this.nextSibling.click()} else return true" />
+      <h:commandButton
+        value="#{messages['command.search']}"
+        action="#{editorLinkActions.searchDocuments}" class="button" />
+    </h:form></div>
+
+    <div id="content">
+    <h3><h:outputText
+      value="#{messages['label.search.results.keywords']}" /></h3>
+    <h:outputText value="#{messages['label.content.emptyFolder']}"
+      rendered="#{!editorLinkActions.hasSearchResults}" /> <h:form
+      id="search_results"
+      rendered="#{editorLinkActions.hasSearchResults}">
+      <h:selectOneRadio>
+        <nxu:dataTable id="dataTable"
+          value="#{editorLinkActions.searchDocumentResults}"
+          var="document" rowClasses="dataRowEven,dataRowOdd"
+          styleClass="dataOutput">
+          <!-- id and selection -->
+          <nxu:column styleClass="iconColumn">
+            <input type="radio" id="selection" name="selection"
+              value="#{document.id}" />
+            <div style="display: none;" id="#{document.id}"><h:outputText
+              value="#{document.dublincore.title}" /></div>
+          </nxu:column>
+          <!-- Icon + Type -->
+          <nxu:column styleClass="iconColumn">
+            <nxu:graphicImage value="#{nxd:iconPath(document)}"
+              alt="#{document.type}" />
+          </nxu:column>
+          <!--  Title -->
+          <nxu:column>
+            <f:facet name="header">
+              <h:outputText
+                value="#{messages['label.content.header.title']}" />
+            </f:facet>
+            <nxd:restDocumentLink document="#{document}"
+              newConversation="true" target="_blank">
+              <h:outputText value="#{nxd:titleOrId(document)}" />
+            </nxd:restDocumentLink>
+          </nxu:column>
+          <!--  Author -->
+          <h:column>
+            <f:facet name="header">
+              <h:outputText
+                value="#{messages['label.content.header.author']}" />
+            </f:facet>
+            <h:outputText value="#{document.dublincore.contributors[0]}" />
+          </h:column>
+          <!--  Path -->
+          <h:column>
+            <f:facet name="header">
+              <h:outputText
+                value="#{messages['label.content.header.path']}" />
+            </f:facet>
+            <h:outputText value="#{messages[document.pathAsString]}" />
+          </h:column>
+        </nxu:dataTable>
+      </h:selectOneRadio>
+
+      <script language="javascript">
+          function getSelectedRadio(buttonGroup) {
+            if (buttonGroup[0]) {
+              for (var i=0; i&lt;buttonGroup.length; i++) {
+                if (buttonGroup[i].checked) {
+                  return buttonGroup[i]
+                }
+              }
+            } else if (buttonGroup.checked) {
+              return buttonGroup;
+            }
+            return null;
+          }
+
+          function getDocumentLink(radioButton) {
+            if (radioButton) {
+              var ele = radioButton.parentNode.nextSibling;
+              while(ele != null) {
+                for (var i = 0; i &lt; ele.childNodes.length; ++i) {
+                  e = ele.childNodes[i];
+                  if (e.nodeName == 'A' || e.nodeName == 'a') {
+                    var docLink = e;
+                    return docLink;
+                  }
+                }
+                ele = ele.nextSibling;
+              }
+            }
+            return null;
+          }
+
+          function updateEditor(form) {
+            var button = getSelectedRadio(form.elements.selection);
+            var docLink = getDocumentLink(button);
+            if (docLink != null) {
+              if (window.opener.FCK) {
+                var FCK = window.opener.FCK;
+                FCK.InsertElement(docLink);
+              } else if (window.opener.tinyMCE) {
+                var tinyMCE = window.opener.tinyMCE;
+                var html = '&lt;a href="' + docLink.href + '"&gt;' + docLink.childNodes[0].nodeValue + '&lt;/a&gt;';
+                tinyMCE.execCommand('mceInsertContent', false, html);
+              }
+            }
+            self.close();
+          }
+        </script>
+      <input type="submit" id="button_update" styleClass="button"
+        value="#{messages['command.ok']}"
+        onclick="javascript:updateEditor(this.form);" />
+
+    </h:form></div>
+
+  </ui:define>
+
+</nxthemes:composition>
