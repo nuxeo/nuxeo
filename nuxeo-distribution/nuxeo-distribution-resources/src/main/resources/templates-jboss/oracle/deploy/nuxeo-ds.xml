@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources>
+  <local-tx-datasource>
+    <jndi-name>NuxeoDS</jndi-name>
+    <driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+     <connection-url>jdbc:oracle:thin:@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}</connection-url>
+     <user-name>${nuxeo.db.user}</user-name>
+     <password>${nuxeo.db.password}</password>
+     <min-pool-size>${nuxeo.db.min-pool-size}</min-pool-size>
+     <max-pool-size>${nuxeo.db.max-pool-size}</max-pool-size>
+<!--
+     <valid-connection-checker-class-name>org.jboss.resource.adapter.jdbc.vendor.OracleValidConnectionChecker</valid-connection-checker-class-name>
+     <exception-sorter-class-name>org.jboss.resource.adapter.jdbc.vendor.OracleExceptionSorter</exception-sorter-class-name>
+ -->
+  </local-tx-datasource>
+
+  <mbean code="org.jboss.naming.NamingAlias" name="jboss.jca:name=nxsqldirectory,service=DataSourceBinding">
+    <attribute name="ToName">java:/NuxeoDS</attribute>
+    <attribute name="FromName">java:/nxsqldirectory</attribute>
+  </mbean>
+
+  <mbean code="org.jboss.naming.NamingAlias" name="jboss.jca:name=nxaudit-logs,service=DataSourceBinding">
+    <attribute name="ToName">java:/NuxeoDS</attribute>
+    <attribute name="FromName">java:/nxaudit-logs</attribute>
+  </mbean>
+  <mbean code="org.jboss.naming.NamingAlias" name="jboss.jca:name=nxaudits,service=DataSourceBinding">
+    <attribute name="ToName">java:/NuxeoDS</attribute>
+    <attribute name="FromName">jdbc/nxaudits</attribute>
+  </mbean>
+
+  <mbean code="org.jboss.naming.NamingAlias" name="jboss.jca:name=nxcomment-jena,service=DataSourceBinding">
+    <attribute name="ToName">java:/NuxeoDS</attribute>
+    <attribute name="FromName">java:/comment-relations</attribute>
+  </mbean>
+
+  <mbean code="org.jboss.naming.NamingAlias"
+    name="jboss.jca:name=placeful_service_ds,service=DataSourceBinding">
+    <attribute name="ToName">java:/NuxeoDS</attribute>
+    <attribute name="FromName">java:/placeful_service_ds</attribute>
+  </mbean>
+
+  <mbean code="org.jboss.naming.NamingAlias"
+    name="jboss.jca:name=nxrelations-default-jena,service=DataSourceBinding">
+    <attribute name="ToName">java:/NuxeoDS</attribute>
+    <attribute name="FromName">java:/nxrelations-default-jena</attribute>
+  </mbean>
+
+  <mbean code="org.jboss.naming.NamingAlias" name="jboss.jca:name=nxuidsequencer,service=DataSourceBinding">
+    <attribute name="ToName">java:/NuxeoDS</attribute>
+    <attribute name="FromName">java:/nxuidsequencer</attribute>
+  </mbean>
+
+  <mbean code="org.jboss.naming.NamingAlias" name="jboss.jca:name=nxworkflowjbpm,service=DataSourceBinding">
+    <attribute name="ToName">java:/NuxeoDS</attribute>
+    <attribute name="FromName">java:/nxjbpm</attribute>
+  </mbean>
+</datasources>
