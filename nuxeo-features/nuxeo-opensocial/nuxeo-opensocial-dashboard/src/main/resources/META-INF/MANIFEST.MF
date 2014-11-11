@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo-webengine-dashboard
+Bundle-SymbolicName: org.nuxeo.opensocial.dashboard;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Nuxeo
+Provide-Package: org.nuxeo.opensocial.dashboard
+Nuxeo-Require: org.nuxeo.ecm.webengine.core, org.nuxeo.ecm.core.schema, 
+ org.nuxeo.opensocial.container.space.config,
+ org.nuxeo.ecm.spaces.core,
+ org.nuxeo.opensocial.spaces.web,
+ org.nuxeo.ecm.directory.api,
+ org.nuxeo.ecm.directory.web,
+ org.nuxeo.ecm.platform.userworkspace.api,
+ org.nuxeo.ecm.platform.userworkspace.types
+Nuxeo-RequiredBy: org.nuxeo.ecm.war
+Nuxeo-Component: OSGI-INF/gadget-contrib.xml,
+ OSGI-INF/theme-contrib.xml,
+ OSGI-INF/type-contrib.xml,
+ OSGI-INF/ui-contrib.xml,
+ OSGI-INF/auth-contrib.xml,
+ OSGI-INF/actions-contrib.xml,
+ OSGI-INF/type-contrib.xml
+Bundle-Category: stateless

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.opensocial.container.factory">
+
+	<implementation
+		class="org.nuxeo.opensocial.container.component.FactoryManagerImpl" />
+	<service>
+		<provide interface="org.nuxeo.opensocial.container.component.api.FactoryManager" />
+	</service>
+
+	<extension-point name="factoryConfig">
+		<documentation>
+
+
+
+    </documentation>
+
+    <object class="org.nuxeo.opensocial.container.component.FactoryConfig"/>
+  </extension-point>
+
+
+</component>
