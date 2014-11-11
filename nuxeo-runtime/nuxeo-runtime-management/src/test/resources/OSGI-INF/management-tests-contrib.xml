@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.runtime.management.tests.ManagementContrib">
+
+  <require>org.nuxeo.runtime.management.ManagementService</require>
+
+  <extension target="org.nuxeo.runtime.management.ManagementService"
+    point="resources">
+
+    <resource class="org.nuxeo.runtime.management.DummyService" />
+
+    <resource name="test" class="org.nuxeo.runtime.management.DummyService" />
+
+    <resource name="test-with-iface" class="org.nuxeo.runtime.management.DummyService"
+      iface="org.nuxeo.runtime.management.DummyMBean" />
+
+
+
+    <resource name="foo:name=test" class="org.nuxeo.runtime.management.DummyService" />
+
+  </extension>
+
+  <extension target="org.nuxeo.runtime.management.ManagementService"
+    point="factories">
+
+    <factory name="dummy" class="org.nuxeo.runtime.management.DummyFactory" />
+
+  </extension>
+
+  <extension target="org.nuxeo.runtime.management.ManagementService"
+    point="shortcuts">
+    <shortcut name="dummy"
+      qualifiedName="nx:type=service,name=rg.nuxeo.runtime.management.DummyService" />
+  </extension>
+
+  <extension targets="org.nuxeo.runtime.management.ManagementService"
+    point="locators">
+     <locator domainName="DEFAULT_DOMAIN"/>
+  </extension>
+</component>
+

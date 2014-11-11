@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Version: 5.4.1.qualifier
+Bundle-Name: Nuxeo Runtime Start
+Bundle-SymbolicName: org.nuxeo.runtime.start;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: runtime
+Export-Package: org.nuxeo.runtime.start
+Bundle-ClassPath: .
+Import-Package: org.osgi.framework,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.osgi,
+ org.nuxeo.runtime.jtajca,
+ org.nuxeo.common.jndi,
+ javax.naming.spi,
+ javax.naming
+Bundle-Activator: org.nuxeo.runtime.start.StartApplication
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
