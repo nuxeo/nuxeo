@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes">
+
+  <ui:define name="page title">
+    <h:outputText value="#{nuxeoApplicationName} - #{messages['title.tag.search.results']}"/>
+  </ui:define>
+
+  <ui:define name="body">
+    <ui:include src="/incl/message_banner.xhtml"/>
+    <div id="content">
+
+    <nxu:dataTable id="dataTable" value="#{taggedDocuments}" var="doc"
+      rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput"
+      rendered="#{taggedDocuments.size() > 0}">
+
+      <!-- Icon + Type -->
+      <nxu:column styleClass="iconColumn">
+        <div id="docRefTarget:#{doc.ref}">
+        <div id="docRef:#{doc.ref}" class="cell"><h:graphicImage
+          value="/icons/lock.gif" rendered="#{not empty doc.lock}" />
+        <nxu:graphicImage value="#{nxd:iconPath(doc)}"
+          alt="#{doc.type}">
+        </nxu:graphicImage></div>
+        </div>
+        <script type="text/javascript">
+          <h:outputText
+            value="new Draggable('docRef:#{doc.ref}', {revert:true});"/>
+          <h:outputText rendered="#{doc.folder}"
+            value="Droppables.add('docRefTarget:#{doc.ref}', {accept:'cell', onDrop:function(element){moveElement(element,'docRef:#{doc.ref}')}, hoverclass:'dropInto'});"/>
+        </script>
+      </nxu:column>
+
+      <!--  Title -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:panelGroup>
+            <h:outputText
+              value="#{messages['label.content.header.title']}"/>
+          </h:panelGroup>
+        </f:facet>
+
+        <nxd:restDocumentLink document="#{doc}">
+          <nxh:outputText value="#{nxd:titleOrId(doc)}" />
+        </nxd:restDocumentLink>
+
+        <nxd:restDocumentLink document="#{doc}"
+          newConversation="true" target="_blank">
+          <nxu:graphicImage value="/icons/external.gif"
+            style="vertical-align:middle"
+            alt="#{messages['permalink.newTab']}"
+            title="#{messages['permalink.newTab']}" />
+        </nxd:restDocumentLink>
+      </nxu:column>
+
+      <!--  Modification date -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:panelGroup>
+            <h:outputText value="#{messages['label.content.header.modified']}"
+              rendered="#{!provider.sortable}" />
+          </h:panelGroup>
+        </f:facet>
+        <h:outputText value="#{doc.dublincore.modified}">
+          <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+            timeZone="#{timeZone}" />
+        </h:outputText>
+      </nxu:column>
+
+      <!--  Author -->
+      <h:column>
+        <f:facet name="header">
+          <h:panelGroup>
+            <h:outputText value="#{messages['label.content.header.author']}"
+              rendered="#{!provider.sortable}" />
+          </h:panelGroup>
+        </f:facet>
+        <h:outputText value="#{nxu:userFullName(doc.dublincore.creator)}" />
+      </h:column>
+
+      <!--  Life cycle -->
+      <h:column>
+        <f:facet name="header">
+          <h:panelGroup>
+            <h:outputText value="#{messages['label.content.header.currentLifecycleState']}"
+              rendered="#{!provider.sortable}" />
+          </h:panelGroup>
+        </f:facet>
+
+        <h:outputText value="#{messages[doc.currentLifeCycleState]}" />
+      </h:column>
+
+    </nxu:dataTable>
+
+    </div>
+
+  </ui:define>
+
+</nxthemes:composition>
