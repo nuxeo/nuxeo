@@ -1,0 +1,57 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <a4j:outputPanel id="connectAppListing">
+    <div class="actionBar">
+      <span><h:outputText value="#{messages['label.studio.update.title.devmode']}"/>: <a class="connectLink" target="_blank" href="http://doc.nuxeo.com/display/Studio/Nuxeo+Studio">Nuxeo Studio</a></span>
+      
+      <h:panelGroup rendered="#{!appsViews.isStudioSnapshopUpdateInProgress()}">
+        <div>
+          <h:outputText value="#{messages['label.studio.update.lastStatus']}"/>
+          <h:outputText value="#{appsViews.getStudioInstallationStatus()}" styleClass="boldLabel"/>
+        </div>
+      </h:panelGroup>
+    </div>
+    
+    <h:form>
+      <a4j:poll interval="1000" enabled="#{appsViews.isStudioSnapshopUpdateInProgress()}" reRender="connectAppListing"/>
+    </h:form>
+
+    <h:panelGroup rendered="#{!appsViews.isStudioSnapshopUpdateInProgress()}">
+       <h:form>
+           <a4j:commandButton value="#{messages['admCommand.studio.update']}" actionListener="#{appsViews.installStudioSnapshot()}"  reRender="connectAppListing" />
+       </h:form>
+    </h:panelGroup>
+
+    <h:panelGroup rendered="#{appsViews.isStudioSnapshopUpdateInProgress()}" styleClass="boldLabel">
+      <div class="actionBar markerplace">
+       <h:outputText value="#{messages['label.studio.update.inprogress']}"/>
+       <h:outputText value="#{appsViews.getStudioInstallationStatus()}"/>
+       </div>
+    </h:panelGroup>
+
+    <br/>
+    <div class="actionBar">
+      <span><h:outputText value="#{messages['label.studio.update.title.versionmode']}"/></span>
+
+       <h:form>
+           <a4j:commandButton value="#{messages['admCommand.refresh']}" actionListener="#{appsViews.flushCache()}"  reRender="connectAppListing" />
+       </h:form>
+   </div>
+
+  <c:if test="#{connectServerReachable}">
+    <iframe src="/nuxeo/site/connectClient/packages/studio" frameborder="0" scrolling="auto" width="100%" height="300px">
+      <img src="/nuxeo/img/big_loading.gif"/>
+    </iframe>
+    </c:if>
+
+  <c:if test="#{not connectServerReachable}">
+     <h:outputText value="#{messages[adminsubtab.servernotreachable]}" />
+  </c:if>
+
+  </a4j:outputPanel>
+
+</div>

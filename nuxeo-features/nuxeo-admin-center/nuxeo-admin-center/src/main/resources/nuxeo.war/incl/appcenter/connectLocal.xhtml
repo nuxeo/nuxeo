@@ -1,0 +1,30 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+<a4j:outputPanel id="connectAppListing">
+  <div class="actionBar">
+    <h:form>
+   <h:outputText value="#{messages[label.packagetype]}" />
+    <h:selectOneListbox class="dataInputText" size="1"
+                  value="#{appsViews.packageTypeFilter}"
+                   onchange="Element.next(this).firstChild.click();">
+
+                  <nxu:selectItems
+                    value="#{appsViews.packageTypes}"
+                    var="itype"
+                    itemValue="#{itype.value}"
+                    itemLabel="#{messages[itype.label]}" />
+                </h:selectOneListbox>
+                  <div style="display: none;">
+                <a4j:commandButton value="submit" reRender="connectAppListing"/>
+            </div>
+    </h:form>
+  </div>
+
+  <iframe src="/nuxeo/site/connectClient/packages/local?type=#{appsViews.packageTypeFilter}" frameborder="0" scrolling="auto" width="100%" height="500px">
+    <img src="/nuxeo/img/big_loading.gif"/>
+  </iframe>
+</a4j:outputPanel>
+</div>

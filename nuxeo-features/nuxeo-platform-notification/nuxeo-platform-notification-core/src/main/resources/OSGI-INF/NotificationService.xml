@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.ec.notification.service.NotificationService">
+  <implementation
+    class="org.nuxeo.ecm.platform.ec.notification.service.NotificationService" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.notification.api.NotificationManager" />
+  </service>
+
+  <documentation>
+    This component provides a service for notifications.
+
+    By registering with this extension point one can specify the possible
+    notifications to which a user can subscribe, or to which a user is
+    automatically subscribed.
+  </documentation>
+  <extension-point name="notifications">
+    <documentation>
+      This extension point can be used to configure available notifications. A
+      given notification has the form:
+      <code>
+        <notification name="Publication" channel="email"
+          availableIn="Section, Workspace" autoSubscribed="false"
+          template="publishContent">
+          <event name="sectionContentPublished" />
+          <event name="myContentPublished" />
+        </notification>
+      </code>
+      The
+      <em>name</em>
+      is the identifier for this notification.
+
+      The
+      <em>channel</em>
+      is always "email".
+
+      The
+      <em>autoSubscribed</em>
+      flag can be true if this notification is aways taken into account, or
+      false if you want to allow users to enable/disable this notification by
+      themselves.
+
+      The
+      <em>template</em>
+      refers to the body template, which can be configured through the
+      "templates" extension point.
+
+      The
+      <em>availableIn</em>
+      attribute specifies in which types of superspaces the notification is
+      active, it can be a comma-separated lists of types, or "*" or "all" to
+      make the notification active in any container.
+
+      To disable an existing notification:
+      <code>
+        <notification name="Publication" enabled="false" />
+      </code>
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ec.notification.service.NotificationDescriptor" />
+    <object
+      class="org.nuxeo.ecm.platform.ec.notification.service.NotificationEventDescriptor" />
+  </extension-point>
+
+  <extension-point name="templates">
+    <documentation>
+      This extension point can be used to define templates for notifications.
+
+      By default inside the template files those expressions are available to use:
+
+      ${docId} - the UID of the document that produced the notification
+
+      ${author} - the user name of who or what produced the event
+
+      ${principalAuthor} - the same as ${author}
+
+      ${principalAuthor.firstName} - the first name of ${principalAuthor}
+      if defined for the corresponding user
+
+      ${principalAuthor.lastName} - the family name of ${principalAuthor}
+      if defined for the corresponding user
+
+      ${dateTime) - date and time when it happened - must be formatted according
+      to the freemaker rules
+
+      ${docUrl} - For now it displays the path to follow to get to the document
+      that was the source of the event
+
+      ${docTitle} - displays the title of the document that produced the
+      notification
+
+      ${newDocUrl} - this can display the path of the document modified/created
+      inside the document that produced the notification. This newDoc is the
+      child of the producer document.
+
+      ${newDocTitle} - the same that ${newDocUrl}, but displays the title.
+
+      ${newDocId} - the same that ${newDocUrl}, but displays the UID.
+
+      If you need to add some more variables into your templates, just put the
+      data you need to display in the notification in the eventInfo map of the
+      JMS message that is sent to queue topic/NXPMessages.
+
+      The same goes for subject but in this case there is no need to define a
+      template. Just put the string that you need to have as subject and if it
+      contains dynamic elements ${XXX}, they will be rendered just like it
+      happens in the body.
+
+      For example :
+
+      When creating the message : mesage.getEventInfo().put("docSize",
+      sizeOfDocument);
+
+      In your template file : The document has ${docSize}KB.
+
+      @author Narcis Paslaru
+
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ec.notification.service.TemplateDescriptor" />
+  </extension-point>
+
+  <extension-point name="generalSettings">
+    <documentation>
+      This extension point can be used to define general settings. For now only
+      server prefix E.g. : http://server:port/appName/
+
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ec.notification.service.GeneralSettingsDescriptor" />
+  </extension-point>
+
+</component>
