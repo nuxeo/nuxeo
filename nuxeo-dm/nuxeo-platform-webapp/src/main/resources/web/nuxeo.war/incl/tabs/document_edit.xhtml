@@ -1,0 +1,49 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<h:form enctype="multipart/form-data" id="document_edit">
+
+  <script>
+    jQuery(document).ready(function() {
+      jQuery('#document_edit').focusFirst();
+    });
+  </script>
+
+  <ui:include src="/incl/safeEdit.xhtml">
+     <ui:param name="safeEdit_form" value="document_edit" />
+     <ui:param name="safeEdit_mode" value="edit" />
+  </ui:include>
+
+  <nxl:documentLayout mode="edit" value="#{currentDocument}" />
+
+  <nxl:layout name="document_edit_form_options"
+    mode="edit" value="#{currentDocument}" />
+
+  <p class="buttonsGadget">
+    <nxu:set var="actions"
+      value="#{webActions.getActionsList('EDIT_DOCUMENT_FORM')}"
+      cache="true">
+      <c:forEach var="action" items="#{actions}">
+        <nxh:commandButton action="#{action.getLink()}"
+          immediate="#{action.immediate}"
+          onclick="#{action.confirm}"
+          id="edit_doc_#{action.id}"
+          value="#{messages[action.label]}"
+          styleClass="button" />
+      </c:forEach>
+    </nxu:set>
+  </p>
+
+  <script>
+    jQuery(document).ready(function() {
+       initSafeEditOnForm('document_edit', '#{currentDocument.id}', '#{messages[safeEdit_message]}');
+    });
+</script>
+
+</h:form>
+
+</div>
