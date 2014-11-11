@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<component name="default-repository-config">
+  <extension target="org.nuxeo.ecm.core.storage.sql.RepositoryService"
+    point="repository">
+    <repository name="default"
+      factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
+      <indexing>
+        <!-- for H2 (Lucene Analyzer): -->
+        <fulltext analyzer="org.apache.lucene.analysis.standard.StandardAnalyzer">
+          <index name="default">
+            <!-- all props implied -->
+          </index>
+          <index name="title">
+            <field>dc:title</field>
+          </index>
+          <index name="description">
+            <field>dc:description</field>
+          </index>
+        </fulltext>
+        <!-- for PostgreSQL (Text Search Configuration):
+        <fulltext analyzer="english">
+          <index name="default">
+          </index>
+          <index name="title">
+            <field>dc:title</field>
+          </index>
+          <index name="description">
+            <field>dc:description</field>
+          </index>
+        </fulltext>
+        -->
+      </indexing>
+
+      <xa-datasource>org.h2.jdbcx.JdbcDataSource</xa-datasource>
+      <property name="URL">jdbc:h2:data/h2/vcsh2repo</property>
+      <property name="User">sa</property>
+      <property name="Password"></property>
+    </repository>
+  </extension>
+</component>
