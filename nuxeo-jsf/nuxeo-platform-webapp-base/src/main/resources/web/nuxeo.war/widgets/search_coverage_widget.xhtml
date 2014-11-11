@@ -1,0 +1,43 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  id="#{widget.id}">
+
+  <a4j:region id="#{widget.id}_region">
+    <nxdir:chainSelect size="2" value="#{field}"
+      id="#{widget.id}_editselect" multiSelect="true" multiParentSelect="true"
+      allowBranchSelection="false">
+      <nxdir:chainSelectListbox index="0" size="4" directoryName="continent"
+        localize="true" id="#{widget.id}_continent">
+        <a4j:ajax event="change" render="#{widget.id}_country" />
+      </nxdir:chainSelectListbox>
+      <nxdir:chainSelectListbox id="#{widget.id}_country" size="4" index="1"
+        directoryName="country" localize="true" />
+      <a4j:commandButton value="#{messages['command.add']}"
+        styleClass="button" immediate="true"
+        actionListener="#{chainSelectActions.add}"
+        render="#{widget.id}_status" id="#{widget.id}_add" />
+      <br />
+      <nxdir:chainSelectStatus display="value"
+        cssStyleClass="chainSelect"
+        label="#{messages['label.chainSelect.selection']}"
+        id="#{widget.id}_status">
+        <f:facet name="removeButton">
+          <a4j:commandButton actionListener="#{chainSelectActions.delete}"
+            immediate="true" render="#{widget.id}_status"
+            image="/icons/delete.png" id="#{widget.id}_delete" />
+        </f:facet>
+      </nxdir:chainSelectStatus>
+    </nxdir:chainSelect>
+    <a4j:outputPanel ajaxRendered="true">
+      <h:message styleClass="errorMessage" for="#{widget.id}_editselect"
+        id="#{widget.id}_message" />
+    </a4j:outputPanel>
+  </a4j:region>
+
+</f:subview>

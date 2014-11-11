@@ -1,0 +1,96 @@
+<c:if test="true" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <c:if test="#{widget.mode != 'edit'}">
+   <div>
+     <span class="tinyLabel"> 
+      <h:outputText value="#{messages['label.search.between']} " />
+     </span>
+     <nxl:widgetType name="datetime" mode="#{widget.mode}" label="#{widget.label}"
+      value="#{field_0}" properties="#{widget.properties}" />
+     <span class="tinyLabel"> 
+      <h:outputText value="#{messages['label.search.and']} " />
+     </span>
+     <nxl:widgetType name="datetime" mode="#{widget.mode}" label="#{widget.label}"
+      value="#{field_1}" properties="#{widget.properties}" />
+     </div>
+  </c:if>
+
+  <c:if test="#{widget.mode == 'edit'}">
+
+    <nxu:set var="parentWidgetName" value="#{widget.name}" cache="true">
+    <nxu:set var="parentWidgetMode" value="#{widget.mode}" cache="true">
+    <nxu:set var="parentProperties" value="#{widget.properties}" cache="true">
+
+    <nxl:widgetType name="datetime"
+      widgetName="#{parentWidgetName}_start"
+      mode="#{parentWidgetMode}"
+      value="#{field_0}"
+      properties="#{parentProperties}"
+      resolveOnly="true">
+    <nxu:set var="widgetStart" value="#{widget}" cache="true">
+
+    <nxl:widgetType name="datetime"
+      widgetName="#{parentWidgetName}_end"
+      value="#{field_1}"
+      mode="#{parentWidgetMode}"
+      properties="#{parentProperties}"
+      resolveOnly="true">
+    <nxu:set var="widgetEnd" value="#{widget}" cache="true">
+
+    <div>
+      <table>
+        <tbody>
+          <tr>
+            <td>
+              <span class="tinyLabel">
+                <h:outputText value="#{messages['label.search.between']} " />
+              </span>
+            </td>
+            <td>
+              <nxl:widget widget="#{widgetStart}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <span class="tinyLabel">
+               <h:outputText value="#{messages['label.search.and']} " />
+              </span>
+            </td>
+            <td>
+              <nxl:widget widget="#{widgetEnd}" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <h:inputHidden value="dateRangeValidator"
+                validator="#{dateRangeValidator.validateDateRange}"
+                id="#{widget.id}_dateRangeValidator">
+                <f:attribute name="startDateComponentId" value="#{widgetStart.id}" />
+                <f:attribute name="endDateComponentId" value="#{widgetEnd.id}" />
+              </h:inputHidden>
+              <h:message for="#{widget.id}_dateRangeValidator"
+                styleClass="errorMessage" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    </nxu:set>
+    </nxl:widgetType>
+
+    </nxu:set>
+    </nxl:widgetType>
+
+    </nxu:set>
+    </nxu:set>
+    </nxu:set>
+
+  </c:if>
+
+</c:if> 

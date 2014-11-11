@@ -1,0 +1,28 @@
+<c:if test="true"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <h:commandLink
+    id="#{widget.id}_#{idPrefix}toggleAction"
+    value="#{buttonLabel}"
+    immediate="true"
+    styleClass="button smallButton #{toggleButtonStyleClass} #{widgetProperty_actionStyleClass} #{widgetProperty_toggleActionStyleClass}">
+    <f:attribute name="selectedValue" value="#{modeSwitch}" />
+    <f:attribute name="targetComponentId" value="#{modeValueHolderId}" />
+    <f:ajax execute="@this"
+      render=":#{widgetPanelComponent.clientId}"
+      listener="#{selectionActions.setStaticValue}" />
+  </h:commandLink>
+  <a4j:status>
+    <f:facet name="start">
+      <h:graphicImage value="/img/standart_waiter.gif" />
+    </f:facet>
+  </a4j:status>
+
+</c:if>

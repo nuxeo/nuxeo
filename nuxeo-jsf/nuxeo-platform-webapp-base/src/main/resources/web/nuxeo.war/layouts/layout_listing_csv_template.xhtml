@@ -1,0 +1,47 @@
+<nxl:layoutColumn
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxe="http://nuxeo.org/nxweb/seam/excel"  
+  xmlns:e="http://jboss.com/products/seam/excel">
+  <c:if test="#{not layoutColumn.properties.isHidden}">
+    <nxe:column>
+      <f:facet name="header">
+        <nxe:cell>
+          <c:if test="#{layoutColumn.properties.useFirstWidgetLabelAsColumnHeader}">
+            <h:outputText value="#{layoutColumn.widgets[0].label}"
+              rendered="#{!layoutColumn.widgets[0].translated}" />
+            <h:outputText value="#{messages[layoutColumn.widgets[0].label]}"
+              rendered="#{layoutColumn.widgets[0].translated}" />
+          </c:if>
+        </nxe:cell>
+      </f:facet>
+      <nxl:layoutColumnWidget>
+        <nxu:set
+          var="forceType"
+          value="#{widget.properties['csv_forceType']}"
+          resolveTwice="true">
+        <nxu:set
+          var="formatMask"
+          value="#{widget.properties['csv_formatMask']}"
+          resolveTwice="true">
+        <nxu:set
+          var="csvCellStyle"
+          value="#{nxu:test(empty formatMask, '', 'xls-format-mask: #{formatMask};')}"
+          cache="true"
+          resolveTwice="true">
+          <nxe:cell
+            forceType="#{forceType}"
+            style="#{csvCellStyle}">
+            <nxl:widget widget="#{widget}" value="#{value}"/>
+          </nxe:cell>
+        </nxu:set>
+        </nxu:set>
+        </nxu:set>
+      </nxl:layoutColumnWidget>
+    </nxe:column>
+  </c:if>
+</nxl:layoutColumn>

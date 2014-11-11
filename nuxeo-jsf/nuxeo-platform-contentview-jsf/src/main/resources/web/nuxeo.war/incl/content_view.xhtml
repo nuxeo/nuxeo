@@ -1,0 +1,308 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<c:if test="false">
+  Template rendering a content view defined on a document.
+
+  Parameters:
+  - contentViewName: the content view name, mandatory.
+  - contentViewId: a marker to generate unique ids
+    when iterating over a list of content views, optional
+    when only one content view is displayed in the page.
+  - hideEmpty: if set to true, nothing is displayed when there is no
+    item to list (even the sentence saying that there are no items in the
+    list). optional, defaults to false.
+  - foldable: if set to true, shows the content view in a foldable box.
+    optional, defaults to false.
+  - foldedByDefault: if set to true and foldable, foldable box is folded by
+    default. optional, defaults to false (available since 5.6).
+  - foldedIfEmpty: if set to true and foldable, foldable box is folded if
+    there are no results. optional, defaults to false (available since 5.6).
+  - removeForm: if set to true, do not enclose the listing with a form
+    (optional, available since 5.5, defaults to false).
+  - useAjaxForm: if removeForm is not set or set to false, use an ajax form if
+    set to true. This will have an impact on selection actions as they will be
+    using ajax calls. (optional, available since 5.6, defaults to false).
+  - useAjaxPagination: use ajax links for page navigation controls when set to
+    true (optional, available since 5.6, defaults to false).
+  - hideTopPaginationControls: only display the bottom page selectors
+    (available since 5.6).
+
+  Optional parameters used to override the content view definition when not
+  empty:
+  - contentViewTitle: title to display for this content view instead of the
+    one set on the content view definition.
+  - translateContentViewTitle: boolean to use when translating title,
+    only checked if contentViewTitle is not empty.
+  - contentViewIconPath
+  - showTitle
+  - showPageSizeSelector
+  - showRefreshCommand
+  - showFilterForm
+  - defaultPageSize
+  - showCSVExport
+  - showPDFExport
+  - showSyndicationLinks
+  - contentViewDocument: the document to use for filter form instead of
+    the default one managed by the content view. optional.
+  - contentViewSortInfos: the default sort infos, optional.
+  - selectedResultLayoutColumns: list of result layout columns selected,
+    optional
+  - resultLayoutTemplate: layout template to use for results, optional,
+    available since 5.6
+  - ajaxReRender: ids of components that should be re-rendered on ajax actions,
+    optional, available since 5.7
+
+  Templating zones that can be replaced using facelets tag ui:define:
+  - content_view_title
+  - content_view_quick_search_layout
+  - content_view_selector
+  - content_view_search_layout
+  - content_view_syndication_buttons
+  - content_view_footer
+  - empty_folder_label
+
+</c:if>
+
+<nxu:set var="finalDefaultPageSize"
+  value="#{nxu:test(empty defaultPageSize, -1, defaultPageSize)}">
+<nxu:set var="finalSortInfos"
+  value="#{nxu:test(empty contentViewSortInfos, null, contentViewSortInfos)}">
+<nxu:set var="contentView"
+  value="#{contentViewActions.getContentViewWithProvider(contentViewName, contentViewDocument, finalSortInfos, finalDefaultPageSize, -1, -1)}"
+  cache="true">
+<nxu:set var="aggregates"
+  value="#{contentView.pageProvider.hasAggregateSupport() ? contentView.pageProvider.aggregates : null}"
+  cache="true">
+<nxu:set var="selectedResultLayoutColumns"
+  value="#{nxu:test(selectedResultLayoutColumns == null, contentView.currentResultLayoutColumns, selectedResultLayoutColumns)}"
+  cache="true">
+
+<c:if test="#{contentView != null}">
+
+  <c:if test="#{contentView.cacheSize &lt;= 0 and not facesContext.getPartialViewContext().isAjaxRequest()}">
+    <nxu:set var="forceRefreshSoonEnough"
+      value="#{contentView.refreshPageProvider()}"
+      cache="true" />
+  </c:if>
+
+<nxu:set var="contentViewRenderId"
+  value="cv_#{contentView.name}_#{contentViewId}"
+  cache="true">
+<nxu:set var="contentViewRenderId"
+  value="#{nxu:jsfTagIdEscape(contentViewRenderId)}"
+  cache="true">
+<nxu:set var="resultsPanelId"
+  value="#{contentViewRenderId}_resultsPanel"
+  cache="true">
+<nxu:set var="contentViewPanelId"
+  value="#{contentViewRenderId}_panel"
+  cache="true">
+
+<a4j:region id="#{contentViewRenderId}_region">
+<a4j:outputPanel id="#{contentViewPanelId}" layout="block">
+
+  <nxu:set var="provider" value="#{contentView.currentPageProvider}"
+    cache="false">
+    #{provider.setSelectedEntries(documentsListsManager.getWorkingList(contentView.selectionListName))}
+  <c:if test="#{not hideEmpty or not empty provider.currentPage}">
+    <nxu:set var="finalFolded"
+      value="#{nxu:test(foldedByDefault or (foldedIfEmpty and empty provider.currentPage), true, false)}"
+      cache="true">
+
+      <div class="#{foldableBoxStyleClass} #{nxu:test(foldable, 'foldableBox', '')}">
+
+        <ui:insert name="content_view_title">
+          <nxu:set var="translateTitle"
+            value="#{nxu:test(empty contentViewTitle, contentView.translateTitle, translateContentViewTitle)}">
+          <nxu:set var="title"
+            value="#{nxu:test(empty contentViewTitle, contentView.title, contentViewTitle)}">
+          <nxu:set var="finalTitle"
+            value="#{nxu:test(translateTitle, messages[title], title)}">
+          <nxu:set var="iconPath"
+            value="#{nxu:test(empty contentViewIconPath, contentView.iconPath, contentViewIconPath)}">
+            <c:choose>
+              <c:when test="#{foldable}">
+                <div class="#{nxu:test(finalFolded, 'folded', 'unfolded')}">
+                  <a class="foldableHeaderLink" href="#nogo" onclick="return toggleBox(this)">
+                    <c:if test="#{not empty finalTitle}">
+                      <c:if test="#{!empty contentViewIconPath}">
+                        <nxu:graphicImage value="#{contentViewIconPath}"
+                          title="#{finalTitle}" />
+                      </c:if>
+                      #{finalTitle}
+                    </c:if>
+                    <c:if test="#{empty finalTitle}">
+                      <c:if test="#{!empty contentViewIconPath}">
+                        <nxu:graphicImage value="#{contentViewIconPath}"
+                          title="#{messages['label.foldableBox.foldUnfold']}" />
+                      </c:if>
+                      #{messages['label.foldableBox.foldUnfold']}
+                    </c:if>
+                  </a>
+                  <ui:insert name="content_view_selector">
+                    <ui:include src="/incl/content_view_upper_actions.xhtml">
+                      <ui:param name="contentIdToBeReRendered"
+                        value="#{nxu:joinRender(nxu:componentAbsoluteId(component, resultsPanelId), ajaxReRender)}" />
+                      <ui:param name="actionStyleClass" value="smallButton" />
+                    </ui:include>
+                    <div style="clear:both;" />
+                  </ui:insert>
+                </div>
+              </c:when>
+              <c:otherwise>
+                <nxu:set var="finalShowTitle"
+                  value="#{nxu:test(empty showTitle, contentView.showTitle, showTitle)}">
+                  <c:if test="#{finalShowTitle and not empty finalTitle}">
+                    <div class="contentViewTitle">
+                      <h3>
+                        <c:if test="#{!empty contentViewIconPath}">
+                          <nxu:graphicImage value="#{contentViewIconPath}"
+                            title="#{finalTitle}" />
+                        </c:if>
+                        #{finalTitle}
+                      </h3>
+                    </div>
+                  </c:if>
+                </nxu:set>
+              </c:otherwise>
+            </c:choose>
+          </nxu:set>
+          </nxu:set>
+          </nxu:set>
+          </nxu:set>
+        </ui:insert>
+
+        <div class="#{nxu:test(foldable, 'boxBody', '')}"
+          style="#{nxu:test(foldable and finalFolded, 'display: none;', '')}">
+
+          <ui:insert name="content_view_header" />
+
+          <ui:insert name="content_view_quick_search_layout">
+            <c:if test="#{contentView.searchLayout.filterDisplayType == 'quick'}">
+              <ui:include src="/incl/content_view_quick_search_layout.xhtml">
+                <ui:param name="contentIdToBeReRendered"
+                  value="#{nxu:joinRender(nxu:componentAbsoluteId(component, contentViewPanelId), ajaxReRender)}" />
+              </ui:include>
+            </c:if>
+          </ui:insert>
+
+          <c:if test="#{not foldable}">
+            <ui:insert name="content_view_selector">
+              <ui:include src="/incl/content_view_upper_actions.xhtml">
+                <ui:param name="contentIdToBeReRendered"
+                  value="#{nxu:joinRender(nxu:componentAbsoluteId(component, resultsPanelId), ajaxReRender)}" />
+              </ui:include>
+              <div style="clear:both;" />
+            </ui:insert>
+          </c:if>
+
+          <ui:insert name="content_view_search_layout">
+            <c:if test="#{contentView.searchLayout.filterDisplayType == 'default' or empty contentView.searchLayout.filterDisplayType}">
+              <ui:include src="/incl/content_view_search_layout.xhtml">
+                <ui:param name="contentIdToBeReRendered"
+                  value="#{nxu:joinRender(nxu:componentAbsoluteId(component, contentViewPanelId), ajaxReRender)}" />
+              </ui:include>
+              <div style="clear:both;" />
+            </c:if>
+          </ui:insert>
+
+          <a4j:outputPanel id="#{resultsPanelId}" layout="block">
+            <script>
+              jQuery(document).ready(function() {
+                initNXDrapAndDropOnPage(jQuery('##{contentViewRenderId}_panel'));
+              });
+            </script>
+
+            <ui:decorate template="/incl/documents_layout_table.xhtml">
+              <ui:param name="providerId" value="#{contentViewId}" />
+              <ui:param name="documents" value="#{provider.currentSelectPage}" />
+              <ui:param name="layoutName"
+                value="#{contentView.currentResultLayout.name}" />
+              <ui:param name="layoutTemplate"
+                value="#{resultLayoutTemplate}" />
+              <ui:param name="contentIdToBeReRendered"
+                value="#{nxu:joinRender(nxu:componentAbsoluteId(component, resultsPanelId), ajaxReRender)}" />
+
+              <ui:define name="empty_folder_label">
+                <ui:insert name="empty_content_view_label">
+                  <c:set var="defaultSentence"
+                    value="#{nxu:test(contentView.showFilterForm and nxd:isDirty(contentView.searchDocumentModel), messages['label.content.empty.search'], messages['label.content.emptyFolder'])}" />
+                  <c:set var="emptySentence"
+                    value="#{nxu:test(contentView.translateEmptySentence, messages[contentView.emptySentence], contentView.emptySentence)}" />
+                  <h:outputText value="#{nxu:test(empty emptySentence, defaultSentence, emptySentence)}"
+                    rendered="#{documents.rowCount == 0 and not provider.hasError()}" styleClass="emptyResult emptyResultBig" />
+                </ui:insert>
+              </ui:define>
+
+              <ui:define name="error_message">
+                <c:if test="#{provider.hasError()}">
+                  #{messages[provider.errorMessage]}
+                </c:if>
+              </ui:define>
+
+              <ui:define name="buttons">
+                <a4j:outputPanel id="ajax_selection_buttons"
+                  layout="block">
+                  <div id="selection_buttons">
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <ui:insert name="content_view_actions_before" />
+                            <ui:insert name="content_view_actions">
+                              <ui:include src="/widgets/actions/content_view_selection_actions_widget_template.xhtml" />
+                            </ui:insert>
+                            <ui:insert name="content_view_actions_after" />
+                          </td>
+                          <td rowSpan="#{contentView.actionsCategories.size}" valign="middle">
+                            <a4j:status>
+                              <f:facet name="start">
+                                <h:graphicImage value="/img/standart_waiter.gif" />
+                              </f:facet>
+                            </a4j:status>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </a4j:outputPanel>
+              </ui:define>
+
+            </ui:decorate>
+
+          </a4j:outputPanel>
+
+          <ui:insert name="content_view_footer" />
+
+        </div>
+      </div>
+
+    </nxu:set>
+  </c:if>
+  </nxu:set>
+
+</a4j:outputPanel>
+</a4j:region>
+</nxu:set>
+</nxu:set>
+</nxu:set>
+</nxu:set>
+</c:if>
+
+</nxu:set>
+</nxu:set>
+</nxu:set>
+</nxu:set>
+</nxu:set>
+
+</ui:composition>

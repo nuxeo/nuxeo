@@ -1,0 +1,16 @@
+<f:subview xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  id="#{widget.id}">
+
+  <c:if test="false">
+    Deprecated since 5.6, here for compat. Use the "complex" widget instead.
+  </c:if>
+
+  <nxl:widgetType name="complex" mode="#{widget.mode}" value="#{fieldOrValue}"
+    properties="#{widget.properties}"
+    ignoreTemplateProperty="true"
+    subWidgets="#{widget.subWidgets}" />
+
+</f:subview>

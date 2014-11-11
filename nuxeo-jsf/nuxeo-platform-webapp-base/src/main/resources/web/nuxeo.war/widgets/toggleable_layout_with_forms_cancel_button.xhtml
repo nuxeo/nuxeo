@@ -1,0 +1,73 @@
+<c:if test="true"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <c:choose>
+
+    <c:when test="#{display == 'buttons'}">
+      <h:commandButton
+        id="#{widget.id}_#{idPrefix}cancelToggleAction"
+        value="#{cancelActionLabel}"
+        styleClass="button smallButton #{widgetProperty_actionStyleClass}">
+        <f:attribute name="selectedValue" value="#{initialMode}" />
+        <f:attribute name="targetComponentId" value="#{modeValueHolderId}" />
+        <f:ajax execute="@this"
+          render=":#{widgetPanelComponent.clientId}"
+          listener="#{selectionActions.setStaticValue}" />
+      </h:commandButton>
+    </c:when>
+
+    <c:when test="#{display == 'icons'}">
+      <h:commandLink
+        id="#{widget.id}_#{idPrefix}cancelToggleAction"
+        styleClass="actionLink #{widgetProperty_actionStyleClass}">
+        <nxh:graphicImage value="/icons/delete.png"
+          title="#{cancelActionLabel}"
+          alt="#{cancelActionLabel}" />
+        <f:attribute name="selectedValue" value="#{initialMode}" />
+        <f:attribute name="targetComponentId" value="#{modeValueHolderId}" />
+        <f:ajax execute="@this"
+          render=":#{widgetPanelComponent.clientId}"
+          listener="#{selectionActions.setStaticValue}" />
+      </h:commandLink>
+    </c:when>
+
+    <c:when test="#{display == 'links'}">
+      <h:commandLink
+        id="#{widget.id}_#{idPrefix}cancelToggleAction"
+        value="#{cancelActionLabel}"
+        styleClass="actionLink #{widgetProperty_actionStyleClass}">
+        <f:attribute name="selectedValue" value="#{initialMode}" />
+        <f:attribute name="targetComponentId" value="#{modeValueHolderId}" />
+        <f:ajax execute="@this"
+          render=":#{widgetPanelComponent.clientId}"
+          listener="#{selectionActions.setStaticValue}" />
+      </h:commandLink>
+    </c:when>
+
+    <c:otherwise>
+      <h:commandLink
+        id="#{widget.id}_#{idPrefix}cancelToggleAction"
+        styleClass="actionLink #{widgetProperty_actionStyleClass}">
+        <nxh:graphicImage value="/icons/delete.png"
+          title="#{cancelActionLabel}"
+          alt="#{cancelActionLabel}" />
+        <h:outputText value=" #{cancelActionLabel}"
+          styleClass="actionLabel" />
+        <f:attribute name="selectedValue" value="#{initialMode}" />
+        <f:attribute name="targetComponentId" value="#{modeValueHolderId}" />
+        <f:ajax execute="@this"
+          render=":#{widgetPanelComponent.clientId}"
+          listener="#{selectionActions.setStaticValue}" />
+      </h:commandLink>
+    </c:otherwise>
+
+  </c:choose>
+
+</c:if>

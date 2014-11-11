@@ -1,0 +1,49 @@
+<c:if test="#{widget.mode != 'after_view' and widget.mode != 'tab_content'}"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<nxu:set var="onclick"
+  value="#{nxu:test(not empty action.properties.confirmMessage, actionConfirmMessageJs, '')}#{action.confirm};#{action.properties.onclick};"
+  cache="true">
+
+  <c:if test="#{not useAjaxForm}">
+    <nxh:commandLink action="#{contentView.refreshAndRewindPageProvider()}"
+      id="#{widget.id}"
+      onclick="#{onclick}"
+      immediate="#{action.immediate}"
+      target="#{action.properties.target}"
+      disabled="#{!action.available}"
+      styleClass="#{actionStyleClass} #{action.properties.styleClass}"
+      accesskey="#{action.accessKey}">
+      <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+      <ui:insert name="inside_action" />
+    </nxh:commandLink>
+  </c:if>
+
+  <c:if test="#{useAjaxForm}">
+    <h:commandLink
+      id="#{widget.id}"
+      onclick="#{onclick}"
+      disabled="#{!action.available}"
+      styleClass="#{actionStyleClass} #{action.properties.styleClass}"
+      accesskey="#{action.accessKey}">
+      <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+      <ui:insert name="before_action_trigger" />
+      <nxu:actionListenerMethod
+        value="#{contentView.refreshAndRewindPageProvider()}" />
+      <ui:insert name="after_action_trigger" />
+      <f:ajax execute="#{action.immediate ? '@this' : '@form'}"
+        render="#{ajaxReRender}" />
+    </h:commandLink>
+  </c:if>
+
+</nxu:set>
+
+</c:if>

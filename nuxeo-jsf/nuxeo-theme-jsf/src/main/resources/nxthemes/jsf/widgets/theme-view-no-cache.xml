@@ -1,0 +1,26 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+  <f:view contentType="text/html" />
+  <h:head id="pageHead">
+    <title>
+      <ui:insert name="page title"></ui:insert>
+    </title>
+
+    <ui:insert name="bookmark"></ui:insert>
+
+    <nxthemes:head />
+
+    <ui:insert name="stylesheets"></ui:insert>
+    <ui:insert name="header_scripts"></ui:insert>
+
+    <nxthemes:themestyles cache="true" target="head"
+      id="theme_view_styles" name="theme_view_styles" />
+    <nxthemes:resources target="head"
+      id="theme_view_resources" name="theme_view_resources" />
+
+  </h:head>
+  [nxthemes markup]
+</html>

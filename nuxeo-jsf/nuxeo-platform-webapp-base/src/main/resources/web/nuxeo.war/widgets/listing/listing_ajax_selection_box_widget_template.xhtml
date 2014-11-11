@@ -1,0 +1,12 @@
+<h:selectBooleanCheckbox
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:f="http://java.sun.com/jsf/core"
+  id="#{widget.id}"
+  value="#{field_0}">
+  <f:ajax id="#{widget.id}_ajax_onclick" event="click"
+    execute="@this"
+    listener="#{documentListingActions.processSelectRow(field_1, contentView.name, contentView.selectionListName, field_0)}"
+    render="#{nxu:componentAbsoluteId(component, 'ajax_selection_buttons')}" />
+</h:selectBooleanCheckbox>

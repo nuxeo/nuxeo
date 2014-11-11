@@ -1,0 +1,64 @@
+<f:subview
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  id="#{layout.id}">
+
+<c:if test="false">
+  Layout template applying to an item instance of SelectDataModel named "documents"
+
+  Other needed parameters are:
+  - provider: instance of a ResultProvider to handle sort
+  - layoutListingStatus: iteration status, used to print table header
+    matching widget label.
+
+  Since 5.8, removed selection and sort actions (see NXP-12435).
+</c:if>
+
+<c:if test="#{showListingHeader and layout.properties.showListingHeader}">
+  <thead>
+    <tr>
+      <nxl:layoutColumn>
+        <th dir="auto">
+          <c:choose>
+            <c:when test="#{layoutColumn.properties.isListingSelectionBox}">
+              <!-- removed checkboxes, see NXP-12435 -->
+            </c:when>
+            <c:when test="#{layoutColumn.properties.isListingSelectionBoxWithCurrentDocument}">
+              <!-- removed checkboxes, see NXP-12435 -->
+            </c:when>
+            <c:when test="#{layoutColumn.properties.useFirstWidgetLabelAsColumnHeader}">
+              <c:if test="#{provider.sortable and !empty layoutColumn.properties.sortPropertyName}">
+                <!-- removed sort actions, see NXP-12435 -->
+              </c:if>
+              <h:outputText value="#{layoutColumn.widgets[0].label}"
+                rendered="#{!layoutColumn.widgets[0].translated}" />
+              <h:outputText value="#{messages[layoutColumn.widgets[0].label]}"
+                rendered="#{layoutColumn.widgets[0].translated}" />
+            </c:when>
+          </c:choose>
+        </th>
+      </nxl:layoutColumn>
+    </tr>
+  </thead>
+</c:if>
+
+<c:set var="trStyleClass" value="#{nxu:test(layoutListingStatus.index%2 ==0, 'dataRowEven', 'dataRowOdd')}" />
+<tr class="#{nxu:test(layout.properties.showRowEvenOddClass, trStyleClass, '')}">
+  <nxl:layoutColumn>
+    <td class="#{layoutColumn.properties.columnStyleClass}" dir="auto">
+      <nxl:layoutColumnWidget>
+        <nxl:widget widget="#{widget}" value="#{value}" />
+        <c:if test="#{layoutColumn.size > 1 and layoutColumn.size > widgetIndex + 1}">
+          <br />
+        </c:if>
+      </nxl:layoutColumnWidget>
+    </td>
+  </nxl:layoutColumn>
+</tr>
+
+</f:subview>

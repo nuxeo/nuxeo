@@ -1,0 +1,41 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+<div id="#{widget.id}"
+  class="#{widgetProperty_styleClass}">
+
+    <nxu:set var="contentViewName"
+      value="#{widgetProperty_contentViewName}">
+      <nxu:set var="contentView"
+        value="#{contentViewActions.getContentViewWithProvider(contentViewName)}"
+        cache="true">
+        <nxu:set var="resolvedAjaxReRender"
+          value="#{nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender)}"
+          cache="false">
+          <c:if test="#{contentView != null}">
+            <nxl:layout name="#{contentView.searchLayout.name}"
+              mode="search" value="#{contentView.searchDocumentModel}">
+              <ui:define name="inside_input_widget">
+                <c:if
+                  test="#{widgetControl_supportInsideInputWidgetEffects}">
+                  <f:ajax execute="@form"
+                    listener="#{contentViewActions.refreshAndRewind(contentView.name)}"
+                    render="@form #{resolvedAjaxReRender}">
+                  </f:ajax>
+                </c:if>
+              </ui:define>
+            </nxl:layout>
+          </c:if>
+
+        </nxu:set>
+      </nxu:set>
+    </nxu:set>
+
+  </div>
+</ui:composition>

@@ -1,0 +1,205 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layout.dev">
+
+  <documentation>
+    Component that provides layouts/widgets contributions used when
+    rendering layouts/widgets dev screens
+
+    @author Anahide Tchertchian
+    (at@nuxeo.com)
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouttypes">
+
+    <layoutType name="devLayout">
+      <templates>
+        <template mode="any">
+          /widgets/dev/layouts/dev_layout_template.xhtml
+        </template>
+      </templates>
+    </layoutType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="widget_dev_layout" type="devLayout">
+      <rows>
+        <row>
+          <widget>type</widget>
+        </row>
+        <row>
+          <widget>typeCategory</widget>
+        </row>
+        <row>
+          <widget>mode</widget>
+        </row>
+        <row>
+          <widget>dynamic</widget>
+        </row>
+        <row>
+          <widget>properties</widget>
+        </row>
+        <row>
+          <widget>controls</widget>
+        </row>
+      </rows>
+      <widget name="type" type="text">
+        <labels>
+          <label mode="any">Type</label>
+        </labels>
+        <fields>
+          <field>type</field>
+        </fields>
+      </widget>
+      <widget name="typeCategory" type="text">
+        <labels>
+          <label mode="any">Type Category</label>
+        </labels>
+        <fields>
+          <field>typeCategory</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{nxu:test(empty layoutValue.typeCategory or
+            layoutValue.typeCategory == 'jsf', 'hidden', mode)}
+          </mode>
+        </widgetModes>
+      </widget>
+      <widget name="mode" type="text">
+        <labels>
+          <label mode="any">Mode</label>
+        </labels>
+        <fields>
+          <field>mode</field>
+        </fields>
+      </widget>
+      <widget name="dynamic" type="text">
+        <labels>
+          <label mode="any">Dynamic</label>
+        </labels>
+        <fields>
+          <field>dynamic</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{nxu:test(layoutValue.dynamic, mode, 'hidden')}
+          </mode>
+        </widgetModes>
+      </widget>
+      <widget name="properties" type="template">
+        <labels>
+          <label mode="any">Properties</label>
+        </labels>
+        <fields>
+          <field>properties</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{nxu:test(empty layoutValue.properties, 'hidden',
+            mode)}
+          </mode>
+        </widgetModes>
+        <properties mode="any">
+          <property name="template">
+            /widgets/dev/properties_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="controls" type="template">
+        <labels>
+          <label mode="any">Controls</label>
+        </labels>
+        <fields>
+          <field>controls</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{nxu:test(empty layoutValue.controls, 'hidden',
+            mode)}
+          </mode>
+        </widgetModes>
+        <properties mode="any">
+          <property name="template">
+            /widgets/dev/properties_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="layout_dev_layout" type="devLayout">
+      <rows>
+        <row>
+          <widget>type</widget>
+        </row>
+        <row>
+          <widget>mode</widget>
+        </row>
+        <row>
+          <widget>dynamic</widget>
+        </row>
+        <row>
+          <widget>properties</widget>
+        </row>
+      </rows>
+      <widget name="type" type="text">
+        <labels>
+          <label mode="any">Type</label>
+        </labels>
+        <fields>
+          <field>type</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{nxu:test(empty layoutValue.type, 'hidden', mode)}
+          </mode>
+        </widgetModes>
+      </widget>
+      <widget name="mode" type="text">
+        <labels>
+          <label mode="any">Mode</label>
+        </labels>
+        <fields>
+          <field>mode</field>
+        </fields>
+      </widget>
+      <widget name="dynamic" type="text">
+        <labels>
+          <label mode="any">Dynamic</label>
+        </labels>
+        <fields>
+          <field>dynamic</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{nxu:test(layoutValue.dynamic, mode, 'hidden')}
+          </mode>
+        </widgetModes>
+      </widget>
+      <widget name="properties" type="template">
+        <labels>
+          <label mode="any">Properties</label>
+        </labels>
+        <fields>
+          <field>properties</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{nxu:test(empty layoutValue.properties, 'hidden',
+            mode)}
+          </mode>
+        </widgetModes>
+        <properties mode="any">
+          <property name="template">
+            /widgets/dev/properties_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+    </layout>
+
+  </extension>
+
+</component>

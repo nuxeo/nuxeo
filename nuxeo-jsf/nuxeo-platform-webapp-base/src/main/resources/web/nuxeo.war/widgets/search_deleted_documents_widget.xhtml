@@ -1,0 +1,23 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <c:if test="#{widget.mode == 'view'}">
+    <h:outputText id="#{widget.id}"
+      value="#{field == 'deleted' ? messages['label.no']: messages['label.yes']}" />
+  </c:if>
+
+  <c:if test="#{widget.mode == 'edit'}">
+    <h:selectOneMenu value="#{field}" id="#{widget.id}"
+      required="#{widgetProperty_required}">
+      <f:selectItem itemValue="deleted" itemLabel="#{messages['label.no']}" />
+      <f:selectItem itemValue=" " itemLabel="#{messages['label.yes']}" />
+    </h:selectOneMenu>
+    <h:message styleClass="errorMessage" for="#{widget.id}"
+      id="#{widget.id}_message" />
+  </c:if>
+
+</ui:composition>
