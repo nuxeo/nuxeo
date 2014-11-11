@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>nuxeo-runtime-parent</artifactId>
+    <groupId>org.nuxeo.runtime</groupId>
+    <version>5.4.0-I20100925_0829</version>
+  </parent>
+  <groupId>org.nuxeo.runtime</groupId>
+  <artifactId>nuxeo-runtime-management-metrics</artifactId>
+  <name>Nuxeo Runtime Management Metrics</name>
+
+  <dependencies>
+  	<dependency>
+  		<groupId>org.javasimon</groupId>
+  		<artifactId>javasimon-core</artifactId>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.javasimon</groupId>
+  		<artifactId>javasimon-jmx</artifactId>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.thoughtworks.xstream</groupId>
+  		<artifactId>xstream</artifactId>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.nuxeo.runtime</groupId>
+  		<artifactId>nuxeo-runtime</artifactId>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.osgi</groupId>
+  		<artifactId>osgi-core</artifactId>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.nuxeo.common</groupId>
+  		<artifactId>nuxeo-common</artifactId>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  </dependencies>
+
+</project>

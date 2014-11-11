@@ -1,0 +1,196 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.runtime</groupId>
+    <artifactId>nuxeo-runtime-parent</artifactId>
+    <version>5.4.0-I20100925_0829</version>
+  </parent>
+
+  <groupId>org.nuxeo.runtime</groupId>
+  <artifactId>nuxeo-runtime-scripting</artifactId>
+  <name>Nuxeo Runtime Scripting</name>
+  <description>Nuxeo Runtime Scripting Support.</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.script</groupId>
+      <artifactId>script-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-jexl</groupId>
+      <artifactId>commons-jexl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.script</groupId>
+      <artifactId>jexl-engine</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>rhino</groupId>
+      <artifactId>js</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.script</groupId>
+      <artifactId>js-engine</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jruby</groupId>
+      <artifactId>jruby</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.script</groupId>
+      <artifactId>jruby-engine</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>backport-util-concurrent</groupId>
+      <artifactId>backport-util-concurrent</artifactId>
+    </dependency>
+
+    <!-- Should use version 3.0 -->
+    <dependency>
+      <groupId>asm</groupId>
+      <artifactId>asm</artifactId>
+      <version>2.2.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.python</groupId>
+      <artifactId>jython</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.script</groupId>
+      <artifactId>jython-engine</artifactId>
+    </dependency>
+
+    <!-- beanshell -->
+    <dependency>
+      <groupId>bsh</groupId>
+      <artifactId>bsh</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.script</groupId>
+      <artifactId>bsh-engine</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.script</groupId>
+      <artifactId>groovy-engine</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>antlr</groupId>
+      <artifactId>antlr</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-remoting</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>commons-jexl</groupId>
+                  <artifactId>commons-jexl</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>rhino</groupId>
+                  <artifactId>js</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.jruby</groupId>
+                  <artifactId>jruby</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.python</groupId>
+                  <artifactId>jython</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.codehaus.groovy</groupId>
+                  <artifactId>groovy-all</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>javax.script</groupId>
+                  <artifactId>groovy-engine</artifactId>
+                </artifactItem>
+
+                <artifactItem>
+                  <groupId>javax.script</groupId>
+                  <artifactId>script-api</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>javax.script</groupId>
+                  <artifactId>bsh-engine</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>javax.script</groupId>
+                  <artifactId>jython-engine</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>javax.script</groupId>
+                  <artifactId>jruby-engine</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>javax.script</groupId>
+                  <artifactId>js-engine</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>javax.script</groupId>
+                  <artifactId>jexl-engine</artifactId>
+                </artifactItem>
+
+                <artifactItem>
+                  <groupId>backport-util-concurrent</groupId>
+                  <artifactId>backport-util-concurrent</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>asm</groupId>
+                  <artifactId>asm</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>antlr</groupId>
+                  <artifactId>antlr</artifactId>
+                </artifactItem>
+
+              </artifactItems>
+              <outputDirectory>
+                ${project.build.directory}/classes/lib
+              </outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

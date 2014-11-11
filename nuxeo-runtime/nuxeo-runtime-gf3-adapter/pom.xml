@@ -1,0 +1,101 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.runtime</groupId>
+    <artifactId>nuxeo-runtime-parent</artifactId>
+    <version>5.4.0-I20100925_0829</version>
+  </parent>
+
+  <groupId>org.nuxeo.runtime</groupId>
+  <artifactId>nuxeo-runtime-gf3-adapter</artifactId>
+  <name>Nuxeo Runtime GlassFish3 Adapter</name>
+  <description>Emebeds GlassFish3 in Nuxeo</description>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.glassfish.embedded</groupId>
+      <artifactId>glassfish-embedded-all</artifactId>
+      <version>3.0-b38-nxp-web-210</version>
+      <type>jar</type>
+    </dependency>
+
+    <!-- 3.0-SNAPSHOT version 03-Nov-2008 is not containing stax api + impl -->
+    <!--dependency>
+      <groupId>javax.xml.stream</groupId>
+      <artifactId>stax-api</artifactId>
+      <version>1.0-2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.woodstox</groupId>
+      <artifactId>wstx-asl</artifactId>
+      <version>3.2.7</version>
+    </dependency-->
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- TODO: use gf3 maven distribution plugin? -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-installed</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.glassfish.embedded</groupId>
+                  <artifactId>glassfish-embedded-all</artifactId>
+                  <version>3.0-b38</version>
+                </artifactItem>
+                <!--artifactItem>
+                  <groupId>javax.xml.stream</groupId>
+                  <artifactId>stax-api</artifactId>
+                  <version>1.0-2</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.codehaus.woodstox</groupId>
+                  <artifactId>wstx-asl</artifactId>
+                  <version>3.2.7</version>
+                </artifactItem-->
+              </artifactItems>
+              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
