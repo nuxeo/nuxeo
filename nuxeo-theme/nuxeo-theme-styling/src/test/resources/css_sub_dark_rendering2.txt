@@ -1,0 +1,52 @@
+<style type="text/css">
+/* CSS styles for theme 'testStyling' */
+
+
+/* CSS styles named 'testStyling/print Page Styles' */
+.${print_suid} {color:red;font-family:'Trebuchet MS', Arial, Helvetica, Geneva, sans-serif;}
+.${print_suid} h1 {margin:0;padding:0;}
+.${print_suid} h2 {margin:0;padding:0;}
+.${print_suid} h3 {margin:0;padding:0;}
+.${print_suid} h4 {margin:0;padding:0;}
+.${print_suid} h5 {margin:0;padding:0;}
+.${print_suid} h6 {margin:0;padding:0;}
+.${print_suid} .myAddonClassWithFlavor {color:#000;font-family:'Trebuchet MS', Arial, Helvetica, Geneva, sans-serif;}
+.${print_suid} .myAddonClass {margin:0;padding:0;}
+
+
+/* CSS styles named 'testStyling/default Page Styles' */
+.${default_suid} {color:#444;font-family:'Trebuchet MS', Arial, Helvetica, Geneva, sans-serif;margin:0;line-height:1.125em;font-size:100%;padding:0;}
+.${default_suid} textarea {font-family:'Trebuchet MS', Arial, Helvetica, Geneva, sans-serif;font-size:.95em;padding:5px;}
+.${default_suid} form {margin:0;padding:0;}
+.${default_suid} div {margin:0;padding:0;}
+.${default_suid} p {margin:0;padding:0;}
+.${default_suid} ul {margin:0;padding:0;list-style:none;}
+.${default_suid} a {color:"red";outline:medium none;text-decoration:none;margin:0;padding:0;}
+.${default_suid} h1 {color:red;font-weight:bold;margin:0;padding:.4em 0 .5em;font-size:1.4em;}
+.${default_suid} h2 {color:red;font-weight:bold;margin:0;padding:.5em 1em .5em 0;font-size:1.2em;}
+.${default_suid} h3 {color:red;font-weight:bold;margin:0;padding:.8em 0 .3em;font-size:1.2em;}
+.${default_suid} h4 {color:#7759bc;margin:.2em 0 .2em 0;padding:0;font-size:.8em;}
+.${default_suid} h5 {color:#7759bc;margin:.2em 0 .2em 0;padding:0;font-size:.8em;}
+.${default_suid} h6 {color:#7759bc;margin:.2em 0 .2em 0;padding:0;font-size:.8em;}
+.${default_suid} input {margin:0;padding:0;}
+.${default_suid} table {margin:0;padding:0;}
+.${default_suid} dd {margin:0;padding:0;}
+.${default_suid} dt {margin:0;padding:0;}
+.${default_suid} dl {margin:0;padding:0;}
+.${default_suid} img {border:0 none;outline:medium none;margin:0;padding:0;}
+.${default_suid} hr {margin:0;padding:0;}
+.${default_suid} fieldset {margin:0;padding:0;}
+.${default_suid} iframe {margin:0;padding:0;}
+.${default_suid} a:link {color:"red";text-decoration:none;}
+.${default_suid} a:visited {color:"red";text-decoration:none;}
+.${default_suid} a:hover {color:#7864e1;text-decoration:underline;}
+.${default_suid} .selectDocumentType {margin-top:10px;}
+.${default_suid} .checkBox {margin-right:3px;}
+.${default_suid} .required {background:transparent url(/nuxeo/myBasePath/icons/required.gif) top right no-repeat;padding:0 10px 0 0;}
+.${default_suid} .boldLabel {font-weight:bold;}
+.${default_suid} .button {background:linear-gradient(center top,#f5f2f5 5%,#dfdfdf 100%);box-shadow:inset 0 1px 0 0 #fff;border-radius:3px;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f2f5',endColorstr='#dfdfdf');text-decoration:none;background-color:#dfdfdf;border:1px solid;margin:5px 10px 10px 0;color:#000;font-size:.9em;text-shadow:1px 1px 0 #fff;font-weight:bold;border-color:"button (subDark border)";padding:4px 10px;cursor:pointer;}
+.${default_suid} input.button {background:linear-gradient(center top,#f5f2f5 5%,#dfdfdf 100%);box-shadow:inset 0 1px 0 0 #fff;border-radius:3px;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f2f5',endColorstr='#dfdfdf');text-decoration:none;background-color:#dfdfdf;border:1px solid;margin:5px 10px 10px 0;color:#000;font-size:.9em;text-shadow:1px 1px 0 #fff;font-weight:bold;border-color:"button (subDark border)";padding:4px 10px;cursor:pointer;}
+.${default_suid} .myAddonClassWithFlavor {color:#000;font-family:'Trebuchet MS', Arial, Helvetica, Geneva, sans-serif;}
+.${default_suid} .myAddonClass {margin:0;padding:0;}
+
+</style>
