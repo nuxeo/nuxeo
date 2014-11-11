@@ -1,0 +1,71 @@
+<f:subview
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  id="#{layout.id}">
+
+<c:if test="false">
+  template needing parameter "jsfContainerId" representing the JSF
+  UINamingContainerId so that javascript code can use it to find
+  DOM elements on the page.
+</c:if>
+
+<c:if test="#{nxl:isBoundToEditMode(layout.mode)}">
+
+  <table class="dataInput">
+    <tbody>
+
+      <nxl:layoutRow>
+        <tr>
+          <nxl:layoutRowWidget>
+            <td class="iconColumn">
+              <c:set var="bulkEditCheckBoxId"
+                value="bulkEdit_checkbox_#{layoutRowIndex}_#{widgetIndex}" />
+              <c:set var="contextDataKey"
+                value="bulkEdit/#{nxl:fieldDefinitionsAsString(widget.fieldDefinitions)}" />
+              <h:selectBooleanCheckbox
+                id="#{bulkEditCheckBoxId}"
+                value="#{value.contextData[contextDataKey]}" />
+            </td>
+            <td class="labelColumn">
+              <c:choose>
+                <c:when test="#{widget.translated}">
+                  <h:outputText value="#{messages[widget.label]}"
+                    styleClass="#{nxu:test(widget.required, 'required', '')}" />
+                  <c:if test="#{!empty widget.helpLabel}">
+                    <h:outputText value=" " />
+                    <h:graphicImage value="/icons/lightbulb.png"
+                      onmouseover="tooltip.show('#{nxu:javaScriptEscape(messages[widget.helpLabel])}', 500);"
+                      onmouseout="tooltip.hide();" />
+                  </c:if>
+                </c:when>
+                <c:otherwise>
+                  <h:outputText value="#{widget.label}"
+                    styleClass="#{nxu:test(widget.required, 'required', '')}" />
+                  <c:if test="#{!empty widget.helpLabel}">
+                    <h:outputText value=" " />
+                    <h:graphicImage value="/icons/lightbulb.png"
+                      onmouseover="tooltip.show('#{nxu:javaScriptEscape(widget.helpLabel)}', 500);"
+                      onmouseout="tooltip.hide();" />
+                  </c:if>
+                </c:otherwise>
+              </c:choose>
+            </td>
+            <td class="fieldColumn" colspan="#{nxu:test(layoutRow.size==1, 3*layout.columns-2, 1)}">
+              <nxl:widget widget="#{widget}" value="#{value}"
+                onclick="document.getElementById('#{jsfContainerId}:#{layout.id}:#{bulkEditCheckBoxId}').checked='checked'"
+                onchange="document.getElementById('#{jsfContainerId}:#{layout.id}:#{bulkEditCheckBoxId}').checked='checked'" />
+            </td>
+          </nxl:layoutRowWidget>
+        </tr>
+      </nxl:layoutRow>
+
+    </tbody>
+  </table>
+
+</c:if>
+
+</f:subview>

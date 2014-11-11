@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.treeManager.contrib">
+
+  <documentation>Default configuration for Nuxeo EP tree</documentation>
+
+  <extension target="org.nuxeo.ecm.platform.treeManager" point="plugin">
+
+    <documentation>
+      Default configuration for the Nuxeo EP tree.
+
+      Displays only Folderish objects, not marked as hidden in navigation, and
+      sorts by dc:title property. Folders with the BigFolder facet are shown
+      without any children.
+    </documentation>
+
+    <treeManagerPlugin name="navigation">
+      <excludedFacets>
+        <facet name="HiddenInNavigation" />
+      </excludedFacets>
+      <includedFacets>
+        <facet name="Folderish" />
+      </includedFacets>
+      <leafFilterClass>org.nuxeo.ecm.webapp.tree.BigFolderLeafFilter</leafFilterClass>
+      <sortPropertyPath>dc:title</sortPropertyPath>
+      <queryModel>TREE_CHILDREN</queryModel>
+      <orderableQueryModel>TREE_ORDERED_CHILDREN</orderableQueryModel>
+    </treeManagerPlugin>
+
+  </extension>
+
+</component>

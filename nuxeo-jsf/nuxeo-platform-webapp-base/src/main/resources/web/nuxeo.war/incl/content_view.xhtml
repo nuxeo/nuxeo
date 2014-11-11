@@ -1,0 +1,157 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<c:if test="false">
+ Template rendering a content view defined on a document
+
+ Parameters:
+ - contentViewName: the content view name, mandatory
+ - contentViewId: a marker to generate unique ids
+   when iterating over a list of content views, optional
+   when only one content view is displayed in the page.
+ - contentViewDocument
+ - contentViewSortInfos
+ - selectedResultLayoutColumns: list of result layout columns selected
+</c:if>
+
+  <nxu:set var="contentView"
+    value="#{contentViewActions.getContentViewWithProvider(contentViewName, contentViewDocument, nxu:test(empty contentViewSortInfos, null, contentViewSortInfos), -1, -1)}"
+    cache="true">
+  <nxu:set var="selectedResultLayoutColumns"
+    value="#{nxu:test(selectedResultLayoutColumns == null, contentView.currentResultLayoutColumns, selectedResultLayoutColumns)}"
+    cache="true">
+
+    <c:if test="#{contentView != null}">
+    <a4j:region id="contentViewAjaxRegion_#{contentView.name}_#{contentViewId}">
+
+      <nxu:set var="provider" value="#{contentView.currentPageProvider}"
+        cache="true">
+        #{provider.setSelectedEntries(documentsListsManager.getWorkingList(contentView.selectionListName))}
+
+        <c:set var="title"
+          value="#{nxu:test(contentView.translateTitle, messages[contentView.title], contentView.title)}" />
+
+        <ui:insert name="content_view_title">
+          <c:if test="#{contentView.showTitle and not empty title}">
+            <div class="contentViewTitle">
+              <h3>
+                <c:if test="#{!empty contentView.iconPath}">
+                  <nxu:graphicImage value="#{contentView.iconPath}" title="#{title}" />
+                </c:if>
+                #{title}
+              </h3>
+            </div>
+          </c:if>
+        </ui:insert>
+
+        <ui:insert name="content_view_selector">
+          <ui:include src="/incl/content_view_result_layout_selector.xhtml" />
+          <div style="clear:both;" />
+        </ui:insert>
+
+        <ui:decorate template="/incl/documents_layout_table.xhtml">
+          <ui:param name="providerId" value="#{contentViewId}" />
+          <ui:param name="documents" value="#{provider.currentSelectPage}" />
+          <ui:param name="listName" value="#{contentView.selectionListName}" />
+          <ui:param name="layoutName" value="#{contentView.currentResultLayout.name}" />
+
+          <ui:define name="empty_folder_label">
+            <ui:insert name="empty_content_view_label">
+              <c:set var="emptySentence"
+                value="#{nxu:test(contentView.translateEmptySentence, messages[contentView.emptySentence], contentView.emptySentence)}" />
+              <h:outputText value="#{nxu:test(empty emptySentence, messages['label.content.emptyFolder'], emptySentence)}"
+                rendered="#{documents.rowCount == 0 and not provider.hasError()}" />
+            </ui:insert>
+          </ui:define>
+        
+          <ui:define name="error_message">
+            <c:if test="#{provider.hasError()}">
+              #{provider.errorMessage}
+            </c:if>
+          </ui:define>
+ 
+          <ui:define name="buttons">
+            <c:if test="#{documents.rowCount != 0}">
+              <a4j:outputPanel id="ajax_selection_buttons" ajaxRendered="false">
+                <div id="selection_buttons">
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <c:forEach var="actionCategory" items="#{contentView.actionsCategories}" varStatus="status">
+                            <nxu:set var="actions" value="#{webActions.getUnfiltredActionsList(actionCategory)}" cache="true">
+                              <nxu:dataList var="sel_action" value="#{actions}"
+                                id="clipboardActionsTable_#{contentViewId}_#{status.index}">
+                              <span id="#{sel_action.id}">
+                                <nxh:commandButton
+                                  styleClass="button"
+                                  action="#{sel_action.getLink()}"
+                                  value="#{messages[sel_action.label]}"
+                                  onclick="#{sel_action.confirm}"
+                                  disabled="#{!sel_action.available}"
+                                  id="clipboardActionsButton" />
+                               </span>
+                              </nxu:dataList>
+                            </nxu:set>
+                            <br />
+                          </c:forEach>
+                        </td>
+                        <td rowSpan="#{contentView.actionsCategories.size}" valign="middle">
+                          <a4j:status>
+                            <f:facet name="start">
+                              <h:graphicImage value="/img/standart_waiter.gif" />
+                            </f:facet>
+                          </a4j:status>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </a4j:outputPanel>
+            </c:if>
+          </ui:define>
+
+          <ui:insert name="content_view_syndication_buttons">
+            <ui:define name="syndication_buttons">
+              <div class="syndicationButton">
+                <div class="syndicationLinks">
+                  <nxu:set var="contentViewState" value="#{contentViewRestActions.getContentViewState(contentView)}">
+                    <nxd:restDocumentLink document="#{currentDocument}"
+                      view="rss" addTabInfo="false"
+                      newConversation="true" target="_blank">
+                      <f:param name="contentViewName" value="#{contentView.name}" />
+                      <f:param name="currentPage" value="0" />
+                      <f:param name="contentViewState" value="#{contentViewState}" />
+                      <h:outputText value="#{messages['label.syndication.rss']}"/>
+                    </nxd:restDocumentLink>
+                    <h:outputText value=" | " />
+                    <nxd:restDocumentLink document="#{currentDocument}"
+                      view="atom" addTabInfo="false"
+                      newConversation="true" target="_blank">
+                      <f:param name="contentViewName" value="#{contentView.name}" />
+                      <f:param name="currentPage" value="0" />
+                      <f:param name="contentViewState" value="#{contentViewState}" />
+                      <h:outputText value="#{messages['label.syndication.atom']}" />
+                    </nxd:restDocumentLink>
+                  </nxu:set>
+                </div>
+              </div>
+            </ui:define>
+          </ui:insert>
+
+        </ui:decorate>
+
+      </nxu:set>
+
+    </a4j:region>
+    </c:if>
+  </nxu:set>
+  </nxu:set>
+
+</div>

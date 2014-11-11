@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.platform.types">
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+
+    <type id="Root">
+      <label>Server Root</label>
+      <icon>/icons/folder.gif</icon>
+      <bigIcon>/icons/folder_100.png</bigIcon>
+      <description>serverRoot.description</description>
+      <category>SuperDocument</category>
+      <default-view>view_domains</default-view>
+      <subtypes>
+        <type hidden="create">Domain</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
+      </contentViews>
+    </type>
+
+    <type id="Domain">
+      <label>Domain</label>
+      <icon>/icons/domain.gif</icon>
+      <bigIcon>/icons/domain.gif</bigIcon>
+      <category>SuperDocument</category>
+      <description>Domain.description</description>
+      <default-view>view_documents</default-view>
+      <create-view>create_domain</create-view>
+      <views>
+        <view id="user_dashboard" value="user_dashboard" />
+        <view id="opensocial_dashboard" value="opensocial_dashboard" />
+      </views>
+      <subtypes>
+        <type hidden="create">WorkspaceRoot</type>
+        <type hidden="create">SectionRoot</type>
+        <type hidden="create">TemplateRoot</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
+      </contentViews>
+    </type>
+
+    <type id="WorkspaceRoot">
+      <label>WorkspaceRoot</label>
+      <icon>/icons/workspace.gif</icon>
+      <bigIcon>/icons/workspace_100.png</bigIcon>
+      <category>SuperDocument</category>
+      <description>WorkspaceRoot.description</description>
+      <icon-expanded>/icons/workspace_open.gif</icon-expanded>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>Workspace</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
+      </contentViews>
+    </type>
+
+    <type id="TemplateRoot">
+      <label>TemplateRoot</label>
+      <icon>/icons/folder_template.gif</icon>
+      <bigIcon>/icons/template_100.png</bigIcon>
+      <icon-expanded>/icons/folder_template_open.gif</icon-expanded>
+      <category>SuperDocument</category>
+      <description>TemplateRoot.description</description>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>Workspace</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
+      </contentViews>
+    </type>
+
+    <type id="Workspace">
+      <label>Workspace</label>
+      <icon>/icons/workspace.gif</icon>
+      <bigIcon>/icons/workspace_100.png</bigIcon>
+      <icon-expanded>/icons/workspace_open.gif</icon-expanded>
+      <category>Collaborative</category>
+      <description>Workspace.description</description>
+      <default-view>view_documents</default-view>
+      <create-view>create_workspace</create-view>
+      <subtypes>
+        <type>Workspace</type>
+        <type>Folder</type>
+        <type>OrderedFolder</type>
+        <type>File</type>
+        <type>Note</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <!--<layout>file</layout>-->
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <!--<layout>file</layout>-->
+        <layout>dublincore</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
+      </contentViews>
+    </type>
+
+    <type id="SectionRoot">
+      <label>SectionRoot</label>
+      <icon>/icons/folder.gif</icon>
+      <bigIcon>/icons/folder_100.png</bigIcon>
+      <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <category>SuperDocument</category>
+      <description>SectionRoot.description</description>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>Section</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>section_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
+      </contentViews>
+    </type>
+
+    <type id="Section">
+      <label>Section</label>
+      <icon>/icons/folder.gif</icon>
+      <bigIcon>/icons/folder_100.png</bigIcon>
+      <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <category>Collaborative</category>
+      <description>Section.description</description>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>Section</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>section_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
+      </contentViews>
+    </type>
+
+    <type id="Folder">
+      <label>Folder</label>
+      <icon>/icons/folder.gif</icon>
+      <bigIcon>/icons/folder_100.png</bigIcon>
+      <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <category>Collaborative</category>
+      <description>Folder.description</description>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>Folder</type>
+        <type>OrderedFolder</type>
+        <type>File</type>
+        <type>Note</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
+      </contentViews>
+    </type>
+
+    <type id="OrderedFolder">
+      <label>OrderedFolder</label>
+      <icon>/icons/ordered_folder.png</icon>
+      <bigIcon>/icons/ordered_folder_100.png</bigIcon>
+      <icon-expanded>/icons/ordered_folder_open.png</icon-expanded>
+      <category>Collaborative</category>
+      <description>OrderedFolder.description</description>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>Folder</type>
+        <type>OrderedFolder</type>
+        <type>File</type>
+        <type>Note</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>orderable_document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
+      </contentViews>
+    </type>
+
+    <type id="File">
+      <label>File</label>
+      <icon>/icons/file.gif</icon>
+      <bigIcon>/icons/file_100.png</bigIcon>
+      <category>SimpleDocument</category>
+      <description>File.description</description>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>file</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>file</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <!-- all content already on summary page -->
+      <layouts mode="view" />
+    </type>
+
+    <type id="Note">
+      <label>Note</label>
+      <icon>/icons/note.gif</icon>
+      <bigIcon>/icons/note_100.png</bigIcon>
+      <category>SimpleDocument</category>
+      <description>Note.description</description>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>note</layout>
+      </layouts>
+      <layouts mode="summary">
+        <layout>note_summary_layout</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>note</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <layouts mode="view">
+        <layout>note</layout>
+      </layouts>
+    </type>
+
+    <type id="AdvancedSearch">
+      <label>Advanced Search</label>
+      <icon>/icons/advanced_search.gif</icon>
+      <bigIcon>/icons/folder_100.png</bigIcon>
+      <default-view>view_user</default-view>
+    </type>
+
+  </extension>
+</component>

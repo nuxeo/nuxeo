@@ -1,0 +1,214 @@
+<!--
+  (C) Copyright 2006 Nuxeo SAS <http://nuxeo.com> and others
+  
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Public License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/legal/epl-v10.html
+  
+  Contributors:
+  Nuxeo - initial API and implementation
+-->
+
+<!DOCTYPE taglib
+  PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
+  "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+
+<taglib>
+
+  <tlib-version>1.0</tlib-version>
+  <jsp-version>1.2</jsp-version>
+  <short-name>nxd</short-name>
+  <uri>http://nuxeo.org/nxweb/document</uri>
+  <description>
+    <![CDATA[
+    <p>
+    The NXWebPlatform taglib specific to NXCore document model features.
+    </p>
+    <p>
+    Exposes specific tags as well as utility functions like:
+    </p>
+    <ul>
+      <li> typeInfo(DocumentModel): retrieve the document type information as
+           described in the TypeService extension point.</li>
+      <li> typeLabel(DocumentModel): retrieve the document type label.</li>
+      <li> iconPath(DocumentModel): retrieve the document icon path from "common"
+           schema", defaults to its document type icon if not set.</li>
+      <li> iconExpandedPath(DocumentModel): retrieve the document icon-expanded
+           path from "common" schema, defaults to its document type icon if
+           not set.</li>
+      <li> titleOrId(DocumentModel): retrieve the document title from
+           "dublincore" schema, defaults to its identifier.</li>
+      <li> hasPermission(DocumentModel, String): check if the current user has
+           the specified permission on the document model.</li>
+      <li> canModify(DocumentModel): check if the current user has
+           the specified permission on the document model, and document model
+           is not archived.</li>
+      <li> defaultValue(String, String): get the default value for given schema
+           name and field name: this is useful to set the "template" attribute
+           of a nxu:inputList tag managing a document complex property.</li>
+      <li> propertyDefaultValue(String): get the default value for given property
+           name: this is useful to set the "template" attribute of a nxu:inputList
+           tag managing a document complex property.</li>
+      <li> fileUrl(String, DocumentModel, String, String): get the rest url for
+           a blob.</li>
+      <li> bigFileUrl(DocumentModel, String, String): get the rest url for
+           a blob using nxbigfile servlet.</li>
+      <li> fileDescription(DocumentModel doc, String blobPropertyPath,
+           String filenamePropertyPath, String filename): get the pretty-print description
+           of a blob.</li>
+      <li> documentUrl(DocumentModel): get the rest url for a document.</li>
+      <li> complexDocumentUrl(String, DocumentModel, String, Map<String, String>, boolean):
+           get the rest url for a document with parameters: the url pattern, the document,
+           the view id, url parameters, and a boolean stating if a new conversation should
+           be created. Available since 5.4.2.</li>
+      <li> liveEditDefaultUrl(DocumentModel): get the nxedit:// URL to edit a document
+           file attachement (default File-like types)</li>
+      <li> liveEditUrl(DocumentModel, String, String, String): get the nxedit://
+           URL to edit a document proviging schema, blob field and filename
+           field names</li>
+      <li> liveCreateDefaultUrl(String): get the nxedit:// url to create a new document
+           of type File providing the mimetype as argument</li>
+      <li> liveCreateUrl(String, String, String, String, String): get the nxedit://
+            url to create a new document with parameters: mimetype, doctype, schema,
+            blob and filename field names</li>
+      <li> liveCreateFromTemplateDefaultUrl(DocumentModel): get the nxedit:// URL to create
+           a new document of type File reusing the content of the blob of the provided
+           template DocumentModel (assumed to have the "file" schema).</li>
+      <li> liveCreateFromTemplateUrl(DocumentModel, String, String, String, String,
+            String, String, String): get the nxedit:// URL to create a new document
+            from template. Parameters are: template DocumentModel, template schema,
+            template blob field, target document type, target schema, target, blob
+            field name, target filename field. </li>
+      <li> propertyPath(String, int, String): builds the property path given the
+           property list name, the index and the sub property name.</li>
+      <li> availableLifeCycleTransitions(String, String): get all the available transition
+           to follow with the parameters: lifeCycleName and currentLifeCycleState</li>
+    </ul>
+    ]]>
+  </description>
+
+  <tag>
+    <name>documentLink</name>
+    <tag-class>None</tag-class>
+    <description>
+      <![CDATA[
+      <p>
+        Link to a document within the application using standard command link
+        component and renderer.
+      </p>
+      <p>
+        All usual command link attribute are accepted except value and action.
+        Value is replaced by the title attribute value, and action is
+        dynamically processed to retrun to the document view.
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>document</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>org.nuxeo.ecm.core.api.DocumentModel</type>
+      <description>The document model to link to</description>
+    </attribute>
+    <attribute>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Value for the command link component</description>
+    </attribute>
+    <attribute>
+      <name>view</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        View id of the document to display when redirecting to it. This is the
+        view configured in the document type definition.
+      </description>
+    </attribute>
+  </tag>
+  <tag>
+    <name>restDocumentLink</name>
+    <tag-class>None</tag-class>
+    <description>
+      <![CDATA[
+      <p>
+        Link to a document within the application using standard output link
+        component and renderer.
+      </p>
+      <p>
+        The main purpose of this tag is to provide restful (bookmarkable)
+        navigation inside documents.
+      </p>
+      <p>
+        All usual output link attributes are accepted except value. Sub tags
+        "f:param" are taken into account to build the corresponding DocumentView
+        and URL. Value is replaced a method binding that generates the correct
+        rest URL.
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>document</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>org.nuxeo.ecm.core.api.DocumentModel</type>
+      <description>The document model to link to</description>
+    </attribute>
+    <attribute>
+      <name>view</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        View id of the document to display when redirecting to it. This is the
+        view configured in the document type definition.
+      </description>
+    </attribute>
+    <attribute>
+      <name>tab</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        The tab identifier to display as view of the document.
+      </description>
+    </attribute>
+    <attribute>
+      <name>subTab</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        The sub tab identifier to display as sub view of the document.
+      </description>
+    </attribute>
+    <attribute>
+      <name>pattern</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        The pattern name to use to generate the url (according to the url
+        service configuration).
+      </description>
+    </attribute>
+    <attribute>
+      <name>newConversation</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Boolean stating if page should be opened in a new conversation. If set
+        to, no conversation information will be added to the URL so that a new
+        conversation is created. Defaults to false.
+      </description>
+    </attribute>
+    <attribute>
+      <name>addTabInFo</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Boolean stating if the default tab information should be added to the
+        generated URL. Default tab information is used to reset current tab
+        value.
+      </description>
+    </attribute>
+  </tag>
+
+</taglib>
