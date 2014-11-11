@@ -1,0 +1,14 @@
+<html>
+  <head>
+    <title>
+       <@block name="title"></@block>
+    </title>
+    
+    <@nxthemes_head />
+    <@nxthemes_resources />
+    
+    <@block name="stylesheets" />
+    <@block name="header_scripts" />
+  </head>
+  [nxthemes markup]
+</html>
