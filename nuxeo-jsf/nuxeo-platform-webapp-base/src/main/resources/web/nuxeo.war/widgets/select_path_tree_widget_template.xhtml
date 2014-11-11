@@ -1,0 +1,144 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax" id="#{widget.id}">
+
+<c:if test="#{widget.mode != 'create' and widget.mode != 'edit'}">
+
+  <h:dataTable value="#{field_0}" var="path"
+    rendered="#{not empty field_0}">
+    <h:column>
+      <h:outputText value="#{nxd:titleOrId(treeWidgetActions.getDocumentFromPath(path))}" />
+    </h:column>
+  </h:dataTable>
+
+</c:if>
+
+<c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
+
+  <script type="text/javascript">
+      function showTree(treeId) {
+        // hide all trees
+        hideAllTrees();
+
+        var tree = jQuery(treeId);
+        tree.css('top', 100 + getScrollTop());
+        tree.show();
+
+        return false;
+      }
+
+      function hideAllTrees() {
+        jQuery('.treeSearchPopUp').each(function () {
+          jQuery(this).hide();
+        });
+      }
+
+      function hideTree(treeId) {
+        jQuery(treeId).hide();
+      }
+
+      function getScrollTop() {
+        var scrollTop  = document.body.scrollTop  || document.documentElement.scrollTop;
+        return scrollTop;
+      }
+
+      jQuery(document).keydown(function(event) {
+        // escape
+        if (event.keyCode == '27') {
+          hideAllTrees();
+          event.preventDefault();
+        }
+      });
+
+      jQuery(document).click(function(event) {
+        var element = jQuery(event.target);
+        if (!(element.is('.treeSearchPopUp') || element.parents().is('.treeSearchPopUp')) &amp;&amp; !(element.is('.labelTool') || element.parents().is('.labelTool'))) {
+          hideAllTrees();
+        }
+      });
+    </script>
+
+  <c:set var="labelOpenPopUp" value="#{nxu:test(!empty widget.properties.labelOpenPopUp, widget.properties.labelOpenPopUp, widget.label)}" />
+  <span class="labelOpenPopUp"><c:choose>
+    <c:when test="#{widget.translated}">
+      <span class="subLabel"> <h:outputText
+        value="#{messages[labelOpenPopUp]}" /> </span>
+    </c:when>
+    <c:otherwise>
+      <span class="subLabel"> <h:outputText value="#{labelOpenPopUp}" />
+      </span>
+    </c:otherwise>
+  </c:choose> <span class="labelTool" onclick="showTree('##{widget.id}_tree');"><img
+    src="/nuxeo/icons/add_popup.png" alt="Pop up" /></span></span>
+  <div style="clear: both;"></div>
+
+  <div id="#{widget.id}_tree" class="genericPopUp treeSearchPopUp">
+  <div class="closePopUpHeader"><span class="popUpTitle"><h:outputText
+    value="#{messages['label.search.popup.title']}" /></span> <span
+    class="closePopUp" onclick="hideTree('##{widget.id}_tree');">Close</span>
+  <div style="clear: both;"></div>
+  </div>
+  <div class="popUpContent">
+    <rich:tree
+      id="#{widget.id}_treeId"
+      adviseNodeOpened="#{reducedTreeActions.adviseNodeOpened}"
+      changeExpandListener="#{reducedTreeActions.changeExpandListener}"
+      icon="#{nodeState.isExpanded(rowKey)?nxd:iconExpandedPath(node.document):nxd:iconPath(node.document)}"
+      iconLeaf="#{nxd:iconPath(node.document)}"
+      iconExpanded="/icons/toggle_minus.png"
+      iconCollapsed="/icons/toggle_plus.png"
+      rowKeyVar="rowKey"
+      styleClass="labelTool"
+      stateVar="nodeState">
+      <rich:recursiveTreeNodesAdaptor
+        id="#{widget.id}_recursiveTreeNodesAdaptorId"
+        roots="#{widget.properties.showAllDomains ? reducedTreeActions.rootNode : reducedTreeActions.treeRoots}"
+        nodes="#{node.children}"
+        styleClass="labelTool"
+        var="node">
+        <rich:treeNode
+          id="#{widget.id}_treeNodeId"
+          highlightedClass="treeNodeHighlightedClass"
+          selectedClass="treeNodeSelectedClass">
+          <a4j:commandLink immediate="true"
+            id="#{widget.id}_linkId"
+            actionListener="#{treeWidgetActions.addSelectionToList}"
+            styleClass="treeLink" reRender="#{widget.id}_listRegion">
+            <f:param name="selectionListId" value="#{widget.id}_list" />
+            <f:param name="selectedPath" value="#{node.path}" />
+            <h:outputText value="#{nxd:titleOrId(node.document)}" />
+          </a4j:commandLink>
+        </rich:treeNode>
+      </rich:recursiveTreeNodesAdaptor>
+    </rich:tree>
+  </div>
+  </div>
+
+  <a4j:outputPanel id="#{widget.id}_listRegion" ajaxRendered="true">
+    <table class="dataInput thin">
+      <nxu:inputList id="#{widget.id}_list" value="#{field_0}"
+        model="model">
+        <tr>
+          <td>
+          <p><h:outputText value="#{nxd:titleOrId(treeWidgetActions.getDocumentFromPath(model.rowData))}" /></p>
+          </td>
+          <td><a4j:commandLink immediate="true"
+            actionListener="#{editableListBean.performAction}"
+            id="#{widget.id}_delete" reRender="#{widget.id}_listRegion"
+            bypassUpdates="true">
+            <img src="/nuxeo/icons/action_delete_mini.gif" alt="Delete" />
+            <f:param name="for" value="#{widget.id}_list" />
+            <f:param name="index" value="#{model.rowIndex}" />
+            <f:param name="type" value="remove" />
+          </a4j:commandLink></td>
+        </tr>
+      </nxu:inputList>
+    </table>
+  </a4j:outputPanel>
+
+</c:if>
+
+</div>

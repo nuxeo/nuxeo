@@ -1,0 +1,182 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.webapp.contentview.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="document_content">
+
+      <title>label.contentview.document_content</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>false</showTitle>
+
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <pattern>
+          SELECT * FROM Document WHERE ecm:parentId = ? AND
+          ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
+          AND ecm:currentLifeCycleState != 'deleted'
+        </pattern>
+        <parameter>#{currentDocument.id}</parameter>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>#{currentDocument.id}</cacheKey>
+      <cacheSize>10</cacheSize>
+
+      <resultLayouts>
+        <layout name="document_listing_ajax" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" showPDFExport="true" />
+        <layout name="document_listing_ajax_compact_2_columns"
+          title="document_listing_compact_2_columns" translateTitle="true"
+          iconPath="/icons/document_listing_compact_2_columns_icon.png" />
+        <layout name="document_listing_ajax_icon_2_columns"
+          title="document_listing_icon_2_columns" translateTitle="true"
+          iconPath="/icons/document_listing_icon_2_columns_icon.png" />
+      </resultLayouts>
+
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <actions category="CURRENT_SELECTION_LIST" />
+
+    </contentView>
+
+    <contentView name="document_trash_content">
+
+      <title>label.contentview.document_trash_content</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>false</showTitle>
+
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <pattern>
+          SELECT * FROM Document WHERE ecm:parentId = ? AND
+          ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
+          AND ecm:currentLifeCycleState = 'deleted'
+        </pattern>
+        <parameter>#{currentDocument.id}</parameter>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>#{currentDocument.id}</cacheKey>
+      <cacheSize>10</cacheSize>
+
+      <resultLayouts>
+        <layout name="document_listing_ajax" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" showPDFExport="true" />
+        <layout name="document_listing_ajax_compact_2_columns"
+          title="document_listing_compact_2_columns" translateTitle="false"
+          iconPath="/icons/document_listing_compact_2_columns_icon.png" />
+        <layout name="document_listing_ajax_icon_2_columns"
+          title="document_listing_icon_2_columns" translateTitle="true"
+          iconPath="/icons/document_listing_icon_2_columns_icon.png" />
+      </resultLayouts>
+
+      <selectionList>CURRENT_SELECTION_TRASH</selectionList>
+      <actions category="CURRENT_SELECTION_TRASH_LIST" />
+
+    </contentView>
+
+    <contentView name="section_content">
+
+      <title>label.contentview.section_content</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>false</showTitle>
+
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <pattern>
+          SELECT * FROM Document WHERE ecm:parentId = ? AND
+          ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
+          AND ecm:currentLifeCycleState != 'deleted'
+        </pattern>
+        <parameter>#{currentDocument.id}</parameter>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>#{currentDocument.id}</cacheKey>
+      <cacheSize>10</cacheSize>
+
+      <resultLayouts>
+        <layout name="document_listing_ajax" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" showPDFExport="true" />
+        <layout name="document_listing_ajax_compact_2_columns"
+          title="document_listing_compact_2_columns" translateTitle="true"
+          iconPath="/icons/document_listing_compact_2_columns_icon.png" />
+        <layout name="document_listing_ajax_icon_2_columns"
+          title="document_listing_icon_2_columns" translateTitle="true"
+          iconPath="/icons/document_listing_icon_2_columns_icon.png" />
+      </resultLayouts>
+
+      <selectionList>CURRENT_SELECTION_SECTIONS</selectionList>
+      <actions category="CURRENT_SELECTION_SECTIONS_LIST" />
+
+    </contentView>
+
+    <contentView name="orderable_document_content">
+
+      <title>label.contentview.orderable_document_content</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>false</showTitle>
+
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <pattern>
+          SELECT * FROM Document WHERE ecm:parentId = ? AND
+          ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
+          AND ecm:currentLifeCycleState != 'deleted'
+        </pattern>
+        <parameter>#{currentDocument.id}</parameter>
+        <sort column="ecm:pos" ascending="true" />
+        <sortable>false</sortable>
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>#{currentDocument.id}</cacheKey>
+      <cacheSize>10</cacheSize>
+
+      <resultLayouts>
+        <layout name="document_listing_ajax" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" showPDFExport="true" />
+      </resultLayouts>
+
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <actions category="CURRENT_SELECTION_LIST" />
+      <actions category="ORDERABLE_CURRENT_SELECTION_LIST" />
+
+    </contentView>
+
+  </extension>
+
+</component>
