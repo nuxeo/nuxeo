@@ -1,0 +1,129 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  class="repoInfos">
+
+
+ <h2><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.repositoryinfo']}" /></h2>
+
+ <c:if test="#{!systemInfo.isMultiRepo()}">
+  <p><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.repositoryinfo.2']}" />: <b> #{systemInfo.listAvailableRepositories().get(0).label}</b> </p>
+ </c:if>
+
+ <a4j:outputPanel id="repoInfos">
+  <p><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.openconnection.1']}" />  #{systemInfo.openSessionNumber} <h:outputText value="#{messages['adminsubtab.sysinfo.repostat.openconnection.2']}" /></p>
+
+  <a4j:log/>
+
+  <p>
+    <a4j:form id="repoInfoForm">
+
+     <a4j:poll interval="1000" enabled="#{systemInfo.isStatInfoInProgress()}" reRender="repoInfos"/>
+
+     <h:panelGroup rendered="#{systemInfo.isStatInfoInProgress()}">
+       <div><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.computing']}" /> </div>
+       <img src="/nuxeo/img/big_loading.gif"/>
+     </h:panelGroup>
+
+     <h:panelGroup rendered="#{!systemInfo.isStatInfoInProgress()}">
+
+        <a4j:commandButton value="#{messages['adminsubtab.sysinfo.repostat.compute.statistics']}"  action="#{systemInfo.startRepoStats()}" reRender="repoInfos" />
+
+     </h:panelGroup>
+    </a4j:form>
+  </p>
+
+  <div>
+    <h:panelGroup rendered="#{systemInfo.isStatInfoAvailable()}">
+      <table class="dataOutput">
+        <tr>
+        <th><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.generalstatsistics']}" /></th>
+        <th><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.perdocumenttypes']}" /></th>
+        </tr>
+        <tr>
+         <td>
+        <table>
+          <tr>
+             <td><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.numberofdocuments']}" /></td>
+             <td>
+             <h:outputText value="#{repoStatResult.getTotalNbDocs()}">
+               <f:convertNumber type="number"/>
+             </h:outputText>
+               </td>
+          </tr>
+          <tr>
+             <td><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.numberofversions']}" />: </td>
+             <td>
+             <h:outputText value="#{repoStatResult.getVersions()}">
+               <f:convertNumber type="number"/>
+             </h:outputText>
+               </td>
+          </tr>
+          <tr>
+             <td><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.numberofblobs']}" /></td>
+             <td>
+             <h:outputText value="#{repoStatResult.getTotalBlobNumber()}">
+               <f:convertNumber type="number"/>
+             </h:outputText>
+             </td>
+          </tr>
+          <tr>
+             <td><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.totalsizeofblobs']}" />:</td>
+             <td>
+                <h:outputText value="#{repoStatResult.getTotalBlobSize()/(1024*1024)}">
+                    <f:convertNumber type="number" maxFractionDigits="3"/>
+                  </h:outputText>
+             </td>
+          </tr>
+          <tr>
+             <td><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.maxtreedepth']}" /></td>
+             <td> #{repoStatResult.getMaxDepth()} </td>
+          </tr>
+          <tr>
+             <td><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.maxblobsize']}" /></td>
+             <td>
+                  <h:outputText value="#{repoStatResult.getMaxBlobSize()/1024}">
+                    <f:convertNumber type="number" maxFractionDigits="1"/>
+                  </h:outputText>
+              </td>
+          </tr>
+          <tr>
+             <td><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.biggestfolder']}" />:</td>
+             <td> #{repoStatResult.getMaxChildren()} children </td>
+          </tr>
+          <tr>
+             <td><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.averagereadspeed']}" />: </td>
+             <td>
+                  <h:outputText value="#{repoStatResult.getSpeed()}">
+                    <f:convertNumber type="number" maxFractionDigits="1"/>
+                  </h:outputText>
+              </td>
+          </tr>
+        </table>
+       </td>
+       <td>
+          <table>
+          <nxu:repeat value="#{repoStatResult.getDocTypes()}" var="docType">
+            <tr>
+               <td> #{docType} </td>
+               <td>
+                  <h:outputText value="#{repoStatResult.getDocTypeCount(docType)}">
+                    <f:convertNumber type="number"/>
+                  </h:outputText>
+               </td>
+            </tr>
+          </nxu:repeat>
+         </table>
+       </td>
+       </tr>
+     </table>
+   </h:panelGroup>
+  </div>
+
+</a4j:outputPanel>
+
+</div>
