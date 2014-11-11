@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.tests.repo.core-types">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="mylib" src="schemas/mylib.xsd" />
+    <schema name="myschema" src="schemas/myschema.xsd" prefix="my" />
+    <schema name="book" src="schemas/book.xsd" prefix="book" />
+    <schema name="testList" src="schemas/mytestlist.xsd" prefix="" />
+    <schema name="complexschema" src="schemas/complexschema.xsd" prefix="cmpf" />
+    <schema name="test-properties" src="schemas/test-properties.xsd"
+      prefix="tp" />
+    <schema name="age" src="schemas/age.xsd" prefix="age" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <facet name="BrowseViaSearch" />
+    <facet name="HiddenInNavigation" />
+    <doctype name="FolderWithSearch" extends="Folder">
+      <facet name="Folderish" />
+      <facet name="BrowseViaSearch" />
+    </doctype>
+    <doctype name="MyDocType" extends="Document">
+      <schema name="common" />
+      <schema name="myschema" />
+      <schema name="dublincore" />
+      <schema name="testList" />
+      <schema name="book" />
+      <prefetch>uid, common.icon, dc:title
+        testList.participants, attachments/0/name, attachments/item[1]/name,
+        book:author/pJob, book:author/pName/FirstName
+        </prefetch>
+    </doctype>
+    <doctype name="Book" extends="Folder">
+      <schema name="common" />
+      <schema name="book" />
+    </doctype>
+    <doctype name="HiddenFile" extends="Document">
+      <schema name="common" />
+      <schema name="file" />
+      <schema name="dublincore" />
+      <facet name="Downloadable" />
+      <facet name="Versionable" />
+      <facet name="HiddenInNavigation" />
+    </doctype>
+    <doctype name="ComplexDoc" extends="Document">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="complexschema" />
+    </doctype>
+    <doctype name="TestDocument" extends="Document">
+      <schema name="test-properties" />
+      <prefetch></prefetch>
+    </doctype>
+    <doctype name="TestDocumentWithDefaultPrefetch" extends="Document">
+      <!-- default prefetch includes props from common and dc -->
+      <schema name="common" />
+      <schema name="dublincore" />
+    </doctype>
+    <!-- facet tests -->
+    <facet name="Fooable" /> <!-- no content -->
+    <facet name="Aged">
+      <schema name="age" />
+    </facet>
+    <doctype name="DocWithAge" extends="Document">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <facet name="Aged" />
+    </doctype>
+  </extension>
+
+</component>
