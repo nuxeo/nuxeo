@@ -1,0 +1,190 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-parent</artifactId>
+    <version>5.2-20081231</version>
+  </parent>
+
+  <artifactId>nuxeo-platform-transform-plugins</artifactId>
+  <name>Nuxeo Content Transformation Service - Default Transformers</name>
+  <description>
+    Nuxeo Enterprise Platform: some default transformers for the Content
+    Transformation Service. This package provides: any-to-pdf using
+    OpenOffice.org as rendering engine, pdf-to-jpeg, pdf-to-text, pdf-to-png,
+    WordML metadata injection (inject document metadata into a WordML file),
+    any-to-odt / any-to-ods / any-to-odp (transform any file format supported by
+    OpenOffice.org into ODF).
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-transform-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-transform-core</artifactId>
+      <type>ejb</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-mimetype-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>pdfbox</groupId>
+      <artifactId>pdfbox</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.artofsolving</groupId>
+      <artifactId>jodconverter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-scratchpad</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-text-extractors</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.openoffice</groupId>
+      <artifactId>ridl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+    </dependency>
+
+    <!-- test scope -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-mimetype-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jnp-client</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.thoughtworks.xstream</groupId>
+      <artifactId>xstream</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/TestAny*.class</exclude>
+            <exclude>**/TestJOO*.class</exclude>
+            <exclude>**/MultipleResultsEchoPlugin*.class</exclude>
+            <exclude>**/AbstractXSLT*.class</exclude>
+            <exclude>**/TestPPTToTextPlugin*.class</exclude>
+            <exclude>**/TestWordToText*.class</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <!-- TODO: do we need all these dependencies in the jar? -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-installed</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>commons-logging</groupId>
+                  <artifactId>commons-logging-api</artifactId>
+                  <version>1.1</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>commons-io</groupId>
+                  <artifactId>commons-io</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>com.artofsolving</groupId>
+                  <artifactId>jodconverter</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.openoffice</groupId>
+                  <artifactId>juh</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.openoffice</groupId>
+                  <artifactId>jurt</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>pdfbox</groupId>
+                  <artifactId>pdfbox</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.openoffice</groupId>
+                  <artifactId>ridl</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.openoffice</groupId>
+                  <artifactId>unoil</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>xpp3</groupId>
+                  <artifactId>xpp3</artifactId>
+                  <version>1.1.3.4.O</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>com.thoughtworks.xstream</groupId>
+                  <artifactId>xstream</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.poi</groupId>
+                  <artifactId>poi</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.jackrabbit</groupId>
+                  <artifactId>jackrabbit-text-extractors</artifactId>
+                </artifactItem>
+
+              </artifactItems>
+              <outputDirectory>
+                ${project.build.outputDirectory}
+              </outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

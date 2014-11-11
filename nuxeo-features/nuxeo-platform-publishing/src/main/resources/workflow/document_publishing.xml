@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process-definition xmlns="" name="document_publishing">
+
+  <start-state name="start">
+    <transition name="" to="pending">
+      <action
+          class="org.nuxeo.ecm.platform.publishing.workflow.handler.StartActionHandler"/>
+    </transition>
+  </start-state>
+
+  <task-node name="pending" create-tasks="false" end-tasks="true"
+      signal="first-wait">
+    <event type="node-enter">
+      <action
+          class="org.nuxeo.ecm.platform.publishing.workflow.handler.CreateTasksActionHandler"/>
+    </event>
+    <task name="pending_publishing"/>
+    <transition name="setupRights" to="pending">
+      <action
+          class="org.nuxeo.ecm.platform.publishing.workflow.handler.RightsActionHandler"/>
+    </transition>
+    <transition name="publish" to="end">
+      <action
+          class="org.nuxeo.ecm.platform.publishing.workflow.handler.PublishActionHandler"/>
+    </transition>
+    <transition name="reject" to="end">
+      <action
+          class="org.nuxeo.ecm.platform.publishing.workflow.handler.RejectActionHandler"/>
+    </transition>
+  </task-node>
+
+  <end-state name="end">
+    <event type="node-enter">
+      <action
+          class="org.nuxeo.ecm.platform.publishing.workflow.handler.EndActionHandler"/>
+    </event>
+  </end-state>
+
+</process-definition>

@@ -1,0 +1,80 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-parent</artifactId>
+    <version>5.2-20081231</version>
+  </parent>
+
+  <artifactId>nuxeo-platform-workflow-test</artifactId>
+  <name>Nuxeo Workflow Service - Tests</name>
+  <description>
+    Nuxeo Enterprise Platform: Tests for the workflow service
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency><!-- For RepositoryFactory -->
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-jcr-connector-test</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency><!-- For integration tests -->
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-workflow-jbpm</artifactId>
+    </dependency>
+    <dependency><!-- For integration tests -->
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-workflow-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-events-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-workflow-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-workflow-document-api</artifactId>
+    </dependency>
+    <dependency><!-- For fake wapi service on runtime -->
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-workflow-document-facade</artifactId>
+      <type>ejb</type>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.persistence</groupId>
+      <artifactId>persistence-api</artifactId>
+      <version>1.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <dependency><!-- For fake wapi service on runtime -->
+      <groupId>javax.ejb</groupId>
+      <artifactId>ejb-api</artifactId>
+    </dependency>
+    <!-- Seems to be needed on some machines, do not get why -->
+    <!-- JC : commented; if needed, please detail in which environment(s)
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jnp-client</artifactId>
+    </dependency>
+     -->
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jbpm</artifactId>
+    </dependency>
+  </dependencies>
+
+</project>

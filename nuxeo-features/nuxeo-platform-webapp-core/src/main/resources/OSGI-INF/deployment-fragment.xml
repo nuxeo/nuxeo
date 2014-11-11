@@ -1,0 +1,408 @@
+<?xml version="1.0"?>
+<fragment>
+
+  <extension target="application#MODULE">
+    <module>
+      <ejb>${bundle.fileName}</ejb>
+    </module>
+
+    <module>
+      <web>
+        <web-uri>nuxeo.war</web-uri>
+        <context-root>/nuxeo</context-root>
+      </web>
+    </module>
+  </extension>
+
+  <!-- uncomment that to enable tomcat based auth
+    <extension target="web#LOGIN-CONFIG">
+    <login-config>
+    <auth-method>FORM</auth-method>
+    <realm-name>nuxeo.ecm</realm-name>
+    <form-login-config>
+    <form-login-page>/login.jsp</form-login-page>
+    <form-error-page>/login.jsp?loginFailed=true</form-error-page>
+    </form-login-config>
+    </login-config>
+    </extension>
+  -->
+
+  <extension target="web#FILTER-MAPPING">
+
+    <!-- Seam Context Filter is declared in org.nuxeo.ecm.platform.ui.web
+      deployment fragment -->
+
+    <filter-mapping>
+      <filter-name>Seam Context Filter</filter-name>
+      <url-pattern>/ws/FileManageWS</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>Seam Context Filter</filter-name>
+      <url-pattern>/DocumentManagerWS</url-pattern>
+    </filter-mapping>
+  </extension>
+
+  <extension target="web#SERVLET">
+  </extension>
+
+  <extension target="web#SERVLET-MAPPING">
+  </extension>
+
+  <extension target="pages#PAGES">
+    <!-- This calls a method which load the Workspace logo -->
+    <page view-id="/showLogo.xhtml" action="#{logoHelper.getLogo}"/>
+
+    <!-- Bind URL to the Document URL resolver-->
+    <page view-id="/getDocument.xhtml"
+        action="#{navigationContext.navigateToURL}">
+    </page>
+
+    <page view-id="/nxliveedit.xhtml" action="#{liveEditHelper.getBootstrap()}"/>
+
+    <!-- Bind URL to the Parallele conversation Document URL resolver-->
+    <page view-id="/parallele.xhtml"
+        action="#{paralleleNavigationHelper.navigateToURL}">
+    </page>
+
+    <!-- Post login and 'home' view handler -->
+    <page view-id="/nxstartup.xhtml"
+        action="#{startupHelper.initDomainAndFindStartupPage('Default domain', 'view')}"/>
+
+    <!-- To redirect to the user dashboard instead, use instead:
+
+      <page view-id="/nxstartup.xhtml"
+      action="#{startupHelper.initDomainAndFindStartupPage('Default domain', 'user_dashboard')}" />
+    -->
+
+    <!--  config for workspace management
+      = give a description for each viewId
+    -->
+
+    <page view-id="/view_domains.xhtml">
+      #{currentServerLocation.name}/#{currentTabAction.label}
+    </page>
+
+    <page view-id="/select_document_type.faces.xhtml">
+      Create new document in #{currentDocument.name}
+    </page>
+
+    <page view-id="/create_document.faces.xhtml">
+      Create new document in #{currentDocument.name}
+    </page>
+
+    <page view-id="/user_dashboard.xhtml">
+      breadcrumb=command.user_dashboard
+    </page>
+
+    <page view-id="/view_users.xhtml">
+      breadcrumb=command.manageMembers
+    </page>
+
+    <page view-id="/view_many_users.xhtml">
+      breadcrumb=command.manageMembers
+    </page>
+
+    <page view-id="/view_vocabularies.xhtml">
+      breadcrumb=title.vocabularies
+    </page>
+
+    <page view-id="/search/search_form.xhtml">
+      breadcrumb=command.advancedSearch
+    </page>
+  </extension>
+
+  <extension target="faces-config#APPLICATION">
+    <locale-config>
+      <default-locale>en</default-locale>
+      <supported-locale>en_GB</supported-locale>
+      <supported-locale>en_US</supported-locale>
+      <supported-locale>fr</supported-locale>
+      <supported-locale>de</supported-locale>
+      <supported-locale>es</supported-locale>
+      <supported-locale>it</supported-locale>
+      <supported-locale>ar</supported-locale>
+      <supported-locale>ru</supported-locale>
+      <supported-locale>ja</supported-locale>
+      <supported-locale>vn</supported-locale>
+    </locale-config>
+
+    <message-bundle>messages</message-bundle>
+  </extension>
+
+  <extension target="components#PAGEFLOW">
+    <value>config/addWorkspace.jpdl.xml</value>
+  </extension>
+
+  <extension target="faces-config#NAVIGATION">
+    <!-- generic pages -->
+    <navigation-case>
+      <from-outcome>generic_error_page</from-outcome>
+      <to-view-id>/generic_error_page.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>generic_message_page</from-outcome>
+      <to-view-id>/generic_message_page.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>home</from-outcome>
+      <to-view-id>/nxstartup.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>user_login</from-outcome>
+      <to-view-id>/login.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>user_logout</from-outcome>
+      <to-view-id>/logout.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_servers</from-outcome>
+      <to-view-id>/view_servers.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <!-- pages for document actions -->
+
+    <navigation-case>
+      <from-outcome>view_domains</from-outcome>
+      <to-view-id>/view_domains.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>select_document_type</from-outcome>
+      <to-view-id>/select_document_type.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>create_document</from-outcome>
+      <to-view-id>/create_document.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>edit_document</from-outcome>
+      <to-view-id>/edit_document.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_documents</from-outcome>
+      <to-view-id>/view_documents.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>create_file</from-outcome>
+      <to-view-id>/create_file.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>create_workspace_wizard</from-outcome>
+      <to-view-id>/createWorkspaceWizard.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>send_email</from-outcome>
+      <to-view-id>/document_email.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <!-- AT: BBB, use view_documents instead -->
+    <navigation-case>
+      <from-outcome>view_workspaces</from-outcome>
+      <to-view-id>/view_workspaces.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <!-- AT: BBB, use create_document instead -->
+    <navigation-case>
+      <from-outcome>create_domain</from-outcome>
+      <to-view-id>/create_domain.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <!-- AT: BBB, use edit_document instead -->
+    <navigation-case>
+      <from-outcome>edit_domain</from-outcome>
+      <to-view-id>/edit_domain.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <!-- AT: BBB, use create_document instead -->
+    <navigation-case>
+      <from-outcome>create_workspace</from-outcome>
+      <to-view-id>/create_workspace.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <!-- AT: BBB, use edit_document instead -->
+    <navigation-case>
+      <from-outcome>edit_workspace</from-outcome>
+      <to-view-id>/edit_workspace.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <!-- users ang groups -->
+
+    <navigation-case>
+      <from-outcome>members_management</from-outcome>
+      <to-view-id>/members_management.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_users</from-outcome>
+      <to-view-id>/view_users.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_many_users</from-outcome>
+      <to-view-id>/view_many_users.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>edit_user</from-outcome>
+      <to-view-id>/edit_user.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>edit_user_password</from-outcome>
+      <to-view-id>/edit_user_password.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_user</from-outcome>
+      <to-view-id>/view_user.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>create_user</from-outcome>
+      <to-view-id>/create_user.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_groups</from-outcome>
+      <to-view-id>/view_groups.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_group</from-outcome>
+      <to-view-id>/view_group.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>edit_group</from-outcome>
+      <to-view-id>/edit_group.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>create_group</from-outcome>
+      <to-view-id>/create_group.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_vocabularies</from-outcome>
+      <to-view-id>/view_vocabularies.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_vocabulary</from-outcome>
+      <to-view-id>/view_vocabulary.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <!-- search -->
+
+    <navigation-case>
+      <from-outcome>search_form</from-outcome>
+      <to-view-id>/search/search_form.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>search_results_nxql</from-outcome>
+      <to-view-id>/search/search_results_nxql.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>search_results_advanced</from-outcome>
+      <to-view-id>
+        /search/search_results_advanced.xhtml
+      </to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>search_results_simple</from-outcome>
+      <to-view-id>/search/search_results_simple.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <!-- miscellaneaous -->
+
+    <navigation-case>
+      <from-outcome>clipboard</from-outcome>
+      <to-view-id>/incl/clipboard.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>user_dashboard</from-outcome>
+      <to-view-id>/user_dashboard.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>select_workspace_template</from-outcome>
+      <to-view-id>/select_workspace_template.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>pdf_generation_error</from-outcome>
+      <to-view-id>/pdf_generation_error.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>mass_edit</from-outcome>
+      <to-view-id>/massedit_documents.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>mass_edit_confirm</from-outcome>
+      <to-view-id>/massedit_documents_preview.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+  </extension>
+
+</fragment>
+

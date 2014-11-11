@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field">
+
+  <subclass name="org.nuxeo.ecm.platform.workflow.jbpm.tasks.ExtendedTaskInstance"
+            extends="org.jbpm.taskmgmt.exe.TaskInstance"
+            discriminator-value="E">
+    <property name="order" column="ORDER_"/>
+    <property name="isRejected" column="ISREJECTED_"/>
+    <property name="directive" column="DIRECTIVE_"/>
+    <property name="comment" column="COMMENT_"/>
+  </subclass>
+
+</hibernate-mapping>

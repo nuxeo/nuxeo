@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXFileManager API TESTs
+Bundle-SymbolicName: org.nuxeo.ecm.platform.filemanager.api.tests

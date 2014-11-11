@@ -1,0 +1,167 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-parent</artifactId>
+    <version>5.2-20081231</version>
+  </parent>
+
+  <artifactId>nuxeo-platform-search-compass-plugin</artifactId>
+  <name>Nuxeo Search Service - Compass Plugin</name>
+  <description>Nuxeo Enterprise Platform: Compass Plugin for the Search
+    Service. This plugin implements indexing and search for Nuxeo EP using
+    Compass and Lucene as indexing and search engine.</description>
+
+  <properties>
+    <compass.version>1.1.1</compass.version>
+    <lucene.version>2.0.0</lucene.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-query</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-search-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-search-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>opensymphony</groupId>
+      <artifactId>compass-core</artifactId>
+      <version>${compass.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+      <version>${lucene.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-analyzers</artifactId>
+      <version>${lucene.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <scope>provided</scope>
+      <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <version>1.0.1B</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-search-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-transform-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
+      <version>1.0.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- FIXME: disable tests for now : working with junit-->
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/*Test*.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+      <!-- TODO: do we need all these dependencies in the jar? -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-installed</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>opensymphony</groupId>
+                  <artifactId>compass-annotations</artifactId>
+                  <version>${compass.version}</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>opensymphony</groupId>
+                  <artifactId>compass-core</artifactId>
+                  <version>${compass.version}</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>opensymphony</groupId>
+                  <artifactId>compass-gps</artifactId>
+                  <version>${compass.version}</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>opensymphony</groupId>
+                  <artifactId>compass-vocabulary</artifactId>
+                  <version>${compass.version}</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.lucene</groupId>
+                  <artifactId>lucene-analyzers</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.lucene</groupId>
+                  <artifactId>lucene-core</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.lucene</groupId>
+                  <artifactId>lucene-highlighter</artifactId>
+                  <version>${lucene.version}</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.lucene</groupId>
+                  <artifactId>lucene-snowball</artifactId>
+                  <version>${lucene.version}</version>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>
+                ${project.build.outputDirectory}/lib</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

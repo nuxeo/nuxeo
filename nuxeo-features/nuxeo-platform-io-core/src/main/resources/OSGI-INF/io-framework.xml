@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.io.IOManager">
+
+  <implementation class="org.nuxeo.ecm.platform.io.impl.IOManagerComponent" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.io.api.IOManager" />
+  </service>
+
+  <extension-point name="adapters">
+    <object
+      class="org.nuxeo.ecm.platform.io.descriptors.IOResourceAdapterDescriptor" />
+  </extension-point>
+
+</component>

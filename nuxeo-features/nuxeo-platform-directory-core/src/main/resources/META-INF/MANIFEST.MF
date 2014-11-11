@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Directory
+Bundle-SymbolicName: org.nuxeo.ecm.directory;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Bundle-ClassPath: .
+Bundle-Category: web,stateful
+Export-Package: org.nuxeo.ecm.directory,
+ org.nuxeo.ecm.directory.api,
+ org.nuxeo.ecm.directory.constants
+Eclipse-LazyStart: true
+Nuxeo-Component: OSGI-INF/DirectoryService.xml,
+ OSGI-INF/directory-ui-framework.xml
+Require-Bundle: org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.directory.api

@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.publishing"
+    version="1.0">
+
+  <service>
+    <provide
+        interface="org.nuxeo.ecm.platform.publishing.api.PublishingService"/>
+  </service>
+
+  <documentation>
+    Nuxeo Platform Publishing Service.
+
+    @version 1.0
+    @author Julien Anguenot
+  </documentation>
+
+  <implementation
+      class="org.nuxeo.ecm.platform.publishing.PublishingServiceImpl"/>
+
+  <extension-point name="publishingValidDateField">
+    <documentation>
+      Extension point that permit to define the field holding the valid
+      date for publishing.
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.platform.publishing.PublishingValidDateFieldDesc"/>
+  </extension-point>
+
+  <extension-point name="publishingValidatorsRule">
+    <documentation>
+      Extension point where to contribute the a rule aimed at computing the
+      validators for a document just request for publishing.
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.platform.publishing.rules.ValidatorsRuleDesc"/>
+  </extension-point>
+
+</component>

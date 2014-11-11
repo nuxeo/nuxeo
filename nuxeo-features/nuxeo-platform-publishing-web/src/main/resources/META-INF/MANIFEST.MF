@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Publishing Web/Client
+Bundle-SymbolicName: org.nuxeo.ecm.platform.publishing.web;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateless
+Eclipse-LazyStart: false
+Nuxeo-Component: OSGI-INF/querymodel-contrib.xml
+Require-Bundle: org.nuxeo.ecm.core.api,
+  org.nuxeo.ecm.platform.publishing.api,
+  org.nuxeo.ecm.platform.events.api,
+  org.nuxeo.ecm.platform.ui,
+  org.nuxeo.ecm.platform.workflow.api,
+  org.nuxeo.ecm.webapp.core

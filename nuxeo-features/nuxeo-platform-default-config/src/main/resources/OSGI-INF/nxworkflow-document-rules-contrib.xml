@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.workflow.DefaultWorkflowRulesContributions">
+
+  <documentation>
+    Default NXP workflow rules contributions.
+
+    @version 1.0
+    @author Julien Anguenot
+  </documentation>
+
+  <require>org.nuxeo.ecm.platform.workflow.document.service.WorkflowRulesService</require>
+
+  <extension target="org.nuxeo.ecm.platform.workflow.document.service.WorkflowRulesService"
+      point="docTypeRule">
+
+    <documentation>
+      Workflow document types rules contribution for <i>File</i> document type.
+      <p/>
+      Defines allowed workflows for the <i>File</i> document type.
+    </documentation>
+
+    <docTypeRule docType="File">
+      <workflowDefinition>document_review_parallel</workflowDefinition>
+      <workflowDefinition>document_review_serial</workflowDefinition>
+      <workflowDefinition>document_review_approbation</workflowDefinition>
+    </docTypeRule>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.workflow.document.service.WorkflowRulesService"
+      point="docTypeRule">
+
+    <documentation>
+      Workflow document types rules contribution for <i>Note</i> document type.
+      <p/>
+      Defines allowed workflows for the <i>Note</i> document type.
+    </documentation>
+
+    <docTypeRule docType="Note">
+      <workflowDefinition>document_review_parallel</workflowDefinition>
+      <workflowDefinition>document_review_serial</workflowDefinition>
+      <workflowDefinition>document_review_approbation</workflowDefinition>
+    </docTypeRule>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.workflow.document.service.WorkflowRulesService"
+      point="docTypeRule">
+    <documentation>
+      Workflow document types rules contribution for <i>Calendar</i> document type.
+      <p/>
+      Defines allowed workflows for the <i>Calendar</i> document type.
+    </documentation>
+
+    <docTypeRule docType="Calendar">
+      <workflowDefinition>document_review_parallel</workflowDefinition>
+      <workflowDefinition>document_review_serial</workflowDefinition>
+      <workflowDefinition>document_review_approbation</workflowDefinition>
+    </docTypeRule>
+  </extension>
+
+</component>

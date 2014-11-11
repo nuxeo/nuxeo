@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Workflow API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.workflow.api;singleton:=true
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: false
+Export-Package: org.nuxeo.ecm.platform.workflow.api,
+ org.nuxeo.ecm.platform.workflow.api.client.delegate,
+ org.nuxeo.ecm.platform.workflow.api.client.ejb.local,
+ org.nuxeo.ecm.platform.workflow.api.client.ejb.remote,
+ org.nuxeo.ecm.platform.workflow.api.client.events,
+ org.nuxeo.ecm.platform.workflow.api.client.wfmc,
+ org.nuxeo.ecm.platform.workflow.api.client.wfmc.impl,
+ org.nuxeo.ecm.platform.workflow.api.common

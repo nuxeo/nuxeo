@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:s="http://jboss.com/products/seam/taglib">
+
+  <ui:define name="page title">
+    <h:outputText value="#{messages['title.create.file']}"/>
+  </ui:define>
+
+  <ui:define name="body">
+    <div id="content">
+    <h3 onclick="testAddFileFromPlugin()"><h:outputText
+        value="#{messages['label.selectFileToImport']}"/></h3>
+      <h:form enctype="multipart/form-data">
+        <s:fileUpload data="#{FileManageActions.fileUpload}"
+          fileName="#{FileManageActions.fileName}"/>
+        <br />
+        <h:commandButton type="submit" class="button"
+          value="#{messages['command.upload']}"
+          action="#{FileManageActions.addFile}" />
+        <h:commandButton class="button"
+          value="#{messages['command.cancel']}"
+          action="#{navigationContext.goBack()}" immediate="true" />
+      </h:form>
+    </div>
+  </ui:define>
+
+</nxthemes:composition>

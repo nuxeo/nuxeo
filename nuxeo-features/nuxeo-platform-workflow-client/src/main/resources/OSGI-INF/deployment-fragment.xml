@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<fragment>
+
+  <extension target="application#MODULE">
+    <module>
+      <ejb>${bundle.fileName}</ejb>
+    </module>
+  </extension>
+
+  <extension target="faces-config#VALIDATOR">
+    <validator>
+      <validator-id>dueDateValidator</validator-id>
+      <validator-class>
+        org.nuxeo.ecm.platform.workflow.web.ui.jsf.DueDateValidator
+      </validator-class>
+    </validator>
+  </extension>
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+  </install>
+
+</fragment>

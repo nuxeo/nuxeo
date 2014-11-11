@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.platform.workflow.web">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
+
+    <action id="TAB_CONTENT_WORKFLOWS"
+      link="/incl/tabs/document_workflows.xhtml" enabled="true"
+      label="action.view.workflow" icon="/icons/file.gif" order="10">
+      <filter-id>view_workflows</filter-id>
+    </action>
+
+    <action id="TAB_CONTENT_WORKFLOW_TASKS"
+      link="/incl/tabs/document_workflows_tasks.xhtml" enabled="true"
+      label="action.view.workflow.tasks" icon="/icons/file.gif" order="20">
+      <filter-id>view_tasks</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
+
+    <filter id="view_workflows">
+      <rule grant="true">
+        <permission>ManageWorkflows</permission>
+        <type>File</type>
+        <type>Note</type>
+      </rule>
+    </filter>
+
+    <filter id="view_tasks">
+      <rule grant="true">
+        <permission>WriteLifeCycle</permission>
+        <type>File</type>
+        <type>Note</type>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

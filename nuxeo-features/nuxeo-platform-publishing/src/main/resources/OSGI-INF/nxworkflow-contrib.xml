@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<component
+    name="org.nuxeo.ecm.platform.publishing.workflow.definitions">
+
+  <documentation>
+    Default NXP Publishing workflows
+
+    @version 1.0
+    @author Julien Anguenot
+  </documentation>
+
+  <extension
+      target="org.nuxeo.ecm.platform.workflow.service.WorkflowService"
+      point="definition">
+
+    <documentation>
+      JBPM workflow definition (JPDL).
+    </documentation>
+
+    <definition>
+      <engineName>jbpm</engineName>
+      <mimetype>text/xml</mimetype>
+      <definitionPath>
+        workflow/document_publishing.xml
+      </definitionPath>
+    </definition>
+  </extension>
+
+</component>

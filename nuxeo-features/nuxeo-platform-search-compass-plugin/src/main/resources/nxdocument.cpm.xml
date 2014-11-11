@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!DOCTYPE compass-core-mapping PUBLIC
+    "-//Compass/Compass Core Mapping DTD 1.0//EN"
+    "http://www.opensymphony.com/compass/dtd/compass-core-mapping.dtd">
+
+<compass-core-mapping>
+
+  <!--  Alias for Nuxeo Documents
+    Customizers, don't change the alias name, nor the resource-id name, and
+    don't try and use another alias
+   -->
+      <!--  all is useless with Nuxeo mixed type contents -->
+  <resource alias="nxdoc" sub-index="nxdocs" analyzer="default" all="false">
+    <resource-id name="nxdoc_id" />
+
+    <!-- BUILTIN -->
+    <resource-property name="ecm:isCheckedInVersion" converter="boolean"
+      store="yes" index="un_tokenized" />
+
+      <resource-property name="ecm:isProxy" converter="boolean"
+      store="yes" index="un_tokenized" />
+
+
+    <!-- DUBLINCORE -->
+    <resource-property name="dc:created" converter="date" store="yes"
+      index="un_tokenized" />
+    <resource-property name="dc:modified" converter="date" store="yes"
+      index="un_tokenized" />
+    <resource-property name="dc:issued" converter="date" store="yes"
+      index="un_tokenized" />
+    <resource-property name="dc:valid" converter="date" store="yes"
+      index="un_tokenized" />
+    <resource-property name="dc:expired" converter="date" store="yes"
+      index="un_tokenized" />
+
+    <!-- COMMON -->
+    <resource-property name="common:size" converter="int" store="yes"
+      index="un_tokenized" />
+
+    <!-- UID -->
+    <!-- long is a shame for these small integers, but that's for
+      consistency with what a DocumentModel holds (JCR doesn't know about shorts)
+    -->
+    <resource-property name="uid:major_version" converter="long" store="yes"
+      index="un_tokenized" />
+    <resource-property name="uid:minor_version" converter="long" store="yes"
+      index="un_tokenized" />
+    <resource-property name="ecm:flags" converter="long" store="yes"
+      index="un_tokenized" />
+
+  </resource>
+
+
+  </compass-core-mapping>
