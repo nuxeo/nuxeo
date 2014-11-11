@@ -1,0 +1,72 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  class="foldableBox">
+
+  <h3 class="unfolded">
+    <a href="#nogo"
+      onclick="return toggleBox(this)">
+      <h:outputText value="#{messages['title.dashboard.userProcesses']}" />
+    </a>
+  </h3>
+
+  <div class="boxBody">
+    <a4j:region renderRegionOnly="true">
+      <h:form id="dashboardDocumentProcessTable">
+        <a4j:outputPanel>
+          <c:choose>
+            <c:when test="#{not empty currentUserProcesses}">   
+              <h:outputText value="#{messages['label.user.processes']}"
+                class="infoMessage" />
+              <h:dataTable value="#{currentUserProcesses}"
+                var="process" styleClass="dataList">
+                <h:column>
+                  <f:facet name="header">#{messages['label.name']}</f:facet>
+                  <c:set var="label" value="document_#{process.processInstanceName}" />
+                  #{messages[label]}
+                </h:column>
+                <h:column>
+                  <f:facet name="header">#{messages['label.title']}</f:facet>
+                  <nxd:restDocumentLink document="#{process.documentModel}" tab="TAB_CONTENT_JBPM">
+                    <h:outputText value="#{nxd:titleOrId(process.documentModel)}" />
+                  </nxd:restDocumentLink>
+                </h:column>
+                <h:column>
+                  <f:facet name="header">
+                    <h:outputText
+                      value="#{messages['label.workflow.task.startdate']}" />
+                  </f:facet>
+                  <h:outputText
+                    value="#{process.processInstanceStartDate}">
+                    <f:convertDateTime
+                      pattern="#{nxu:dateAndTimeFormater('medium')}"
+                      timeZone="#{timeZone}" />
+                  </h:outputText>
+                </h:column>
+              </h:dataTable>
+            </c:when>
+            <c:otherwise>
+              <div class="emptyDashboardContent">
+                <h:outputText class="emptyDashBoardLabel"
+                  value="#{messages['label.dashboard.user.document.process.empty']}" />
+              </div>
+            </c:otherwise>
+          </c:choose>
+        </a4j:outputPanel>
+ 
+        <div class="buttonsGroup">
+          <a4j:commandButton value="#{messages['label.refresh']}"
+            action="#{dashboardActions.refreshDocumentProcessItems}"
+            reRender="dashboardDocumentProcessTable"
+            styleClass="button" id="refreshButton"/>
+        </div>
+
+      </h:form>
+    </a4j:region>
+  </div>
+
+</div>
