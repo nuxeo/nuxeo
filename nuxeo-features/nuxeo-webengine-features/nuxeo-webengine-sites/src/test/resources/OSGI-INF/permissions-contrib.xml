@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webengine.sites.security.defaultPermissions">
+
+  <require>org.nuxeo.ecm.core.security.defaultPermissions</require>
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="permissions">
+
+    <permission name="Comment">
+      <include>WriteLifeCycle</include>
+    </permission>
+    
+    <permission name="Moderate" />
+    
+    <permission name="Write">
+      <include>Comment</include>
+    </permission>
+    
+  </extension>
+  
+  <extension target="org.nuxeo.ecm.core.security.SecurityService" 
+  	point="permissionsVisibility">
+    <visibility type="Workspace">
+      <item show="true" order="200">Comment</item>
+      <item show="true" order="200">Moderate</item>
+    </visibility>
+
+  </extension>
+
+</component>
