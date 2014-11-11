@@ -1,0 +1,18 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <c:if test="#{widget.mode == 'edit'}">
+
+    <h:inputHidden value="needed"
+      validator="#{userManagementActions.validateGroups}" id="#{widget.id}">
+      <f:attribute name="groupsValueHolderId"
+        value="#{layout.widgetMap['groups'].id}_select2" />
+    </h:inputHidden>
+    <h:message for="#{widget.id}" styleClass="errorMessage" />
+  </c:if>
+
+</ui:composition>

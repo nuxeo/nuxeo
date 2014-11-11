@@ -1,0 +1,17 @@
+<f:subview xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf"
+  id="#{widget.id}">
+<c:if test="#{widget.mode != 'edit' and widget.mode != 'pdf'}">
+  <h:outputText value="#{nxu:printFormattedDuration(field_0, messages)}" />
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:text value="#{nxu:printFormattedDuration(field_0, messages)}" />
+</c:if>
+</f:subview>

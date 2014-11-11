@@ -1,0 +1,167 @@
+<c:if xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  test="#{contentView != null}">
+
+<c:if test="false">
+Needed parameters:
+ - contentView: the content view instance
+ - contentViewRenderId: unique identifier for this content view in the page
+
+Optional parameters used to override the content view definition when not
+empty:
+ - showFilterForm
+</c:if>
+
+<nxu:set var="finalShowFilterForm"
+  value="#{nxu:test(empty showFilterForm, contentView.showFilterForm, showFilterForm)}">
+<c:if test="#{finalShowFilterForm and contentView.searchDocumentModel != null}">
+
+  <nxu:set var="cvid" value="#{contentViewRenderId}"
+    cache="true">
+  <nxu:set var="quickFilterFormId" value="#{cvid}_quickFilterForm"
+    cache="true">
+  <nxu:set var="resetFilterFormId" value="#{cvid}_resetFilterForm"
+    cache="true">
+  <nxu:set var="filterFormId" value="#{cvid}_filterForm"
+    cache="true">
+  <nxu:set var="elementsToReRender"
+    value="#{contentIdToBeReRendered} #{resetFilterFormId} #{filterFormId} #{quickFilterFormId} #{filterFormId}_panel"
+    cache="true">
+
+  <h:panelGroup id="#{quickFilterFormId}_panel"
+    layout="block"
+    styleClass="contentViewQuickFilterForm">
+
+      <h:form id="#{quickFilterFormId}"
+        styleClass="action_bar">
+        <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
+          value="#{contentView.searchDocumentModel}"
+          template="content_view_quick_filter_layout_template.xhtml" />
+        <h:commandButton
+          value="#{messages['label.contentview.filter.filterAction']}"
+          id="submitFilter"
+          styleClass="button"
+          action="#{contentView.resetPageProvider()}">
+          <nxu:actionListenerMethod
+            value="#{jsfResetActions.resetComponents}" />
+          <f:attribute name="selectedValue" value="false" />
+          <f:attribute name="targetComponentId" value="#{cvid}_showFilterFormBox" />
+          <f:ajax execute="@form" render="#{elementsToReRender}" listener="#{selectionActions.setStaticValue}" />
+        </h:commandButton>
+      </h:form>
+
+      <h:form id="#{quickFilterFormId}_more"
+        styleClass="action_bar">
+        <h:commandLink value="..."
+          id="moreButton"
+          styleClass="button">
+          <f:attribute name="selectedValue" value="true" />
+          <f:attribute name="targetComponentId" value="#{cvid}_showFilterFormBox" />
+          <f:ajax execute="@this" render="#{elementsToReRender}" listener="#{selectionActions.setStaticValue}" />
+        </h:commandLink>
+      </h:form>
+
+      <h:form id="#{resetFilterFormId}"
+        styleClass="action_bar">
+        <h:commandLink
+          value="#{messages['label.contentview.filter.clearFilter']}"
+          id="resetFilter"
+          rendered="#{nxd:isDirty(contentView.searchDocumentModel)}"
+          styleClass="button">
+          <nxu:actionListenerMethod
+            value="#{jsfResetActions.resetComponents}" />
+          <nxu:actionListenerMethod
+            value="#{contentView.resetSearchDocumentModel()}" />
+          <f:attribute name="selectedValue" value="false" />
+          <f:attribute name="targetComponentId" value="#{cvid}_showFilterFormBox" />
+          <f:ajax execute="@this" render="#{elementsToReRender}" listener="#{selectionActions.setStaticValue}" />
+        </h:commandLink>
+      </h:form>
+      <div class="action_bar">
+        <a4j:status>
+          <f:facet name="start">
+            <h:graphicImage value="/img/standart_waiter.gif" />
+          </f:facet>
+        </a4j:status>
+      </div>
+
+  </h:panelGroup>
+
+  <h:panelGroup id="#{filterFormId}_panel" layout="block">
+      <nxu:valueHolder id="#{cvid}_showFilterFormBox"
+        var="showFilterFormBox">
+
+        <h:form>
+          <a4j:jsFunction name="#{filterFormId}closeFancybox"
+            render="#{elementsToReRender}">
+            <f:attribute name="selectedValue" value="false" />
+            <f:attribute name="targetComponentId" value="#{cvid}_showFilterFormBox" />
+            <nxu:actionListenerMethod value="#{selectionActions.setStaticValue}"/>
+          </a4j:jsFunction>
+        </h:form>
+
+        <c:if test="#{showFilterFormBox or nxu:hasMessages(filterFormId)}">
+          <script>
+            openFancyBox('##{filterFormId}_box', {onClosed: #{filterFormId}closeFancybox});
+            jQuery('##{filterFormId}').focusFirst();
+          </script>
+        </c:if>
+
+        <div  style="display:none;">
+        <div id="#{filterFormId}_box">
+          <h3><h:outputText value="#{messages['label.contentview.filter.title']}" /></h3>
+          <h:form id="#{filterFormId}">
+
+            <div class="content">
+              <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
+                value="#{contentView.searchDocumentModel}" />
+            </div>
+
+            <p class="buttonsGadget">
+              <h:commandButton onclick="jQuery.fancybox.close();"
+                value="#{messages['label.contentview.filter.filterAction']}"
+                id="submitFilter"
+                styleClass="button"
+                action="#{contentView.resetPageProvider()}">
+                <nxu:actionListenerMethod
+                  value="#{jsfResetActions.resetComponents}" />
+                <f:ajax execute="@form" render="#{elementsToReRender}" />
+              </h:commandButton>
+              <h:commandButton
+                value="#{messages['label.contentview.filter.clearFilterButton']}"
+                id="resetFilter"
+                disabled="#{not nxd:isDirty(contentView.searchDocumentModel)}"
+                styleClass="button">
+                <nxu:actionListenerMethod
+                  value="#{jsfResetActions.resetComponents}" />
+                <nxu:actionListenerMethod
+                  value="#{contentView.resetSearchDocumentModel()}" />
+                <f:ajax execute="@this" render="#{filterFormId}" />
+              </h:commandButton>
+            </p>
+
+          </h:form>
+
+        </div>
+        </div>
+
+      </nxu:valueHolder>
+  </h:panelGroup>
+
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+
+</c:if>
+</nxu:set>
+</c:if>

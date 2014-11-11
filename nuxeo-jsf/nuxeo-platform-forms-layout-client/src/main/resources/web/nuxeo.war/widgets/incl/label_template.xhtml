@@ -1,0 +1,41 @@
+<c:if test="true"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<c:if test="false">
+Reusable template to display a label, with help message.
+
+Accepted parameters:
+- label: the label (required)
+- helpLabel: the help label
+- translated: wether the labels should be translated or not
+- required: boolean indicating if the required field indicator should be displayed
+- isEditMode: boolean indicating if it is in edit mode (to display
+  required field indicators), optional
+- hideHelp: boolean indicating if the help should label be hidden, optional
+- labelStyleClass: CSS style class for the label item, optional
+</c:if>
+
+  <nxu:set var="translatedLabel"
+    value="#{nxu:test(translated, messages[label], label)}">
+
+    <c:if test="#{empty helpLabel or hideHelp}">
+      <h:outputText value="#{translatedLabel}"
+        styleClass="widgetLabel #{labelStyleClass} #{nxu:test(required and isEditMode, 'required', '')}" />
+    </c:if>
+    <c:if test="#{not empty helpLabel and not hideHelp}">
+      <div class="widgetHelpLabel">
+        <nxu:set var="translatedHelpLabel"
+          value="#{nxu:test(translated, messages[helpLabel], helpLabel)}">
+          <h:outputText value="#{translatedLabel}"
+            title="#{translatedHelpLabel}"
+            styleClass="widgetLabel tipsyShow tipsyGravityNW #{labelStyleClass} #{nxu:test(widget.required and isEditMode, 'required', '')}" />
+        </nxu:set>
+      </div>
+    </c:if>
+
+  </nxu:set>
+
+</c:if>

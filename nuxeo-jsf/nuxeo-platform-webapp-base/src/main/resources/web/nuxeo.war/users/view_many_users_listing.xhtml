@@ -1,0 +1,42 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:a4j="http://richfaces.org/a4j">
+
+  <ui:composition template="view_users_listing_template.xhtml">
+
+    <ui:define name="users_search_method">
+      <div class="tabsBar subtabsBar">
+        <a4j:region id="search_many_users_region">
+          <h:form>
+            <ul>
+              <c:set var="selectedLetter" value="#{userManagementActions.selectedLetter}" />
+              <c:forEach var="letter" items="#{provider.catalogLetters}" varStatus="status">
+
+                <c:set var="cssClass" value="" />
+                <c:if test="#{letter == selectedLetter or (empty selectedLetter and status.index == 0)}">
+                  <c:set var="cssClass" value="selected" />
+                </c:if>
+
+                <li class="#{cssClass}">
+                  <h:commandLink action="#{userManagementActions.setSelectedLetter(letter)}">
+                    <f:ajax execute="@this" render="usersListingPanel" />
+                    <h:outputText value="#{letter}" />
+                  </h:commandLink>
+                </li>
+             </c:forEach>
+            </ul>
+            <a4j:status>
+              <f:facet name="start">
+                <h:graphicImage value="/img/standart_waiter.gif" />
+              </f:facet>
+            </a4j:status>
+          </h:form>
+        </a4j:region>
+      </div>
+      <div style="clear:both"></div>
+    </ui:define>
+
+  </ui:composition>
+</div>

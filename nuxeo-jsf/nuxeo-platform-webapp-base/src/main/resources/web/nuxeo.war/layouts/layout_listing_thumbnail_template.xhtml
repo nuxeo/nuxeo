@@ -1,0 +1,207 @@
+<f:subview
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:a4j="http://richfaces.org/a4j"
+  id="#{layout.id}">
+
+  <c:if test="false">
+    Layout template applying to an item instance of PageSelections&lt;DocumentModel&gt; named "documents"
+    in the search tab
+
+    Other needed parameters are:
+    - provider: instance of a PageProvider&lt;DocumentModel&gt; to handle sort
+    - layoutListingStatus: iteration status, used to print table header
+    matching widget label.
+    - formId: the surrounding form id
+  </c:if>
+
+  <c:if test="#{layoutListingStatus.index == 0}">
+
+    <!-- slideshow init -->
+    <nxu:set var="cvpcfp"
+      value="#{nxu:jsfTagIdEscape(contentViewPanelId)}">
+      <a4j:jsFunction name="#{cvpcfp}NP" action="#{provider.next()}"
+        render="#{contentIdToBeReRendered}"
+        oncomplete="jQuery('div[id$=#{contentViewPanelId}]').openLightBoxAfterNP();" />
+      <a4j:jsFunction name="#{cvpcfp}PP" action="#{provider.previous()}"
+        render="#{contentIdToBeReRendered}"
+        oncomplete="jQuery('div[id$=#{contentViewPanelId}]').openLightBoxAfterPP();" />
+
+      <a4j:jsFunction name="#{cvpcfp}_infoViewNextPage" action="#{provider.next()}"
+        render="#{contentIdToBeReRendered}"
+        oncomplete="nuxeo.infoView.openFirstInfoView();" />
+      <a4j:jsFunction name="#{cvpcfp}_infoViewPreviousPage" action="#{provider.previous()}"
+        render="#{contentIdToBeReRendered}"
+        oncomplete="nuxeo.infoView.openLastInfoView();" />
+
+      <script>
+        jQuery.extend(true, jQuery.magnificPopup.defaults, {
+          tClose: "#{messages['label.slideshow.close']}",
+          tLoading: "#{messages['label.slideshow.loading']}",
+          gallery: {
+            tPrev: "#{messages['label.slideshow.gallery.previous']}",
+            tNext: "#{messages['label.slideshow.gallery.next']}",
+            tCounter: ""
+          },
+          image: {
+            tError: "#{messages['label.slideshow.image.error']}"
+          },
+          ajax: {
+            tError: "#{messages['label.slideshow.ajax.error']}"
+          }
+        });
+
+        var nuxeo = nuxeo || {};
+        nuxeo.infoView = (function(m) {
+          m.hasPreviousPage = #{provider.previousPageAvailable};
+          m.hasNextPage = #{provider.nextPageAvailable};
+          m.infoViewUrls = [];
+
+          m.nextPageAndOpenInfoView = function() {
+            if (m.hasNextPage) {
+              console.log("next");
+              #{cvpcfp}_infoViewNextPage();
+              // #{cvpcfp}NP();
+            }
+          };
+
+          m.previousPageAndOpenInfoView = function() {
+            if (m.hasPreviousPage) {
+              console.log("previous")
+              #{cvpcfp}_infoViewPreviousPage();
+              // #{cvpcfp}PP();
+            }
+          };
+
+          m.openFirstInfoView = function() {
+            jQuery.fancybox.close();
+            if (m.infoViewUrls.length > 0) {
+              openFancyBox(m.infoViewUrls[0], {
+                'autoDimensions': false,
+                'width': '100%',
+                'height': '100%',
+                'centerOnScroll': true,
+                'scrolling': 'auto',
+                'padding': 0
+              });
+            }
+          };
+
+          m.openLastInfoView = function() {
+            jQuery.fancybox.close();
+            if (m.infoViewUrls.length > 0) {
+              openFancyBox(m.infoViewUrls[m.infoViewUrls.length - 1], {
+                'autoDimensions': false,
+                'width': '100%',
+                'height': '100%',
+                'centerOnScroll': true,
+                'scrolling': 'auto',
+                'padding': 0
+              });
+            }
+          };
+
+          return m;
+
+        })(nuxeo.infoView || {});
+
+        jQuery(document).ready(function() {
+          // slideshow
+          jQuery('div[id$=#{contentViewPanelId}]').initNxCv({
+            nxHasPreviousPage : #{provider.previousPageAvailable},
+            nxHasNextPage : #{provider.nextPageAvailable},
+            endOfPageCallback : #{cvpcfp}NP,
+            startOfPageCallback : #{cvpcfp}PP
+          });
+
+          // info view
+          var canTriggerInfoView = function(event) {
+            if (event &amp;&amp; event.target) {
+              var ele = jQuery(event.target);
+              if ((ele.is('input') &amp;&amp; ele.attr('type').match(/checkbox/i))
+                || ele.is('a') || ele.closest('a').length &gt; 0) {
+                return false;
+              }
+            }
+            return true;
+          };
+
+          jQuery('div[data-infoviewurl]').each(function(index, ele) {
+            var ele = jQuery(ele);
+            var infoViewUrl = ele.data('infoviewurl');
+            // store the info view url
+            nuxeo.infoView.infoViewUrls.push(infoViewUrl);
+            ele.click(function(event) {
+              if (canTriggerInfoView(event)) {
+                openFancyBox(infoViewUrl, {
+                  'autoDimensions': false,
+                  'width': '100%',
+                  'height': '100%',
+                  'centerOnScroll': true,
+                  'scrolling': 'auto',
+                  'padding': 0
+                });
+              }
+            });
+          });
+
+        });
+      </script>
+
+    </nxu:set>
+
+    <!-- select all -->
+    <div class="detail">
+      <a4j:outputPanel id="#{layout.id}_selectAll_panel" layout="block">
+        <h:commandButton
+          id="#{layoutColumn.widgets[0].name}_selectAll"
+          onclick="javascript:handleAllCheckBoxes(this.form.name, true)"
+          disabled="#{documents.selected}"
+          value="#{messages['label.search.select.all']}">
+          <nxu:actionListenerMethod value="#{documents.setSelected(true)}" />
+          <nxu:actionListenerMethod value="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, true)}" />
+          <f:ajax execute="@this" render="@this #{layoutColumn.widgets[0].name}_deselectAll #{formId}_buttons:ajax_selection_buttons" />
+        </h:commandButton>
+        <h:commandButton
+          id="#{layoutColumn.widgets[0].name}_deselectAll"
+          onclick="javascript:handleAllCheckBoxes(this.form.name, false)"
+          disabled="#{not documents.selected}"
+          value="#{messages['label.search.deselect.all']}">
+          <nxu:actionListenerMethod value="#{documents.setSelected(false)}" />
+          <nxu:actionListenerMethod value="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, false)}" />
+          <f:ajax execute="@this" render="@this #{layoutColumn.widgets[0].name}_selectAll #{formId}_buttons:ajax_selection_buttons" />
+        </h:commandButton>
+      </a4j:outputPanel>
+    </div>
+    <div class="clear" />
+  </c:if>
+
+  <!-- for slideshow -->
+  <nxu:set var="blobInfo"
+    value="#{blobHolderGenerator.getBlobHolder(value.data).blob.filename}"
+    cache="true">
+    <h:outputLink value="#{contextPath}/api/v1/id/#{value.data.id}"
+      class="image-popup visibilityH"
+      rendered="#{not empty blobInfo and value.data.hasFacet('Picture')}" />
+  </nxu:set>
+
+  <c:set var="boxSelectedStyleClass" value="#{nxu:test(value.data.id == currentDocument.id, 'selectedItem', '')}" />
+  <c:set var="infoViewUrl" value="#{nxd:complexDocumentUrl('id', value.data, 'info_view', null, true)}" />
+  <div class="bubbleBox bubbleListing #{boxSelectedStyleClass}" data-docref="#{value.data.id}" data-infoviewurl="#{infoViewUrl}">
+    <nxl:layout name="${layoutProperty_thumbnailHeaderLayout}" value="#{value}" mode="view" />
+    <nxl:layoutColumn>
+      <nxu:set var="divStyleClass" value="#{nxu:test(layoutColumn.properties.isBoxTitle, 'bubbleHeader', '')}">
+        <div class="#{layoutColumn.properties.columnStyleClass} #{divStyleClass}" dir="auto">
+          <nxl:layoutColumnWidget>
+            <nxl:widget widget="#{widget}" value="#{value}" />
+          </nxl:layoutColumnWidget>
+        </div>
+      </nxu:set>
+    </nxl:layoutColumn>
+  </div>
+
+</f:subview>

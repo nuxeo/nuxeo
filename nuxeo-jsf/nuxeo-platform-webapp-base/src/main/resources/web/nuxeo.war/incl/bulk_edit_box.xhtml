@@ -1,0 +1,38 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <h3>
+    <h:outputText value="#{messages['label.bulk.edit']}" />
+  </h3>
+
+  <h:form enctype="multipart/form-data" id="#{fancyboxFormId}">
+
+    <div class="content" style="overflow:auto;">
+      <nxl:layout name="#{action.properties.layout}" mode="edit"
+        value="#{bulkEditActions.bulkEditDocumentModel}"/>
+    </div>
+
+    <div class="buttonsGadget">
+      <h:commandButton styleClass="button"
+        onclick="document.getElementById('#{fancyboxFormId}_waiter').className = '';"
+        action="#{bulkEditActions.bulkEditSelection}"
+        value="#{messages['command.update']}"/>
+      <a4j:commandButton styleClass="button"
+        immediate="true" execute="@this"
+        action="#{bulkEditActions.cancel}"
+        value="#{messages['command.cancel']}"
+        oncomplete="jQuery.fancybox.close();"/>
+      <span class="displayN" id="#{fancyboxFormId}_waiter">
+        <h:graphicImage value="/img/standart_waiter.gif" />
+      </span>
+    </div>
+  </h:form>
+
+</div>

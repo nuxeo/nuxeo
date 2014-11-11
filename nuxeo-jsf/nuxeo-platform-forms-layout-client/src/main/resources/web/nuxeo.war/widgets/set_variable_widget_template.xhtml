@@ -1,0 +1,13 @@
+<nxu:set
+  id="#{widget.id}"
+  var="#{widgetProperty_var}"
+  value="#{widgetProperty_value}"
+  cache="#{widgetProperty_cache}"
+  resolveTwice="#{widgetProperty_resolveTwice}"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+<nxl:subWidget>
+  <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+</nxl:subWidget>
+</nxu:set>

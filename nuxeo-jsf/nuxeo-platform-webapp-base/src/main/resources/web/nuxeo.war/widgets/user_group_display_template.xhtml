@@ -1,0 +1,104 @@
+<c:if test="true"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+<c:if test="false">
+  Template displaying a user/group label (@since 5.7)
+
+  Spaces are avoided to allow using this template for CSV export.
+
+  Parameters:
+  - info: user or group info (map grom userSuggestionAction,
+    resolved from the user or group id)
+  - firstLabelField: usually 'firstName', useful for user display
+  - secondLabelField: usually 'lastName', useful for user display
+  - thirdLabelField: usually 'email', useful for user display
+  - hideFirstLabel: boolean stating that first label should not be shown,
+    usually defaults to false
+  - hideSecondLabel: boolean stating that second label should not be shown,
+    usually defaults to false
+  - hideThirdLabel: boolean stating that third label should not be shown,
+    usually defaults to false
+  - hideIcon: optional marker to hide the icon associated to a user or group,
+    defaults to false
+  - showEmail: boolean stating that email should be shown (here for compat),
+    usually defaults to false
+  - displayAction: optional marker to control display for a user or group,
+    can be 'view', 'edit' or 'nothing', defaults to 'nothing'
+</c:if>
+<c:set var="userSchema" value="#{userManager.userSchemaName}" />
+<c:set var="groupSchema" value="#{userManager.groupSchemaName}" />
+<c:set var="firstNameField" value="#{nxu:test(showEmail and hideFirstLabel and hideSecondLabel, thirdLabelField, firstLabelField)}" />
+<ui:fragment rendered="#{info.type == 'USER_TYPE'}">
+  <c:if test="#{showEmail}">
+    <c:set var="userDisplayName"
+      value="#{nxu:userDisplayNameAndEmail(info.id, info.entry[userSchema][firstNameField], nxu:test(hideSecondLabel, null, info.entry[userSchema][secondLabelField]), nxu:test(hideThirdLabel or not showEmail, null, info.entry[userSchema][thirdLabelField]))}" />
+  </c:if>
+  <c:if test="#{not showEmail}">
+    <c:set var="userDisplayName"
+      value="#{nxu:userDisplayName(info.id, nxu:test(hideFirstLabel, null, info.entry[userSchema][firstNameField]), nxu:test(hideSecondLabel, null, info.entry[userSchema][secondLabelField]))}" />
+  </c:if>
+  <c:if test="#{displayAction == 'nothing' or empty displayAction}">
+    <ui:include src="/widgets/user_group_output_template.xhtml">
+      <ui:param name="hideIcon" value="#{hideIcon}" />
+      <ui:param name="displayName" value="#{userDisplayName}" />
+      <ui:param name="tagType" value="user" />
+    </ui:include>
+  </c:if>
+  <c:if test="#{displayAction == 'view'}">
+    <h:outputLink value="#{nxu:userUrl('user', info.id, null, false)}" title="#{info.id}">
+      <ui:include src="/widgets/user_group_output_template.xhtml">
+        <ui:param name="hideIcon" value="#{hideIcon}" />
+        <ui:param name="displayName" value="#{userDisplayName}" />
+        <ui:param name="tagType" value="user" />
+      </ui:include>
+    </h:outputLink>
+  </c:if>
+  <c:if test="#{displayAction == 'edit'}">
+    <h:commandLink action="#{userManagementActions.setSelectedUser(info.id)}"
+      actionListener="#{userManagementActions.toggleShowUserOrGroup}">
+      <f:ajax execute="@this" render="usersPanel" />
+      <ui:include src="/widgets/user_group_output_template.xhtml">
+        <ui:param name="hideIcon" value="#{hideIcon}" />
+        <ui:param name="displayName" value="#{userDisplayName}" />
+        <ui:param name="tagType" value="user" />
+      </ui:include>
+    </h:commandLink>
+  </c:if>
+</ui:fragment>
+<ui:fragment rendered="#{info.type == 'GROUP_TYPE'}">
+  <c:set var="groupDisplayName"
+    value="#{nxu:groupDisplayName(info.id, nxu:test(hideFirstLabel, null, info.entry[groupSchema].grouplabel))}" />
+  <c:if test="#{displayAction == 'nothing' or empty displayAction}">
+    <ui:include src="/widgets/user_group_output_template.xhtml">
+      <ui:param name="hideIcon" value="#{hideIcon}" />
+      <ui:param name="displayName" value="#{groupDisplayName}" />
+      <ui:param name="tagType" value="group" />
+    </ui:include>
+  </c:if>
+  <c:if test="#{displayAction == 'view'}">
+    <h:commandLink action="#{groupManagementActions.viewGroup(info.id)}">
+      <ui:include src="/widgets/user_group_output_template.xhtml">
+        <ui:param name="hideIcon" value="#{hideIcon}" />
+        <ui:param name="displayName" value="#{groupDisplayName}" />
+        <ui:param name="tagType" value="group" />
+      </ui:include>
+    </h:commandLink>
+  </c:if>
+  <c:if test="#{displayAction == 'edit'}">
+    <h:commandLink action="#{groupManagementActions.setSelectedGroup(info.id)}"
+      actionListener="#{groupManagementActions.toggleShowUserOrGroup}">
+      <f:ajax execute="@this" render="groupsPanel" />
+      <ui:include src="/widgets/user_group_output_template.xhtml">
+        <ui:param name="hideIcon" value="#{hideIcon}" />
+        <ui:param name="displayName" value="#{groupDisplayName}" />
+        <ui:param name="tagType" value="group" />
+      </ui:include>
+    </h:commandLink>
+  </c:if>
+</ui:fragment>
+<h:outputText rendered="#{empty info.type}" value="#{item}" />
+</c:if>

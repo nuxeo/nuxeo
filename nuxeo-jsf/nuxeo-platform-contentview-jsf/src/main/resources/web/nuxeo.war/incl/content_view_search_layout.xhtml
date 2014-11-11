@@ -1,0 +1,104 @@
+<c:if xmlns:c="http://java.sun.com/jstl/core"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:f="http://java.sun.com/jsf/core"
+  test="#{contentView != null}">
+
+<c:if test="false">
+Needed parameters:
+ - contentView: the content view instance
+ - contentViewRenderId: unique identifier for this content view in the page
+
+Optional parameters used to override the content view definition when not
+empty:
+ - showFilterForm
+</c:if>
+
+<nxu:set var="finalShowFilterForm"
+  value="#{nxu:test(empty showFilterForm, contentView.showFilterForm, showFilterForm)}">
+<c:if test="#{finalShowFilterForm and contentView.searchDocumentModel != null}">
+
+  <nxu:set var="cvid" value="#{contentViewRenderId}"
+    cache="true">
+  <nxu:set var="filterFormId" value="#{cvid}_filterForm"
+    cache="true">
+  <nxu:set var="resetFilterFormId" value="#{cvid}_resetFilterForm"
+    cache="true">
+  <nxu:set var="openBox" value="#{nxu:hasMessages(filterFormId) or contentView.searchLayout.filterUnfolded}"
+    cache="true">
+  <nxu:set var="elementsToReRender"
+    value="#{contentIdToBeReRendered} #{resetFilterFormId} #{filterFormId}"
+    cache="true">
+
+  <div class="foldableLightBox">
+
+    <div class="foldableLightBoxHeader #{nxu:test(openBox, 'unfolded', 'folded')}">
+      <a class="foldableHeaderLink" href="#nologo" onclick="return toggleBox(this)">
+        <h:outputText value="#{messages['label.contentview.filter.title']}"/>
+      </a>
+
+      <div class="action_bar_message">
+        <h:form id="#{cvid}_resetFilterForm">
+          <h:commandLink
+            value="#{messages['label.contentview.filter.clearFilter']}"
+            id="resetFilter"
+            rendered="#{nxd:isDirty(contentView.searchDocumentModel)}"
+            styleClass="button warningLink">
+            <nxu:actionListenerMethod
+              value="#{jsfResetActions.resetComponents}" />
+            <nxu:actionListenerMethod
+              value="#{contentView.resetSearchDocumentModel()}" />
+            <f:ajax execute="@this" render="#{elementsToReRender}" />
+          </h:commandLink>
+        </h:form>
+      </div>
+    </div>
+
+    <div class="boxBody"
+      style="#{nxu:test(openBox, '', 'overflow: visible; display: none;')}">
+      <h:form id="#{filterFormId}">
+        <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
+          value="#{contentView.searchDocumentModel}" />
+        <p class="buttonsGadget">
+          <h:commandButton
+            value="#{messages['label.contentview.filter.filterAction']}"
+            id="submitFilter"
+            action="#{contentView.resetPageProvider}"
+            styleClass="button">
+            <nxu:actionListenerMethod
+              value="#{jsfResetActions.resetComponents}" />
+            <f:ajax execute="@form" render="#{elementsToReRender}" />
+          </h:commandButton>
+          <h:commandButton
+            value="#{messages['label.contentview.filter.clearFilterButton']}"
+            id="resetFilter"
+            execute="@this"
+            disabled="#{not nxd:isDirty(contentView.searchDocumentModel)}"
+            styleClass="button">
+            <nxu:actionListenerMethod
+              value="#{jsfResetActions.resetComponents}" />
+            <nxu:actionListenerMethod
+              value="#{contentView.resetSearchDocumentModel()}" />
+            <f:ajax execute="@this" render="#{filterFormId}" />
+          </h:commandButton>
+        </p>
+      </h:form>
+    </div>
+
+  </div>
+
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+
+</c:if>
+</nxu:set>
+
+</c:if>
