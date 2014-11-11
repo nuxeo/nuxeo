@@ -1,0 +1,55 @@
+<div
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  >
+
+<h:form>
+    <div id="content" class="wizardFrame">
+        <h4>
+          <h:outputText value="#{messages['label.templates.createFrom']}"/>
+        </h4>
+
+        <table class="dataInput"><tbody>
+	        <tr>
+    		    <td>
+			        <h:selectOneRadio id="selectTemplate" layout="pageDirection"
+			          value="#{selectedTemplateId.value}">
+			          <f:selectItem itemValue="none" itemLabel="#{messages['label.templates.none']}"/>
+			         <nxu:selectItems value="#{availableWorkspaceTemplates}" var="template"
+			                   itemValue="#{template.id}" itemLabel="#{template.dublincore.title}"/>
+			          <a4j:support event="onchange" reRender="wizard"/>
+			        </h:selectOneRadio>
+
+				    <h:message styleClass="errorMessage" for="selectTemplate" />
+		        </td>
+        		<td class="templatePreview">
+
+
+		        	<nxu:methodResult name="templateLogoURL" value="#{logoHelper.getLogoURLFromDocRef(selectedTemplateId.value)}">
+				        <h:graphicImage value="#{templateLogoURL}" alt="Nuxeo 5" width="194" height="99"
+					        rendered="#{!(selectedTemplateId.value=='none')}"/>
+		        	</nxu:methodResult>
+
+			        <h:graphicImage value="#{logoHelper.defaultLogoURL}" alt="Nuxeo 5" width="194" height="99"
+			        rendered="#{selectedTemplateId.value=='none'}"/>
+
+                    <h:outputText value="#{workspaceActions.selectedTemplateDescription}" styleClass="templatePreviewDescription" />
+
+				</td>
+			</tr>
+		</tbody></table>
+
+
+    <div class="wizardButtonBar">
+ 	  <h:commandButton styleClass="button" value="#{messages['wizard.cancel']}" action="cancel" immediate="true"/>
+      <a4j:commandButton styleClass="button" value="#{messages['wizard.prev']}" action="toEditFields" reRender="wizard"/>
+      <a4j:commandButton styleClass="button" value="#{messages['wizard.next']}" action="toManageMembers" reRender="wizard"/>
+    </div>
+
+    </div>
+</h:form>
+</div>
