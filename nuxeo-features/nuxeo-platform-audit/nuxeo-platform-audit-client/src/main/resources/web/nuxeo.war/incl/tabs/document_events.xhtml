@@ -1,0 +1,87 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+    <h:dataTable var="logEntry" value="${logEntries}"
+      class="dataOutput" rowClasses="dataRowEven,dataRowOdd">
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.performedAction']}" />
+        </f:facet>
+        <h:outputText value="#{messages[logEntry.eventId]}" />
+      </h:column>
+      <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.date']}" />
+        </f:facet>
+        <h:outputText value="#{logEntry.eventDate}" >
+          <f:convertDateTime pattern="#{nxu:basicDateFormater()}"
+            timeZone="#{timeZone}" />
+        </h:outputText>
+    </h:column>
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.time']}" />
+      </f:facet>
+        <h:outputText value="#{logEntry.eventDate}" converter="TimeConverter"/>
+      </h:column>
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.username']}" />
+        </f:facet>
+        <span onmouseover="tooltip.show('#{logEntry.principalName}', 150);" onmouseout="tooltip.hide();">
+         <h:outputText value="#{nxu:userFullName(logEntry.principalName)}" />
+        </span>
+      </h:column>
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.category']}" />
+        </f:facet>
+        <h:outputText value="#{messages[logEntry.category]}" />
+      </h:column>
+      <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.workflow.task.directive']}" />
+      </f:facet>
+        <h:outputText value="#{messages[logEntry.extendedInfos['directive'].serializableValue]}"/>
+      </h:column>
+      <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.workflow.task.duedate']}" />
+      </f:facet>
+        <h:outputText value="#{logEntry.extendedInfos['dueDate'].serializableValue}" >
+          <f:convertDateTime pattern="#{nxu:basicDateFormater()}"
+            timeZone="#{timeZone}" />
+        </h:outputText>
+      </h:column>
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.comment']}" />
+        </f:facet>
+        <h:outputText value="#{messages[logEntriesComments[logEntry.id]]}" />
+
+        <f:subview rendered="#{(logEntriesLinkedDocs[logEntry.id])!=null}">
+        <h:outputText value="   "/>
+         <nxu:graphicImage value="/icons/lock.gif"
+           rendered="#{(logEntriesLinkedDocs[logEntry.id]).brokenDocument}"
+                alt="#{(logEntriesLinkedDocs[logEntry.id]).documentRef}"
+           />
+          <nxd:restDocumentLink document="#{(logEntriesLinkedDocs[logEntry.id]).document}" rendered="#{!(logEntriesLinkedDocs[logEntry.id]).brokenDocument}">
+              <nxu:graphicImage
+                        value="#{nxd:iconPath((logEntriesLinkedDocs[logEntry.id]).document)}" alt="#{(logEntriesLinkedDocs[logEntry.id]).document.type}">
+                        </nxu:graphicImage>
+          </nxd:restDocumentLink>
+        </f:subview>
+
+      </h:column>
+       <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.lifecycle']}" />
+        </f:facet>
+        <h:outputText value="#{messages[logEntry.docLifeCycle]}" />
+      </h:column>
+    </h:dataTable>
+
+</div>

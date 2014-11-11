@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Admin Center
+Bundle-SymbolicName: org.nuxeo.admin.center;singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/actions-contrib.xml,
+ OSGI-INF/theme-contrib.xml,
+ OSGI-INF/auth-contrib.xml
+Export-Package: i18n
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule

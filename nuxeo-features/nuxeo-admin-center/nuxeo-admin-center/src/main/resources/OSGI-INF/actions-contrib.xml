@@ -1,0 +1,119 @@
+<component name="org.nuxeo.connect.client.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="AdminMain" link="#{adminViews.enter()}" label="action.admin.center"
+      order="30">
+      <category>USER_SERVICES</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="SystemInfo" link="view_admin-fragment.xhtml" label="admcommand.systeminfo"
+      order="10">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="HostInfo" link="/incl/sysinfo/hostInfo.xhtml"
+      label="tab.sysinfo.host" order="20">
+      <category>NUXEO_ADMIN_SystemInfo</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="NuxeoInfo" link="/incl/sysinfo/nuxeoInfo.xhtml"
+      label="tab.sysinfo.nuxeo" order="30">
+      <category>NUXEO_ADMIN_SystemInfo</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="Setup" link="/incl/sysinfo/setup.xhtml" label="tab.sysinfo.setup"
+      order="40">
+      <category>NUXEO_ADMIN_SystemInfo</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="ReposInfo" link="/incl/sysinfo/reposInfo.xhtml"
+      label="tab.sysinfo.reposInfo" order="50">
+      <category>NUXEO_ADMIN_SystemInfo</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <!-- <action id="ReposUsage" link="/incl/sysinfo/reposUsage.xhtml" label="tab.sysinfo.reposStats"
+      order="60"> <category>NUXEO_ADMIN_SystemInfo</category> <filter-id>only_for_manager</filter-id>
+      </action> -->
+
+    <action id="UserActivity" link="/incl/sysinfo/usersActivity.xhtml"
+      label="tab.sysinfo.usersActivity" order="60">
+      <category>NUXEO_ADMIN_SystemInfo</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="ConnectClient" link="view_admin-fragment.xhtml"
+      label="admcommand.nuxeoconnect" order="20">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="ConnectClientStatus" link="/incl/connect/connectStatus.xhtml"
+      label="tab.nuxeoconnect.status" order="20">
+      <category>NUXEO_ADMIN_ConnectClient</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="ConnectClientTickets" link="/incl/connect/connectTickets.xhtml"
+      label="tab.nuxeoconnect.tickets" order="30">
+      <category>NUXEO_ADMIN_ConnectClient</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="ConnectApps" link="view_admin-fragment.xhtml"
+      label="admcommand.appstore" order="30">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="ConnectAppsUpdates" link="/incl/appcenter/connectUpdates.xhtml"
+      label="tab.appstore.updates" order="20">
+      <category>NUXEO_ADMIN_ConnectApps</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="ConnectAppsStudio" link="/incl/appcenter/studio.xhtml"
+      label="tab.appstore.studio" order="30">
+      <category>NUXEO_ADMIN_ConnectApps</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="ConnectAppsRemote" link="/incl/appcenter/connectRemote.xhtml"
+      label="tab.appstore.remote" order="40">
+      <category>NUXEO_ADMIN_ConnectApps</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="ConnectAppsLocal" link="/incl/appcenter/connectLocal.xhtml"
+      label="tab.appstore.local" order="50">
+      <category>NUXEO_ADMIN_ConnectApps</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="themes_manager" link="#{themeEditorAction.startEditor}"
+      label="command.manageThemes" order="20">
+      <category>NUXEO_ADMIN_USER_SERVICES</category>
+      <filter-id>only_for_manager</filter-id>
+      <filter-id>not_readonly</filter-id>
+    </action>
+
+    <action id="adm_logout" link="#{loginLogoutAction.logout()}"
+      label="command.logout" order="40">
+      <category>NUXEO_ADMIN_USER_SERVICES</category>
+    </action>
+
+    <action id="adm_exit" link="#{adminViews.exit()}" label="action.admin.exit"
+      order="60">
+      <category>NUXEO_ADMIN_USER_SERVICES</category>
+    </action>
+
+  </extension>
+
+</component>

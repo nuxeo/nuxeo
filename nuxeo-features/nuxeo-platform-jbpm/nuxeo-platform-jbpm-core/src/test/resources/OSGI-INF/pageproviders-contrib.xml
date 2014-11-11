@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.jbpm.pageproviders.test">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <genericPageProvider name="CURRENT_USER_TASKS"
+      class="org.nuxeo.ecm.platform.jbpm.providers.DocumentTaskPageProvider">
+      <pageSize>2</pageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="CURRENT_USER_PROCESSES"
+      class="org.nuxeo.ecm.platform.jbpm.providers.DocumentProcessPageProvider">
+      <pageSize>0</pageSize>
+    </genericPageProvider>
+
+  </extension>
+
+</component>

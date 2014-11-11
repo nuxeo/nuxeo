@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.mail.web.types.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+
+    <type id="MailMessage">
+      <label>MailMessage</label>
+      <icon>/icons/mail.png</icon>
+      <bigIcon>/icons/mail_100.png</bigIcon>
+      <category>SimpleDocument</category>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>mailMessage</layout>
+        <layout>noLabelFiles</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>mailMessage</layout>
+        <layout>noLabelFiles</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <!-- files content already on summary page -->
+      <layouts mode="view">
+        <layout>mailMessage</layout>
+      </layouts>
+    </type>
+
+    <type id="MailFolder">
+      <label>MailFolder</label>
+      <icon>/icons/mail_folder.png</icon>
+      <bigIcon>/icons/mailfolder_100.png</bigIcon>
+      <category>Collaborative</category>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>mail_folder</layout>
+      </layouts>
+      <layouts mode="listing">
+        <layout>mail_listing</layout>
+        <layout>document_listing</layout>
+      </layouts> 
+      <subtypes>
+        <type>MailMessage</type>
+      </subtypes>
+    </type>
+
+    <!-- allow mail floders within workspaces -->
+    <type id="Workspace">
+      <subtypes>
+        <type>MailFolder</type>
+      </subtypes>
+    </type>
+
+  </extension>
+
+</component>

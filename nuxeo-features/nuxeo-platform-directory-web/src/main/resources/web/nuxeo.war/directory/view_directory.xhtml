@@ -1,0 +1,114 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <script type="text/javascript">
+    function confirmDeleteDirectoryEntry() {
+      return confirm("#{messages['label.vocabulary.entry.confirmDelete']}");
+    }
+  </script>
+
+  <a4j:outputPanel id="viewDirectoryPanel">
+
+  <nxu:set var="currentVoc" value="#{directoryUIActions.currentDirectory}">
+  <nxu:set var="isReadOnly" value="#{directoryUIActions.readOnly}">
+
+  <ui:include src="/incl/message_banner.xhtml" />
+
+  <c:if test="#{!isReadOnly}">
+    <c:if test="#{directoryUIActions.selectedDirectoryEntry == null}">
+      <a4j:outputPanel id="addDirectoryEntryPanel">
+      <h:form id="showHideAddDirectoryEntry">
+        <h4>
+          <a4j:commandLink
+            action="#{directoryUIActions.toggleShowAddForm}" reRender="addDirectoryEntryPanel">
+            <h:graphicImage url="/icons/toggle_plus.png"
+              rendered="#{!directoryUIActions.showAddForm}" />
+            <h:graphicImage url="/icons/toggle_minus.png"
+              rendered="#{directoryUIActions.showAddForm}" />
+            <h:outputText
+              value="#{messages['title.create.vocabulary.entry']}" />
+          </a4j:commandLink>
+        </h4>
+      </h:form>
+
+      <f:subview id="addEntryView" rendered="#{directoryUIActions.showAddForm}">
+        <div class="tabsContent">
+          <ui:include src="create_directory_entry.xhtml" />
+        </div>
+      </f:subview>
+      </a4j:outputPanel>
+
+    </c:if>
+  </c:if>
+
+  <div class="tabsContent">
+
+    <c:if test="#{directoryUIActions.selectedDirectoryEntry != null}">
+
+      <div class="vocabularyEntryContent">
+        <a4j:form id="editDirectoryEntry">
+
+          <nxl:layout name="#{currentVoc.layout}" mode="edit"
+            value="#{directoryUIActions.selectedDirectoryEntry}" />
+
+          <div class="buttons">
+            <a4j:commandButton value="#{messages['command.save']}"
+              id="editDirectoryEntryButton"
+              styleClass="button"
+              action="#{directoryUIActions.editSelectedDirectoryEntry}"
+              reRender="viewDirectoryPanel" />
+            <a4j:commandButton value="#{messages['command.cancel']}"
+              id="cancelEditingDirectoryEntryButton"
+              styleClass="button"
+              action="#{directoryUIActions.resetSelectedDirectoryEntry}"
+              immediate="true"
+              reRender="viewDirectoryPanel" />
+          </div>
+
+        </a4j:form>
+
+      </div>
+
+    </c:if>
+
+    <nxu:set var="forceReRender" value="true" forceCreate="true">
+    <a4j:form rendered="#{!empty directoryUIActions.currentDirectoryEntries}"
+      id="viewDirectoryEntries">
+
+      <table class="dataOutput">
+        <tbody>
+          <nxu:repeat var="entry" value="#{directoryUIActions.currentDirectoryEntries}"
+            index="index">
+            <c:if test="#{index%2 == 0}">
+              <c:set var="directoryEntryClass" value="dataRowOdd" />
+            </c:if>
+            <c:if test="#{index%2 != 0}">
+              <c:set var="directoryEntryClass" value="dataRowEven" />
+            </c:if>
+            <c:if test="#{index == 0}">
+              <nxl:layout name="#{currentVoc.layout}" mode="view_list_and_header" value="#{entry}" />
+            </c:if>
+            <c:if test="#{index != 0}">
+              <nxl:layout name="#{currentVoc.layout}" mode="view_list" value="#{entry}" />
+            </c:if>
+          </nxu:repeat>
+        </tbody>
+      </table>
+
+    </a4j:form>
+    </nxu:set>
+
+  </div>
+
+  </nxu:set>
+  </nxu:set>
+  </a4j:outputPanel>
+
+</div>
