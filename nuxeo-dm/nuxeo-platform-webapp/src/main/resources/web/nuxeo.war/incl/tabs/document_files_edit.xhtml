@@ -1,0 +1,88 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxh="http://nuxeo.org/nxweb/html">
+
+  <script type="text/javascript"
+          src="#{baseURL}scripts/contextKeeper.js"></script>
+  <script type="text/javascript">
+    jQuery(document).ready(function(){
+      document.NXContextKeeper_document_files_edit = new InputContextKeeper('document_files_edit');
+    });
+  </script>
+
+<script type="text/javascript">
+  function removeUploadedFile(deleteEntry)
+  {
+
+	  if(null!=deleteEntry)
+	  {
+	    Seam.Component.getInstance('FileManageActions').removeUploadedFile(deleteEntry.fileName);
+	  } else {
+		Seam.Component.getInstance('FileManageActions').removeAllUploadedFile();
+	  }
+
+  }
+</script>
+
+<h:form enctype="multipart/form-data" id="document_files_edit" disableDoubleClickShield="true"
+  rendered="#{currentDocument.hasSchema('files')}">
+
+  <h3><h:outputText value="#{messages['label.upload.files.download']}" /></h3>
+
+  <h:panelGrid columns="2" styleClass="dataTableNoBorder smallTable">
+
+    <rich:fileUpload uploadData="#{FileManageActions.uploadedFiles}"
+      listHeight="150" maxFilesQuantity="5"
+      id="upload"
+      locale="#{localeSelector.localeString}"
+      immediateUpload="true" >
+      <a4j:support  onsubmit="removeUploadedFile(event.memo.entry);" event="onclear"/>
+      <a4j:support  event="onuploadcomplete" reRender="validateMultiplesUploadDiv" />
+    </rich:fileUpload>
+
+    <a4j:region renderRegionOnly="true" id="files_region">
+
+      <a4j:outputPanel ajaxRendered="true" layout="block">
+
+        <nxu:inputList value="#{currentDocument.files.files}"  id="files_input" model="model">
+
+          <div class="simpleBox">
+            <a4j:commandLink immediate="true"
+              onclick="document.NXContextKeeper_document_files_edit.removeFromKeeper(#{model.rowIndex});if( !confirmRemoveFiles('#{currentDocument.files.files[model.rowIndex].filename}')) return false;"
+              oncomplete="document.NXContextKeeper_document_files_edit.onReturnAnswer();"
+              actionListener="#{FileManageActions.performAction}"
+              id="files_delete" reRender="files_input"
+              bypassUpdates="true">
+              <h:graphicImage value="/icons/delete.png" />
+              <f:param name="index" value="#{model.rowIndex}" />
+            </a4j:commandLink>
+
+            <nxh:outputLink value="#{nxd:complexFileUrl('downloadFile', currentDocument, 'files:files', model.rowIndex, 'file', currentDocument.files.files[model.rowIndex].filename)}">
+              <nxh:outputText value="#{currentDocument.files.files[model.rowIndex].filename}" />
+            </nxh:outputLink>
+          </div>
+
+        </nxu:inputList>
+
+        <h:message styleClass="errorMessage" for="files_input"
+          id="files_message" />
+
+      </a4j:outputPanel>
+    </a4j:region>
+
+  </h:panelGrid>
+
+  <a4j:outputPanel id="validateMultiplesUploadDiv">
+    <h:commandButton
+      rendered="#{not empty FileManageActions.uploadedFiles}"
+      value="#{messages['command.add.files']}" styleClass="button"
+      action="#{FileManageActions.validateMultiplesUpload}" />
+  </a4j:outputPanel>
+
+</h:form>
+
+</div>
