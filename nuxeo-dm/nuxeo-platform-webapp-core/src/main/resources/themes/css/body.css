@@ -1,0 +1,35 @@
+/*
+Styles for containers of all products
+author: lkemen@nuxeo.com
+*/
+
+/* Container of the main part without header and footer */
+.nxMainContainer {
+  width: 100%;
+  font-size: .8em }
+
+/* Left column */
+.nxMainContainer .column {
+  border-width: 1px;
+  border-style: none solid none none;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  font-size: .85em;
+  padding: .5em; width: 18% }
+
+/* Main region */
+.nxMainContainer .content {
+  padding: 0 }
+
+.mainFragment {
+  padding: .6em }
+
+/* Description of folders - to be moved to tabs_content */
+.currentDocumentDescription {
+  display: block;
+  font-size: .9em;
+  font-weight: bold;
+  padding: 0 0 1em }
+
+.currentItemDescription {
+  display: block;
+  font-size: 13px }
