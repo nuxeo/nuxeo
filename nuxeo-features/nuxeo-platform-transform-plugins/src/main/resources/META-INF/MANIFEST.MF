@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Transform Plugins
+Bundle-SymbolicName: org.nuxeo.ecm.platform.transform.plugin;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: search,web,stateful,stateless
+Eclipse-LazyStart: false
+Export-Package: org.nuxeo.ecm.platform.transform.plugin.joooconverter.api,
+ org.nuxeo.ecm.platform.transform.plugin.joooconverter.impl,
+ org.nuxeo.ecm.platform.transform.plugin.pdfbox.api,
+ org.nuxeo.ecm.platform.transform.plugin.pdfbox.impl,
+ org.nuxeo.ecm.platform.transform.plugin.wordml
+Nuxeo-Component: OSGI-INF/nxtransform-plugins-contrib.xml
+Require-Bundle: org.nuxeo.ecm.platform.transform,
+ org.nuxeo.ecm.platform.mimetype.core
