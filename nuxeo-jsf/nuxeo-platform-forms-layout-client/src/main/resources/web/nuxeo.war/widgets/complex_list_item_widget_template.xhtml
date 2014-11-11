@@ -1,0 +1,101 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf"
+  id="#{widget.id}">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">
+  <nxl:subWidget>
+    <nxl:widget widget="#{widget}" value="#{value}" />
+  </nxl:subWidget>
+</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+
+  <c:set var="displaySubLabels" value="#{not widgetProperty_hideSubLabels}" />
+
+  <table>
+    <tbody>
+      <c:choose>
+        <c:when test="#{widgetProperty_display == 'inline'}">
+          <tr>
+            <nxl:subWidget>
+              <td class="fieldColumn">
+                <c:if test="#{displaySubLabels}">
+                  <h:outputText value="#{messages[widget.label]}"
+                    styleClass="labelColumn" />
+                </c:if>
+                <nxl:widget widget="#{widget}" value="#{value}" />
+              </td>
+            </nxl:subWidget>
+          </tr>
+        </c:when>
+        <c:otherwise>
+          <nxl:subWidget>
+            <tr>
+              <c:if test="#{displaySubLabels}">
+                <td class="labelColumn">
+                  <h:outputText value="#{messages[widget.label]}" />
+                </td>
+              </c:if>
+              <td class="fieldColumn">
+                <nxl:widget widget="#{widget}" value="#{value}" />
+              </td>
+            </tr>
+          </nxl:subWidget>
+        </c:otherwise>
+      </c:choose>
+    </tbody>
+  </table>
+
+</c:if>
+<c:if test="#{widget.mode == 'edit'}">
+
+  <c:set var="displaySubLabels" value="#{not widgetProperty_hideSubLabels}" />
+
+  <table>
+    <tbody>
+      <c:choose>
+        <c:when test="#{widgetProperty_display == 'inline'}">
+          <tr>
+            <nxl:subWidget>
+              <td class="fieldColumn">
+                <c:if test="#{displaySubLabels}">
+                  <h:outputText value="#{messages[widget.label]}"
+                    styleClass="labelColumn #{nxu:test(widget.required, 'required', '')}" />
+                </c:if>
+                <nxl:widget widget="#{widget}" value="#{value}" />
+              </td>
+            </nxl:subWidget>
+          </tr>
+        </c:when>
+        <c:otherwise>
+          <nxl:subWidget>
+            <tr>
+              <c:if test="#{displaySubLabels}">
+                <td class="labelColumn">
+                  <h:outputText value="#{messages[widget.label]}"
+                    styleClass="#{nxu:test(widget.required, 'required', '')}" />
+                </td>
+              </c:if>
+              <td class="fieldColumn">
+                <nxl:widget widget="#{widget}" value="#{value}" />
+              </td>
+            </tr>
+          </nxl:subWidget>
+        </c:otherwise>
+      </c:choose>
+    </tbody>
+  </table>
+
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:html>
+    <nxl:subWidget>
+      <nxl:widget widget="#{widget}" value="#{value}" />
+    </nxl:subWidget>
+  </nxp:html>
+</c:if>
+</f:subview>
