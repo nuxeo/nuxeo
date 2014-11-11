@@ -1,0 +1,22 @@
+Export-Package: org.nuxeo.ecm.platform.filemanager.ejb,
+ org.nuxeo.ecm.platform.filemanager.ejb.interfaces.local
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Category: runtime
+Bundle-Name: NXFileManager
+Bundle-Localization: plugin
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 0.0.0.SNAPSHOT
+Nuxeo-Component: OSGI-INF/nxfilemanager-platform-contrib.xml
+Bundle-ManifestVersion: 2
+Import-Package: javax.ejb,
+ org.apache.commons.logging,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.repository,
+ org.nuxeo.ecm.platform.filemanager.api,
+ org.nuxeo.runtime.api
+Bundle-SymbolicName: org.nuxeo.ecm.platform.filemanager.facade
