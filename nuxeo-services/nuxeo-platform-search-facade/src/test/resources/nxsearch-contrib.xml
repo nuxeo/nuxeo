@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.search.testing">
+
+  <extension target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+    point="searchEngineBackend">
+
+    <searchEngineBackend name="fake" default="True"
+      class="org.nuxeo.ecm.core.search.ejb.FakeSearchEnginePlugin"/>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+    point="indexableDocType">
+
+    <indexableDocType name="File">
+      <resource>indexableDocumentSchemaResource</resource>
+    </indexableDocType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+    point="resource">
+
+    <resource name="fakeSchema" prefix="fake">
+      <field name="title" analyzer="standard" type="Text"/>
+    </resource>
+
+  </extension>
+
+</component>
