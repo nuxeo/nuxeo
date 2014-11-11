@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/status/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:qis="http://www.nuxeo.org/ecm/schemas/status/">
+
+  <xs:element name="instanceId" type="xs:string" />
+  <xs:element name="serviceId" type="xs:string" />
+  <xs:element name="administrative_status" type="xs:string" />
+  <xs:element name="statusMessage" type="xs:string" />
+  <xs:element name="userLogin" type="xs:string" />
+
+</xs:schema>
