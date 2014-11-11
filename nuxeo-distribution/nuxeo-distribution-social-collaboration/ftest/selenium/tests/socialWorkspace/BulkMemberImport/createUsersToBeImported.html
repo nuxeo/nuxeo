@@ -1,0 +1,602 @@
+ll<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8080/nuxeo/" />
+<title>Social Collaboration View-Administrator- create users for import</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Social Collaboration View-Administrator- create users for import</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium<br /> create users for import</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Admin Center</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Users &amp; groups</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=usersListingView:createUserActionsForm:createUserButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='createUserView:createUser:nxl_user:nxw_username']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_username</td>
+	<td>member1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_email</td>
+	<td>member1@mail.net</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_firstPassword</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_secondPassword</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@name='createUserView:createUser:nxl_user:nxw_groups_suggest']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='createUserView:createUser:nxl_user:nxw_groups_suggest']</td>
+	<td>members</td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Members group</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=createUserView:createUser:button_save</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Admin Center</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Users &amp; groups</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=usersListingView:createUserActionsForm:createUserButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='createUserView:createUser:nxl_user:nxw_username']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_username</td>
+	<td>member2</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_email</td>
+	<td>member2@mail.net</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_firstPassword</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_secondPassword</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@name='createUserView:createUser:nxl_user:nxw_groups_suggest']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='createUserView:createUser:nxl_user:nxw_groups_suggest']</td>
+	<td>members</td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Members group</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=createUserView:createUser:button_save</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Admin Center</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Users &amp; groups</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=usersListingView:createUserActionsForm:createUserButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='createUserView:createUser:nxl_user:nxw_username']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_username</td>
+	<td>memberToAddByEmailList1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_email</td>
+	<td>memberToAddByEmailList1@mail.net</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_firstPassword</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_secondPassword</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@name='createUserView:createUser:nxl_user:nxw_groups_suggest']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='createUserView:createUser:nxl_user:nxw_groups_suggest']</td>
+	<td>members</td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Members group</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=createUserView:createUser:button_save</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Admin Center</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Users &amp; groups</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=usersListingView:createUserActionsForm:createUserButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='createUserView:createUser:nxl_user:nxw_username']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_username</td>
+	<td>memberToAddByEmailList2</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_email</td>
+	<td>memberToAddByEmailList2@mail.net</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_firstPassword</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_secondPassword</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@name='createUserView:createUser:nxl_user:nxw_groups_suggest']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='createUserView:createUser:nxl_user:nxw_groups_suggest']</td>
+	<td>members</td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Members group</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=createUserView:createUser:button_save</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Admin Center</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Users &amp; groups</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=usersListingView:createUserActionsForm:createUserButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='createUserView:createUser:nxl_user:nxw_username']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_username</td>
+	<td>memberOfAnotherGroup1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_email</td>
+	<td>memberOfAnotherGroup1@mail.net</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_firstPassword</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_secondPassword</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=createUserView:createUser:button_save</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Admin Center</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Users &amp; groups</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=usersListingView:createUserActionsForm:createUserButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='createUserView:createUser:nxl_user:nxw_username']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_username</td>
+	<td>memberOfAnotherGroup2</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_email</td>
+	<td>memberOfAnotherGroup2@mail.net</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_firstPassword</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=createUserView:createUser:nxl_user:nxw_secondPassword</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=createUserView:createUser:button_save</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Admin Center</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Users &amp; groups</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Groups</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>6000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id=&quot;groupsListingView:createGroupActionsForm:createGroupButton&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>6000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id=&quot;createGroupView:createGroup:nxl_group:nxw_group_name&quot;]</td>
+	<td>AnotherGroup</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createGroupView:createGroup:nxl_group:nxw_group_members_suggest']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@id='createGroupView:createGroup:nxl_group:nxw_group_members_suggest']</td>
+	<td>memberOfAnotherGroup1</td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='createGroupView:createGroup:nxl_group:nxw_group_members_suggestionBox:suggest']/x:tbody/x:tr/x:td[2]</td>
+	<td>memberOfAnotherGroup1</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='createGroupView:createGroup:nxl_group:nxw_group_members_suggestionBox:suggest']/x:tbody/x:tr/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>6000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createGroupView:createGroup:nxl_group:nxw_group_members_suggest']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@id='createGroupView:createGroup:nxl_group:nxw_group_members_suggest']</td>
+	<td></td>
+</tr>
+
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@id='createGroupView:createGroup:nxl_group:nxw_group_members_suggest']</td>
+	<td>memberOfAnotherGroup2</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='createGroupView:createGroup:nxl_group:nxw_group_members_suggestionBox:suggest']/x:tbody/x:tr/x:td[2]</td>
+	<td>memberOfAnotherGroup2</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>6000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='createGroupView:createGroup:nxl_group:nxw_group_members_suggestionBox:suggest']/x:tbody/x:tr/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>6000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>memberOfAnotherGroup1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>memberOfAnotherGroup2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@id='createGroupView:createGroup:button_save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>6000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>

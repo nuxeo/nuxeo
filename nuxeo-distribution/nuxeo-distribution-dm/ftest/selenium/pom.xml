@@ -1,0 +1,121 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.distribution</groupId>
+    <artifactId>nuxeo-distribution</artifactId>
+    <version>5.5.0-HF01</version>
+    <relativePath>../../../pom.xml</relativePath>
+  </parent>
+
+  <groupId>org.nuxeo.tool</groupId>
+  <artifactId>selenium-utility</artifactId>
+  <version>1.1</version>
+  <packaging>pom</packaging>
+  <name>Utility POM for running Selenium tests</name>
+  <description>
+    This POM allow download of Selenium Server jar file.
+    It also provide a plugin for running regular Surefire tests.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-server-standalone</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <!-- DEPRECATED, remove when run.sh is no more used. -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <configuration>
+          <artifactItems>
+            <artifactItem>
+              <groupId>org.seleniumhq.selenium</groupId>
+              <artifactId>selenium-server-standalone</artifactId>
+              <overWrite>true</overWrite>
+              <outputDirectory>.</outputDirectory>
+              <destFileName>selenium-server.jar</destFileName>
+            </artifactItem>
+          </artifactItems>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>nuxeo-distribution-tools</artifactId>
+        <executions>
+         <execution>
+          <id>start-nuxeo</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+            <configuration>
+              <buildFile>${basedir}/itests.xml</buildFile>
+              <targets>
+                <target>prepare-environment</target>
+                <target>start</target>
+              </targets>
+            </configuration>
+          </execution>
+          <execution>
+            <id>run-tests</id>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+            <configuration>
+              <buildFile>${basedir}/itests.xml</buildFile>
+              <target>run-selenium-tests</target>
+            </configuration>
+          </execution>
+         <execution>
+          <id>stop-nuxeo</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+            <configuration>
+              <buildFile>${basedir}/itests.xml</buildFile>
+              <targets>
+                <target>stop</target>
+                <target>cleanup-environment</target>
+              </targets>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>tomcat</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
+    <profile>
+      <id>jboss</id>
+    </profile>
+    <profile>
+      <id>pgsql</id>
+    </profile>
+    <profile>
+      <id>mssql</id>
+    </profile>
+    <profile>
+      <id>oracle10g</id>
+    </profile>
+    <profile>
+      <id>oracle11g</id>
+    </profile>
+    <profile>
+      <id>mysql</id>
+    </profile>
+  </profiles>
+
+</project>
