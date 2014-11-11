@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<project name="Nuxeo Distribution" default="distrib" basedir=".">
+
+  <property file="build.properties" />
+  <property name="mvn.opts" value="" />
+
+  <condition property="osfamily-unix">
+    <os family="unix" />
+  </condition>
+  <condition property="osfamily-windows">
+    <os family="windows" />
+  </condition>
+
+  <target name="package"
+          depends="package-unix,package-windows"
+          description="Package Nuxeo" />
+  <target name="package-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg value="-f" />
+      <arg value="./pom.xml" />
+      <arg value="clean" />
+      <arg value="package" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-Pall-distributions" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+  <target name="package-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="-f" />
+      <arg value="pom.xml" />
+      <arg value="clean" />
+      <arg value="package" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-Pall-distributions" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+  <target name="list-available-distributions">
+    <echo message="Available distributions are:" />
+    <echo message="jboss                - build all JBoss distributions" />
+    <echo message="jetty                - build all Jetty distributions (DEPRECATED)" />
+    <echo message="tomcat               - build all Tomcat distribution" />
+    <echo message="all-distributions    - build all available distributions" />
+  </target>
+  <target name="choose-distrib" unless="distrib">
+    <input message="Which distribution do you want to build?"
+           validargs="jboss,jetty,tomcat,all-distributions"
+           addproperty="distrib" />
+  </target>
+  <target name="distrib"
+          depends="list-available-distributions,choose-distrib,distrib-unix,distrib-windows"
+          description="Build a distribution" />
+  <target name="distrib-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg value="clean" />
+      <arg value="install" />
+      <arg value="package" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-P" />
+      <arg value="${distrib}" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+  <target name="distrib-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="clean" />
+      <arg value="install" />
+      <arg value="package" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-P" />
+      <arg value="${distrib}" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+</project>
