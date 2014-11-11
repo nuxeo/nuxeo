@@ -1,0 +1,265 @@
+#!/bin/sh
+#
+# JBoss Control Script
+#
+# (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+#
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the GNU Lesser General Public License
+# (LGPL) version 2.1 which accompanies this distribution, and is available at
+# http://www.gnu.org/licenses/lgpl.html
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# Lesser General Public License for more details.
+#
+# Contributors:
+#     Florent Guillaume
+#     Benoit Delbosc
+#     Julien Carsique
+#
+# $Id: jbossctl 31958 2008-05-22 16:44:24Z jcarsique $
+CONFIG=default
+JBOSS_USER=
+BINDHOST=
+PORT=8080
+# The directory containing directories log, bin, conf, etc.
+HERE=`dirname $0`
+JBOSS_HOME=`cd $HERE/..; pwd -P`
+
+# Read an optional running configuration file
+if [ -r "$JBOSS_HOME/bin/jbossctl.conf" ]; then
+    RUN_CONF=$JBOSS_HOME/bin/jbossctl.conf
+    export RUN_CONF
+    . $RUN_CONF
+fi
+if [ -z "$JAVA_HOME" ]; then
+    echo 'Missing $JAVA_HOME' >&2; exit 2
+fi
+if [ ! -d $JAVA_HOME/bin ]; then
+    echo 'No bin/ in $JAVA_HOME' >&2; exit 2
+fi
+
+# Console Log
+LOG=$JBOSS_HOME/log/jboss.log
+
+# Server log
+LOGF=$JBOSS_HOME/server/$CONFIG/log/server.log
+
+# PID_FILE
+PID_FILE=$JBOSS_HOME/log/jboss.pid
+
+mkdir -p `dirname $LOG`
+touch $LOG
+
+# Bind host
+BINDHOST_CONF=$JBOSS_HOME/bin/bind.conf
+test -r $BINDHOST_CONF && . $BINDHOST_CONF
+
+# Start command
+CMD_START="$JBOSS_HOME/bin/run.sh -c $CONFIG"
+test -n "$BINDHOST" && CMD_START="$CMD_START -b $BINDHOST"
+# waiting time in s
+START_WAITING_TIME=300
+
+# Stop command
+JBOSS_SERVICE="$JBOSS_HOME/server/$CONFIG/conf/jboss-service.xml"
+# old location for JBoss 4.0.4:
+test -f "$JBOSS_SERVICE" || JBOSS_SERVICE="$JBOSS_HOME/server/$CONFIG/deploy/naming.sar/META-INF/jboss-service.xml"
+# extract <attribute name="Port">1099</attribute>
+JNPPORT=`cat $JBOSS_SERVICE | awk 'BEGIN {ok=0; FS="[<>]"} /org.jboss.naming.NamingService/ {ok=1} /name=.Port/ {if (ok) {print $3; exit}}'`
+JNPHOST=$BINDHOST
+test -z "$JNPHOST" && JNPHOST=127.0.0.1
+ADMINPW=`cat $JBOSS_HOME/server/$CONFIG/conf/props/jmx-console-users.properties | sed -ne '/^admin=/ {s/^admin=\(.*\)/\1/;p;}'`
+CMD_STOP="$JAVA_HOME/bin/java -classpath $JBOSS_HOME/bin/shutdown.jar:$JBOSS_HOME/client/jnet.jar org.jboss.Shutdown --shutdown -u admin -p $ADMINPW -s jnp://$JNPHOST:$JNPPORT"
+
+# su
+if [ -z "$JBOSS_USER" -o `/usr/xpg4/bin/id -nu` = "$JBOSS_USER" ]; then
+  SU=""
+else
+  SU="su - $JBOSS_USER -c "
+fi
+
+if [ -z "`echo $PATH | grep $JAVA_HOME/bin`" ]; then
+  PATH=$JAVA_HOME/bin:$PATH
+  export PATH
+fi
+
+extract_pid() {
+    # extract pid from the jvm
+    JBOSS_PID=`jps -v |grep $JBOSS_HOME |cut -f1 -d" "`
+    if [ $? != 0 ]; then
+        echo "Unable to find the pid of the jvm aborting"
+        return 1
+    fi
+    echo $JBOSS_PID > $PID_FILE
+}
+
+status() {
+    # compatibility with other running scripts : always extract process id
+    extract_pid
+    # check if pid file and process exists
+    ps_alive=0
+    if [ -f "$PID_FILE" ] && [ -n "$JBOSS_PID" ] && \
+     [ -n "`ps -ef |grep $JBOSS_PID`" ]; then
+        ps_alive=1;
+    fi
+    if  [ "$1" = "check_alive" -a $ps_alive = 1 ] ||
+        [ "$1" = "check_dead" -a $ps_alive = 0 ]; then
+        return 0 # success
+    else
+        if [ "$2" = "warn" ]; then
+            if [ $ps_alive = 0 ]; then
+                echo "No JBoss running."
+            else
+                echo "JBoss running [$JBOSS_PID]"
+            fi
+        fi
+        return 1 # failure
+    fi
+}
+
+start() {
+    status check_dead warn
+    if [ ! $? ] ; then
+        return 0 # success
+    fi
+    echo "Starting JBoss... \c"
+    echo "(pressing Ctrl+C will interrupt starting process)"
+    if [ -z "$SU" ]; then
+        eval "$CMD_START" >>${LOG} 2>&1 &
+    else
+        $SU "$CMD_START >>${LOG} 2>&1 &"
+    fi
+    sleep 2
+    extract_pid || exit 1
+    echo "[$JBOSS_PID]: \c"
+    waiting_loops=`expr $START_WAITING_TIME / 1`
+    count=0
+    while [ $count -le $waiting_loops ]; do
+# could use ServerBindPort (8093) from jboss/server/default/deploy/jms/uil2-service.xml ?
+#        netstat -ln |grep $PORT > /dev/null
+        tail -1 $LOGF |grep "Started in" >/dev/null
+        if [ $? = 0 ]; then
+            echo "Server started."
+             tail -n9 $LOGF | head -n7
+            return 0
+        fi
+        echo ".\c"
+        count=`expr $count + 1`
+        sleep 1 || return 1 # Ctrl-C
+    done
+    echo "Too long, give up"
+    return 0
+}
+
+startd() {
+    status check_dead warn
+    if [ $? ] ; then
+        return 0 # success
+    fi
+    echo "Setup debug configuration"
+    JBOSS_DEBUG_MODE=1
+    export JBOSS_DEBUG_MODE
+    start
+    return $?
+}
+
+stop() {
+    if ! status check_alive warn; then
+        return 0 # success
+    fi
+    extract_pid
+    echo "Stopping JBoss... \c"
+    echo "(using jnp://$JNPHOST:$JNPPORT)"
+    echo "[$JBOSS_PID]\c"
+    if [ -z "$SU" ]; then
+        $CMD_STOP > /dev/null 2>&1
+    else
+        $SU "$CMD_STOP"
+    fi
+    for i in 1 2 3 4 5 6 7 8 9 10; do
+        sleep 1
+        if status check_dead nowarn; then
+            break;
+        fi
+        echo ".\c"
+    done
+    if status check_alive nowarn; then
+        #kill it
+        echo " SIGKILL\c"
+        cmd="kill -9 $JBOSS_PID"
+        if [ -z "$SU" ]; then
+            eval $cmd
+        else
+            $SU "$cmd"
+        fi
+        wait $JBOSS_PID || waitstopped
+    fi
+    echo " done."
+    return 0
+}
+
+waitstopped() {
+    echo "Waiting for server to stop..."
+    while true; do
+        case `tail -1 $LOG` in
+            "Shutdown complete"|"Halting VM")
+                echo "Server stopped."
+                return 0
+        esac
+        sleep 1 || return 1 # Ctrl-C interrupt
+    done
+}
+
+
+case "$1" in
+    start)
+        start
+        ;;
+    startd)
+        startd
+        ;;
+    status)
+        if status check_alive nowarn; then
+            echo "JBoss running [$JBOSS_PID]."
+            exit 0
+        else
+            echo "No JBoss running."
+            exit 1
+        fi
+        ;;
+    stop)
+        stop
+        # stop && waitstopped
+        ;;
+    restart)
+        stop
+        # stop && waitstopped
+        sleep 5
+        start
+        ;;
+    info)
+        if status check_alive warn; then
+            jps -v | grep $JBOSS_PID
+            jmap -heap $JBOSS_PID
+            jstat -gc $JBOSS_PID
+        else
+            status
+        fi
+        ;;
+    tailf)
+        echo "tail $LOGF"
+        tail -f $LOGF
+        ;;
+    log)
+        less $LOGF
+        ;;
+    tail)
+        tail -f $LOG
+        ;;
+    *)
+        echo "usage: `basename $0` (start|stop|startd|restart|status|tail|tailf|info|help)"
+        ;;
+esac

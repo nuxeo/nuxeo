@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<datasources>
+  <xa-datasource>
+    <jndi-name>nxtags</jndi-name>
+    <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
+    <xa-datasource-property name="ServerName">localhost</xa-datasource-property>
+    <xa-datasource-property name="PortNumber">5432</xa-datasource-property>
+    <xa-datasource-property name="DatabaseName">nuxeo</xa-datasource-property>
+    <xa-datasource-property name="User">nuxeo</xa-datasource-property>
+    <xa-datasource-property name="Password">password</xa-datasource-property>
+    <track-connection-by-tx/>
+  </xa-datasource>
+</datasources>
