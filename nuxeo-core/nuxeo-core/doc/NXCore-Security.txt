@@ -1,0 +1,309 @@
+NXCore Security Model
+=====================
+
+This is the low-level security model, which will be encapsulated into
+more user-friendly concepts by the UI.
+
+The security model is compatible with JAAS and use patterns that are
+common in Java enterprise applications.
+
+Authentication
+--------------
+
+Users are authenticated using the standard JAAS services, which assumes
+that the principals already exist from JAAS's point of view.
+
+JAAS and EJB security are not designed to work with a single principal
+that would have different "permissions" depending on which document
+context he is looking at. JAAS can give roles to a principal, but this
+is fixed at login time.
+
+Therefore the following security model doesn't concerns itself with that
+problem yet, it is only the low-level part. Security will then have to
+be checked explicitely by the MVC framework, which will display only
+things for which the logged in principal is allowed.
+
+Principals
+----------
+
+A principal is a user authenticated in a given way, or it can be a group
+of other principals. Principals are identified by strings, which depend
+on the backend used.
+
+Given a principal A (currently authenticated), it must be possible to
+know if a principal UG "implies" the principal U, which means that if UG
+is allowed something then U is allowed too. If UG is a group of
+principals and U is in the group, then UG implies U. Groups of groups
+must be taken into account too.
+
+Some pseudo-groups of principals are defined:
+
+- `Everybody` implies any user.
+
+- `Authenticated` implies any authenticated user.
+
+- `Unauthenticated` is a principal given to non-authenticated users.
+
+- `Owner` is a principal that has meaning only in the context of a given
+  access control policy. It implies the user specified as owner of the
+  ACL.
+
+Permission
+----------
+
+A permission represents access to a resource. Even though Java has base
+classes used to represent permissions, this document will only show them
+in terms of strings.
+
+Some permissions are groups of other permissions. Given a permission
+group PG and a permission P, then PG "implies" P, because if a principal
+is allowed PG then it is allowed P. Some groups are "standard" groups,
+others can be defined by an administrator to refine.
+
+Basic permissions and their groupings:
+
+- `Browse`: know about a document, but not necessarily get detailed
+  information about it.
+
+- `ReadProperties`: read the properties of a document. This gives access
+  to all the document's content, but not its security, and not its
+  children if it's a folder. `ReadProperties` implies `Browse`.
+
+- `ReadSecurity`: read the security of a document.
+
+- `ReadChildren`: read the list of children of a folder.
+
+- `Read`: a grouping of `ReadProperties` and `ReadChildren`.
+
+- `WriteProperties`: write the properties of a document, excluding the
+  security or the manipulation of children.
+
+- `Version`: checkin a version of the document.
+
+- `WriteSecurity`: write the security of a document.
+
+- `AddChildren`: add children to a folder.
+
+- `RemoveChildren`: remove children from a folder.
+
+- `Remove`: remove a document itself.
+
+- `Write`: a grouping of `WriteProperties`, `AddChildren`,
+  `Remove`, `RemoveChildren`.
+
+- `Everything`: a pseudo group of all the permissions in the system.
+
+Examples:
+
+- To view a document when a folder is listed, the `Browse` permission is
+  needed on the document.
+
+- To view a document in a search result, the `Browse` permission is
+  needed.
+
+- To create a document in a folder, `AddChildren` is needed on the
+  folder.
+
+- To remove a document, `RemoveChildren` is needed on the parent
+  folder *and* `Remove` is needed on the document itself.
+
+
+You can have a look at org.nuxeo.ecm.core/nuxeo-core/src/main/resources/OSGI-INF/permissions.xml, which defines the default Nuxeo permissions and permissions groups (like read, limited read, write, that we find in the select input of the rights management UI )
+
+
+ACP, ACE and ACL
+----------------
+
+An ACE (Access Control Entry) is an basic granting or denying of
+permissions to some principals.
+
+An ACL (Access Control List) regroups several ACE. It is important to
+note that ACEs are ordered in the ACL and evaluated in that order.
+
+An ACL can also be a reference to a predefined ACL, this indirection
+makes it possible to manage complex ACLs in a central place and apply
+them locally.
+
+An ACP (Access Control Policy) is stored with the document an regroups
+severals ACLs, in a fixed order.
+
+An ACP can have owners, which are a set of principals which will be made
+to correspond to the `Owner` principal for the purpose of the permission
+evaluation.
+
+Permission evaluation
+---------------------
+
+The basic security operation is to check if a given principal U is
+allowed to do a certain operation protected by P on a document. Note
+that here, P is never a group of permissions but always an basic one.
+
+The following algorithm is used:
+
+1. collect the (ordered) list of ACPs that apply to the document:
+
+   a. start with the ACP on the document itself, if there is one,
+
+   b. continue upwards by finding the closest parent having an ACP, and
+      addi the ACP after those already collected, this up until the root
+      of the hierarchy,
+
+2. set the `Owner` pseudo-principal to the owners of the first ACP
+   (there is no inheritance of owners),
+
+3. get all the ordered ACLs from the ACPs. If an ACL is a reference, use
+   the pointed ACL instead,
+
+4. get all the ordered ACEs from the ACLs,
+
+5. check each ACE in order:
+
+   a. if the ACE is a DENY for a principal implying U and a permission
+      implying P, then deny the operation,
+
+   b. if the ACE is a GRANT for a principal implying U and a permission
+      implying P, then allow the operation,
+
+   c. if all ACEs of all ACLs of all ACPs have been checked
+      inconclusively, then deny the operation.
+
+Group evaluation context
+------------------------
+
+The permission evaluation is checked in the context of the existence of
+some principal groups and permission groups.
+
+These groups are defined globally in a workspace.
+
+As a convention, groups of principals should be named to reflect an
+actor, and groups of permissions should be named to reflect an action.
+For instance the groups of principals `Reviewers` has to be
+distinguished from the group of permissions `Reviewing`.
+
+Standard use cases
+------------------
+
+1. In a folder, some people must be able to create and edit documents.
+
+   - a permission group P is reused or defined globally to group the
+     required privileges,
+
+   - a principal group G is defined globally to group the required users,
+
+   - an ACL with the ACE "GRANT G P" is made on the folder,
+
+   - if another principal U must be added, then another ACE can be added
+     with "GRANT U P".
+
+   - Example: the `Bob` principal is granted the `Contribution`
+     permission, which is a group for `Read` and `Write`.
+
+2. The workflow changes the security on a document.
+
+   - workflow security changes are specified in the workflow definition
+     as a pseudo-ACL (computed depending on changes) or for other cases
+     an fixed ACL node somewhere in the system,
+
+   - when workflow security is applied, the appropriate ACL is added
+     *first* in the document's ACP,
+
+   - when the workflow has to "undo" its changes to the security of a
+     document (when it moves on to another state), it simply removes the
+     ACL it has added, which is easy because ACLs have names in the ACP.
+
+   - Example: the `Editors` group is granted the `Edition` permission.
+
+
+JCR Storage
+-----------
+
+The security is stored on a document node using the following mixin::
+
+  [ecmmix:accessControlled]
+    mixin
+    + ecm:accessControlPolicy (ecmnt:accessControlPolicy)
+
+The node types for the ACLs and ACEs themselves are::
+
+  [ecmnt:accessControlPolicy]
+    orderable
+    - ecm:owners (String) *
+    + * (ecmnt:acl)
+    + * (ecmnt:predefinedAcl)
+
+  [ecmnt:acl]
+    orderable
+    + ecm:ace (ecmnt:ace) *
+
+  [ecmnt:ace]
+    - ecm:aceType (String) // "GRANT" or "DENY"
+    - ecm:principals (String) *
+    - ecm:permissions (String) *
+
+  [emcnt:predefinedAcl]
+    - ecm:predefinedAcl (reference) < ecmnt:acl
+
+API
+---
+
+The API can be seen in the files XXX.
+
+An IDocument will need the ``checkPermission(String permission`` method
+(from IDocumentAccessControl below).
+
+Management methods can be implemented in terms of node manipulation for
+now.
+
+A first draft of these methods would include::
+
+  public enum AceType { DENY, GRANT };
+
+  public interface IACE {
+      public final AceType getType();
+      public final String[] getPrincipals();
+      public final String[] getPermissions();
+  }
+
+  public interface IACL {
+      public IACE[] getACEs();
+  }
+
+  public interface IMutableACL extends IACL {
+      public void setACEs(IACE[] aces);
+      public void addACE(IACE ace);
+      public void insertACE(int pos, IACE ace)
+          throws IndexOutOfBoundsException;
+  }
+
+  public class ReferenceACL implements IACL {
+      public void IReferenceACL(String UUID);
+  }
+
+  public interface IACP {
+      public String[] getOwners();
+      public void setOwners(String[] owners);
+      public void addOwner(String owner);
+      public IACL[] getACLs();
+      public String[] getACLNames();
+      public void addACL(String name, IACL acl);
+      public void addACL(String name, IACL acl, int pos)
+          throws IndexOutOfBoundsException;
+      public void removeACL(String name);
+  }
+
+  public interface IDocumentAccessControl {
+      public IACP getACP();        // null means none defined
+      public void setACP(IACP acp); // null means remove
+      /**
+       * Check the security access on a document for the current user.
+       *
+       * @permission the permission to check
+       *
+       * @return true if permission is allowed
+       * @throws DocumentException
+       */
+      public boolean checkPermission(String permission)
+          throws DocumentException;
+  }
+
+  public interface IDocument extends IDocumentAccessControl ...
