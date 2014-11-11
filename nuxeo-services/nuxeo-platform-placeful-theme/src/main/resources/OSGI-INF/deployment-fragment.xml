@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<fragment>
+
+  <extension target="application#MODULE">
+    <module>
+      <ejb>${bundle.fileName}</ejb>
+    </module>
+  </extension>
+
+  <!-- NXP-4897 - avoid unzip nuxeo-platform-placeful-facade
+  <extension target="persistence#CLASS">
+    <class>org.nuxeo.ecm.webapp.theme.negotiation.LocalThemeConfig</class>
+  </extension>
+  -->
+
+</fragment>
+
