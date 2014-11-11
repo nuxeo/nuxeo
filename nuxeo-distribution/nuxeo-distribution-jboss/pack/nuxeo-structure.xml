@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<structure bundles="lib/nuxeo-*.jar:bundles/*.jar:bundles/*.rar">
+    <preprocessor enabled="false" />
+    <properties>
+      <property name="nuxeo.home.dir">${nuxeo.home.dir}</property>
+      <property name="nuxeo.config.dir">${nuxeo.config.dir}</property>
+    </properties>
+</structure>
+
