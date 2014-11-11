@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<fragment>
+  <extension target="application#MODULE">
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
+
+
+  <extension target="web#STD-AUTH-FILTER">
+
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/site/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+  </extension>
+
+  <!-- Site Servlet mapping -->
+  <extension target="web#SERVLET">
+
+    <servlet>
+      <servlet-name>Nuxeo Resource Servlet</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.webengine.servlet.ResourceServlet
+      </servlet-class>
+      <!-- this is required so that prefix param is initialized before webengine is started -->
+      <load-on-startup>1</load-on-startup>
+      <init-param>
+        <param-name>prefix</param-name>
+        <param-value>/nuxeo/site/skin</param-value>
+      </init-param>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Nuxeo Resource Servlet</servlet-name>
+      <url-pattern>/site/skin/*</url-pattern>
+    </servlet-mapping>
+
+  <servlet>
+    <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
+    <!--servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class-->
+	<servlet-class>org.nuxeo.ecm.webengine.app.jersey.ReloadingJerseyServlet</servlet-class>
+    <init-param>
+      <param-name>javax.ws.rs.Application</param-name>
+      <param-value>org.nuxeo.ecm.webengine.app.WebEngineApplication</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
+    <url-pattern>/site/*</url-pattern>
+  </servlet-mapping>
+  <filter>
+    <display-name>WebEngineFilter</display-name>
+    <filter-name>WebEngineFilter</filter-name>
+    <filter-class>
+      org.nuxeo.ecm.webengine.app.WebEngineFilter
+    </filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>WebEngineFilter</filter-name>
+    <url-pattern>/site/*</url-pattern>
+  </filter-mapping>
+
+  </extension>
+
+</fragment>
+
