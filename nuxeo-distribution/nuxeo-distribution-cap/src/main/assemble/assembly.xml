@@ -1,0 +1,75 @@
+<project name="nuxeo-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+
+
+  <target name="init" unless="init.done">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <property name="nuxeo.ear" value="${outdir}/nuxeo.ear" />
+
+    <antcall target="expand" />
+    <property name="init.done" value="true" />
+  </target>
+
+  <target name="expand">
+    <artifact:nuxeo-expand />
+    <!-- <artifact:print output="dependency-tree.log" /> -->
+  </target>
+
+  <target name="build" depends="init" description="Build Nuxeo CAP">
+    <echo>Building default Nuxeo DM EAR</echo>
+    <delete failonerror="false" dir="${nuxeo.ear}" />
+    <mkdir dir="${nuxeo.ear}" />
+    <antcall target="build-standard" />
+  </target>
+
+  <target name="build-standard"
+          description="Build default distribution"
+          depends="init">
+    <copy todir="${nuxeo.ear}/bundles" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="org.nuxeo*" />
+        </includes>
+        <excludes>
+          <artifact artifactId="*-test" />
+          <artifact artifactId="nuxeo-runtime-management-metrics" />
+          <artifact artifactId="nuxeo-apt-extensions" />
+          <artifact artifactId="nuxeo-webengine-apt" />
+        </excludes>
+      </artifact:set>
+    </copy>
+
+    <!-- Third-party libraries -->
+    <antcall target="third-party-libraries" />
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+         basedir="${nuxeo.ear}" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="zip" />
+  </target>
+
+  <target name="third-party-libraries">
+    <copy todir="${nuxeo.ear}/lib" overwrite="true">
+      <artifact:set>
+        <excludes>
+          <artifact artifactId="gwt-dev" />
+          <artifact artifactId="gwt-user" />
+          <artifact artifactId="json-jena" />
+          <artifact artifactId="h2" />
+        </excludes>
+        <includes>
+          <artifact groupId="!org.nuxeo*" />
+        </includes>
+      </artifact:set>
+    </copy>
+    <!-- Remove duplicates -->
+    <nx:rmdups dir="${nuxeo.ear}/lib" />
+  </target>
+
+</project>
