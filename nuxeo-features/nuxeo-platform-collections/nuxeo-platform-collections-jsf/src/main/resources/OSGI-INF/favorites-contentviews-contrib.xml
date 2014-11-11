@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.favorites.contentview">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="favorites_content_contentview">
+
+      <title>label.search.results</title>
+      <translateTitle>true</translateTitle>
+
+      <emptySentence>label.content.empty.search</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
+
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <whereClause docType="Document">
+          <fixedPart>
+            ecm:mixinType != 'HiddenInNavigation' AND
+            ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
+            'deleted' AND
+            collectionMember:collectionIds/* = ?
+          </fixedPart>
+        </whereClause>
+        <parameter>#{currentUserFavorites.id}</parameter>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
+
+      <searchLayout name="collection_content_default" />
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+
+      <resultLayouts>
+        <layout name="document_virtual_navigation_listing_ajax" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" showSyndicationLinks="true" />
+      </resultLayouts>
+
+      <selectionList>COLLECTION_CURRENT_SELECTION</selectionList>
+      <actions category="COLLECTION_ACTION" />
+
+    </contentView>
+
+  </extension>
+
+</component>

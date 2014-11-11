@@ -1,0 +1,121 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <script type="text/javascript">
+    function confirmDeleteDirectoryEntry() {
+      return confirm("#{messages['label.vocabulary.entry.confirmDelete']}");
+    }
+  </script>
+
+  <a4j:outputPanel id="viewDirectoryPanel" layout="block">
+
+  <nxu:set var="currentVoc" cache="true" value="#{directoryUIActions.currentDirectory}">
+  <nxu:set var="isReadOnly" cache="true" value="#{directoryUIActions.checkContextualDirectoryFilter('readOnlyDirectory')}">
+
+  <ui:include src="/incl/message_banner.xhtml" />
+
+  <c:if test="#{!isReadOnly}">
+    <a4j:outputPanel id="addDirectoryEntryPanel" layout="block">
+    <c:if test="#{directoryUIActions.selectedDirectoryEntry == null}">
+
+      <h:form id="showHideAddDirectoryEntry">
+        <h4>
+          <h:commandLink
+            action="#{directoryUIActions.toggleShowAddForm}">
+            <h:graphicImage url="/icons/toggle_plus.png"
+              rendered="#{!directoryUIActions.showAddForm}" />
+            <h:graphicImage url="/icons/toggle_minus.png"
+              rendered="#{directoryUIActions.showAddForm}" />
+            <h:outputText
+              value="#{messages['title.create.vocabulary.entry']}" />
+            <f:ajax execute="@this" render="addDirectoryEntryPanel" />
+          </h:commandLink>
+        </h4>
+      </h:form>
+
+      <f:subview id="addEntryView" rendered="#{directoryUIActions.showAddForm}">
+        <div class="tabsContent">
+          <ui:include src="create_directory_entry.xhtml" />
+        </div>
+      </f:subview>
+
+    </c:if>
+    </a4j:outputPanel>
+  </c:if>
+
+  <div class="tabsContent">
+
+    <a4j:outputPanel id="editDirectoryEntryPanel" layout="block">
+    <c:if test="#{directoryUIActions.selectedDirectoryEntry != null}">
+
+      <div class="vocabularyEntryContent">
+        <h:form id="editDirectoryEntry">
+
+          <nxl:layout name="#{currentVoc.layout}" mode="edit"
+            value="#{directoryUIActions.selectedDirectoryEntry}" />
+
+          <div class="buttons">
+            <h:commandButton value="#{messages['command.save']}"
+              id="editDirectoryEntryButton"
+              styleClass="button"
+              action="#{directoryUIActions.editSelectedDirectoryEntry}">
+              <f:ajax execute="@form" render="viewDirectoryPanel" />
+            </h:commandButton>
+            <h:commandButton value="#{messages['command.cancel']}"
+              id="cancelEditingDirectoryEntryButton"
+              styleClass="button"
+              action="#{directoryUIActions.resetSelectedDirectoryEntry}"
+              immediate="true">
+              <f:ajax execute="@this" render="viewDirectoryPanel" />
+            </h:commandButton>
+            <a4j:status id="editDirectoryEntryStatus">
+              <f:facet name="start">
+                <h:graphicImage value="/img/standart_waiter.gif" />
+              </f:facet>
+            </a4j:status>
+          </div>
+
+        </h:form>
+
+      </div>
+
+    </c:if>
+    </a4j:outputPanel>
+
+    <h:form rendered="#{!empty directoryUIActions.currentDirectoryEntries}"
+      id="viewDirectoryEntries">
+
+      <table class="dataTable">
+        <c:forEach var="entry" items="#{directoryUIActions.currentDirectoryEntries}"
+          varStatus="status">
+          <c:if test="#{status.index%2 == 0}">
+            <c:set var="directoryEntryClass" value="dataRowOdd" />
+          </c:if>
+          <c:if test="#{status.index%2 != 0}">
+            <c:set var="directoryEntryClass" value="dataRowEven" />
+          </c:if>
+          <c:if test="#{status.index == 0}">
+            <nxl:layout name="#{currentVoc.layout}" mode="view_list_and_header" value="#{entry}" />
+          </c:if>
+          <c:if test="#{status.index != 0}">
+            <nxl:layout name="#{currentVoc.layout}" mode="view_list" value="#{entry}" />
+          </c:if>
+        </c:forEach>
+      </table>
+
+    </h:form>
+
+  </div>
+
+  </nxu:set>
+  </nxu:set>
+  </a4j:outputPanel>
+
+</div>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.ui.select2.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="addEntryFromSuggestDirectoryWidget" type="template"
+      label="label.directorySuggestion.addNewEntry">
+      <properties>
+        <property name="template">
+          /incl/action/suggest_add_new_directory_entry_action.xhtml
+        </property>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="canAddEntryFromSuggestDirectoryWidget">
+      <documentation>
+        <p>
+          Filter used by the "suggestOneDirectory" and "suggestManyDirectory"
+          widget types to check wether the "Add new entry" button should be
+          displayed.
+        </p>
+        <p>
+          This filter is a combination of default filters controlling access to
+          the "Vocabularies" tab in Admin Center and read-only configuration set
+          on the directory.
+        </p>
+        <p>
+          This filter is evaluated in a context where the variable
+          'directoryName' is set to the currently selected directory name.
+        </p>
+        @since 5.9.1
+      </documentation>
+      <rule grant="true">
+        <condition>currentUser.administrator</condition>
+        <condition>currentUser.isMemberOf('powerusers')</condition>
+      </rule>
+      <rule grant="false">
+        <condition>#{directoryUIActions.isReadOnly(directoryName)}</condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

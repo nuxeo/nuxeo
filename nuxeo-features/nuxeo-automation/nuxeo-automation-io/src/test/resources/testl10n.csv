@@ -1,0 +1,4 @@
+id, label_en, label_fr, parent, obsolete
+"parent","parent_en","parent_fr","","0"
+"subject1","subject1_en","subject1_fr","parent","0"
+"subject2","subject2_en","subject2_fr","parent","0"

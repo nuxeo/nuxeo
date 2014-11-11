@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.presales.toolkit.doctype.field.list" version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="lists" prefix="lists" src="schemas/studio_produced_schema.xsd"/>
+  </extension>
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="MyDocument" extends="Document">
+      <schema name="lists"/>
+      <schema name="dublincore"/>
+      <schema name="common"/>
+      <schema name="uid"/>
+      <schema name="file"/>
+    </doctype>
+  </extension>
+</component>

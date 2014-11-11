@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.task.pageproviders.test">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <genericPageProvider name="current_user_tasks"
+      class="org.nuxeo.ecm.platform.task.providers.UserTaskPageProvider">
+      <pageSize>1</pageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="current_user_tasks_sort_asc"
+      class="org.nuxeo.ecm.platform.task.providers.UserTaskPageProvider">
+      <sort ascending="true" column="dc:created"/>
+      <sort ascending="true" column="nt:name"/>
+    </genericPageProvider>
+
+    <genericPageProvider name="current_user_tasks_sort_desc"
+      class="org.nuxeo.ecm.platform.task.providers.UserTaskPageProvider">
+      <sort ascending="false" column="dc:created"/>
+      <sort ascending="false" column="nt:name"/>
+    </genericPageProvider>
+
+  </extension>
+
+</component>

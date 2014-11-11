@@ -1,0 +1,342 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.automation.coreContrib" version="1.0">
+
+  <documentation>@author Guillaume Renard (grenard@nuxeo.com)</documentation>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+
+    <!-- register built-in operations -->
+    <operation class="org.nuxeo.ecm.automation.core.operations.FetchContextDocument" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.FetchContextBlob" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.SetVar" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.stack.PushDocument" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.stack.PushDocumentList" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.stack.PopDocument" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.stack.PopDocumentList" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.SetInputAsVar" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.RestoreDocumentInput" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.RestoreDocumentsInput" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.RestoreBlobInput" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.RestoreBlobsInput" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.RunScript" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.RestoreDocumentInputFromScript" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.RestoreDocumentsInputFromScript" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.RestoreBlobInputFromScript" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.RestoreBlobsInputFromScript" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.execution.RunOperation" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnList" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.execution.RunInNewTransaction" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.execution.RunDocumentChain" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.execution.RunFileChain" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.document.CopyDocument" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.CreateDocument" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.document.CreateVersion" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.CheckInDocument" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.CheckOutDocument" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.RestoreVersion" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.DeleteDocument" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.document.FetchDocument" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.document.LockDocument" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.FetchByProperty" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.FilterDocuments" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.UnlockDocument" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.GetDocumentChildren" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.GetDocumentChild" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.GetDocumentParent" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.GetDocumentVersions" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.document.MoveDocument" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.ReloadDocument" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.document.SaveDocument" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.execution.SaveSession" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.SetDocumentLifeCycle">
+      <widgets>
+        <widget name="value" type="codearea">
+          <labels>
+            <label mode="any">Value</label>
+          </labels>
+          <properties mode="any">
+            <property name="language">lifecycle</property>
+            <property name="width">100%</property>
+            <property name="height">100%</property>
+          </properties>
+          <fields>
+            <field>value</field>
+          </fields>
+        </widget>
+      </widgets>
+    </operation>
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.SetDocumentACE" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.document.AddPermission" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.RemovePermission" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.RemoveDocumentACL" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.SetDocumentProperty">
+      <widgets>
+        <widget name="xpath" type="codearea">
+          <labels>
+            <label mode="any">XPath</label>
+          </labels>
+          <properties mode="any">
+            <property name="language">xpath</property>
+            <property name="width">100%</property>
+            <property name="height">100%</property>
+          </properties>
+          <fields>
+            <field>xpath</field>
+          </fields>
+        </widget>
+      </widgets>
+    </operation>
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.RemoveProperty">
+      <widgets>
+        <widget name="xpath" type="codearea">
+          <labels>
+            <label mode="any">XPath</label>
+          </labels>
+          <properties mode="any">
+            <property name="language">xpath</property>
+            <property name="width">100%</property>
+            <property name="height">100%</property>
+          </properties>
+          <fields>
+            <field>xpath</field>
+          </fields>
+        </widget>
+      </widgets>
+    </operation>
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.UpdateDocument" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.PublishDocument" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.MultiPublishDocument" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob">
+      <widgets>
+        <widget name="xpath" type="codearea">
+          <labels>
+            <label mode="any">XPath</label>
+          </labels>
+          <properties mode="any">
+            <property name="language">xpath</property>
+            <property name="width">100%</property>
+            <property name="height">100%</property>
+          </properties>
+          <fields>
+            <field>xpath</field>
+          </fields>
+        </widget>
+      </widgets>
+    </operation>
+    <operation class="org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlobs">
+      <widgets>
+        <widget name="xpath" type="codearea">
+          <labels>
+            <label mode="any">XPath</label>
+          </labels>
+          <properties mode="any">
+            <property name="language">xpath</property>
+            <property name="width">100%</property>
+            <property name="height">100%</property>
+          </properties>
+          <fields>
+            <field>xpath</field>
+          </fields>
+        </widget>
+      </widgets>
+    </operation>
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.blob.GetAllDocumentBlobs" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.SetDocumentBlob">
+      <widgets>
+        <widget name="xpath" type="codearea">
+          <labels>
+            <label mode="any">XPath</label>
+          </labels>
+          <properties mode="any">
+            <property name="language">xpath</property>
+            <property name="width">100%</property>
+            <property name="height">100%</property>
+          </properties>
+          <fields>
+            <field>xpath</field>
+          </fields>
+        </widget>
+      </widgets>
+    </operation>
+    <operation class="org.nuxeo.ecm.automation.core.operations.blob.PostBlob" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.blob.BlobToPDF" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.blob.ConcatenatePDFs" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.blob.ConvertBlob" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.blob.BlobToFile" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.blob.CreateBlob" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.blob.CreateZip" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.blob.AttachBlob">
+      <widgets>
+        <widget name="xpath" type="codearea">
+          <labels>
+            <label mode="any">XPath</label>
+          </labels>
+          <properties mode="any">
+            <property name="language">xpath</property>
+            <property name="width">100%</property>
+            <property name="height">100%</property>
+          </properties>
+          <fields>
+            <field>xpath</field>
+          </fields>
+        </widget>
+      </widgets>
+    </operation>
+    <operation class="org.nuxeo.ecm.automation.core.operations.blob.SetBlobFileName" >
+      <widgets>
+        <widget name="xpath" type="codearea">
+          <labels>
+            <label mode="any">XPath</label>
+          </labels>
+          <properties mode="any">
+            <property name="language">xpath</property>
+            <property name="width">100%</property>
+            <property name="height">100%</property>
+          </properties>
+          <fields>
+            <field>xpath</field>
+          </fields>
+        </widget>
+      </widgets>
+    </operation>
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.RemoveDocumentBlob">
+      <widgets>
+        <widget name="xpath" type="codearea">
+          <labels>
+            <label mode="any">XPath</label>
+          </labels>
+          <properties mode="any">
+            <property name="language">xpath</property>
+            <property name="width">100%</property>
+            <property name="height">100%</property>
+          </properties>
+          <fields>
+            <field>xpath</field>
+          </fields>
+        </widget>
+      </widgets>
+    </operation>
+    <operation class="org.nuxeo.ecm.automation.core.operations.stack.PushBlob" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.stack.PushBlobList" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.stack.PopBlob" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.stack.PopBlobList" />
+
+    <operation class="org.nuxeo.ecm.automation.core.operations.stack.PullDocument" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.stack.PullDocumentList" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.stack.PullBlob" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.stack.PullBlobList" />
+
+    <operation class="org.nuxeo.ecm.automation.core.events.operations.FireEvent" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.RunInputScript" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.rendering.operations.RenderDocument" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.rendering.operations.RenderDocumentFeed" />
+
+    <operation class="org.nuxeo.ecm.automation.core.operations.login.LoginAs" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.login.Logout" />
+
+    <operation class="org.nuxeo.ecm.automation.core.operations.LogOperation" />
+
+    <!-- From presales toolkit -->
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.AddEntryToMultiValuedProperty">
+      <widgets>
+        <widget name="xpath" type="codearea">
+          <labels>
+            <label mode="any">XPath</label>
+          </labels>
+          <properties mode="any">
+            <property name="language">xpath</property>
+            <property name="width">100%</property>
+            <property name="height">100%</property>
+          </properties>
+          <fields>
+            <field>xpath</field>
+          </fields>
+        </widget>
+      </widgets>
+    </operation>
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.CreateProxyLive" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.GetLiveDocument" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.RemoveEntryOfMultiValuedProperty">
+      <widgets>
+        <widget name="xpath" type="codearea">
+          <labels>
+            <label mode="any">XPath</label>
+          </labels>
+          <properties mode="any">
+            <property name="language">xpath</property>
+            <property name="width">100%</property>
+            <property name="height">100%</property>
+          </properties>
+          <fields>
+            <field>xpath</field>
+          </fields>
+        </widget>
+      </widgets>
+    </operation>
+
+    <!-- Business Operations -->
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.business.BusinessCreateOperation" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.business.BusinessUpdateOperation" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.business.BusinessFetchOperation" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnListInNewTransaction" />
+
+    <!-- register built-in operations -->
+    <!-- operation class="org.nuxeo.ecm.automation.core.operations.RunScriptFile"
+      / -->
+
+    <!-- Trace related operations -->
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.traces.AutomationTraceGetOperation" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.traces.AutomationTraceToggleOperation" />
+    <operation
+            class="org.nuxeo.ecm.automation.core.operations.traces.JsonStackToggleDisplayOperation" />
+
+  </extension>
+
+</component>

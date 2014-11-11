@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+<ui:define name="body">
+
+  <ui:include src="/incl/message_banner.xhtml"/>
+
+  <h3><h:outputText value="#{messages['title.create.vocabulary.entry']}" /></h3>
+
+  <nxu:set var="directoryNameForPopup"
+    value="#{request.getParameter('directoryNameForPopup')}"
+    cache="true">
+  <nxu:set var="directoryNameForPopup"
+    value="#{nxu:test(empty directoryNameForPopup, select2DirectoryActions.directoryName, directoryNameForPopup)}"
+    cache="true">
+  <c:if test="#{not empty directoryNameForPopup}">
+  <h:form id="suggestAddNewDirectoryEntry">
+    <h:message styleClass="errorMessage" for="suggestAddNewDirectoryEntry"
+      id="suggestAddNewDirectoryEntry_message" />
+
+    <div class="content">
+      <nxl:layout name="#{select2DirectoryActions.getCreationDirectoryEntryLayout(directoryNameForPopup)}"
+        mode="create"
+        value="#{select2DirectoryActions.getCreationDirectoryEntry(directoryNameForPopup)}" />
+    </div>
+
+    <input type="hidden" value="#{directoryNameForPopup}"
+      id="directoryNameForPopup" name="directoryNameForPopup" />
+
+    <h:panelGroup rendered="#{not nxu:hasMessages('suggestAddNewDirectoryEntry') and request.getParameter('postback') != 'false'}">
+      <script>
+        jQuery(document).ready(function() {
+          window.parent.jQuery.fancybox.close();
+        });
+      </script>
+    </h:panelGroup>
+
+    <p class="buttonsGadget">
+      <a4j:commandButton value="#{messages['command.create']}"
+        styleClass="button"
+        action="#{select2DirectoryActions.createDirectoryEntry}"
+        render="suggestAddNewDirectoryEntry" />
+      <a4j:commandButton value="#{messages['command.cancel']}"
+        styleClass="button"
+        action="#{select2DirectoryActions.cancelCreateDirectoryEntry}"
+        immediate="true"
+        oncomplete="window.parent.jQuery.fancybox.close();" />
+    </p>
+  </h:form>
+  </c:if>
+  </nxu:set>
+  </nxu:set>
+
+</ui:define>
+
+</nxthemes:composition>

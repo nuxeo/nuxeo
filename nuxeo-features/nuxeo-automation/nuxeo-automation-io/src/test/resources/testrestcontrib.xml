@@ -1,0 +1,49 @@
+<component name="testrestcontrib">
+
+  <extension
+    target="org.nuxeo.ecm.automation.io.services.enricher.ContentEnricherService"
+    point="enricher">
+
+    <enricher name="children"
+      class="org.nuxeo.ecm.automation.io.services.enricher.ChildrenEnricher">
+      <category>test</category>
+      <filter-id>onlyfolderish</filter-id>
+    </enricher>
+
+    <enricher name="children1"
+      class="org.nuxeo.ecm.automation.io.services.enricher.ChildrenEnricher">
+      <category>anothertest</category>
+
+    </enricher>
+
+    <enricher name="children2"
+      class="org.nuxeo.ecm.automation.io.services.enricher.ChildrenEnricher">
+      <category>anothertest</category>
+      <category>yetanothertest</category>
+    </enricher>
+
+    <enricher name="breadcrumb"
+      class="org.nuxeo.ecm.automation.io.services.enricher.BreadcrumbEnricher">
+      <category>breadcrumb</category>
+    </enricher>
+
+    <enricher name="parameters"
+              class="org.nuxeo.ecm.automation.test.service.enrichers.MockEnricher">
+      <category>parameters</category>
+      <parameter name="param1">value1</parameter>
+    </enricher>
+
+  </extension>
+
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+    <filter id="onlyfolderish">
+      <rule grant="true">
+        <facet>Folderish</facet>
+      </rule>
+    </filter>
+  </extension>
+
+
+</component>
