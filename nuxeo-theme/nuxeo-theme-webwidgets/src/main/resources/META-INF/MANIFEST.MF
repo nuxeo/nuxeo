@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXThemes Web Widgets
+Bundle-SymbolicName: org.nuxeo.theme.webwidgets;singleton:=true
+Bundle-Vendor: Chalmers
+Nuxeo-Component: OSGI-INF/nxthemes-webwidgets-contrib.xml,
+ OSGI-INF/nxthemes-webwidgets-samples-contrib.xml, 
+ OSGI-INF/nxthemes-webwidgets-service.xml
+Bundle-Localization: bundle
+Bundle-Version: ${eclipseVersion}-r${buildNumber}
+Require-Bundle: org.nuxeo.theme.webengine
