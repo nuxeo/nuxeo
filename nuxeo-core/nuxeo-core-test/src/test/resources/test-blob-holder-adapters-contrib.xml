@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.core.api.blobholder.test">
+
+
+  <extension
+    target="org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterComponent"
+    point="BlobHolderFactory">
+    <blobHolderFactory name="test" docType="Test" class="org.nuxeo.ecm.core.api.blobholder.BlobHolderDummyFactory"></blobHolderFactory>
+  </extension>
+
+</component>
+
