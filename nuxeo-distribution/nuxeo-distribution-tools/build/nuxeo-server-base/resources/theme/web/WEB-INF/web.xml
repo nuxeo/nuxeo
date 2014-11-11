@@ -1,0 +1,78 @@
+<?xml version="1.0" ?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+  version="2.4">
+
+  <filter>
+    <display-name>WebEngine Authentication Filter</display-name>
+    <filter-name>NuxeoAuthenticationFilter</filter-name>
+    <filter-class>
+      org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter
+    </filter-class>
+    <init-param>
+      <param-name>byPassAuthenticationLog</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>securityDomain</param-name>
+      <param-value>nuxeo-webengine</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>NuxeoAuthenticationFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <servlet>
+    <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
+    <servlet-class>
+    org.nuxeo.ecm.webengine.server.resteasy.WebEngineServlet
+    </servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>Nuxeo Resource Servlet</servlet-name>
+    <servlet-class>
+        org.nuxeo.ecm.webengine.servlet.ResourceServlet
+    </servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Nuxeo Resource Servlet</servlet-name>
+    <url-pattern>/skin/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- NXThemes -->
+  <servlet>
+    <servlet-name>NXThemes Resource Library</servlet-name>
+    <servlet-class>org.nuxeo.theme.html.servlets.Resources</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>NXThemes Resource Library</servlet-name>
+    <url-pattern>/nuxeo/nxthemes-lib/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>NXThemes CSS</servlet-name>
+    <servlet-class>org.nuxeo.theme.html.servlets.Styles</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>NXThemes CSS</servlet-name>
+    <url-pattern>/nuxeo/nxthemes-css/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>NXThemes Negotiation Selector</servlet-name>
+    <servlet-class>org.nuxeo.theme.html.servlets.NegotiationSelector</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>NXThemes Negotiation Selector</servlet-name>
+    <url-pattern>/nuxeo/nxthemes-select/*</url-pattern>
+  </servlet-mapping>
+
+</web-app>
