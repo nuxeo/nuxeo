@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<r:RDF xmlns:a="http://www.w3.org/2000/10/annotation-ns#" xmlns:r="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:dc="http://purl.org/dc/elements/1.0/" xmlns:h="http://www.w3.org/1999/xx/http#">
+  <r:Description r:about="http://foo.com">
+    <r:type r:resource="http://www.w3.org/2000/10/annotation-ns#Annotation" />
+    <r:type r:resource="http://www.w3.org/2000/10/annotationType#Comment" />
+    <a:annotates r:resource="http://www.w3.org/2005/Incubator/" />
+    <dc:creator>Alexandre Russel</dc:creator>
+    <a:created>2008-09-05T18:16:12+02:00</a:created>
+    <dc:date>2008-09-05T18:16:12+02:00</dc:date>
+    <a:context>http://www.w3.org/2005/Incubator/#xpointer(string-range(/html[1]/body[1]/div[3]/div[2]/p[1],"", 225, 17))</a:context>
+    <dc:language>en</dc:language>
+    <a:body>
+      <h:Message>
+        <h:ContentType>application/xhtml+xml
+        </h:ContentType>
+        <h:Body r:parseType="Literal">
+          <html xmlns="http://www.w3.org/1999/xhtml">
+            <head>
+              <title></title>
+            </head>
+            <body>1816</body>
+          </html>
+        </h:Body>
+      </h:Message>
+    </a:body>
+  </r:Description>
+</r:RDF>
