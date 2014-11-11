@@ -1,0 +1,212 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<h3><h:outputText
+  value="#{messages['label.security.parentDocumentsRights']}" /></h3>
+
+<h:form>
+  <h:dataTable var="user" class="dataOutput" rowClasses="dataRowEven,dataRowOdd"
+    columnClasses="${columnHeader.id=='c4' ? 'iconColumn' : ''}"
+    value="#{securityActions.parentDocumentsUsers}"
+    rendered="#{securityActions.displayInheritedPermissions}">
+
+    <nxu:methodResult name="principalType"
+      value="#{principalListManager.getPrincipalType(user)}">
+
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.content.header.type']}" />
+        </f:facet>
+
+        <h:graphicImage value="#{securityActions.iconPathMap[principalType]}"
+          title="#{securityActions.iconAltMap[principalType]}" />
+
+      </h:column>
+
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.username']}" />
+        </f:facet>
+
+        <h:commandLink value="#{nxu:userFullName(user)}" immediate="true"
+          action="#{userManagerActions.viewUser(user)}"
+          rendered="#{principalType=='USER_TYPE'}">
+        </h:commandLink>
+        <h:commandLink value="#{user}" immediate="true"
+          action="#{groupManagerActions.viewGroup(user)}"
+          rendered="#{principalType!='USER_TYPE'}">
+        </h:commandLink>
+
+      </h:column>
+    </nxu:methodResult>
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.security.grantedPerms']}" />
+      </f:facet>
+      <nxu:dataList var="perm"
+        value="#{securityActions.securityData.parentDocsGrantLabels[user]}">
+        <h:outputText value="#{messages[perm]}" />
+      </nxu:dataList>
+    </h:column>
+
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.security.deniedPerms']}" />
+      </f:facet>
+      <nxu:dataList var="perm"
+        value="#{securityActions.securityData.parentDocsDenyLabels[user]}">
+        <h:outputText value="#{messages[perm]}" />
+      </nxu:dataList>
+    </h:column>
+  </h:dataTable>
+</h:form>
+
+<p><h:form id="block_inherit">
+  <h:selectBooleanCheckbox value="#{securityActions.blockRightInheritance}"
+    immediate="true" onclick="this.form.submit();" />
+  <h:outputText value="#{messages['label.security.block.inehritance']}" />
+</h:form></p>
+<p><h:outputText rendered="${empty securityActions.parentDocumentsUsers}"
+  value="#{messages['label.security.noParentDocumentsRights']}" /></p>
+
+<h3><h:outputText value="#{messages['label.security.localRights']} " />
+ <h:graphicImage value="/icons/warning.gif" title="#{messages['label.security.saveNeeded']}"
+ rendered="#{securityActions.securityData.needSave}"/>
+</h3>
+
+<a4j:region renderRegionOnly="true">
+  <h:form id="rights_content">
+    <nxu:dataTable var="user" id="dataTable_local_rights"
+      rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput"
+      value="#{securityActions.dataTableModel.data}"
+      rendered="#{not empty securityActions.currentDocumentUsers}">
+      <nxu:columns id="columns"
+        value="#{securityActions.dataTableModel.columnHeaders}"
+        styleClass="${columnHeader.id=='c4' ? 'iconColumn' : ''}"
+        var="columnHeader">
+        <!--  Selection checkbox -->
+        <f:facet name="header">
+          <h:panelGroup>
+            <h:selectBooleanCheckbox rendered="${columnHeader.id=='c0'}"
+              value="#{columnHeader.allSelected}">
+
+              <a4j:support event="onclick"
+                reRender="dataTable_local_rights,security_button_remove"
+                onsubmit="disableCheckBoxesIn('rights_content:dataTable_local_rights')"
+                oncomplete="enableCheckBoxesIn('rights_content:dataTable_local_rights')"
+                actionListener="#{securityActions.dataTableModel.selectAllRows}" />
+            </h:selectBooleanCheckbox>
+
+            <h:outputText rendered="${columnHeader.id != 'c0'}"
+              value="#{messages[columnHeader.label]}" />
+          </h:panelGroup>
+        </f:facet>
+        <h:selectBooleanCheckbox rendered="${columnHeader.id=='c0'}"
+          value="#{securityActions.dataTableModel.currentCellDisplayedValue}">
+          <a4j:support event="onclick" reRender="security_button_remove_script"
+            onsubmit="disableCheckBoxesIn('rights_content:dataTable_local_rights')"
+            oncomplete="enableCheckBoxesIn('rights_content:dataTable_local_rights')"
+            actionListener="#{securityActions.dataTableModel.process}" />
+        </h:selectBooleanCheckbox>
+
+        <!-- Icon -->
+        <h:graphicImage rendered="${columnHeader.id == 'c4'}"
+          value="#{securityActions.dataTableModel.currentCellDisplayedValue}"
+          title="#{securityActions.dataTableModel.currentCellDisplayedValue}" />
+
+        <!--  Username -->
+        <f:subview rendered="${columnHeader.id == 'c1'}">
+          <h:commandLink
+            value="#{nxu:userFullName(securityActions.dataTableModel.currentCellDisplayedValue)}"
+            immediate="true"
+            action="#{userManagerActions.viewUser(securityActions.dataTableModel.currentCellDisplayedValue)}"
+            rendered="#{securityActions.dataTableModel.currentUserType=='USER_TYPE'}">
+          </h:commandLink>
+          <h:commandLink
+            value="#{securityActions.dataTableModel.currentCellDisplayedValue}"
+            immediate="true"
+            action="#{groupManagerActions.viewGroup(securityActions.dataTableModel.currentCellDisplayedValue)}"
+            rendered="#{securityActions.dataTableModel.currentUserType!='USER_TYPE'}">
+          </h:commandLink>
+        </f:subview>
+
+        <!-- Grant permissions -->
+        <nxu:dataList var="perm" rendered="${columnHeader.id == 'c2'}"
+          value="#{securityActions.dataTableModel.currentCellDisplayedValue}">
+          <h:outputText value="#{messages[perm]}" />
+        </nxu:dataList>
+
+        <!-- Deny permissions -->
+        <nxu:dataList var="perm" rendered="${columnHeader.id == 'c3'}"
+          value="#{securityActions.dataTableModel.currentCellDisplayedValue}">
+          <h:outputText value="#{messages[perm]}" />
+        </nxu:dataList>
+
+      </nxu:columns>
+    </nxu:dataTable>
+
+    <p><h:outputText
+      rendered="${empty securityActions.currentDocumentUsers}"
+      value="#{messages['label.security.noLocalRights']}" /> <h:commandButton
+      id="security_button_remove"
+      value="#{messages['command.security.delPerm']}" class="button"
+      rendered="${not empty securityActions.currentDocumentUsers}"
+      action="#{securityActions.removePermissions}"
+      disabled="#{!securityActions.canRemoveSecurityRules}" /> <h:panelGroup
+      id="security_button_remove_script">
+      <script>
+     <!--
+     var checked=isOneCheckBoxChecked("rights_content:dataTable_local_rights");
+     var btn = document.getElementById("rights_content:security_button_remove");
+     if (btn)
+     {
+         if (checked)
+         {
+            btn.removeAttribute("disabled");
+         }
+         else
+         {
+            btn.setAttribute("disabled", "disabled");
+         }
+     }
+     -->
+     </script>
+    </h:panelGroup></p>
+  </h:form>
+</a4j:region>
+
+<h:form id="validate_rights">
+<h:commandButton
+      value="#{messages['label.security.save']}"
+      class="button rightsAddButton"
+      action="#{securityActions.saveSecurityUpdates}"
+      rendered="#{securityActions.securityData.needSave}"
+      id="document_rights_validate_button" />
+</h:form>
+
+<h3><h:outputText value="#{messages['label.security.addNewRule']}" /></h3>
+
+<a4j:region renderRegionOnly="true">
+  <h:form id="add_rights_form">
+    <table class="rightsAddManager">
+      <tbody>
+        <tr>
+          <td valign="top" align="center">
+            <nxl:layout name="user_group_suggestion" mode="edit"
+              value="#{securityActions.selectedEntries}" />
+          </td>
+          <td>
+            <ui:include src="/incl/document_rights_action.xhtml" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </h:form>
+</a4j:region>
+
+</div>
