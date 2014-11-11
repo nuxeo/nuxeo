@@ -1,0 +1,46 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:a4j="http://richfaces.org/a4j"
+     xmlns:nxd="http://nuxeo.org/nxweb/document"
+     xmlns:nxh="http://nuxeo.org/nxweb/html"
+     xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <!-- users listing -->
+  <a4j:outputPanel id="usersListingPanel">
+
+    <nxu:set var="listingMode" value="#{nxu:test(userManagementActions.listingMode == 'all', 'search_only', userManagementActions.listingMode)}">
+    <nxu:set var="contentViewName" value="users_listing_#{listingMode}">
+    <nxu:set var="useAjaxForm" value="true">
+    <nxu:set var="useAjaxPagination" value="true">
+      <ui:decorate template="/incl/content_view.xhtml">
+        <ui:define name="content_view_header">
+          <!-- create button -->
+          <h:form rendered="#{userManagementActions.allowCreateUser and notReadOnly}"
+            id="createUserActionsForm">
+            <div class="action_bar">
+              <ul>
+                <li class="selected">
+                  <a4j:commandLink action="#{userManagementActions.toggleShowCreateForm}"
+                    immediate="true" id="createUserButton" reRender="usersPanel"
+                    eventsQueue="adminCenterQueue">
+                    <h:graphicImage value="/icons/action_add_user.png" />
+                    <h:outputText value="#{messages['command.createUser']}"  />
+                  </a4j:commandLink>
+                </li>
+              </ul>
+            </div>
+          </h:form>
+          <div style="clear:both" />
+
+          <ui:insert name="users_search_method" />
+        </ui:define>
+      </ui:decorate>
+    </nxu:set>
+    </nxu:set>
+    </nxu:set>
+    </nxu:set>
+
+  </a4j:outputPanel>
+</div>
