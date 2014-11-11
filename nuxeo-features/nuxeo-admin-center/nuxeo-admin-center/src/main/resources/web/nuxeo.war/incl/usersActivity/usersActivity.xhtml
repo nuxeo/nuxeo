@@ -1,0 +1,24 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html">
+
+<h2><h:outputText
+  value="#{messages['adminsubtab.usersActivity.events.title']}" /></h2>
+
+<a4j:outputPanel id="usersEventsListing">
+
+  <nxu:set var="contentViewName" value="EVENTS_VIEW">
+    <ui:decorate template="/incl/content_view.xhtml">
+      <ui:define name="content_view_title">
+      </ui:define>
+      <ui:define name="content_view_syndication_buttons">
+      </ui:define>
+    </ui:decorate>
+  </nxu:set>
+
+</a4j:outputPanel></div>

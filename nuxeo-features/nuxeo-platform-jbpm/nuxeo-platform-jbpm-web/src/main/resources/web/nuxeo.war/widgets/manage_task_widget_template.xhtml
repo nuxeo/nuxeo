@@ -1,0 +1,21 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core" id="#{widget.id}">
+
+  <c:if test="#{widget.mode == 'edit'}">
+    <c:if test="#{jbpmActions.getCanEndTask(field_0) and widget.properties.review == 'end'}">
+      <h:commandLink
+        value="#{messages['label.review.end.task']}"
+        action="#{jbpmActions.validateTask(field_0, null)}"  />
+    </c:if><c:if test="#{jbpmActions.getCanEndTask(field_0) and field_0.name != 'validate-after-reject' and widget.properties.review == 'reject'}">
+      <h:commandLink
+        value="#{messages['label.review.reject.task']}"
+        action="#{jbpmActions.rejectTask(field_0, 'reject')}" />
+    </c:if><c:if test="#{jbpmActions.getCanEndTask(field_0) and field_0.name == 'validate-after-reject' and widget.properties.review == 'cancel'}">
+      <h:commandLink
+        value="#{messages['label.review.cancel.process']}"
+        action="#{jbpmActions.cancelCurrentProcess}" />
+    </c:if>
+  </c:if>
+
+</f:subview>
