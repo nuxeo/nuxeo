@@ -1,0 +1,14 @@
+<f:subview id="#{widget.id}"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <h:outputLink value="#{nxd:liveEditUrl(field, widget.properties.file_schema, widget.properties.file_field_name, widget.properties.filename_field_name)}"
+    rendered="#{liveEditHelper.isDocumentLiveEditable(field, widget.properties.file_schema, widget.properties.file_field_name)}">
+    <h:graphicImage value="/icons/application_form_edit.png"
+      alt="#{messages['label.document.directEdit']}"
+      title="#{messages['label.document.directEdit']}"/>
+  </h:outputLink>
+
+</f:subview>
