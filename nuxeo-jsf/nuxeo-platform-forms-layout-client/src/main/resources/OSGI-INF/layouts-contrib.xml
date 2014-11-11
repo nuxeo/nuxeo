@@ -1,0 +1,3097 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layout.MainContribution">
+  <documentation>
+    Component that provides main contributions to the web layout
+    manager widget
+    types.
+
+    @version 1.0 @author Anahide Tchertchian (at@nuxeo.com)
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="widgets">
+
+    <widget name="escape" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Escape</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          If set to false, the held value will not be escaped.
+          For instance if it contains HTML tags, they will be
+          rendered as part of
+          the rendered HTML page instead of being rendered as text content.
+          Defaults to true.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>escape</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Yes (default value)" itemValue="true" />
+        <option itemLabel="No" itemValue="false" />
+      </selectOptions>
+    </widget>
+
+    <widget name="style" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Style</label>
+      </labels>
+      <fields>
+        <field>style</field>
+      </fields>
+    </widget>
+
+    <widget name="styleClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Style class</label>
+      </labels>
+      <fields>
+        <field>styleClass</field>
+      </fields>
+    </widget>
+
+    <widget name="subStyleClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Sub style class</label>
+      </labels>
+      <fields>
+        <field>subStyleClass</field>
+      </fields>
+    </widget>
+
+    <widget name="subItemStyleClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Sub item style class</label>
+      </labels>
+      <fields>
+        <field>subItemStyleClass</field>
+      </fields>
+    </widget>
+
+    <widget name="title" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Title</label>
+      </labels>
+      <fields>
+        <field>title</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">hidden</mode>
+        <mode value="view_reference">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="text_localize" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Localize</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          If set to true, the held value will be translated.
+          This property cannot be an EL expression, it will only resolve literal
+          values 'true' or 'false'. Defaults to false. Available since 5.5.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>localize</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit_demo_preview">hidden</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="accesskey" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Access key</label>
+      </labels>
+      <fields>
+        <field>accesskey</field>
+      </fields>
+    </widget>
+
+    <widget name="alt" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Alt</label>
+      </labels>
+      <fields>
+        <field>alt</field>
+      </fields>
+    </widget>
+
+    <widget name="dir" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Direction</label>
+      </labels>
+      <fields>
+        <field>dir</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="" itemValue="" />
+        <option itemLabel="Left to right" itemValue="LTR" />
+        <option itemLabel="Right to left" itemValue="RTL" />
+      </selectOptions>
+    </widget>
+
+    <widget name="placeholder" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Placeholder</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          String representing a short hint (a word or short
+          phrase)
+          intended to aid the user with data entry.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>placeholder</field>
+      </fields>
+    </widget>
+
+    <widget name="disabled" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Disabled</label>
+      </labels>
+      <fields>
+        <field>disabled</field>
+      </fields>
+    </widget>
+
+    <widget name="immediate" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Immediate</label>
+      </labels>
+      <fields>
+        <field>immediate</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">hidden</mode>
+        <mode value="view_reference">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="lang" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Lang</label>
+      </labels>
+      <fields>
+        <field>lang</field>
+      </fields>
+    </widget>
+
+    <widget name="maxlength" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Max length</label>
+      </labels>
+      <fields>
+        <field>maxlength</field>
+      </fields>
+    </widget>
+
+    <widget name="required" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Required</label>
+      </labels>
+      <fields>
+        <field>required</field>
+      </fields>
+    </widget>
+
+    <widget name="size" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Size</label>
+      </labels>
+      <fields>
+        <field>size</field>
+      </fields>
+    </widget>
+
+    <widget name="validator" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Validator</label>
+      </labels>
+      <fields>
+        <field>validator</field>
+      </fields>
+    </widget>
+
+    <widget name="valueChangeListener" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Value change listener</label>
+      </labels>
+      <fields>
+        <field>valueChangeListener</field>
+      </fields>
+    </widget>
+
+    <widget name="redisplay" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Redisplay</label>
+      </labels>
+      <fields>
+        <field>redisplay</field>
+      </fields>
+    </widget>
+
+    <widget name="textarea_cols" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Number of columns</label>
+      </labels>
+      <fields>
+        <field>cols</field>
+      </fields>
+    </widget>
+
+    <widget name="textarea_rows" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Number of rows</label>
+      </labels>
+      <fields>
+        <field>rows</field>
+      </fields>
+    </widget>
+
+    <widget name="datetime_pattern" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Pattern</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          String pattern for the date and time, as described by
+          the java.text.SimpleDateFormat class, and as used in the standard
+          DateTimeConverter. Default value is "dd/MM/yyyy HH:mm". Sample value:
+          "#{nxu:basicDateFormatter()}" or "#{nxu:basicDateAndTimeFormatter()}".
+        </label>
+      </helpLabels>
+      <fields>
+        <field>pattern</field>
+      </fields>
+    </widget>
+
+    <widget name="datetime_timeZone" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Time zone</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          String timeZone ID. The server time zone is
+          used if not
+          set.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>timeZone</field>
+      </fields>
+    </widget>
+
+    <widget name="datetime_format" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Format</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          String format for the date and time, as described by
+          the java.text.SimpleDateFormat class, and as used in the standard
+          DateTimeConverter. Default value is "dd/MM/yyyy HH:mm". Sample value:
+          "#{nxu:basicDateFormatter()}" or "#{nxu:basicDateAndTimeFormatter()}".
+        </label>
+      </helpLabels>
+      <fields>
+        <field>format</field>
+      </fields>
+    </widget>
+
+    <widget name="datetime_locale" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Locale</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          String representing the locale to use for
+          the calendar.
+          Current locale is used if not set.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>locale</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="" itemValue="" />
+        <option itemLabel="Catalan" itemValue="ca" />
+        <option itemLabel="Chinese" itemValue="cn" />
+        <option itemLabel="Czech" itemValue="cz" />
+        <option itemLabel="Deutsch" itemValue="de" />
+        <option itemLabel="English" itemValue="en" />
+        <option itemLabel="Spanish" itemValue="es" />
+        <option itemLabel="French" itemValue="fr" />
+        <option itemLabel="Italiano" itemValue="it" />
+        <option itemLabel="Japanese" itemValue="jp" />
+        <option itemLabel="Nederlands" itemValue="nl" />
+        <option itemLabel="Polish" itemValue="pl" />
+        <option itemLabel="Portuguese" itemValue="pt" />
+        <option itemLabel="Romanian" itemValue="ro" />
+        <option itemLabel="Russian" itemValue="ru" />
+        <option itemLabel="svenska" itemValue="sv" />
+      </selectOptions>
+    </widget>
+
+    <widget name="datetime_showsTime" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Shows time</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Flag indicating that the calendar must show
+          a time
+          choice.
+          Since 5.4.2, this property is ignored and time
+          is shown
+          depending on the date format.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>showsTime</field>
+      </fields>
+    </widget>
+
+    <widget name="datetime_timeZone" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Time zone</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          String timeZone ID. The server time zone is used if
+          not set.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>timeZone</field>
+      </fields>
+    </widget>
+
+    <widget name="datetime_triggerImg" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Trigger image</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Image path to use for the trigger. Available since
+          5.4.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>triggerImg</field>
+      </fields>
+    </widget>
+
+    <widget name="datetime_triggerLabel" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Trigger label</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Label to display on the trigger image. Defaults to
+          "...".
+        </label>
+      </helpLabels>
+      <fields>
+        <field>triggerLabel</field>
+      </fields>
+    </widget>
+
+    <widget name="datetime_triggerStyleClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Trigger style class</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Style class to set on the trigger button tag, defaults
+          to 'calendarTrigger'.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>triggerStyleClass</field>
+      </fields>
+    </widget>
+
+    <widget name="file_downloadLabel" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Download label</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Value binding that will be used as the download link
+          value, and will attempt to be translated.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>downloadLabel</field>
+      </fields>
+    </widget>
+
+    <widget name="file_iconRendered" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Icon rendered</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Boolean flag indicating whether or not the file icon
+          should be rendered. Defaults to true.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>iconRendered</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Yes (default value)" itemValue="true" />
+        <option itemLabel="No" itemValue="false" />
+      </selectOptions>
+    </widget>
+
+    <widget name="htmltext_disableHtmlInit" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Disable HTML init</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          If set to true, the default display will be
+          the text
+          display
+          (not html editor). Available since 5.3.1.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>disableHtmlInit</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">hidden</mode>
+        <mode value="view_reference">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="htmltext_width" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Width</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The textarea width. Defaults to "640".
+          Give the exact size in pixels or percentage.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>width</field>
+      </fields>
+    </widget>
+
+    <widget name="htmltext_height" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Height</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The textarea height. Defaults to "400".
+          Give the exact size in pixels or percentage.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>height</field>
+      </fields>
+    </widget>
+
+    <widget name="htmltext_editorSelector" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Editor selector</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The class to use to identify text areas to turn into
+          html editors. Defaults to "mceEditor". See the editor_selector option
+          in tiny_mce
+          (http://wiki.moxiecode.com/index.php/TinyMCE:Configuration/editor_selector).
+        </label>
+      </helpLabels>
+      <fields>
+        <field>editorSelector</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">hidden</mode>
+        <mode value="view_reference">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="directoryName" type="selectOneResource">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Vocabulary</label>
+      </labels>
+      <fields>
+        <field>directoryName</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit_demo_preview">hidden</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="resourceName">vocabularies</property>
+      </properties>
+      <properties widgetMode="any">
+        <property name="required">true</property>
+      </properties>
+    </widget>
+
+    <widget name="directoryNameDemoPreview" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Vocabulary</label>
+      </labels>
+      <fields>
+        <field>directoryName</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">hidden</mode>
+        <mode value="edit_demo_preview">view</mode>
+      </widgetModes>
+      <properties widgetMode="any">
+        <property name="required">true</property>
+      </properties>
+    </widget>
+
+    <widget name="directory_localize" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Localize</label>
+      </labels>
+      <fields>
+        <field>localize</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit_demo_preview">hidden</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="directory_displayIdAndLabel" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Display id and label</label>
+      </labels>
+      <fields>
+        <field>displayIdAndLabel</field>
+      </fields>
+    </widget>
+
+    <widget name="directory_cssStyle" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Style</label>
+      </labels>
+      <fields>
+        <field>cssStyle</field>
+      </fields>
+    </widget>
+
+    <widget name="directory_cssStyleClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Style class</label>
+      </labels>
+      <fields>
+        <field>cssStyleClass</field>
+      </fields>
+    </widget>
+
+    <widget name="directory_displayObsoleteEntries" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Display obsolete entries</label>
+      </labels>
+      <fields>
+        <field>displayObsoleteEntries</field>
+      </fields>
+    </widget>
+
+    <widget name="directory_notDisplayDefaultOption" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Do not display the default option</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          True if there should not be displayed a "Please select
+          a value" option
+        </label>
+      </helpLabels>
+      <fields>
+        <field>notDisplayDefaultOption</field>
+      </fields>
+    </widget>
+
+    <widget name="directory_ordering" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Sort criterion</label>
+      </labels>
+      <fields>
+        <field>ordering</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Label (default)" itemValue="label" />
+        <option itemLabel="Ordering" itemValue="ordering" />
+        <option itemLabel="Id" itemValue="id" />
+      </selectOptions>
+    </widget>
+
+    <widget name="complex_subwidgets_display" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Display</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The display attribute controls the rendering of
+          subwidgets. Available since 5.4.2.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>display</field>
+      </fields>
+      <selectOptions>
+        <!-- block-like renderings available since 5.6 -->
+        <option itemLabel="Block (label on the left, default)" itemValue="block_left" />
+        <option itemLabel="Block (label on top)" itemValue="block_top" />
+        <option itemLabel="Table" itemValue="table" />
+        <option itemLabel="In line" itemValue="inline" />
+      </selectOptions>
+    </widget>
+
+    <widget name="list_subwidgets_display" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Display</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The display attribute controls the rendering of
+          subwidgets. Available since 5.4.2.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>display</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Block (label on the left, default)" itemValue="block_left" />
+        <option itemLabel="Block (label on top)" itemValue="block_top" />
+        <option itemLabel="Table" itemValue="table" />
+        <option itemLabel="In line" itemValue="inline" />
+      </selectOptions>
+    </widget>
+
+    <widget name="subwidgets_hideSubLabels" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Hide subwidgets labels</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          This attribute controls the rendering of subwidgets
+          labels. Available since 5.4.2.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>hideSubLabels</field>
+      </fields>
+    </widget>
+
+    <widget name="list_diff" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Diff</label>
+      </labels>
+      <fields>
+        <field>diff</field>
+      </fields>
+    </widget>
+
+    <widget name="list_orderable" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Orderable</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          This attribute controls the possibility to order the
+          items. Available since 5.5.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>orderable</field>
+      </fields>
+    </widget>
+
+    <widget name="list_hideDeleteButton" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Hide delete button</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          This attribute controls the possibility to remove the
+          'delete' button for each list item. Available since 5.6.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>hideDeleteButton</field>
+      </fields>
+    </widget>
+
+    <widget name="list_hideAddButton" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Hide add button</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          This attribute controls the possibility to remove the
+          'add' button to add an item to the list. Available since 5.6.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>hideAddButton</field>
+      </fields>
+    </widget>
+
+    <widget name="list_listTemplateItem" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">List template item</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          This attribute enables to control the template for
+          each item that needs to be added to the list. In most common cases,
+          this value is deduced from the field definition, using the expression:
+          #{nxd:propertyDefaultValue(widget.fieldDefinitions[0].propertyName)}.
+          This needs to be adapted for subwidgets (when handling lists of lists
+          for instance) or when using this widget on another object that a
+          DocumentModel property. For instance, for a subwidget, you can use:
+          #{nxd:propertyDefaultValue('mySchema:listOfLists/stringListItem')}.
+          Available since 5.6.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>listTemplateItem</field>
+      </fields>
+    </widget>
+
+    <widget name="container_subwidgets_display" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Display</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The display attribute controls the rendering of
+          subwidgets.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>display</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Block (label on the left, default)" itemValue="block_left" />
+        <option itemLabel="Block (label on top)" itemValue="block_top" />
+        <option itemLabel="Table" itemValue="table" />
+        <option itemLabel="In line" itemValue="inline" />
+      </selectOptions>
+    </widget>
+
+    <widget name="container_subwidgets_hideSubLabels" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Hide subwidgets labels</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          This attribute controls the rendering of subwidgets
+          labels.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>hideSubLabels</field>
+      </fields>
+    </widget>
+
+    <widget name="widgetsDisplay" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Widgets Display</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The display attribute controls the rendering of
+          widgets.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>widgetsDisplay</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Label on the left (default)" itemValue="label_left" />
+        <option itemLabel="Label on top" itemValue="label_top" />
+        <option itemLabel="No Label" itemValue="no_label" />
+      </selectOptions>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="text">
+      <configuration>
+        <title>Text</title>
+        <description>
+          <p>
+            The text widget displays an input text in create or edit mode, with
+            additional message tag for errors, and a regular text output in
+            any
+            other mode.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;h:inputText /&gt; tag in create or edit mode, and properties
+            accepted on a &lt;h:outputText /&gt; tag in other modes.
+          </p>
+        </description>
+        <demo id="textWidget" previewEnabled="true" />
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+            <type>path</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>string</type>
+          </defaultTypes>
+        </fields>
+        <categories>
+          <category>document</category>
+        </categories>
+        <properties>
+          <layouts mode="view">
+            <layout name="text_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">title</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">escape</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">text_localize</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="text_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">maxlength</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">size</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">title</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">accesskey</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">alt</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">dir</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">disabled</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">immediate</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">lang</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">validator</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">valueChangeListener</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TextWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="int">
+      <configuration>
+        <title>Integer</title>
+        <description>
+          <p>
+            The int widget displays an input text in create or edit mode, with
+            additional message tag for errors, and a regular text output in
+            any
+            other mode. It uses a number converter.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;h:inputText /&gt; tag in create or edit mode, and properties
+            accepted on a &lt;h:outputText /&gt; tag in other modes.
+          </p>
+        </description>
+        <demo id="intWidget" previewEnabled="true" />
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>integer</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>integer</type>
+          </defaultTypes>
+        </fields>
+        <properties>
+          <layouts mode="view">
+            <layout name="int_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">title</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="int_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">maxlength</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">size</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">title</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">accesskey</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">alt</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">dir</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">disabled</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">immediate</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">lang</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">validator</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">valueChangeListener</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.IntWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="double">
+      <configuration>
+        <title>Floating point</title>
+        <sinceVersion>5.4.2</sinceVersion>
+        <description>
+          <p>
+            The floating point (aka "double") widget displays an input text in
+            create or edit mode, with additional message tag for errors, and a
+            regular text output in any other mode. It uses a JSF double
+            converter.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;h:inputText /&gt; tag in create or edit mode, and properties
+            accepted on a &lt;h:outputText /&gt; tag in other modes.
+          </p>
+        </description>
+        <!--<demo id="doubleWidget" /> -->
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>double</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>double</type>
+          </defaultTypes>
+        </fields>
+        <properties>
+          <layouts mode="view">
+            <layout name="double_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">title</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="double_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">maxlength</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">size</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">title</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">accesskey</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">alt</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">dir</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">disabled</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">immediate</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">lang</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">validator</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">valueChangeListener</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.DoubleWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="secret">
+      <configuration>
+        <title>Secret</title>
+        <description>
+          <p>
+            The secret widget displays an input secret text in create or edit
+            mode, with additional message tag for errors, and nothing in any
+            other mode.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;h:inputSecret /&gt; tag in create or edit mode.
+          </p>
+        </description>
+        <demo id="secretWidget" previewEnabled="true" />
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <layouts mode="edit">
+            <layout name="secret_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">maxlength</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">size</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">accesskey</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">alt</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">dir</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">disabled</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">immediate</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">lang</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">redisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">title</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">validator</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">valueChangeListener</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.SecretWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="textarea">
+      <configuration>
+        <title>Textarea</title>
+        <description>
+          <p>
+            The textarea widget displays a textarea in create or edit mode,
+            with
+            additional message tag for errors, and a regular text output in
+            any
+            other mode.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;h:inputTextarea /&gt; tag in create or edit mode, and properties
+            accepted on a &lt;h:outputText /&gt; tag in other modes.
+          </p>
+        </description>
+        <demo id="textareaWidget" previewEnabled="true" />
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <layouts mode="view">
+            <layout name="textarea_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">title</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">escape</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="textarea_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">textarea_cols</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">textarea_rows</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">accesskey</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">dir</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">disabled</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">immediate</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">lang</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">validator</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">valueChangeListener</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TextareaWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="datetime">
+      <configuration>
+        <title>Datetime</title>
+        <description>
+          <p>
+            The datetime widget displays a javascript calendar in create or
+            edit
+            mode, with additional message tag for errors, and a regular text
+            output in any other mode. It uses a date time converter.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;nxu:inputDatetime /&gt; tag in create or edit mode, and
+            properties accepted on a &lt;h:outputText /&gt; tag in other
+            modes.
+            The converter will also be given these properties.
+          </p>
+        </description>
+        <demo id="datetimeWidget" previewEnabled="true" />
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>date</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>date</type>
+          </defaultTypes>
+        </fields>
+        <properties>
+          <layouts mode="view">
+            <layout name="datetime_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">datetime_pattern</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_timeZone</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="datetime_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_format</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_showsTime</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_locale</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_timeZone</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_triggerImg</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_triggerLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_triggerStyleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.DateTimeWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="template">
+      <configuration>
+        <title>Template</title>
+        <description>
+          <p>
+            The template widget displays a template content whatever the mode.
+          </p>
+          <p>
+            Widgets using this type must provide the path to this template ;
+            this template can check the mode to adapt the rendering.
+          </p>
+          <p>
+            Note that the same handler class can be used to define a new widget
+            type using a designated template, by registering it as is:
+          </p>
+          <p>
+            &lt;widgetType name="template"&gt; &lt;handler-class&gt;
+            org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+            &lt;/handler-class&gt; &lt;property name="template"&gt;
+            /widgets/my_custom_widget_template.xhtml &lt;/property&gt;
+            &lt;/widgetType&gt; </p>
+        </description>
+        <demo id="templateWidget" previewEnabled="false" />
+        <categories>
+          <category>dev</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>true</complex>
+          <supportedTypes>
+            <type>*</type>
+          </supportedTypes>
+        </fields>
+        <acceptingSubWidgets>true</acceptingSubWidgets>
+        <properties>
+          <layouts mode="any">
+            <layout name="template_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>template</widget>
+                </row>
+              </rows>
+              <widget name="template" type="selectOneResource">
+                <labels>
+                  <label mode="any">Template</label>
+                </labels>
+                <fields>
+                  <field>template</field>
+                </fields>
+                <properties mode="any">
+                  <property name="resourceName">widget_templates</property>
+                </properties>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="file">
+      <configuration>
+        <title>File</title>
+        <description>
+          <p>
+            The file widget displays a file uploader/editor in create or edit
+            mode, with additional message tag for errors, and a link to the file
+            in other modes.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;nxu:inputFile /&gt; tag in create or edit mode, and properties
+            accepted on a &lt;nxu:outputFile /&gt; tag in other modes.
+          </p>
+        </description>
+        <demo id="fileWidget" previewEnabled="true" />
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>blob</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>blob</type>
+          </defaultTypes>
+        </fields>
+        <properties>
+          <layouts mode="view">
+            <layout name="file_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">file_downloadLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">file_iconRendered</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="file_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">file_downloadLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">file_iconRendered</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.FileWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="htmltext">
+      <configuration>
+        <title>HTML text</title>
+        <description>
+          <p>
+            The htmltext widget displays an html text editor in create or edit
+            mode, with additional message tag for errors, and a regular text
+            output in other modes (without escaping the text).
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;nxu:editor /&gt; tag in create or edit mode, and properties
+            accepted on a &lt;nxu:outputText /&gt; tag in other modes.
+          </p>
+        </description>
+        <demo id="htmltextWidget" previewEnabled="true" />
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <layouts mode="view">
+            <layout name="htmltext_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">title</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="htmltext_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">htmltext_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">htmltext_height</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">htmltext_disableHtmlInit</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">htmltext_editorSelector</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.HtmlTextWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectOneDirectory">
+      <configuration>
+        <title>Vocabulary</title>
+        <description>
+          <p>
+            The selectOneDirectory widget displays a selection of vocabulary
+            entries in create or edit mode, with additional message tag for
+            errors, and the directory entry label in other modes.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;nxd:selectOneListbox /&gt; tag in create or edit mode, and
+            properties accepted on a &lt;nxd:directoryEntryOutput /&gt; tag in
+            other modes.
+          </p>
+        </description>
+        <demo id="selectOneDirectoryWidget" previewEnabled="true" />
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <layouts mode="any">
+            <layout name="selectOneDirectory_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">directoryName</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directoryNameDemoPreview</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="view">
+            <layout name="selectOneDirectory_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="selectOneDirectory_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_displayObsoleteEntries</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_notDisplayDefaultOption</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_ordering</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_cssStyle</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_cssStyleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.DirectorySelectOneWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectOneListbox">
+      <configuration>
+        <sinceVersion>5.4.2</sinceVersion>
+        <title>Select One Listbox</title>
+        <description></description>
+        <categories>
+          <!-- don't export it yet -->
+          <category>configuration_not_ready</category>
+          <!--
+            <category>document</category>
+          -->
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <!-- TODO
+            <mode>view</mode>
+          -->
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.SelectOneListboxWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectOneMenu">
+      <configuration>
+        <sinceVersion>5.4.2</sinceVersion>
+        <title>Select One Menu</title>
+        <description></description>
+        <categories>
+          <!-- don't export it yet -->
+          <category>configuration_not_ready</category>
+          <!--
+            <category>document</category>
+          -->
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <!-- TODO
+            <mode>view</mode>
+          -->
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.SelectOneMenuWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectOneRadio">
+      <configuration>
+        <sinceVersion>5.7.3</sinceVersion>
+        <title>Select One Radio</title>
+        <description></description>
+        <categories>
+          <!-- don't export it yet -->
+          <category>configuration_not_ready</category>
+          <!--
+            <category>document</category>
+          -->
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <!-- TODO
+            <mode>view</mode>
+          -->
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.SelectOneRadioWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyDirectory">
+      <configuration>
+        <title>Multiple vocabulary</title>
+        <description>
+          <p>
+            The selectManyDirectory widget displays a multi selection of
+            vocabulary entries in create or edit mode, with additional message
+            tag for errors, and the directory entries labels in other modes.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a c tag
+            in create or edit mode, and properties accepted on a
+            &lt;nxd:directoryEntryOutput /&gt; tag in other modes.
+          </p>
+        </description>
+        <demo id="selectManyDirectoryWidget" previewEnabled="true" />
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <layouts mode="any">
+            <layout name="selectManyDirectory_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">directoryName</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directoryNameDemoPreview</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="view">
+            <layout name="selectManyDirectory_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="selectManyDirectory_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_displayObsoleteEntries</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_notDisplayDefaultOption</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_ordering</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_cssStyle</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_cssStyleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.DirectorySelectManyWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="list">
+      <configuration>
+        <title>List</title>
+        <description>
+          <p>
+            The list widget displays an editable list of items in create or
+            edit mode, with additional message tag for errors, and the same list
+            of items in other modes. It is not usable within a list widget (see
+            sublist widget for this feature).
+          </p>
+          <p>Items are defined using sub wigdets configuration.</p>
+          <p>
+            This is actually a template widget type whose template uses a
+            &lt;nxu:inputList /&gt; tag in edit or create mode, and a table
+            iterating over items in other modes.
+          </p>
+          <p>
+            Since 5.6, it will apply to the current value (e.g. the layout or
+            parent widget value) if no field definition is given.
+          </p>
+        </description>
+        <demo id="listWidget" previewEnabled="false" />
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <acceptingSubWidgets>true</acceptingSubWidgets>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+            <type>path</type>
+            <type>date</type>
+            <type>blob</type>
+            <type>integer</type>
+            <type>double</type>
+            <type>boolean</type>
+            <type>complex</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>string</type>
+            <type>path</type>
+            <type>date</type>
+            <type>integer</type>
+            <type>double</type>
+            <type>boolean</type>
+            <type>complex</type>
+          </defaultTypes>
+        </fields>
+        <properties>
+          <layouts mode="any">
+            <layout name="list_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">list_subwidgets_display</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">subwidgets_hideSubLabels</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="list_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">list_diff</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">list_orderable</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">list_hideDeleteButton</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">list_hideAddButton</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">list_listTemplateItem</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">/widgets/list_widget_template.xhtml</property>
+    </widgetType>
+
+    <widgetType name="complex">
+      <configuration>
+        <sinceVersion>5.4.2</sinceVersion>
+        <title>Complex</title>
+        <description>
+          <p>
+            The complex widget displays its sub widgets, and is controlling of
+            a map-like. Each of the map items rendering is done through sub
+            widgets configuration.
+          </p>
+          <p>
+            Since 5.6, it will apply to the current value (e.g. the layout or
+            parent widget value) if no field definition is given.
+          </p>
+        </description>
+        <demo id="complexWidget" previewEnabled="false" />
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <acceptingSubWidgets>true</acceptingSubWidgets>
+        <fields>
+          <list>false</list>
+          <complex>true</complex>
+          <supportedTypes>
+            <type>complex</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>complex</type>
+          </defaultTypes>
+        </fields>
+        <properties>
+          <layouts mode="any">
+            <layout name="complex_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">complex_subwidgets_display</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">subwidgets_hideSubLabels</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/complex_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="container">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>Container</title>
+        <description>
+          <p>
+            The container widget displays its subwidgets with display options
+            to control the rendering of global div container as well as each
+            container of sub items, using the widget label as header.
+          </p>
+          <p>
+            If the widget is marked as handling labels (marker available on all
+            widgets since 5.6), the header will be displayed. Otherwise it will
+            never be displayed.
+          </p>
+          <p>
+            On version 5.6 (only this version), this widget also accepts custom
+            properties to add forms around some of its subwidgets. If the
+            property with name "nxw_addForm_#{widgetIndex}" is present and
+            resolves to true, then a form will be added around the subwidgets at
+            index #{widgetIndex}. For instance, adding a property
+            "nxw_addForm_0" with value true, the first subwidget will be
+            surrounded with a form.
+          </p>
+          <p>
+            From version 5.7, subwidgets hold this information directly, by
+            declaring a control with key "addForm" and value "true".
+          </p>
+          <p>
+            It will apply to the current value (e.g. the layout or parent
+            widget value) if no field definition is given.
+          </p>
+        </description>
+        <categories>
+          <category>decoration</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <acceptingSubWidgets>true</acceptingSubWidgets>
+        <handlingLabels>true</handlingLabels>
+        <supportedControls>
+          <control>requireSurroundingForm</control>
+          <control>useAjaxForm</control>
+          <control>handlingLabels</control>
+        </supportedControls>
+        <properties>
+          <layouts mode="any">
+            <layout name="container_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">container_subwidgets_display</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">container_subwidgets_hideSubLabels</widget>
+                </row>
+                <row>
+                  <widget>foldable</widget>
+                </row>
+                <row>
+                  <widget>foldedByDefault</widget>
+                </row>
+                <row>
+                  <widget>headerStyleClass</widget>
+                </row>
+                <row>
+                  <widget>styleClass</widget>
+                </row>
+                <row>
+                  <widget>subLabelStyleClass</widget>
+                </row>
+                <row>
+                  <widget>subStyleClass</widget>
+                </row>
+                <row>
+                  <widget>showIfEmpty</widget>
+                </row>
+                <row>
+                  <widget>tip</widget>
+                </row>
+              </rows>
+              <widget name="foldable" type="checkbox">
+                <labels>
+                  <label mode="any">Foldable</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, the widget label will be
+                    displayed in a header of a box, containing the sub widgets
+                    rendering. This box is foldable in javascript. Ignored if
+                    the widget is not marked as handling labels as the header
+                    will not be displayed in this case. Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>foldable</field>
+                </fields>
+              </widget>
+              <widget name="foldedByDefault" type="checkbox">
+                <labels>
+                  <label mode="any">Folded by default</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, and property "foldable" is
+                    also set to true,
+                    the box will be folded by default. Defaults
+                    to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>foldedByDefault</field>
+                </fields>
+              </widget>
+              <widget name="showIfEmpty" type="checkbox">
+                <labels>
+                  <label mode="any">Show if empty</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, the widget label will be
+                    displayed even if there are no subwidgets. Defaults to
+                    false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>showIfEmpty</field>
+                </fields>
+              </widget>
+              <widget name="tip" type="text">
+                <labels>
+                  <label mode="any">Tip</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Label to display on top of the container
+                    widget content, that will be translated if the widget is
+                    translated. Available since 5.7.3.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>tip</field>
+                </fields>
+              </widget>
+              <widget name="headerStyleClass" type="text">
+                <labels>
+                  <label mode="any">Header style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Style class for the header, displaying this
+                    widget label.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>headerStyleClass</field>
+                </fields>
+              </widget>
+              <widget name="styleClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Style class for the global container div.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>styleClass</field>
+                </fields>
+              </widget>
+              <widget name="subLabelStyleClass" type="text">
+                <labels>
+                  <label mode="any">Sub Label style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Style class for the sub widget label.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>subLabelStyleClass</field>
+                </fields>
+              </widget>
+              <widget name="subStyleClass" type="text">
+                <labels>
+                  <label mode="any">Sub style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Style class for the container of each sub
+                    widget.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>subStyleClass</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">/widgets/container_widget_template.xhtml</property>
+    </widgetType>
+
+    <widgetType name="checkbox">
+      <configuration>
+        <title>Checkbox</title>
+        <description>
+          <p>
+            The checkbox widget displays a checkbox in create, edit and any
+            other mode, with additional message tag for errors.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;h:selectBooleanCheckbox /&gt; tag in create, edit mode, and
+            other modes.
+          </p>
+        </description>
+        <demo id="checkboxWidget" previewEnabled="true" />
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>boolean</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>boolean</type>
+          </defaultTypes>
+        </fields>
+        <properties>
+          <layouts mode="view">
+            <layout name="checkbox_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">title</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="checkbox_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">title</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">accesskey</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">dir</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">disabled</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">immediate</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">lang</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">validator</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">valueChangeListener</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.CheckboxWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="hidden">
+      <configuration>
+        <title>Hidden</title>
+        <description>
+          <p>
+            The hidden widget is for a hidden field in create, edit and any
+            other mode, with additional message tag for errors.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;h:inputHidden /&gt; tag in create, edit mode, and other modes.
+          </p>
+        </description>
+        <!-- demo does not present it (yet?) -->
+        <!--
+          <demo id="hiddenWidget" previewEnabled="false"/>
+        -->
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <layouts mode="view">
+            <layout name="hidden_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">title</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="hidden_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">immediate</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">validator</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">valueChangeListener</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.HiddenWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="layout">
+      <configuration>
+        <sinceVersion>5.4.0</sinceVersion>
+        <title>Layout</title>
+        <description>
+          <p>The layout widget renders a layout.</p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;nxl:layout /&gt; tag in all modes.
+          </p>
+          <p>
+            Since 5.6, it will apply to the current value (e.g. the layout or
+            parent widget value) if no field definition is given.
+          </p>
+        </description>
+        <categories>
+          <category>dev</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="layout_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>name</widget>
+                </row>
+                <row>
+                  <widget>nameDemoPreview</widget>
+                </row>
+                <row>
+                  <widget>mode</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">widgetsDisplay</widget>
+                </row>
+                <row>
+                  <widget>template</widget>
+                </row>
+              </rows>
+              <widget name="name" type="selectOneResource">
+                <labels>
+                  <label mode="any">Layout(s)</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The layout name. Since 5.6, this attribute
+                    accepts a list of multiple layout names, separated by
+                    commas.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>name</field>
+                </fields>
+                <widgetModes>
+                  <mode value="edit_demo_preview">hidden</mode>
+                </widgetModes>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
+                  <property name="resourceName">layouts</property>
+                </properties>
+              </widget>
+              <widget name="nameDemoPreview" type="text">
+                <labels>
+                  <label mode="any">Layout(s)</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The layout name. Since 5.6, this attribute
+                    accepts a list of multiple layout names, separated by
+                    commas.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>name</field>
+                </fields>
+                <widgetModes>
+                  <mode value="any">hidden</mode>
+                  <mode value="edit_demo_preview">view</mode>
+                </widgetModes>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="mode" type="text">
+                <labels>
+                  <label mode="any">Layout mode</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If not set, the mode is resolved from the
+                    usual widget mode. Otherwise it's taken instead when not
+                    empty. WARNING: Before 5.5, mode was not resolved from the
+                    widget mode, so this value was required.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>mode</field>
+                </fields>
+              </widget>
+              <widget name="template" type="selectOneResource">
+                <labels>
+                  <label mode="any">Template</label>
+                </labels>
+                <fields>
+                  <field>template</field>
+                </fields>
+                <properties mode="any">
+                  <property name="resourceName">layout_templates</property>
+                </properties>
+                <widgetModes>
+                  <mode value="any">hidden</mode>
+                  <mode value="edit_demo_preview">hidden</mode>
+                </widgetModes>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.LayoutWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="richtext_with_mimetype">
+      <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
+        <title>Richtext</title>
+        <description>
+          <p>
+            This widget displays an html text editor or a textarea in create or
+            edit mode, depending on the mimetype defined.
+          </p>
+          <p>
+            It accepts two fields bindings:
+            <ul>
+              <li>first field holds the text content</li>
+              <li>second field holds the text mimetype (text/plain,
+                text/html...)</li>
+            </ul>
+          </p>
+        </description>
+        <categories>
+          <!-- do not export with documents -->
+          <category>configuration_not_ready</category>
+          <!--
+            <category>document</category>
+          -->
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <layouts mode="view">
+            <layout name="richtext_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>cssClass</widget>
+                </row>
+              </rows>
+              <widget name="cssClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <fields>
+                  <field>cssClass</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="richtext_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>height</widget>
+                </row>
+                <row>
+                  <widget>width</widget>
+                </row>
+                <row>
+                  <widget>cols</widget>
+                </row>
+                <row>
+                  <widget>rows</widget>
+                </row>
+                <row>
+                  <widget>editorSelector</widget>
+                </row>
+              </rows>
+              <widget name="width" type="int">
+                <labels>
+                  <label mode="any">Width</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The textarea width. Defaults to "640".
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>width</field>
+                </fields>
+              </widget>
+              <widget name="height" type="int">
+                <labels>
+                  <label mode="any">Height</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The textarea height. Defaults to "400".
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>height</field>
+                </fields>
+              </widget>
+              <widget name="cols" type="int">
+                <labels>
+                  <label mode="any">Number of columns</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The cols attribute sets the number of
+                    columns to display.
+                    Available since 5.3.1.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>cols</field>
+                </fields>
+              </widget>
+              <widget name="rows" type="int">
+                <labels>
+                  <label mode="any">Number of rows</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The rows attribute sets the number of rows
+                    to display.
+                    Available since 5.3.1.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>rows</field>
+                </fields>
+              </widget>
+              <widget name="editorSelector" type="text">
+                <labels>
+                  <label mode="any">Editor selector</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The class to use to identify text areas to
+                    turn into html
+                    editors. Defaults to "mceEditor". See the
+                    editor_selector
+                    option in tiny_mce
+                    (http://wiki.moxiecode.com/index.php/TinyMCE:Configuration/editor_selector).
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>editorSelector</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/richtext_with_mimetype_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="duration">
+      <configuration>
+        <sinceVersion>5.3.2</sinceVersion>
+        <title>Duration</title>
+        <description>
+          This widget displays a i18n formatted duration of a field
+          holding a
+          value measured in seconds (can be Long, Double or String
+          valued). NB:
+          only view mode is supported right now.
+        </description>
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+            <type>int</type>
+            <type>double</type>
+          </supportedTypes>
+        </fields>
+        <!-- no props -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/duration_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="setVariable">
+      <configuration>
+        <sinceVersion>5.7.3</sinceVersion>
+        <title>Set variable</title>
+        <description>
+          <p>
+            This widget exposes a variable to the context for
+            rendering,
+            allowing its sub widgets to reference it.
+          </p>
+          <p>
+            This is mostly useful to simplify resolution of a variable in sub
+            contexts, and benefit from caching on the variable resolution.
+          </p>
+        </description>
+        <properties>
+          <layouts mode="any">
+            <layout name="set_variable_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>var</widget>
+                </row>
+                <row>
+                  <widget>value</widget>
+                </row>
+                <row>
+                  <widget>cache</widget>
+                </row>
+                <row>
+                  <widget>resolveTwice</widget>
+                </row>
+              </rows>
+              <widget name="var" type="text">
+                <labels>
+                  <label mode="any">Variable name</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The variable under which name the value will
+                    be exposed, making it available to sub widgets.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>var</field>
+                </fields>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="value" type="text">
+                <labels>
+                  <label mode="any">Value</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The value to resolve for the variable name.
+                    The variable under which name the value will
+                    be exposed,
+                    making it available to sub widgets.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>value</field>
+                </fields>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="cache" type="checkbox">
+                <labels>
+                  <label mode="any">Cache</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean expressing if exposed value should
+                    be cached in the page.
+                    If set to true, the variable will be
+                    resolved only once per page rendering (or re-rendering in
+                    case of ajax requests). Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>cache</field>
+                </fields>
+              </widget>
+              <widget name="resolveTwice" type="checkbox">
+                <labels>
+                  <label mode="any">Resolve twice</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean expressing if expression should be
+                    resolved twice: sometimes the expression uses a
+                    configuration element, and the first resolution of the
+                    expression will resolve to another expression, that may need
+                    to be itself evaluated again. Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>resolveTwice</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+        <categories>
+          <category>dev</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <acceptingSubWidgets>true</acceptingSubWidgets>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/set_variable_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="disabledPropertyRefs">
+    <documentation>
+      Configuration of properties disabled by default for reference
+      in EL expressions.
+    </documentation>
+
+    <disabledPropertyRef name="converter"
+      widgetTypeCategory="jsf" />
+    <disabledPropertyRef name="validator"
+      widgetTypeCategory="jsf" />
+
+    <!-- avoid bad interactions with JBoss-el size EL resolver... -->
+    <disabledPropertyRef name="size" widgetTypeCategory="jsf" />
+
+    <!-- rich:calendar does not resolve some attributes as EL expressions -->
+    <disabledPropertyRef name="showApplyButton" widgetType="datetime"
+      widgetTypeCategory="jsf" />
+    <disabledPropertyRef name="defaultTime" widgetType="datetime"
+      widgetTypeCategory="jsf" />
+
+  </extension>
+
+</component>
