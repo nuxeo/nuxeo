@@ -1,0 +1,63 @@
+/** Add css rules here for your application. */
+body {
+  font-family:arial,sans-serif
+}
+
+div,td {
+  color:#000000
+}
+
+a:link {
+  color:#0000cc
+}
+     
+a:visited {
+  color:#551a8b
+}
+
+a:active {
+  color:#ff0000
+}
+
+button {
+  display: block;
+  font-size: 16pt
+}
+
+.widePanel {
+  width: 100%
+}
+
+
+.docHeader {
+    font-size: 20pt;
+    color: #0000;
+    margin:0;
+    margin-bottom:10px;
+    margin-top:10px;
+}
+
+
+.docToolbar {
+    color: #0000;
+    margin:0;
+    margin-bottom:4px;
+    margin-top:2px;
+}
+
+.docButton {
+    padding:2px;
+    font-weight:bold;
+    font-family:Arial,Bitstream Vera Sans,sans-serif; font-size:11px;
+}
+
+.navbar {
+  text-align: right;
+  padding:2px;
+}
+
+.navbarSpan {
+  white-space: nowrap;
+  text-align: right;
+}
+

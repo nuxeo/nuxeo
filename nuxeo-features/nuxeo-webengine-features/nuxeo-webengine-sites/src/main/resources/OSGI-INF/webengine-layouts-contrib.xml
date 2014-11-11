@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.webengine.sites.layouts">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="webcontainer">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>name</widget>
+        </row>
+        <row>
+          <widget>url</widget>
+        </row>
+        <row>
+          <widget>baseline</widget>
+        </row>
+        <row>
+          <widget>email</widget>
+        </row>
+        <row>
+          <widget>logo</widget>
+        </row>
+        <row>
+          <widget>welcomeText</widget>
+        </row>
+        <row>
+          <widget>welcomeMedia</widget>
+        </row>
+        <row>
+          <widget>useCaptcha</widget>
+        </row>
+        <row>
+          <widget>moderationType</widget>
+        </row>
+      </rows>
+
+      <widget name="name" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="validator">
+            #{siteActions.validateSiteTitle}
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="url" type="template">
+        <widgetModes>
+         <mode value="create">hidden</mode>
+         <mode value="any">view</mode>
+        </widgetModes>
+        <translated>true</translated>
+        <fields>
+          <field>webc:url</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/site_url_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="baseline" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>webc:baseline</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+
+      <widget name="email" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>webc:email</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+
+      <widget name="logo" type="file">
+        <translated>true</translated>
+        <fields>
+          <field>webc:logo</field>
+          <field>webc:logo/filename</field>
+        </fields>
+      </widget>
+
+      <widget name="welcomeText" type="htmltext">
+        <translated>true</translated>
+        <fields>
+          <field>webc:welcomeText</field>
+        </fields>
+      </widget>
+
+      <widget name="welcomeMedia" type="file">
+        <translated>true</translated>
+        <fields>
+          <field>webc:welcomeMedia</field>
+          <field>webc:welcomeMedia/filename</field>
+        </fields>
+      </widget>
+
+      <widget name="useCaptcha" type="checkbox">
+        <translated>true</translated>
+        <fields>
+          <field>webc:useCaptcha</field>
+        </fields>
+      </widget>
+
+      <widget name="moderationType" type="template">
+        <translated>true</translated>
+        <fields>
+          <field>webc:moderationType</field>
+        </fields>
+        <helpLabels>
+          <label mode="any">label.widget.webcontainer.moderationType.info</label>
+        </helpLabels>
+        <properties mode="any">
+          <property name="template">
+            /widgets/moderation_type_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+
+    </layout>
+
+    <layout name="webpage">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>pushtomenu</widget>
+        </row>
+        <row>
+          <widget>contentWiki</widget>
+        </row>
+        <row>
+          <widget>contentRich</widget>
+        </row>
+      </rows>
+
+      <widget name="pushtomenu" type="template">
+        <translated>true</translated>
+        <fields>
+          <field>webp:pushtomenu</field>
+        </fields>
+         <properties mode="any">
+         <property name="required">true</property>
+         <property name="template">
+           /widgets/boolean_radio_widget_template.xhtml
+         </property>
+         </properties>
+      </widget>
+
+      <widget name="contentRich" type="htmltext">
+        <translated>true</translated>
+        <fields>
+          <field>webp:content</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{layoutValue.webpage.isRichtext ? 'edit' : 'hidden'}
+          </mode>
+          <mode value="view">view</mode>
+        </widgetModes>
+      </widget>
+
+      <widget name="contentWiki" type="textarea">
+        <translated>true</translated>
+        <fields>
+          <field>webp:content</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{layoutValue.webpage.isRichtext ? 'hidden' : 'edit'}
+          </mode>
+          <mode value="create">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="rows">15</property>
+        </properties>
+      </widget>
+
+
+    </layout>
+
+    <!-- ContextualLink layout definition  -->
+    <layout name="contextualLink">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>link</widget>
+        </row>
+      </rows>
+      <widget name="link" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>clink:link</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="WebSite">
+      <templates>
+        <template mode="any">
+          /layouts/layout_site_url_link.xhtml
+        </template>
+      </templates>
+    </layout>
+
+  </extension>
+
+</component>

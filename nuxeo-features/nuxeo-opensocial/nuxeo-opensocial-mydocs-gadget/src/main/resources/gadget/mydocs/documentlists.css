@@ -1,0 +1,93 @@
+img {
+  border: 0;
+}
+.pageNavigationControls span {
+color:#757575;
+font-size:13px;
+font-weight:bold;
+margin:10px 5px;
+vertical-align:top;
+}
+
+.pageNavigationControls {
+border:1px solid #3399FF;
+margin:5px 0px;
+padding:2px;
+text-align:center;
+}
+
+.pageNavigationControls input {
+margin-left:5px;
+}
+
+.dataList {
+width:100%;
+}
+
+.dataList td {
+border:1px solid #666666;
+padding:3px;
+font-family	: 'Lucida Grande',Verdana,Arial,sans-serif;
+font-size :	11px;
+line-height	: 13.75px;
+background-color :transparent;
+background-image :none;
+margin : 0px;
+padding-top	: 5px;
+padding-right : 3px;
+padding-bottom : 5px;
+padding-left :3px;
+border-top-width	: 0px;
+border-right-width	: 0px;
+border-bottom-width	: 1px;
+border-left-width	: 0px;
+border-top-color : #C7C7C7;
+border-right-color: #000000;
+border-bottom-color	: #C7C7C7;
+border-left-color	: #000000;
+border-top-style : solid;
+border-right-style	: none;
+border-bottom-style	: solid;
+border-left-style	: none;
+}
+.dataOutput td table td {
+border:0px none transparent;
+}
+
+.dataList thead th {
+background:#F1F2F3 none repeat scroll 0% 0%;
+border-bottom:1px solid #C7C7C7;
+color:#606161;
+padding:5px 3px;
+text-align:left;
+font-size :	10pt;
+}
+
+.dataList thead th a, .dataList thead th a:link {
+color:#FFFFFF;
+text-decoration:none;
+}
+.dataList thead th a:visited {
+color:#FFFFFF;
+}
+.dataList thead th a:active {
+color:#FFFFFF;
+}
+.dataList thead th a:hover {
+color:#FFFFFF;
+text-decoration:underline;
+}
+
+.dataList {
+background:white none repeat scroll 0% 0%;
+border-collapse:collapse;
+margin:0pt;
+}
+
+.dataRowEven {
+background:#F2F7FC none repeat scroll 0% 0%;
+}
+
+.dataRowOdd {
+background:#ECF6FF none repeat scroll 0% 0%;
+}
