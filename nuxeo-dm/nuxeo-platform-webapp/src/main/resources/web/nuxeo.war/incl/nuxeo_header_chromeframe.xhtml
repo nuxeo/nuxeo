@@ -1,0 +1,29 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core">
+<!--[if lt IE 9]>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+
+  <div id="gcfdiv" class="actionHide" style="display:none; text-align: center; padding: 5px 5px 5px 25px; background-color:#fff9B4; font: normal 12px Arial,sans-serif;">
+  </div>
+
+  <script type="text/javascript">
+  // The conditional ensures that this code will only execute in IE,
+  // Therefore we can use the IE-specific attachEvent without worry
+
+  function onMissing() {
+    var gcfdiv = jQuery('#gcfdiv')
+    var link = jQuery('<span>#{messages['chromeframe.message']}</span> <a>#{messages['chromeframe.link']}</a>').attr({href: 'http://www.google.com/chromeframe?hl=fr&amp;prefersystemlevel=true'})
+    gcfdiv.prepend(link);
+
+    gcfdiv.css('display', 'block')
+  }
+
+   jQuery(function() {
+     CFInstall.check({
+       onmissing: onMissing,
+       preventPrompt: true
+     });
+   });
+
+   </script>
+<![endif]-->
+</f:subview>
