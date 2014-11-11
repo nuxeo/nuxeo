@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Relations Core Listener
+Bundle-SymbolicName: org.nuxeo.ecm.relations.core.listener;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: stateful
+Require-Bundle: org.nuxeo.ecm.core,
+ org.nuxeo.ecm.core.event,
+ org.nuxeo.ecm.relations
+Nuxeo-Component: OSGI-INF/relations-core-listener-contrib.xml

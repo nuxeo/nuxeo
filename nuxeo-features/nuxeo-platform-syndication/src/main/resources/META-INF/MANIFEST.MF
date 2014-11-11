@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Syndication project
+Bundle-SymbolicName: org.nuxeo.ecm.platform.syndication;singleton=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateless
+Require-Bundle: org.nuxeo.ecm.webapp.core,
+ org.nuxeo.ecm.platform.ui
+Nuxeo-Component: OSGI-INF/restpack-contrib.xml,
+ OSGI-INF/querymodel-contrib.xml

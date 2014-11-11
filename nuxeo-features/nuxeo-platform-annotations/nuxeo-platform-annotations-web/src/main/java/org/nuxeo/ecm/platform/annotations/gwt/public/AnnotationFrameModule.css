@@ -1,0 +1,162 @@
+img.annotated {
+border-width: 0;
+}
+
+span.decorate {
+background-color: #ffcc30;
+}
+
+div.decorate {
+position: absolute;
+border: 1px groove black;
+padding: 0;
+display: none;
+background: white;
+opacity: 0.3;
+filter: alpha(opacity=30);
+-khtml-opacity: 0.3;
+-moz-opacity:0.3;
+}
+
+div.decorate:hover {
+border:1px solid black;
+background-color:#e68d00
+}
+
+div.decorateArea {
+position: absolute;
+border: 1px groove black;
+padding: 0;
+display: none;
+background: white;
+opacity: 0.3;
+filter: alpha(opacity=30);
+-khtml-opacity: 0.3;
+-moz-opacity:0.3;
+}
+
+.gwt-Label {
+border-bottom-color:#999999;
+border-bottom-style:dotted;
+border-bottom-width:1px;
+color:#0066CC;
+font-size:13px;
+font-weight:bold;
+margin-bottom:8px;
+padding-bottom:2px;
+padding-left:5px;
+padding-right:2px;
+padding-top:25px;
+
+}
+
+span.selectedAnnotation {
+text-decoration:underline;
+}
+
+.popupContent {
+padding:0px 10px 10px;
+}
+
+.annotationsNewAnnotationPopup .gwt-TextArea {
+margin:10px 0px;
+padding:5px;
+}
+
+.gwt-TextArea gwt-TextArea-readonly {
+margin:5px 0px;
+padding:5px 0 5px 5px;
+background-color:#f4f9ff;
+border:1px solid #ddecff;
+color:#373632;
+font-family:Verdana,Arial,sans-serif;
+font-size:11px;
+}
+
+.gwt-RichTextArea {
+border:1px solid gray;
+margin:10px 0;
+padding:0;
+}
+
+.gwt-Button {
+background:#cecfd1 url(../img/theme_galaxy/buttons.png) top left repeat-x;
+border:1px solid #bfc5cb;
+cursor:pointer;
+font-size:small;
+margin:0 10px 0 0;
+padding:3px 5px;
+text-decoration:none;
+color:#333333;
+}
+
+.gwt-Button:hover {
+color:#000000;
+border-color:#92999e;
+}
+
+span.selectedAnnotation {
+text-decoration:underline;
+background-color: #30ccff;
+}
+div.selectedAnnotation {
+border: 2px solid #E66C00;
+}
+
+.annotation-body {
+color: #373632 !important;
+background-color: #f4f9ff;
+border:1px solid white;
+padding: 10px 5px !important;
+margin: 2px 0px !important;
+font-size:10px !important;
+width: 188px;
+overflow: auto;
+}
+
+.annotationsPopupEvent {
+background-color: #f0f6ff;
+border: 3px solid #C3D9FF;
+padding: 2px 0px;
+}
+
+.annotationsPopupEvent .annotation-body {
+background-color: #ffffff;
+margin: 2px 0 8px;
+padding: 5px;
+font-size:11px;
+}
+
+
+div.decorateNot {
+border: 0;
+background: transparent;
+}
+
+span.decorateNot {
+background: transparent;
+text-decoration:none;
+}
+
+.gwt-Label {
+padding:3px !important;
+color:#343434;
+font-size:11px !important;
+}
+
+.gwt-RichTextArea {
+border:1px solid gray;
+margin:10px 0;
+padding:0;
+color:#373632;
+}
+
+.annotationsPopupEvent {
+background-color:#FFFFFF;
+padding:8px 5px 10px;
+border:2px solid #cae2ff;
+}
+
+span.selectedText {
+background: gray;
+}
