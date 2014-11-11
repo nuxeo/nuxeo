@@ -1,0 +1,87 @@
+<div class="dublincore_block"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory">
+
+  <table class="floatingLeftTable">
+    <tr>
+      <td class="labelColumnLeftAlign">
+        <h:outputText value="#{messages['label.dublincore.creator']}"/>
+      </td>
+      <td>
+        <h:outputText value="#{currentDocument.dc.creator}"/>
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumnLeftAlign">
+        <h:outputText value="#{messages['label.content.header.currentLifecycleState']}"/>
+      </td>
+      <td>
+        <h:outputText value="#{messages[currentDocument.currentLifeCycleState]}" />
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumnLeftAlign">
+        <h:outputText value="#{messages['label.version']}"/>
+      </td>
+      <td>
+        <h:outputText value="#{currentDocumentVersionInfo.versionLabel}"/>
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumnLeftAlign">
+        <h:outputText value="#{messages['label.summary.lastModified']}"/>
+      </td>
+      <td>
+        <h:outputText value="#{nxu:formatDateUsingBasicFormatter(currentDocument.dublincore.modified)}"/>
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumnLeftAlign">
+        <h:outputText value="#{messages['label.dublincore.expired']}"/>
+      </td>
+      <td>
+        <h:outputText value="#{nxu:formatDateUsingBasicFormatter(currentDocument.dc.expired)}"
+          rendered="#{!empty currentDocument.dc.expired}"/>
+      </td>
+    </tr>
+  </table>
+
+  <table class="floatingRightTable">
+    <tr>
+      <td class="labelColumnLeftAlign">
+        <h:outputText value="#{messages['label.dublincore.format']}"/>
+      </td>
+      <td>
+        <h:outputText value="#{currentDocument.dc.format}"/>
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumnLeftAlign">
+        <h:outputText value="#{messages['label.dublincore.language']}"/>
+      </td>
+      <td>
+        <h:outputText value="#{currentDocument.dc.language}"/>
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumnLeftAlign">
+        <h:outputText value="#{messages['label.dublincore.source']}"/>
+      </td>
+      <td>
+        <h:outputText value="#{currentDocument.dc.source}"/>
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumnLeftAlign">
+        <h:outputText value="#{messages['label.dublincore.rights']}"/>
+      </td>
+      <td>
+        <h:outputText value="#{currentDocument.dc.rights}"/>
+        </td>
+    </tr>
+  </table>
+  <div style="clear:both;"></div>
+
+</div>
