@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: NXThemes Styling
+Bundle-SymbolicName: org.nuxeo.theme.styling;singleton:=true
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Bundle-Category: web
+Require-Bundle: org.nuxeo.theme.core
+Nuxeo-Component: OSGI-INF/theme-styling-framework.xml,
+ OSGI-INF/theme-local-configuration.xml
