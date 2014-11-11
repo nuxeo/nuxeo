@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources>
+  <!-- DEFAULT UNIFIED DATASOURCE CONFIGURATION -->
+  <!--
+    This is the default unified datasource configuration. All datasources from nuxeo
+    points to this datasource so it will use only 1 database.
+    To use another database than Derby, comment out the following section and uncomment
+    your database configuration or add it if not present.
+    If you wish to use a different database for a service, comment out the link in the relevant
+    xxx-ds.xml file and add a datasource configuration.
+  -->
+  <!-- nuxeo datasource -->
+  <local-tx-datasource>
+    <jndi-name>NuxeoDS</jndi-name>
+    <connection-url>
+      jdbc:derby:${jboss.server.data.dir}/derby/nuxeo;create=true
+    </connection-url>
+    <driver-class>org.apache.derby.jdbc.EmbeddedDriver</driver-class>
+    <user-name>sa</user-name>
+    <password></password>
+  </local-tx-datasource>
+
+  <!-- Configuration for Postgres -->
+  <!-- 
+  <xa-datasource>
+    <jndi-name>NuxeoDS</jndi-name>
+    <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
+    <xa-datasource-property name="ServerName">localhost</xa-datasource-property>
+    <xa-datasource-property name="PortNumber">5432</xa-datasource-property>
+    <xa-datasource-property name="DatabaseName">nuxeo</xa-datasource-property>
+    <xa-datasource-property name="User">username</xa-datasource-property>
+    <xa-datasource-property name="Password">myPr3c1ous</xa-datasource-property>
+    <track-connection-by-tx/>
+  </xa-datasource>
+  -->
+</datasources>

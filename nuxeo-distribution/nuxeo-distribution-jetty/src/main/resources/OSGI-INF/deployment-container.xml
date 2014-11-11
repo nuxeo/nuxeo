@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<container>
+
+  <template name="web" src="OSGI-INF/templates/web.xml"
+    installPath="nuxeo.war/WEB-INF/web.xml" required="true" />
+
+  <template name="faces-config" src="OSGI-INF/templates/faces-config.xml"
+    installPath="nuxeo.war/WEB-INF/faces-config.xml" required="true" />
+
+  <template name="application" src="OSGI-INF/templates/application.xml"
+    installPath="nuxeo.war/WEB-INF/application.xml" required="true" />
+
+  <template name="pages" src="OSGI-INF/templates/pages.xml"
+    installPath="nuxeo.war/WEB-INF/pages.xml" required="true" />
+
+  <template name="components" src="OSGI-INF/templates/components.xml"
+    installPath="nuxeo.war/WEB-INF/components.xml" required="true" />
+
+  <directory>bundles</directory>
+
+  <install>
+
+    <property name="war" value="/nuxeo.war" />
+
+    <delete path="${war}" />
+
+    <!-- create here the tree directory structure if needed -->
+    <mkdir path="${war}" />
+    <mkdir path="${war}/WEB-INF" />
+    <mkdir path="${war}/META-INF" />
+    <!--
+    <copy from="/OSGI-INF/templates/WAR_MANIFEST.MF"
+      to="${war}/META-INF/MANIFEST.MF" /> -->
+
+  </install>
+
+</container>
