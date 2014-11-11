@@ -1,0 +1,268 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.webapp.directory.directoryUI">
+
+  <extension target="org.nuxeo.ecm.directory.ui.DirectoryUIManager"
+    point="directories">
+
+    <directory name="continent" layout="vocabulary" sortField="label">
+      <deleteConstraint
+        class="org.nuxeo.ecm.directory.api.ui.HierarchicalDirectoryUIDeleteConstraint">
+        <property name="targetDirectory">country</property>
+        <property name="targetDirectoryField">parent</property>
+      </deleteConstraint>
+    </directory>
+    <directory name="country" layout="country_vocabulary" sortField="parent" />
+
+    <directory name="topic" layout="vocabulary" sortField="label">
+      <deleteConstraint
+        class="org.nuxeo.ecm.directory.api.ui.HierarchicalDirectoryUIDeleteConstraint">
+        <property name="targetDirectory">subtopic</property>
+        <property name="targetDirectoryField">parent</property>
+      </deleteConstraint>
+    </directory>
+    <directory name="subtopic" layout="subtopic_vocabulary" sortField="parent" />
+
+    <!-- seems it's not used anymore -->
+    <directory name="subject" layout="vocabulary" sortField="label" />
+
+    <directory name="sort_order" layout="vocabulary" sortField="label" />
+
+    <directory name="search_operators" layout="vocabulary" sortField="label" />
+
+    <directory name="predicates" layout="vocabulary" sortField="label" />
+    <directory name="inverse_predicates" layout="vocabulary" sortField="label" />
+    <directory name="language" layout="vocabulary" sortField="label" />
+    <directory name="nature" layout="vocabulary" sortField="label" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="vocabulary_id" type="text">
+      <labels>
+        <label mode="any">label.vocabulary.entry.id</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>vocabulary:id</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit">view</mode>
+      </widgetModes>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+      </properties>
+    </widget>
+
+    <widget name="vocabulary_label" type="text">
+      <labels>
+        <label mode="any">label.vocabulary.entry.label</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>vocabulary:label</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="size">50</property>
+      </properties>
+    </widget>
+
+    <widget name="vocabulary_obsolete" type="template">
+      <labels>
+        <label mode="any">label.vocabulary.entry.obsolete</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>vocabulary:obsolete</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">
+          /widgets/integer_yes_no_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="vocabulary_order" type="int">
+      <labels>
+        <label mode="any">label.vocabulary.entry.order</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>vocabulary:ordering</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="size">10</property>
+      </properties>
+    </widget>
+
+    <widget name="xvocabulary_id" type="text">
+      <labels>
+        <label mode="any">label.vocabulary.entry.id</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>xvocabulary:id</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit">view</mode>
+      </widgetModes>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+      </properties>
+    </widget>
+
+    <widget name="xvocabulary_label" type="text">
+      <labels>
+        <label mode="any">label.vocabulary.entry.label</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>xvocabulary:label</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="size">50</property>
+      </properties>
+    </widget>
+
+    <widget name="xvocabulary_obsolete" type="template">
+      <labels>
+        <label mode="any">label.vocabulary.entry.obsolete</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>xvocabulary:obsolete</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">
+          /widgets/integer_yes_no_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="xvocabulary_order" type="int">
+      <labels>
+        <label mode="any">label.vocabulary.entry.order</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>xvocabulary:ordering</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="size">10</property>
+      </properties>
+    </widget>
+
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="vocabulary">
+      <templates>
+        <template mode="any">
+          /directory/directory_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>vocabulary_id</widget>
+        </row>
+        <row>
+          <widget>vocabulary_label</widget>
+        </row>
+        <row>
+          <widget>vocabulary_obsolete</widget>
+        </row>
+        <row>
+          <widget>vocabulary_order</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="country_vocabulary">
+      <templates>
+        <template mode="any">
+          /directory/directory_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>parent</widget>
+        </row>
+        <row>
+          <widget>xvocabulary_id</widget>
+        </row>
+        <row>
+          <widget>xvocabulary_label</widget>
+        </row>
+        <row>
+          <widget>xvocabulary_obsolete</widget>
+        </row>
+        <row>
+          <widget>xvocabulary_order</widget>
+        </row>
+      </rows>
+      <widget name="parent" type="selectOneDirectory">
+        <labels>
+          <label mode="any">label.vocabulary.entry.parent</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>xvocabulary:parent</field>
+        </fields>
+        <properties mode="any">
+          <property name="directoryName">continent</property>
+          <property name="localize">true</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="subtopic_vocabulary">
+      <templates>
+        <template mode="any">
+          /directory/directory_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>parent</widget>
+        </row>
+        <row>
+          <widget>xvocabulary_id</widget>
+        </row>
+        <row>
+          <widget>xvocabulary_label</widget>
+        </row>
+        <row>
+          <widget>xvocabulary_obsolete</widget>
+        </row>
+        <row>
+          <widget>xvocabulary_order</widget>
+        </row>
+      </rows>
+      <widget name="parent" type="selectOneDirectory">
+        <labels>
+          <label mode="any">label.vocabulary.entry.parent</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>xvocabulary:parent</field>
+        </fields>
+        <properties mode="any">
+          <property name="directoryName">topic</property>
+          <property name="localize">true</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+    </layout>
+  </extension>
+
+</component>

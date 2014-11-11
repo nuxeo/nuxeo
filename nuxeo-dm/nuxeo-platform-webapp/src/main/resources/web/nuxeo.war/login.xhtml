@@ -1,0 +1,30 @@
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:nxthemes="http://nuxeo.org/nxthemes"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:s="http://jboss.com/products/seam/taglib">
+ 
+  <ui:define name="body">
+    <div><h:form>
+      <table>
+      <tbody>
+        <tr>
+          <td colspan="2"></td>
+        </tr>
+        <tr>
+          <td><label for="username">Input User Name: </label></td>
+          <td><h:inputText name="j_username" value="#{userDTO.username}" /></td>
+        </tr>
+        <tr>
+          <td><label for="password">Password: </label></td>
+          <td><h:inputSecret name="j_password"
+            value="#{userDTO.password}" /></td>
+        </tr>
+      </tbody>
+      </table>
+      <h:commandButton value="Login" action="#{loginLogoutAction.login}" />
+    </h:form></div>
+  </ui:define>
+
+</nxthemes:composition>
