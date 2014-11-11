@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<xs:schema
+	targetNamespace="http://www.nuxeo.org/ecm/schemas/role"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	>
+
+	<xs:element name="id" type="xs:integer"/>
+	<xs:element name="username" type="xs:string"/>
+	<xs:element name="role" type="xs:string"/>
+
+</xs:schema>
+
+
