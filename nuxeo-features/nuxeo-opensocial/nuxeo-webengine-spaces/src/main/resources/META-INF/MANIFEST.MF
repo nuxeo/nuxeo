@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo-webengines-spaces project
+Bundle-SymbolicName: org.nuxeo.opensocial.webengines.spaces;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Nuxeo
+Provide-Package: org.nuxeo.opensocial.webengines.spaces
+Require-Bundle: org.nuxeo.ecm.webengine.core
+Nuxeo-Component: OSGI-INF/theme-contrib.xml
