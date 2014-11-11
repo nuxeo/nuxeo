@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM HTTP Annotations
+Bundle-SymbolicName: org.nuxeo.ecm.annotations.http;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateless
+Require-Bundle: org.nuxeo.ecm.platform.annotations.api,
+  org.nuxeo.ecm.annotations
+Bundle-Localization: bundle
+Eclipse-LazyStart: true
+Nuxeo-Component: OSGI-INF/annotations-transactional-contrib.xml

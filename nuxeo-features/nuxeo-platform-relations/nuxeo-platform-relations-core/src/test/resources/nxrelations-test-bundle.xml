@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.relations.services.RelationServiceTests">
+
+  <extension
+    target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="graphtypes">
+    <graphtype name="dummygraph"
+      class="org.nuxeo.ecm.platform.relations.DummyGraphType" />
+    <graphtype name="byfactory"
+      class="org.nuxeo.ecm.platform.relations.DummyGraphFactory" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="resourceadapters">
+    <!-- Resource adapter example for tests -->
+    <adapter namespace="http://nuxeo.org/nxrelations/test/"
+      class="org.nuxeo.ecm.platform.relations.DummyResourceAdapter" />
+    <!-- Another one for tests of multiple resources for one obj -->
+    <adapter namespace="http://nuxeo.org/nxrelations/test2/"
+      class="org.nuxeo.ecm.platform.relations.DummyResourceAdapter" />
+    <!-- Resource adapter example with no implementation for tests -->
+    <adapter namespace="http://nuxeo.org/nxrelations/unexistent/"
+      class="org.nuxeo.ecm.platform.relations.UnexistentResourceAdapter" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="graphs">
+    <graph name="myrelations" type="dummygraph">
+      <option name="backend">sql</option>
+      <option name="host">localhost</option>
+      <option name="port">8080</option>
+      <namespaces>
+        <namespace name="rdf">
+          http://www.w3.org/1999/02/22-rdf-syntax-ns#
+        </namespace>
+        <namespace name="dc">http://purl.org/dc/elements/1.1/</namespace>
+        <namespace name="nxtest">http://nuxeo/org/nxrelations/test/</namespace>
+      </namespaces>
+    </graph>
+    <graph name="somerelations" type="byfactory">
+    </graph>
+  </extension>
+
+</component>

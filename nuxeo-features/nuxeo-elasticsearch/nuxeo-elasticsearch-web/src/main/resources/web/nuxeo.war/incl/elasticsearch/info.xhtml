@@ -1,0 +1,98 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+     xmlns:c="http://java.sun.com/jstl/core"
+     class="hostInfos">
+
+  <script src="#{baseURL}scripts/json2html.js" type='text/javascript'></script>
+  <script src="#{baseURL}scripts/jquery.json2html.js"
+          type='text/javascript'></script>
+  <script src="#{baseURL}scripts/displayESJSON.js"
+          type='text/javascript'></script>
+
+   <c:choose>
+    <c:when test="#{esAdmin.isIndexingInProgress()}">
+      <h1>Indexing in PROGRESS</h1>
+    </c:when>
+    <c:otherwise>
+      <h2>No indexing in progress</h2>
+    </c:otherwise>
+  </c:choose>
+
+  <h3>Indexing state</h3>
+  <div>An indexing command is an Elasticsearch operation that can insert, update or delete one or many Nuxeo documents.</div>
+  <pre class="bubbleBox">
+Indexing command running: <h:outputText value="#{esAdmin.runningCommands}"/>
+Indexing command pending: <h:outputText value="#{esAdmin.pendingCommands}"/>
+Number of command processed since Nuxeo instance startup: <h:outputText value="#{esAdmin.totalCommandProcessed}"/>
+  </pre>
+
+  <h3>Indexing rates</h3>
+  <div>Exponentially-weighted moving average rate of indexing last 1, 5 and 15 minutes in docs/s (similar to Unix load).</div>
+  <pre class="bubbleBox">
+    <h:outputText
+      value="#{esAdmin.indexingRates}"/>
+  </pre>
+
+  <h3>Elasticsearch documents</h3>
+  <div>Number of documents in the Elasticsearch index.</div>
+  <pre class="bubbleBox">
+<h:outputText value="#{esAdmin.numberOfDocuments}"/> (deleted: <h:outputText value="#{esAdmin.numberOfDeletedDocuments}"/>)
+  </pre>
+
+  <h3> Elasticsearch Health</h3>
+  <pre class="bubbleBox">
+    <h:outputText value="#{esAdmin.nodesHealth}"/>
+  </pre>
+
+  <h3> Elasticsearch Stats </h3>
+
+  <div>
+    <a id="ESStatsOpen" href="#">Expand all</a>
+    <a id="ESStatsClose" href="#" style="display:none">Unexpand all</a>
+  </div>
+
+  <div id="ESStats"></div>
+
+  <h3> Elasticsearch Cluster Config</h3>
+
+  <div>
+    <a id="ESConfigOpen" href="#">Expand all</a>
+    <a id="ESConfigClose" href="#" style="display:none">Unexpand all</a>
+  </div>
+
+  <div id="ESConfig"></div>
+
+  <a4j:outputPanel ajaxRendered="true">
+    <script>
+function initExpandAll(divId) {
+  jQuery('#' + divId + 'Open').click(function() {
+    jQuery(this).css('display', 'none');
+    jQuery('#' + divId + ' div.closed > div.esheader > div.arrow').click();
+    jQuery('#' + divId + 'Close').css('display', '');
+    return false;
+  });
+  jQuery('#' + divId + 'Close').click(function() {
+    jQuery(this).css('display', 'none');
+    jQuery('#' + divId + ' div.open > div.esheader > div.arrow').click();
+    jQuery('#' + divId + 'Open').css('display', '');
+    return false;
+  });
+}
+
+function initESInfo() {
+  // I know this is bad
+  jQuery('head').append('<link rel="stylesheet" type="text/css" href="#{baseURL}css/displayESJSON.css"/>');
+
+  displayESJSON('config', <h:outputText value="#{esAdmin.nodesInfo}" escape="false" />, jQuery('#ESConfig'));
+  displayESJSON('stats', <h:outputText value="#{esAdmin.nodesStats}" escape="false" />, jQuery('#ESStats'));
+
+}
+
+jQuery(document).ready(function(){
+  initESInfo();
+  initExpandAll('ESStats');
+  initExpandAll('ESConfig');
+})
+    </script>
+  </a4j:outputPanel>
+</div>

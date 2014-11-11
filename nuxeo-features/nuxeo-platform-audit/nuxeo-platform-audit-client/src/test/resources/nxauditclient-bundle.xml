@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.audit.web">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
+    <action id="TAB_CONTENT_HISTORY" link="/incl/tabs/document_history.xhtml"
+        enabled="true" label="action.view.history" icon="/icons/file.gif"
+        order="100">
+      <category>VIEW_ACTION_LIST</category>
+      <filter id="view_content_history">
+        <rule grant="true">
+          <type>File</type>
+          <type>Folder</type>
+          <type>OrderedFolder</type>
+          <type>Workspace</type>
+          <type>Section</type>
+          <type>Domain</type>
+          <type>Note</type>
+          <type>Section</type>
+        </rule>
+      </filter>
+    </action>
+  </extension>
+
+</component>

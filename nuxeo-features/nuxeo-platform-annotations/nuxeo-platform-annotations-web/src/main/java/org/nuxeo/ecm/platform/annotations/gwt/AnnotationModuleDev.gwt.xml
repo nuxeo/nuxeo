@@ -1,0 +1,5 @@
+<module rename-to="org.nuxeo.ecm.platform.annotations.gwt.AnnotationModule">
+  <inherits name="org.nuxeo.ecm.platform.annotations.gwt.AnnotationModule" />
+  <set-property name="user.agent" value="gecko1_8,ie8" />
+  <set-property name="locale" value="en,fr" />
+</module>
