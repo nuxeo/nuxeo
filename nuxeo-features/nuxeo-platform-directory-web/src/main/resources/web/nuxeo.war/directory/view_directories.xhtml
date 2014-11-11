@@ -1,0 +1,55 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <c:if test="#{currentUser.administrator}">
+    <a4j:form id="selectDirectoryForm">
+    <div class="tabsContent">
+      <table class="dataInput">
+        <tbody>
+          <tr>
+            <td class="labelColumn">
+              <h:outputText value="#{messages['label.vocabulary.select']}" />
+            </td>
+            <td class="fieldColumn">
+              <h:selectOneMenu id="directoriesList" styleClass="dataInputText"
+                value="#{directoryUIActions.selectedDirectoryName}">
+                <c:forEach var="dirName"
+                  items="#{directoryUIActions.directoryNames}">
+                  <f:selectItem itemLabel="#{messages[dirName]}"
+                    itemValue="#{dirName}" />
+                </c:forEach>
+                <a4j:support event="onchange" reRender="selectDirectoryForm,directoryListingPanel"
+                  action="#{directoryUIActions.selectDirectory()}"
+                  ajaxSingle="true">
+                </a4j:support>
+              </h:selectOneMenu>
+            </td>
+            <td class="iconColumn">
+              <a4j:status>
+                <f:facet name="start">
+                  <h:graphicImage value="/img/standart_waiter.gif" />
+                </f:facet>
+              </a4j:status>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    </a4j:form>
+
+    <a4j:outputPanel id="directoryListingPanel" rendered="#{not empty directoryUIActions.selectedDirectoryName}">
+      <ui:include src="view_directory.xhtml"/>
+    </a4j:outputPanel>
+  </c:if>
+
+  <c:if test="#{!currentUser.administrator}">
+    Unauthorized user
+  </c:if>
+
+</div>
+

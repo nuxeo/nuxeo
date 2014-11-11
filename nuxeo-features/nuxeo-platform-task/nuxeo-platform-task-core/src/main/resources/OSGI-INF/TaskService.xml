@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.task.core.TaskService">
+
+  <documentation>
+    The TaskService provides necessary API to handle Task documents.
+    @author
+    <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.task.core.service.TaskServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.task.TaskService" />
+  </service>
+
+  <extension-point name="taskProvider">
+    <documentation>
+      This extension can be used to add task providers. a task provider must implement the TaskProvider interface.
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.task.TaskProviderDescriptor"/>
+  </extension-point>
+
+  <extension target="org.nuxeo.ecm.platform.task.core.TaskService"
+    point="taskProvider">
+    <taskProvider class="org.nuxeo.ecm.platform.task.core.service.DocumentTaskProvider"
+      id="documentTaskProvider"/>
+  </extension>
+
+</component>
