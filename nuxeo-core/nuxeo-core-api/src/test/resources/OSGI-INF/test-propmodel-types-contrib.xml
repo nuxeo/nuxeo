@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.api.test.propmodel.types">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="test" src="schemas/TestSchema.xsd" prefix="book" />
+    <schema name="noblob" prefix="nb" src="schemas/noblob.xsd" />
+    <schema name="simpleblob" src="schemas/simpleblob.xsd" />
+      <schema name="simpleblob2" src="schemas/simpleblob2.xsd" />
+      <schema name="simpleblob3" src="schemas/simpleblob3.xsd" />
+    <schema name="wihtoutpref" src="schemas/simpleblob.xsd" />
+    <schema name="blobinlist" prefix="bil" src="schemas/blobinlist.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="NoBlobDocument" extends="Document">
+      <schema name="noblob" />
+    </doctype>
+
+    <doctype name="SimpleBlobDocument" extends="Document">
+      <schema name="simpleblob" />
+    </doctype>
+
+    <doctype name="WithoutPrefixDocument" extends="Document"> 
+      <schema name="wihtoutpref" />
+    </doctype>
+
+    <doctype name="BlobInListDocument" extends="Document">
+      <schema name="blobinlist" />
+    </doctype>
+
+      <doctype name="BlobWithTwoSchemasContainingBlob" extends="Document">
+        <schema name="simpleblob" />
+        <schema name="simpleblob2" />
+      </doctype>
+
+      <doctype name="BlobWithOneSchemaContainingTwoBlobs" extends="Document">
+        <schema name="simpleblob3" />
+      </doctype>
+
+  </extension>
+
+</component>
