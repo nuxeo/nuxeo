@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXAudit Facade
+Bundle-SymbolicName: org.nuxeo.ecm.platform.audit.ejb
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.ecm.platform.audit.api,
+ org.nuxeo.ecm.platform.audit
+Export-Package: org.nuxeo.ecm.platform.audit.ejb,
+ org.nuxeo.ecm.platform.audit.ejb.local,
+ org.nuxeo.ecm.platform.audit.ejb.remote
+Nuxeo-Component: OSGI-INF/nxaudit-platform-contrib.xml

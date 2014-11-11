@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService">
+
+  <implementation class="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.audit.api.NXAuditEvents" />
+  </service>
+
+  <extension-point name="event">
+    <object class="org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor" />
+  </extension-point>
+
+  <extension-point name="extendedInfo">
+    <object
+      class="org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor" />
+  </extension-point>
+
+  <extension-point name="hibernateOptions">
+    <object
+      class="org.nuxeo.ecm.platform.audit.service.extension.HibernateOptionsDescriptor" />
+  </extension-point>
+
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+    point="event">
+    <event name="documentCreated" />
+    <event name="documentRemoved" />
+    <event name="documentModified" />
+    <event name="lifecycle_transition_event" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+    point="extendedInfo">
+    <extendedInfo key="title" expression="${source.dublincore.title}" />
+    <extendedInfo key="message" expression="${message.cacheKey}" />
+    <extendedInfo key="user" expression="${principal.name}" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+    point="hibernateOptions">
+    <hibernateOptions datasource="jdbc/nxaudits"/>
+  </extension>
+
+</component>

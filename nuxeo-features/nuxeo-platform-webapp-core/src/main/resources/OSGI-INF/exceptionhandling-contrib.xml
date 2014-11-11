@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.webapp.core.ExceptionHandlingContrib">
+  <require>org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingContrib</require>
+	<extension
+		target="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService"
+		point="listener">
+		<listener
+			class="org.nuxeo.ecm.webapp.shield.SeamExceptionHandlingListener" />
+	</extension>
+</component>
