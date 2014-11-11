@@ -1,0 +1,124 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  class="menu">
+
+    <c:if test="#{reducedTreeManager.treeModel != null}">
+
+      <style type="text/css">
+        a.selectedPath { background-color:#CCC; }
+      </style>
+
+      <script language="javascript">
+
+          function updateParent(value) {
+            PARENT_FORM_NAME = 'searchForm';
+            FIELD_NAME = 'searchscope';
+
+            parentSearchScope = opener.document.getElementById(PARENT_FORM_NAME + ':' + FIELD_NAME);
+            parentSearchScope.value = value;
+            self.close();
+          }
+
+          function chooseAndSelect(element, value) {
+            FORM_NAME = 'searchForm';
+            HIDDEN_FIELD_NAME = 'searchscope';
+            SELECTED_CLASS_NAME = 'selectedPath';
+
+            hiddenField = document.getElementById(FORM_NAME + ':' + HIDDEN_FIELD_NAME);
+            if (hiddenField != null) {
+              hiddenField.value = value;
+            }
+
+            selectedFields = document.getElementsByClassName(SELECTED_CLASS_NAME);
+            for(i=0; i &lt; selectedFields.length ; i++){
+              selectedFields[i].className = '';
+            }
+
+            element.className = SELECTED_CLASS_NAME;
+
+            return false;
+          }
+
+          function selectElement(element, value) {
+            if (opener == null) {
+              // embedded in a form
+              chooseAndSelect(element, value);
+            } else {
+              // in a popup
+              updateParent(value);
+            }
+          }
+        </script>
+
+      <a4j:region renderRegionOnly="true">
+        <dl>
+          <dd class="menuForm">
+            <a4j:outputPanel ajaxRendered="true">
+            <h:panelGroup id="treeNav">
+              <nxu:lazyTree value="#{reducedTreeManager.treeModel}"
+                showNav="false" showRootNode="true"
+                preserveToggle="false" clientSideToggle="false"
+                var="node" varNodeToggler="t">
+
+                <f:facet name="Document">
+                  <h:panelGroup>
+                    <div id="#{node.nodeCellId}"><a4j:commandLink
+                      immediate="true" rendered="#{node.doc.folder}"
+                      actionListener="#{t.setNodeSelected}"
+                      action="#{t.toggleExpanded}" reRender="treeNav">
+                      <t:graphicImage value="/img/toggle_minus.png"
+                        rendered="#{t.nodeExpanded}" />
+                      <t:graphicImage value="/img/toggle_plus.png"
+                        rendered="#{!t.nodeExpanded}" />
+                    </a4j:commandLink> <span class="popupTarget" docRef="#{node.doc.ref}">
+                    <nxd:restDocumentLink document="#{node.doc}"
+                      actionListener="#{t.setNodeSelected}"
+                      rendered="#{node.doc.folder}"
+                      styleClass="treeLink">
+                      <nxu:graphicImage
+                        value="#{nxd:iconExpandedPath(node.doc)}"
+                        alt="#{node.doc.type}"
+                        rendered="#{t.nodeExpanded}" />
+                      <nxu:graphicImage
+                        value="#{nxd:iconPath(node.doc)}"
+                        alt="#{node.doc.type}"
+                        rendered="#{!t.nodeExpanded}" />
+                    </nxd:restDocumentLink> <a style="cursor:pointer"
+                      onclick="selectElement(this, '#{node.doc.path}')">
+                      <h:outputText value="#{nxd:titleOrId(node.doc)}" />
+                    </a> <t:graphicImage value="/img/transp.gif"
+                      styleClass="iconImage"
+                      rendered="#{!node.doc.folder}" />
+                    <nxd:restDocumentLink document="#{node.doc}"
+                      actionListener="#{t.setNodeSelected}"
+                      action="#{reducedTreeManager.selectNode}"
+                      styleClass="treeLink"
+                      rendered="#{!node.doc.folder}">
+                      <t:graphicImage value="#{node.doc.common.icon}"
+                        styleClass="iconImage"
+                        rendered="#{!node.doc.folder}" />
+                      <h:outputText value="#{nxd:titleOrId(node.doc)}" />
+                    </nxd:restDocumentLink> </span></div>
+                  </h:panelGroup>
+                </f:facet>
+
+              </nxu:lazyTree>
+            </h:panelGroup>
+            </a4j:outputPanel>
+
+          </dd>
+        </dl>
+
+      </a4j:region>
+
+    </c:if>
+
+</div>

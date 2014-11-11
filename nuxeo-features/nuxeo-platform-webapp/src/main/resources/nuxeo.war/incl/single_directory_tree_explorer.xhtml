@@ -1,0 +1,43 @@
+<a4j:region xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+  <h:form rendered="#{directoryTreeManager.initialized}">
+    <h:panelGroup id="directoryTreeNav">
+        <t:tree2 value="${treeModel}" showNav="false" showRootNode="true"
+          preserveToggle="true" clientSideToggle="false" var="node"
+          varNodeToggler="t">
+
+          <f:facet name="defaultDirectoryTreeNode">
+          <h:panelGroup>
+            <div class="#{nxu:test(node.selected, 'selected', '')}">
+              <!-- This link manage the Navigation -->
+              <h:commandLink immediate="true"
+                actionListener="#{t.setNodeSelected}"
+                action="#{t.toggleExpanded}">
+                <t:graphicImage value="/img/toggle_minus.png"
+                  rendered="#{node.leaf or t.nodeExpanded}" />
+                <t:graphicImage value="/img/toggle_plus.png"
+                  rendered="#{!node.leaf and !t.nodeExpanded}" />
+              </h:commandLink>
+
+              <!-- This link is the one which perform the search for matching documents -->
+              <h:commandLink immediate="true"
+                actionListener="#{t.setNodeSelected}"
+                action="#{node.selectNode}" styleClass="treeLink">
+                <t:graphicImage value="/img/yellow-folder-open.png"
+                  rendered="#{t.nodeExpanded}" />
+                <t:graphicImage value="/img/yellow-folder-closed.png"
+                  rendered="#{!t.nodeExpanded}" />
+                <h:outputText value="#{messages[node.description]}" />
+              </h:commandLink>
+            </div>
+            </h:panelGroup>
+          </f:facet>
+        </t:tree2>
+    </h:panelGroup>
+  </h:form>
+</a4j:region>

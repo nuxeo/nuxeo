@@ -1,0 +1,10 @@
+<nxu:methodResult name="provider"
+                  value="#{resultsProvidersCache.get('DOMAIN_PUBLISHED_DOCUMENTS')}">
+  <ui:decorate template="/incl/foldable_box_document_listing.xhtml"
+     xmlns:ui="http://java.sun.com/jsf/facelets">
+    <ui:param name="documents" value="#{provider.currentPage}" />
+    <ui:param name="provider" value="#{provider}" />
+    <ui:param name="heading" value="#{messages['title.last.published.documents']}" />
+    <ui:param name="idParam" value="DOMAIN_PUBLISHED_DOCUMENTS" />
+  </ui:decorate>
+</nxu:methodResult>

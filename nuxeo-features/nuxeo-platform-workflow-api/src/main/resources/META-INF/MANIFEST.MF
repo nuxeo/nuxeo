@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Workflow API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.workflow.api;singleton:=true
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: false

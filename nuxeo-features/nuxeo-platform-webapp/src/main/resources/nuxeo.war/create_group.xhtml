@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:define name="page title">Nuxeo 5 EP</ui:define>
+
+  <ui:define name="body">
+    <ui:include src="/incl/message_banner.xhtml" />
+    <h:form id='createGroup_form'>
+    <div>
+      <ui:include src="/groupManager_action_tabs.xhtml" />
+      <div style="clear:both"></div>
+    </div>
+
+    <div class="tabsContent">
+      <h3>
+        <h:outputText value="#{messages['title.createGroup']}" />
+      </h3>
+  
+      <table cellspacing="0" cellpadding="0" border="0">
+        <tbody>
+          <tr class="dataInput">
+            <td class="labelColumn">
+              <h:outputText styleClass="required"
+                value="#{messages['label.groupManager.groupName']}" />
+            </td>
+            <td class="fieldColumn">
+              <h:inputText id="groupName" value="#{newGroup.name}"
+                class="dataInputText" />
+              <br />
+              <h:message styleClass="errorMessage" for="groupName" />
+            </td>
+          </tr>
+          <tr>
+            <td class="labelColumn">
+              <h:outputText
+                value="#{messages['label.groupManager.userMembers']}" />
+            </td>
+            <td>
+              <table cellspacing="5" cellpadding="0" border="0">
+                <tbody>
+                  <tr>
+                    <td valign="top" colspan="2">
+                      <ui:include
+                        src="/incl/select_users_search.xhtml">
+                        <ui:param name="searchType" value="USER_TYPE" />
+                      </ui:include>
+                    </td>
+                  </tr>
+                  <tr class="rightsAddManager">
+                    <td valign="top" align="center">
+                      <ui:include
+                        src="/incl/select_users_results.xhtml">
+                        <ui:param name="searchLocation"
+                          value="USER_MANAGEMENT" />
+                      </ui:include>
+                    </td>
+                    <td valign="top" align="center">
+                      <ui:include
+                        src="/incl/select_users_selection.xhtml">
+                        <ui:param name="searchLocation"
+                          value="USER_MANAGEMENT" />
+                      </ui:include>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr class="dataInput">
+            <td class="labelColumn">
+              <h:outputText
+                value="#{messages['label.groupManager.groupMembers']}" />
+            </td>
+            <td class="fieldColumn">
+              <h:selectManyListbox value="#{newGroup.memberGroups}">
+                <f:selectItems
+                  value="#{groupManagerActions.availableGroups}" />
+              </h:selectManyListbox>
+            </td>
+          </tr>
+          <tr class="dataInput">
+            <td />
+            <td>
+              <h:commandButton type="submit"
+                value="#{messages['command.save']}"
+                action="#{groupManagerActions.saveGroup}"
+                class="button" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    </h:form>
+  </ui:define>
+
+</nxthemes:composition>

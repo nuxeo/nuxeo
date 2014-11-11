@@ -1,0 +1,1422 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module relativePaths="false" type="JAVA_MODULE" version="4"> 
+  <component name="FacetManager"> 
+    <facet type="javaeeApplication" name="javaEEApplication" implicit="true"> 
+      <configuration> 
+        <descriptors> 
+          <deploymentDescriptor name="application.xml" url="file://$MODULE_DIR$/src/main/resources/OSGI-INF/templates/application.xml" optional="false" version="5"/> 
+        </descriptors>  
+        <building> 
+          <setting name="EXPLODED_URL" value="file://"/>  
+          <setting name="EXPLODED_ENABLED" value="false"/>  
+          <setting name="JAR_URL" value="file://"/>  
+          <setting name="JAR_ENABLED" value="false"/>  
+          <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="false"/>  
+          <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false"/>  
+          <setting name="EXCLUDE_EXPLODED_DIRECTORY" value="true"/> 
+        </building> 
+      </configuration> 
+    </facet>  
+    <facet type="web" name="Web" implicit="true"> 
+      <configuration> 
+        <descriptors> 
+          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/src/main/resources/OSGI-INF/templates/web.xml" optional="false" version="2.5"/> 
+        </descriptors>  
+        <webroots> 
+          <root url="file://$MODULE_DIR$/src/main/resources/OSGI-INF/templates" relative="/WEB-INF"/> 
+        </webroots>  
+        <sourceRoots> 
+          <root url="file://$MODULE_DIR$/src/main/resources"/> 
+        </sourceRoots>  
+        <building> 
+          <setting name="EXPLODED_URL" value="file://"/>  
+          <setting name="EXPLODED_ENABLED" value="false"/>  
+          <setting name="JAR_URL" value="file://"/>  
+          <setting name="JAR_ENABLED" value="false"/>  
+          <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="false"/>  
+          <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false"/>  
+          <setting name="EXCLUDE_EXPLODED_DIRECTORY" value="true"/>  
+          <setting name="RUN_JASPER_VALIDATION" value="true"/>  
+          <setting name="BUILD_ONLY_WEB_RESOURCES" value="false"/> 
+        </building>  
+        <packaging> 
+          <containerElement type="module" name="nuxeo-platform-ear"> 
+            <attribute name="method" value="1"/>  
+            <attribute name="URI" value="/WEB-INF/classes"/> 
+          </containerElement> 
+        </packaging> 
+      </configuration> 
+    </facet> 
+  </component>  
+  <component name="NewModuleRootManager" inherit-compiler-output="false"> 
+    <output url="file://$MODULE_DIR$/target/classes"/>  
+    <exclude-output/>  
+    <output-test url="file://$MODULE_DIR$/target/test-classes"/>  
+    <content url="file://$MODULE_DIR$"> 
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" isTestSource="false"/>
+      <excludeFolder url="file://$MODULE_DIR$/target"/>
+    </content>  
+    <orderEntry type="inheritedJdk"/>  
+    <orderEntry type="sourceFolder" forTests="false"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-workflow-document-facade"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/jboss-common/4.0.4.GA/jboss-common-4.0.4.GA.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/jboss-jmx/4.0.4.GA/jboss-jmx-4.0.4.GA.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-search-core"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-workflow-document"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/dojotoolkit/custom_rhino/0.4.3/custom_rhino-0.4.3.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/javax/servlet/jstl/1.1.2/jstl-1.1.2.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/opensymphony/quartz-all/1.5.2/quartz-all-1.5.2.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-dublincore"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/rome/rome/0.8/rome-0.8.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-relations-web"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-types-core"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-workflow-api"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/openoffice/jurt/2.2.0/jurt-2.2.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/xalan/xalan/2.7.0/xalan-2.7.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform"/>  
+    <orderEntry type="module" module-name="nuxeo-runtime-jboss-adapter"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-audit-client"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/jboss-remoting/4.0.4.GA/jboss-remoting-4.0.4.GA.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/commons-el/commons-el/1.0/commons-el-1.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/javax/transaction/jta/1.0.1B/jta-1.0.1B.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/restlet/org.restlet/1.0.1/org.restlet-1.0.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-core-jcr-connector"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/slf4j/slf4j-api/1.3.0/slf4j-api-1.3.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-core"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-cache-jboss"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/lucene/lucene-core/2.0.0/lucene-core-2.0.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/net/sf/ezmorph/ezmorph/0.9/ezmorph-0.9.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/ejb3/3.0-RC8/ejb3-3.0-RC8.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/bsh/bsh/2.0b1/bsh-2.0b1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-core-api"/>  
+    <orderEntry type="module" module-name="nuxeo-theme-core"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/net/sourceforge/jena/iri/2.4/iri-2.4.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/com/thoughtworks/xstream/xstream/1.1.3/xstream-1.1.3.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/jgroups/2.2.9/jgroups-2.2.9.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/hibernate/asm/3.1-final/asm-3.1-final.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-theme-jsf"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jmimemagic/jmimemagic/0.1.2/jmimemagic-0.1.2.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/myfaces/trinidad/trinidad-api/1.0.1-incubating-NXEP51M2/trinidad-api-1.0.1-incubating-NXEP51M2.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-forum"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/commons-fileupload/commons-fileupload/1.1.1/commons-fileupload-1.1.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/jbpm-identity/3.1.4/jbpm-identity-3.1.4.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-archive-facade"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-usermanager-core"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-modifier"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/jboss-aop-jdk50/1.4.0.SP1/jboss-aop-jdk50-1.4.0.SP1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-cache-client"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/net/sourceforge/jena/arq/2.4/arq-2.4.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/jboss-serialization/1.0.0-RC1/jboss-serialization-1.0.0-RC1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/opensymphony/compass-core/1.1/compass-core-1.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/javax/servlet/servlet-api/2.4/servlet-api-2.4.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/xml-apis/xmlParserAPIs/2.0.2/xmlParserAPIs-2.0.2.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-actions-core"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-webapp"/>  
+    <orderEntry type="module" module-name="nuxeo-core-query"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/commons-collections/commons-collections/3.1/commons-collections-3.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/junit/junit/3.8.2/junit-3.8.2.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-types-api"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/commons-validator/commons-validator/1.3.1/commons-validator-1.3.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/myfaces/tomahawk/tomahawk/1.1.5/tomahawk-1.1.5.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/com/noelios/restlet/com.noelios.restlet/1.0.1/com.noelios.restlet-1.0.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-login"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/commons-codec/commons-codec/1.3/commons-codec-1.3.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-relations-core"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/hibernate/hibernate-annotations/3.2.0.ga/hibernate-annotations-3.2.0.ga.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/cup/java-cup/0.11a/java-cup-0.11a.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-workflow-document-api"/>  
+    <orderEntry type="module" module-name="nuxeo-common"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-search-api"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/cglib/cglib/2.1_3/cglib-2.1_3.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-api"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-archive-api"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-versioning-core"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-syndication"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/concurrent/concurrent/1.3.4/concurrent-1.3.4.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-uidgen-core"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/com/sun/xml/xsom/20060306/xsom-20060306.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-ui-web"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-api-test"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jdom/jdom/1.0/jdom-1.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-comment"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/commons-digester/commons-digester/1.6/commons-digester-1.6.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-transform-plugins"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-filemanager-core"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-directory-sql"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/jboss-cache-jdk50/1.4.0.SP1/jboss-cache-jdk50-1.4.0.SP1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/cssparser/cssparser/0.9.4-fix/cssparser-0.9.4-fix.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/xerces/xmlParserAPIs/2.6.2/xmlParserAPIs-2.6.2.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-runtime-test"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/xpp3/xpp3_min/1.1.3.4.O/xpp3_min-1.1.3.4.O.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/opensymphony/compass-gps/1.1/compass-gps-1.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-events-facade"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/derby/derby/10.2.1.6/derby-10.2.1.6.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-core-schema"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/net/sf/json-lib/json-lib/0.9/json-lib-0.9.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-core-facade"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/geronimo/specs/geronimo-jta_1.0.1B_spec/1.0.1/geronimo-jta_1.0.1B_spec-1.0.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/openoffice/unoil/2.2.0/unoil-2.2.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/xerces/xercesImpl/2.7.1/xercesImpl-2.7.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/freemarker/freemarker/2.3.8/freemarker-2.3.8.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-theme-jsf-editor-web"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-workflow-jbpm"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/restlet/org.restlet.ext.fileupload/1.0.1/org.restlet.ext.fileupload-1.0.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-notification-web"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/poi/poi/3.0-alpha3/poi-3.0-alpha3.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/asm/asm-attrs/1.5.3/asm-attrs-1.5.3.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/pdfbox/pdfbox/0.7.2/pdfbox-0.7.2.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/jboss-j2ee/4.0.4.GA/jboss-j2ee-4.0.4.GA.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/slf4j/slf4j-log4j12/1.3.0/slf4j-log4j12-1.3.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/commons-logging/commons-logging-api/1.1/commons-logging-api-1.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-directory-ldap"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-directory-core"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/commons-jexl/commons-jexl/1.1/commons-jexl-1.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/xstream/xstream/1.1.3/xstream-1.1.3.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/hibernate/asm-attrs/3.1-final/asm-attrs-3.1-final.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-userdata"/>  
+    <orderEntry type="module" module-name="nuxeo-theme-fragments"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-workflow-core"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/commons-beanutils/commons-beanutils/1.7.0/commons-beanutils-1.7.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/jbpm/3.1.4/jbpm-3.1.4.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/javax/persistence/persistence-api/1.0/persistence-api-1.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-events-core"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-events-api"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/com/artofsolving/jodconverter/2.1.1/jodconverter-2.1.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/com/sun/xml/relaxngDatatype/1.0/relaxngDatatype-1.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/icu4j/icu4j/3.4/icu4j-3.4.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/hibernate/jdbc-stdext/2.0/jdbc-stdext-2.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/javax/el/el-api/unknown/el-api-unknown.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/jboss-system/4.0.4.GA/jboss-system-4.0.4.GA.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/textmining/tm-extractors/0.4/tm-extractors-0.4.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-scheduler-core"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-notification-facade"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/hibernate/hibernate/3.2.0.ga/hibernate-3.2.0.ga.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/nekohtml/nekohtml/0.9.4/nekohtml-0.9.4.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-workflow-client"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/net/sourceforge/jena/jena/2.4/jena-2.4.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-archive-web"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/myfaces/myfaces/1.0.9/myfaces-1.0.9.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-relations-api"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/javax/jcr/jcr/1.0/jcr-1.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-relations-jena-plugin"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/asm/asm/1.5.3/asm-1.5.3.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/cglib-jboss/2.1.2/cglib-jboss-2.1.2.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/javax/jms/jms/1.1/jms-1.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-audit-core"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/openoffice/juh/2.2.0/juh-2.2.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-runtime-template"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-audit-api"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-search-compass-plugin"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/net/sf/ehcache/ehcache/1.2/ehcache-1.2.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/commons-lang/commons-lang/2.2/commons-lang-2.2.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-placeful-facade"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-audit-facade"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/com/noelios/restlet/com.noelios.restlet.ext.servlet/1.0.1/com.noelios.restlet.ext.servlet-1.0.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-cache-server"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-workflow-jbpm-document-handlers"/>  
+    <orderEntry type="module" module-name="nuxeo-runtime-osgi"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jmock/jmock/1.0.1/jmock-1.0.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-runtime"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-usermanager-impl"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/poi/poi-scratchpad/3.0-alpha3/poi-scratchpad-3.0-alpha3.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/oro/oro/2.0.8/oro-2.0.8.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-workflow-facade"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-search-facade"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-placeful-core"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/javax/faces/jsf-api/1.2_04/jsf-api-1.2_04.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/joda-time/joda-time/1.4/joda-time-1.4.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/hsqldb/hsqldb/1.8.0.1/hsqldb-1.8.0.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/javax/jws/jsr181/1.0/jsr181-1.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-notification-core"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/net/sf/opencsv/opencsv/1.7/opencsv-1.7.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-mimetype-core"/>  
+    <orderEntry type="module" module-name="nuxeo-theme-jsf-editor"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/openoffice/ridl/2.2.0/ridl-2.2.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/commons-io/commons-io/1.2/commons-io-1.2.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-transform-core"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jsr170/jcr/1.0/jcr-1.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-webapp-core"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-usermanager-facade"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-search-core-listener"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-cache-api"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-versioning-api"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-relations-search"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-url-api"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-comment-api"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-webapp-types"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-notification-api"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-userdata-core-contrib"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-comment-web"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-comment-core"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-url-facade"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-url-core"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-filemanager-facade"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-ws"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-usermanager-api"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/myfaces/trinidad/trinidad-impl/1.0.1-incubating-NXEP51M2/trinidad-impl-1.0.1-incubating-NXEP51M2.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-types-facade"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-cache-web"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-publishing"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/commons-logging/commons-logging/1.0.4/commons-logging-1.0.4.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-audit-search"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-directory-types-contrib"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-mimetype-api"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/net/sf/ehcache/1.2.3/ehcache-1.2.3.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-filemanager-api"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-transform-api"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-forum-core"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-relations-facade"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-mimetype-facade"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/osgi/osgi-core/4.1/osgi-core-4.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/jackrabbit/jackrabbit-text-extractors/1.3.3/jackrabbit-text-extractors-1.3.3.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/jackrabbit/jackrabbit-api/1.3.3/jackrabbit-api-1.3.3.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/jackrabbit/jackrabbit-jcr-commons/1.3.3/jackrabbit-jcr-commons-1.3.3.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/jackrabbit/jackrabbit-core/1.3.3/jackrabbit-core-1.3.3.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-forms-layout-api"/>  
+    <orderEntry type="module" module-name="nuxeo-core-io"/>  
+    <orderEntry type="module" module-name="nuxeo-core-io-api"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-directory-api"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/antlr/antlr/2.7.7/antlr-2.7.7.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-publishing-api"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-audit-io"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-io-core"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-io-api"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-imaging-api"/>  
+    <orderEntry type="module" module-name="nuxeo-core-jca"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-imaging-facade"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-content-template-manager"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jaxen/jaxen/1.1-beta-8/jaxen-1.1-beta-8.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/xom/xom/1.1/xom-1.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-directory-facade"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-domsync-core"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/lucene/lucene-analyzers/2.0.0/lucene-analyzers-2.0.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-io-client"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-io-facade"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-directory-multi"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-imaging-core"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/net/java/dev/mistral/EditableImage/0.9.5/EditableImage-0.9.5.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/javax/media/jai_core/1.1.2_01/jai_core-1.1.2_01.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/com/sun/media/mlib_jai/1.1.2_01/mlib_jai-1.1.2_01.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/com/sun/media/jai_codec/1.1.2_01/jai_codec-1.1.2_01.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/net/java/dev/mistral/JAI-Adapter/0.9.5/JAI-Adapter-0.9.5.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/net/java/dev/mistral/Operations/0.9.5/Operations-0.9.5.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/net/java/dev/mistral/metadata-extractor/2.3.1/metadata-extractor-2.3.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/directory/server/apacheds-core-shared/1.5.1/apacheds-core-shared-1.5.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/directory/shared/shared-ldap/0.9.7/shared-ldap-0.9.7.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/directory/shared/shared-asn1/0.9.7/shared-asn1-0.9.7.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/directory/shared/shared-ldap-constants/0.9.7/shared-ldap-constants-0.9.7.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/directory/server/apacheds-core/1.5.1/apacheds-core-1.5.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/directory/server/apacheds-schema-bootstrap/1.5.1/apacheds-schema-bootstrap-1.5.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/directory/server/apacheds-schema-registries/1.5.1/apacheds-schema-registries-1.5.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/directory/server/apacheds-constants/1.5.1/apacheds-constants-1.5.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jdbm/jdbm/1.0/jdbm-1.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/directory/server/apacheds-utils/1.5.1/apacheds-utils-1.5.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/directory/server/apacheds-jdbm-store/1.5.1/apacheds-jdbm-store-1.5.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/directory/server/apacheds-btree-base/1.5.1/apacheds-btree-base-1.5.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/directory/server/apacheds-bootstrap-extract/1.5.1/apacheds-bootstrap-extract-1.5.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/directory/server/apacheds-kerberos-shared/1.5.1/apacheds-kerberos-shared-1.5.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/mina/mina-core/1.1.2/mina-core-1.1.2.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/directory/server/apacheds-protocol-shared/1.5.1/apacheds-protocol-shared-1.5.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-platform-relations-io"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-imaging-transform"/>  
+    <orderEntry type="module" module-name="nuxeo-platform-forms-layout-client"/>  
+    <orderEntryProperties/> 
+  </component>  
+  <component name="copyright"> 
+    <Base> 
+      <setting name="state" value="2"/> 
+    </Base> 
+  </component> 
+</module>

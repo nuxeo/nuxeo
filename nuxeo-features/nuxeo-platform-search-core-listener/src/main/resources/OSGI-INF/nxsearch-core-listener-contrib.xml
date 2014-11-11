@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.search.core.listener.IndexingDocumentModelPrefetched">
+
+  <documentation> Core event listener that takes care of document model prefetched data
+    indexing. This listener is useful to index in a synchronous way minimum document model
+    data so that document updates can show up directly after one request.</documentation>
+
+  <extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
+    point="listener">
+
+
+    <!-- XXX We need to go last which is not necessarily ensured here with an 1000 order value -->
+    <listener name="indexingPrefetched"
+      class="org.nuxeo.ecm.platform.search.core.listener.IndexingDocumentModelPrefetchedListener"
+      order="1000"/>
+
+  </extension>
+
+</component>
+
+

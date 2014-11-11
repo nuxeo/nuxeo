@@ -1,0 +1,14 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <nxu:methodResult name="actions"
+    value="#{commentManagerActions.getActionsForComment()}">
+    <t:dataList var="action" value="#{actions}">
+      <nxh:commandButton action="#{action.getLink()}"
+        value="#{messages[action.label]}" styleClass="button" type="submit"/>
+    </t:dataList>
+  </nxu:methodResult>
+
+</div>
