@@ -1,0 +1,22 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory">
+<c:if test="false">
+  This template is deprecated
+</c:if>
+
+    <h:commandButton value="#{messages['command.search']}"
+      action="#{searchActions.performSearch}" class="button" />
+
+    <h:commandButton value="#{messages['command.clearSearch']}"
+      action="#{searchActions.reset}" class="button" />
+
+    <h:outputText value="#{searchActions.queryErrorMsg}"
+      class="error" />
+
+</div>
