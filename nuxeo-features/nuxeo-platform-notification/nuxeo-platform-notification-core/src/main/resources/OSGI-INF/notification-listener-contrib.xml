@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.notification.listener" version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+
+    <documentation>
+      Copy relations from the source document to the newly published proxy.
+    </documentation>
+
+    <listener name="proxySubscriptionPropagationListener" async="false" postCommit="false"
+      class="org.nuxeo.ecm.platform.ec.notification.ProxySubscriptionPropagationListener" priority="-20">
+      <event>documentProxyPublished</event>
+    </listener>
+
+    <documentation>
+     Then the notifications to subscribed users.
+    </documentation>
+
+    <listener name="notificationListener" async="true" postCommit="true"
+      class="org.nuxeo.ecm.platform.ec.notification.NotificationEventListener" priority="120">
+    </listener>
+
+  </extension>
+
+</component>

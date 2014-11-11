@@ -1,0 +1,120 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+     xmlns:nxd="http://nuxeo.org/nxweb/document"
+     xmlns:nxh="http://nuxeo.org/nxweb/html"
+     xmlns:nxu="http://nuxeo.org/nxweb/util"
+     xmlns:rich="http://richfaces.org/rich"
+     class="menu">
+
+  <a4j:outputPanel ajaxRendered="true">
+    <a4j:form ajaxSubmit="true" id="publishTreeForm">
+      <h:panelGroup rendered="#{!empty defaultPublishingRoots}">
+        <h:panelGrid class="dataInput" columnClasses="labelColumn, fieldColumn"
+                     columns="2">
+          <h:panelGroup>
+            <h:outputText value="#{messages['label.publish.sections']}"/>
+          </h:panelGroup>
+          <h:panelGroup>
+            <h:selectOneListbox class="dataInputText" size="1"
+                                value="#{adminPublishActions.currentSectionRootId}">
+              <nxu:selectItems value="#{defaultPublishingRoots}"
+                               var="root"
+                               itemValue="#{root.id}"
+                               itemLabel="#{root.dublincore.title}"/>
+              <a4j:support event="onchange" reRender="sectionTree,sectionList"
+                           ignoreDupResponses="true"/>
+            </h:selectOneListbox>
+          </h:panelGroup>
+        </h:panelGrid>
+
+        <dl>
+          <dd class="menuForm">
+            <h:panelGroup id="sectionTree">
+              <rich:tree
+                      icon="#{nodeState.isExpanded(rowKey)?nxd:iconExpandedPath(node.document):nxd:iconPath(node.document)}"
+                      iconLeaf="#{nxd:iconPath(node.document)}"
+                      iconExpanded="/icons/toggle_minus.png"
+                      iconCollapsed="/icons/toggle_plus.png"
+                      rowKeyVar="rowKey"
+                      stateVar="nodeState">
+                <rich:recursiveTreeNodesAdaptor
+                        roots="#{adminPublishActions.currentSectionsTree}"
+                        nodes="#{node.children}"
+                        var="node">
+                  <rich:treeNode
+                          highlightedClass="treeNodeHighlightedClass"
+                          selectedClass="treeNodeSelectedClass">
+                    <h:outputText value="#{nxd:titleOrId(node.document)}"/>
+                    <nxu:methodResult name="canAddSection"
+                                      value="#{adminPublishActions.canAddSection(node.document)}">
+                      <a4j:commandLink immediate="true"
+                                       rendered="#{canAddSection}"
+                                       action="#{adminPublishActions.addSection(node.document.id)}"
+                                       reRender="sectionList">
+                        <h:graphicImage value="/icons/back.png"/>
+                        <h:outputText
+                                value="#{messages['label.publish.add.section']}"/>
+                      </a4j:commandLink>
+                    </nxu:methodResult>
+                  </rich:treeNode>
+                </rich:recursiveTreeNodesAdaptor>
+              </rich:tree>
+            </h:panelGroup>
+          </dd>
+        </dl>
+      </h:panelGroup>
+
+      <a4j:outputPanel id="sectionList">
+        <h:panelGroup rendered="#{!empty adminPublishActions.selectedSections}">
+
+          <h:outputText value="#{messages['label.publish.selected.sections']}"/>
+
+          <nxu:dataTable value="#{adminPublishActions.selectedSections}"
+                         var="section"
+                         preserveSort="true" preserveDataModel="false"
+                         rowClasses="dataRowEven,dataRowOdd" sortable="false"
+                         styleClass="dataList">
+
+            <!-- Remove -->
+            <nxu:column styleClass="iconColumn">
+              <a4j:commandLink immediate="true"
+                               action="#{adminPublishActions.removeSection(section.id)}"
+                               reRender="sectionList"
+                               ignoreDupResponses="true">
+                <h:graphicImage value="/icons/action_delete.gif"/>
+              </a4j:commandLink>
+            </nxu:column>
+
+            <!-- Name -->
+            <nxu:column>
+              <f:facet name="header">
+                <h:outputText
+                        value="#{messages['label.content.header.title']}"/>
+              </f:facet>
+              <nxu:methodResult name="formattedPath"
+                                value="#{adminPublishActions.getFormattedPath(section)}">
+                <nxd:restDocumentLink document="#{section}">
+                  <h:outputText value="#{formattedPath}"/>
+                </nxd:restDocumentLink>
+              </nxu:methodResult>
+            </nxu:column>
+          </nxu:dataTable>
+
+
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{empty adminPublishActions.selectedSections}">
+
+          <h:outputText
+                  value="#{messages['label.publish.selected.sections.empty']}"/>
+
+        </h:panelGroup>
+
+      </a4j:outputPanel>
+
+
+    </a4j:form>
+  </a4j:outputPanel>
+</div>
