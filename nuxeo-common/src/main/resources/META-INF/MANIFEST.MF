@@ -1,0 +1,33 @@
+Export-Package: org.nuxeo.common,
+ org.nuxeo.common.collections,
+ org.nuxeo.common.debug,
+ org.nuxeo.common.logging,
+ org.nuxeo.common.persistence,
+ org.nuxeo.common.server,
+ org.nuxeo.common.utils,
+ org.nuxeo.common.utils.i18n,
+ org.nuxeo.common.xmap,
+ org.nuxeo.common.xmap.annotation
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: Nuxeo Common
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.4.2.qualifier
+Eclipse-BuddyPolicy: registered
+Bundle-ManifestVersion: 2
+Import-Package: javax.naming,
+ javax.naming.spi,
+ javax.resource,
+ javax.transaction.xa,
+ javax.xml.parsers,
+ org.apache.commons.io,
+ org.apache.commons.logging,
+ org.apache.commons.lang.builder,
+ org.apache.xml.serialize,
+ org.w3c.dom,
+ org.w3c.dom.ranges,
+ org.xml.sax
+Bundle-SymbolicName: org.nuxeo.common;singleton:=true
