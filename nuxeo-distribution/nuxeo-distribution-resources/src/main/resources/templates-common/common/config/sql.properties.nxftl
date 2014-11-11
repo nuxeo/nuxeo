@@ -1,0 +1,12 @@
+# Jena database type and transaction mode
+<#if "${nuxeo.db.type}" == "postgresql">
+org.nuxeo.ecm.sql.jena.databaseType=PostgreSQL
+<#elseif "${nuxeo.db.type}" == "oracle">
+org.nuxeo.ecm.sql.jena.databaseType=Oracle
+<#elseif "${nuxeo.db.type}" == "mssql">
+org.nuxeo.ecm.sql.jena.databaseType=MsSQL
+<#elseif "${nuxeo.db.type}" == "mysql">
+org.nuxeo.ecm.sql.jena.databaseType=MySQL
+<#else>
+org.nuxeo.ecm.sql.jena.databaseType=Derby 
+</#if>
