@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.theme.styling.tests.themeStylingContrib3">
+
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+
+    <!-- check no append behaviour + override default flavor-->
+    <themePage name="testStyling/default">
+      <defaultFlavor>dark</defaultFlavor>
+      <flavors>
+        <flavor>dark</flavor>
+      </flavors>
+    </themePage>
+
+    <!-- check multiple append behaviour -->
+    <themePage name="testStyling/print">
+      <flavors append="true">
+        <flavor>subDark</flavor>
+      </flavors>
+    </themePage>
+    <themePage name="testStyling/print">
+      <defaultFlavor>default</defaultFlavor>
+      <flavors append="true">
+        <flavor>nonExistingFlavor</flavor>
+      </flavors>
+    </themePage>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.styling.service" point="flavors">
+
+    <flavor name="dark">
+      <logo>
+        <title>Darxeo</title>
+      </logo>
+      <presetsList append="true">
+        <presets category="color" src="themes/palettes/dark-colors2.properties" />
+      </presetsList>
+    </flavor>
+
+  </extension>
+
+</component>
