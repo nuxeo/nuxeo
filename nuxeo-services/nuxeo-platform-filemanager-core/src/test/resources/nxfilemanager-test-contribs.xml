@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.filemanager.service.FileManagerService.xxx">
+
+  <extension target="org.nuxeo.ecm.platform.filemanager.service.FileManagerService" point="plugins">
+    <plugin name="plug" class="org.nuxeo.ecm.platform.filemanager.FooPlugin">
+      <filter>text/plain</filter>
+      <filter>text/rtf</filter>
+    </plugin>
+  </extension>
+  
+</component>
+
