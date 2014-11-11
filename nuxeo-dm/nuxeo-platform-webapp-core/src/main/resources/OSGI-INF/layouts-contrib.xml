@@ -1,0 +1,491 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layouts.webapp">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="title_and_permlink">
+
+      <documentation>
+        This widgets displays the document title with a permlink icon. If the
+        document is a version, the major and minor are displayed in parenthesis.
+
+        Three fields are required :
+        <ul>
+          <li>an empty field to map the document</li>
+          <li>the major version field</li>
+          <li>the minor version field</li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/title_with_permlink_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="nature" type="selectOneDirectory">
+      <labels>
+        <label mode="any">label.dublincore.nature</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:nature</field>
+      </fields>
+      <properties mode="any">
+        <property name="directoryName">nature</property>
+        <property name="localize">true</property>
+      </properties>
+    </widget>
+
+    <widget name="subjects" type="template">
+      <labels>
+        <label mode="any">label.dublincore.subject</label>
+      </labels>
+      <helpLabels>
+        <label mode="edit">label.dublincore.subjects.info</label>
+      </helpLabels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:subjects</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">/widgets/subjects_widget.xhtml</property>
+      </properties>
+    </widget>
+
+    <widget name="rights" type="text">
+      <labels>
+        <label mode="any">label.dublincore.rights</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:rights</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="source" type="text">
+      <labels>
+        <label mode="any">label.dublincore.source</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:source</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="coverage" type="template">
+      <labels>
+        <label mode="any">label.dublincore.coverage</label>
+      </labels>
+      <helpLabels>
+        <label mode="edit">label.dublincore.coverage.info</label>
+      </helpLabels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:coverage</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">/widgets/coverage_widget.xhtml</property>
+      </properties>
+    </widget>
+
+    <widget name="created" type="datetime">
+      <labels>
+        <label mode="any">label.dublincore.created</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:created</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+      </properties>
+      <widgetModes>
+        <mode value="any">view</mode>
+        <mode value="pdf">pdf</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="modified" type="datetime">
+      <labels>
+        <label mode="any">label.dublincore.modified</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:modified</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+      </properties>
+      <widgetModes>
+        <mode value="any">view</mode>
+        <mode value="pdf">pdf</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="format" type="text">
+      <labels>
+        <label mode="any">label.dublincore.format</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:format</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="language" type="text">
+      <labels>
+        <label mode="any">label.dublincore.language</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:language</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="expired" type="datetime">
+      <labels>
+        <label mode="any">label.dublincore.expired</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:expired</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateFormater()}</property>
+      </properties>
+      <properties widgetMode="edit">
+        <property name="format">#{nxu:basicDateFormater()}</property>
+      </properties>
+    </widget>
+
+    <widget name="author" type="template">
+      <labels>
+        <label mode="any">label.dublincore.creator</label>
+      </labels>
+      <helpLabels>
+        <label mode="edit">label.dublincore.author.info</label>
+      </helpLabels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:contributors/0</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+        <mode value="pdf">pdf</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="template">
+          /widgets/single_user_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="contributors" type="template">
+      <labels>
+        <label mode="any">label.dublincore.contributors</label>
+      </labels>
+      <helpLabels>
+        <label mode="edit">label.dublincore.contributors.info</label>
+      </helpLabels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:contributors</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">/widgets/contributors_widget.xhtml</property>
+      </properties>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="lastContributor" type="template">
+      <labels>
+        <label mode="any">label.dublincore.lastContributor</label>
+      </labels>
+      <helpLabels>
+        <label mode="edit">label.dublincore.lastContributor.info</label>
+      </helpLabels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:lastContributor</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+        <mode value="pdf">pdf</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="template">
+          /widgets/single_user_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="title" type="text">
+      <labels>
+        <label mode="any">title</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:title</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="description" type="textarea">
+      <labels>
+        <label mode="any">description</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:description</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="file" type="template">
+      <labels>
+        <label mode="any">label.file.content</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>file:content</field>
+        <field>file:filename</field>
+      </fields>
+      <widgetModes>
+        <mode value="full_edit">edit</mode>
+        <mode value="edit">edit</mode>
+        <mode value="view">view</mode>
+        <mode value="view">preview</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="template">/widgets/extended_file_widget.xhtml</property>
+      </properties>
+    </widget>
+
+    <widget name="note" type="richtext_with_mimetype">
+      <labels>
+        <label mode="any">note</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>note:note</field>
+        <field>note:mime_type</field>
+      </fields>
+      <properties mode="view">
+        <property name="translatedHtml">
+          #{noteActions.translateImageLinks(field_0)}
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="files" type="template">
+      <labels>
+        <label mode="any">label.files.files</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field schema="files">files</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">
+          /widgets/files_list_widget_template.xhtml
+        </property>
+      </properties>
+      <properties widgetMode="edit">
+        <property name="diff">true</property>
+      </properties>
+      <widgetModes>
+        <mode value="full_edit">edit</mode>
+        <mode value="edit">edit</mode>
+        <mode value="view">view</mode>
+        <mode value="view">preview</mode>
+      </widgetModes>
+      <subWidgets>
+        <widget name="file" type="template">
+          <labels>
+            <label mode="any"></label>
+          </labels>
+          <fields>
+            <field>file</field>
+            <field>filename</field>
+          </fields>
+          <properties mode="any">
+            <property name="template">
+              /widgets/extended_subfile_widget.xhtml
+            </property>
+          </properties>
+          <properties widgetMode="edit">
+            <property name="required">true</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="header_title_and_permlink" type="title_and_permlink">
+      <fields>
+        <field></field>
+        <field>uid:major_version</field>
+        <field>uid:minor_version</field>
+      </fields>
+      <labels>
+        <label mode="any"></label>
+      </labels>
+    </widget>
+
+    <widget name="header_description" type="textarea">
+      <fields>
+        <field>dc:description</field>
+      </fields>
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <properties mode="any">
+        <property name="styleClass">currentDocumentDescription</property>
+      </properties>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="heading">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>title</widget>
+        </row>
+        <row>
+          <widget>description</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="dublincore">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>nature</widget>
+        </row>
+        <row>
+          <widget>subjects</widget>
+        </row>
+        <row>
+          <widget>rights</widget>
+        </row>
+        <row>
+          <widget>source</widget>
+        </row>
+        <row>
+          <widget>coverage</widget>
+        </row>
+        <row>
+          <widget>created</widget>
+        </row>
+        <row>
+          <widget>modified</widget>
+        </row>
+        <row>
+          <widget>format</widget>
+        </row>
+        <row>
+          <widget>language</widget>
+        </row>
+        <row>
+          <widget>expired</widget>
+        </row>
+        <row>
+          <widget>author</widget>
+        </row>
+        <row>
+          <widget>contributors</widget>
+        </row>
+        <row>
+          <widget>lastContributor</widget>
+        </row>
+      </rows>
+
+    </layout>
+
+    <layout name="file">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>file</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="note">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>note</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="files">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>files</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="document_header">
+      <templates>
+        <template mode="any">/layouts/layout_div_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>header_title_and_permlink</widget>
+        </row>
+        <row>
+          <widget>header_description</widget>
+        </row>
+      </rows>
+    </layout>
+
+  </extension>
+
+</component>
