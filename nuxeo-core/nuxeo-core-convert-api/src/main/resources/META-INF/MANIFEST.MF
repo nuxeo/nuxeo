@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXCore Covert API
+Bundle-SymbolicName: org.nuxeo.ecm.core.convert.api
+Bundle-Localization: plugin
+Require-Bundle: org.nuxeo.ecm.core.api
+Bundle-Vendor: Nuxeo
+Export-Package: org.nuxeo.ecm.core.convert.api
+
