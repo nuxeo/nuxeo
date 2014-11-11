@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXCoreConvert
+Bundle-SymbolicName: org.nuxeo.ecm.core.convert
+Bundle-Localization: plugin
+Require-Bundle: org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.convert.api
+Bundle-Vendor: Nuxeo
+Export-package: org.nuxeo.ecm.core.convert.cache,
+ org.nuxeo.ecm.core.convert.extension,
+ org.nuxeo.ecm.core.convert.service
+Bundle-Category: runtime
+Nuxeo-Component: OSGI-INF/convert-service-framework.xml
+Bundle-Activator: org.nuxeo.ecm.core.convert.service.CacheCGTaskActivator

@@ -1,0 +1,212 @@
+# (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+#
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the GNU Lesser General Public License
+# (LGPL) version 2.1 which accompanies this distribution, and is available at
+# http://www.gnu.org/licenses/lgpl.html
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# Lesser General Public License for more details.
+#
+# Contributors:
+#     Florent Guillaume
+
+# Variables used:
+# ${idType} NVARCHAR(36)
+# ${fulltextCatalog} configured catalog
+# ${fulltextTriggerStatements} repeated for all suffixes SFX:
+#   :NEW.fulltextSFX := :NEW.simpletextSFX || :NEW.binarytextSFX;
+
+# Conditions used:
+# fulltextEnabled
+
+############################################################
+
+
+#CATEGORY: beforeTableCreation
+
+
+#IF: fulltextEnabled
+#TEST:
+SELECT name FROM sys.fulltext_catalogs WHERE name = '${fulltextCatalog}'
+
+#IF: fulltextEnabled
+#IF: emptyResult
+CREATE FULLTEXT CATALOG [${fulltextCatalog}];
+
+
+############################################################
+
+
+#CATEGORY: afterTableCreation
+
+
+IF OBJECT_ID('dbo.nxTrigCascadeDelete', 'TR') IS NOT NULL
+  DROP TRIGGER dbo.nxTrigCascadeDelete;
+
+CREATE TRIGGER nxTrigCascadeDelete ON [hierarchy]
+INSTEAD OF DELETE AS
+BEGIN
+  SET NOCOUNT ON;
+  WITH subtree(id, parentid) AS (
+    SELECT id, parentid
+    FROM deleted
+  UNION ALL
+    SELECT h.id, h.parentid
+    FROM [hierarchy] h
+    JOIN subtree ON subtree.id = h.parentid
+  )
+  DELETE FROM [hierarchy]
+    FROM [hierarchy] h
+    JOIN subtree
+    ON subtree.id = h.id;
+END;
+
+
+IF OBJECT_ID('dbo.NX_ACCESS_ALLOWED', 'FN') IS NOT NULL
+  DROP FUNCTION dbo.NX_ACCESS_ALLOWED;
+
+CREATE FUNCTION NX_ACCESS_ALLOWED(@id ${idType}, @users NVARCHAR(4000), @perms NVARCHAR(4000))
+RETURNS TINYINT AS
+BEGIN
+  DECLARE @allusers NVARCHAR(4000);
+  DECLARE @allperms NVARCHAR(4000);
+  DECLARE @first TINYINT;
+  DECLARE @curid ${idType};
+  DECLARE @newid ${idType};
+  DECLARE @gr TINYINT;
+  DECLARE @pe VARCHAR(1000);
+  DECLARE @us VARCHAR(1000);
+  SET @allusers = N'|' + @users + N'|';
+  SET @allperms = N'|' + @perms + N'|';
+  SET @first = 1;
+  SET @curid = @id;
+  WHILE @curid IS NOT NULL BEGIN
+    DECLARE @cur CURSOR;
+    SET @cur = CURSOR FAST_FORWARD FOR
+      SELECT [grant], [permission], [user] FROM [acls]
+      WHERE [id] = @curid ORDER BY [pos];
+    OPEN @cur;
+    FETCH FROM @cur INTO @gr, @pe, @us;
+    WHILE @@FETCH_STATUS = 0 BEGIN
+      IF @allusers LIKE (N'%|' + @us + N'|%') AND @allperms LIKE (N'%|' + @pe + N'|%')
+      BEGIN
+        CLOSE @cur;
+        RETURN @gr;
+      END;
+      FETCH FROM @cur INTO @gr, @pe, @us;
+    END;
+    CLOSE @cur;
+    SET @newid = (SELECT [parentid] FROM [hierarchy] WHERE [id] = @curid);
+    IF @first = 1 AND @newid IS NULL BEGIN
+      SET @newid = (SELECT [versionableid] FROM [versions] WHERE [id] = @curid);
+    END;
+    SET @first = 0;
+    SET @curid = @newid;
+  END;
+  RETURN 0;
+END;
+
+
+IF OBJECT_ID('dbo.NX_IN_TREE', 'FN') IS NOT NULL
+  DROP FUNCTION dbo.NX_IN_TREE;
+
+CREATE FUNCTION NX_IN_TREE(@id ${idType}, @baseid ${idType})
+RETURNS TINYINT AS
+BEGIN
+  DECLARE @curid ${idType};
+  IF @baseid IS NULL OR @id IS NULL OR @baseid = @id RETURN 0;
+  SET @curid = @id;
+  WHILE @curid IS NOT NULL BEGIN
+    SET @curid = (SELECT [parentid] FROM [hierarchy] WHERE [id] = @curid);
+    IF @curid = @baseid RETURN 1;
+  END;
+  RETURN 0;
+END;
+
+
+IF OBJECT_ID('dbo.NX_CLUSTER_INVAL', 'P') IS NOT NULL
+  DROP PROCEDURE dbo.NX_CLUSTER_INVAL;
+
+CREATE PROCEDURE NX_CLUSTER_INVAL(@i ${idType}, @f VARCHAR(8000), @k TINYINT)
+AS
+BEGIN
+  DECLARE @nid SMALLINT;
+  DECLARE @cur CURSOR;
+  SET @cur = CURSOR FAST_FORWARD FOR
+    SELECT [nodeid] FROM [cluster_nodes] WHERE [nodeid] <> @@SPID;
+  OPEN @cur;
+  FETCH FROM @cur INTO @nid;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    INSERT INTO [cluster_invals] ([nodeid], [id], [fragments], [kind]) VALUES (@nid, @i, @f, @k);
+    FETCH FROM @cur INTO @nid;
+  END;
+  CLOSE @cur;
+END;
+
+
+# ##### upgrade tag / nxp_tagging (since Nuxeo 5.3.2) #####
+
+#TEST:
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'NXP_TAGGING' AND TABLE_CATALOG = db_name();
+
+#IF: ! emptyResult
+LOG.INFO Upgrading tags
+
+#IF: ! emptyResult
+IF OBJECT_ID('dbo.NX_UPGRADE_TAGS', 'P') IS NOT NULL
+  DROP PROCEDURE dbo.NX_UPGRADE_TAGS;
+
+#IF: ! emptyResult
+CREATE PROCEDURE NX_UPGRADE_TAGS
+AS
+BEGIN
+  -- make tags placeless
+  UPDATE hierarchy SET parentid = NULL WHERE primarytype = 'Tag' AND isproperty = 0;
+  -- make tagging hierarchy
+  UPDATE nxp_tagging SET id = lower(newid());
+  INSERT INTO hierarchy (id, name, isproperty, primarytype)
+    SELECT tg.id, t.label, 0, 'Tagging'
+      FROM nxp_tagging tg
+      JOIN tag t ON tg.tag_id = t.id;
+  -- make tagging relation
+  INSERT INTO relation (id, source, target)
+    SELECT id, document_id, tag_id FROM nxp_tagging;
+  -- make tagging dublincore (save is_private into coverage just in case)
+  INSERT INTO dublincore (id, title, creator, created, coverage)
+    SELECT tg.id, t.label, tg.author, tg.creation_date, tg.is_private
+      FROM nxp_tagging tg
+      JOIN tag t ON tg.tag_id = t.id;
+  -- drop now useless table
+  DROP TABLE nxp_tagging;
+  -- remove old tags root
+  DELETE FROM hierarchy
+    WHERE name = 'tags' AND primarytype = 'HiddenFolder' AND isproperty = 0
+      AND parentid IN (SELECT id FROM hierarchy WHERE primarytype = 'Root' AND isproperty = 0);
+END;
+
+#IF: ! emptyResult
+EXEC NX_UPGRADE_TAGS
+
+
+############################################################
+
+
+#CATEGORY: addClusterNode
+
+# delete nodes for sessions that don't exist anymore
+DELETE FROM N FROM cluster_nodes N WHERE
+  HAS_PERMS_BY_NAME(null, null, 'VIEW SERVER STATE') = 1
+  AND NOT EXISTS(
+    SELECT 1 FROM sys.dm_exec_sessions S WHERE
+      S.is_user_process = 1 AND N.nodeid = S.session_id);
+
+INSERT INTO cluster_nodes (nodeid, created) VALUES (@@SPID, CURRENT_TIMESTAMP);
+
+
+#CATEGORY: removeClusterNode
+
+DELETE FROM cluster_nodes WHERE nodeid = @@SPID;
+
