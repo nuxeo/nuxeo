@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.management.CoreManagementComponent">
+
+  <implementation class="org.nuxeo.ecm.core.management.CoreManagementComponent" />
+
+  <require>org.nuxeo.ecm.core.repository.RepositoryService</require>
+  <!-- TODO: Cannot use this ince content template is not in the core .. find another solution. 
+  <require>org.nuxeo.ecm.platform.content.template.service.ContentTemplateService</require>
+  -->
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.management.api.ProbeManager" />
+    <provide
+      interface="org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager" />
+    <provide
+      interface="org.nuxeo.ecm.core.management.api.AdministrativeStatusManager" />
+    <provide
+      interface="org.nuxeo.ecm.core.event.EventStats" />
+  </service>
+
+  <extension-point name="probes">
+    <object class="org.nuxeo.ecm.core.management.probes.ProbeDescriptor" />
+  </extension-point>
+
+  <extension-point name="serviceDefinition">
+    <object
+      class="org.nuxeo.ecm.core.management.statuses.AdministrableServiceDescriptor" />
+  </extension-point>
+
+  <extension-point name="storageConfiguration">
+    <object
+      class="org.nuxeo.ecm.core.management.storage.DocumentStoreConfigurationDescriptor" />
+  </extension-point>
+
+  <extension-point name="storageHandlers">
+    <object
+      class="org.nuxeo.ecm.core.management.storage.DocumentStoreHandlerDescriptor" />
+  </extension-point>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="mgmt-guards" class="org.nuxeo.ecm.core.management.guards.GuardsCacheUpdater"/>
+  </extension>
+  
+</component>
