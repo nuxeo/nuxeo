@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+  version="1.0">
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.core.search.api.client.SearchService" />
+  </service>
+
+  <implementation
+    class="org.nuxeo.ecm.core.search.service.SearchServiceImpl" />
+
+  <extension-point name="searchEngineBackend">
+    <object
+      class="org.nuxeo.ecm.core.search.backend.SearchEngineBackendDescriptor" />
+  </extension-point>
+
+  <extension-point name="resource">
+    <object
+      class="org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceDescriptor" />
+  </extension-point>
+
+  <extension-point name="indexableDocType">
+    <object
+      class="org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.IndexableDocTypeDescriptor" />
+  </extension-point>
+
+  <extension target="org.nuxeo.ecm.platform.api.PlatformService"
+    point="servers">
+    <server name="default" host="localhost">
+      <service class="org.nuxeo.ecm.core.search.service.SearchService"
+        jndiName="%SearchServiceBean" />
+    </server>
+  </extension>
+
+  <extension-point name="resourceType">
+    <object
+      class="org.nuxeo.ecm.core.search.api.indexing.resources.configuration.ResourceTypeDescriptor" />
+  </extension-point>
+
+</component>
