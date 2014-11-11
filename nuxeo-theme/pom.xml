@@ -1,0 +1,107 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-ecm</artifactId>
+    <version>5.3.0</version>
+  </parent>
+
+  <groupId>org.nuxeo.theme</groupId>
+  <artifactId>nuxeo-theme-parent</artifactId>
+  <name>Nuxeo Theme Parent</name>
+  <packaging>pom</packaging>
+  <description>
+    Nuxeo Theme: Parent. Nuxeo Theme is a full-featured high-level web rendering
+    framework used to compose the UI and the look and feel of web applications.
+  </description>
+
+  <properties>
+    <nuxeo.common.version>1.6.0</nuxeo.common.version>
+    <nuxeo.runtime.version>1.6.0</nuxeo.runtime.version>
+    <nuxeo.services.version>${pom.version}</nuxeo.services.version>
+    <nuxeo.theme.version>${pom.version}</nuxeo.theme.version>
+  </properties>
+
+  <modules>
+    <module>nuxeo-theme-core</module>
+    <module>nuxeo-theme-fragments</module>
+    <module>nuxeo-theme-html</module>
+  </modules>
+
+  <organization>
+    <name>Chalmers University</name>
+    <url>http://www.chalmers.se/</url>
+  </organization>
+
+  <developers>
+    <developer>
+      <id>jmorliaguet</id>
+      <name>Jean-Marc Orliaguet</name>
+      <email>jmo@chalmers.se</email>
+      <organization>University of Chalmers</organization>
+      <organizationUrl>http://www.chalmers.se</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-theme</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-theme</developerConnection>
+    <url>http://hg.nuxeo.org/nuxeo/nuxeo-theme</url>
+  </scm>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.common</groupId>
+        <artifactId>nuxeo-common</artifactId>
+        <version>${nuxeo.common.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-osgi</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-rendering</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.nuxeo.theme</groupId>
+        <artifactId>nuxeo-theme-core</artifactId>
+        <version>${nuxeo.theme.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.theme</groupId>
+        <artifactId>nuxeo-theme-fragments</artifactId>
+        <version>${nuxeo.theme.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.theme</groupId>
+        <artifactId>nuxeo-theme-html</artifactId>
+        <version>${nuxeo.theme.version}</version>
+      </dependency>
+
+      <!-- scope test -->
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-test</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+</project>
