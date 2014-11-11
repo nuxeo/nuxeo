@@ -1,0 +1,6 @@
+<component name="test:dummy">
+	<implementation class="org.nuxeo.runtime.annotated.DummyComponent"/>
+    <service>
+      <provide interface="org.nuxeo.runtime.annotated.DummyAnnotated"/>
+  </service>
+</component>
