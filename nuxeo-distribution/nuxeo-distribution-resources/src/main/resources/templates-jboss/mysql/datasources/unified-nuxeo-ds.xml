@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources>
+  <local-tx-datasource>
+    <jndi-name>NuxeoDS</jndi-name>
+    <connection-url>jdbc:mysql://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}?relaxAutoCommit=true</connection-url>
+    <driver-class>com.mysql.jdbc.Driver</driver-class>
+    <user-name>${nuxeo.db.user}</user-name>
+    <password>${nuxeo.db.password}</password>
+    <min-pool-size>${nuxeo.db.min-pool-size}</min-pool-size>
+    <max-pool-size>${nuxeo.db.max-pool-size}</max-pool-size>
+  </local-tx-datasource>
+</datasources>

@@ -1,0 +1,65 @@
+<project name="nuxeo-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+
+
+
+  <target name="init" unless="init.done">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <property name="stagedir" value="${outdir}/stage" />
+    <property name="init.done" value="true" />
+  </target>
+
+  <target name="build" depends="init" unless="no.build">
+    <delete dir="${outdir}/${distribution}" failonerror="false" />
+    <antcall target="build-resources">
+      <param name="distribution" value="jetty-base" />
+    </antcall>
+    <delete dir="${outdir}/${distribution}" failonerror="false" />
+    <antcall target="build-resources">
+      <param name="distribution" value="doc" />
+    </antcall>
+    <delete dir="${outdir}/bin" failonerror="false" />
+    <unzip dest="${outdir}/bin">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-windows-startup:${nuxeo.windows.version}:zip" />
+    </unzip>
+    <antcall target="build-resources">
+      <param name="distribution" value="bin" />
+    </antcall>
+    <delete dir="${outdir}/${distribution}" failonerror="false" />
+    <antcall target="build-resources">
+      <param name="distribution" value="templates-jboss" />
+    </antcall>
+    <delete dir="${outdir}/${distribution}" failonerror="false" />
+    <antcall target="build-resources">
+      <param name="distribution" value="templates-jboss-dm" />
+    </antcall>
+    <delete dir="${outdir}/${distribution}" failonerror="false" />
+    <antcall target="build-resources">
+      <param name="distribution" value="templates-tomcat" />
+    </antcall>
+    <antcall target="build-resources">
+      <param name="distribution" value="templates-jetty" />
+    </antcall>
+  </target>
+
+  <target name="build-resources"
+          depends="init"
+          description="Build resources package for ${distribution}"
+          unless="no.alternate.build">
+    <copy todir="${outdir}/${distribution}" overwrite="true">
+      <fileset dir="src/main/resources/${distribution}" />
+    </copy>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
+         basedir="${outdir}/${distribution}" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
+                     classifier="${distribution}"
+                     type="zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}" />
+  </target>
+
+</project>

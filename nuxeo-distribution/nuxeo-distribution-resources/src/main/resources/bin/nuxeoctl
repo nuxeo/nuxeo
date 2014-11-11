@@ -1,0 +1,598 @@
+#!/bin/bash
+#####
+#
+# Nuxeo startup script
+# Inspired/copied from RedHat JBoss's run.sh and Apache Tomcat's catalina.sh
+#
+#####
+
+
+# Helper functions
+
+warn() {
+  echo "WARNING: $*"
+}
+
+die() {
+  echo "ERROR: $*"
+  exit 1
+}
+
+
+# OS detection
+
+cygwin=false
+darwin=false
+linux=false
+
+case "`uname`" in
+  CYGWIN*) cygwin=true;;
+  Darwin*) darwin=true;;
+  Linux) linux=true;;
+esac
+
+
+# Get dirname and progname
+
+PRG="$0"
+
+# follow symlinks
+while [ -h "$PRG" ]; do
+  ls=`ls -ld "$PRG"`
+  link=`expr "$ls" : '.*-> \(.*\)$'`
+  if expr "$link" : '/.*' > /dev/null; then
+    PRG="$link"
+  else
+    PRG=`dirname "$PRG"`/"$link"
+  fi
+done
+
+DIRNAME=`dirname "$PRG"`
+PROGNAME=`basename "$PRG"`
+
+
+# Read nuxeo.conf
+# We can't just source it as sh/bash don't like dots in variable names
+
+if [ "x$NUXEO_CONF" = "x" ]; then
+  NUXEO_CONF="$DIRNAME/nuxeo.conf"
+fi
+if [ -r "$NUXEO_CONF" ]; then
+  while read confline
+  do
+    if [ "x$confline" = "x" ]; then
+      continue
+    fi
+    if [[ "$confline" == \#* ]]; then
+      continue
+    fi
+    key="$(echo $confline | cut -d= -f1)"
+    value="$(echo $confline | cut -d= -f2-)"
+    if [[ "$key" == "nuxeo.log.dir" ]]; then
+      read -r LOG_DIR <<< $value
+    fi
+    if [[ "$key" == "nuxeo.pid.dir" ]]; then
+      read -r PID_DIR <<< $value
+    fi
+    if [[ "$key" == "nuxeo.data.dir" ]]; then
+      read -r DATA_DIR <<< $value
+    fi
+    if [[ "$key" == "nuxeo.tmp.dir" ]]; then
+      read -r TMP_DIR <<< $value
+    fi
+    if [[ "$key" == "nuxeo.bind.address" ]]; then
+      read -r BIND_ADDRESS <<< $value
+    fi
+    if [[ "$key" == *.* ]]; then
+      continue
+    fi
+    eval "$key=\"$value\""
+  done < $NUXEO_CONF
+fi
+
+
+# For Cygwin, ensure paths are in UNIX format before anything is touched
+
+if [ "$cygwin" = "true" ]; then
+  [ -n "$JAVA_HOME" ] && JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
+  [ -n "$CLASSPATH" ] && CLASSPATH=`cygpath --path --unix "$CLASSPATH"`
+  [ -n "$JBOSS_HOME" ] && JBOSS_HOME=`cygpath --unix "$JBOSS_HOME"`
+  [ -n "$CATALINA_HOME" ] && CATALINA_HOME=`cygpath --unix "$CATALINA_HOME"`
+  [ -n "$JETTY_HOME" ] && JETTY_HOME=`cygpath --unix "$JETTY_HOME"`
+  [ -n "$NUXEO_HOME" ] && NUXEO_HOME=`cygpath --unix "$NUXEO_HOME"`
+fi
+
+
+# Setup the JVM (find JAVA_HOME if undefined; use JAVA if defined)
+if [ -z "$JAVA" ]; then
+    JAVA="java"
+fi
+if [ -z "$JAVA_HOME" ]; then
+  JAVA=`which $JAVA`
+
+  # follow symlinks
+  while [ -h "$JAVA" ]; do
+    ls=`ls -ld "$JAVA"`
+    link=`expr "$ls" : '.*-> \(.*\)$'`
+    if expr "$link" : '/.*' > /dev/null; then
+      JAVA="$link"
+    else
+      JAVA=`dirname "$JAVA"`/"$link"
+    fi
+  done
+  JAVA_HOME=`dirname "$JAVA"`
+  JAVA_HOME=`dirname "$JAVA_HOME"`
+fi
+PATH="$JAVA_HOME/bin:$PATH"
+
+# Setup NUXEO_HOME
+if [ -z "$NUXEO_HOME" ]; then
+  if [ -n "$JBOSS_HOME" ]; then NUXEO_HOME="$JBOSS_HOME"
+  elif [ -n "$CATALINA_HOME" ]; then NUXEO_HOME="$CATALINA_HOME"
+  elif [ -n "$JETTY_HOME" ]; then NUXEO_HOME="$JETTY_HOME"
+  else NUXEO_HOME=`cd "$DIRNAME"/..; pwd`
+  fi
+fi
+
+
+# Layout setup
+
+# LOG_DIR
+
+if [ -z "$LOG_DIR" ]; then
+  LOG_DIR="$NUXEO_HOME/log"
+elif [[ "$LOG_DIR" != /* ]]; then
+  LOG_DIR="$NUXEO_HOME/$LOG_DIR"
+fi
+LOG="$LOG_DIR/console.log"
+
+# PID_DIR
+
+if [ -z "$PID_DIR" ]; then
+  PID_DIR="$LOG_DIR"
+elif [[ "$PID_DIR" != /* ]]; then
+  PID_DIR="$NUXEO_HOME/$PID_DIR"
+fi
+PID="$PID_DIR/nuxeo.pid"
+
+
+# Where possible, increase the maximum number of file descriptors
+if [ "$cygwin" = "false" ]; then
+  MAX_FD_LIMIT=`ulimit -H -n`
+  if [ $? -eq 0 ]; then
+    if [ "$darwin" = "true" ] && [ "$MAX_FD_LIMIT" = "unlimited" ]; then
+      MAX_FD_LIMIT=`sysctl -n kern.maxfilesperproc`
+    fi
+    ulimit -n $MAX_FD_LIMIT
+  else
+    warn "Could not get system maximum file descriptor limit: $MAX_FD_LIMIT"
+  fi
+fi
+
+
+# Force IPv4
+JAVA_OPTS="$JAVA_OPTS -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true"
+
+
+# If -server not set in JAVA_OPTS, set it, if supported
+SERVER_SET=`echo $JAVA_OPTS | grep "\-server"`
+if [ "x$SERVER_SET" = "x" ]; then
+  # Check for SUN(tm) JVM w/ HotSpot support
+  if [ "x$HAS_HOTSPOT" = "x" ]; then
+    HAS_HOTSPOT=`"$JAVA" -version 2>&1 | grep -i HotSpot`
+  fi
+  # Enable -server if we have Hotspot, unless we can't
+  if [ "x$HAS_HOTSPOT" != "x" ]; then
+    # MacOS does not support -server flag
+    if [ "$darwin" != "true" ]; then
+      JAVA_OPTS="-server $JAVA_OPTS"
+    fi
+  fi
+fi
+
+# Bind address
+if [ "x$BIND_ADDRESS" = "x" ]; then
+  BIND_ADDRESS=0.0.0.0
+fi
+
+# Application server detection
+# We're checking for the presence of the jars used to start each server
+
+jboss=false
+tomcat=false
+jetty=false
+
+jbossjar="$NUXEO_HOME/bin/run.jar"
+tomcatjar="$NUXEO_HOME/bin/bootstrap.jar"
+jettyjar="`ls $NUXEO_HOME/nuxeo-runtime-launcher*.jar 2>/dev/null || echo null`"
+
+if [ -f "$jbossjar" ]; then jboss=true
+elif [ -f "$tomcatjar" ]; then tomcat=true
+elif [ "$jettyjar" != "null" ]; then jetty=true
+else die "Could not find startup jars for either JBoss, Tomcat or Jetty in $NUXEO_HOME"
+fi
+
+
+# Application server-specific stuff
+# Those won't work with cygwin without transforming them back first, need to rethink this part
+
+#
+# JBOSS
+#
+if [ "$jboss" = "true" ]; then
+
+  # TODO: remove since Nuxeo is no more compliant with Java 1.5
+  # Fix JRE 1.5/1.6 issue with script-api.jar
+  IS_JRE_6=`"$JAVA" -version 2>&1|grep "version \"1\.6"`
+  NUXEO_EAR="$NUXEO_HOME/server/default/deploy/nuxeo.ear"
+  JAVA5_APIS="script-api"
+  for java5_api in $JAVA5_APIS;
+  do
+  if [ ! -z "$IS_JRE_6" ]; then
+    #echo "Java 1.6 detected"
+    JAVA5_API=`ls "$NUXEO_EAR"/lib/$java5_api*.jar 2>/dev/null || echo "null"`
+    if [ -f "$JAVA5_API" ]; then
+      echo "Moving $JAVA5_API out of classpath (already provided by Java6)"
+      mkdir "$NUXEO_EAR"/lib-jre1.5/ 2>/dev/null
+      mv "$JAVA5_API" "$NUXEO_EAR"/lib-jre1.5/
+    fi
+  else
+    #echo "Assumed Java 1.5"
+    JAVA5_API=`ls "$NUXEO_EAR"/lib/$java5_api*.jar 2>/dev/null || echo "null"`
+    if [ ! -f "$JAVA5_API" ]; then
+      echo "Moving $JAVA5_API into classpath"
+      mv "$NUXEO_EAR"/lib-jre1.5/$java5_api*.jar "$NUXEO_EAR"/lib/ 2>/dev/null || \
+      echo "Missing $java5_api in $NUXEO_EAR/lib/ or $NUXEO_EAR/lib-jre1.5/" >&2
+    fi
+  fi
+  done
+
+  # Paths and specific options
+  TMP_OVERRIDE="false"
+  if [ -n "$TMP_DIR" ]; then
+    TMP_OVERRIDE="true"
+  fi
+  TMP_DIR=${TMP_DIR:-server/default/tmp}
+
+  DATA_DIR=${DATA_DIR:-server/default/data/NXRuntime/data}
+  JBOSS_DATA_DIR=${JBOSS_DATA_DIR:-"$NUXEO_HOME"/server/default/data}
+  NUXEO_CLASSPATH="$CLASSPATH:$jbossjar"
+  NUXEO_ENDORSED="$NUXEO_HOME/lib/endorsed"
+  NUXEO_BOOTJAR_PATH="$NUXEO_HOME/server/default/lib/*"
+  LOG4J_CONF="file:$NUXEO_HOME/server/default/conf/jboss-log4j.xml"
+
+#
+# TOMCAT
+#
+elif [ "$tomcat" = "true" ]; then
+  # Paths and specific options
+  TMP_DIR=${TMP_DIR:-tmp}
+  CATALINA_TEMP=${CATALINA_TEMP:-$TMP_DIR}
+  if [[ "$CATALINA_TEMP" != /* ]]; then
+    CATALINA_TEMP="$NUXEO_HOME/$CATALINA_TEMP"
+  fi
+  DATA_DIR=${DATA_DIR:-nxserver/data}
+  NUXEO_CLASSPATH="$CLASSPATH:$tomcatjar"
+  NUXEO_BOOTJAR_PATH="$NUXEO_HOME/nxserver/bundles/*:$NUXEO_HOME/lib/*"
+  TMP_DIR=${TMP_DIR:-$NUXEO_HOME/temp}
+  LOG4J_CONF="file:$NUXEO_HOME/lib/log4j.xml"
+
+#
+# JETTY
+#
+elif [ "$jetty" = "true" ]; then
+  # Paths and specific options
+  TMP_DIR=${TMP_DIR:-tmp}
+  DATA_DIR=${DATA_DIR:-data}
+  NXC_VERSION=`basename $jettyjar | cut -d"-" -f4-`
+  NUXEO_CLASSPATH="$CLASSPATH:$jettyjar"
+  NUXEO_BOOTJAR_PATH="$NUXEO_HOME/bundles/*:$NUXEO_HOME/lib/*"
+  NUXEO_BUNDLES="$NUXEO_HOME/bundles/.:$NUXEO_HOME/lib/.:$NUXEO_HOME/config"
+  JAVA_OPTS="$JAVA_OPTS -Djava.rmi.server.RMIClassLoaderSpi=org.nuxeo.runtime.launcher.NuxeoRMIClassLoader"
+  JAVA_OPTS="$JAVA_OPTS -Dsun.lang.ClassLoader.allowArraySyntax=true"
+  JAVA_OPTS="$JAVA_OPTS -Dderby.system.home=$DATA_DIR/derby"
+  JAVA_OPTS="$JAVA_OPTS -Dorg.nuxeo.launcher.libdirs=lib"
+  LOG4J_CONF="file:$NUXEO_HOME/config/log4j.xml"
+
+#
+# Oops
+#
+
+else
+  die "Oops, something went very wrong, I'm not supposed to be here !"
+fi
+
+if [ "$cygwin" = "true" ]; then
+  NUXEO_CLASSPATH=`cygpath --path --windows "$NUXEO_CLASSPATH"`
+  NUXEO_BOOTJAR_PATH=`cygpath --path --windows "$NUXEO_BOOTJAR_PATH"`
+  NUXEO_HOME=`cygpath --absolute --windows "$NUXEO_HOME"`
+  NUXEO_CONF=`cygpath --absolute --windows "$NUXEO_CONF"`
+  LOG4J_CONF=`cygpath --absolute --windows "$LOG4J_CONF"`
+
+  [ "$jboss" = "true" ] && NUXEO_ENDORSED=`cygpath --absolute --windows "$NUXEO_ENDORSED"`
+  [ "$tomcat" = "true" ] && CATALINA_TEMP==`cygpath --absolute --windows "$CATALINA_TEMP"`
+  [ "$jetty" = "true" ] && NUXEO_BUNDLES=`cygpath --path --windows "$NUXEO_BUNDLES"`
+fi
+
+# Set absolute path for data directory
+if [[ "$DATA_DIR" != /* ]]; then
+  DATA_DIR="$NUXEO_HOME/$DATA_DIR"
+fi
+
+# Set absolute path for tmp directory if any
+if [ -n "$TMP_DIR" ]; then
+  if [[ "$TMP_DIR" != /* ]]; then
+    TMP_DIR="$NUXEO_HOME/$TMP_DIR"
+  fi
+fi
+
+# Check old paths (NXP-5370, NXP-5460)
+## look for h2 and derby directories (JBoss)
+check_old_paths() {
+  if [ "$jboss" = "true" ] && \
+    ( [ -e "$NUXEO_HOME"/server/default/data/h2 ] || [ -e "$NUXEO_HOME"/server/default/data/derby ] ); then
+    echo ERROR: Deprecated paths used \(NXP-5370, NXP-5460\).
+    die "Please move 'h2' and 'derby' directories from \"$NUXEO_HOME\"/server/default/data/ to \"$DATA_DIR\""
+    exit 1
+  fi
+}
+
+# Check if nuxeo.conf used has not changed since last run (if not first run)
+check_nuxeo_conf() {
+  return 1
+}
+
+generate_configuration() {
+  if checkalive; then
+    die "Nuxeo is already running with pid `cat \"$PID\"`"
+  fi
+  createdirs
+  check_old_paths
+  if [ "$1" = "console" ]; then
+    echo java $JAVA_OPTS -classpath "$CLASSPATH:$NUXEO_BOOTJAR_PATH" \
+      -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
+      -Dnuxeo.log.dir="$LOG_DIR" -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" \
+      -Dlog4j.configuration="$LOG4J_CONF" \
+      org.nuxeo.runtime.deployment.preprocessor.ConfigurationGenerator
+    java $JAVA_OPTS -classpath "$CLASSPATH:$NUXEO_BOOTJAR_PATH" \
+      -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
+      -Dnuxeo.log.dir="$LOG_DIR" -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" \
+      -Dlog4j.configuration="$LOG4J_CONF" \
+      org.nuxeo.runtime.deployment.preprocessor.ConfigurationGenerator
+  else
+    java $JAVA_OPTS -classpath "$CLASSPATH:$NUXEO_BOOTJAR_PATH" \
+      -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
+      -Dnuxeo.log.dir="$LOG_DIR" -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" \
+      -Dlog4j.configuration="$LOG4J_CONF" \
+      org.nuxeo.runtime.deployment.preprocessor.ConfigurationGenerator > "$LOG" 2>&1
+  fi
+}
+
+checkalive() {
+  if [ ! -r "$PID" ]; then
+    return 1
+  fi
+  MYPID=`cat "$PID"`
+  JPS=`$JAVA_HOME/bin/jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" " | grep $MYPID`
+  if [ "x$JPS" = "x" ]; then
+    return 1
+  else
+    return 0
+  fi
+}
+
+createdirs() {
+  if [ ! -d "$LOG_DIR" ]; then
+    mkdir -p "$LOG_DIR"
+  fi
+  if [ ! -d "$PID_DIR" ]; then
+    mkdir -p "$PID_DIR"
+  fi
+  if [ ! -z "$DATA_DIR" ] && [ ! -d "$DATA_DIR" ]; then
+    mkdir -p "$DATA_DIR"
+  fi
+  if [ ! -z "$TMP_DIR" ] && [ ! -d "$TMP_DIR" ]; then
+    mkdir -p "$TMP_DIR"
+  fi
+}
+
+stop() {
+  if checkalive; then
+    kill `cat "$PID"`
+    max_count=100
+    count=0
+    while [ $count -le $max_count ]; do
+      if checkalive; then
+        /bin/echo -n "."
+        count=`expr $count + 1`
+        sleep 1 || exit 1
+      else
+        rm "$PID"
+        echo Nuxeo stopped.
+        return 0
+      fi
+    done
+    echo "Stoping process is taking too long - giving up. Check end of process `cat \"$PID\"`."
+  else
+    echo "Nuxeo is not running."
+  fi
+}
+
+start() {
+  generate_configuration
+
+  if [ "$jboss" = "true" ]; then
+    $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
+      -Dprogram.name=nuxeoctl -Djava.endorsed.dirs="$NUXEO_ENDORSED" \
+      -Djboss.server.log.dir="$LOG_DIR" -Dnuxeo.log.dir="$LOG_DIR" \
+      -Djboss.server.temp.dir="$TMP_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" -Djboss.server.temp.dir.overrideJavaTmpDir=$TMP_OVERRIDE \
+      -Djboss.server.data.dir="$JBOSS_DATA_DIR" -Dnuxeo.data.dir="$DATA_DIR" org.jboss.Main -b $BIND_ADDRESS > "$LOG" 2>&1 &
+
+  elif [ "$tomcat" = "true" ]; then
+    $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
+      -Dnuxeo.log.dir="$LOG_DIR" -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager \
+      -Dcatalina.base="$NUXEO_HOME" -Dcatalina.home="$NUXEO_HOME" -Djava.io.tmpdir="$CATALINA_TEMP" \
+      -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" org.apache.catalina.startup.Bootstrap start > "$LOG" 2>&1 &
+
+  elif [ "$jetty" = "true" ]; then
+    $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
+      -Dnuxeo.tmp.dir="$TMP_DIR" -Djava.io.tmpdir="$TMP_DIR" \
+      -Dnuxeo.data.dir="$DATA_DIR" -jar "$jettyjar" "$NUXEO_HOME"/bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
+      "$NUXEO_BUNDLES" -home "$NUXEO_HOME" > "$LOG" 2>&1 &
+  fi
+
+  NUXEO_PID=$!
+  echo $NUXEO_PID > "$PID"
+
+  # Trap common signals and relay them to the jboss process
+  trap "kill -HUP  `cat \"$PID\"`" HUP
+  trap "kill -TERM `cat \"$PID\"`" INT
+  trap "kill -QUIT `cat \"$PID\"`" QUIT
+  trap "kill -PIPE `cat \"$PID\"`" PIPE
+  trap "kill -TERM `cat \"$PID\"`" TERM
+  # Wait for "Server started"
+  /bin/echo -n "Starting Nuxeo... "
+  echo "(pressing Ctrl+C will interrupt starting process)"
+  max_count=300
+  count=0
+  exit=0
+  while [ $count -le $max_count ]; do
+    line=$(tail -n80 "$LOG" 2>&1 | egrep "[Ss]tarted in")
+    if [ $? = 0 ]; then
+      countStatus=0
+      countActive=false
+      while read lineStatus; do
+        echo "$lineStatus" |grep "\[OSGiRuntimeService\] Nuxeo EP Started"
+        if [ $? = 0 ]; then
+          countActive=true
+        fi
+        if ! $countActive; then
+          continue
+        fi
+        echo "$lineStatus" | grep "======================================================================" > /dev/null
+        if [ $? = 0 ]; then
+          countStatus=`expr $countStatus + 1`
+        fi
+        if [ $countStatus -gt 0 ]; then
+          echo "$lineStatus"
+        fi
+        if [ $countStatus -eq 3 ]; then
+          break
+        fi
+      done < "$LOG"
+      echo $line
+      exit 0
+    fi
+    /bin/echo -n "."
+    count=`expr $count + 1`
+    sleep 1 || exit=1
+    if [ $exit -eq 1 ]; then
+      rm "$PID" 2>/dev/null
+      exit 1
+    fi
+  done
+  # Startup took over 5 minutes
+  echo "Starting process is taking too long - giving up."
+  # Tell java to stop working
+  kill `cat "$PID"` && wait `cat "$PID"` && rm "$PID"
+}
+
+startbg() {
+  generate_configuration
+
+  if [ "$jboss" = "true" ]; then
+    $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
+      -Dprogram.name=nuxeoctl -Djava.endorsed.dirs="$NUXEO_ENDORSED" \
+      -Djboss.server.log.dir="$LOG_DIR" -Dnuxeo.log.dir="$LOG_DIR" \
+      -Djboss.server.temp.dir="$TMP_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" -Djboss.server.temp.dir.overrideJavaTmpDir=$TMP_OVERRIDE \
+      -Djboss.server.data.dir="$JBOSS_DATA_DIR" -Dnuxeo.data.dir="$DATA_DIR" org.jboss.Main -b $BIND_ADDRESS > "$LOG" 2>&1 &
+
+  elif [ "$tomcat" = "true" ]; then
+    $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
+      -Dnuxeo.log.dir="$LOG_DIR" -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager \
+      -Dcatalina.base="$NUXEO_HOME" -Dcatalina.home="$NUXEO_HOME" -Djava.io.tmpdir="$CATALINA_TEMP" \
+      -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" org.apache.catalina.startup.Bootstrap start > "$LOG" 2>&1 &
+
+  elif [ "$jetty" = "true" ]; then
+    $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
+      -Dnuxeo.tmp.dir="$TMP_DIR" -Djava.io.tmpdir="$TMP_DIR" \
+      -Dnuxeo.data.dir="$DATA_DIR" -jar "$jettyjar" "$NUXEO_HOME"/bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
+      "$NUXEO_BUNDLES" -home "$NUXEO_HOME" > "$LOG" 2>&1 &
+  fi
+  NUXEO_PID=$!
+  echo $NUXEO_PID > "$PID"
+}
+
+console() {
+  generate_configuration console
+
+  if [ "$jboss" = "true" ]; then
+    echo Command: $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
+      -Dprogram.name=nuxeoctl -Djava.endorsed.dirs="$NUXEO_ENDORSED" -Djboss.server.log.dir="$LOG_DIR" -Dnuxeo.log.dir="$LOG_DIR" \
+      -Djboss.server.temp.dir="$TMP_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" -Djboss.server.temp.dir.overrideJavaTmpDir=$TMP_OVERRIDE \
+      -Djboss.server.data.dir="$JBOSS_DATA_DIR" -Dnuxeo.data.dir="$DATA_DIR" org.jboss.Main -b $BIND_ADDRESS
+    $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
+      -Djboss.server.temp.dir="$TMP_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" -Djboss.server.temp.dir.overrideJavaTmpDir=$TMP_OVERRIDE \
+      -Dprogram.name=nuxeoctl -Djava.endorsed.dirs="$NUXEO_ENDORSED" -Djboss.server.log.dir="$LOG_DIR" -Dnuxeo.log.dir="$LOG_DIR" \
+      -Djboss.server.data.dir="$JBOSS_DATA_DIR" -Dnuxeo.data.dir="$DATA_DIR" org.jboss.Main -b $BIND_ADDRESS
+
+  elif [ "$tomcat" = "true" ]; then
+    echo Command: $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
+      -Dnuxeo.log.dir="$LOG_DIR" -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager \
+      -Dcatalina.base="$NUXEO_HOME" -Dcatalina.home="$NUXEO_HOME" -Djava.io.tmpdir="$CATALINA_TEMP" \
+      -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" org.apache.catalina.startup.Bootstrap start
+    $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
+      -Dnuxeo.log.dir="$LOG_DIR" -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager \
+      -Dcatalina.base="$NUXEO_HOME" -Dcatalina.home="$NUXEO_HOME" -Djava.io.tmpdir="$CATALINA_TEMP" \
+      -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" org.apache.catalina.startup.Bootstrap start
+
+  elif [ "$jetty" = "true" ]; then
+    echo Command: $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
+      -Dnuxeo.tmp.dir="$TMP_DIR" -Djava.io.tmpdir="$TMP_DIR" -Dnuxeo.log.dir="$LOG_DIR" \
+      -Dnuxeo.data.dir="$DATA_DIR" -jar "$jettyjar" "$NUXEO_HOME"/bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
+      "$NUXEO_BUNDLES" -home "$NUXEO_HOME"
+    $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
+      -Dnuxeo.tmp.dir="$TMP_DIR" -Djava.io.tmpdir="$TMP_DIR" -Dnuxeo.log.dir="$LOG_DIR" \
+      -Dnuxeo.data.dir="$DATA_DIR" -jar "$jettyjar" "$NUXEO_HOME"/bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
+      "$NUXEO_BUNDLES" -home "$NUXEO_HOME"
+  fi
+}
+
+if check_nuxeo_conf; then
+  # warning
+  # pause / question / timer
+  # return true (continue) or false (exit)
+  echo $NUXEO_CONF
+fi
+
+case "$1" in
+  status)
+    if checkalive; then
+      echo "Nuxeo is running with pid `cat \"$PID\"`"
+    else
+      echo "Nuxeo is not running."
+    fi
+    ;;
+  startbg)
+    startbg
+    ;;
+  start)
+    start
+    ;;
+  console)
+    console
+    ;;
+  stop)
+    stop
+    ;;
+  restart)
+    stop
+    start
+    ;;
+  configure)
+    generate_configuration console
+    ;;
+  *)
+    echo "Usage: nuxeoctl (startbg|start|console|stop|status|configure)"
+    ;;
+esac

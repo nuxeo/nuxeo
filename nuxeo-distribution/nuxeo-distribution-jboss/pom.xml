@@ -1,0 +1,145 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.distribution</groupId>
+    <artifactId>nuxeo-distribution</artifactId>
+    <version>5.4.0-I20101011_0115-CP03</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>nuxeo-distribution-jboss</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo JBoss Distribution</name>
+  <description>Package Nuxeo EP or DM EAR with JBoss</description>
+
+  <profiles>
+    <profile>
+      <id>all-distributions</id>
+      <!-- profile for building all classifiers -->
+    </profile>
+    <profile>
+      <id>all</id>
+      <!-- profile for building all classifiers -->
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
+    <profile>
+      <id>nuxeo-ep</id>
+      <!-- profile for building JBoss with only Nuxeo EP -->
+    </profile>
+    <profile>
+      <id>nuxeo-dm</id>
+      <!-- default profile for building JBoss with only Nuxeo DM -->
+    </profile>
+  </profiles>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>nuxeo-distribution-tools</artifactId>
+        <configuration>
+          <buildFiles>
+            <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
+          </buildFiles>
+        </configuration>
+        <executions>
+          <execution>
+            <id>packaging</id>
+            <goals>
+              <goal>build</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- copy nuxeo libraries that must go into $JBOSS/server/default/lib/ -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <configuration>
+          <outputDirectory>${jboss.lib}</outputDirectory>
+          <artifactItems>
+            <artifactItem>
+              <groupId>org.nuxeo.common</groupId>
+              <artifactId>nuxeo-common</artifactId>
+              <version>${nuxeo.common.version}</version>
+              <overWrite>true</overWrite>
+            </artifactItem>
+            <artifactItem>
+              <groupId>org.nuxeo.runtime</groupId>
+              <artifactId>nuxeo-runtime-deploy</artifactId>
+              <version>${nuxeo.runtime.version}</version>
+              <overWrite>true</overWrite>
+            </artifactItem>
+            <artifactItem>
+              <groupId>org.nuxeo.runtime</groupId>
+              <artifactId>nuxeo-runtime-launcher</artifactId>
+              <version>${nuxeo.runtime.version}</version>
+              <overWrite>true</overWrite>
+            </artifactItem>
+            <artifactItem>
+              <groupId>org.nuxeo.runtime</groupId>
+              <artifactId>nuxeo-runtime-jboss-extensions</artifactId>
+              <version>${nuxeo.runtime.version}</version>
+              <overWrite>true</overWrite>
+            </artifactItem>
+            <artifactItem>
+              <groupId>org.nuxeo.ecm.core</groupId>
+              <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
+              <version>${nuxeo.core.version}</version>
+              <overWrite>true</overWrite>
+            </artifactItem>
+            <artifactItem>
+              <groupId>com.h2database</groupId>
+              <artifactId>h2</artifactId>
+            </artifactItem>
+            <artifactItem>
+              <groupId>org.apache.derby</groupId>
+              <artifactId>derby</artifactId>
+            </artifactItem>
+            <artifactItem>
+              <groupId>org.apache.lucene</groupId>
+              <artifactId>lucene-core</artifactId>
+            </artifactItem>
+            <artifactItem>
+              <groupId>org.apache.lucene</groupId>
+              <artifactId>lucene-analyzers</artifactId>
+            </artifactItem>
+            <artifactItem>
+              <groupId>org.nuxeo.ecm.platform</groupId>
+              <artifactId>nuxeo-generic-wss-handler</artifactId>
+            </artifactItem>
+            <artifactItem>
+              <groupId>org.freemarker</groupId>
+              <artifactId>freemarker</artifactId>
+            </artifactItem>
+            <artifactItem>
+              <groupId>commons-lang</groupId>
+              <artifactId>commons-lang</artifactId>
+            </artifactItem>
+            <artifactItem>
+              <groupId>postgresql</groupId>
+              <artifactId>postgresql</artifactId>
+              <version>9.0-801.jdbc4</version>
+            </artifactItem>
+            <artifactItem>
+              <groupId>mysql</groupId>
+              <artifactId>mysql-connector-java</artifactId>
+              <version>5.1.6</version>
+            </artifactItem>
+            <artifactItem>
+              <groupId>org.apache.derby</groupId>
+              <artifactId>derby</artifactId>
+              <version>10.5.3.0_1</version>
+            </artifactItem>
+          </artifactItems>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

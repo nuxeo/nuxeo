@@ -1,0 +1,210 @@
+<project name="nuxeo-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+
+
+  <target name="init" unless="init.done">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <property name="nuxeo.ear" value="${outdir}/nuxeo.ear" />
+
+    <antcall target="expand" />
+    <property name="init.done" value="true" />
+  </target>
+
+  <target name="expand">
+    <artifact:nuxeo-expand />
+    <!--artifact:print output="dependency-tree.log" /-->
+  </target>
+
+  <target name="build" depends="init" description="Build Nuxeo DM">
+    <echo>Building default Nuxeo DM EAR</echo>
+    <delete failonerror="false" dir="${nuxeo.ear}" />
+    <mkdir dir="${nuxeo.ear}" />
+
+    <copy todir="${nuxeo.ear}" overwrite="true">
+      <artifact:file artifactId="nuxeo-platform-webapp" />
+      <artifact:file artifactId="nuxeo-platform-webapp-core" />
+    </copy>
+    <copy todir="${nuxeo.ear}/system" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="org.nuxeo*" />
+        </includes>
+        <excludes>
+          <artifact artifactId="*-test" />
+          <artifact artifactId="*nuxeo-core-storage-sql-extensions" />
+          <artifact artifactId="*nuxeo-runtime-jetty-adapter" />
+          <artifact artifactId="*nuxeo-runtime-deploy" />
+          <artifact artifactId="*nuxeo-runtime-jtajca" />
+          <artifact artifactId="nuxeo-runtime-management-metrics" />
+          <artifact groupId="org.nuxeo.common" />
+          <artifact artifactId="nuxeo-generic-wss-handler" />
+          <artifact artifactId="nuxeo-platform-webapp" />
+          <artifact artifactId="nuxeo-platform-webapp-core" />
+          <artifact artifactId="nuxeo-apt-extensions" />
+          <artifact artifactId="nuxeo-webengine-apt" />
+        </excludes>
+      </artifact:set>
+    </copy>
+
+    <!-- Third-party libraries -->
+    <antcall target="third-party-libraries" />
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+         basedir="${nuxeo.ear}" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="zip" />
+  </target>
+
+  <target name="third-party-libraries">
+    <copy todir="${nuxeo.ear}/lib" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="!org.nuxeo*" />
+        </includes>
+      </artifact:set>
+    </copy>
+    <nx:rmdups dir="${nuxeo.ear}/lib" />
+    <delete>
+      <fileset dir="${nuxeo.ear}/lib">
+        <include name="eval-*" />
+        <include name="cssparser-0.9.5.jar*" />
+        <include name="htmlunit-*" />
+        <include name="htmlunit-*" />
+        <include name="hamcrest-*" />
+        <include name="jmock-*" />
+        <include name="jna-*" />
+        <include name="jotm-*" />
+        <include name="json-20080701*" />
+        <include name="jtds-**" />
+        <include name="mysql-connector-java*" />
+        <include name="ognl-*" />
+        <include name="README.txt" />
+        <include name="slf4j-*-1.4.3*" />
+        <include name="slf4j-*-1.5.3*" />
+        <include name="webdriver-*" />
+        <include name="concordion*" />
+        <include name="serializer*" />
+        <include name="activation-*" />
+        <include name="ant-*" />
+        <include name="ant-launcher-*" />
+        <include name="antlr-2*" />
+        <include name="arq-extra-*" />
+        <include name="asm-*" />
+        <include name="avalon-framework-*" />
+        <include name="bsh-*" />
+        <include name="EditableImage-*" />
+        <include name="apacheds-core-*" />
+        <include name="apacheds-core-shared-*" />
+        <include name="apacheds-protocol-shared-*" />
+        <include name="bcmail-jdk14*" />
+        <include name="bcprov-jdk14*" />
+        <include name="c3p0-*" />
+        <include name="commons-beanutils-core-*" />
+        <include name="commons-betwixt-*" />
+        <include name="commons-codec-*" />
+        <include name="commons-digester-*" />
+        <include name="commons-httpclient-*" />
+        <include name="commons-lang-*" />
+        <include name="commons-logging-*" />
+        <include name="concurrent-*" />
+        <include name="derby-*" />
+        <include name="dom4j-*" />
+        <include name="ejb-3.0-RC8*" />
+        <include name="ejb-api-3.0*" />
+        <include name="ejb3-3.0-RC8*" />
+        <include name="el-api-unknown*" />
+        <include name="freemarker-*" />
+        <include name="geronimo-connector-*" />
+        <include name="geronimo-jta_1.1_spec-*" />
+        <include name="geronimo-stax-api_1.0_spec-*" />
+        <include name="gwt-dev-*" />
+        <include name="gwt-gadgets-*" />
+        <include name="gwt-log-*" />
+        <include name="gwt-user-*" />
+        <include name="gwtext-*" />
+        <include name="h2-*" />
+        <include name="hibernate-*" />
+        <include name="imagej-*" />
+        <include name="javacc-*" />
+        <include name="jaxb-api-*" />
+        <include name="jenatest-*" />
+        <include name="jboss-4.0.4.GA*" />
+        <include name="jboss-annotations-ejb3-3.0-RC8*" />
+        <include name="jboss-common-*" />
+        <include name="jboss-j2ee-*" />
+        <include name="jboss-jmx-*" />
+        <include name="jboss-remoting-*" />
+        <include name="jboss-system-*" />
+        <include name="jbosssx-*" />
+        <include name="jca-api-*" />
+        <include name="jcip-annotations-*" />
+        <include name="jetty-annotations-*" />
+        <include name="jetty-naming-*" />
+        <include name="jetty-plus-*" />
+        <include name="jline-*" />
+        <include name="jms-*" />
+        <include name="jsecurity-*" />
+        <include name="jsf-api-*" />
+        <include name="jsf-impl-*" />
+        <include name="jsp-api-*" />
+        <include name="jsr181-*" />
+        <include name="jsr250-api-*" />
+        <include name="json-jena-*" />
+        <include name="jsr107cache-*" />
+        <include name="jta-*" />
+        <include name="juel-api-*" />
+        <include name="junit-*" />
+        <include name="log4j-*" />
+        <include name="logkit-*" />
+        <include name="mail-*" />
+        <include name="metadata-extractor-*" />
+        <include name="mlib_jai-*" />
+        <include name="persistence-*" />
+        <include name="persistence-api-*" />
+        <include name="postgresql-*" />
+        <include name="quartz-all-*" />
+        <include name="servlet-api-*" />
+        <include name="stax-api-*" />
+        <include name="webservices-api-*" />
+        <include name="wstx-asl-*" />
+        <include name="xercesImpl-*" />
+        <include name="xml-apis-*" />
+        <include name="xmlParserAPIs-*" />
+        <include name="xpp3_min-*" />
+        <include name="geronimo-*" />
+        <include name="jsr311-api-1.0*" />
+        <include name="javassist*" />
+        <include name="jaxen-*beta*" />
+        <include name="xalan-*" />
+        <include name="xom-1.0*" />
+      </fileset>
+    </delete>
+    <copy todir="${nuxeo.ear}/lib" overwrite="true">
+      <artifact:resolveFile key="org.jboss.el:jboss-el" />
+      <artifact:resolveFile key="jboss:jboss-cache-jdk50" />
+      <artifact:resolveFile key="org.jboss.seam:jboss-seam-remoting" />
+      <artifact:resolveFile key="org.jboss.seam:jboss-seam-mail" />
+      <artifact:resolveFile key="org.jboss.seam:jboss-seam-debug" />
+      <artifact:resolveFile key="jboss:jgroups" />
+      <artifact:resolveFile key="org.bouncycastle:bcmail-jdk15" />
+      <artifact:resolveFile key="org.bouncycastle:bcprov-jdk15" />
+      <artifact:resolveFile key="org.slf4j:slf4j-api" />
+      <artifact:resolveFile key="org.slf4j:slf4j-log4j12" />
+      <artifact:resolveFile key="org.apache.directory.server:apacheds-protocol-shared" />
+      <artifact:resolveFile key="org.openoffice:jurt" />
+      <artifact:resolveFile key="org.fontbox:fontbox" />
+      <artifact:resolveFile key="org.jempbox:jempbox" />
+      <artifact:resolveFile key="org.apache.poi:ooxml-schemas" />
+      <artifact:resolveFile key="org.apache.httpcomponents:httpcore" />
+      <artifact:resolveFile key="com.google.collections:google-collections" />
+      <artifact:resolveFile key="com.googlecode.json-simple:json-simple" />
+    </copy>
+  </target>
+
+</project>
