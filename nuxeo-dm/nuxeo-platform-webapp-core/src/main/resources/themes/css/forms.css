@@ -1,0 +1,129 @@
+/*
+Styles for all the forms.
+=Forms elements
+=Calendar -> adjust the Calendar icon
+author: lkemen@nuxeo.com
+*/
+
+/* =Forms elements */
+textarea {
+  font-family: "default (__FLAVOR__ font)";
+  font-size: .95em;
+  min-height: 5em;
+  padding: .4em }
+
+.required {
+  background: transparent url("${basePath}/icons/required.gif") top right no-repeat;
+  padding: 0 1em 0 0 }
+
+optgroup {
+  font-style: normal;
+  font-weight: bold }
+
+option {
+  background-color: white;
+  font-weight: normal }
+
+.field,
+select,
+textarea,
+input[type="text"],
+input[type="file"],
+input[type="password"] {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border: 1px solid;
+  border-color: "neutral.light (__FLAVOR__ border)";
+  border-radius: 2px;
+  display: inline-block;
+  font-size: 1em;
+  margin-bottom: .3em;
+  padding: .3em }
+
+select {
+  margin: 0 .5em .5em 0;
+  min-width: 9em }
+
+label {
+  padding-right: .4em }
+
+.dataInputText {
+  vertical-align: top }
+
+input[type="file"] {
+  margin-left: .6em }
+
+input[type="radio"],
+input[type="image"],
+input[type="hidden"],
+input[type="checkbox"] {
+  background: none;
+  border: none !important;
+  box-shadow: none;
+  margin-right: .3em }
+
+input:focus,
+select:focus,
+textarea:focus,
+input[type="text"]:focus,
+input[type="password"]:focus {
+  background-color: #fff;
+  border-color: #2e9cff;
+  box-shadow: 0 0 3px #b5dcff;
+  color: "black (__FLAVOR__ color)";
+  outline: 0 none }
+
+select:focus > option:checked,
+select:focus > optgroup > option:checked {
+  background-color: "color.major.stronger (__FLAVOR__ background)" }
+
+/* Placeholders in forms */
+input[placeholder] {
+  color: "gray.medium (__FLAVOR__ color)";
+  text-overflow: ellipsis; }
+
+::-webkit-input-placeholder {
+  color: "gray.medium (__FLAVOR__ color)";
+  text-overflow: ellipsis; }
+
+:-moz-placeholder { /* Firefox 18- */
+  color: "gray.medium (__FLAVOR__ color)";
+  text-overflow: ellipsis; }
+
+::-moz-placeholder {  /* Firefox 19+ */
+  color: "gray.medium (__FLAVOR__ color)";
+  text-overflow: ellipsis; }
+
+:-ms-input-placeholder {
+  color: "gray.medium (__FLAVOR__ color)";
+  text-overflow: ellipsis; }
+
+/* in Tables */
+.dataInput textarea,
+.dataTableNoBorder textarea,
+.dataInput input[type="text"],
+.dataTableNoBorder input[type="text"] {
+  max-width: 49em }
+
+input.rich-calendar-input[type="text"] {
+  max-width: 14em }
+
+.chainSelect input[type="image"] {
+  margin: -0.1em 0 0 0.2em;
+  padding: 0;
+  vertical-align: top;
+  float: right; }
+
+input.tagInput {
+  background: url("${basePath}/icons/tag.png") no-repeat scroll 2px center / 12px auto transparent;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  font-size: .95em;
+  padding: .1em .5em .2em 1.8em;
+  max-width: 12em;
+  min-width: 10em }
+
+/* =Calendar */
+.calendarTrigger {
+  cursor: pointer;
+  margin: 0 0 .4em;
+  vertical-align: bottom }
