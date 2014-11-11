@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService">
+  <implementation
+      class="org.nuxeo.ecm.platform.content.template.service.ContentTemplateServiceImpl"/>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"/>
+  </service>
+
+  <documentation>
+    The content template manager service provide factories to automatically create Document.
+    The factories are used whenever a document is created using EventListener.
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+
+  <extension-point name="factory">
+    <documentation>
+      This service provides extension points for ContentFactory registering.
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.platform.content.template.service.ContentFactoryDescriptor"/>
+  </extension-point>
+
+  <extension-point name="factoryBinding">
+    <documentation>
+      Define a new factory binding.
+
+      -factoryBinding
+        - name: name of the factory, defining a factory with the same name will override the first to be registered.
+        - factoryName: the name of the factory defined in the factory extensionPoint.
+        - targetType: The document Type for which the factory will be executed.
+
+      -acl: set rights on document to your users.
+        -principal: Name of the group/user
+        -permission: the permission you want to set.
+        -granted: grant or denied the permission.
+
+      -template
+        - typeName: The Type of the Document you want to create.
+        - id: The id of the Document you want to create.
+        - title: The title of the Document you want to create.
+        - description: The description of the Document you want to create.
+        - path: additionary path, added to facctoryBinding's targetType DocPath
+
+      Example of a factoryBinding Registration:
+
+      <code>
+        <factoryBinding name="RootFactory" factoryName="SimpleTemplateFactory" targetType="Root">
+          <acl>
+            <ace principal="Administrator" permission="Everything" granted="true"/>
+            <ace principal="administrators" permission="Everything" granted="true"/>
+            <ace principal="members" permission="Read" granted="true"/>
+            <ace principal="members" permission="Version" granted="true"/>
+          </acl>
+          <template>
+            <templateItem typeName="Domain" id="default-domain" title="Default domain"
+                description="Default domain"/>
+          </template>
+        </factoryBinding>
+      </code>
+
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.platform.content.template.service.FactoryBindingDescriptor"/>
+  </extension-point>
+
+  <extension-point name="postContentCreationHandlers">
+    <documentation>
+      @author Thomas Roger (troger@nuxeo.com)
+
+      <code>
+        <postContentCreationHandler name="collaborationPostHandler"
+          enabled="true" order="1"
+          class="org.nuxeo.ecm.platform.content.template.service.CollaborationPostHandler" />
+      </code>
+
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.platform.content.template.service.PostContentCreationHandlerDescriptor"/>
+  </extension-point>
+
+</component>
