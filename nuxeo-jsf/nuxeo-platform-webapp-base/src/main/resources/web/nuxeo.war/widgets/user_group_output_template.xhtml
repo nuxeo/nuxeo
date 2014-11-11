@@ -1,0 +1,23 @@
+<c:if test="true"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+  <c:if test="false">
+  Template displaying a user/group label (@since 5.7.2)
+
+  Spaces are avoided to allow using this template for CSV export.
+
+  Parameters:
+  - displayName: user or group text to display.
+  - tagType: type of icon, must be "user" or "group".
+
+  - hideIcon: optional marker to hide the icon associated to a user or group,
+    defaults to false.
+  </c:if>
+  <c:if test="#{hideIcon}">
+    <h:outputText value="#{displayName}"/>
+  </c:if>
+  <c:if test="#{not hideIcon}">
+    <h:outputText value="#{displayName}" styleClass="#{tagType}" />
+  </c:if>
+</c:if>

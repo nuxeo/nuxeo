@@ -1,0 +1,40 @@
+<f:subview xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+
+<c:if test="#{currentDocument.hasFacet('Commentable') and (documentThreadedComments.size > 0)}">
+
+<nxp:font size="14" style="bold">
+  <nxp:paragraph spacingAfter="20">
+    #{messages['action.view.comments']}
+  </nxp:paragraph>
+</nxp:font>
+
+<c:forEach items="#{documentThreadedComments}" var="threadEntry">
+  <nxp:paragraph indentationLeft="#{threadEntry.depth*20}"
+    firstLineIndent="15">
+    <nxp:image value="/icons/comment.png" underlying="true" />
+    <nxp:text value=" #{nxu:userFullName(threadEntry.comment.comment.author)} " />
+    <nxp:font size="10" style="italic">
+      <nxl:widgetType name="datetime" mode="pdf"
+        value="#{threadEntry.comment.comment.creationDate}"
+        pattern="#{nxu:basicDateAndTimeFormatter()}" />
+    </nxp:font>
+  </nxp:paragraph>
+  <nxp:paragraph indentationLeft="#{threadEntry.depth*20}"
+    firstLineIndent="20" spacingAfter="20">
+    <nxp:html>
+      <h:outputText value="#{threadEntry.comment.comment.text}"
+        escape="false" />
+    </nxp:html>
+  </nxp:paragraph>
+</c:forEach>
+
+</c:if>
+
+</f:subview>

@@ -1,0 +1,28 @@
+<c:if xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  test="true">
+
+<c:forEach var="actionCategory" items="#{contentView.actionsCategories}" varStatus="status">
+  <nxu:set var="actions"
+    value="#{documentContentViewActions.getSelectionActions(actionCategory, contentView, documentsListsManager.getWorkingList(contentView.selectionListName))}"
+    cache="true">
+    <c:if test="#{not status.first and not empty actions}">
+      <br />
+    </c:if>
+    <nxl:widgetType name="actions"
+      mode="view"
+      widgetName="cvButton"
+      label=""
+      actions="#{actions}"
+      overallDisplay="horizontal_block"
+      actionStyleClass="button"
+      actionsDisplay="buttons"
+      ignoreTemplateProperty="true"
+      addForm="true" />
+  </nxu:set>
+</c:forEach>
+
+</c:if>

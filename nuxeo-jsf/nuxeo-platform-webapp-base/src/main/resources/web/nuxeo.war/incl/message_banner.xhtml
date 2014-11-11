@@ -1,0 +1,42 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxh="http://nuxeo.org/nxweb/html">
+
+  <a4j:outputPanel id="facesStatusMessagePanel" ajaxRendered="true" layout="block">
+
+    <div class="facesStatusMessage">
+      <c:if test="#{facesContext.maximumSeverity.ordinal >= 2}">
+        <script type="text/javascript">
+          jQuery(document).ready(function() {
+            jQuery.ambiance({
+              title: "#{messages['feedback.correctErrors']}",
+              type: "error",
+              className: "errorFeedback",
+              timeout: 0
+            })
+          });
+        </script>
+      </c:if>
+      <script type="text/javascript">
+        jsf.ajax.addOnError(function(data) {
+          jQuery.ambiance({
+            title: data.description,
+            type: "error",
+            className: "errorFeedback",
+            timeout: 0
+          });
+        });
+      </script>
+    </div>
+
+    <nxh:messages globalOnly="true"
+      infoClass="infoFeedback"
+      warnClass="warningFeedback"
+      errorClass="errorFeedback"/>
+
+  </a4j:outputPanel>
+
+</ui:composition>

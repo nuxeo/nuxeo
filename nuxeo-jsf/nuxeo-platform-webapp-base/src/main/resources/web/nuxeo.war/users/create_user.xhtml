@@ -1,0 +1,82 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <h3>
+    <h:outputText value="#{messages['title.createUser']}" />
+  </h3>
+
+  <h:form id="createUser" rendered="#{userManagementActions.allowCreateUser and notReadOnly}">
+    <script>
+      jQuery(document).ready(function() {
+        jQuery('#createUserView\\:createUser').focusFirst();
+      });
+    </script>
+    <h:selectBooleanCheckbox id="immediate_creation"
+      title="#{messages['label.immediateCreation']}"
+      valueChangeListener="#{userManagementActions.changeTypeUserModel}"
+      value="#{userManagementActions.immediateCreation}">
+      <f:ajax event="change"
+        render="createUser"
+        execute="@this" />
+    </h:selectBooleanCheckbox>
+    <h:outputLabel for="immediate_creation" value="#{messages['label.immediateCreation']}" />
+
+    <nxl:layout name="#{userManagementActions.immediateCreation ? 'user' : 'user_registration'}"
+      mode="create" value="#{userManagementActions.newUser}" />
+
+    <table class="dataInput">
+      <tbody>
+        <tr>
+          <td>
+            <c:if test="#{!userManagementActions.immediateCreation}">
+              <h:commandButton
+                id="button_save_and_invite"
+                value="#{messages['command.saveAndInvite']}"
+                action="#{userManagementActions.inviteUser(true)}"
+                styleClass="button">
+                <f:ajax execute="@form" render="usersPanel facesStatusMessagePanel" />
+              </h:commandButton>
+              <h:commandButton
+                id="button_invite"
+                value="#{messages['command.invite']}"
+                action="#{userManagementActions.inviteUser(false)}"
+                styleClass="button">
+                <f:ajax execute="@form" render="usersPanel facesStatusMessagePanel" />
+              </h:commandButton>
+            </c:if>
+            <c:if test="#{userManagementActions.immediateCreation}">
+              <h:commandButton
+                id="button_save_and_create"
+                value="#{messages['command.saveAndCreate']}"
+                action="#{userManagementActions.createUser(true)}"
+                styleClass="button">
+                <f:ajax execute="@form" render="usersPanel facesStatusMessagePanel" />
+              </h:commandButton>
+              <h:commandButton
+                id="button_save"
+                value="#{messages['command.save']}"
+                action="#{userManagementActions.createUser}"
+                styleClass="button">
+                <f:ajax execute="@form" render="usersPanel facesStatusMessagePanel" />
+              </h:commandButton>
+            </c:if>
+            <h:commandButton
+              action="#{userManagementActions.toggleShowCreateForm}" immediate="true"
+              value="#{messages['command.cancel']}" styleClass="button">
+              <f:ajax execute="@this" render="usersPanel facesStatusMessagePanel" />
+            </h:commandButton>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </h:form>
+
+</div>

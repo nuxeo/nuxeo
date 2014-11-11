@@ -1,0 +1,1806 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layouts.webapp.listing">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <documentation>
+      The widget types from this contribution are intended to be used within a
+      layout displaying a table line. They can be configured to match metadata
+      from a table iteration item.
+      <br />
+
+      The template "/layouts/layout_listing_template.xhtml" handles specific
+      configuration for lists of documents rendering. It applies to an item
+      instance of SelectDataModel named "documents" in the EL context.
+      <br />
+
+      It also requires the following variables to be present in the EL context:
+      <ul>
+        <li>
+          provider: result provider used to get the list of items, its name
+          will
+          be used, as well as sort and pagination features it provides.
+        </li>
+        <li>
+          layoutListingStatus: iteration status as provided by the "c:forEach"
+          tag, used to print table header matching widget label.
+        </li>
+      </ul>
+
+      It accepts the the following properties configuration:
+      <ul>
+        <li>
+          showListingHeader: true or false, used to define whether the table
+          header should be displayed. This property can also be passed in the EL
+          context, using the table iteration status. Defaults to false.
+        </li>
+        <li>
+          showRowEvenOddClass: true or false, used to define if a style class
+          should be set on table rows depending on the layoutListingStatus index
+          variable (row or odd). Defaults to false.
+        </li>
+      </ul>
+      Its layout columns accept the following properties configuration:
+      <ul>
+        <li>
+          useFirstWidgetLabelAsColumnHeader: true or false, used to define if
+          first widget label should be used as column header label. Will use
+          translation settings from the widget configuration. Defaults to false.
+        </li>
+        <li>
+          sortPropertyName: name of the property that will be used by the
+          result provider when clicking on the table header. If not set, the
+          sort link will not be displayed. Defaults to null.
+        </li>
+        <li>
+          defaultSortAscending: define the initial sort order of the column
+          (true : ascending, false : descending) Defaults to null (will be
+          interpreted as ascending=true).
+        </li>
+        <li>
+          columnStyleClass: name of the style class that will be used for the
+          given column. Defaults to null.
+        </li>
+      </ul>
+    </documentation>
+
+    <widgetType name="listing_ajax_selection_box_with_current_document">
+      <aliases>
+        <alias>listing_selection_box_with_current_document</alias>
+      </aliases>
+      <configuration>
+        <sinceVersion>5.4.0</sinceVersion>
+        <title>Ajax selection checkbox with current document</title>
+        <description>
+          <p>
+            This widget type displays a selection checkbox, that will perform
+            ajax selection of given item. The current document information is
+            also provided to restore current context when clicking on the link.
+          </p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps a boolean representing the selection state
+              </li>
+              <li>
+                second field maps the string identifier used to perform
+                selection
+              </li>
+            </ul>
+          </p>
+          <p>
+            It also requires the following variables to be present in the EL
+            context:
+            <ul>
+              <li>
+                provider: result provider used to get the list of items, its
+                name will be used.
+              </li>
+              <li>
+                listName: the name of the list that will hold selected items
+              </li>
+              <li>currentDocument: the current document</li>
+            </ul>
+          </p>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>selected</field>
+            <field>data.ref</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>hidden_listing</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_ajax_selection_box_with_current_document_widget_template.xhtml
+      </property>
+
+    </widgetType>
+
+    <widgetType name="listing_ajax_selection_box">
+      <aliases>
+        <alias>listing_selection_box</alias>
+      </aliases>
+      <configuration>
+        <sinceVersion>5.4.0</sinceVersion>
+        <title>Ajax selection checkbox</title>
+        <description>
+          <p>
+            This widget type displays a selection checkbox, that will perform
+            ajax selection of given item.
+          </p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps a boolean representing the selection state
+              </li>
+              <li>
+                second field maps the string identifier used to perform
+                selection
+              </li>
+            </ul>
+          </p>
+          <p>
+            It also requires the following variables to be present in the EL
+            context:
+            <ul>
+              <li>
+                provider: result provider used to get the list of items, its
+                name will be used.
+              </li>
+              <li>
+                listName: the name of the list that will hold selected items
+              </li>
+            </ul>
+          </p>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>selected</field>
+            <field>data.ref</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>hidden_listing</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_ajax_selection_box_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_icon_type">
+      <configuration>
+        <sinceVersion>5.4.0</sinceVersion>
+        <title>Icon and document type</title>
+        <description>
+          <p>
+            This widget type displays a draggable icon corresponding to a
+            document.
+          </p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps the document model, the jsf method
+                nxd:iconPath will be used to provide its icon
+              </li>
+              <li>
+                second field maps the unique id to be used as drag/drop
+                identified (e.g. the document model id)
+              </li>
+              <li>
+                third field maps the icon title (can be the document model
+                type)
+              </li>
+              <li>
+                fourth field maps a boolean stating whether the widget
+                displays a droppable zone (e.g. if document is folderish)
+              </li>
+            </ul>
+          </p>
+        </description>
+        <demo id="listing_icon_typeWidget" />
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+            <field>data.ref</field>
+            <field>data.type</field>
+            <field>data.folder</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_icon_type_widget_template.xhtml
+      </property>
+
+    </widgetType>
+
+    <widgetType name="listing_big_icon_type">
+      <configuration>
+        <sinceVersion>5.4.0</sinceVersion>
+        <title>Big icon and document type</title>
+        <description>
+          <p>
+            This widget type displays a big draggable icon corresponding to a
+            document.
+          </p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps the document model, the jsf method
+                nxd:bigIconPath will be used to provide its icon
+              </li>
+              <li>
+                second field maps the unique id to be used as drag/drop
+                identified (e.g. the document model id)
+              </li>
+              <li>
+                third field maps the displayed icon title (can be the document
+                model type)
+              </li>
+              <li>
+                fourth field maps a boolean stating whether the widget
+                displays
+                a droppable zone (e.g. if document is folderish)
+              </li>
+            </ul>
+          </p>
+        </description>
+        <demo id="listing_big_icon_typeWidget" />
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+            <field>data.ref</field>
+            <field>data.type</field>
+            <field>data.folder</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_big_icon_type_widget_template.xhtml
+      </property>
+
+    </widgetType>
+
+    <widgetType name="listing_big_icon_type_link">
+      <configuration>
+        <sinceVersion>5.4.0</sinceVersion>
+        <title>Big icon and document type with link</title>
+        <description>
+          <p>
+            This widget type displays a big draggable icon corresponding to a
+            document with a link to the document.
+          </p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps the document model, the jsf method
+                nxd:bigIconPath will be used to provide its icon and to display
+                the document link
+              </li>
+              <li>
+                second field maps the unique id to be used as drag/drop
+                identified (e.g. the document model id)
+              </li>
+              <li>
+                third field maps the displayed icon title (can be the document
+                model type)
+              </li>
+              <li>
+                fourth field maps a boolean stating whether the widget
+                displays
+                a droppable zone (e.g. if document is folderish)
+              </li>
+            </ul>
+          </p>
+        </description>
+        <demo id="listing_big_icon_type_linkWidget" />
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+            <field>data.ref</field>
+            <field>data.type</field>
+            <field>data.folder</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_big_icon_type_link_widget_template.xhtml
+      </property>
+
+    </widgetType>
+
+    <widgetType name="listing_title_link">
+      <configuration>
+        <sinceVersion>5.4.0</sinceVersion>
+        <title>Title with link</title>
+        <description>
+          <p>
+            This widget type displays a link to navigate to a document, as well
+            as a download link for the document binary content.
+          </p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps the document model, it will be used to
+                display the document link and its title
+              </li>
+              <li>
+                second field maps the unique id to be used for contextual menu
+                (e.g. the document model id)
+              </li>
+              <li>
+                third field maps the displayed link title (can be the document
+                model description)
+              </li>
+              <li>
+                fourth field maps the document model file to be used for
+                download link
+              </li>
+              <li>
+                fifth field maps the file name to be used for download link
+                (can be the document model file name property value)
+              </li>
+            </ul>
+          </p>
+          <p>
+            It also requires the following properties configuration:
+            <ul>
+              <li>
+                file_schema: the file schema name, used to check whether
+                download link should be displayed (e.g: file)
+              </li>
+              <li>
+                file_property_name: the file property name (e.g file:content)
+              </li>
+            </ul>
+          </p>
+        </description>
+        <demo id="listing_title_linkWidget" />
+        <confProperties>
+          <property name="sortPropertyName">dc:title</property>
+        </confProperties>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+            <field>data.ref</field>
+            <field>data.dc.description</field>
+            <field>data.file.content</field>
+            <field>data.file.content.filename</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+        <properties>
+          <defaultValues mode="any">
+            <property name="hideExternalLink">true</property>
+          </defaultValues>
+          <layouts mode="any">
+            <layout name="listing_title_link_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>tab</widget>
+                </row>
+                <row>
+                  <widget>subTab</widget>
+                </row>
+                <row>
+                  <widget>target</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">localize</widget>
+                </row>
+                <row>
+                  <widget>hideExternalLink</widget>
+                </row>
+                <row>
+                  <widget>hideDownloadLink</widget>
+                </row>
+              </rows>
+              <widget name="tab" type="text">
+                <labels>
+                  <label mode="any">Tab</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The tab to select when clicking on the
+                    document link. Available since 5.4.2.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>tab</field>
+                </fields>
+              </widget>
+              <widget name="subTab" type="text">
+                <labels>
+                  <label mode="any">Sub Tab</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The sub tab to select when clicking on the
+                    document link. Available since 5.5.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>subTab</field>
+                </fields>
+              </widget>
+              <widget name="target" type="text">
+                <labels>
+                  <label mode="any">Target</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Available since 6.0. The target attribute
+                    of the link.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>target</field>
+                </fields>
+              </widget>
+              <widget name="localize" type="checkbox">
+                <categories>
+                  <category>widgetTypeConf</category>
+                </categories>
+                <labels>
+                  <label mode="any">Localize</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Available since 5.7.1. Flag indicating that
+                    the title is localized.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>localize</field>
+                </fields>
+              </widget>
+              <widget name="hideExternalLink" type="checkbox">
+                <labels>
+                  <label mode="any">Hide External Link</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Available since 5.7.2. Flag indicating that
+                    the external link, opening the document in a new
+                    conversation, must be hidden.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>hideExternalLink</field>
+                </fields>
+              </widget>
+              <widget name="hideDownloadLink" type="checkbox">
+                <labels>
+                  <label mode="any">Hide Download Link</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Available since 6.0. Flag indicating that
+                    the download link must be hidden.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>hideDownloadLink</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_title_link_widget_template.xhtml
+      </property>
+
+    </widgetType>
+
+    <widgetType name="listing_lock_icon">
+      <configuration>
+        <sinceVersion>5.4.0</sinceVersion>
+        <title>Lock icon</title>
+        <description>
+          <p>This widget type displays a lock icon.</p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps a property stating that lock icon should be
+                displayed if not empty (e.g. the document model lock state)
+              </li>
+            </ul>
+          </p>
+        </description>
+        <demo id="listing_lock_iconWidget" />
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data.lock</field>
+            <field>data.lockInfo</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_lock_icon_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_author">
+      <configuration>
+        <sinceVersion>5.4.0</sinceVersion>
+        <title>Author</title>
+        <description>
+          <p>This widget type displays a user name.</p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>first field mapping the user identifier</li>
+            </ul>
+          </p>
+        </description>
+        <demo id="listing_authorWidget" />
+        <confProperties>
+          <property name="sortPropertyName">dc:creator</property>
+        </confProperties>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data.dc.creator</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/single_user_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_last_contributor">
+      <configuration>
+        <sinceVersion>5.4.2</sinceVersion>
+        <title>Last contributor</title>
+        <description>
+          <p>This widget type displays the last contributor name</p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>first field mapping the lastContributor field</li>
+            </ul>
+          </p>
+        </description>
+        <demo id="listing_last_contributorWidget" />
+        <confProperties>
+          <property name="sortPropertyName">dc:lastContributor</property>
+        </confProperties>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data.dc.lastContributor</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/single_user_widget_template.xhtml
+      </property>
+
+    </widgetType>
+
+    <!-- Deprecated since NXP-6825 is fixed but still useful
+      for Studio configuration -->
+    <widgetType name="listing_lifecycle">
+      <configuration>
+        <sinceVersion>5.4.0</sinceVersion>
+        <title>Lifecycle state</title>
+        <description>
+          <p>This widget type displays a life cycle state name.</p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>first field mapping the life cycle state name</li>
+            </ul>
+          </p>
+        </description>
+        <demo id="listing_lifecycleWidget" />
+        <confProperties>
+          <property name="sortPropertyName">ecm:currentLifeCycleState</property>
+        </confProperties>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data.currentLifeCycleState</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_lifecycle_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_livedit_link">
+      <configuration>
+        <sinceVersion>5.4.0</sinceVersion>
+        <title>Live edit link</title>
+        <description>
+          <p>This widget type displays a live edit link.</p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field mapping the document model to be used for live
+                edit link
+              </li>
+            </ul>
+          </p>
+          <p>
+            It also requires the following properties configuration:
+            <ul>
+              <li>file_schema: the file schema name</li>
+              <li>file_field_name: the file field name</li>
+              <li>filename_field_name: the file name field name</li>
+            </ul>
+          </p>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_livedit_link_widget_template.xhtml
+      </property>
+
+    </widgetType>
+
+    <widgetType name="listing_version">
+      <configuration>
+        <sinceVersion>5.4.0</sinceVersion>
+        <title>Version</title>
+        <description>
+          <p>This widget type displays a document model version label</p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field mapping the document model, its version label will
+                be retrieved querying the versioning service
+              </li>
+            </ul>
+          </p>
+        </description>
+        <demo id="listing_versionWidget" />
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_version_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_thumbnail">
+      <configuration>
+        <sinceVersion>5.7.2</sinceVersion>
+        <title>Thumbnail</title>
+        <description>
+          <p>This widget type displays the document thumbnail.</p>
+          <p>
+            It requires the following fields configuration: first field maps
+            the document model.
+          </p>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_thumbnail_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_main_file_size">
+      <configuration>
+        <sinceVersion>5.7.2</sinceVersion>
+        <title>Main File Size</title>
+        <description>
+          <p>
+            This widget type displays the size of the main blob of the
+            document.
+          </p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps the document model, it will be used to
+                display the size.
+              </li>
+            </ul>
+          </p>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_main_file_size_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_main_file_format">
+      <configuration>
+        <sinceVersion>5.7.2</sinceVersion>
+        <title>Main File Format</title>
+        <description>
+          <p>
+            This widget type displays the format of the main file of the
+            document.
+          </p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps the document model, it will be used to
+                display the format.
+              </li>
+            </ul>
+          </p>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_main_file_format_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_manage_document">
+      <configuration>
+        <sinceVersion>5.9.3</sinceVersion>
+        <title>Manage Document</title>
+        <description>
+          <p>This widget type displays a clickable icon when the document can be
+            managed by the current user. Clicking the icon goes directly to the
+            manage
+            tab.
+          </p>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_manage_document.xhtml
+      </property>
+
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="listing_ajax_selection_box_with_current_document" type="listing_ajax_selection_box_with_current_document">
+      <aliases>
+        <alias>listing_selection_box_with_current_document</alias>
+      </aliases>
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field>selected</field>
+        <field>data.ref</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_ajax_selection_box" type="listing_ajax_selection_box">
+      <aliases>
+        <alias>listing_selection_box</alias>
+      </aliases>
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field>selected</field>
+        <field>data.ref</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_icon_type" type="listing_icon_type">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field>data</field>
+        <field>data.ref</field>
+        <field>data.type</field>
+        <field>data.folder</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_big_icon_type" type="listing_big_icon_type">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field>data</field>
+        <field>data.ref</field>
+        <field>data.type</field>
+        <field>data.folder</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_big_icon_type_link" type="listing_big_icon_type_link">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field>data</field>
+        <field>data.ref</field>
+        <field>data.type</field>
+        <field>data.folder</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_title_link" type="listing_title_link">
+      <labels>
+        <label mode="any">label.content.header.title</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data</field>
+        <field>data.ref</field>
+        <field>data.dc.description</field>
+        <field>data.file.content</field>
+        <field>data.file.content.filename</field>
+      </fields>
+      <properties mode="any">
+        <property name="file_property_name">file:content</property>
+        <property name="file_schema">file</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_lock_icon" type="listing_lock_icon">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field>data.lock</field>
+        <field>data.lockInfo</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_modification_date" type="datetime">
+      <labels>
+        <label mode="any">label.content.header.modified</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.modified</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateFormatter()}</property>
+      </properties>
+      <properties mode="csv">
+        <property name="csv_formatMask">#{nxu:basicDateFormatter()}</property>
+        <property name="csv_forceType">date</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_author" type="listing_author">
+      <labels>
+        <label mode="any">label.content.header.author</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dublincore.creator</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_lifecycle" type="text">
+      <labels>
+        <label mode="any">label.content.header.currentLifecycleState</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.currentLifeCycleState</field>
+      </fields>
+      <properties mode="any">
+        <property name="localize">true</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_livedit_link" type="listing_livedit_link">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field>data</field>
+      </fields>
+      <properties mode="any">
+        <property name="file_schema">file</property>
+        <property name="file_field_name">content</property>
+        <property name="filename_field_name">filename</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_version" type="listing_version">
+      <labels>
+        <label mode="any">label.version</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_description" type="textarea">
+      <labels>
+        <label mode="any">label.dublincore.description</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.description</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_nature" type="selectOneDirectory">
+      <labels>
+        <label mode="any">label.dublincore.nature</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.nature</field>
+      </fields>
+      <properties mode="any">
+        <property name="directoryName">nature</property>
+        <property name="localize">true</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_subjects" type="template">
+      <labels>
+        <label mode="any">label.dublincore.subject</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.subjects</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">/widgets/subjects_widget.xhtml</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_rights" type="text">
+      <labels>
+        <label mode="any">label.dublincore.rights</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.rights</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_source" type="text">
+      <labels>
+        <label mode="any">label.dublincore.source</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.source</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_coverage" type="template">
+      <labels>
+        <label mode="any">label.dublincore.coverage</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.coverage</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">/widgets/coverage_widget.xhtml</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_creation_date" type="datetime">
+      <labels>
+        <label mode="any">label.dublincore.created</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.created</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateFormatter()}</property>
+      </properties>
+      <properties mode="csv">
+        <property name="csv_formatMask">#{nxu:basicDateFormatter()}</property>
+        <property name="csv_forceType">date</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_format" type="text">
+      <labels>
+        <label mode="any">label.dublincore.format</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.format</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_language" type="text">
+      <labels>
+        <label mode="any">label.dublincore.language</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.language</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_expiration_date" type="datetime">
+      <labels>
+        <label mode="any">label.dublincore.expired</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.expired</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateFormatter()}</property>
+      </properties>
+      <properties mode="csv">
+        <property name="csv_formatMask">#{nxu:basicDateFormatter()}</property>
+        <property name="csv_forceType">date</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_contributors" type="template">
+      <labels>
+        <label mode="any">label.dublincore.contributors</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.contributors</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">/widgets/contributors_widget.xhtml</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_last_contributor" type="listing_last_contributor">
+      <labels>
+        <label mode="any">label.dublincore.lastContributor</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.lastContributor</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_thumbnail" type="listing_thumbnail">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field>data</field>
+      </fields>
+    </widget>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="document_listing_table" type="listingTable">
+      <aliases>
+        <alias>search_listing_ajax</alias>
+        <alias>document_listing_ajax</alias>
+        <alias>document_listing</alias>
+      </aliases>
+      <columns>
+        <column alwaysSelected="true" name="selection">
+          <properties mode="any">
+            <property name="isListingSelectionBoxWithCurrentDocument">
+              true
+            </property>
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+            <property name="label">label.selection.column.checkbox</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_ajax_selection_box_with_current_document</widget>
+        </column>
+        <column name="icon_type">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+            <property name="label">label.selection.column.icon_type</property>
+          </properties>
+          <widget>listing_icon_type</widget>
+        </column>
+        <column name="title_link">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:title</property>
+            <property name="label">label.selection.column.title_link</property>
+          </properties>
+          <widget>listing_title_link</widget>
+        </column>
+        <column name="lock">
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+            <property name="label">label.selection.column.lock</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_lock_icon</widget>
+        </column>
+        <column name="modification_date">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:modified</property>
+            <property name="label">label.dublincore.modificationDate</property>
+          </properties>
+          <widget>listing_modification_date</widget>
+        </column>
+        <column name="lastContributor">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:lastContributor</property>
+            <property name="label">label.dublincore.lastContributor</property>
+          </properties>
+          <widget>listing_last_contributor</widget>
+        </column>
+        <column name="version">
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="isSortable">false</property>
+            <property name="label">label.version</property>
+          </properties>
+          <widget>listing_version</widget>
+        </column>
+        <column name="lifecycle">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">
+              ecm:currentLifeCycleState
+            </property>
+            <property name="label">label.lifecycle</property>
+          </properties>
+          <widget>listing_lifecycle</widget>
+        </column>
+        <column name="livedit_link">
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+            <property name="label">label.selection.column.livedit_link</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_livedit_link</widget>
+        </column>
+        <column name="description" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:description</property>
+            <property name="label">description</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_description</widget>
+        </column>
+        <column name="nature" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:nature</property>
+            <property name="label">label.dublincore.nature</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_nature</widget>
+        </column>
+        <column name="subjects" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="label">label.dublincore.subject</property>
+          </properties>
+          <widget>listing_subjects</widget>
+        </column>
+        <column name="rights" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:rights</property>
+            <property name="label">label.dublincore.rights</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_rights</widget>
+        </column>
+        <column name="source" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:source</property>
+            <property name="label">label.dublincore.source</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_source</widget>
+        </column>
+        <column name="coverage" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:coverage</property>
+            <property name="label">label.dublincore.coverage</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_coverage</widget>
+        </column>
+        <column name="creation_date" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:created</property>
+            <property name="label">label.dublincore.created</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_creation_date</widget>
+        </column>
+        <column name="format" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:format</property>
+            <property name="label">label.dublincore.format</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_format</widget>
+        </column>
+        <column name="language" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:language</property>
+            <property name="label">label.dublincore.language</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_language</widget>
+        </column>
+        <column name="expired_date" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:expired</property>
+            <property name="label">label.dublincore.expired</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_expiration_date</widget>
+        </column>
+        <column name="contributors" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="label">label.dublincore.contributors</property>
+          </properties>
+          <widget>listing_contributors</widget>
+        </column>
+      </columns>
+    </layout>
+
+    <layout name="document_listing_thumbnail" type="listingThumbnail">
+      <columns>
+        <column name="last_contributor">
+          <properties mode="any">
+            <property name="label">label.dublincore.lastContributor</property>
+          </properties>
+          <widget>listing_last_contributor</widget>
+        </column>
+        <column name="size_and_format">
+          <properties mode="any">
+            <property name="label">label.selection.column.size_and_format</property>
+          </properties>
+          <widget>listing_size_and_format</widget>
+        </column>
+      </columns>
+    </layout>
+
+    <layout name="document_virtual_navigation_listing_ajax">
+      <aliases>
+        <alias>document_virtual_navigation_listing</alias>
+      </aliases>
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="isListingSelectionBox">true</property>
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_ajax_selection_box</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_icon_type</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:title</property>
+          </properties>
+          <widget>listing_title_link</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_lock_icon</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:modified</property>
+          </properties>
+          <widget>listing_modification_date</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:lastContributor</property>
+          </properties>
+          <widget>listing_last_contributor</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_version</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">
+              ecm:currentLifeCycleState
+            </property>
+          </properties>
+          <widget>listing_lifecycle</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_livedit_link</widget>
+        </column>
+      </columns>
+    </layout>
+
+    <layout name="document_listing_ajax_compact_2_columns">
+      <aliases>
+        <alias>document_listing_compact_2_columns</alias>
+      </aliases>
+      <properties mode="any">
+        <property name="display">table_2_columns</property>
+      </properties>
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <columns>
+        <column alwaysSelected="true">
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_ajax_selection_box_with_current_document</widget>
+        </column>
+        <column alwaysSelected="true">
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_icon_type</widget>
+        </column>
+        <column alwaysSelected="true">
+          <widget>listing_title_link</widget>
+          <widget>listing_modification_date</widget>
+          <widget>listing_author</widget>
+          <widget>listing_lifecycle</widget>
+          <widget>listing_version</widget>
+        </column>
+      </columns>
+    </layout>
+
+    <layout name="document_virtual_navigation_listing_ajax_compact_2_columns">
+      <properties mode="any">
+        <property name="display">table_2_columns</property>
+      </properties>
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <columns>
+        <column alwaysSelected="true">
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_ajax_selection_box</widget>
+        </column>
+        <column alwaysSelected="true">
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_icon_type</widget>
+        </column>
+        <column alwaysSelected="true">
+          <widget>listing_title_link</widget>
+          <widget>listing_modification_date</widget>
+          <widget>listing_author</widget>
+          <widget>listing_lifecycle</widget>
+          <widget>listing_version</widget>
+        </column>
+      </columns>
+    </layout>
+
+    <layout name="document_listing_icon_2_columns">
+      <properties mode="any">
+        <property name="display">table_2_columns</property>
+      </properties>
+      <templates>
+        <template mode="any">/layouts/layout_listing_template.xhtml</template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <columns>
+        <column alwaysSelected="true">
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_selection_box_with_current_document</widget>
+        </column>
+        <column alwaysSelected="true">
+          <widget>listing_big_icon_type_link</widget>
+        </column>
+        <column alwaysSelected="true">
+          <widget>listing_title_link</widget>
+        </column>
+      </columns>
+    </layout>
+
+    <layout name="document_listing_ajax_icon_2_columns">
+      <properties mode="any">
+        <property name="display">table_2_columns</property>
+      </properties>
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <columns>
+        <column alwaysSelected="true">
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_ajax_selection_box_with_current_document</widget>
+        </column>
+        <column alwaysSelected="true">
+          <widget>listing_thumbnail</widget>
+        </column>
+        <column alwaysSelected="true">
+          <widget>listing_title_link</widget>
+        </column>
+      </columns>
+    </layout>
+
+    <layout name="document_virtual_navigation_listing_ajax_icon_2_columns">
+      <properties mode="any">
+        <property name="display">table_2_columns</property>
+      </properties>
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <columns>
+        <column alwaysSelected="true">
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_ajax_selection_box</widget>
+        </column>
+        <column alwaysSelected="true">
+          <widget>listing_thumbnail</widget>
+        </column>
+        <column alwaysSelected="true">
+          <widget>listing_title_link</widget>
+        </column>
+      </columns>
+    </layout>
+
+    <layout name="listing_thumbnail_header">
+      <templates>
+        <template mode="any">
+          /layouts/layout_div_template.xhtml
+        </template>
+      </templates>
+      <columns>
+        <column alwaysSelected="true" name="selection">
+          <widget>listing_ajax_selection_box</widget>
+        </column>
+        <column>
+          <widget>listing_thumbnail</widget>
+        </column>
+        <column>
+          <widget>listing_title_link</widget>
+        </column>
+      </columns>
+    </layout>
+
+  </extension>
+
+</component>

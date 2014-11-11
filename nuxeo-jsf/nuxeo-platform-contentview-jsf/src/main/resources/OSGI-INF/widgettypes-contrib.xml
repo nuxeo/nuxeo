@@ -1,0 +1,1029 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.contentview.jsf.widgettypes">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="selectManyCheckboxAggregate">
+      <configuration>
+        <sinceVersion>6.0</sinceVersion>
+        <title>Checkbox</title>
+        <description>
+          A widget to display aggregate result with checkboxes.
+        </description>
+        <categories>
+          <category>aggregates</category>
+          <category>aggregates_terms</category>
+          <category>aggregates_significant_terms</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="layout">pageDirection</property>
+            <property name="notDisplayDefaultOption">true</property>
+            <property name="moreLessLimit">6</property>
+            <property name="emptyChoiceMessage">label.aggregate.emptyChoice</property>
+          </defaultValues>
+          <layouts mode="edit">
+            <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_layout</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyCheckboxAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyListboxAggregate">
+      <configuration>
+        <sinceVersion>6.0</sinceVersion>
+        <title>Select</title>
+        <description>
+          A widget to display aggregate result with select2.
+        </description>
+        <categories>
+          <category>aggregates</category>
+          <category>aggregates_terms</category>
+          <category>aggregates_significant_terms</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="notDisplayDefaultOption">true</property>
+            <property name="width">100%</property>
+          </defaultValues>
+          <layouts mode="edit">
+            <layout name="selectManyListboxAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyListboxAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyCheckboxDirectoryAggregate">
+      <configuration>
+        <sinceVersion>6.0</sinceVersion>
+        <title>Directory Checkbox</title>
+        <description>
+          A widget to display aggregate result with checkboxes.
+          The display label is resolved from a given directory.
+        </description>
+        <categories>
+          <category>aggregates</category>
+          <category>aggregates_terms</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="layout">pageDirection</property>
+            <property name="notDisplayDefaultOption">true</property>
+            <property name="moreLessLimit">6</property>
+            <property name="emptyChoiceMessage">label.aggregate.emptyChoice</property>
+          </defaultValues>
+          <layouts mode="any">
+            <layout
+              name="selectManyCheckboxDirectoryAggregate_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">directoryName</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directoryNameDemoPreview</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout
+              name="selectManyCheckboxDirectoryAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_layout</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_dbl10n</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">
+                    directory_notDisplayDefaultOption
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyCheckboxDirectoryAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyListboxDirectoryAggregate">
+      <configuration>
+        <sinceVersion>6.0</sinceVersion>
+        <title>Directory Select</title>
+        <description>
+          A widget to display aggregate result with select2.
+          The display label is resolved from a given directory.
+        </description>
+        <categories>
+          <category>aggregates</category>
+          <category>aggregates_terms</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="notDisplayDefaultOption">true</property>
+            <property name="width">100%</property>
+          </defaultValues>
+          <layouts mode="any">
+            <layout
+              name="selectManyListboxDirectoryAggregate_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">directoryName</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directoryNameDemoPreview</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout
+              name="selectManyListboxDirectoryAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_dbl10n</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">
+                    directory_notDisplayDefaultOption
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyListboxDirectoryAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyCheckboxDocumentAggregate">
+      <configuration>
+        <sinceVersion>6.0</sinceVersion>
+        <title>Document Checkbox</title>
+        <description>Select Many Checkbox Document Aggregate</description>
+        <description>
+          A widget to display aggregate result with checkboxes.
+          The display label the is title of the document.
+          It is resolved according to a document id.
+        </description>
+        <categories>
+          <category>aggregates</category>
+          <category>aggregates_terms</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="layout">pageDirection</property>
+            <property name="notDisplayDefaultOption">true</property>
+            <property name="itemLabel">#{nxd:titleFromId(item.key)}</property>
+            <property name="moreLessLimit">6</property>
+            <property name="emptyChoiceMessage">label.aggregate.emptyChoice</property>
+          </defaultValues>
+          <layouts mode="edit">
+            <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_layout</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyCheckboxAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyListboxDocumentAggregate">
+      <configuration>
+        <sinceVersion>6.0</sinceVersion>
+        <title>Document Select</title>
+        <description>Select2 Document Aggregate Widget</description>
+        <description>
+          A widget to display aggregate result with select2.
+          The display label the is title of the document.
+          It is resolved according to a document id.
+        </description>
+        <categories>
+          <category>aggregates</category>
+          <category>aggregates_terms</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="notDisplayDefaultOption">true</property>
+            <property name="itemLabel">#{nxd:titleFromId(item.key)}</property>
+            <property name="width">100%</property>
+            <property name="placeholder">#{messages['label.vocabulary.selectValue']}</property>
+          </defaultValues>
+          <layouts mode="edit">
+            <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyListboxAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyCheckboxUserAggregate">
+      <configuration>
+        <sinceVersion>6.0</sinceVersion>
+        <title>User Checkbox</title>
+        <description>Select Many Checkbox User Aggregate</description>
+        <description>
+          A widget to display aggregate result with checkboxes.
+          The display label is resolved from user directory.
+        </description>
+        <categories>
+          <category>aggregates</category>
+          <category>aggregates_terms</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="layout">pageDirection</property>
+            <property name="notDisplayDefaultOption">true</property>
+            <property name="itemLabel">#{nxu:userDisplayName(itemEntry.user.username, itemEntry.user.firstName, itemEntry.user.lastName)}</property>
+            <property name="directoryName">userDirectory</property>
+            <property name="moreLessLimit">6</property>
+            <property name="emptyChoiceMessage">label.aggregate.emptyChoice</property>
+          </defaultValues>
+          <layouts mode="edit">
+            <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_layout</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyCheckboxDirectoryAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyListboxUserAggregate">
+      <configuration>
+        <sinceVersion>6.0</sinceVersion>
+        <title>User Select</title>
+        <description>Select2 User Aggregate Widget</description>
+        <description>
+          A widget to display aggregate result with select2.
+          The display label is resolved from user directory.
+        </description>
+        <categories>
+          <category>aggregates</category>
+          <category>aggregates_terms</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="notDisplayDefaultOption">true</property>
+            <property name="itemLabel">#{nxu:userDisplayName(itemEntry.user.username, itemEntry.user.firstName, itemEntry.user.lastName)}</property>
+            <property name="directoryName">userDirectory</property>
+            <property name="width">100%</property>
+            <property name="placeholder">#{messages['label.vocabulary.selectValue']}</property>
+          </defaultValues>
+          <layouts mode="edit">
+            <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyListboxDirectoryAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyCheckboxHistogramAggregate">
+      <configuration>
+        <sinceVersion>6.0</sinceVersion>
+        <title>Histogram Checkbox</title>
+        <description>
+          A widget to display histogram aggregate result with checkboxes.
+        </description>
+        <categories>
+          <category>aggregates</category>
+          <category>aggregates_histogram</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="layout">pageDirection</property>
+            <property name="notDisplayDefaultOption">true</property>
+            <property name="moreLessLimit">6</property>
+            <property name="emptyChoiceMessage">label.aggregate.emptyChoice</property>
+            <property name="order">key desc</property>
+          </defaultValues>
+          <layouts mode="edit">
+            <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_layout</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyCheckboxAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyListboxHistogramAggregate">
+      <configuration>
+        <sinceVersion>6.0</sinceVersion>
+        <title>Histogram Select</title>
+        <description>
+          A widget to display histogram aggregate result with select2.
+        </description>
+        <categories>
+          <category>aggregates</category>
+          <category>aggregates_histogram</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="notDisplayDefaultOption">true</property>
+            <property name="width">100%</property>
+            <property name="placeholder">#{messages['label.vocabulary.selectValue']}</property>
+            <property name="order">key desc</property>
+          </defaultValues>
+          <layouts mode="edit">
+            <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyListboxAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyCheckboxDateHistogramAggregate">
+      <configuration>
+        <sinceVersion>6.0</sinceVersion>
+        <title>Date Histogram Checkbox</title>
+        <description>
+          A widget to display date histogram aggregate result with checkboxes.
+        </description>
+        <categories>
+          <category>aggregates</category>
+          <category>aggregates_date_histogram</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="layout">pageDirection</property>
+            <property name="notDisplayDefaultOption">true</property>
+            <property name="moreLessLimit">6</property>
+            <property name="emptyChoiceMessage">label.aggregate.emptyChoice</property>
+            <property name="order">key desc</property>
+          </defaultValues>
+          <layouts mode="edit">
+            <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_layout</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyCheckboxAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyListboxDateHistogramAggregate">
+      <configuration>
+        <sinceVersion>6.0</sinceVersion>
+        <title>Date Histogram Select</title>
+        <description>
+          A widget to display date histogram aggregate result with select2.
+        </description>
+        <categories>
+          <category>aggregates</category>
+          <category>aggregates_date_histogram</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="notDisplayDefaultOption">true</property>
+            <property name="width">100%</property>
+            <property name="placeholder">#{messages['label.vocabulary.selectValue']}</property>
+            <property name="order">key desc</property>
+          </defaultValues>
+          <layouts mode="edit">
+            <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyListboxAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyCheckboxDateRangeAggregate">
+      <configuration>
+        <sinceVersion>6.0</sinceVersion>
+        <title>Date Range Checkbox</title>
+        <description>
+          A widget to display date range aggregate result with checkboxes.
+        </description>
+        <categories>
+          <category>aggregates</category>
+          <category>aggregates_date_range</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="layout">pageDirection</property>
+            <property name="notDisplayDefaultOption">true</property>
+            <property name="moreLessLimit">6</property>
+            <property name="emptyChoiceMessage">label.aggregate.emptyChoice</property>
+          </defaultValues>
+          <layouts mode="edit">
+            <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_layout</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyCheckboxAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyListboxDateRangeAggregate">
+      <configuration>
+        <sinceVersion>6.0</sinceVersion>
+        <title>Date Range Select</title>
+        <description>
+          A widget to display date range aggregate result with select2.
+        </description>
+        <categories>
+          <category>aggregates</category>
+          <category>aggregates_date_range</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="var">item</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="notDisplayDefaultOption">true</property>
+            <property name="width">100%</property>
+            <property name="placeholder">#{messages['label.vocabulary.selectValue']}</property>
+          </defaultValues>
+          <layouts mode="edit">
+            <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyListboxAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyCheckboxRangeAggregate">
+      <configuration>
+        <sinceVersion>6.0</sinceVersion>
+        <title>Range Checkbox</title>
+        <description>
+          A widget to display range aggregate result with checkboxes.
+        </description>
+        <categories>
+          <category>aggregates</category>
+          <category>aggregates_range</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="layout">pageDirection</property>
+            <property name="notDisplayDefaultOption">true</property>
+            <property name="var">item</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="moreLessLimit">6</property>
+            <property name="emptyChoiceMessage">label.aggregate.emptyChoice</property>
+          </defaultValues>
+          <layouts mode="edit">
+            <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_layout</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyCheckboxAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyListboxRangeAggregate">
+      <configuration>
+        <sinceVersion>6.0</sinceVersion>
+        <title>Range Select</title>
+        <description>
+          A widget to display date range aggregate result with select2.
+        </description>
+        <categories>
+          <category>aggregates</category>
+          <category>aggregates_range</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="notDisplayDefaultOption">true</property>
+            <property name="width">100%</property>
+            <property name="var">item</property>
+            <property name="itemValue">#{item.key}</property>
+            <property name="itemCount">(#{item.docCount})</property>
+            <property name="placeholder">#{messages['label.vocabulary.selectValue']}</property>
+          </defaultValues>
+          <layouts mode="edit">
+            <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select_selectOptions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_style</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_styleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyListboxAggregateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+  </extension>
+
+</component>

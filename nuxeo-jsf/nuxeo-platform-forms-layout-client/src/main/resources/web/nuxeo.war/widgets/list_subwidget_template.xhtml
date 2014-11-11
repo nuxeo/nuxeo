@@ -1,0 +1,22 @@
+<f:subview xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  id="#{widget.id}">
+
+  <c:if test="false">
+    Deprecated since 5.6, here for compat. Use "list" widget instead, and fill
+    the property named "listTemplateItem".
+  </c:if>
+
+  <nxu:set var="propValueForTemplate"
+    value="#{widget_0.fieldDefinitions[0].propertyName}/#{widget.fieldDefinitions[0].propertyName}">
+    <nxl:widgetType name="list" mode="#{widget.mode}" value="#{fieldOrValue}"
+      properties="#{widget.properties}"
+      ignoreTemplateProperty="true"
+      subWidgets="#{widget.subWidgets}"
+      listTemplateItem="#{nxd:propertyDefaultValue(propValueForTemplate)}" />
+  </nxu:set>
+
+</f:subview>

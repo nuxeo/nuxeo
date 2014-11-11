@@ -1,0 +1,98 @@
+<f:subview xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+
+<c:if test="false">
+  displays a document view using PDF JSF library.
+</c:if>
+
+<c:set var="titleOrId" value="#{nxd:titleOrId(currentDocument)}" />
+
+<nxp:document title="#{titleOrId}" orientation="portrait"
+  fileName="#{titleOrId}.pdf">
+
+<nxp:table columns="2" widths="1 3">
+  <nxp:cell>#{messages['label.title']}</nxp:cell>
+  <nxp:cell><nxp:paragraph alignment="center">#{titleOrId}</nxp:paragraph></nxp:cell>
+  <nxp:cell>#{messages['label.exportview.pdfExport.generationDate']}</nxp:cell>
+  <nxp:cell>
+    <nxp:paragraph alignment="center">
+      <nxl:widgetType name="datetime" mode="pdf"
+        value="#{currentDate}"
+        pattern="#{nxu:basicDateAndTimeFormatter()}" />
+    </nxp:paragraph>
+  </nxp:cell>
+</nxp:table>
+
+<ui:include src="/incl/export/document_content_pdf_template.xhtml" />
+
+<c:if test="#{not empty nxd:typeInfo(currentDocument).getLayouts('pdf')}">
+  <nxp:paragraph>
+    <nxp:font size="14" style="bold">
+      <nxp:paragraph>
+        #{messages['action.view.metadata.specific']}
+      </nxp:paragraph>
+    </nxp:font>
+   <nxl:documentLayout value="#{currentDocument}" mode="pdf"
+     template="/layouts/layout_pdf_template.xhtml" />
+  </nxp:paragraph>
+</c:if>
+
+<nxp:paragraph>
+  <nxp:font size="14" style="bold">
+    <nxp:paragraph>
+      #{messages['action.view.metadata.common']}
+    </nxp:paragraph>
+  </nxp:font>
+  <nxl:layout value="#{currentDocument}" mode="pdf"
+    name="dublincore" 
+    template="/layouts/layout_pdf_template.xhtml" />
+</nxp:paragraph>
+
+<nxp:paragraph>
+  <nxp:font size="14" style="bold">
+    <nxp:paragraph>
+      #{messages['label.permalink']}
+    </nxp:paragraph>
+  </nxp:font>
+  <nxp:paragraph />
+  <nxp:list style="numbered">
+    <nxp:listItem>
+      <nxu:set var="url"
+        value="#{nxd:complexDocumentUrl('default', currentDocument, null, null, true)}">
+        <nxp:anchor reference="#{url}">#{url}</nxp:anchor>
+      </nxu:set>
+    </nxp:listItem>
+    <nxp:listItem>
+      <nxu:set var="url"
+        value="#{nxd:complexDocumentUrl('id', currentDocument, null, null, true)}">
+        <nxp:anchor reference="#{url}">#{url}</nxp:anchor>
+      </nxu:set>
+    </nxp:listItem>
+  </nxp:list>
+</nxp:paragraph>
+
+<nxp:newPage />
+<ui:include src="/incl/export/document_history_pdf_template.xhtml" />
+
+<ui:include src="/incl/export/document_comments_pdf_template.xhtml" />
+
+<nxu:set var="exportContentViews"
+  value="#{documentContentViewActions.getExportContentViewsForCurrentDocument()}"
+  cache="true">
+<c:if test="#{not empty exportContentViews}">
+  
+  <nxp:newPage />
+  <ui:include src="/incl/export/document_contentviews_pdf_template.xhtml" />
+
+</c:if>
+</nxu:set>
+
+</nxp:document>
+
+</f:subview>

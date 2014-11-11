@@ -1,0 +1,60 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:a4j="http://richfaces.org/a4j">
+<div id="#{widget.id}"
+  class="#{widgetProperty_styleClass}">
+
+  <nxu:set var="widgetPanelId"
+    value="#{widget.id}_panel"
+    cache="true">
+
+  <a4j:outputPanel id="#{widgetPanelId}"
+   layout="block">
+
+  <c:if test="#{!empty widget.label and widget.handlingLabels}">
+    <ui:include src="/widgets/incl/widget_label_template.xhtml">
+      <ui:param name="labelStyleClass" value="summaryTitle #{widgetProperty_headerStyleClass}" />
+    </ui:include>
+  </c:if>
+
+  <c:if test="#{!empty widgetProperty_description}">
+    <p class="specification">
+      <h:outputText value="#{messages[widgetProperty_description]}" />
+    </p>
+  </c:if>
+
+  <nxl:widgetType name="text"
+    mode="edit"
+    widgetName="#{widget.name}"
+    value="#{fieldOrValue}"
+    properties="#{widget.properties}"/>
+
+  <nxu:set var="action"
+    value="#{webActions.getAction(widgetProperty_actionId, not widgetProperty_disableFiltered)}"
+    cache="true">
+  <nxu:set var="localElementToRender"
+    value="#{nxu:componentAbsoluteId(component, widgetPanelId)}">
+  <nxu:set var="elementsToRender"
+    value="#{nxu:joinRender(ajaxReRender, nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender))}">
+    <nxl:widgetType name="action"
+      mode="#{widget.mode}"
+      widgetName="#{widget.name}_action"
+      label=""
+      ajaxReRender="#{nxu:joinRender(elementsToRender, localElementToRender)}"
+      action="#{action}"
+      addForm="false"
+      actionsDisplay="buttons"
+      useAjaxForm="true" />
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+  </a4j:outputPanel>
+  </nxu:set>
+
+</div>
+</ui:composition>
