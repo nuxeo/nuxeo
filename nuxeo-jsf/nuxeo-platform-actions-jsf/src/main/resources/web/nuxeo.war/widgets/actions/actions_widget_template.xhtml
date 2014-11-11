@@ -1,0 +1,154 @@
+<c:if test="#{not empty widgetProperty_actions}"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+<nxu:set var="actionStyleClass"
+  value="#{widgetProperty_actionStyleClass}"
+  cache="true">
+<nxu:set var="idPrefix" value="#{widget.id}_" cache="true">
+<nxu:set var="clickedActionIdHolder" value="#{idPrefix}clickedActionIdHolder"
+  cache="true">
+<nxu:set var="actionsPanelId" value="#{widget.id}_panel"
+  cache="true">
+<nxu:set var="formAdded" value="#{widgetProperty_addForm}" cache="true">
+  <nxu:valueHolder id="#{clickedActionIdHolder}"
+    var="clickedActionId">
+
+    <a4j:outputPanel id="#{actionsPanelId}" layout="block"
+      styleClass="#{widgetProperty_styleClass}">
+
+      <c:choose>
+        <c:when test="#{widgetProperty_overallDisplay == 'horizontal_block'}">
+          <div class="widgetPanel actionsWidgetPanel">
+            <nxu:repeat var="action" items="#{widgetProperty_actions}"
+              begin="0"
+              end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
+              step="1"
+              varStatus="status">
+              <span class="#{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
+                <ui:decorate template="/incl/action/action_template.xhtml">
+                  <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+                  <ui:param name="ajaxReRender" value="#{nxl:joinReRender(actionsPanelId, widgetProperty_ajaxReRender)}" />
+                  <ui:param name="addForm" value="#{widgetProperty_addForm}" />
+                  <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
+                  <ui:param name="formStyleClass" value="displayI subWidgetForm" />
+                  <ui:param name="mode" value="#{widget.mode}" />
+                </ui:decorate>
+              </span>
+              <c:if test="#{not status.last}">
+                <h:outputText value="#{widgetProperty_separator}" />
+              </c:if>
+            </nxu:repeat>
+
+            <ui:include src="./actions_more_menu.xhtml" />
+
+          </div>
+        </c:when>
+
+        <c:when test="#{widgetProperty_overallDisplay == 'menu'}">
+          <ul>
+            <nxu:repeat var="action" items="#{widgetProperty_actions}"
+              begin="0"
+              end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
+              step="1">
+              <li class="#{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
+                <ui:decorate template="/incl/action/action_template.xhtml">
+                  <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+                  <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
+                  <ui:param name="addForm" value="#{widgetProperty_addForm}" />
+                  <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
+                  <ui:param name="formStyleClass" value="displayI subWidgetForm" />
+                  <ui:param name="mode" value="#{widget.mode}" />
+                </ui:decorate>
+              </li>
+            </nxu:repeat>
+          </ul>
+
+          <ui:include src="./actions_more_menu.xhtml" />
+        </c:when>
+
+        <c:when test="#{widgetProperty_overallDisplay == 'rollover_menu'}">
+          <ul class="actionList">
+            <li class="dropDownMenu button dropdown">
+              <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                <ui:param name="labelStyleClass"
+                  value="boldLabel #{widgetProperty_subLabelStyleClass}" />
+              </ui:include>
+              <ul class="actionSubList">
+                <nxu:repeat var="action" items="#{widgetProperty_actions}">
+                  <li class="#{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
+                    <ui:decorate template="/incl/action/action_template.xhtml">
+                      <ui:param name="actionsDisplay" value="#{nxu:test(widgetProperty_actionsDisplay == 'buttons', 'links', widgetProperty_actionsDisplay)}" />
+                      <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
+                      <ui:param name="addForm" value="#{widgetProperty_addForm}" />
+                      <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
+                      <ui:param name="formStyleClass" value="subWidgetForm" />
+                      <ui:param name="mode" value="#{widget.mode}" />
+                    </ui:decorate>
+                  </li>
+                </nxu:repeat>
+              </ul>
+            </li>
+          </ul>
+          <script type="text/javascript">
+            jQuery(document).ready(function($) {
+              jQuery('.dropDownMenu').click(function(e) {
+                jQuery(this).find('ul').hide();
+                jQuery(this).find("ul").show();
+                e.stopPropagation();
+              });
+              jQuery(document).click(function() {
+                jQuery('.dropDownMenu').find('ul').hide();
+              });
+            });
+          </script>
+        </c:when>
+
+        <c:otherwise>
+          <nxu:repeat var="action" items="#{widgetProperty_actions}"
+            begin="0"
+            end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
+            step="1">
+            <div class="widgetPanel actionsWidgetPanel #{action.properties.containerStyleClass}">
+              <ui:decorate template="/incl/action/action_template.xhtml">
+                <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+                <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
+                <ui:param name="addForm" value="#{widgetProperty_addForm}" />
+                <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
+                <ui:param name="formStyleClass" value="subWidgetForm" />
+                <ui:param name="mode" value="#{widget.mode}" />
+              </ui:decorate>
+            </div>
+          </nxu:repeat>
+
+          <ui:include src="./actions_more_menu.xhtml" />
+
+        </c:otherwise>
+
+      </c:choose>
+
+    </a4j:outputPanel>
+    <c:if test="#{widgetProperty_clearBoth}">
+      <div class="clear" />
+    </c:if>
+
+    <nxu:repeat var="action" items="#{widgetProperty_actions}">
+      <ui:include src="/incl/action/generic_mode_action_template.xhtml">
+        <ui:param name="mode" value="after_view" />
+      </ui:include>
+    </nxu:repeat>
+
+  </nxu:valueHolder>
+</nxu:set>
+</nxu:set>
+</nxu:set>
+</nxu:set>
+</nxu:set>
+
+</c:if>
