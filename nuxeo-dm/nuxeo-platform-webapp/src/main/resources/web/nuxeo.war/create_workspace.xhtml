@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <ui:define name="page title">
+    <h:outputText value="#{nuxeoApplicationName} - #{messages['title.create.document']}" />
+  </ui:define>
+
+  <ui:define name="body">
+    <div class="mainNoTabs">
+    <h3>
+      <h:outputText value="#{messages['title.create.document']} #{messages[typesTool.selectedType.label]}" />
+    </h3>
+    <ui:include src="/incl/message_banner.xhtml" />
+    <h:form enctype="multipart/form-data" id="document_create">
+      <c:if test="#{!empty documentActions.changeableDocumentType.layout}">
+        <ui:include src="/incl/document_editor.xhtml" />
+      </c:if>
+      <c:if test="#{empty documentActions.changeableDocumentType.layout}">
+        <nxl:documentLayout mode="create" value="#{changeableDocument}" />
+      </c:if>
+      <f:subview rendered="#{! empty availableTemplates}">
+        <h4>
+          <h:outputText value="#{messages['label.templates.createFrom']}"/>
+        </h4>
+        <h:selectOneMenu id="selectTemplate"
+          value="#{documentTemplatesActions.selectedTemplateId}">
+          <f:selectItem itemValue="" itemLabel="#{messages['label.templates.none']}"/>
+         <nxu:selectItems value="#{availableTemplates}" var="template"
+                   itemValue="#{template.id}" itemLabel="#{template.dublincore.title}"/>
+        </h:selectOneMenu>
+      </f:subview>
+      <p class="buttonsGadget">
+        <h:commandButton class="button" id="button_create"
+	  value="#{messages['command.create']}"
+          action="#{documentTemplatesActions.createDocumentFromTemplate}" />
+        <h:commandButton class="button" value="#{messages['command.cancel']}"
+          action="#{navigationContext.goBack()}" immediate="true" />
+      </p>
+    </h:form>
+    </div>
+  </ui:define>
+
+</nxthemes:composition>
