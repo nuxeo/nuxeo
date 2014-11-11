@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <ui:define name="body">
+    <div>
+    <h3><h:outputText value="#{messages['title.massedition']} #{currentType.id}" /></h3>
+    <ui:include src="/incl/message_banner.xhtml" />
+    <h:form>
+
+    <h:selectBooleanCheckbox value="#{massSecurityModifierActions.blockRightInheritance}"/>
+
+    <ui:include src="/incl/select_users_search.xhtml" />
+
+    <table cellspacing="10" cellpadding="0" border="0" class="rightsAddManager">
+    <tbody>
+      <tr>
+      <td valign="top" align="center">
+        <ui:include src="/incl/select_users_results.xhtml" />
+      </td>
+      <td valign="top" align="center">
+        <ui:include src="/incl/select_users_selection.xhtml" />
+      </td>
+      <td>
+        <div>
+
+  <h:outputText value="#{messages['label.action']}"
+    class="rightsAddLabel" />
+  <h:selectOneMenu value="#{permissionActionListManager.selectedGrant}"
+    class="rightsAddSelect">
+    <f:selectItems
+      value="#{permissionActionListManager.permissionActionItems}" />
+  </h:selectOneMenu>
+
+  <br />
+
+  <h:outputText value="#{messages['label.security.permission']}"
+    class="rightsAddLabel" />
+  <h:selectOneMenu value="#{permissionListManager.selectedPermission}"
+    class="rightsAddSelect">
+  <f:selectItems value="#{securityActions.settablePermissions}" />
+  </h:selectOneMenu>
+
+  <h:commandButton
+    value="#{messages['command.security.addPerm']}"
+    class="button rightsAddButton"
+    action="#{massSecurityModifierActions.stackPermissions}" />
+</div>
+
+      </td>
+      </tr>
+    </tbody>
+    </table>
+
+
+
+    </h:form>
+  </div>
+  </ui:define>
+</nxthemes:composition>

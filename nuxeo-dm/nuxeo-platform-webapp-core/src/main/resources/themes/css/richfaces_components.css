@@ -1,0 +1,49 @@
+/*
+Override from RichFaces components styles
+=Tree -> rich:tree Tree styles override
+=FileUpload -> rich:fileUpload styles override
+=Modal Panel -> RichFaces Modal Panel container styles override
+author: lkemen@nuxeo.com
+*/
+
+/* =Tree */
+.treeLink a, .treeLink a:link, .treeLink a:visited { font-weight: normal }
+.treeLink a:hover, .treeLink a:active { text-decoration: underline }
+.treeLink img {margin: .3em .4em .4em 0; vertical-align: top }
+
+.cell { margin-bottom: .2em; padding: .2em }
+.cell img, .clipboardFunction img { vertical-align: middle }
+.cell .iconImage { margin-right: .4em }
+
+.menu dl, .menu dd { margin: 0 }
+.menu dd { padding: 1em 0 }
+
+td.dr-tree-h-text, td.dr-tree-h-text span, td.dr-tree-h-text a.treeLink { white-space: normal }
+.dr-tree-h-ic-div { margin-left: .7em; padding-left: 1em }
+.treeNodeHighlightedClass { text-decoration: none }
+.treeNodeSelectedClass { border: none }
+
+.dataInput .dr-tree td, .dataInput .dr-tree td td {padding: .1em }
+.fieldColumn .dr-tree img { margin: 0 }
+
+/* =FileUpload */
+.rich-fileupload-list-decor { margin: 1em 0 }
+.rich-fileupload-button, .rich-fileupload-button-border { padding: .2em }
+.rich-fileupload-button-light, .rich-fileupload-button-press { padding: .1em }
+.rich-fileupload-button-content { padding: .2em .5em .2em 1.7em }
+
+/* =Modal Panel */
+.rich-mpnl-mask-div { opacity: 0.1 }
+h3.documentTypes { padding: 0; margin: 1.4em 0 .5em; color: #333; border-width: 1px; border-style: none none solid;  border-color: "neutral.light (__FLAVOR__ border)"; }
+
+.documentType { margin: 1em 0; width: 200px }
+.documentType img { float: left; margin-right: .5em }
+.documentType a, .documentType a:link, .documentType a:visted, .documentType a:hover { font-weight: bold; color: "link (__FLAVOR__ color)"; text-decoration: none }
+.documentType span { color: #454545 }
+a.documentTypeLink { color: "link (__FLAVOR__ color)"; font-weight: bold; text-decoration: none }
+
+#tooltip { position: absolute; display: block }
+#tooltipContent { display: block; padding: .2em 1.1em .3em .6em; margin-left: .5em; background: #FFFFAA; color:"black (__FLAVOR__ color)"; border: 1px solid #333 }
+
+/* Suggestion Box */
+.suggestionBoxResult .rich-sb-cell-padding img { max-height: 16px; max-width: 16px }

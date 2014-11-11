@@ -1,0 +1,57 @@
+<span xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory">
+<c:if test="false">
+  This template is deprecated
+</c:if>
+
+  <!-- Title -->
+  <nxu:column rendered="#{field.prefixedName == 'dc:title'}" >
+    <ui:decorate template="/search/column_header.xhtml">
+      <ui:param name="sortColumn" value="#{field.prefixedName}"/>
+      <ui:param name="provider" value="#{provider}" />
+      <ui:param name="providerName" value="#{providerName}" />
+      <ui:param name="label" value="#{messages[field.label]}" />
+    </ui:decorate>
+    <div id="docRefTarget:#{row.data.ref}">
+      <div id="docRef:#{row.data.ref}" class="cell popupTarget" docRef="#{row.data.ref}">
+        <nxd:restDocumentLink document="#{doc}">
+          <nxh:outputText value="#{nxd:titleOrId(doc)}"/>
+        </nxd:restDocumentLink>
+      </div>
+    </div>
+  </nxu:column>
+
+  <!-- lifecycle state -->
+  <nxu:column rendered="#{field.prefixedName == 'ecm:currentLifeCycleState'}" >
+    <ui:decorate template="/search/column_header.xhtml">
+      <ui:param name="sortColumn" value="#{field.prefixedName}"/>
+      <ui:param name="provider" value="#{provider}" />
+      <ui:param name="providerName" value="#{providerName}" />
+      <ui:param name="label" value="#{messages[field.label]}" />
+    </ui:decorate>
+    
+    <h:outputText value="#{messages[doc.currentLifeCycleState]}" />
+
+  </nxu:column>
+
+  <!-- primary type -->
+  <nxu:column rendered="#{field.prefixedName == 'ecm:primaryType'}" >
+    <ui:decorate template="/search/column_header.xhtml">
+      <ui:param name="sortColumn" value="#{field.prefixedName}"/>
+      <ui:param name="provider" value="#{provider}" />
+      <ui:param name="providerName" value="#{providerName}" />
+      <ui:param name="label" value="#{messages[field.label]}" />
+    </ui:decorate>
+    <h:outputText value="#{messages[nxd:typeInfo(row.data).label]}" />
+
+  </nxu:column>
+
+</span>

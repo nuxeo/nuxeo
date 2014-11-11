@@ -1,0 +1,49 @@
+<div
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  >
+
+<h:form enctype="multipart/form-data">
+    <div id="content" class="wizardFrame">
+        <h4>
+          <h:outputText value="#{messages['wizard.workspace.customization']}"/>
+        </h4>
+          <table class="dataInput">
+            <tbody>
+              <tr>
+                <td class="labelColumn">
+	              <h:outputText value="#{messages['wizard.workspace.currentLogo']}"/>
+                </td>
+                <td class="fieldColumn">
+                  <h:graphicImage value="/img/default_logo.gif" alt="Nuxeo 5" width="194" height="99"
+                  rendered="#{selectedTemplateId.value=='none'}"/>
+		        	<nxu:methodResult name="templateLogoURL" value="#{logoHelper.getLogoURLFromDocRef(selectedTemplateId.value)}">
+				        <h:graphicImage value="#{templateLogoURL}" alt="Nuxeo 5" width="194" height="99"
+					        rendered="#{!(selectedTemplateId.value=='none')}"/>
+		        	</nxu:methodResult>
+                </td>
+              </tr>
+              <tr>
+                <td class="labelColumn">
+                  <h:outputText value="#{messages['wizard.workspace.uploadNewLogo']}"/>
+                </td>
+                <td class="fieldColumn">
+                  <iframe frameborder="0" src="#{workspaceActions.a4JHackingURL}" width="300px" height="150px"/>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+    <div class="wizardButtonBar">
+    	<h:commandButton styleClass="button" value="#{messages['wizard.cancel']}" action="cancel" immediate="true"/>
+    	<a4j:commandButton styleClass="button" value="#{messages['wizard.prev']}" action="back" reRender="wizard"/>
+        <h:commandButton styleClass="button" value="#{messages['wizard.terminate']}" action="finish"/>
+    </div>
+
+    </div>
+</h:form>
+</div>
