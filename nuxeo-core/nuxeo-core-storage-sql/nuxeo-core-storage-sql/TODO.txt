@@ -1,0 +1,11 @@
+SQL Storage TODO
+
+Optimizations:
+
+- blob storage GC
+
+- table aggregation
+
+- arrays to replace collection tables (PostgreSQL)
+
+- CONNECT BY / START WITH for NX_IN_TREE implementation (Oracle)
