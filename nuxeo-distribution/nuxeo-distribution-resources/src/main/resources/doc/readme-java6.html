@@ -1,0 +1,36 @@
+<html>
+<body>
+
+<h1>Running Nuxeo DM with Java 6</h1>
+
+<p>Nuxeo DM has been compiled against Java 5 but is runnable with Java Runtime Environment 6 (this is actually the recommended version).</p>
+
+<p>When running under Java 6, the startup script applies some fixes, 
+moving for example the scripting API out of the classpath (as it's already provided by Java6).</p>
+
+<h1>Building Nuxeo DM</h1>
+
+<p>The JDK 5 compiled binary is our primary/recommended binary distribution. 
+It has undergone rigorous testing and can run under both a Java 5 or a Java 6 JRE/JDK.</p>
+
+<p>However, you can build with Sun JDK 6 and then run under JRE/JDK 6 only.</p>
+
+<h1>Details for experts</h1>
+
+<p>If you encounter problems using JBoss with a Sun Java 6 runtime, you may
+want to set -Dsun.lang.ClassLoader.allowArraySyntax=true, as described in
+JBAS-4491. Other potential problems under a Java 6 runtime include:</p>
+
+<ul>
+    <li>ORB getting prematurely destroyed when using Sun JDK 6 (see Sun Bug
+    ID:6520484)</li>
+    <li>Unimplemented methods in Hibernate for JDK6 interfaces.</li>
+</ul>
+
+<p>When JBossAS 4.2.3 is compiled with Java 6, support for the extended JDBC
+4 API is included in the binary, however this can only be used under a Java 6
+runtime. In this case no manual configuration steps are necessary. It should be
+noted however that the Java 6 compiled distribution of JBoss AS 4.2.3.GA is
+still in experimental stage.</p>
+</body>
+</html>

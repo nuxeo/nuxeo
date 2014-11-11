@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<connection-factories>
+  <tx-connection-factory>
+    <jndi-name>NXRepository/default</jndi-name>
+    <xa-transaction/>
+    <track-connection-by-tx/>
+    <adapter-display-name>Nuxeo SQL Repository DataSource</adapter-display-name>
+    <rar-name>nuxeo.ear#nuxeo-core-storage-sql-ra-1.6.2-SNAPSHOT.rar</rar-name>
+    <connection-definition>org.nuxeo.ecm.core.storage.sql.Repository</connection-definition>
+    <config-property name="name">default</config-property>
+    <max-pool-size>${nuxeo.vcs.max-pool-size}</max-pool-size>
+    
+    <config-property name="xaDataSource" type="java.lang.String">oracle.jdbc.xa.client.OracleXADataSource</config-property>
+    <config-property name="property" type="java.lang.String">URL=jdbc:oracle:thin:@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}</config-property>
+    <config-property name="property" type="java.lang.String">User=${nuxeo.db.user}</config-property>
+    <config-property name="property" type="java.lang.String">Password=${nuxeo.db.password}</config-property>
+
+    <isSameRM-override-value>false</isSameRM-override-value>
+    <!-- Oracles XA datasource cannot reuse a connection outside a transaction once enlisted in a global transaction and vice-versa -->
+    <no-tx-separate-pools></no-tx-separate-pools>
+  </tx-connection-factory>
+</connection-factories>
