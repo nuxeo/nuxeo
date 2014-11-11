@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/themeConfiguration/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/themeConfiguration/">
+
+  <xs:element name="theme" type="xs:string"/>
+  <xs:element name="page" type="xs:string"/>
+  <xs:element name="perspective" type="xs:string"/>
+  <xs:element name="engine" type="xs:string"/>
+  <xs:element name="mode" type="xs:string"/>
+  <xs:element name="flavor" type="xs:string"/>
+
+</xs:schema>
