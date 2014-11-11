@@ -1,0 +1,356 @@
+<project name="nuxeo-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+
+
+  <target name="init" unless="init.done">
+    <condition property="no.build">
+      <or>
+        <isset property="maven.profile.nuxeo-ep" />
+        <isset property="maven.profile.nuxeo-2parts" />
+      </or>
+    </condition>
+    <condition property="no.alternate.build">
+      <isset property="maven.profile.nuxeo-dm" />
+    </condition>
+
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <property name="stagedir" value="${outdir}/stage" />
+
+    <antcall target="expand" />
+    <property name="init.done" value="true" />
+  </target>
+
+  <target name="expand" unless="no.build">
+    <artifact:nuxeo-expand />
+    <!--artifact:print output="dependency-tree.log" /-->
+  </target>
+
+  <target name="build" depends="init,clean" unless="no.build">
+    <echo>Building default Nuxeo DM EAR</echo>
+    <property name="nuxeo.ear" value="${stagedir}/nuxeo.ear" />
+    <property name="nuxeo.ear.resources"
+              value="${stagedir}/nuxeo.ear.resources" />
+    <mkdir dir="${nuxeo.ear}" />
+    <mkdir dir="${nuxeo.ear.resources}" />
+
+    <antcall target="build-standard" />
+    <delete failonerror="false" dir="${outdir}/nuxeo.ear" />
+    <copy todir="${outdir}/nuxeo.ear">
+      <fileset dir="${nuxeo.ear}" />
+      <fileset dir="${nuxeo.ear.resources}" />
+    </copy>
+    <!-- DEPRECATED distributions -->
+    <antcall target="build-distribution">
+      <param name="distribution" value="derby" />
+    </antcall>
+    <antcall target="build-distribution">
+      <param name="distribution" value="mysql" />
+    </antcall>
+    <antcall target="build-distribution">
+      <param name="distribution" value="postgresql" />
+    </antcall>
+    <antcall target="build-distribution">
+      <param name="distribution" value="oracle" />
+    </antcall>
+    <antcall target="build-distribution">
+      <param name="distribution" value="h2" />
+    </antcall>
+    <antcall target="build-distribution">
+      <param name="distribution" value="jcr" />
+      <param name="storage.jcr" value="true" />
+    </antcall>
+    <antcall target="build-distribution">
+      <param name="distribution" value="jcr-postgresql" />
+      <param name="storage.jcr" value="true" />
+    </antcall>
+    <antcall target="clean" />
+  </target>
+
+  <target name="build-distribution"
+          depends="init"
+          description="Build distributions on various backends"
+          unless="no.alternate.build">
+    <delete failonerror="false" dir="${stagedir}/nuxeo-${distribution}.ear" />
+    <copy todir="${stagedir}/nuxeo-${distribution}.ear" overwrite="true">
+      <fileset dir="${nuxeo.ear}" />
+    </copy>
+    <antcall target="use-jcr-storage" />
+    <nx:profile name="${distribution}">
+      <delete failonerror="false" dir="${outdir}/nuxeo.ear" />
+      <copy todir="${outdir}/nuxeo.ear">
+        <fileset dir="${stagedir}/nuxeo-${distribution}.ear" />
+      </copy>
+    </nx:profile>
+
+    <!-- DEPRECATED resources artifact, temporarily built for backward compliance -->
+    <delete failonerror="false"
+            dir="${stagedir}/nuxeo-${distribution}.ear.resources" />
+    <unzip dest="${stagedir}/nuxeo-${distribution}.ear.resources">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
+                            classifier="resources-${distribution}" />
+    </unzip>
+    <copy todir="${stagedir}/nuxeo-${distribution}.ear.resources"
+          overwrite="true">
+      <fileset dir="src/main/resources" />
+    </copy>
+    <nx:profile name="${distribution}">
+      <delete failonerror="false" dir="${outdir}/nuxeo.ear" />
+      <copy todir="${outdir}/nuxeo.ear">
+        <fileset dir="${stagedir}/nuxeo-${distribution}.ear" />
+        <fileset dir="${stagedir}/nuxeo-${distribution}.ear.resources" />
+      </copy>
+    </nx:profile>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-resources-${distribution}.zip"
+         basedir="${stagedir}/nuxeo-${distribution}.ear.resources" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-resources-${distribution}.zip"
+                     classifier="resources-${distribution}"
+                     type="zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}" />
+  </target>
+
+  <target name="use-jcr-storage"
+          description="Replace VCS with JCR storage"
+          if="storage.jcr">
+    <delete failonerror="false">
+      <fileset dir="${stagedir}/nuxeo-${distribution}.ear/system">
+        <include name="nuxeo-core-storage-sql*" />
+      </fileset>
+    </delete>
+    <copy todir="${stagedir}/nuxeo-${distribution}.ear/system" overwrite="true">
+      <artifact:file groupId="org.nuxeo.ecm.core" artifactId="nuxeo-core-jca" />
+      <artifact:file groupId="org.nuxeo.ecm.core"
+                     artifactId="nuxeo-core-jcr-connector" />
+    </copy>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
+         basedir="${stagedir}/nuxeo-${distribution}.ear" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
+                     classifier="${distribution}"
+                     type="zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}" />
+  </target>
+
+  <target name="build-standard"
+          description="Build default distribution"
+          depends="init">
+    <copy todir="${nuxeo.ear}" overwrite="true">
+      <artifact:file artifactId="nuxeo-platform-webapp" />
+      <artifact:file artifactId="nuxeo-platform-webapp-core" />
+    </copy>
+    <copy todir="${nuxeo.ear}/system" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="org.nuxeo*" />
+        </includes>
+        <excludes>
+          <artifact groupId="org.nuxeo.common" />
+          <artifact artifactId="nuxeo-generic-wss-handler" />
+          <artifact artifactId="nuxeo-platform-webapp" />
+          <artifact artifactId="nuxeo-platform-webapp-core" />
+          <artifact artifactId="nuxeo-apt-extensions" />
+          <artifact artifactId="nuxeo-webengine-apt" />
+          <!-- exclude JCR storage -->
+          <artifact artifactId="nuxeo-core-jca" />
+          <artifact artifactId="nuxeo-core-jcr-connector" />
+        </excludes>
+      </artifact:set>
+    </copy>
+
+    <!-- Third-party libraries -->
+    <antcall target="third-party-libraries" />
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+         basedir="${nuxeo.ear}" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="zip" />
+
+    <!-- DEPRECATED resources artifact, temporarily built for backward compliance -->
+    <unzip dest="${nuxeo.ear.resources}">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
+                            classifier="resources-mono" />
+    </unzip>
+    <copy todir="${nuxeo.ear.resources}" overwrite="true">
+      <fileset dir="src/main/resources" />
+    </copy>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-resources.zip"
+         basedir="${nuxeo.ear.resources}" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-resources.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="resources"
+                     type="zip" />
+  </target>
+
+  <target name="third-party-libraries">
+    <copy todir="${nuxeo.ear}/lib" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="!org.nuxeo*" />
+        </includes>
+      </artifact:set>
+    </copy>
+    <!-- Remove duplicates -->
+    <delete>
+      <fileset dir="${nuxeo.ear}/lib">
+        <include name="activation-*" />
+        <include name="ant-*" />
+        <include name="ant-launcher-*" />
+        <include name="antlr-*" />
+        <include name="arq-extra-*" />
+        <include name="asm-*" />
+        <include name="avalon-framework-*" />
+        <include name="bsh-*" />
+        <include name="EditableImage-*" />
+        <include name="JAI-Adapter-*" />
+        <include name="Operations-*" />
+        <include name="apacheds-core-*" />
+        <include name="apacheds-core-shared-*" />
+        <include name="apacheds-protocol-shared-*" />
+        <include name="bcmail-jdk14*" />
+        <include name="bcprov-jdk14*" />
+        <include name="c3p0-*" />
+        <include name="commons-beanutils-*" />
+        <include name="commons-beanutils-core-*" />
+        <include name="commons-betwixt-*" />
+        <include name="commons-codec-*" />
+        <include name="commons-collections-*" />
+        <include name="commons-digester-*" />
+        <include name="commons-fileupload-*" />
+        <include name="commons-httpclient-*" />
+        <include name="commons-io-*" />
+        <include name="commons-lang-*" />
+        <include name="commons-logging-*" />
+        <include name="concurrent-*" />
+        <include name="custom_rhino-*" />
+        <include name="derby-*" />
+        <include name="dom4j-*" />
+        <include name="ehcache-*" />
+        <include name="ejb-3.0-RC8*" />
+        <include name="ejb-api-3.0*" />
+        <include name="ejb3-3.0-RC8*" />
+        <include name="el-api-unknown*" />
+        <include name="freemarker-*" />
+        <include name="geronimo-connector-*" />
+        <include name="geronimo-jta_1.1_spec-*" />
+        <include name="geronimo-stax-api_1.0_spec-*" />
+        <include name="gwt-dev-*" />
+        <include name="gwt-gadgets-*" />
+        <include name="gwt-log-*" />
+        <include name="gwt-user-*" />
+        <include name="gwtext-*" />
+        <include name="h2-*" />
+        <include name="hibernate-*" />
+        <include name="icu4j-*" />
+        <include name="imagej-*" />
+        <include name="jackrabbit-api-*" />
+        <include name="jackrabbit-core-*" />
+        <include name="jackrabbit-jcr-commons-*" />
+        <include name="jackrabbit-spi-*" />
+        <include name="jackrabbit-text-extractors-*" />
+        <include name="jai_codec-*" />
+        <include name="jai_core-*" />
+        <include name="javacc-*" />
+        <include name="jaxb-api-*" />
+        <include name="jenatest-*" />
+        <include name="jboss-4.0.4.GA*" />
+        <include name="jboss-annotations-ejb3-3.0-RC8*" />
+        <include name="jboss-common-*" />
+        <include name="jboss-j2ee-*" />
+        <include name="jboss-jmx-*" />
+        <include name="jboss-remoting-*" />
+        <include name="jboss-system-*" />
+        <include name="jbosssx-*" />
+        <include name="jca-api-*" />
+        <include name="jcip-annotations-*" />
+        <include name="jcr-*" />
+        <include name="jetty-annotations-*" />
+        <include name="jetty-naming-*" />
+        <include name="jetty-plus-*" />
+        <include name="jetty-util-*" />
+        <include name="jline-*" />
+        <include name="jms-*" />
+        <include name="jsecurity-*" />
+        <include name="jsf-api-*" />
+        <include name="jsf-impl-*" />
+        <include name="jsp-api-*" />
+        <include name="jsr181-*" />
+        <include name="jsr250-api-*" />
+        <include name="json-jena-*" />
+        <include name="jsr107cache-*" />
+        <include name="jta-*" />
+        <include name="juel-api-*" />
+        <include name="junit-*" />
+        <include name="log4j-*" />
+        <include name="logkit-*" />
+        <include name="lucene-core-*" />
+        <include name="mail-*" />
+        <include name="metadata-extractor-*" />
+        <include name="mlib_jai-*" />
+        <include name="nekohtml-*" />
+        <include name="persistence-*" />
+        <include name="persistence-api-*" />
+        <include name="poi-*" />
+        <include name="poi-scratchpad-*" />
+        <include name="postgresql-*" />
+        <include name="quartz-all-*" />
+        <include name="servlet-api-*" />
+        <include name="slf4j-api-1.5.3*" />
+        <include name="stax-api-*" />
+        <include name="webservices-api-*" />
+        <include name="wstx-asl-*" />
+        <include name="xercesImpl-*" />
+        <include name="xml-apis-*" />
+        <include name="xmlParserAPIs-*" />
+        <include name="xpp3_min-*" />
+        <include name="geronimo-*" />
+        <include name="jaxen-1.1-beta-9*" />
+        <include name="jsr311-api-1.0*" />
+      </fileset>
+    </delete>
+    <copy todir="${nuxeo.ear}/lib" overwrite="true">
+      <artifact:resolveFile key="org.jboss.el:jboss-el" />
+      <artifact:resolveFile key="jboss:jboss-cache-jdk50" />
+      <artifact:resolveFile key="org.jboss.seam:jboss-seam-remoting" />
+      <artifact:resolveFile key="org.jboss.seam:jboss-seam-mail" />
+      <artifact:resolveFile key="org.jboss.seam:jboss-seam-debug" />
+      <artifact:resolveFile key="jboss:jgroups" />
+      <artifact:resolveFile key="org.bouncycastle:bcmail-jdk15" />
+      <artifact:resolveFile key="org.bouncycastle:bcprov-jdk15" />
+      <artifact:resolveFile key="org.slf4j:slf4j-api" />
+      <artifact:resolveFile key="org.slf4j:slf4j-log4j12" />
+      <artifact:resolveFile key="org.apache.directory.server:apacheds-protocol-shared" />
+      <artifact:resolveFile key="org.openoffice:jurt" />
+      <artifact:resolveFile key="org.fontbox:fontbox" />
+      <artifact:resolveFile key="org.jempbox:jempbox" />
+      <artifact:resolveFile key="org.apache.poi:ooxml-schemas" />
+      <artifact:resolveFile key="org.apache.httpcomponents:httpcore" />
+      <artifact:resolveFile key="com.google.collections:google-collections" />
+      <artifact:resolveFile key="com.googlecode.json-simple:json-simple" />
+      <!-- Re-add because of duplicated jars in different versions -->
+      <artifact:resolveFile key="commons-beanutils:commons-beanutils" />
+      <artifact:resolveFile key="commons-collections:commons-collections" />
+      <artifact:resolveFile key="commons-fileupload:commons-fileupload" />
+      <artifact:resolveFile key="commons-io:commons-io" />
+      <artifact:resolveFile key="net.sf.ehcache:ehcache" />
+      <artifact:resolveFile key="com.ibm.icu:icu4j" />
+      <artifact:resolveFile key="org.apache.lucene:lucene-core" />
+      <artifact:resolveFile key="net.sourceforge.nekohtml:nekohtml" />
+      <artifact:resolveFile key="org.apache.poi:poi" />
+      <artifact:resolveFile key="org.apache.poi:poi-ooxml" />
+      <artifact:resolveFile key="org.apache.poi:poi-scratchpad" />
+      <artifact:resolveFile key="org.antlr:antlr-runtime" />
+      <!--
+      <artifact:resolveFile key="antlr:antlr" />
+      -->
+    </copy>
+  </target>
+
+  <target name="clean">
+    <delete dir="${stagedir}" />
+  </target>
+
+</project>

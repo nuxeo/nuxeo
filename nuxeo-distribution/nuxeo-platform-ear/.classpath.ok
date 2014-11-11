@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+  <classpathentry kind="src" path="src/main/resources_common"/>
+  <classpathentry kind="src" path="src/main/resources_core"/>
+  <classpathentry kind="src" path="src/main/resources_platform-stateful"/>
+  <classpathentry kind="src" path="src/main/resources_search"/>
+  <classpathentry kind="src" path="src/main/resources_webplatform"/>
+  <classpathentry kind="src" path="src/main/resources_web-stateless"/>
+  <classpathentry kind="src" path="src/main/assemble"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="output" path="bin/main"/>
+</classpath>
