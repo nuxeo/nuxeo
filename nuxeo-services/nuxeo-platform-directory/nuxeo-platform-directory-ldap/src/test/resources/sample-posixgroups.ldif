@@ -1,0 +1,127 @@
+version: 1
+
+# Branch to store groups of users
+#
+dn: ou=groups,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: groups
+
+dn: ou=editable,ou=groups,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: editable
+
+dn: cn=administrators,ou=editable,ou=groups,dc=example,dc=com
+memberUID: Administrator
+objectClass: top
+objectClass: groupOfNames
+objectClass: posixGroup
+description: Group of users that have the Everything permissions by default
+cn: administrators
+gidNumber: 2000
+
+dn: cn=members,ou=editable,ou=groups,dc=example,dc=com
+memberUID: Administrator
+memberUID: user1
+memberUID: user2
+objectClass: top
+objectClass: groupOfNames
+objectClass: posixGroup
+description: Statically defined group of users that have the Read permissions by default
+cn: members
+gidNumber: 2001
+
+dn: cn=submembers,ou=editable,ou=groups,dc=example,dc=com
+memberUID: user2
+objectClass: top
+objectClass: groupOfNames
+objectClass: posixGroup
+description: A sample (static) subgroup of members
+cn: submembers
+gidNumber: 2002
+
+dn: cn=group,ou=editable,ou=groups,dc=example,dc=com
+memberUID: user3
+objectClass: top
+objectClass: groupOfNames
+objectClass: posixGroup
+cn: group
+description: A sample group
+gidNumber: 2003
+
+dn: cn=subgroup,cn=group,ou=editable,ou=groups,dc=example,dc=com
+memberUID: user1
+objectClass: top
+objectClass: groupOfNames
+objectClass: posixGroup
+cn: subgroup
+description: A sample child of a group using the LdapTreeReference
+gidNumber: 2004
+
+dn: cn=subsubgroup,cn=subgroup,cn=group,ou=editable,ou=groups,dc=example,dc=com
+memberUID: user4
+objectClass: top
+objectClass: groupOfNames
+objectClass: posixGroup
+cn: subsubgroup
+description: A sample subchild of a subgroup using the LdapTreeReference
+gidNumber: 2005
+
+dn: cn=subsubsubgroup,cn=subsubgroup,cn=subgroup,cn=group,ou=editable,ou=groups,dc=example,dc=com
+memberUID: user2
+objectClass: top
+objectClass: groupOfNames
+objectClass: posixGroup
+cn: subsubsubgroup
+description: A sample subchild of a subsubgroup using the LdapTreeReference
+gidNumber: 2006
+
+dn: ou=unit,cn=group,ou=editable,ou=groups,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: unit
+
+dn: ou=subunit,cn=subgroup,cn=group,ou=editable,ou=groups,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: subunit
+
+
+#
+# The following emptygroup is not valid with OpenLDAP schemacheck
+# enabled (depending of the LDAP schema as uniqueMember might be a
+# compulsory attribute)
+#
+#dn: cn=emptygroup,ou=editable,ou=groups,dc=example,dc=com
+#objectClass: top
+#objectClass: groupOfUniqueNames
+#description: A sample empty group
+#cn: emptygroup
+
+dn: ou=someotherbranch,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: someotherbranch
+
+dn: cn=disabledgroup,ou=someotherbranch,dc=example,dc=com
+uniqueMember: uid=Administrator,ou=people,dc=example,dc=com
+uniqueMember: uid=user1,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: groupOfUniqueNames
+description: A group in someotherbranch that is not part of groupDirectory
+cn: disabledgroup
+
+dn: ou=readonly,ou=groups,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: readonly
+
+dn: cn=readonlygroup1,ou=readonly,ou=groups,dc=example,dc=com
+memberUID: user2
+objectClass: top
+objectClass: groupOfNames
+objectClass: posixGroup
+description: Statically defined group that is not editable
+cn: readonlygroup1
+gidNumber: 4096
