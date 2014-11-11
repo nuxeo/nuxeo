@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.notification.service.NotificationContrib">
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="notifications">
+
+    <notification name="Subscriptions updated" channel="email" enabled="true" availableIn="Workspace"
+      autoSubscribed="true" template="subscriptionsUpdated" subject="New subscription" label="label.nuxeo.notifications.subscriptions.updated">
+      <event name="subscriptionAssigned"/>
+    </notification>
+
+    <notification name="Modification" channel="email" enabled="true" availableIn="Workspace"
+      autoSubscribed="false" template="modif" subject="Document modified" label="label.nuxeo.notifications.modif">
+      <event name="documentModified"/>
+    </notification>
+
+    <notification name="Creation" channel="email" enabled="true" availableIn="Workspace"
+      autoSubscribed="false" template="modif" subject="Document created" label="label.nuxeo.notifications.create">
+      <event name="documentCreated"/>
+    </notification>
+
+    <notification name="Publication" channel="email" enabled="true" availableIn="Section"
+      autoSubscribed="true" template="publish" subject="Document published" label="label.nuxeo.notifications.publication">
+      <event name="documentPublicationApproved"/>
+      <event name="documentPublicationRejected"/>
+      <event name="documentPublished"/>
+    </notification>
+
+    <notification name="PublicationOnClient" channel="email" enabled="true" availableIn="Section"
+      autoSubscribed="false" template="publish" subject="Document published" label="label.nuxeo.notifications.publication">
+      <event name="documentPublicationApproved"/>
+      <event name="documentPublished"/>
+    </notification>
+
+    <notification name="Workflow Change" channel="email" enabled="true" availableIn="Workspace"
+      autoSubscribed="false" template="workflow" subject="Workflow event" label="label.nuxeo.notifications.workflow">
+      <event name="workflowNewProcessStarted"/>
+      <event name="workflowProcessEnded"/>
+      <event name="workflowProcessCanceled"/>
+      <event name="workflowAbandoned"/>
+      <event name="workflowTaskCompleted"/>
+      <event name="workflowTaskRejected"/>
+      <event name="workflowTaskAssigned"/>
+    </notification>
+
+    <notification name="Approbation review started" channel="email" enabled="true" availableIn="Workspace"
+      autoSubscribed="false" template="aprobationWorkflowStarted" subject="Review started for ${docTitle}"
+      label="label.nuxeo.notifications.appReviewStarted">
+      <event name="workflowNewProcessStarted"/>
+    </notification>
+
+    <notification name="Task assigned" channel="email" enabled="true" availableIn="Workspace"
+      autoSubscribed="true" template="workflowTaskAssigned" subject="Task Assigned for ${docTitle}"
+      label="label.nuxeo.notifications.appReviewStarted">
+      <event name="workflowTaskAssigned"/>
+    </notification>
+
+    <notification name="Email document" channel="email" enabled="true" availableIn="all"
+      autoSubscribed="true" template="emailDocument" subject="${subject}"
+      label="label.noLabel">
+      <event name="emailDocumentSend"/>
+    </notification>
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="templates">
+
+    <template name="subscriptionsUpdated" src="templates/subscriptionsUpdated.ftl" />
+    <template name="modif" src="templates/modif.ftl" />
+    <template name="publish" src="templates/publish.ftl" />
+    <template name="auto" src="templates/auto.ftl" />
+    <template name="workflow" src="templates/workflow.ftl" />
+    <template name="aprobationWorkflowStarted" src="templates/appReviewStarted.ftl" />
+    <template name="emailDocument" src="templates/emailDocument.ftl" />
+    <template name="workflowTaskAssigned" src="templates/workflowTaskAssigned.ftl"/>
+
+    <template name="defaultNotifTemplate" src="templates/defaultNotifTemplate.ftl" />
+
+  </extension>
+
+</component>
