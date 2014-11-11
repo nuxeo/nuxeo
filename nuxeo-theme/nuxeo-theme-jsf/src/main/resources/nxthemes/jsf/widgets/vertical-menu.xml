@@ -1,0 +1,7 @@
+<ul xmlns:ui="http://java.sun.com/jsf/facelets">
+  <ui:repeat value="#{nxthemesInfo.model.children}" var="item">
+    <li>
+      <a href="#{item.url}">#{item.title}</a>
+    </li>
+  </ui:repeat>
+</ul>
