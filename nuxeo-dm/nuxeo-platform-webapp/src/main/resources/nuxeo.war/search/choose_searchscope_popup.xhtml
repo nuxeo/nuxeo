@@ -1,0 +1,27 @@
+<nxthemes:composition xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+
+  <ui:define name="page title">
+    <h:outputText value="#{nuxeoApplicationName} - #{messages['title.search.form']}" />
+  </ui:define>
+
+  <ui:define name="body">
+
+    <h2><h:outputText
+      value="#{messages['title.advancedsearch.choose.path']}" />
+    </h2>
+
+    <a4j:form>
+      <ui:include src="/search/search_path_tree_explorer.xhtml" />
+    </a4j:form>
+
+  </ui:define>
+
+</nxthemes:composition>

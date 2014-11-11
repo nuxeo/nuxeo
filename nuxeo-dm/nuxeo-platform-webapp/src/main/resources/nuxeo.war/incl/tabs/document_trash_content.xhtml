@@ -1,0 +1,25 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+    <ui:include src="/incl/document_listing_layout_selector.xhtml" />
+    <div style="clear:both;" />
+
+    <nxu:set var="documents" value="#{deleteActions.deletedChildrenSelectModel}"
+      cache="true">
+    <nxu:set var="provider" value="#{resultsProvidersCache.get('CURRENT_DOC_DELETED_CHILDREN')}"
+      cache="true">
+
+      <ui:decorate template="/incl/documents_layout_table.xhtml">
+        <ui:param name="listName" value="CURRENT_SELECTION_TRASH" />
+        <ui:param name="layoutName" value="document_listing" />
+        <ui:define name="buttons">
+          <ui:include src="/incl/trash_clipboard.xhtml" />
+        </ui:define>
+        <ui:define name="syndication_buttons" />
+      </ui:decorate>
+
+    </nxu:set>
+    </nxu:set>
+
+</div>
