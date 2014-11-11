@@ -1,0 +1,49 @@
+<style type="text/css">
+/* CSS styles for theme 'testStyling' */
+
+
+/* CSS styles named 'testStyling/print Page Styles' */
+.${print_suid} {color:#000;font-family:'Trebuchet MS', Arial, Helvetica, Geneva, sans-serif;}
+.${print_suid} h1 {margin:0;padding:0;}
+.${print_suid} h2 {margin:0;padding:0;}
+.${print_suid} h3 {margin:0;padding:0;}
+.${print_suid} h4 {margin:0;padding:0;}
+.${print_suid} h5 {margin:0;padding:0;}
+.${print_suid} h6 {margin:0;padding:0;}
+.${print_suid} .myAddonClassWithFlavor {color:#000;font-family:'Trebuchet MS', Arial, Helvetica, Geneva, sans-serif;}
+.${print_suid} .myAddonClass {margin:0;padding:0;}
+
+
+/* CSS styles named 'testStyling/default Page Styles' */
+.${default_suid} {color:#444;font-family:'Trebuchet MS', Arial, Helvetica, Geneva, sans-serif;font-size:100%;line-height:1.125em;margin:0;padding:0;}
+.${default_suid} textarea {font-family:'Trebuchet MS', Arial, Helvetica, Geneva, sans-serif;font-size:0.95em;padding:5px;}
+.${default_suid} form {margin:0;padding:0;}
+.${default_suid} div {margin:0;padding:0;}
+.${default_suid} p {margin:0;padding:0;}
+.${default_suid} ul {list-style:none;margin:0;padding:0;}
+.${default_suid} a {color:#9080e3;margin:0;padding:0;text-decoration:none;outline:medium none;}
+.${default_suid} h1 {color:#391193;font-size:1.4em;font-weight:bold;margin:0;padding:0.4em 0 0.5em;}
+.${default_suid} h2 {color:#391193;font-size:1.2em;font-weight:bold;margin:0;padding:0.5em 1em 0.5em 0;}
+.${default_suid} h3 {color:#391193;font-size:1.2em;font-weight:bold;margin:0;padding:0.8em 0 0.3em;}
+.${default_suid} h4 {color:#7759bc;font-size:0.8em;margin:0.2em 0 0.2em 0;padding:0;}
+.${default_suid} h5 {color:#7759bc;font-size:0.8em;margin:0.2em 0 0.2em 0;padding:0;}
+.${default_suid} h6 {color:#7759bc;font-size:0.8em;margin:0.2em 0 0.2em 0;padding:0;}
+.${default_suid} input {margin:0;padding:0;}
+.${default_suid} table {margin:0;padding:0;}
+.${default_suid} dd {margin:0;padding:0;}
+.${default_suid} dt {margin:0;padding:0;}
+.${default_suid} dl {margin:0;padding:0;}
+.${default_suid} img {border:0 none;margin:0;padding:0;outline:medium none;}
+.${default_suid} hr {margin:0;padding:0;}
+.${default_suid} fieldset {margin:0;padding:0;}
+.${default_suid} iframe {margin:0;padding:0;}
+.${default_suid} a:link {color:#9080e3;text-decoration:none;}
+.${default_suid} a:visited {color:#9080e3;text-decoration:none;}
+.${default_suid} a:hover {color:#7864e1;text-decoration:underline;}
+.${default_suid} .selectDocumentType {margin-top:10px;}
+.${default_suid} .checkBox {margin-right:3px;}
+.${default_suid} .required {background:transparent url(/nuxeo/myBasePath/icons/required.gif) top right no-repeat;padding:0 10px 0 0;}
+.${default_suid} .myAddonClassWithFlavor {color:#000;font-family:'Trebuchet MS', Arial, Helvetica, Geneva, sans-serif;}
+.${default_suid} .myAddonClass {margin:0;padding:0;}
+
+</style>
