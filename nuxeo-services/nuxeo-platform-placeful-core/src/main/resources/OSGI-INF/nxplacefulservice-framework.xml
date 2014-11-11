@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ec.placeful.PlacefulService">
+
+  <documentation>
+    This component manages placeful annotations stored in RDBMS
+  </documentation>
+
+  <!-- needed so that activation has access to persistence -->
+  <require>org.nuxeo.ecm.platform.ec.placeful.persistence</require>
+
+  <implementation
+     class="org.nuxeo.ecm.platform.ec.placeful.PlacefulServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService" />
+  </service>
+
+
+  <extension-point name="annotations">
+    <documentation>
+      This extension is used to register annotations (fully qualified entity
+      classes) under unit name 'nxplacefulservice'.
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.ec.placeful.AnnotationDescriptor" />
+  </extension-point>
+
+</component>
