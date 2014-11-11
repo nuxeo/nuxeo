@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.workflow.service.WorkflowService">
+
+  <documentation>
+      Core service that deals with workflow (or BPM) engine.
+
+      @version 1.0
+      @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.workflow.service.WorkflowServiceImpl"/>
+
+  <extension-point name="engine">
+
+    <documentation>
+
+      Extension point allowing the contributions of workflow engine implementation.
+
+      <p/>
+
+      The workflow engine implementation should implement the WorkflowEngine interface.
+
+      @see org.nuxeo.ecm.platform.api.WorkflowEngine
+
+      <p/>
+
+      Several workflow engine implementations can be registered and one single implementation
+      can be used as the default one unless another is overriding your contribution. Only one
+      implementation can possibily be the default backened and you can specify it while registering
+      your workflow engine implementation. You will have to make sure your default workflow engine implementation
+      is the latest contributed at deployment time to be sure no other extensions will override yours as
+      default implementation later during deployment. Please see Nuxeo runtime deployment fragment order.
+
+      <p/>
+
+      The default workflow engine implementation in NXP is a JBPM engine implementation.
+      @see org.nuxeo.ecm.platform.workflow.jbpm
+
+    </documentation>
+
+    <object class="org.nuxeo.ecm.platform.workflow.service.extensions.WorkflowEngineDescriptor"/>
+
+  </extension-point>
+
+  <extension-point name="definition">
+
+    <documentation>
+
+      Contribute a workflow definition to a specified target workflow engine formerly contributed as
+      workflow engine.
+
+      <p/>
+
+      Once contributed the workflow definition will be deployed in the specified target workflow engine
+      backened. Depending on the workflow engine backened, you need to take care of the versioning of
+      the workflow definition since the definition will be deployed every time this contributions will
+      be deployed.
+
+      <p/>
+
+      <strong>Important : </strong> the format of the workflow definition is always the native format
+      of the target workflow engine backened.
+
+      <p/>
+
+      You need to specify along with the path of the workflow definition the mimetype of the file holding
+      the definition. This will be useful in a clustered environement for the core workflow backened
+      for serialization purpose.
+
+    </documentation>
+
+    <object class="org.nuxeo.ecm.platform.workflow.service.extensions.WorkflowDefinitionDeploymentDescriptor"/>
+
+  </extension-point>
+
+</component>

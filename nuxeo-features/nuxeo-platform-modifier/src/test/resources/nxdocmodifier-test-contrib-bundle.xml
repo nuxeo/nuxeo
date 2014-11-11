@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.modifier.service.DocModifierService.Test">
+
+  <!--  Example for tests -->
+  <!--  if no order is specified a default of 100 is considered -->
+  <extension target="org.nuxeo.ecm.platform.modifier.service.DocModifierService"
+             point="docTypeToTransformer">
+    <docModifier name="wordMLinjectModifier" documentType="File"
+                 transformationPluginName="wordMLinjectPlugin"
+                 sourceFieldName="file:content" destinationFieldName="file:content">
+
+      <coreEvent>documentCreated</coreEvent>
+      <coreEvent>documentModified</coreEvent>
+
+      <customField name="dc:title" transformParamName="o:TitreDocument"/>
+      <customField name="uid:uid" transformParamName="o:HAG"/>
+      <customField name="uid:major_version" transformParamName="o:Revision"/>
+      <customField value="." transformParamName="o:Revision"/>
+      <customField name="uid:minor_version" transformParamName="o:Revision"/>
+      <customField value="DM" transformParamName="o:CreateurDocument"/>
+    </docModifier>
+
+    <docModifier name="echoModifier" documentType="File"
+                 transformationPluginName="multipleResultsEchoPlugin"
+                 sourceFieldName="file:content" destinationFieldName="file:content">
+
+      <coreEvent>documentCreated</coreEvent>
+      <coreEvent>documentModified</coreEvent>
+
+      <customField value="test descr" transformParamName="desc"/>
+
+      <customOutputField outputParamName="desc" name="dc:description"/>
+    </docModifier>
+
+    <docModifier name="echoTitleModifier_last" documentType="File"
+                 transformationPluginName="multipleResultsEchoPlugin"
+                 sourceFieldName="file:content" destinationFieldName="file:content" order="101">
+
+      <coreEvent>documentCreated</coreEvent>
+      <coreEvent>documentModified</coreEvent>
+
+      <customField value="test title last" transformParamName="titleParam"/>
+
+      <customOutputField outputParamName="titleParam" name="dc:title"/>
+    </docModifier>
+
+    <docModifier name="echoTitleModifier_first" documentType="File"
+                 transformationPluginName="multipleResultsEchoPlugin"
+                 sourceFieldName="file:content" destinationFieldName="file:content" order="1">
+
+      <coreEvent>documentCreated</coreEvent>
+      <coreEvent>documentModified</coreEvent>
+
+      <customField value="test title first" transformParamName="titleParam"/>
+
+      <customOutputField outputParamName="titleParam" name="dc:title"/>
+    </docModifier>
+  </extension>
+
+</component>
+
+
+

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<fragment>
+
+  <template name="logEntryClass" src="OSGI-INF/persistence.xml"
+    installPath="META-INF/persistence.xml" required="true"/>
+
+  <extension target="application#MODULE">
+
+    <module>
+      <ejb>${bundle.fileName}</ejb>
+    </module>
+
+    <module>
+      <java>datasources/nxaudit-logs-ds.xml</java>
+    </module>
+
+  </extension>
+
+  <extension target="logEntryClass#CLASS">
+    <class>org.nuxeo.ecm.platform.audit.ejb.LogEntryImpl</class>
+  </extension>
+
+</fragment>

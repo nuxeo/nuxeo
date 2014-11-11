@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService">
+
+	<implementation class="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"/>
+
+	<extension-point name="event">
+		<object class="org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor"/>
+	</extension-point>
+
+</component>

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<datasources>
+  <!-- The following is kept as a sample for
+easy live edition. It is NOT used in the default app. -->
+
+  <!-- 
+  Link datasource to point to NuxeoDS.
+  See unified-nuxeo-ds.xml to set a different database
+  -->
+  <mbean code="org.jboss.naming.NamingAlias"
+    name="jboss.jca:name=nxsearch-compass,service=DataSourceBinding">
+    <attribute name="ToName">java:/NuxeoDS</attribute>
+    <attribute name="FromName">java:/nxsearch-compass</attribute>
+  </mbean>
+</datasources>

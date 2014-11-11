@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component
+  name="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService.contrib">
+
+  <documentation> Service that deals with log entry factory.
+
+    <p/> Most of the work is done at EJB layer though This supports JMS events based
+    notifications on a dedicated topic.
+    @version 1.0
+    @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+    point="logEntryFactory">
+    <logEntryFactory
+      class="org.nuxeo.ecm.platform.audit.ejb.LogEntryFactoryImpl"/>
+  </extension>
+
+</component>
