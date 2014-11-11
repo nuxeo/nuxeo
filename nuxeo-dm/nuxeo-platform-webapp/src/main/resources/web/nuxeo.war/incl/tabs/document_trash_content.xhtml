@@ -1,0 +1,39 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <c:choose>
+    <c:when test="#{documentContentViewActions.hasContentViewSupport(currentDocument, 'trash_content')}">
+
+      <ui:include src="/incl/document_content_view.xhtml">
+        <ui:param name="contentViewCategory" value="trash_content" />
+      </ui:include>
+
+    </c:when>
+    <c:otherwise>
+
+      <ui:include src="/incl/document_listing_layout_selector.xhtml" />
+      <div style="clear:both;" />
+  
+      <nxu:set var="documents" value="#{deleteActions.deletedChildrenSelectModel}"
+        cache="true">
+      <nxu:set var="provider" value="#{resultsProvidersCache.get('CURRENT_DOC_DELETED_CHILDREN')}"
+        cache="true">
+  
+        <ui:decorate template="/incl/documents_layout_table.xhtml">
+          <ui:param name="listName" value="CURRENT_SELECTION_TRASH" />
+          <ui:param name="layoutName" value="document_listing" />
+          <ui:define name="buttons">
+            <ui:include src="/incl/trash_clipboard.xhtml" />
+          </ui:define>
+          <ui:define name="syndication_buttons" />
+        </ui:decorate>
+  
+      </nxu:set>
+      </nxu:set>
+
+    </c:otherwise>
+  </c:choose>
+
+</div>
