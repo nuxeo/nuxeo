@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo-webengine-dashboard
+Bundle-SymbolicName: org.nuxeo.opensocial.dashboard;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Nuxeo
+Provide-Package: org.nuxeo.opensocial.dashboard
+Nuxeo-Component: OSGI-INF/gadget-contrib.xml,
+ OSGI-INF/theme-contrib.xml,
+ OSGI-INF/type-contrib.xml,
+ OSGI-INF/ui-contrib.xml,
+ OSGI-INF/auth-contrib.xml,
+ OSGI-INF/actions-contrib.xml,
+ OSGI-INF/type-contrib.xml
+Bundle-Category: stateless

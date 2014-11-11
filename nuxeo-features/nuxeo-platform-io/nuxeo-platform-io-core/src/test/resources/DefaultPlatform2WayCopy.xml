@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.api.DefaultPlatform" version="1.0">
+
+  <extension target="org.nuxeo.ecm.platform.api.PlatformService"
+      point="servers">
+    <documentation>The default platform layout</documentation>
+
+    <server name="default" host="localhost">
+      <service class="org.nuxeo.ecm.platform.types.TypeManager" jndiName="%TypeManagerBean"/>
+      <repository name="demo" class="org.nuxeo.ecm.core.api.CoreSession" description="Demo Repository"/>
+    </server>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
+      point="repositories">
+    <documentation>The default repository</documentation>
+
+    <repository group="core" label="Default Repository" name="default"/>
+    <repository group="local" label="Default Repository" name="demo"/>
+
+    <repository name="rep1" repositoryUri="default" group="remote1" label="Default Repository"/>
+    <repository name="rep2" repositoryUri="default" group="remote2" label="Default Repository"/>
+
+  </extension>
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement" point="servers">
+
+    <server class="org.nuxeo.runtime.api.JBossServiceLocator">
+      <group>remote1</group>
+      <property name="java.naming.factory.initial">org.jnp.interfaces.NamingContextFactory</property>
+      <property name="java.naming.provider.url">jnp://192.168.0.103:1099</property>
+      <property name="java.naming.factory.url.pkgs">org.jboss.naming:org.jnp.interfaces</property>
+    </server>
+
+    <server class="org.nuxeo.runtime.api.JBossServiceLocator">
+      <group>remote2</group>
+      <property name="java.naming.factory.initial">org.jnp.interfaces.NamingContextFactory</property>
+      <property name="java.naming.provider.url">jnp://192.168.0.197:1099</property>
+      <property name="java.naming.factory.url.pkgs">org.jboss.naming:org.jnp.interfaces</property>
+    </server>
+
+  </extension>
+
+  <!-- use local repo -->
+  <extension target="org.nuxeo.runtime.api.ServiceManagement" point="services">
+
+    <service class="org.nuxeo.ecm.core.api.CoreSession" name="rep1" group="remote1">
+      <locator>%DocumentManagerBean</locator>
+    </service>
+
+    <service class="org.nuxeo.ecm.core.api.CoreSession" name="rep2" group="remote2">
+      <locator>%DocumentManagerBean</locator>
+    </service>
+
+    <service class="org.nuxeo.ecm.platform.io.api.IOManager" group="remote1">
+      <locator>%IOManagerBean</locator>
+    </service>
+
+    <service class="org.nuxeo.ecm.platform.io.api.IOManager" name="remote" group="remote2">
+      <locator>%IOManagerBean</locator>
+    </service>
+
+    <service class="org.nuxeo.ecm.platform.relations.api.RelationManager" group="remote1">
+      <locator>%RelationManagerBean</locator>
+    </service>
+
+    <service class="org.nuxeo.ecm.platform.comment.api.CommentManager" group="remote1">
+      <locator>%CommentManagerBean</locator>
+    </service>
+
+    <service class="org.nuxeo.ecm.platform.audit.api.Logs" group="remote1">
+      <locator>%LogsBean</locator>
+    </service>
+
+  </extension>
+
+</component>
