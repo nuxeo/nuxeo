@@ -1,0 +1,89 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>createTestWebsite</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">createTestWebsite</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/nxpath/default/default-domain/workspaces/testwebworkspace1@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>You are logged as Administrator</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//select[@class=&quot;langSelect&quot;]</td>
+	<td>label=English (United Kingdom)</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@class=&quot;langSubmit&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=New document</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=WebSite</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>15000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//table[@class=&quot;dataInput&quot;]/tbody/tr//td[2]/input</td>
+	<td>testWebSite1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Create&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>15000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
