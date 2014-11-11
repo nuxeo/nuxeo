@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.picture.web.plugins">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.rest.URLService"
+             point="urlpatterns">
+    <urlPattern name="downloadPicture" enabled="true">
+      <defaultURLPolicy>false</defaultURLPolicy>
+      <needBaseURL>true</needBaseURL>
+      <needRedirectFilter>false</needRedirectFilter>
+      <needFilterPreprocessing>true</needFilterPreprocessing>
+      <codecName>downloadPicture</codecName>
+      <actionBinding>#{pictureManager.download}</actionBinding>
+      <documentViewBinding>
+        #{restHelper.documentView}
+      </documentViewBinding>
+      <newDocumentViewBinding>
+        #{restHelper.newDocumentView}
+      </newDocumentViewBinding>
+    </urlPattern>
+
+    <urlPattern name="downloadThumbnail" enabled="true">
+      <defaultURLPolicy>false</defaultURLPolicy>
+      <needBaseURL>true</needBaseURL>
+      <needRedirectFilter>false</needRedirectFilter>
+      <needFilterPreprocessing>true</needFilterPreprocessing>
+      <codecName>downloadThumbnail</codecName>
+      <actionBinding>#{pictureManager.downloadThumbnail}</actionBinding>
+      <documentViewBinding>
+        #{restHelper.documentView}
+      </documentViewBinding>
+      <newDocumentViewBinding>
+        #{restHelper.newDocumentView}
+      </newDocumentViewBinding>
+    </urlPattern>
+  </extension>
+
+</component>
+

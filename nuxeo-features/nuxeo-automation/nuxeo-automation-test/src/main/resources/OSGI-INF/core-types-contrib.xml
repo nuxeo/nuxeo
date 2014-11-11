@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.platform.automation.test.doctypes">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="schema">
+    <schema name="dataset" src="schemas/dataset.xsd" prefix="ds" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="doctype">
+
+    <doctype name="DataSet" extends="File">
+      <schema name="dataset" />
+    </doctype>
+
+
+  </extension>
+
+</component>

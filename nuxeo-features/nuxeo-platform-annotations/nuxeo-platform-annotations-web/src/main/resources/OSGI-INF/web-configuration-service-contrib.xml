@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.annotations.configuration.service.WebAnnotationConfigurationService.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.annotations.configuration.service.WebAnnotationConfigurationService"
+      point="types">
+
+    <webAnnotation
+           name="SeeAlso"
+           uri="http://www.w3.org/2000/10/annotationType#SeeAlso"
+           icon="icons/permalink.png"
+           type="local"
+           enabled="false">
+    </webAnnotation>
+
+    <webAnnotation
+           name="Question"
+           uri="http://www.w3.org/2000/10/annotationType#Question"
+           icon="icons/tip.gif"
+           type="local"
+           enabled="false">
+    </webAnnotation>
+
+    <webAnnotation
+           name="Explanation"
+           uri="http://www.w3.org/2000/10/annotationType#Explanation"
+           icon="icons/annotate.png"
+           type="local"
+           enabled="false">
+    </webAnnotation>
+
+    <webAnnotation
+           name="Example"
+           uri="http://www.w3.org/2000/10/annotationType#Example"
+           icon="icons/annotate.png"
+           type="local"
+           enabled="false">
+    </webAnnotation>
+
+    <webAnnotation
+           name="Comment"
+           uri="http://www.w3.org/2000/10/annotationType#Comment"
+           icon="icons/annotate.png"
+           type="local"
+           enabled="true">
+    </webAnnotation>
+
+    <webAnnotation
+           name="Change"
+           uri="http://www.w3.org/2000/10/annotationType#Change"
+           icon="icons/annotate.png"
+           type="local"
+           enabled="false">
+    </webAnnotation>
+
+    <webAnnotation
+           name="Advice"
+           uri="http://www.w3.org/2000/10/annotationType#Advice"
+           icon="icons/annotate.png"
+           type="local"
+           enabled="false">
+    </webAnnotation>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.annotations.configuration.service.WebAnnotationConfigurationService"
+      point="userInfo">
+    <userInfoMapper class="org.nuxeo.ecm.platform.annotations.gwt.server.configuration.GenericUserInfoMapper" />
+  </extension>
+  
+  <extension target="org.nuxeo.ecm.platform.annotations.configuration.service.WebAnnotationConfigurationService"
+      point="displayedFields">
+       <field name ="{http://purl.org/dc/elements/1.1/}creator" label="Auteur" displayed="true" />
+       <field name ="{http://www.w3.org/1999/02/22-rdf-syntax-ns#}type" label="Type" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.annotations.configuration.service.WebAnnotationConfigurationService"
+      point="webPermission">
+    <webPermission class="org.nuxeo.ecm.platform.annotations.gwt.server.configuration.DefaultWebPermission" />
+  </extension>
+
+</component>
