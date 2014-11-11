@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Comment Workflow implementation
+Bundle-SymbolicName: org.nuxeo.ecm.platform.comment.workflow;singleton=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: core,stateful
+Nuxeo-Component: OSGI-INF/comments-moderation-service.xml,
+ OSGI-INF/notification-contrib.xml,
+ OSGI-INF/comment-operation-contrib.xml,
+ OSGI-INF/comment-pageprovider-contrib.xml
+Require-Bundle: org.nuxeo.ecm.platform.comment.api,
+  org.nuxeo.ecm.core.api

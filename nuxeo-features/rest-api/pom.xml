@@ -1,0 +1,52 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-addons-parent</artifactId>
+    <version>5.8.0-HF21</version>
+  </parent>
+
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-rest-api-parent</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo Rest API Parent</name>
+  <description>Parent project for the REST API of Nuxeo</description>
+
+  <modules>
+    <module>nuxeo-rest-api-server</module>    
+    <module>nuxeo-rest-api-io</module>    
+    <module>nuxeo-rest-api-test</module>    
+  </modules>
+
+  
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <scm>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-rest-api.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-rest-api.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-rest-api</url>
+  </scm>
+
+</project>

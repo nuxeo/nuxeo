@@ -1,0 +1,20 @@
+<component name="test.contrib">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="schema">
+    <schema name="myschema" src="testschema.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="doctype">
+
+    <doctype name="ComplexDoc" extends="Document">
+      <schema name="myschema" />
+      <schema name="dublincore" />
+      <schema name="common" />
+    </doctype>
+
+  </extension>
+
+
+</component>

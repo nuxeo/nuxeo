@@ -1,0 +1,169 @@
+/* ECP error page - lk@nuxeo.com - 06/2010 */
+
+/* Global style */
+
+body {
+  height:100%;
+  background-color:#fff;
+}
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+  border:0 none;
+  font:normal 12px "Lucida Grande", Verdana, sans-serif;
+  margin:0;
+  padding:0;
+  color:#664e4e;
+}
+
+
+h1 {
+  font:bold 22px "Lucida Grande", Verdana, sans-serif;
+  margin:20px 0 25px;
+  color:#000;
+}
+
+h2 {
+  font:bold 16px "Lucida Grande", Verdana, sans-serif;
+  margin:25px 0 10px;
+  color:#c30000;
+}
+
+h3{
+  color:#2466a3;
+  font:bold 14px "Lucida Grande",Verdana,sans-serif;
+  margin:15px 0 7px;
+}
+
+h4 {
+  font:bold 14px "lucida grande",Verdana,sans-serif;
+  color:#5290ca;
+  }
+
+h5 {
+  border-bottom:1px solid #E8E8E8;
+  font:bold 15px "Lucida Grande",Arial,sans-serif;
+  margin:10px 0;
+  }
+
+h6 {
+  font:bold 12px "Lucida Grande",Verdana,sans-serif;
+  border-bottom:1px solid #E8E8E8;
+  margin:0 0 5px;
+  }
+
+p {
+  line-height:150%;
+  margin:3px 0 10px;
+}
+
+a, a:link, a:active, a:visited {
+  color:#008ed8;
+  text-decoration:none;
+}
+
+a:hover {
+  color:#00a1f5;
+  text-decoration:underline;
+}
+
+blockquote:before, blockquote:after, q:before, q:after {
+  content:"";
+}
+
+blockquote, q {
+  quotes:"" "";
+ margin:0 0 15px;
+ padding:0;
+}
+
+ol {
+  margin-left:2em;
+}
+
+ul {
+  list-style-image:url(../images/bullet.png);
+  margin-left:2em;
+}
+
+table {
+  border-collapse:collapse;
+  margin-bottom:10px;
+  }
+
+td {
+ padding:3px 20px 5px 0;
+ vertical-align:top;
+  }
+
+.thin td {
+  font-size:11px;
+  padding:1px 20px 2px 0;
+  }
+
+
+input {
+  border:1px solid #DEDEDE;
+  padding:2px 3px;
+  margin:0px 10px 0px 0px;
+  }
+  
+input:hover {
+  border:1px solid #b1d0ff;
+  cursor:pointer;
+  }
+
+textarea {
+  border:1px solid #DEDEDE;
+  font:12px "Lucida Grande","Lucida Sans Unicode",Arial,sans-serif;
+  padding:2px 3px;
+  }
+
+:focus {
+  outline-style:none;
+}
+
+/* Header style */
+
+.header {
+  padding:5px 5px 8px 20px;
+  border-bottom:1px solid #000000;
+  background:#3f3f3f url(../images/ecp_login_header_bg.png) top left repeat-x;
+}
+
+.logo {
+  float:left;
+}
+
+/* Footer style */
+
+.footer {
+  padding:25px 5px 15px;
+  height:33px;
+  border-top:1px solid #E3E3E3
+}
+
+.footer a {
+  color:#008ed8;
+  font-size:10px;
+}
+
+.footer a:hover {
+  color:#00a1f5;
+}
+
+.copyrights {
+  color:#5b5b5b;
+  display:inline;
+  width:500px;
+  font-size:10px;
+}
+
+.links {
+  float:right;
+}
+
+.links span {
+  color:#5b5b5b;
+  padding:0px 10px;
+  font-size:10px;
+}

@@ -1,0 +1,36 @@
+/*
+Picture Book styles used in Document Management view
+author: lkemen@nuxeo.com
+*/
+.pictureBookItem {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
+  border: 1px solid;  border-color: "neutral.light (__FLAVOR__ border)";
+  float: left;
+  height: 100%;
+  margin: 1em 1.8em 1em 0;
+  text-align: center;
+  width: 140px }
+
+.itemSelected { background-color: "color.major.light (__FLAVOR__ background)"; border: 1px solid; border-color: "color.major.strong (__FLAVOR__ border)" }
+
+.pictureBookItem .cell { height: 110px; padding-top: 1.4em; text-align: center }
+.pictureBookItem .cell a { display: block; height: 100px; padding: 2em; width: 100px }
+.pictureBookItem .cell img { max-height: 100px; max-width: 120px }
+.pictureBookItemTitle { background-color: #fff; font-size:.8em; padding: .5em 0 }
+
+.slideshowContent { padding: .5em 0 ; text-align: center }
+.slideshowContent #slideshowPoll { border-width: 1px; border-style: none none solid;  border-color: "neutral.light (__FLAVOR__ border)"; margin-bottom: .8em }
+.slideshowContent h3 { float: left; padding: 0 }
+.slideShowControl { margin: .1em 0 .6em }
+.slideShowControl input { margin: 0 .3em -0.3em; padding: 0 }
+.slideShowControl .indexPicture { margin: 0 .5em; width: 3em }
+
+.slideshowContainer img { max-height: 35em; max-width: 70em }
+
+.selectSize { margin: .5em auto 1em }
+.selectSize td { padding: .3em }
+.selectSize td label { padding: 0 .5em }
+.imagingPanelDownloadLink { color: "link (__FLAVOR__ color)"; font-weight: bold; padding: .4em .5em; text-align: center }
+
+.pictureItemSize td {padding: 0 1.5em 0 0}
+.pictureItemSize td input[type="radio"] {margin-right: 0.1em}
