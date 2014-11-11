@@ -1,0 +1,95 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core">
+
+
+<a4j:outputPanel ajaxRendered="true">
+  <h:messages />
+</a4j:outputPanel> <h:outputText
+  value="#{messages['adminsubtab.usersActivity.userSessions.total']}" /><f:verbatim>&amp;nbsp;</f:verbatim>
+<h:outputText value="#{nbActiveUserHttpSessions}" /> <br />
+<h:outputText
+  value="#{messages['adminsubtab.usersActivity.requests.total']}" /><f:verbatim>&amp;nbsp;</f:verbatim>
+<h:outputText value="#{nbUserRequests}" /> <br />
+
+<a4j:outputPanel id="usersHttpSessionsListing">
+
+  <h:form>
+    <h:outputText
+      value="#{messages['adminsubtab.usersActivity.userSessions.timerange']}" /> :
+        <h:selectOneListbox class="dataInputText" size="1"
+      value="#{usersActivityInfo.selectedHttpSessionsTimeRange}"
+      onchange="Element.next(this).firstChild.click();">
+
+      <nxu:selectItems value="#{usersActivityInfo.httpSessionsTimeRanges}"
+        var="itype" itemValue="#{itype.value}"
+        itemLabel="#{messages[itype.label]}" />
+    </h:selectOneListbox>
+    <div style="display: none;"><a4j:commandButton value="submit"
+      reRender="usersHttpSessionsListing" /></div>
+
+  </h:form>
+
+  <h:form>
+    <nxu:dataTable id="userSessionTable" value="#{userHttpSessions}"
+      var="row" rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput">
+
+      <!--  Login -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.userSession.login']}" />
+        </f:facet>
+        <h:outputText value="#{row.loginName}">
+        </h:outputText>
+      </nxu:column>
+
+      <!--  Inactivity -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.userSession.inactivity']}" />
+        </f:facet>
+        <h:outputText value="#{row.inactivityAsString}" />
+      </nxu:column>
+
+      <!--  Pages count -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.userSession.requests']}" />
+        </f:facet>
+        <h:outputText value="#{row.accessedPagesCount}" />
+      </nxu:column>
+
+
+      <!--  Duration -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.userSession.duration']}" />
+        </f:facet>
+        <h:outputText value="#{row.durationAsString}" />
+      </nxu:column>
+
+      <!--  principal -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.userSession.lastUrl']}" />
+        </f:facet>
+        <h:outputText value="#{row.lastAccessUrl}" />
+      </nxu:column>
+
+      <!--  comment -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.userSession.lastActivity']}" />
+        </f:facet>
+        <h:outputText value="#{row.lastAccessDate}">
+          <f:convertDateTime type="both" dateStyle="medium"
+            timeStyle="medium" timeZone="#{timeZone}" />
+        </h:outputText>
+      </nxu:column>
+    </nxu:dataTable>
+
+  </h:form>
+</a4j:outputPanel></div>
