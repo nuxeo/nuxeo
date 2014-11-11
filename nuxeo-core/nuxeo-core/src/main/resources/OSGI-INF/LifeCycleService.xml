@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.lifecycle.LifeCycleService">
+
+  <documentation>
+    Service that deals with life cycle.
+
+    @version 1.0
+    @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+  </documentation>
+
+  <implementation
+      class="org.nuxeo.ecm.core.lifecycle.impl.LifeCycleServiceImpl"/>
+
+  <extension-point name="lifecycle">
+
+    <documentation>
+      Extension point for registering life cycle definition.
+      <p/>
+      A life cycle is a state-transition model described as an XML document.
+      <p/>
+      A life cycle within Nuxeo Core describes only the states and the
+      transitions without any security policy whatsoever. For instance, the
+      workflow service (or BPM service) will be responsible of the security
+      policy and actors involved.
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleDescriptor"/>
+
+  </extension-point>
+
+  <extension-point name="types">
+
+    <documentation>
+      Extension point for registering document type to life cycle mappings.
+      <p/>
+      For instance, you can specify that a document type <i>File</i> will follow a <i>default</i>
+      life cycle where <i>default</i> is the name of a registered life cycle.
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleTypesDescriptor"/>
+
+  </extension-point>
+
+</component>
