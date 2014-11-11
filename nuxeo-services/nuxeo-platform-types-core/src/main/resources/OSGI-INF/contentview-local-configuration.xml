@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.content.view.local.configuration">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="schema">
+    <schema name="content_view_configuration" prefix="cvconf"
+      src="schemas/content_view_configuration.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="doctype">
+
+    <facet name="ContentViewLocalConfiguration">
+      <schema name="content_view_configuration" />
+    </facet>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService"
+    point="adapters">
+    <adapter
+      class="org.nuxeo.ecm.platform.types.localconfiguration.ContentViewConfiguration"
+      factory="org.nuxeo.ecm.platform.types.localconfiguration.ContentViewConfigurationFactory" />
+  </extension>
+
+</component>
