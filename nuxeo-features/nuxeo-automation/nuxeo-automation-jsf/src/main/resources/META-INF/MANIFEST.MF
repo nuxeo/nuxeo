@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Automation JSF
+Bundle-SymbolicName: org.nuxeo.ecm.automation.jsf;singleton:=true
+Bundle-Version: 1.0.0
+Require-Bundle: org.nuxeo.ecm.platform.ui
+Nuxeo-Component: OSGI-INF/operations-contrib.xml

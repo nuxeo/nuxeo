@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.jbpm.web.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="TAB_CONTENT_JBPM" link="/incl/tabs/document_process.xhtml"
+      enabled="true" label="action.view.review" icon="/icons/file.gif" order="60">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>jbpm-process</filter-id>
+      <filter-id>mutable_document</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="jbpm-process">
+      <rule grant="true">
+        <permission>Read</permission>
+        <condition>
+          #{jbpmActions.hasProcessDefinitions(document.getType())}
+        </condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.jbpm.tasks.contrib" version="1.0">
+
+  <extension target="org.nuxeo.ecm.platform.task.core.TaskService"
+    point="taskProvider">
+    <taskProvider class="org.nuxeo.ecm.plateform.jbpm.core.task.JBPMDocTaskProvider"
+      id="jbpmTaskProvider"/>
+  </extension>
+
+</component>

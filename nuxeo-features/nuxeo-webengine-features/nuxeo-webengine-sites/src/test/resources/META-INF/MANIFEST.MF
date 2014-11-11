@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: WebEngine Sites Module
+Bundle-SymbolicName: org.nuxeo.ecm.platform.webengine.sites.tests
+Bundle-Vendor: Nuxeo
+Provide-Package: org.nuxeo.ecm.platform.webengine.jsf
+Nuxeo-Component: OSGI-INF/webengine-layouts-contrib.xml,
+ OSGI-INF/webengine-types-contrib.xml,
+ OSGI-INF/webengine-actions-contrib.xml,
+ OSGI-INF/ecm-types-contrib.xml,
+ OSGI-INF/theme-contrib.xml,
+ OSGI-INF/permissions-contrib.xml
+Require-Bundle: org.nuxeo.ecm.webapp.core, org.nuxeo.ecm.webengine.core
+Nuxeo-RequiredBy: org.nuxeo.ecm.war
+Export-Package: org.nuxeo.webengine.site
