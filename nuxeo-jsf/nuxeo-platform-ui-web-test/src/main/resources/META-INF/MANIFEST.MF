@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-Name: Nuxeo ECM Web Test Framework Fragment
+Bundle-SymbolicName: org.nuxeo.ecm.platform.ui.web.test;singleton:=true
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-Vendor: Nuxeo
