@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+  <ui:define name="page title">
+    <h:outputText value="#{nuxeoApplicationName} - #{currentDocument.dublincore.title}"/>
+  </ui:define>
+
+  <ui:define name="bookmark">
+    <link rel="bookmark" href="#{navigationContext.currentDocumentFullUrl}"/>
+  </ui:define>
+
+  <ui:define name="body">
+    <div>
+
+    <h:panelGroup rendered="#{currentDocument.version}">
+      <h1>
+      <h:outputText value="#{versionedActions.sourceDocument.dublincore.title}"/>
+      (version
+      <h:outputText value=" #{currentDocument.uid.major_version}"/>.
+      <h:outputText value="#{currentDocument.uid.minor_version}"/>)
+      </h1>
+    </h:panelGroup>
+    <h:panelGroup rendered="#{! currentDocument.version}">
+      <h1><h:outputText value="#{currentDocument.dublincore.title}"/></h1>
+    </h:panelGroup>
+      <ui:include src="/incl/message_banner.xhtml"/>
+
+      <p class="currentDocumentDescription">
+        <h:outputText value="#{currentDocument.dublincore.description}"/>
+      </p>
+
+      <ui:include src="/incl/document_action_tabs.xhtml"/>
+      <div style="clear:both"></div>
+      <div class="tabsContent">
+        <ui:include src="#{webActions.currentTabAction.link}"/>
+      </div>
+
+    </div>
+  </ui:define>
+</nxthemes:composition>
