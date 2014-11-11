@@ -1,0 +1,23 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  class="tabsBar">
+
+  <a4j:form ajaxSubmit="true" id="adminSubViewSelector">
+    <ul>
+      <c:forEach var="adminSubTab" items="#{adminViews.availableSubActions}">
+        <li class="#{nxu:test(adminViews.currentSubViewId == adminSubTab.id, 'selected', '')}">
+          <a4j:commandLink id="#{adminSubTab.id}"
+            action="#{adminViews.setCurrentSubViewId(adminSubTab.id)}"
+            immediate="true"
+            reRender="admin_subtab"
+            eventsQueue="adminCenterQueue">
+            <h:outputText value="#{messages[adminSubTab.label]}" />
+          </a4j:commandLink>
+        </li>
+      </c:forEach>
+    </ul>
+  </a4j:form>
+</div>
