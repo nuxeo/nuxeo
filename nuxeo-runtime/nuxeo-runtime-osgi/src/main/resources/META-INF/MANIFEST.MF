@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-Name: OSGiAdapter
+Bundle-SymbolicName: org.nuxeo.osgi
+Bundle-Vendor: Nuxeo
+Bundle-Category: runtime
+Provide-Package: org.nuxeo.osgi,
+ org.nuxeo.runtime.jboss.osgi,
+ org.nuxeo.runtime.launcher
