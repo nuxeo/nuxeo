@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.query.api.PageProviderservice.testContrib.override">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <!-- non regression test for NXP-9809 -->
+    <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN"
+      enabled="false" />
+
+    <!-- test override -->
+    <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT">
+      <searchDocumentType>File2</searchDocumentType>
+      <whereClause>
+        <predicate parameter="dc:title" operator="FULLTEXT">
+          <field schema="dublincore" name="title" />
+        </predicate>
+      </whereClause>
+      <sort column="dc:description" ascending="false" />
+      <pageSize>20</pageSize>
+    </coreQueryPageProvider>
+
+  </extension>
+
+</component>

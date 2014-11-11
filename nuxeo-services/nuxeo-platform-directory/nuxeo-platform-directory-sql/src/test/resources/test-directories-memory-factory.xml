@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<!-- This is a test setup for the directory service, mixing a directory registration
+  in several factories, see NXP-6574 -->
+
+<component name="org.nuxeo.ecm.directory.service.MockMemoryDirectoryFactory">
+
+  <!-- register an alternative memory directory factory -->
+  <implementation class="org.nuxeo.ecm.directory.service.MockMemoryDirectoryFactory" />
+  <extension target="org.nuxeo.ecm.directory.DirectoryServiceImpl"
+    point="factoryDescriptor">
+    <factoryDescriptor
+      component="org.nuxeo.ecm.directory.service.MockMemoryDirectoryFactory" />
+  </extension>
+  <extension-point name="directories">
+    <object class="org.nuxeo.ecm.directory.service.MockMemoryDirectoryDescriptor" />
+  </extension-point>
+
+</component>

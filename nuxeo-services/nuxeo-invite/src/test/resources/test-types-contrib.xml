@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.test.ecm.user.invite.core.types.contrib">
+
+  <require>org.nuxeo.ecm.user.invite.core.types.contrib</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="TestRegistration" extends="File">
+      <facet name="UserInvitation"/>
+    </doctype>
+
+    <doctype name="TestTwoRegistration" extends="File">
+      <facet name="UserInvitation"/>
+    </doctype>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.user.invite.UserInvitationService"
+             point="configuration">
+
+    <configuration>
+      <requestDocType>TestRegistration</requestDocType>
+      <container>
+        <docType>Workspace</docType>
+        <parentPath>/requests/</parentPath>
+        <name>invitationRequests</name>
+        <title>Invitation Requests</title>
+      </container>
+      <validationEmail>
+        <title>Invitation for a test workspace</title>
+        <template>templates/TestUserRegistration.ftl</template>
+      </validationEmail>
+    </configuration>
+
+    <configuration name="test">
+      <requestDocType>TestRegistration</requestDocType>
+      <container>
+        <docType>Folder</docType>
+        <parentPath>/test-requests/</parentPath>
+        <name>invitationRequests</name>
+        <title>Invitation test Requests</title>
+      </container>
+      <validationEmail>
+        <title>Invitation for another test folder</title>
+        <template>templates/TestUserRegistration.ftl</template>
+      </validationEmail>
+    </configuration>
+  </extension>
+</component>

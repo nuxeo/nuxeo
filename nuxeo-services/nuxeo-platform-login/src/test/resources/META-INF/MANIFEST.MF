@@ -1,0 +1,10 @@
+Export-Package: org.nuxeo.ecm.platform.login.test
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Category: runtime
+Bundle-Localization: plugin
+Bundle-Name: Nuxeo Login Module Test
+Bundle-Vendor: Nuxeo
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.platform.login.test
