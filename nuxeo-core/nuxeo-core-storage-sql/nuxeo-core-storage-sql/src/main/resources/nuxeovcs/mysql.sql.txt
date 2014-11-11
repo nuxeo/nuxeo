@@ -1,0 +1,276 @@
+# Copyright (c) 2008-2012 Nuxeo SA (http://nuxeo.com/) and others.
+#
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License v1.0
+# which accompanies this distribution, and is available at
+# http://www.eclipse.org/legal/epl-v10.html
+#
+# Contributors:
+#     Florent Guillaume
+
+# Variables used:
+# ${idType} VARCHAR(36)
+
+############################################################
+
+
+#CATEGORY: beforeTableCreation
+
+
+DROP FUNCTION IF EXISTS NX_IN_TREE;
+
+CREATE FUNCTION NX_IN_TREE(id ${idType}, baseid ${idType})
+RETURNS BOOLEAN
+LANGUAGE SQL
+READS SQL DATA
+BEGIN
+  DECLARE curid ${idType} DEFAULT id;
+  DECLARE curisprop BOOLEAN;
+  SELECT isproperty INTO curisprop FROM hierarchy WHERE hierarchy.id = curid;
+  IF curisprop = 1 THEN
+    -- a complex property is never in-tree
+    RETURN FALSE;
+  END IF;
+  IF baseid IS NULL OR id IS NULL OR baseid = id THEN
+    RETURN FALSE;
+  END IF;
+  LOOP
+    SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;
+    IF curid IS NULL THEN
+      RETURN FALSE;
+    ELSEIF curid = baseid THEN
+      RETURN TRUE;
+    END IF;
+  END LOOP;
+END
+
+
+DROP FUNCTION IF EXISTS NX_ACCESS_ALLOWED;
+
+CREATE FUNCTION NX_ACCESS_ALLOWED(id ${idType}, users VARCHAR(10000), perms VARCHAR(10000))
+RETURNS BOOLEAN
+LANGUAGE SQL
+READS SQL DATA
+BEGIN
+  DECLARE allusers VARCHAR(10000) DEFAULT CONCAT('|',users,'|');
+  DECLARE allperms VARCHAR(10000) DEFAULT CONCAT('|',perms,'|');
+  DECLARE first BOOLEAN DEFAULT TRUE;
+  DECLARE curid ${idType} DEFAULT id;
+  DECLARE newid ${idType};
+  DECLARE gr BIT;
+  DECLARE pe VARCHAR(1000);
+  DECLARE us VARCHAR(1000);
+  WHILE curid IS NOT NULL DO
+    BEGIN
+      DECLARE done BOOLEAN DEFAULT FALSE;
+      DECLARE cur CURSOR FOR
+        SELECT `grant`, `permission`, `user` FROM `acls`
+        WHERE `acls`.`id` = curid ORDER BY `pos`;
+      DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+      OPEN cur;
+      REPEAT
+        FETCH cur INTO gr, pe, us;
+        IF NOT done THEN
+          IF LOCATE(CONCAT('|',us,'|'), allusers) <> 0 AND LOCATE(CONCAT('|',pe,'|'), allperms) <> 0 THEN
+            CLOSE cur;
+            RETURN gr;
+          END IF;
+        END IF;
+      UNTIL done END REPEAT;
+      CLOSE cur;
+    END;
+    SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;
+    IF first AND newid IS NULL THEN
+      SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;
+    END IF;
+    SET first = FALSE;
+    SET curid = newid;
+  END WHILE;
+  RETURN FALSE;
+END;
+
+
+DROP PROCEDURE IF EXISTS NX_CLUSTER_INVAL;
+
+#IF: clusteringEnabled
+CREATE PROCEDURE NX_CLUSTER_INVAL(i ${idType}, f TEXT, k TINYINT)
+LANGUAGE SQL
+MODIFIES SQL DATA
+BEGIN
+  DECLARE n BIGINT;
+  DECLARE done BOOLEAN DEFAULT FALSE;
+  DECLARE cur CURSOR FOR
+    SELECT nodeid FROM cluster_nodes WHERE nodeid <> @@PSEUDO_THREAD_ID;
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+  OPEN cur;
+  REPEAT
+    FETCH cur INTO n;
+    IF NOT done THEN
+      INSERT INTO cluster_invals (nodeid, id, fragments, kind) VALUES (n, i, f, k);
+    END IF;
+  UNTIL done END REPEAT;
+  CLOSE cur;
+END;
+
+
+
+############################################################
+
+
+#CATEGORY: afterTableCreation
+
+
+# ##### upgrade tag / nxp_tagging (since Nuxeo 5.3.2) #####
+
+#TEST:
+SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE 'NXP_TAGGING' AND TABLE_SCHEMA = SCHEMA();
+
+#IF: ! emptyResult
+LOG.INFO Upgrading tags
+
+#IF: ! emptyResult
+DROP PROCEDURE IF EXISTS NX_UPGRADE_TAGS;
+
+#IF: ! emptyResult
+CREATE PROCEDURE NX_UPGRADE_TAGS()
+LANGUAGE SQL
+MODIFIES SQL DATA
+BEGIN
+  -- make tags placeless
+  UPDATE hierarchy SET parentid = NULL WHERE primarytype = 'Tag' AND isproperty = 0;
+  -- make tagging hierarchy
+  UPDATE nxp_tagging SET id = uuid();
+  INSERT INTO hierarchy (id, name, isproperty, primarytype)
+    SELECT tg.id, t.label, 0, 'Tagging'
+      FROM nxp_tagging tg
+      JOIN tag t ON tg.tag_id = t.id;
+  -- make tagging relation
+  INSERT INTO relation (id, source, target)
+    SELECT id, document_id, tag_id FROM nxp_tagging;
+  -- make tagging dublincore (save is_private into coverage just in case)
+  INSERT INTO dublincore (id, title, creator, created, coverage)
+    SELECT tg.id, t.label, tg.author, tg.creation_date, tg.is_private
+      FROM nxp_tagging tg
+      JOIN tag t ON tg.tag_id = t.id;
+  -- drop now useless table
+  DROP TABLE nxp_tagging;
+  -- remove old tags root
+  DELETE FROM hierarchy
+    WHERE name = 'tags' AND primarytype = 'HiddenFolder' AND isproperty = 0
+      AND parentid IN (SELECT id FROM (SELECT id FROM hierarchy WHERE primarytype = 'Root' AND isproperty = 0) as stupid);
+END;
+
+#IF: ! emptyResult
+CALL NX_UPGRADE_TAGS()
+
+
+############################################################
+
+
+#CATEGORY: upgradeVersions
+
+UPDATE hierarchy, versions SET hierarchy.isversion = 1
+  WHERE hierarchy.id = versions.id;
+
+DROP PROCEDURE IF EXISTS nx_upgrade_versions;
+
+CREATE PROCEDURE nx_upgrade_versions()
+LANGUAGE SQL
+MODIFIES SQL DATA
+BEGIN
+-- Upgrade versions: label, islatest, islatestmajor
+  DECLARE series ${idType} DEFAULT '-';
+  DECLARE latest BOOLEAN DEFAULT FALSE;
+  DECLARE latestmajor BOOLEAN DEFAULT FALSE;
+  DECLARE major BOOLEAN;
+  DECLARE curid ${idType};
+  DECLARE curvid ${idType};
+  DECLARE curmaj BIGINT;
+  DECLARE curmin BIGINT;
+  --
+  DECLARE done BOOLEAN DEFAULT FALSE;
+  DECLARE cur CURSOR FOR
+    SELECT v.id, v.versionableid, h.majorversion, h.minorversion
+      FROM versions v JOIN hierarchy h ON v.id = h.id
+      ORDER BY v.versionableid, v.created DESC;
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+  OPEN cur;
+  REPEAT
+    FETCH cur INTO curid, curvid, curmaj, curmin;
+    IF NOT done THEN
+      IF curvid <> series THEN
+        -- restart
+        SET latest = TRUE;
+        SET latestmajor = TRUE;
+        SET series = curvid;
+      END IF;
+      SET major = curmin = 0;
+      UPDATE versions SET
+          label = CONCAT(curmaj, '.', curmin),
+          islatest = latest,
+          islatestmajor = major AND latestmajor
+        WHERE id = curid;
+      -- next
+      SET latest = FALSE;
+      IF major THEN SET latestmajor = FALSE; END IF;
+    END IF;
+  UNTIL done END REPEAT;
+  CLOSE cur;
+END;
+
+CALL nx_upgrade_versions();
+
+DROP PROCEDURE nx_upgrade_versions;
+
+
+############################################################
+
+
+#CATEGORY: addClusterNode
+
+DELETE N FROM cluster_nodes N WHERE
+  NOT EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.PROCESSLIST P WHERE N.nodeid = P.id);
+
+# Remove orphan invalidations
+DELETE i FROM cluster_invals i LEFT JOIN cluster_nodes n ON i.NODEID=n.NODEID WHERE n.NODEID IS NULL
+
+INSERT INTO cluster_nodes (nodeid, created) VALUES (@@PSEUDO_THREAD_ID, CURRENT_TIMESTAMP);
+
+
+#CATEGORY: removeClusterNode
+
+DELETE FROM cluster_nodes WHERE nodeid = @@PSEUDO_THREAD_ID;
+
+# Remove orphan invalidations
+DELETE i FROM cluster_invals i LEFT JOIN cluster_nodes n ON i.NODEID=n.NODEID WHERE n.NODEID IS NULL
+
+
+############################################################
+
+
+#CATEGORY: upgradeLastContributor
+
+CREATE TEMPORARY TABLE tmp AS SELECT dc.id, tmp.pos FROM dublincore dc
+    JOIN (SELECT id, max(pos) AS pos FROM dc_contributors GROUP BY id) AS tmp ON (dc.id = tmp.id)
+    JOIN dc_contributors ON (tmp.id = dc_contributors.id AND tmp.pos = dc_contributors.pos)
+  WHERE dc.lastContributor IS NULL;
+
+UPDATE dublincore, tmp, dc_contributors SET lastContributor = dc_contributors.item
+WHERE tmp.id = dublincore.id AND tmp.id = dc_contributors.id and dc_contributors.pos = tmp.pos;
+
+DROP TABLE tmp;
+
+
+############################################################
+
+
+#CATEGORY: upgradeLocks
+
+ALTER TABLE locks DROP FOREIGN KEY locks_id_hierarchy_fk;
+
+DELETE FROM locks WHERE `lock` IS NULL;
+
+UPDATE locks SET
+  owner = SUBSTRING(`lock` FROM 1 FOR POSITION(':' in `lock`) - 1),
+  created = STR_TO_DATE(SUBSTRING(`lock` FROM POSITION(':' in `lock`) + 1), '%M %d, %Y')
+  WHERE owner IS NULL;
