@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.auth.loginScreenConfig-merge">
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="loginScreen">
+
+    <loginScreenConfig>
+
+      <headerStyle>#DDDDDD</headerStyle>
+      <newsIframeUrl></newsIframeUrl>
+      <disableBackgroundSizeCover>true</disableBackgroundSizeCover>
+
+      <loginProviders>
+        <loginProvider name="google">
+          <iconPath>nuxeo.war/img/google.png</iconPath>
+          <link>News</link>
+        </loginProvider>
+        <loginProvider name="facebook" remove="true">
+        </loginProvider>
+      </loginProviders>
+    </loginScreenConfig>
+
+  </extension>
+
+</component>
