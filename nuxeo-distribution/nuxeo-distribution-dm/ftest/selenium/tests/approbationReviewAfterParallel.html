@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>approbationReviewAfterParallel</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">approbationReviewAfterParallel</td></tr>
+</thead><tbody>
+<!--@Test groups:SerialReviewAbandon,off|depends:CreateNote-->
+<!-- sets back doc state to project after parallel workflow tests -->
+<tr>
+	<td>setTimeout</td>
+	<td>30000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=WARN&amp;message=----- Selenium approbationReviewAfterParallel</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/workspaces/testWorkspace1/testFolder1/testNote1@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>jdoe</td>
+	<td></td>
+</tr>
+<!--lancement de la revue-->
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Approved</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Workflow</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@id='startWorkflow:workflowDefinitionId:1']</td>
+	<td></td>
+</tr>
+<!-- life cycle project -->
+<tr>
+	<td>click</td>
+	<td>//input[@id='startWorkflow:lifeCycleDestinationStateTransition:1']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Start']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Approval workflow</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//input[@value='Start the workflow']</td>
+	<td></td>
+</tr>
+<!--ajout intervenant jdoe-->
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='addReviewers:nxl_add_workflow_task:nxw_actors_suggest']</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox').style.display != 'none'</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>John Doe</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<!-- wait for table to appear -->
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_list:0:nxw_actors_listItem') != null</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@name='addReviewers:nxl_add_workflow_task:nxw_actors_suggest']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox').style.display == 'none'</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Add']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Selected participant(s) successfully added to the workflow</td>
+	<td></td>
+</tr>
+<!-- start and approve -->
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Start the workflow']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Approve</td>
+	<td></td>
+</tr>
+<!--verification de l'etat du document-->
+<!-- XXX need to navigate once for life cycle to be refreshed -->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testFolder1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testNote1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Project</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

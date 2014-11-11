@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Required to allow root filter to forward calls to nuxeo webapp
+     This is used by WSS since some calls are always sent to / instead of /nuxeo
+-->
+<Context path="/" crossContext="true">
+</Context>
+
