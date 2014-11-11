@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig">
+
+  <!-- replace auth chain -->
+  <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+  <require>org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService</require>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="sessionManager">
+
+    <sessionManager name="WebEngine" enabled="true"
+      class="org.nuxeo.ecm.webengine.login.WebEngineSessionManager">
+    </sessionManager>
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="startURL">
+
+    <startURLPattern>
+      <patterns>
+        <pattern>site/</pattern>
+      </patterns>
+    </startURLPattern>
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="authenticators">
+    <authenticationPlugin name="WEBENGINE_FORM_AUTH" enabled="true"
+      class="org.nuxeo.ecm.webengine.login.WebEngineFormAuthenticator">
+      <needStartingURLSaving>true</needStartingURLSaving>
+      <parameters>
+        <parameter name="UsernameKey">username</parameter>
+        <parameter name="PasswordKey">password</parameter>
+      </parameters>
+      <stateful>false</stateful>
+    </authenticationPlugin>
+  </extension>
+  
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="chain">
+
+    <authenticationChain>
+      <plugins>
+        <plugin>BASIC_AUTH</plugin>
+        <plugin>FORM_AUTH</plugin>
+        <plugin>WEBENGINE_FORM_AUTH</plugin>        
+        <plugin>ANONYMOUS_AUTH</plugin>
+        <plugin>WEBSERVICES_AUTH</plugin>
+      </plugins>
+    </authenticationChain>
+  </extension>
+
+  <!-- The propagator must be deployed only on webengine standalone 
+  so the definition was moved to config directory in webengine -->
+  <!-- 
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="propagator">
+
+    <propagationHandler name="WebEngine"
+      class="org.nuxeo.ecm.webengine.login.WebEngineLocalPropagator"/>
+  </extension>
+  -->
+    
+</component>
