@@ -1,0 +1,13 @@
+id,label,lang,date,type
+"1","Label1","fr","2012-12-01 00:00:00","nuxeo"
+"2","Label2","en","2012-12-02 00:00:00","not-nuxeo"
+"3","Label3","en","2012-12-03 00:00:00","nuxeo"
+"4","Label4","fr","2012-12-04 00:00:00","not-nuxeo"
+"5","Label5","fr","2012-12-05 00:00:00","something"
+"6","Label6","fr","2012-12-06 00:00:00","something"
+"7","Label7","fr","2012-12-07 00:00:00","something"
+"8","Label8","fr","2012-12-08 00:00:00","something"
+"9","Label9","fr","2012-12-09 00:00:00","something"
+"10","Label10","fr","2012-12-10 00:00:00","something"
+"11","Label11","fr","2012-12-11 00:00:00","something"
+"12","Label12","fr","2012-12-12 00:00:00","somethingdiff"
