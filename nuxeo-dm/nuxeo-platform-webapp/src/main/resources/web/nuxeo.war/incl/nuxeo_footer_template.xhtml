@@ -1,0 +1,75 @@
+<f:subview xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:insert name="prefooter">
+  <c:if test="#{connectUpdateStatusInfo.bannerPath!=null}">
+    <ui:include src="#{connectUpdateStatusInfo.bannerPath}" />
+  </c:if>
+</ui:insert>
+
+<ui:insert name="footer">
+  <div class="footerDefaultLinks">
+    <div class="nuxLinks">
+      <a href="http://www.nuxeo.com/en/about/contact?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+        target="_blank">
+        <h:outputText value="#{messages['label.footer.contactUs']}" />
+      </a>
+      <h:outputText value=" | " />
+      <a href="http://blogs.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+        target="_blank">
+        <h:outputText value="#{messages['label.footer.blogs']}" />
+      </a>
+      <h:outputText value=" | " />
+      <a href="http://community.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+        target="_blank">
+        <h:outputText value="#{messages['label.footer.community']}" />
+      </a>
+      <h:outputText value=" | " />
+      <a href="http://forum.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+        target="_blank">
+        <h:outputText value="#{messages['label.footer.forums']}" />
+      </a>
+      <h:outputText value=" | " />
+      <a href="http://doc.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+        target="_blank">
+        <h:outputText value="#{messages['label.footer.documentation']}" />
+      </a>
+      <h:outputText value=" | " />
+      <a href="http://twitter.com/nuxeo/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+        class="twitt" target="_blank">
+        <h:outputText value="Twitter" style="display:none;"/>
+      </a>
+      <a href="http://www.linkedin.com/groupRegistration?gid=43314&amp;utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+        class="linkedin" target="_blank">
+        <h:outputText value="LinkedIn" style="display:none;" />
+      </a>
+    </div>
+
+    <div class="copyrights">
+      <h:outputFormat value="#{messages['label.login.copyright']}">
+        <f:param value="2012" />
+      </h:outputFormat>
+    </div>
+    <div class="clear"></div>
+  </div>
+
+<c:if test="false">
+  NXP-3151: move language selector to login page
+  <h:form id="langSelectForm">
+    <h:outputText value="#{messages['label.selectLocale']}" />
+    <h:selectOneMenu value="#{localeSelector.localeString}" styleClass="langSelect"
+      id="langSelectMenu">
+      <f:selectItems value="#{localeSelector.supportedLocales}"/>
+    </h:selectOneMenu>
+    <h:commandButton action="#{localeSelector.select}"
+      value="#{messages['command.changeLocale']}"
+      class="langSubmit"
+      id="langSelectSubmitButton" />
+  </h:form>
+</c:if>
+
+</ui:insert>
+
+</f:subview>
