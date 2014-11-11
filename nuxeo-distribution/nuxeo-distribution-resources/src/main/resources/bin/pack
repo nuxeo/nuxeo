@@ -1,0 +1,316 @@
+#!/bin/bash
+## (C) Copyright 2010-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+##
+## All rights reserved. This program and the accompanying materials
+## are made available under the terms of the GNU Lesser General Public License
+## (LGPL) version 2.1 which accompanies this distribution, and is available at
+## http://www.gnu.org/licenses/lgpl.html
+##
+## This library is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+## Lesser General Public License for more details.
+##
+## Contributors:
+##     Julien Carsique
+##
+## Shell script generating a static archive for Tomcat or JBoss
+##
+
+echo 'DEPRECATED - You should use "nuxeoctl pack <target> [options]"'
+
+MAX_FD_LIMIT_HELP_URL="http://doc.nuxeo.com/display/KB/java.net.SocketException+Too+many+open+files"
+
+# Helper functions
+
+warn() {
+  echo "WARNING: $*"
+}
+
+die() {
+  echo "ERROR: $*"
+  exit 1
+}
+
+
+# OS detection
+
+cygwin=false
+darwin=false
+linux=false
+
+case "`uname`" in
+  CYGWIN*) cygwin=true;;
+  Darwin*) darwin=true;;
+  Linux) linux=true;;
+esac
+
+
+# Get dirname and progname
+
+PRG="$0"
+
+# follow symlinks
+while [ -h "$PRG" ]; do
+  ls=`ls -ld "$PRG"`
+  link=`expr "$ls" : '.*-> \(.*\)$'`
+  if expr "$link" : '/.*' > /dev/null; then
+    PRG="$link"
+  else
+    PRG=`dirname "$PRG"`/"$link"
+  fi
+done
+
+DIRNAME=`dirname "$PRG"`
+PROGNAME=`basename "$PRG"`
+
+
+# Read nuxeo.conf
+# We can't just source it as sh/bash don't like dots in variable names
+
+if [ "x$NUXEO_CONF" = "x" ]; then
+  NUXEO_CONF="$DIRNAME/nuxeo.conf"
+fi
+if [ -r "$NUXEO_CONF" ]; then
+  while read confline
+  do
+    if [ "x$confline" = "x" ]; then
+      continue
+    fi
+    if [[ "$confline" == \#* ]]; then
+      continue
+    fi
+    key="$(echo $confline | cut -d= -f1)"
+    value="$(echo $confline | cut -d= -f2-)"
+    if [[ "$key" == "nuxeo.log.dir" ]]; then
+      read -r LOG_DIR <<< $value
+    fi
+    if [[ "$key" == "nuxeo.pid.dir" ]]; then
+      read -r PID_DIR <<< $value
+    fi
+    if [[ "$key" == "nuxeo.data.dir" ]]; then
+      read -r DATA_DIR <<< $value
+    fi
+    if [[ "$key" == "nuxeo.bind.address" ]]; then
+      read -r BIND_ADDRESS <<< $value
+    fi
+    if [[ "$key" == *.* ]]; then
+      continue
+    fi
+    eval "$key=\"$value\""
+  done < $NUXEO_CONF
+fi
+
+
+# For Cygwin, ensure paths are in UNIX format before anything is touched
+
+if [ "$cygwin" = "true" ]; then
+  [ -n "$JAVA_HOME" ] && JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
+  [ -n "$CLASSPATH" ] && CLASSPATH=`cygpath --path --unix "$CLASSPATH"`
+  [ -n "$JBOSS_HOME" ] && JBOSS_HOME=`cygpath --unix "$JBOSS_HOME"`
+  [ -n "$CATALINA_HOME" ] && CATALINA_HOME=`cygpath --unix "$CATALINA_HOME"`
+  [ -n "$JETTY_HOME" ] && JETTY_HOME=`cygpath --unix "$JETTY_HOME"`
+  [ -n "$NUXEO_HOME" ] && NUXEO_HOME=`cygpath --unix "$NUXEO_HOME"`
+  [ -n "$DATA_DIR" ] && DATA_DIR=`cygpath --unix "$DATA_DIR"`
+fi
+
+
+# Setup the JVM (find JAVA_HOME if undefined; use JAVA if defined)
+if [ -z "$JAVA" ]; then
+    JAVA="java"
+fi
+if [ -z "$JAVA_HOME" ]; then
+  JAVA=`which $JAVA`
+
+  # follow symlinks
+  while [ -h "$JAVA" ]; do
+    ls=`ls -ld "$JAVA"`
+    link=`expr "$ls" : '.*-> \(.*\)$'`
+    if expr "$link" : '/.*' > /dev/null; then
+      JAVA="$link"
+    else
+      JAVA=`dirname "$JAVA"`/"$link"
+    fi
+  done
+  JAVA_HOME=`dirname "$JAVA"`
+  JAVA_HOME=`dirname "$JAVA_HOME"`
+fi
+PATH="$JAVA_HOME/bin:$PATH"
+
+# Setup NUXEO_HOME
+if [ -z "$NUXEO_HOME" ]; then
+  if [ -n "$JBOSS_HOME" ]; then NUXEO_HOME="$JBOSS_HOME"
+  elif [ -n "$CATALINA_HOME" ]; then NUXEO_HOME="$CATALINA_HOME"
+  elif [ -n "$JETTY_HOME" ]; then NUXEO_HOME="$JETTY_HOME"
+  else NUXEO_HOME=`cd "$DIRNAME"/..; pwd`
+  fi
+fi
+
+
+# Layout setup
+
+# LOG_DIR
+
+if [ -z "$LOG_DIR" ]; then
+  LOG_DIR="$NUXEO_HOME/log"
+elif [[ "$LOG_DIR" != /* ]]; then
+  LOG_DIR="$NUXEO_HOME/$LOG_DIR"
+fi
+LOG="$LOG_DIR/console.log"
+
+# PID_DIR
+
+if [ -z "$PID_DIR" ]; then
+  PID_DIR="$LOG_DIR"
+elif [[ "$PID_DIR" != /* ]]; then
+  PID_DIR="$NUXEO_HOME/$PID_DIR"
+fi
+PID="$PID_DIR/nuxeo.pid"
+
+
+# Check that the FD limit is not too low
+if [ "$cygwin" = "false" ]; then
+  MAX_FD_LIMIT=`ulimit -H -n`
+  if [ $? -eq 0 ]; then
+    if [ "$darwin" = "true" ] && [ "$MAX_FD_LIMIT" = "unlimited" ]; then
+      MAX_FD_LIMIT=`sysctl -n kern.maxfilesperproc`
+      ulimit -n $MAX_FD_LIMIT
+    fi
+    if [ $MAX_FD_LIMIT -lt 2048 ]; then
+      warn "Maximum file descriptor limit is too low: $MAX_FD_LIMIT"
+      warn "See: $MAX_FD_LIMIT_HELP_URL"
+    fi
+  else
+    warn "Could not get system maximum file descriptor limit (got $MAX_FD_LIMIT)"
+  fi
+fi
+
+
+# Force IPv4
+JAVA_OPTS="$JAVA_OPTS -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true"
+
+
+# If -server not set in JAVA_OPTS, set it, if supported
+SERVER_SET=`echo $JAVA_OPTS | grep "\-server"`
+if [ "x$SERVER_SET" = "x" ]; then
+  # Check for SUN(tm) JVM w/ HotSpot support
+  if [ "x$HAS_HOTSPOT" = "x" ]; then
+    HAS_HOTSPOT=`"$JAVA" -version 2>&1 | grep -i HotSpot`
+  fi
+  # Enable -server if we have Hotspot, unless we can't
+  if [ "x$HAS_HOTSPOT" != "x" ]; then
+    # MacOS does not support -server flag
+    if [ "$darwin" != "true" ]; then
+      JAVA_OPTS="-server $JAVA_OPTS"
+    fi
+  fi
+fi
+
+# Bind address
+if [ "x$BIND_ADDRESS" = "x" ]; then
+  BIND_ADDRESS=0.0.0.0
+fi
+
+# Application server detection
+# We're checking for the presence of the jars used to start each server
+
+jboss=false
+tomcat=false
+jetty=false
+
+jbossjar="$NUXEO_HOME/bin/run.jar"
+tomcatjar="$NUXEO_HOME/bin/bootstrap.jar"
+jettyjar="`ls $NUXEO_HOME/nuxeo-runtime-launcher*.jar 2>/dev/null || echo null`"
+
+if [ -f "$jbossjar" ]; then jboss=true
+elif [ -f "$tomcatjar" ]; then tomcat=true
+elif [ "$jettyjar" != "null" ]; then jetty=true
+else die "Could not find startup jars for either JBoss, Tomcat or Jetty in $NUXEO_HOME"
+fi
+
+
+# Application server-specific stuff
+# Those won't work with cygwin without transforming them back first, need to rethink this part
+
+#
+# JBOSS
+#
+if [ "$jboss" = "true" ]; then
+  IS_JRE_6=`"$JAVA" -version 2>&1|grep "version \"1\.6"`
+  NUXEO_EAR="$NUXEO_HOME/server/default/deploy/nuxeo.ear"
+  if [ ! -z "$IS_JRE_6" ]; then
+    #echo "Java 1.6 detected"
+    JAVA5_APIS="script-api"
+    for java5_api in $JAVA5_APIS; do
+      JAVA5_API=`ls "$NUXEO_EAR"/lib/$java5_api*.jar 2>/dev/null || echo "null"`
+      if [ -f "$JAVA5_API" ]; then
+        echo "Removing $JAVA5_API (already provided by Java6)"
+        rm -rf "$JAVA5_API" "$NUXEO_EAR"/lib-jre1.5/ 2>/dev/null
+      fi
+    done
+  else
+    die "Nuxeo 5.4 requires Java 6."
+  fi
+
+  # Paths and specific options
+  DATA_DIR=${DATA_DIR:-server/default/data/NXRuntime/data}
+  NUXEO_BOOTJAR_PATH="$NUXEO_EAR/lib/*:$NUXEO_EAR/bundles/*:$NUXEO_HOME/server/default/lib/*:$NUXEO_HOME/common/lib/*:$NUXEO_HOME/lib/*"
+  LOG4J_CONF="$NUXEO_HOME/server/default/conf/jboss-log4j.xml"
+  MAIN_CLASS=org.nuxeo.runtime.deployment.preprocessor.PackZip
+
+#
+# TOMCAT
+#
+elif [ "$tomcat" = "true" ]; then
+  # Paths and specific options
+  NUXEO_EAR="$NUXEO_HOME/nxserver"
+  DATA_DIR=${DATA_DIR:-nxserver/data}
+  NUXEO_BOOTJAR_PATH="$NUXEO_EAR/lib/*:$NUXEO_EAR/bundles/*:$NUXEO_HOME/lib/*"
+  LOG4J_CONF="$NUXEO_HOME/lib/log4j.xml"
+  MAIN_CLASS=org.nuxeo.runtime.deployment.preprocessor.PackWar
+
+#
+# JETTY
+#
+elif [ "$jetty" = "true" ]; then
+  die pack works only for JBoss
+
+#
+# Oops
+#
+else
+  die "Oops, something went very wrong, I'm not supposed to be here !"
+fi
+
+NUXEO_CONFIG_CLASSPATH="$NUXEO_HOME/bin/nuxeo-launcher.jar:$CLASSPATH:$NUXEO_BOOTJAR_PATH"
+
+# Set absolute path for data directory
+if [[ "$DATA_DIR" != \$* ]] && [[ "$DATA_DIR" != /* ]]; then
+  DATA_DIR="$NUXEO_HOME/$DATA_DIR"
+fi
+
+if [ "$cygwin" = "true" ]; then
+  NUXEO_CONFIG_CLASSPATH=`cygpath --path --windows "$NUXEO_CONFIG_CLASSPATH"`
+  NUXEO_HOME=`cygpath --absolute --windows "$NUXEO_HOME"`
+  NUXEO_CONF=`cygpath --absolute --windows "$NUXEO_CONF"`
+  [ -n "$DATA_DIR" ] && DATA_DIR=`cygpath --absolute --windows "$DATA_DIR"`
+  LOG_DIR=`cygpath --absolute --windows "$LOG_DIR"`
+  LOG4J_CONF="file:///"`cygpath --absolute --mixed "$LOG4J_CONF"`
+
+  [ "$tomcat" = "true" ] && CATALINA_TEMP=`cygpath --absolute --windows "$CATALINA_TEMP"`
+  [ "$jetty" = "true" ] && NUXEO_BUNDLES=`cygpath --path --windows "$NUXEO_BUNDLES"`
+else
+  LOG4J_CONF="file:$LOG4J_CONF"
+fi
+
+pack() {
+    echo "" >> "$NUXEO_CONF"
+    echo "nuxeo.updatecenter.disbaled=true" >> "$NUXEO_CONF"
+    java $JAVA_OPTS -classpath "$NUXEO_CONFIG_CLASSPATH" \
+      -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
+      -Dnuxeo.log.dir="$LOG_DIR" -Dnuxeo.data.dir="$DATA_DIR" \
+      -Dlog4j.configuration="$LOG4J_CONF" \
+      $MAIN_CLASS $1 $2
+}
+
+pack $NUXEO_EAR $1
