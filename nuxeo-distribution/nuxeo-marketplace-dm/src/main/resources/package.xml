@@ -1,0 +1,92 @@
+<package type="addon" name="nuxeo-dm" version="@VERSION@">
+  <title>Nuxeo DM</title>
+  <description>
+    <p>Nuxeo DM is a robust, extensible, global Enterprise Content Management
+      (ECM) solution available as Open Source Software (OSS). Nuxeo imagined,
+      developed and is releasing Nuxeo DM, helped by a vibrant community of
+      professional and individual contributors.
+    </p>
+    <p>
+      Nuxeo DM is the ultimate ready to go collaborative document management
+      application available on the market. Based on our popular open source ECM
+      platform Nuxeo EP, Nuxeo DM benefits from its flexibility, feature scope,
+      scalability and IS integration capabilities. Nuxeo DM provides
+      organizations with the application they need to enable their teams to work
+      more efficiently either on a project-basis or on longer term business
+      processes. Nuxeo DM brings them the ability to create, share, annotate,
+      store and retrieve any types of documents in their usual desktop
+      environment.
+      <br />
+      <br />
+      Nuxeo DM main features (details features are listed
+      <a href="http://www.nuxeo.com/en/products/dm/features/">here</a>
+      ):
+    </p>
+    <ul>
+      <li>
+        <b>Capture:</b>
+        With Nuxeo DM, you can create your documents using your day-to-day
+        favorite tools (MS Office, Mail, etc.) or or you can batch import your
+        exiting documents (drag and drop, form and import, email capture).
+      </li>
+      <li>
+        <b>Share &amp; Collaborate:</b>
+        Save time by finding the right information when you need it ! Empower
+        your co-workers to share, access, enrich and store high quality content
+        in a single place. Nuxeo DM can manage all of your organization's
+        documents and IP assets in a scalable and secured document repository.
+        Create and enrich documents within collaborative workspaces, follow
+        their validation process via customizable workflows, publish in one or
+        any hierarchy you chose.
+        Join our existing customers, take all the
+        benefits from our collaborative open source content management
+        solutions.
+      </li>
+      <li>
+        <b>Process &amp; Review:</b>
+        Customize your documents life cycle, quickly adapt workflows to reflect
+        internal procedures and to meet your legal compliancy requirements.
+        Nuxeo DM can handle the way you work!
+      </li>
+      <li>
+        <b>Publish &amp; Archive:</b>
+        Keep track of any and all changes that have happened within the document
+        repository.
+        Nuxeo DM allows you to publish the validated documents you
+        have created to a
+        larger audience, and the audit trail offers the legal
+        compliance that
+        your organization requires.
+      </li>
+      <li>
+        <b>Search &amp; Find:</b>
+        With Nuxeo DM search features, you can easily find your documents
+        through their content or their metadata.
+        Save time: you can save and
+        reuse your most frequent queries.
+      </li>
+
+    </ul>
+  </description>
+  <home-page>http://doc.nuxeo.com/x/bIEk</home-page>
+  <vendor>Nuxeo</vendor>
+  <installer restart="true" />
+  <uninstaller restart="true" />
+  <!-- <hotreload-support>false</hotreload-support> -->
+  <!-- <require-terms-and-conditions-acceptance>false -->
+  <!-- </require-terms-and-conditions-acceptance> -->
+  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
+  <production-state>production_ready</production-state>
+  <supported>true</supported>
+  <platforms>
+    <platform>cap-@VERSION@</platform>
+  </platforms>
+  <provides>
+    <package>nuxeo-content-browser:1.0.0:1.0.0</package>
+  </provides>
+  <conflicts>
+    <package>nuxeo-cmf</package>
+  </conflicts>
+  <license>LGPL</license>
+  <license-url>http://www.gnu.org/licenses/lgpl.html</license-url>
+</package>
