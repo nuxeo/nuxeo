@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>test-parallel-validation1</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">test-parallel-validation1</td></tr>
+</thead><tbody>
+<!--@Test groups:CreateStructure,introduction-->
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=WARN&amp;message=----- Selenium test-parallel-validation1</td>
+	<td></td>
+</tr>
+<!--Identification-->
+<tr>
+	<td>setTimeout</td>
+	<td>30000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>relative=up</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Workspaces</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Create a new workspace</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>j_id173:nxl_heading:nxw_title</td>
+	<td>___aaa</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>j_id173:j_id206</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=File</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:j_id176:0:j_id178:0:h_inputText</td>
+	<td>test File 1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=___aaa</td>
+	<td>workspaces</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=File</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//td[@class=&quot;fieldColumn&quot;]/input[@type=&quot;text&quot;]</td>
+	<td>first jbpm file</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Workflow</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value=&quot;review_approbation&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value=&quot;approve_MINOR&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Start&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]/input[@type=&quot;text&quot;]</td>
+	<td>jd</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]/input[@value=&quot;Search&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>Add to selection</td>
+	<td>15000</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Add to selection</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]/input[@type=&quot;text&quot;]</td>
+	<td>js</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]/input[@value=&quot;Search&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>Add to selection</td>
+	<td>15000</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Add to selection</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]/input[@type=&quot;text&quot;]</td>
+	<td>li</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]/input[@value=&quot;Search&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>Add to selection</td>
+	<td>15000</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Add to selection</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Workflow task ended&quot;]</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
