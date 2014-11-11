@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.login.jboss">
+
+  <require>org.nuxeo.ecm.platform.login.defaultLMP</require>
+
+  <extension target="org.nuxeo.ecm.platform.login.LoginPluginRegistry"
+      point="callbackFactory">
+    <CallbackFactory name="jboss" class="org.nuxeo.platform.login.jboss.JBossCallbackFactory">
+    </CallbackFactory>
+  </extension>
+
+</component>
