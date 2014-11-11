@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo-spaces-web project
+Bundle-SymbolicName: org.nuxeo.opensocial.spaces.web;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Nuxeo
+Provide-Package: org.nuxeo.opensocial.spaces.web
+Nuxeo-Component: OSGI-INF/spaces-type-contrib.xml,
+ OSGI-INF/actions-contrib.xml,
+ OSGI-INF/layout-contrib.xml
+Require-Bundle: org.nuxeo.ecm.spaces.api,
+ org.nuxeo.ecm.platform.types.api,
+ org.nuxeo.ecm.platform.types.core,
+ org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.actions,
+ org.nuxeo.ecm.webapp.core
+Export-Package: org.nuxeo.opensocial.spaces.web
