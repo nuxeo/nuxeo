@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources>
+  <!-- UNIFIED DATASOURCE CONFIGURATION -->
+  <!--
+    This is the unified datasource configuration for PostgreSQL. All datasources from
+    nuxeo points to this datasource so it will use only 1 database. If you wish
+    to use a different database for a service, comment out the link in the
+    relevant xxx-ds.xml file and add a datasource configuration.
+  -->
+  <!-- nuxeo datasource -->
+  <xa-datasource>
+    <jndi-name>NuxeoDS</jndi-name>
+    <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
+    <xa-datasource-property name="ServerName">localhost</xa-datasource-property>
+    <xa-datasource-property name="PortNumber">5432</xa-datasource-property>
+    <xa-datasource-property name="DatabaseName">nuxeo</xa-datasource-property>
+    <xa-datasource-property name="User">nuxeo</xa-datasource-property>
+    <xa-datasource-property name="Password">password</xa-datasource-property>
+    <track-connection-by-tx/>
+  </xa-datasource>
+</datasources>

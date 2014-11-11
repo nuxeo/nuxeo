@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.directory.sql.storage">
+
+  <implementation class="org.nuxeo.ecm.directory.sql.SQLDirectoryDescriptor" />
+
+  <require>org.nuxeo.ecm.directory.sql.SQLDirectoryFactory</require>
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+    point="directories">
+
+    <directory name="userDirectory">
+
+      <schema>user</schema>
+
+      <dataSource>java:comp/env/jdbc/nxsqldirectory</dataSource>
+
+      <table>users</table>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>users.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <querySizeLimit>15</querySizeLimit>
+
+      <references>
+        <inverseReference field="groups" directory="groupDirectory"
+          dualReferenceField="members" />
+      </references>
+
+    </directory>
+
+    <directory name="groupDirectory">
+
+      <schema>group</schema>
+      <dataSource>java:comp/env/jdbc/nxsqldirectory</dataSource>
+      <table>groups</table>
+      <idField>groupname</idField>
+      <dataFile>groups.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <autoincrementIdField>false</autoincrementIdField>
+
+      <references>
+        <tableReference field="members" directory="userDirectory"
+          table="user2group" sourceColumn="groupId" targetColumn="userId" schema="user2group" 
+          dataFile="user2group.csv" />
+        <!-- Warning ! From Nuxeo 5.3.1, a wrong setting has been fixed. See
+        http://jira.nuxeo.org/browse/NXP-4401 . Nuxeo upgrades would need a fix in the
+        database (inverting parentGroupId and childGroupId in the group2group)  -->
+        <tableReference field="subGroups" directory="groupDirectory"
+          table="group2group" sourceColumn="parentGroupId" 
+          targetColumn="childGroupId" schema="group2group" />
+        <inverseReference field="parentGroups" directory="groupDirectory"
+          dualReferenceField="subGroups" />
+      </references>
+
+    </directory>
+
+  </extension>
+</component>

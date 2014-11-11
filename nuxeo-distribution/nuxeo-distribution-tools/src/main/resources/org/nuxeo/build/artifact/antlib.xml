@@ -1,0 +1,12 @@
+<antlib>
+  <taskdef name="settings" classname="org.nuxeo.build.ant.artifact.SettingsTask" />
+  <typedef name="set" classname="org.nuxeo.build.ant.artifact.ArtifactSet" />
+  <typedef name="file" classname="org.nuxeo.build.ant.artifact.ArtifactFile" />
+  <taskdef name="graph" classname="org.nuxeo.build.ant.artifact.GraphTask" />
+  <taskdef name="expand" classname="org.nuxeo.build.ant.artifact.ExpandTask" />  
+  <taskdef name="export" classname="org.nuxeo.build.ant.artifact.GraphExportTask" />
+  <typedef name="attach" classname="org.nuxeo.build.ant.artifact.AttachArtifactTask" />
+  <typedef name="foreach" classname="org.nuxeo.build.ant.artifact.ArtifactForeach" />
+  <typedef name="resolveFile" classname="org.nuxeo.build.ant.artifact.ResolveFile" />  
+  <typedef name="dependencies" classname="org.nuxeo.build.ant.artifact.ArtifactDependencies" />
+</antlib>

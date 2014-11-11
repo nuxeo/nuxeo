@@ -1,0 +1,98 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.distribution</groupId>
+    <artifactId>nuxeo-distribution</artifactId>
+    <version>5.3.1-I20091211_1434</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>nuxeo-distribution-windows</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo Windows Distribution</name>
+  <description>Build Nuxeo Windows installer with ISTools\n
+  Requirements:\n
+  * wine (from apt sources)\n
+  * ispack-5.2.3.exe from http://www.innosetup.com (http://files.jrsoftware.org/ispack/ispack-5.2.3.exe)\n
+  This should install Inno Setup Compiler and ISTool
+  </description>
+
+  <profiles>
+    <profile>
+      <id>nuxeo-dm-jboss</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <distribution>nuxeo-dm</distribution>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.nuxeo.ecm.distribution</groupId>
+          <artifactId>nuxeo-distribution-jboss</artifactId>
+          <type>zip</type>
+          <classifier>nuxeo-dm</classifier>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>nuxeo-ep-jboss</id>
+      <properties>
+        <distribution>nuxeo-ep</distribution>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.nuxeo.ecm.distribution</groupId>
+          <artifactId>nuxeo-distribution-jboss</artifactId>
+          <type>zip</type>
+          <classifier>nuxeo-ep</classifier>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-shell</artifactId>
+      <type>zip</type>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+        <artifactId>maven-antrun-extended-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <configuration>
+              <tasks>
+                <resolveArtifact groupId="org.nuxeo.ecm.distribution"
+                  artifactId="nuxeo-distribution-jboss" type="zip" classifier="${distribution}"
+                  property="nuxeo-jboss" />
+                <unzip src="${nuxeo-jboss}" dest="${project.build.directory}/nuxeo-jboss" />
+                <resolveArtifact groupId="org.nuxeo.ecm.distribution"
+                  artifactId="nuxeo-distribution-shell" type="zip" property="nuxeo-shell" />
+                <unzip src="${nuxeo-shell}" dest="${project.build.directory}/nuxeo-shell" />
+                <ant antfile="build.xml" target="package">
+                  <property name="nuxeo-jboss.dir"
+                    value="${project.build.directory}/nuxeo-jboss/nuxeo-distribution-jboss-${version}" />
+                  <property name="nuxeo-shell.dir"
+                    value="${project.build.directory}/nuxeo-shell/nxshell" />
+                </ant>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

@@ -1,0 +1,322 @@
+<?xml version="1.0"?>
+<project name="Nuxeo Distribution" default="" basedir=".">
+
+  <property file="build.properties" />
+  <property name="mvn.opts" value="" />
+  <property name="jboss.config" value="default" />
+  <property name="jboss.dir" value="/opt/jboss" />
+  <property name="nuxeo.ear.root" value="${basedir}/nuxeo-distribution-dm/" />
+  <!--the default pom file to use for jboss-patch  -->
+  <property name="pom.file" value="${basedir}/nuxeo-distribution-jboss/jboss-patch/pom.xml" />
+
+  <!-- set default root properties if not set -->
+  <target name="set.jboss.home" unless="jboss.home">
+    <property name="jboss.home" value="${jboss.dir}" />
+  </target>
+  <target name="set.assembly.name" unless="assembly.ear">
+    <property name="assembly.name" value="nuxeo" />
+  </target>
+  <!-- set default properties if not set -->
+  <target name="setproperties" unless="jboss.server" depends="set.jboss.home, set.assembly.name">
+    <property name="assembly.ear" value="${assembly.name}.ear" />
+    <property name="jboss.server" value="${jboss.home}/server/${jboss.config}" />
+    <property name="jboss.deploy" value="${jboss.server}/deploy" />
+    <property name="jboss.lib" value="${jboss.server}/lib" />
+    <property name="jboss.nuxeo.ear" value="${jboss.deploy}/nuxeo.ear" />
+    <property name="nuxeo.ear.build" value="${nuxeo.ear.root}/target/${assembly.ear}" />
+  </target>
+
+  <condition property="osfamily-unix">
+    <os family="unix" />
+  </condition>
+  <condition property="osfamily-windows">
+    <os family="windows" />
+  </condition>
+
+  <!-- backward compatibility -->
+  <target name="undeploy" depends="jboss-clean" description="Undeploy Nuxeo-EP (deprecated : use jboss-clean instead)" />
+
+  <target name="package-2parts" description="Package Nuxeo-EP in two parts">
+    <antcall target="package">
+      <param name="jboss.home" value="${jboss1.dir}" />
+      <param name="assembly.name" value="nuxeo-platform-stateful" />
+    </antcall>
+    <antcall target="package">
+      <param name="jboss.home" value="${jboss2.dir}" />
+      <param name="assembly.name" value="nuxeo-web-stateless" />
+    </antcall>
+  </target>
+  <target name="package-3parts" description="Package Nuxeo-EP in three parts">
+    <antcall target="package">
+      <param name="jboss.home" value="${jboss1.dir}" />
+      <param name="assembly.name" value="nuxeo-core" />
+    </antcall>
+    <antcall target="package">
+      <param name="jboss.home" value="${jboss2.dir}" />
+      <param name="assembly.name" value="nuxeo-indexing" />
+    </antcall>
+    <antcall target="package">
+      <param name="jboss.home" value="${jboss3.dir}" />
+      <param name="assembly.name" value="nuxeo-webplatform" />
+    </antcall>
+  </target>
+  <target name="package" depends="setproperties,package-unix,package-windows" description="Package Nuxeo-EP" />
+  <target name="package-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg value="package" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-f" />
+      <arg value="${nuxeo.ear.root}/pom.xml" />
+      <arg value="-Dnuxeo.ear.assembly=${assembly.name}" />
+      <arg value="-N" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+  <target name="package-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="package" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-f" />
+      <arg value="${nuxeo.ear.root}/pom.xml" />
+      <arg value="-Dnuxeo.ear.assembly=${assembly.name}" />
+      <arg value="-N" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+  <target name="jboss-clean" depends="delete-ear" description="Remove Nuxeo-EP from jboss">
+    <delete>
+      <fileset dir="${jboss.lib}">
+        <include name="nuxeo-*.jar" />
+      </fileset>
+    </delete>
+  </target>
+
+  <target name="jboss-clean-plugins" depends="setproperties" description="Delete plugins deployed in JBoss">
+    <delete>
+      <fileset dir="${jboss.nuxeo.ear}/plugins">
+        <include name="*.jar" />
+      </fileset>
+    </delete>
+  </target>
+
+  <target name="jboss-clean-data" depends="setproperties" description="Delete data from JBoss">
+    <delete dir="${jboss.server}/data" />
+  </target>
+
+  <target name="patch" description="Patch a JBoss 4.2.x for use by Nuxeo-EP">
+    <ant target="patch" dir="nuxeo-distribution-jboss" />
+  </target>
+  <target name="patch-2parts" description="Package Nuxeo-EP in two parts">
+    <ant target="patch-2parts" dir="nuxeo-distribution-jboss" />
+  </target>
+  <target name="patch-3parts" description="Package Nuxeo-EP in three parts">
+    <ant target="patch-3parts" dir="nuxeo-distribution-jboss" />
+  </target>
+
+  <target name="copy-2parts" description="Copy Nuxeo-EP in two parts">
+    <antcall target="copy">
+      <param name="jboss.home" value="${jboss1.dir}" />
+      <param name="assembly.name" value="nuxeo-platform-stateful" />
+    </antcall>
+    <antcall target="copy">
+      <param name="jboss.home" value="${jboss2.dir}" />
+      <param name="assembly.name" value="nuxeo-web-stateless" />
+    </antcall>
+  </target>
+  <target name="copy-3parts" description="Copy Nuxeo-EP in three parts">
+    <antcall target="copy">
+      <param name="jboss.home" value="${jboss1.dir}" />
+      <param name="assembly.name" value="nuxeo-core" />
+    </antcall>
+    <antcall target="copy">
+      <param name="jboss.home" value="${jboss2.dir}" />
+      <param name="assembly.name" value="nuxeo-indexing" />
+    </antcall>
+    <antcall target="copy">
+      <param name="jboss.home" value="${jboss3.dir}" />
+      <param name="assembly.name" value="nuxeo-webplatform" />
+    </antcall>
+  </target>
+  <target name="copy" depends="delete-ear,copy-ear,copy-lib" description="Replace ear and copy libs to jboss" />
+  <target name="delete-ear" depends="setproperties">
+    <delete dir="${jboss.nuxeo.ear}" failonerror="false" />
+  </target>
+  <target name="copy-ear" depends="setproperties">
+    <mkdir dir="${jboss.nuxeo.ear}" />
+    <copy todir="${jboss.nuxeo.ear}">
+      <fileset dir="${nuxeo.ear.build}" />
+    </copy>
+  </target>
+  <target name="copy-lib" depends="clean-lib,copy-lib-unix,copy-lib-windows" description="Copy Nuxeo libs in jboss" />
+  <target name="clean-lib" depends="setproperties">
+    <echo message="Cleaning Nuxeo libs in ${jboss.lib}" />
+    <delete>
+      <fileset dir="${jboss.lib}">
+        <!-- sync this list with the ${nuxeo.ear.root} POM dependencies -->
+        <include name="nuxeo-runtime-jboss-extensions-*.jar" />
+        <include name="nuxeo-common-*.jar" />
+        <include name="nuxeo-core-storage-sql-extensions-*.jar" />
+        <include name="derby-*.jar" />
+        <include name="h2-*.jar" />
+        <include name="lucene-core-*.jar" />
+        <include name="lucene-analyzers-*.jar" />
+      </fileset>
+    </delete>
+  </target>
+  <target name="copy-lib-unix" if="osfamily-unix">
+    <echo message="Copying Nuxeo libs to ${jboss.lib}" />
+    <exec executable="mvn" failonerror="true">
+      <arg value="-f" />
+      <arg value="${nuxeo.ear.root}/pom.xml" />
+      <arg value="-Djboss.lib=${jboss.lib}" />
+      <arg value="dependency:copy" />
+      <arg value="-N" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+  <target name="copy-lib-windows" if="osfamily-windows">
+    <echo message="Copying Nuxeo libs to ${jboss.lib}" />
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="-f" />
+      <arg value="${nuxeo.ear.root}/pom.xml" />
+      <arg value="-Djboss.lib=${jboss.lib}" />
+      <arg value="dependency:copy" />
+      <arg value="-N" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+  <target name="choose-distrib" unless="distrib">
+    <antcall target="list-available-distributions" />
+    <input message="Which distribution do you want to build?" validargs="nuxeo-ep,nuxeo-ep-jboss,nuxeo-ep-jetty,nuxeo-dm,nuxeo-dm-jboss,nuxeo-dm-jetty,shell,jetty,gf3,tomcat,core,all-distributions" addproperty="profile" />
+    <condition property="backend-choosable">
+      <or>
+        <equals arg1="${profile}" arg2="nuxeo-ep" />
+        <equals arg1="${profile}" arg2="nuxeo-ep-jboss" />
+        <equals arg1="${profile}" arg2="nuxeo-ep-jetty" />
+        <equals arg1="${profile}" arg2="nuxeo-dm" />
+        <equals arg1="${profile}" arg2="nuxeo-dm-jboss" />
+        <equals arg1="${profile}" arg2="nuxeo-dm-jetty" />
+        <equals arg1="${profile}" arg2="all-distributions" />
+      </or>
+    </condition>
+    <antcall target="choose-backend" />
+    <property name="distrib" value="${profile}" />
+  </target>
+  <target name="choose-backend" if="backend-choosable">
+    <input message="Which backend do you want to use? Simply press Enter to use default one." validargs="derby,mysql,postgresql,oracle,h2" addproperty="backend" defaultvalue="default" />
+    <property name="distrib" value="${profile},${backend}" />
+  </target>
+  <target name="list-available-distributions">
+    <echo message="Available distributions are:" />
+    <echo message="nuxeo-ep             - build Nuxeo EP EAR" />
+    <echo message="nuxeo-ep-jboss       - package a JBoss containing nuxeo-ep EAR" />
+    <echo message="nuxeo-ep-jetty       - package a Jetty containing nuxeo-ep" />
+    <echo message="nuxeo-dm             - build Nuxeo DM EAR" />
+    <echo message="nuxeo-dm-jboss       - package a JBoss containing nuxeo-dm EAR" />
+    <echo message="nuxeo-dm-jetty       - package a Jetty containing nuxeo-dm" />
+    <echo message="shell                - build Nuxeo Shell" />
+    <echo message="jetty                - build Jetty distribution" />
+    <echo message="gf3                  - build GlassFish distribution" />
+    <echo message="tomcat               - build Tomcat distribution" />
+    <echo message="core                 - build Nuxeo core server" />
+    <echo message="all-distributions    - build all available distributions" />
+  </target>
+  <target name="distrib" depends="choose-distrib,distrib-unix,distrib-windows" description="Build a distribution" />
+  <target name="distrib-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg value="clean" />
+      <arg value="install" />
+      <arg value="package" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-P" />
+      <arg value="${distrib}" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+  <target name="distrib-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="clean" />
+      <arg value="install" />
+      <arg value="package" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-P" />
+      <arg value="${distrib}" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+  <!-- Deprecated. TODO: JC. Removed when NXBT-57 is resolved -->
+  <target name="copy-postgresql" depends="setproperties" description="Deprecated. Deploy default postresql config">
+    <property name="postgresql.config" value="${nuxeo.ear.root}/postgresql-setup" />
+    <copy todir="${jboss.nuxeo.ear}/config" failonerror="false" overwrite="true">
+      <fileset file="${basedir}/${postgresql.config}/config/*.xml" />
+      <fileset file="${basedir}/${postgresql.config}/config/*.properties" />
+    </copy>
+    <copy todir="${jboss.nuxeo.ear}/datasources" failonerror="false" overwrite="true">
+      <fileset file="${basedir}/${postgresql.config}/datasources/*.xml" />
+    </copy>
+    <copy todir="${jboss.lib}" failonerror="false" overwrite="true">
+      <fileset file="${nuxeo.ear.root}/target/postgresql-jdbc-lib/*.jar" />
+    </copy>
+    <!-- XXX: find a way not to depend on the version number of nxsearch compass -->
+    <copy todir="${jboss.nuxeo.ear}/system/nuxeo-platform-search-compass-plugin-5.1.7-SNAPSHOT.jar" failonerror="false" overwrite="true">
+      <fileset file="${basedir}/${postgresql.config}/compass.cfg.xml" />
+    </copy>
+  </target>
+
+  <!-- Deprecated. TODO: JC. Removed when NXBT-57 is resolved -->
+  <target name="copy-oracle" depends="setproperties" description="Deprecated.">
+    <property name="oracle.config" value="${nuxeo.ear.root}/oracle-setup" />
+    <copy todir="${jboss.nuxeo.ear}/config" failonerror="false" overwrite="true">
+      <fileset file="${basedir}/${oracle.config}/config/*.xml" />
+      <fileset file="${basedir}/${oracle.config}/config/*.properties" />
+    </copy>
+    <copy todir="${jboss.nuxeo.ear}/datasources" failonerror="false" overwrite="true">
+      <fileset file="${basedir}/${oracle.config}/datasources/*.xml" />
+      <fileset file="${basedir}/${oracle.config}/datasources/*.properties" />
+    </copy>
+    <copy todir="${jboss.lib}" failonerror="false" overwrite="true">
+      <fileset file="${basedir}/${oracle.config}/lib/*.jar" />
+    </copy>
+    <!-- XXX: find a way not to depend on the version number of nxsearch compass -->
+    <copy todir="${jboss.nuxeo.ear}/system/nuxeo-platform-search-compass-plugin-5.1.7-SNAPSHOT.jar" failonerror="false" overwrite="true">
+      <fileset file="${basedir}/${oracle.config}/compass.cfg.xml" />
+    </copy>
+  </target>
+
+  <!-- Deprecated. TODO: JC. Removed when NXBT-57 is resolved -->
+  <target name="copy-derby" depends="setproperties" description="Deprecated. Deploy default derby config">
+    <property name="derby.config" value="${nuxeo.ear.root}/derby-setup" />
+    <copy todir="${jboss.nuxeo.ear}/config" failonerror="false" overwrite="true">
+      <fileset file="${basedir}/${derby.config}/config/*.xml" />
+      <fileset file="${basedir}/${derby.config}/config/*.properties" />
+    </copy>
+    <copy todir="${jboss.nuxeo.ear}/datasources" failonerror="false" overwrite="true">
+      <fileset file="${basedir}/${derby.config}/datasources/*.xml" />
+    </copy>
+    <!-- XXX: find a way not to depend on the version number of nxsearch compass -->
+    <copy todir="${jboss.nuxeo.ear}/system/nuxeo-platform-search-compass-plugin-5.1.7-SNAPSHOT.jar" failonerror="false" overwrite="true">
+      <fileset file="${basedir}/${derby.config}/compass.cfg.xml" />
+    </copy>
+    <!-- TODO: maven config to get derby lib -->
+    <!--
+    <copy todir="${jboss.deploy}/lib" failonerror="false" overwrite="true">
+      <fileset file="${nuxeo.ear.root}/target/derby-jdbc-lib/*.jar" />
+    </copy>
+    -->
+    <echo>
+    </echo>
+    <echo>Done: Don't forget to put derby library in ${jboss.lib}</echo>
+    <echo>
+    </echo>
+  </target>
+
+</project>
