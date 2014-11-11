@@ -1,0 +1,75 @@
+<span xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory">
+<c:if test="false">
+  This template is deprecated
+</c:if>
+
+<c:forEach var="field" items="#{columns}">
+
+  <nxu:column rendered="#{field.type != 'special'}">
+
+    <ui:decorate template="/search/column_header.xhtml">
+      <ui:param name="sortColumn" value="#{field.prefixedName}" />
+      <ui:param name="provider" value="#{provider}" />
+      <ui:param name="providerName" value="#{providerName}" />
+      <ui:param name="label" value="#{messages[field.label]}" />
+    </ui:decorate>
+
+    <h:outputText value="#{doc[field.schemaName][field.fieldName]}"
+      styleClass="dataInputText" rendered="#{field.jsfComponent=='h:inputText'}" />
+
+    <nxu:dataList var="item" value="#{doc[field.schemaName][field.fieldName]}"
+      rendered="#{field.jsfComponent == 't:dataList'}">
+      <h:outputText value="#{item}" styleClass="dataInputText" />
+    </nxu:dataList>
+
+    <h:outputText value="#{doc[field.schemaName][field.fieldName]}"
+      class="dataInputText" rendered="#{field.jsfComponent=='h:inputTextarea'}" />
+
+    <h:outputText value="#{doc[field.schemaName][field.fieldName]}"
+      rendered="#{field.jsfComponent=='t:inputCalendar'}">
+      <f:convertDateTime pattern="#{nxu:basicDateFormater()}"
+        timeZone="#{timeZone}" />
+    </h:outputText>
+
+    <nxdir:selectOneListbox
+      rendered="#{field.jsfComponent=='nxdir:selectOneListbox'}"
+      value="#{doc[field.schemaName][field.fieldName]}"
+      displayObsoleteEntries="true" directoryName="#{field.directory}"
+      displayValueOnly="true" />
+
+    <nxdir:directoryEntryOutput
+      rendered="#{field.jsfComponent=='nxdir:directoryEntryOutput'}"
+      value="#{doc[field.schemaName][field.fieldName]}"
+      directoryName="#{field.directory}" />
+
+    <nxdir:selectManyListbox
+      rendered="#{field.jsfComponent=='nxdir:selectManyListbox'}"
+      value="#{doc[field.schemaName][field.fieldName]}"
+      displayObsoleteEntries="true" directoryName="#{field.directory}"
+      displayValueOnly="true" />
+
+    <f:subview rendered="#{field.jsfComponent=='nxdir:chainSelect'}">
+      <nxdir:chainSelectOutput directoryNameList="#{field.directory}"
+        display="#{field.display}"
+        qualifiedParentKeys="#{field.qualifiedParentKeys}"
+        keySeparator="#{field.keySeparator}" displayObsoleteEntries="true"
+        displayKeySeparator="#{field.keySeparator}"
+        value="#{doc[field.schemaName][field.fieldName]}" />
+    </f:subview>
+
+  </nxu:column>
+
+  <ui:include src="/search/search_results_special_columns.xhtml" />
+
+</c:forEach>
+
+</span>

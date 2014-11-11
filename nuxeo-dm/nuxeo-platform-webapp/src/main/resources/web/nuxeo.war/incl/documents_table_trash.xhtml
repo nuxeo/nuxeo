@@ -1,0 +1,209 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:s="http://jboss.com/products/seam/taglib">
+
+<c:if test="false">
+unused template, here for compat
+</c:if>
+
+<a4j:region rendered="#{documents != null}">
+
+  <h:form id="#{documents.name}">
+
+    <ui:insert name="empty_folder_label">
+      <h:outputText value="#{messages['label.content.emptyFolder']}"
+        rendered="#{documents.rowCount == 0}" />
+    </ui:insert>
+
+    <ui:include src="/pagination/pageNavigationControls.xhtml" />
+
+    <nxu:dataTable id="dataTable" value="#{documents.rows}" var="row"
+      rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput trashTable"
+      rendered="#{documents.rowCount > 0}">
+      <!-- id and selection -->
+      <nxu:column styleClass="iconColumn" rendered="#{showCheckboxes or false}">
+        <f:facet name="header">
+          <h:selectBooleanCheckbox rendered="true"
+              onclick="selectDataTablePageForDocument('#{documents.name}', '#{providerName}', this.checked, '#{listName}', '#{currentDocument.ref}')"
+              title="#{messages['tooltip.content.select.all']}">
+          </h:selectBooleanCheckbox>
+        </f:facet>
+        <h:selectBooleanCheckbox id="document_checkbox_select"
+            value="#{row.selected}"
+            onclick="selectDataTableRowForDocument('#{row.data.ref}', '#{providerName}', this, '#{listName}', '#{currentDocument.ref}')">
+        </h:selectBooleanCheckbox>
+      </nxu:column>
+      <!-- Icon + Type -->
+      <nxu:column styleClass="iconColumn">
+        <div id="docRefTarget:#{row.data.ref}">
+          <div id="docRef:#{row.data.ref}" class="cell popupTarget" docRef="#{row.data.ref}">
+            <nxu:graphicImage
+              value="#{nxd:iconPath(row.data)}" alt="#{row.data.type}"
+              rendered="#{!empty nxd:iconPath(row.data)}" />
+          </div>
+        </div>
+        <script type="text/javascript">
+          <h:outputText
+            value="new Draggable('docRef:#{row.data.ref}', {revert:true});"/>
+          <h:outputText rendered="#{row.data.folder}"
+            value="Droppables.add('docRefTarget:#{row.data.ref}', {accept:'cell', onDrop:function(element){moveElement(element,'docRef:#{row.data.ref}')}, hoverclass:'dropInto'});"/>
+        </script>
+      </nxu:column>
+
+      <!--  Title -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:panelGroup>
+          <h:commandLink immediate="true" action="#{sortActions.repeatSearch}"
+              rendered="#{provider.sortable}" id="header_title_sort">
+            <h:outputText value="#{messages['label.content.header.title']}" />
+            <f:param name="providerName" value="#{providerName}" />
+            <f:param name="sortColumn" value="dc:title" />
+            <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'dc:title' }" >
+              <h:graphicImage value="/icons/arrow_down.gif"
+                rendered="#{provider.sortInfo.sortAscending}" />
+              <h:graphicImage value="/icons/arrow_up.gif"
+                rendered="#{!provider.sortInfo.sortAscending}" />
+            </h:panelGroup>
+          </h:commandLink>
+          <h:outputText value="#{messages['label.content.header.title']}"
+            rendered="#{!provider.sortable}" />
+          </h:panelGroup>
+        </f:facet>
+        <div class="popupTarget" docRef="#{row.data.ref}">
+          <!-- Title -->
+          <nxd:restDocumentLink document="#{row.data}" tab="TAB_TRASH_CONTENT">
+            <span id="title_#{row.data.ref}">
+              <nxh:outputText value="#{nxd:titleOrId(row.data)}"
+                title="#{row.data.dc.description}"
+                rendered="#{!empty row.data.dc.description}"/>
+              <nxh:outputText value="#{nxd:titleOrId(row.data)}"
+                rendered="#{empty row.data.dc.description}"/>
+            </span>
+          </nxd:restDocumentLink>
+          <!-- Open in a new window -->
+          <nxd:restDocumentLink document="#{row.data}" newConversation="true" target="_blank">
+            <nxu:graphicImage value="/icons/external.gif"
+              style="vertical-align:middle"
+              alt="#{messages['permalink.newTab']}"
+              title="#{messages['permalink.newTab']}" />
+          </nxd:restDocumentLink>
+          <!-- Download Link -->
+          <nxh:outputLink rendered="#{row.data.hasSchema('file') and !empty row.data.file.content}"
+            value="#{nxd:fileUrl('downloadFile', row.data, 'file:content', row.data.file.filename)}">
+            <nxh:graphicImage value="/icons/download.png" style="vertical-align:middle"
+              title="#{row.data.file.filename}" />
+          </nxh:outputLink>
+        </div>
+      </nxu:column>
+
+      <!-- Locking Icon -->
+      <nxu:column styleClass="iconColumn">
+        <h:graphicImage value="/icons/lock.gif"
+           rendered="#{not empty row.data.lock}"/>
+      </nxu:column>
+
+      <!--  Modification date -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:panelGroup>
+          <h:commandLink immediate="true" action="#{sortActions.repeatSearch}"
+              rendered="#{provider.sortable}" id="header_modified_sort">
+            <h:outputText value="#{messages['label.content.header.modified']}" />
+            <f:param name="providerName" value="#{providerName}" />
+            <f:param name="sortColumn" value="dc:modified" />
+            <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'dc:modified' }" >
+              <h:graphicImage value="/icons/arrow_down.gif"
+                rendered="#{provider.sortInfo.sortAscending}" />
+              <h:graphicImage value="/icons/arrow_up.gif"
+                rendered="#{!provider.sortInfo.sortAscending}" />
+            </h:panelGroup>
+          </h:commandLink>
+          <h:outputText value="#{messages['label.content.header.modified']}"
+            rendered="#{!provider.sortable}" />
+          </h:panelGroup>
+        </f:facet>
+        <h:outputText value="#{row.data.dublincore.modified}">
+          <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+            timeZone="#{timeZone}" />
+        </h:outputText>
+      </nxu:column>
+
+      <!--  Author -->
+      <h:column>
+        <f:facet name="header">
+          <h:panelGroup>
+          <h:commandLink immediate="true" action="#{sortActions.repeatSearch}"
+              rendered="#{provider.sortable}" id="header_creator_sort">
+            <h:outputText value="#{messages['label.content.header.author']}" />
+            <f:param name="providerName" value="#{providerName}" />
+            <f:param name="sortColumn" value="dc:creator" />
+            <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'dc:creator' }" >
+              <h:graphicImage value="/icons/arrow_down.gif"
+                rendered="#{provider.sortInfo.sortAscending}" />
+              <h:graphicImage value="/icons/arrow_up.gif"
+                rendered="#{!provider.sortInfo.sortAscending}" />
+            </h:panelGroup>
+          </h:commandLink>
+          <h:outputText value="#{messages['label.content.header.author']}"
+            rendered="#{!provider.sortable}" />
+          </h:panelGroup>
+        </f:facet>
+        <h:outputText value="#{nxu:userFullName(row.data.dublincore.creator)}" />
+      </h:column>
+
+      <!--  Life cycle -->
+      <h:column>
+        <f:facet name="header">
+          <h:panelGroup>
+          <h:commandLink immediate="true" action="#{sortActions.repeatSearch}"
+              rendered="#{provider.sortable}" id="header_currentLifeCycleState_sort">
+            <h:outputText value="#{messages['label.content.header.currentLifecycleState']}" />
+            <f:param name="providerName" value="#{providerName}" />
+            <f:param name="sortColumn" value="ecm:currentLifeCycleState" />
+            <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'ecm:currentLifeCycleState' }" >
+              <h:graphicImage value="/icons/arrow_down.gif"
+                rendered="#{provider.sortInfo.sortAscending}" />
+              <h:graphicImage value="/icons/arrow_up.gif"
+                rendered="#{!provider.sortInfo.sortAscending}" />
+            </h:panelGroup>
+          </h:commandLink>
+          <h:outputText value="#{messages['label.content.header.currentLifecycleState']}"
+            rendered="#{!provider.sortable}" />
+          </h:panelGroup>
+        </f:facet>
+        <h:outputText value="#{messages[row.data.currentLifeCycleState]}" />
+      </h:column>
+    </nxu:dataTable>
+
+    <ui:include src="/pagination/pageNavigationControls.xhtml" />
+
+    <ui:insert name="buttons" />
+
+    <div class="syndicationContainer">
+      <ui:insert name="syndication_buttons">
+        <f:subview rendered="#{currentDocument.folder}">
+          <ui:include src="/incl/syndication_buttons.xhtml">
+            <ui:param name="type" value="document" />
+          </ui:include>
+        </f:subview>
+      </ui:insert>
+    </div>
+
+  </h:form>
+
+</a4j:region>
+
+<ui:include src="/incl/popupMenu.xhtml"/>
+<script>
+setupContextMenu("table td div div.popupTarget");
+</script>
+
+</div>
