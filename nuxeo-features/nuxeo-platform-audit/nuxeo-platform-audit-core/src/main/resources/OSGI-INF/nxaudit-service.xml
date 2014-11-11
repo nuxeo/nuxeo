@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService">
+  <documentation>
+    Service that deals with audit.
+    <p />
+    Most of the work is done at EJB layer though.
+
+    This supports JMS events based notifications on a dedicated topic.
+
+    @version 1.0
+    @author Julien Anguenot
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.audit.api.NXAuditEvents" />
+    <provide interface="org.nuxeo.ecm.platform.audit.api.AuditReader" />
+    <provide interface="org.nuxeo.ecm.platform.audit.api.AuditLogger" />
+    <provide interface="org.nuxeo.ecm.platform.audit.api.Logs" />
+  </service>
+
+  <extension-point name="event">
+    <documentation>
+      This service registers auditable events.
+      <p />
+      Registered events are dummy strings for now.
+      <p />
+      This service is used to filter auditable events from the JMS topic based
+      on their names. The following XML snipset give figures out how the default
+      event types are selected for auditing.
+
+      <programlisting>
+        <extension
+          target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+          point="event">
+          <event name="documentCreated" />
+          <event name="documentCreatedByCopy" />
+          <event name="documentDuplicated" />
+          <event name="documentMoved" />
+          <event name="documentRemoved" />
+          <event name="documentModified" />
+          <event name="documentLocked" />
+          <event name="documentUnlocked" />
+          <event name="documentSecurityUpdated" />
+          <event name="lifecycle_transition_event" />
+        </extension>
+      </programlisting>
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor" />
+
+  </extension-point>
+
+  <extension-point name="extendedInfo">
+
+    <documentation>
+      This service registered extended info mappings.
+
+      <p />
+      This service is used to evaluate EL expression using document as context
+      regist:ering results into a map indexed by names.
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor" />
+  </extension-point>
+
+  <extension-point name="adapter">
+
+    <documentation>
+      register the adapter that will be injected in EL context
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor" />
+  </extension-point>
+
+
+  <require>org.nuxeo.ecm.core.persistence.PersistenceComponent</require>
+
+  <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
+    point="hibernate">
+    <hibernateConfiguration name="nxaudit-logs">
+      <datasource>nxaudit-logs</datasource>
+      <properties>
+        <property name="hibernate.hbm2ddl.auto">update</property>
+      </properties>
+    </hibernateConfiguration>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+    point="event">
+    <documentation>
+      Those default auditable events match Nuxeo core base events.
+      <p />
+      If you are sending new Nuxeo core events and want them audited, this is
+      the place to declare them NXAudit side.
+    </documentation>
+
+    <event name="documentCreated" />
+    <event name="documentCreatedByCopy" />
+    <event name="documentDuplicated" />
+    <event name="documentMoved" />
+    <event name="documentRemoved" />
+    <event name="documentModified" />
+    <event name="documentLocked" />
+    <event name="documentUnlocked" />
+    <event name="documentSecurityUpdated" />
+    <event name="lifecycle_transition_event" />
+    <event name="loginSuccess" />
+    <event name="loginFailed" />
+    <event name="logout" />
+    <event name="documentCheckedIn" />
+    <event name="versionRemoved" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <listener name="auditLoggerListener" async="true" postCommit="true"
+      class="org.nuxeo.ecm.platform.audit.listener.AuditEventLogger" />
+
+  </extension>
+
+</component>

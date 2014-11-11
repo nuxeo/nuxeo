@@ -1,0 +1,19 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h2><h:outputText
+  value="#{messages['adminsubtab.oauth.providersTokens']}" /></h2>
+
+<ui:include src="directoryBasedEditor.xhtml">
+  <ui:param name="bean" value="#{oauthProvidersTokensActions}" />
+  <ui:param name="entryLayoutName" value="oauthProviderTokenLayoutAdmin" />
+  <ui:param name="detailMode" value="view"/>
+</ui:include>
+
+</div>
