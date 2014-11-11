@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry excluding="**/*.java" kind="src" path="src/main/resources"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="/nuxeo-common"/>
+	<classpathentry kind="src" path="/nuxeo-runtime"/>
+	<classpathentry kind="src" path="/nuxeo-core-api"/>
+	<classpathentry kind="src" path="/nuxeo-core"/>
+	<classpathentry kind="src" path="/nuxeo-core-schema"/>
+	<classpathentry kind="src" path="/nuxeo-core-query"/>
+	<classpathentry kind="var" path="M2_REPO/commons-logging/commons-logging/1.0.3/commons-logging-1.0.3.jar"/>
+	<classpathentry kind="var" path="M2_REPO/javax/ressource/jca-api/1.5/jca-api-1.5.jar"/>
+	<classpathentry kind="var" path="M2_REPO/javax/transaction/jta/1.0.1B/jta-1.0.1B.jar"/>
+	<classpathentry kind="output" path="bin/main"/>
+</classpath>

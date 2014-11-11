@@ -1,0 +1,28 @@
+Export-Package: org.nuxeo.ecm.core.query.test,
+ schemas
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: org.nuxeo.ecm.core.query.test
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Import-Package: org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.api.impl,
+ org.nuxeo.ecm.core.api.impl.blob,
+ org.nuxeo.ecm.core.api.security,
+ org.nuxeo.ecm.core.api.security.impl,
+ org.nuxeo.ecm.core.event,
+ org.nuxeo.ecm.core.model,
+ org.nuxeo.ecm.core.query.sql.model,
+ org.nuxeo.ecm.core.query.test,
+ org.nuxeo.ecm.core.schema,
+ org.nuxeo.ecm.core.schema.types,
+ org.nuxeo.ecm.core.security,
+ org.nuxeo.osgi,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.osgi,
+ org.nuxeo.runtime.test
+Bundle-SymbolicName: org.nuxeo.ecm.core.query.test;singleton:=true
+Nuxeo-Require: org.nuxeo.ecm.core.api,
+ 
