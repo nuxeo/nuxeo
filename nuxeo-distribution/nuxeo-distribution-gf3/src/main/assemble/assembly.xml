@@ -1,0 +1,56 @@
+<assembly>
+
+  <zipEntrySet id="base-template">
+    <artifact>org.nuxeo.ecm.distribution:nuxeo-distribution-server:${project.version}:zip</artifact>
+  </zipEntrySet>
+
+  <zipEntrySet id="jdbc-template">
+    <file>${basedir}/target/dependency/jdbc-ra-${gf3.version}.zip</file>
+      <excludes>
+        <exclude>/META-INF/**</exclude>
+      </excludes>
+  </zipEntrySet>
+
+  <fileSet id="template">
+    <directory>src/main/resources</directory>
+  </fileSet>
+
+  <artifactSet id="bundles">
+    <artifacts>
+      <artifact group="org.nuxeo.runtime" name="nuxeo-runtime-gf3-adapter" version="${nuxeo.runtime.version}"/>
+    </artifacts>
+  </artifactSet>
+
+
+  <artifactSet id="third-party-libs">
+    <artifacts>
+      <!--artifact group="org.mortbay.jetty" name="jetty" version="6.1H.7"/-->
+    </artifacts>
+  </artifactSet>
+
+
+  <assemble>
+    <set>base-template</set>
+    <set>template</set>
+    <set>jdbc-template</set>
+    <outputFile>/</outputFile>
+  </assemble>
+
+  <!-- remove the META-INF dir from the root dir: this is copied from jdbc-template -->
+  <assemble>
+    <file>/META-INF</file>
+    <delete>true</delete>
+  </assemble>
+
+  <assemble>
+    <set>third-party-libs</set>
+    <outputFile>lib</outputFile>
+  </assemble>
+
+  <assemble>
+    <set>bundles</set>
+    <outputFile>bundles</outputFile>
+  </assemble>
+
+</assembly>
+

@@ -1,0 +1,112 @@
+<!-- prototype -->
+<packaging>
+  <serverSet id="nuxeo-mono">
+    <includes>
+      <artifacts group="org.nuxeo.*" category="runtime,jboss4"
+        includeDependsOn="false" />
+      <artifacts group="org.nuxeo.*" category="core,search,web" />
+    </includes>
+    <excludes>
+      <artifacts group="org.nuxeo.common" />
+      <artifacts name="nuxeo-runtime-jboss-extensions" />
+    </excludes>
+    <assembly type="directory" name="nuxeo.ear">
+      <artifactsSet pattern="nuxeo-platform-audit-facade" unpack="true"
+        output="system" />
+      <artifactsSet pattern="nuxeo-platform-placeful-facade" unpack="true"
+        output="system" />
+      <!-- resources downloaded from an artifact -->
+      <resourcesSet pattern="nuxeo-platform-ear" classifier="resources-common"
+        output="/" />
+      <resourcesSet pattern="nuxeo-platform-ear" classifier="resources-core"
+        output="/" />
+      <resourcesSet pattern="nuxeo-platform-ear" classifier="resources-search"
+        output="/" />
+      <resourcesSet pattern="nuxeo-platform-ear" classifier="resources-web"
+        output="/" />
+      <resourcesSet pattern="nuxeo-platform-ear" classifier="resources"
+        output="/" />
+      <!-- local resources overriding default ones from artifacts downloaded -->
+      <resourcesSet output="/" source="src/main/resources" />
+      <artifactsSet pattern="nuxeo-*" unpack="false" output="system" />
+      <!-- common libraries -->
+      <artifactsSet pattern="*" unpack="false" output="lib" />
+    </assembly>
+    <preprocessing>true</preprocessing>
+  </serverSet>
+
+  <!-- Nuxeo 3 parts -->
+  <serverSet id="nuxeo-core">
+    <includes>
+      <artifacts group="org.nuxeo.*" category="runtime,jboss4"
+        includeDependsOn="false" />
+      <artifacts group="org.nuxeo.*" category="core" />
+    </includes>
+    <excludes>
+      <artifacts group="org.nuxeo.common" />
+      <artifacts name="nuxeo-runtime-jboss-extensions" />
+    </excludes>
+    <assembly type="directory" name="nuxeo-core.ear">
+      <!-- resources downloaded from an artifact -->
+      <resourcesSet pattern="nuxeo-platform-ear" classifier="resources-common"
+        output="/" />
+      <resourcesSet pattern="nuxeo-platform-ear" classifier="resources-core"
+        output="/" />
+      <!-- local resources overriding default ones from artifacts downloaded -->
+      <resourcesSet output="/" source="src/main/resources-core" />
+      <artifactsSet pattern="nuxeo-*" unpack="false" output="system" />
+      <!-- common libraries -->
+      <artifactsSet pattern="*" unpack="false" output="lib" />
+    </assembly>
+  </serverSet>
+  <serverSet id="nuxeo-search">
+    <includes>
+      <artifacts group="org.nuxeo.*" category="runtime,jboss4"
+        includeDependsOn="false" />
+      <artifacts group="org.nuxeo.*" category="search" />
+    </includes>
+    <excludes>
+      <artifacts group="org.nuxeo.common" />
+      <artifacts name="nuxeo-runtime-jboss-extensions" />
+    </excludes>
+    <assembly type="directory" name="nuxeo-indexing.ear">
+      <!-- resources downloaded from an artifact -->
+      <resourcesSet pattern="nuxeo-platform-ear" classifier="resources-common"
+        output="/" />
+      <resourcesSet pattern="nuxeo-platform-ear" classifier="resources-search"
+        output="/" />
+      <!-- local resources overriding default ones from artifacts downloaded -->
+      <resourcesSet output="/" source="src/main/resources-search" />
+      <artifactsSet pattern="nuxeo-*" unpack="false" output="system" />
+      <!-- common libraries -->
+      <artifactsSet pattern="*" unpack="false" output="lib" />
+    </assembly>
+  </serverSet>
+  <serverSet id="nuxeo-web">
+    <includes>
+      <artifacts group="org.nuxeo.*" category="runtime,jboss4"
+        includeDependsOn="false" />
+      <artifacts group="org.nuxeo.*" category="web" />
+    </includes>
+    <excludes>
+      <artifacts group="org.nuxeo.common" />
+      <artifacts name="nuxeo-runtime-jboss-extensions" />
+    </excludes>
+    <assembly type="directory" name="nuxeo-webplatform.ear">
+      <artifactsSet pattern="nuxeo-platform-audit-facade" unpack="true"
+        output="system" />
+      <artifactsSet pattern="nuxeo-platform-placeful-facade" unpack="true"
+        output="system" />
+      <!-- resources downloaded from an artifact -->
+      <resourcesSet pattern="nuxeo-platform-ear" classifier="resources-common"
+        output="/" />
+      <resourcesSet pattern="nuxeo-platform-ear"
+        classifier="resources-webplatform" output="/" />
+      <!-- local resources overriding default ones from artifacts downloaded -->
+      <resourcesSet output="/" source="src/main/resources-webplatform" />
+      <artifactsSet pattern="nuxeo-*" unpack="false" output="system" />
+      <!-- common libraries -->
+      <artifactsSet pattern="*" unpack="false" output="lib" />
+    </assembly>
+  </serverSet>
+</packaging>
