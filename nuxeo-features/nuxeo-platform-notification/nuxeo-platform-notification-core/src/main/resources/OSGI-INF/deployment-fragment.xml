@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<fragment>
+
+  <!-- For MDB we need topics deployed -->
+  <extension target="application#MODULE">
+    <module>
+      <ejb>${bundle.fileName}</ejb>
+    </module>
+  </extension>
+
+  <!-- NXP-4897 - avoid unzip nuxeo-platform-placeful-facade
+  <extension target="persistence#CLASS">
+    <class>org.nuxeo.ecm.platform.ec.notification.UserSubscription</class>
+  </extension>
+  -->
+
+</fragment>

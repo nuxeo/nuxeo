@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<fragment>
+
+  <extension target="application#MODULE">
+    <module>
+      <ejb>${bundle.fileName}</ejb>
+    </module>
+  </extension>
+
+  <extension target="web#STD-AUTH-FILTER">
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/_vti_bin/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/nuxeo/_vti_bin/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+  </extension>
+
+  <extension target="web#FILTER">
+
+    <filter>
+      <display-name>WSS Filter</display-name>
+      <filter-name>WSSFilter</filter-name>
+      <filter-class>org.nuxeo.wss.servlet.WSSFilter</filter-class>
+      <!--<init-param>
+        <param-name>org.nuxeo.wss.rootFilter</param-name>
+        <param-value>false</param-value>
+      </init-param>-->
+      <!--<init-param>
+        <param-name>org.nuxeo.wss.backendFactory</param-name>
+        <param-value>org.nuxeo.ecm.platform.wss.backend.SimpleVirtualHostedBackendFactory</param-value>
+      </init-param>-->
+      <init-param>
+        <param-name>org.nuxeo.wss.backendFactory</param-name>
+        <param-value>org.nuxeo.ecm.platform.wss.service.PluggableBackendFactory</param-value>
+        <!--<param-value>org.nuxeo.ecm.platform.wss.backend.SearchBasedVirtualHostedBackendfactory</param-value>-->
+      </init-param>
+    </filter>
+    <filter-mapping>
+      <filter-name>WSSFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+  </extension>
+
+</fragment>
+
