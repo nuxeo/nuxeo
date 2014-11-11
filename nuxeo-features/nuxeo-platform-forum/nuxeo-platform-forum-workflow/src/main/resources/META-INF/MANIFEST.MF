@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Forum Workflow implementation
+Bundle-SymbolicName: org.nuxeo.ecm.platform.forum.workflow;singleton=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: core,stateful
+Require-Bundle: org.nuxeo.ecm.platform.forum.api,
+  org.nuxeo.ecm.core.api

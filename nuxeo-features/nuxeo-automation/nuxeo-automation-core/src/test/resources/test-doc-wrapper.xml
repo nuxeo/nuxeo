@@ -1,0 +1,12 @@
+<component name="test-doc-wrapper">
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="chains">
+    <chain id="followtransitiondelete">
+      <operation id="Context.FetchDocument" />
+      <operation id="Context.RunScript">
+        <param type="string" name="script">Session.followTransition(Document.getRef(),
+          "delete");</param>
+      </operation>
+    </chain>
+  </extension>
+</component>

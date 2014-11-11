@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Platform Relations IO Fragment
+Bundle-SymbolicName: org.nuxeo.ecm.relations.io;singleton:=true
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.io,
+ org.nuxeo.ecm.platform.io.api,
+ org.nuxeo.ecm.relations.api
+Nuxeo-Component: OSGI-INF/io-relations-contrib.xml
