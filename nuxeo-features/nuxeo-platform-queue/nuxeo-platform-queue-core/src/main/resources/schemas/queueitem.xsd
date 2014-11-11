@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/queueitem/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:qis="http://www.nuxeo.org/ecm/schemas/queueitem/">
+  <xs:element name="owner" type="xs:string" />
+  <xs:element name="serverId" type="xs:string" />
+  <xs:element name="executeTime" type="xs:date" />
+  <xs:element name="executionCount" type="xs:integer" />
+
+  <xs:element name="additionalInfo" type="xs:string" />
+
+  <!--
+    xs:simpleType name="additionalInfoList"> <xs:list itemType="xs:string" />
+    </xs:simpleType> <xs:element name="additionalInfo"
+    type="qis:additionalInfoList" /
+  -->
+
+</xs:schema>

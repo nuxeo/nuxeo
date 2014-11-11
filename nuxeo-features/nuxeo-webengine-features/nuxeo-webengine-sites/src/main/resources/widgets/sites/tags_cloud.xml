@@ -1,0 +1,31 @@
+<#assign tagsNumber=nxthemesInfo.model.items.size() - 1/>
+<script type="text/javascript" src="${skinPath}/script/tagCloud.js"></script>
+<script src="${skinPath}/script/markitup/jquery.markitup.pack.js"></script>
+<script src="${skinPath}/script/markitup/sets/wiki/set.js"></script>
+
+<div class="tagCloud">
+<#if (!nxthemesInfo.model.items.empty)>
+  <h4>${Context.getMessage("title.tags.cloud.pages")}</h4>
+</#if>
+
+<div id="tagsCloud">
+</div>
+</div>
+
+<script type="text/javascript">
+    function createCloud() {
+        var tagCloud = new TagCloud();
+        <#assign index=0 />
+          tagCloud.setValues([
+          <#list nxthemesInfo.model.items as item>
+              {val:${item.weight},tag:'${item.label?xml}',href:'${This.path}/@tag/${item.label}'}
+              <#if index < tagsNumber>,</#if>
+              <#assign index=index+1 />
+        </#list>]);
+          tagCloud.create('tagsCloud');
+    }
+
+$('#tagsCloud').ready(function() {
+  createCloud();
+});
+</script>

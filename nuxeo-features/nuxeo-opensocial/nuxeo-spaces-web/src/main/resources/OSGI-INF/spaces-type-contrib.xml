@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.spaces.document.types" version="1.0">
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService"
+    point="types">
+
+    <type id="Space">
+      <label>Space</label>
+      <description>A collaborative dashboard</description>
+      <icon>/icons/Space.png</icon>
+      <bigIcon>/icons/Space.png</bigIcon>
+      <default-view>view_documents</default-view>
+      <category>Collaborative</category>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <!--
+        <layout>space</layout>
+        -->
+      </layouts>
+    </type>
+
+    <!--
+      <type id="Workspace">
+      <subtypes>
+      <type>Space</type>
+      </subtypes>
+      </type>
+    -->
+
+  </extension>
+</component>

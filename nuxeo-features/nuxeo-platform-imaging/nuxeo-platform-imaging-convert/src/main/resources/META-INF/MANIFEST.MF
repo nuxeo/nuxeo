@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Imaging Convert Plugin
+Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.convert;singleton:=true
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: false
+Export-Package: org.nuxeo.ecm.platform.picture.transform
+Nuxeo-Component: OSGI-INF/convert-service-contrib.xml
+Require-Bundle: org.nuxeo.ecm.core.convert,
+ org.nuxeo.ecm.platform.picture.api
+Provide-Package: org.nuxeo.ecm.platform.picture.convert
