@@ -1,0 +1,192 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <a4j:outputPanel id="connectAppListing">
+
+    <div class="actionBar marketplace">
+      <span class="marketplaceLogo">
+        <a target="_blank" href="http://doc.nuxeo.com/x/EIAV">
+          <img src="#{contextPath}/img/nuxeo_studio_logo.png"
+            alt="Nuxeo Studio" />
+        </a>
+      </span>
+      <span class="label">
+        <a target="_blank" href="http://doc.nuxeo.com/x/EIAV"
+          class="connectLink">
+          <h:outputText value="#{messages['label.tab.studio.intro']}"/>
+        </a>
+      </span>
+    </div>
+
+    <div class="actionBar">
+
+      <div class="studioUpdateActions">
+        <h:outputText value="#{messages['label.studio.devmod.title']}"
+          styleClass="boldLabel" />
+      </div>
+
+      <div class="studioUpdateActions">
+        <h:outputText value="#{messages['label.studio.devmod.desc']}" escape="false" />
+      </div>
+
+      <div class="studioUpdateActions">
+        <table width="100%">
+          <tr>
+            <td width="70%">
+              <h:outputText value="#{messages['label.studio.update.lastStatus']}"/>
+              <span style="color:green">
+                <h:outputText value="#{appsViews.getStudioInstallationStatus()}" styleClass="boldLabel"/>
+              </span>
+              <c:if test="#{connectServerReachable and registredConnectInstance}">
+                <a4j:form id="updateStudioSnapshotForm">
+                  <h:commandButton
+                    id="updateStudioButton"
+                    value="#{messages['admCommand.studio.update']}"
+                    action="#{appsViews.installStudioSnapshotAndRedirect()}"
+                    onclick="showUpdateInProgress();"
+                    styleClass="button">
+                  </h:commandButton>
+                  <div style="display:none">
+                    <div id="studioBigUpdateWaiter">
+                      <img src="#{contextPath}/img/100px_loading.gif" />
+                    </div>
+                  </div>
+                  <h:outputText value="#{messages['label.studio.update']}"/>
+                </a4j:form>
+              </c:if>
+              <c:if test="#{not connectServerReachable or not registredConnectInstance}">
+                <h:outputText value="#{messages['label.studio.cannotUpdate']}"/>
+              </c:if>
+            </td>
+            <td style="text-align:center;vertical-align:middle">
+              <c:if test="#{connectServerReachable and registredConnectInstance}">
+                <a target="studio" href="#{nuxeoConnectUrl}studio/ide">
+                  <img src="#{contextPath}/icons/studio32.png"/>
+                  <h:outputText value="#{messages['action.studio.go']}" styleClass="boldLabel"/>
+                </a>
+              </c:if>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="studioUpdateActions">
+        <c:if test="#{not setupConfigurable}">
+          <c:if test="#{nxDevModeSet}">
+            <h:outputText value="#{messages['label.setup.nuxeo.org.nuxeo.dev.modeOn']}"/>
+          </c:if>
+          <c:if test="#{not nxDevModeSet}">
+            <h:outputText value="#{messages['label.setup.nuxeo.org.nuxeo.dev.modeOff']}"/>
+          </c:if>
+          <h:outputText
+            value=" #{messages['label.setup.nuxeo.org.nuxeo.dev.changingDevModeNotConfigurable']}"/>
+        </c:if>
+
+        <c:if test="#{setupConfigurable}">
+          <a4j:form id="changeDevModeForm" ajaxSumit="true"
+            eventsQueue="adminCenterQueue">
+            <c:if test="#{nxDevModeSet}">
+              <h:outputText value="#{messages['label.setup.nuxeo.org.nuxeo.dev.modeOn']}"/>
+              <a4j:commandButton
+                if="turnDevModeOffButton"
+                value="#{messages['label.setup.nuxeo.org.nuxeo.dev.disableDevMode']}"
+                action="#{appsViews.setDevMode(false)}"
+                styleClass="button"
+                reRender="connectAppListing" />
+            </c:if>
+            <c:if test="#{not nxDevModeSet}">
+              <h:outputText value="#{messages['label.setup.nuxeo.org.nuxeo.dev.modeOff']}"/>
+              <a4j:commandButton
+                if="turnDevModeOnButton"
+                value="#{messages['label.setup.nuxeo.org.nuxeo.dev.activateDevMode']}"
+                action="#{appsViews.setDevMode(true)}"
+                styleClass="button"
+                reRender="connectAppListing" />
+            </c:if>
+            <h:outputText value="#{messages['label.setup.nuxeo.org.nuxeo.dev.restartWarning']}"/>
+            <h:message
+              for="changeDevModeForm"
+              id="changeDevModeForm_message"
+              styleClass="infoMessage" errorClass="errorMessage" />
+          </a4j:form>
+        </c:if>
+      </div>
+
+    </div>
+    <br />
+
+    <div class="actionBar">
+
+      <div class="studioUpdateActions">
+        <h:outputText value="#{messages['label.studio.prodmod.title']}"
+          styleClass="boldLabel" />
+      </div>
+      <div class="studioUpdateActions">
+        <h:outputText value="#{messages['label.studio.prodmod.desc']}"
+          escape="false" />
+      </div>
+      <h:form id="studioTagsUpdate">
+        <a4j:commandButton
+          value="#{messages['admCommand.studio.refresh']}"
+          actionListener="#{appsViews.flushCache()}"
+          reRender="connectAppListing"
+          eventsQueue="adminCenterQueue"
+          styleClass="button" />
+        <h:outputText value="#{messages['label.studio.refresh']}" />
+      </h:form>
+    </div>
+
+<script>
+  <!--
+  function displayConnectIframe() {
+      var margin = 80;
+      var min = 200;
+      jQuery('#connectLoaderWaiter').css('display','none');
+      var h = jQuery(document).height() - jQuery("#beforeIframe").position().top -margin;
+      if (h<min) {
+        h=min;
+      }
+      jQuery("#connectIframe").height(h);
+      jQuery("#connectIframe").css("display","block");
+  }
+  function showUpdateInProgress() {
+    // disabling the button so soon prevents the action to be triggered => replace by a fancy box modal panel
+    //jQuery('#updateStudioSnapshotForm\\:updateStudioButton').attr("disabled", true);
+    //jQuery('#updateStudioSnapshotForm\\:updateStudioButton').css("color", "#CCCCCC");
+    //jQuery('#studioUpdateWaiter').css('display', 'inline');
+    jQuery('<a href="#studioBigUpdateWaiter"></a>').fancybox({'modal': true, 'type': 'inline',}).click();
+  }
+  -->
+</script>
+
+    <c:if test="#{connectServerReachable and registredConnectInstance}">
+      <span id="beforeIframe"></span>
+      <iframe id="connectIframe"
+        src="#{contextPath}/site/connectClient/packages/studio"
+        frameborder="0" scrolling="auto" width="100%"
+        style="display:none" onload="javascript:displayConnectIframe();">
+      </iframe>
+      <div id="connectLoaderWaiter" style="width:100%;height:100px;text-align:center">
+        <img src="#{contextPath}/img/big_loading.gif"/>
+      </div>
+    </c:if>
+
+    <c:if test="#{not connectServerReachable}">
+      <div class="infoMessage">
+        <h:outputText value="#{messages['adminsubtab.servernotreachable']}" />
+      </div>
+    </c:if>
+
+    <c:if test="#{not registredConnectInstance}">
+      <div class="infoMessage">
+       <h:outputText value="#{messages['adminsubtab.registrationRequired']}" />
+      </div>
+    </c:if>
+
+  </a4j:outputPanel>
+
+</div>
