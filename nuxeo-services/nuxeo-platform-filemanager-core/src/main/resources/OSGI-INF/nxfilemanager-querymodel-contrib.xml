@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component
+    name="org.nuxeo.ecm.platform.filemanager.service.FileManagerService.QueryModels">
+
+  <extension
+      target="org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService"
+      point="model">
+
+    <queryModel name="DEFAULT_CREATION_CONTAINER_LIST_PROVIDER">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:primaryType IN ('Workspace', 'Folder') AND ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sortable value="true" defaultSortColumn="ecm:path" defaultSortAscending="true"/>
+    </queryModel>
+  </extension>
+
+</component>

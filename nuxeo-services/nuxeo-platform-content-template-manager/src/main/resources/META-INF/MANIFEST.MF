@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Content Template Manager
+Bundle-SymbolicName: org.nuxeo.ecm.platform.content.template;singleton=true
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/content-template-framework.xml,
+ OSGI-INF/content-template-contrib.xml,
+ OSGI-INF/content-template-listener.xml
+Require-Bundle: org.nuxeo.ecm.core,
+ org.nuxeo.runtime,
+ org.nuxeo.ecm.core.api
