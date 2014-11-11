@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.publisher.relations.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="graphs">
+    <graph name="publication" type="core">
+      <option name="doctype">PublicationRelation</option>
+      <namespaces>
+        <namespace name="rdf">
+          http://www.w3.org/1999/02/22-rdf-syntax-ns#
+        </namespace>
+        <namespace name="dcterms">http://purl.org/dc/terms/1.1/</namespace>
+        <namespace name="nuxeo">http://www.nuxeo.org/document/uid/</namespace>
+        <namespace name="pTree">http://www.nuxeo.org/publication/tree/</namespace>
+      </namespaces>
+    </graph>
+  </extension>
+
+</component>
