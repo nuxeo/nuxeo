@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.htmlsanitizer.config"
+  version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerService"
+    point="antisamy">
+    <antisamy policy="antisamy-nuxeo-policy.xml" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerService"
+    point="sanitizer">
+    <sanitizer name="default">
+      <!-- <field>dc:description</field> -->
+      <field filter="mime_type" filterValue="text/plain" sanitize="false">note</field>
+      <field>webc:welcomeText</field>
+      <field filter="webp:isRichtext" filterValue="true">webp:content</field>
+      <field>comment:text</field>
+      <!-- <field>post:text</field> -->
+    </sanitizer>
+  </extension>
+
+</component>
