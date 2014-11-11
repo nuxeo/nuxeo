@@ -1,0 +1,53 @@
+/*
+Styles for all the foldable boxes.
+=Default boxes -> foldable box with a colored header
+=Light boxes -> foldable box with a simple border, whithout any color
+author: lkemen@nuxeo.com
+*/
+
+/* =Default boxes */
+.foldableBox { border-radius: 5px; border-width: 1px; border-style: solid; border-color:"neutral.lighter (__FLAVOR__ border)"; font-size: .9em; margin-bottom: 1.8em }
+
+.foldableBox h3 {
+  background-color: #fff;
+  font-size: 1.1em;
+  height: 20px;
+  padding: .3em .3em .3em 1.7em }
+.foldableBox h3.folded {
+  background:url("${basePath}/icons/arrow_folded.gif") top left no-repeat; background-color: "neutral.medium (__FLAVOR__ background)" }
+.foldableBox h3.unfolded {
+  background:url("${basePath}/icons/arrow_unfolded.gif") top left no-repeat; background-color: "neutral.medium (__FLAVOR__ background)";
+  clear: both }
+.foldableBox h3.foldedDisabled {
+  background:"neutral.medium (__FLAVOR__ background)" none;
+  border-width: 1px; border-style: none none solid;  border-color: "neutral.light (__FLAVOR__ border)";
+  color: #555 }
+.foldableBox h3 span, .foldableBox h3 a, .foldableBox h3 a:visited {
+  color: "black (__FLAVOR__ color)";
+  display: block;
+  float: left;
+  padding-right: 1em }
+.foldableBox h3 a.warningLink { color: "warning.status (__FLAVOR__ color)" }
+.foldableBox .boxBody { clear: both; font-size: 1.1em; padding: 1em }
+
+/* =Light boxes */
+.foldableLightBox { margin-bottom: 1.8em }
+.foldableLightBox div.folded {background: #fff url("${basePath}/icons/arrow_folded.gif") top left no-repeat }
+.foldableLightBox div.unfolded { background: #fff url("${basePath}/icons/arrow_unfolded.gif") top left no-repeat }
+.foldableLightBox div.folded a, .foldableLightBox div.unfolded a { color: "gray.dark (__FLAVOR__ color)"; float: left }
+.foldableLightBox div.folded, .foldableLightBox div.unfolded {
+  border-width: 1px; border-style: none none solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  color: "gray.dark (__FLAVOR__ color)";
+  font-size: .8em;
+  height: 18px;
+  padding: .3em .3em .3em 1.7em }
+.foldableLightBox .boxBody {
+  border: 1px solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-top: none;
+  clear: both;
+  font-size: .8em;
+  padding: 1em }
+
+.massEditForm foldableBox { margin-right: 1.4em }
