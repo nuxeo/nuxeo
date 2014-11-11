@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<project name="Nuxeo Distribution JBoss" default="" basedir=".">
+  <!-- Properties -->
+  <property file="build.properties" />
+  <property name="mvn.opts" value="" />
+  <property name="jboss.config" value="default" />
+  <property name="jboss.dir" value="/opt/jboss" />
+  <!--the default pom file to use for jboss-patch  -->
+  <property name="pom.file" value="jboss-patch/pom.xml" />
+
+  <!-- set default root properties if not set -->
+  <target name="set.jboss.home" unless="jboss.home">
+    <property name="jboss.home" value="${jboss.dir}" />
+  </target>
+  <target name="set.assembly.name" unless="assembly.ear">
+    <property name="assembly.name" value="nuxeo" />
+  </target>
+  <!-- set default properties if not set -->
+  <target name="setproperties" unless="jboss.server" depends="set.jboss.home, set.assembly.name">
+    <property name="assembly.ear" value="${assembly.name}.ear" />
+    <property name="jboss.server" value="${jboss.home}/server/${jboss.config}" />
+    <property name="jboss.deploy" value="${jboss.server}/deploy" />
+    <property name="jboss.lib" value="${jboss.server}/lib" />
+    <property name="jboss.nuxeo.ear" value="${jboss.deploy}/nuxeo.ear" />
+  </target>
+  <property name="nuxeo.jboss.jmx.protocol" value="" />
+  <property name="nuxeo.jboss.jmx.http.hostname" value="" />
+  <property name="nuxeo.jboss.jmx.http.port" value="" />
+  <condition property="mvn.profile" value="-Phttp" else="">
+    <equals arg1="${nuxeo.jboss.jmx.protocol}" arg2="http" />
+  </condition>
+
+  <condition property="osfamily-unix">
+    <os family="unix" />
+  </condition>
+  <condition property="osfamily-windows">
+    <os family="windows" />
+  </condition>
+
+  <!-- Patch JBoss -->
+  <target name="patch" depends="setproperties,patch-unix,patch-windows" />
+  <target name="patch-unix" if="osfamily-unix">
+    <echo message="Running maven script ${pom.file}" />
+    <exec executable="mvn" failonerror="true">
+      <arg value="-f" />
+      <arg value="${pom.file}" />
+      <arg value="-Djboss.dir=${jboss.home}" />
+      <arg value="-Dnuxeo.jboss.jmx.protocol=${nuxeo.jboss.jmx.protocol}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.hostname=${nuxeo.jboss.jmx.http.hostname}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.port=${nuxeo.jboss.jmx.http.port}" />
+      <arg value="clean" />
+      <arg value="package" />
+      <arg value="${mvn.profile}" />
+      <arg value="install" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+  <target name="patch-windows" if="osfamily-windows">
+    <echo message="Running maven script ${pom.file}" />
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="-f" />
+      <arg value="${pom.file}" />
+      <arg value="-Djboss.dir=${jboss.home}" />
+      <arg value="-Dnuxeo.jboss.jmx.protocol=${nuxeo.jboss.jmx.protocol}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.hostname=${nuxeo.jboss.jmx.http.hostname}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.port=${nuxeo.jboss.jmx.http.port}" />
+      <arg value="clean" />
+      <arg value="package" />
+      <arg value="${mvn.profile}" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+  <!-- Deploy Nuxeo libraries into JBoss -->
+  <target name="copy-lib" depends="clean-lib,copy-lib-unix,copy-lib-windows" description="Copy Nuxeo libs in jboss" />
+  <target name="clean-lib" depends="setproperties">
+    <delete>
+      <fileset dir="${jboss.lib}">
+        <include name="nuxeo-*.jar" />
+        <include name="derby-*.jar" />
+        <include name="h2-*.jar" />
+        <include name="mysql-connector*.jar" />
+        <include name="postgresql*.jar" />
+        <include name="lucene*.jar" />
+        <include name="freemarker*.jar" />
+        <include name="commons-lang*.jar" />
+      </fileset>
+    </delete>
+  </target>
+  <target name="copy-lib-unix" if="osfamily-unix">
+    <echo message="Copying Nuxeo libs to ${jboss.lib}" />
+    <exec executable="mvn" failonerror="true">
+      <arg value="-f" />
+      <arg value="pom.xml" />
+      <arg value="-Djboss.lib=${jboss.lib}" />
+      <arg value="dependency:copy" />
+      <arg value="-N" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+  <target name="copy-lib-windows" if="osfamily-windows">
+    <echo message="Copying Nuxeo libs to ${jboss.lib}" />
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="-f" />
+      <arg value="pom.xml" />
+      <arg value="-Djboss.lib=${jboss.lib}" />
+      <arg value="dependency:copy" />
+      <arg value="-N" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+</project>
