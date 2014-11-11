@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.versioning.initial.version.number.test.bad">
+
+  <extension
+    target="org.nuxeo.ecm.platform.versioning.service.VersioningService"
+    point="initialVersionNumber">
+        <initialVersionNumber>
+          <majorVersion>sad</majorVersion>
+          <minorVersion>dsfds</minorVersion>
+        </initialVersionNumber>
+  </extension>
+
+</component>

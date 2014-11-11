@@ -1,0 +1,261 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory">
+  <documentation>
+    The LDAPDirectoryFactory component provides implementation of the
+    Directory API using an external LDAP server as storage backend,
+    typically to fetch users and groups data check password based
+    authentication.
+
+    @author Olivier Grisel (ogrisel@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory" />
+  </service>
+
+  <implementation
+      class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"/>
+  <require>org.nuxeo.ecm.directory.DirectoryServiceImpl</require>
+
+  <extension target="org.nuxeo.ecm.directory.DirectoryServiceImpl"
+      point="factoryDescriptor">
+    <factoryDescriptor
+        component="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"/>
+  </extension>
+
+  <extension-point name="servers">
+    <documentation>
+      The servers extension point is used to register network connection
+      parameters to a pool of LDAP servers.
+
+      Examples:
+
+      <code>
+        <server name="default">
+          <ldapUrl>ldap://localhost:389</ldapUrl>
+          <ldapUrl>ldap://server2:389</ldapUrl>
+          <ldapUrl>ldaps://server3:389</ldapUrl>
+          
+          <!-- LDAP SRV DNS resolution on _ldap._tcp.example.com -->
+          <ldapUrl>ldap:///dc=example,dc=com</ldapUrl>
+          
+          <!-- LDAP SRV DNS resolution on _gc._tcp.example.com -->
+          <ldapUrl srvPrefix="_gc._tcp">ldap:///dc=example,dc=com</ldapUrl>
+
+          <bindDn>cn=nuxeo5,ou=applications,dc=example,dc=com</bindDn>
+          <bindPassword>changeme</bindPassword>
+        </server>
+      </code>
+
+      The ldapUrl tags point to server (IP address or DNS name) and
+      ports. If more than one is provided, the Nuxeo EP will use a pool
+      of load balanced connections to each server. They are assumed to
+      be replicated versions of a master server that should belong to
+      the list.
+
+      The bindDn and bindPassword credentials are used by Nuxeo EP to
+      access the content of the LDAP servers. It should have the read
+      permission to any entry that is to be used by Nuxeo EP and write
+      right to branches were Nuxeo EP is supposed to create or edit
+      entries.
+
+      For instance, in OpenLDAP you should have ACLs such as:
+
+      <code>
+        access to attrs="userPassword"
+        by dn="cn=ldapadmin,dc=example,dc=com" write
+        by dn="cn=nuxeo5,ou=applications,dc=example,dc=com" write
+        by anonymous auth
+        by self write
+        by * none
+
+        access to dn.base="" by * read
+
+        # nuxeo5 can manage the ou=people branch
+        access to dn.subtree="ou=people,dc=example,dc=com"
+        by dn="cn=nuxeo5,ou=applications,dc=example,dc=com" write
+        by users read
+        by self write
+        by * none
+
+        access to dn.subtree="ou=groups,dc=example,dc=com"
+        by dn="cn=nuxeo5,ou=applications,dc=example,dc=com" write
+        by users read
+        by self write
+        by * none
+
+        # The admin dn has full write access
+        # other
+        access to *
+        by dn="cn=ldapadmin,dc=example,dc=com" write
+        by users read
+        by * none
+      </code>
+
+      User authentication is done using a bind method against the user
+      provided login and password from the login form and not the bindDn
+      / bindPassword credentials.
+    </documentation>
+
+    <object class="org.nuxeo.ecm.directory.ldap.LDAPServerDescriptor"/>
+  </extension-point>
+
+  <extension-point name="directories">
+    <documentation>
+      The directories extension point is used to register LDAP filtering
+      parameters to identify which part of the LDAP branches are actually
+      used by Nuxeo EP to fetch its entries.
+
+      Examples:
+
+      <code>
+        <directory name="userDirectory">
+          <server>default</server>
+          <schema>user</schema>
+          <idField>username</idField>
+          <passwordField>password</passwordField>
+          <searchBaseDn>ou=people,dc=example,dc=com</searchBaseDn>
+          <searchClass>person</searchClass>
+          <searchFilter>(&amp;(sn=toto*)(myCustomAttribute=somevalue))</searchFilter>
+          <searchScope>onelevel</searchScope>
+
+          <readOnly>false</readOnly>
+
+          <cacheTimeout>3600</cacheTimeout>
+          <cacheMaxSize>1000</cacheMaxSize>
+
+          <creationBaseDn>ou=people,dc=example,dc=com</creationBaseDn>
+          <creationClass>top</creationClass>
+          <creationClass>person</creationClass>
+          <creationClass>organizationalPerson</creationClass>
+          <creationClass>inetOrgPerson</creationClass>
+          <rdnAttribute>uid</rdnAttribute>
+
+          <querySizeLimit>200</querySizeLimit>
+          <queryTimeLimit>0</queryTimeLimit>
+
+          <fieldMapping name="username">uid</fieldMapping>
+          <fieldMapping name="password">userPassword</fieldMapping>
+          <fieldMapping name="firstName">givenName</fieldMapping>
+          <fieldMapping name="lastName">sn</fieldMapping>
+          <fieldMapping name="company">o</fieldMapping>
+          <fieldMapping name="email">mail</fieldMapping>
+
+          <references>
+            <inverseReference field="groups" directory="groupDirectory"
+                dualReferenceField="members"/>
+          </references>
+        </directory>
+
+        <directory name="groupDirectory">
+          <server>default</server>
+          <schema>group</schema>
+          <idField>groupname</idField>
+          <searchBaseDn>ou=groups,dc=example,dc=com</searchBaseDn>
+          <searchFilter>(|(objectClass=groupOfUniqueNames)(objectClass=groupOfURLs))</searchFilter>
+          <searchScope>subtree</searchScope>
+          
+          <!-- Special entry adaptor that makes entries in the ou=editable branch editable
+          other entries have the readonly flag. This require adding a "dn" xs:string field
+          to the group schema.
+          -->
+	      <entryAdaptor class="org.nuxeo.ecm.directory.impl.WritePolicyEntryAdaptor">
+	        <parameter name="fieldName">dn</parameter>
+	        <parameter name="regexp">.*,ou=editable,ou=groups,dc=example,dc=com</parameter>
+	      </entryAdaptor>
+
+          <readOnly>false</readOnly>
+
+          <cacheTimeout>3600</cacheTimeout>
+          <cacheMaxSize>1000</cacheMaxSize>
+
+          <creationBaseDn>ou=editable,ou=groups,dc=example,dc=com</creationBaseDn>
+          <creationClass>top</creationClass>
+          <creationClass>groupOfUniqueNames</creationClass>
+          <rdnAttribute>cn</rdnAttribute>
+
+          <querySizeLimit>200</querySizeLimit>
+          <queryTimeLimit>0</queryTimeLimit>
+
+          <fieldMapping name="groupname">cn</fieldMapping>
+
+          <references>
+            <!-- LDAP reference resolve DNs embedded in uniqueMember attributes
+
+              If the target directory has no specific filtering policy, it is most
+              of the time not necessary to enable the 'forceDnConsistencyCheck' policy.
+
+              Enabling this option will fetch each reference entry to ensure its
+              existence in the target directory.
+            -->
+            <ldapReference field="members" directory="userDirectory"
+                forceDnConsistencyCheck="false"
+                staticAttributeId="uniqueMember"
+                dynamicAttributeId="memberURL"/>
+
+            <ldapReference field="subGroups" directory="groupDirectory"
+                forceDnConsistencyCheck="false"
+                staticAttributeId="uniqueMember"
+                dynamicAttributeId="memberURL"/>
+
+            <inverseReference field="parentGroups"
+                directory="groupDirectory" dualReferenceField="subGroups"/>
+
+            <ldapTreeReference field="children" directory="groupDirectory"
+                scope="onelevel" />
+            <inverseReference field="parents"
+                directory="groupDirectory" dualReferenceField="children"/>
+
+          </references>
+
+        </directory>
+      </code>
+
+      In the previous examples we configured two directories one for the
+      users and one for the groups of users. Each directory uses a
+      single schema which is to be registered as any core document
+      schema and that will be used to build a DocumentModel for each
+      matching entry of the directory.
+      
+      
+      Nuxeo EP provides group resolution for statically dn-referenced
+      entries (in read and write mode) and for dynamically ldapUrl
+      matched entries (readonly).
+
+      The references tags are used to dynamically build nxs:stringList
+      fields of that schema that are to compute membership relationships
+      between users and groups or between parent groups and sub groups.
+      It can also resole children and parents following the ldap tree
+      structure.
+      
+      You have two ways for declaring a dynamic reference in a 'references' tag.
+      You can use 'dynamicAttributeId' to point to an ldap attribute that 
+      contains an ldap url. 
+      
+      <code>
+      <ldapReference field="members" directory="userDirectory"
+               dynamicAttributeId="memberURL"/>
+      </code>
+
+      Or, you can use a subtag 'dynamicReference' to declare attributes that 
+      contain a DN, a filter and a type. This values will be used to selected 
+      the references.
+
+      <code>
+      <ldapReference field="members" directory="userDirectory" />
+         <dynamicReference filter="ldapAttribute" 
+            type="subtree/onelevel" 
+            baseDN ="ldapAttribute" />
+      <ldapReference/>
+      </code>
+
+      When using dynamic references, caching is advised since dynamic
+      group resolution can be expensive.
+
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor"/>
+  </extension-point>
+
+</component>
