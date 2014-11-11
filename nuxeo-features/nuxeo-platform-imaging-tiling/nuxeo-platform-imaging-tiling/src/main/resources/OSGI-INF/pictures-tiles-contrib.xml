@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.pictures.tiles.default.config">
+  <documentation>
+    Defines Env configuration for tiling service
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent"
+    point="environment">
+
+  <environment>
+    <parameters>
+      <!-- Gimp path variables -->
+      <parameter name="GimpExecutable">gimp</parameter>
+      <!-- ImageMagick path variables -->
+      <parameter name="IMConvert">convert</parameter>
+      <parameter name="IMIdentify">identify</parameter>
+      <parameter name="IMStream">stream</parameter>
+      <!-- global env variables -->
+      <parameter name="WorkingDirPath">/tmp/</parameter>
+      <!-- Max Disk cache usage in KB -->
+      <parameter name="MaxDiskSpaceUsageForCache">50000</parameter>
+      <!-- GC Interval in Minutes -->
+      <parameter name="GCInterval">10</parameter>
+
+      <!-- Image dimensions threshold tiling activation -->
+      <parameter name="WidthThreshold">1200</parameter>
+      <parameter name="HeightThreshold">1200</parameter>
+    </parameters>
+  </environment>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent"
+    point="imagesToConvert">
+    <imageToConvert extension="bmp" mimeType="image/bmp"/>
+    <imageToConvert extension="gif" mimeType="image/gif"/>
+
+    <!-- the following are not strictly required but the results is less buggy and faster
+         when the source image is converted to JPEG first -->
+    <imageToConvert extension="tif" mimeType="image/tiff" />
+	  <imageToConvert extension="tiff" mimeType="image/tiff" />
+    <imageToConvert extension="png" mimeType="image/png" />
+
+    <imageToConvert extension="ai" mimeType="application/illustrator" />
+    <imageToConvert extension="psd" mimeType="image/photoshop" />
+    <imageToConvert extension="eps" mimeType="image/eps" />
+
+    <!-- Raw files -->
+    <imageToConvert extension="cr2" mimeType="image/x-canon-cr2" />
+    <imageToConvert extension="crw" mimeType="image/x-canon-crw" />
+    <imageToConvert extension="nef" mimeType="image/x-nikon-nef" />
+    <imageToConvert extension="dng" mimeType="image/x-adobe-dng" />
+    <imageToConvert extension="raw" mimeType="image/x-panasonic-raw" />
+    <imageToConvert extension="raf" mimeType="image/x-fuji-raf" />
+    <imageToConvert extension="x3f" mimeType="image/x-sigma-x3f" />
+    <imageToConvert extension="pef" mimeType="image/x-pentax-pef" />
+    <imageToConvert extension="dcr" mimeType="image/x-kodak-dcr" />
+    <imageToConvert extension="kdc" mimeType="image/x-kodak-kdc" />
+    <imageToConvert extension="sr2" mimeType="image/x-sony-sr2" />
+    <imageToConvert extension="arw" mimeType="image/x-sony-arw" />
+    <imageToConvert extension="srf" mimeType="image/x-sony-srf" />
+    <imageToConvert extension="mrw" mimeType="image/x-minolta-mrw" />
+    <imageToConvert extension="orf" mimeType="image/x-olympus-orf" />
+    <imageToConvert extension="erf" mimeType="image/x-raw-epson" />
+    <imageToConvert extension="ppm" mimeType="image/x-portable-pixmap" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent"
+    point="blobProperties">
+    <blobProperties>
+      <blobProperty docType="Picture" >picture:views/item[3]/content</blobProperty>
+    </blobProperties>
+  </extension>
+
+</component>

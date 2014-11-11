@@ -1,0 +1,108 @@
+<component name="org.nuxeo.ecm.core.rules.test-events">
+
+  <extension point="chains"
+    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+
+    <chain id="createNoteWhenFolderCreated">
+      <operation id="Context.FetchDocument" />
+      <operation id="Document.Create">
+        <param type="string" name="name">note</param>
+        <param type="string" name="type">Note</param>
+        <param type="properties" name="properties">dc:title=MyDoc</param>
+      </operation>
+    </chain>
+
+    <chain id="createNoteWhenFolderCreatedPc">
+      <operation id="Context.FetchDocument" />
+      <operation id="Document.Create">
+        <param type="string" name="name">note_pc</param>
+        <param type="string" name="type">Note</param>
+        <param type="properties" name="properties">dc:title=MyDocPc</param>
+      </operation>
+    </chain>
+
+    <chain id="changeTitleWhenModifiedWithExpression">
+      <operation id="Context.FetchDocument" />
+      <operation id="Document.SetProperty">
+        <param type="string" name="xpath">dc:title</param>
+        <param type="serializable" name="value">
+          Modified with false expression
+        </param>
+        <param type="boolean" name="save">false</param>
+      </operation>
+    </chain>
+
+    <chain id="changeTitleWhenModifiedWithCondition">
+      <operation id="Context.FetchDocument" />
+      <operation id="Document.SetProperty">
+        <param type="string" name="xpath">dc:title</param>
+        <param type="serializable" name="value">
+          Modified with true condition
+        </param>
+        <param type="boolean" name="save">false</param>
+      </operation>
+    </chain>
+
+    <chain id="changeSource">
+      <operation id="Context.FetchDocument" />
+      <operation id="Document.SetProperty">
+        <param type="string" name="xpath">dc:source</param>
+        <param type="serializable" name="value">
+          New source
+        </param>
+      </operation>
+    </chain>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="event-handlers">
+
+    <handler chainId="createNoteWhenFolderCreated">
+      <event>documentCreated</event>
+      <filters>
+        <doctype>Folder</doctype>
+      </filters>
+    </handler>
+
+    <handler chainId="createNoteWhenFolderCreatedPc" postCommit="true">
+      <event>documentCreated</event>
+      <filters>
+        <doctype>Folder</doctype>
+      </filters>
+    </handler>
+
+    <!-- test BBB for "expression" element -->
+    <handler chainId="changeTitleWhenModifiedWithExpression">
+      <event>documentCreated</event>
+      <filters>
+        <doctype>File</doctype>
+        <expression>false</expression>
+      </filters>
+    </handler>
+
+    <!-- test "condition" element -->
+    <handler chainId="changeTitleWhenModifiedWithCondition">
+      <event>documentCreated</event>
+      <filters>
+        <doctype>Workspace</doctype>
+        <condition>true</condition>
+      </filters>
+    </handler>
+
+    <!-- change dc:source if this is dc:description == "ChangeMySource" -->
+    <handler chainId="changeSource" postCommit="true">
+      <event>documentCreated</event>
+      <filters>
+        <!-- this condition cannot be evaluated
+             on a ShallowDocumentModel -->
+        <condition>
+          Document.getProperty("dc:description") == "ChangeMySource"
+        </condition>
+      </filters>
+    </handler>
+
+  </extension>
+
+
+</component>

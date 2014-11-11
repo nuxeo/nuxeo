@@ -1,0 +1,54 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  class="commentActions">
+
+  <nxu:methodResult name="isPostPublished"
+    value="#{postAction.isPostPublished(threadEntry.comment)}">
+
+    <nxu:methodResult name="canAnswer"
+      value="#{postAction.checkWritePermissionOnThread}">
+      <h:commandLink value="#{messages['command.comments.reply']}"
+        action="#{commentManagerActions.beginComment}"
+        rendered="#{isPostPublished and canAnswer}">
+        <f:param name="replyCommentId" value="#{threadEntry.comment.id}"/>
+      </h:commandLink>
+    </nxu:methodResult>
+
+    <nxu:methodResult name="isPrincipalModerator"
+      value="#{threadAction.isPrincipalModerator()}">
+
+      <h:outputText value=" | "
+        rendered="#{isPostPublished}"/>
+      <h:commandLink action="#{postAction.deletePost}"
+        value="#{messages['command.delete']}"
+        rendered="#{isPrincipalModerator or threadEntry.comment.post.author == commentManagerActions.principalName or commentManagerActions.principalIsAdmin}">
+        <f:param name="deletePostId" value="#{threadEntry.comment.id}"/>
+      </h:commandLink>
+
+      <h:outputText value=" | "
+        rendered="#{isPrincipalModerator and threadEntry.comment.currentLifeCycleState == 'moderation_pending'}"/>
+  
+      <h:commandLink action="#{postAction.approvePost(threadEntry.comment)}"
+        value="#{messages['label.review.end.task']}"
+        rendered="#{isPrincipalModerator and threadEntry.comment.currentLifeCycleState == 'moderation_pending'}">
+      </h:commandLink>
+  
+      <h:outputText value=" | "
+        rendered="#{isPrincipalModerator and threadEntry.comment.currentLifeCycleState == 'moderation_pending'}"/>
+  
+      <h:commandLink action="#{postAction.rejectPost(threadEntry.comment)}"
+        value="#{messages['command.reject']}"
+        rendered="#{isPrincipalModerator and threadEntry.comment.currentLifeCycleState == 'moderation_pending'}">
+      </h:commandLink>
+
+    </nxu:methodResult>
+
+  </nxu:methodResult>
+
+</div>

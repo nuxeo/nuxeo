@@ -1,0 +1,59 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+     xmlns:t="http://myfaces.apache.org/tomahawk"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <c:if test="false">
+    Overridden to use the 'WidthThreshold' and 'HeightThreshold' parameters
+    from the Tiling module to switch to the tiling view when necessary.
+  </c:if>
+
+  <script type="text/javascript"  src="#{baseURL}cropper/cropper.js"></script>
+  <script src="#{baseURL}cropper/lib/scriptaculous.js?load=builder" type="text/javascript"></script>
+
+  <script type="text/javascript" charset="utf-8">
+    // setup the callback function
+    function onEndCrop( coords, dimensions ) {
+      document.getElementById( 'cropperCoords' ).value = 'x:' + coords.x1 + ';y:' + coords.y1 + ';width:'+ dimensions.width + ';height:' + dimensions.height + ';' ;
+    }
+  </script>
+
+  <a4j:region>
+    <h:form id="refresh">
+      <c:set var="url" value="#{currentDocument.picture.views[pictureManager.index].title}:content"/>
+
+      <ui:include src="/incl/imaging_actions.xhtml" />
+
+      <div class="pictureItemSize">
+        <h:selectOneRadio value="#{pictureManager.index}">
+          <nxu:selectItems id='greu' value="#{pictureManager.selectItems}" var="item"
+            itemValue="#{item.idx}" itemLabel="#{item.title}" />
+
+          <a4j:support ajaxSingle="true" reRender="refresh" event="onclick" />
+        </h:selectOneRadio>
+      </div>
+
+      <br />
+      <nxu:set var="widthThreshold" value="#{imagingTilingActions.tilingWidthThreshold}">
+      <nxu:set var="heightThreshold" value="#{imagingTilingActions.tilingHeightThreshold}">
+        <ui:fragment rendered="#{((currentDocument.picture.views[pictureManager.index].height gt heightThreshold) or (currentDocument.picture.views[pictureManager.index].width gt widthThreshold)) and pictureManager.isImageMagickAvailable()}">
+          <iframe src="#{previewActions.previewURL}" frameborder="1" height="500px" width="100%" scrolling="auto" id="preview-frame">
+          </iframe>
+        </ui:fragment>
+        <ui:fragment rendered="#{((currentDocument.picture.views[pictureManager.index].height le heightThreshold) and (currentDocument.picture.views[pictureManager.index].width le widthThreshold)) or !pictureManager.isImageMagickAvailable()}">
+          <div style="width: #{currentDocument.picture.views[pictureManager.index].width}px;height: #{currentDocument.picture.views[pictureManager.index].height}px;" >
+            <div id="apear-div" style="display: none;" >
+              <img onload="new Effect.Appear('apear-div');"
+                src="#{nxd:fileUrl('downloadPicture', currentDocument, url, currentDocument.dublincore.modified)}" />
+            </div>
+          </div>
+        </ui:fragment>
+      </nxu:set>
+      </nxu:set>
+      <br />
+    </h:form>
+  </a4j:region>
+</div>
