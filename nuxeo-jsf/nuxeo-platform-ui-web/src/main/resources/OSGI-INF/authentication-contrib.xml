@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.auth.JSFConfig">
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="sessionManager">
+
+    <sessionManager name="SeamJsf" enabled="true"
+      class="org.nuxeo.ecm.platform.ui.web.auth.plugins.SeamJsfSessionManager">
+    </sessionManager>
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="openUrl">
+    <openUrl name="SystemLogRestlet">
+      <grantPattern>${org.nuxeo.ecm.contextPath}/restAPI/systemLog</grantPattern>
+    </openUrl>
+  </extension>
+
+</component>
