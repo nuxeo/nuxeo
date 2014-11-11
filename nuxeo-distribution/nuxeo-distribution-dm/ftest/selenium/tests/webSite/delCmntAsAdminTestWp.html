@@ -1,0 +1,84 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link/>
+<title>delCmntAsAdminTestWp</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">delCmntAsAdminTestWp</td></tr>
+</thead><tbody>
+<tr>
+        <td>open</td>
+        <td>restAPI/systemLog?token=dolog&amp;level=WARN&amp;message=----- Selenium delCmntAsAdminTestWp</td>
+        <td></td>
+</tr>
+<tr>
+    <td>setTimeout</td>
+    <td>30000</td>
+    <td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Administrator</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>site/sites/testWebSite1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>15000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testWebPage1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Delete</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>15000</td>
+	<td></td>
+</tr>
+<tr>
+        <td>assertTextNotPresent</td>
+	<td>Test comment</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
