@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Automation Client
+Bundle-SymbolicName: org.nuxeo.ecm.automation.client;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Export-Package: org.nuxeo.ecm.automation.client
+Eclipse-LazyStart: true

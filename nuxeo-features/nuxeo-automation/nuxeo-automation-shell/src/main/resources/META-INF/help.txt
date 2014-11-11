@@ -1,0 +1,80 @@
+{bold}NUXEO SHELL v.5.4{bold}
+
+This is the main Help page. To see the list of available commands type 'cmds'.
+Also, you can use help [command] for more details about a command.
+
+{bold}COMMAND NAMESPACES{bold}
+
+Nuxeo Shell is providing the capability to define multiple command namespaces in the same shell.
+To switch to a specific namespace you can use the "use [namespace]" command. 
+A namespace is just a registry of commands - so while in a given namespace you will see only the commands provided by that registry.
+Namespaces are hierarchical so a namespace my extend another one to adds more commands. 
+Available namespaces are setup by the Shell implementation. See using a specific shell implementation section for more information. 
+   
+The default implementation comes with 3 command namespaces:
+    global - the global namespace. This provides global commands like 'help', 'use', 'cmds' etc.  
+    local  - provides file system commands like: 'ls', 'cd', 'cat' etc. Extends the global namespace. 
+    tremote - provides remote commands against a nuxeo server. Extends the global namespace.
+
+When launching the shell the 'local' namespace is 
+When connecting to a remote server the shell will automatically switch to 'remote' namespace. When disconnecting
+   
+{bold}Loading a specific shell implementation{bold}
+You can write your own shell implementation to provide additional command namespaces. 
+This way you can for example add a CMIS namespace to provide a CMIS based shell over a remote Nuxeo. 
+
+To force a specific shell implementation to be used when starting - you can use -Dshell.capabilities="caps" in the command line.
+The capabilities is a comma separated list of capabilties that the shell should provide. 
+The default capabilities string is "automation" - which will load the first shell found that is providing "automation".
+To load the right shell implementation - the Java service loader is used. 
+
+{bold}AUTO COMPLETION{bold}
+Each command may provide custom auto-completion for its parameter or argument values. 
+Also, the shell is providing built-in auto-completion for commands and parameter names.
+
+To launch auto-completion press tab key. To launch auto-completion on parameter names write a '-' and then press tab. 
+
+{bold}BATCH MODE{bold}
+To run commands from a batch file use the "-f file/path" parameter on the command line (when starting the shell).
+To run commands from stdin use the '-' parameter on the command line.
+To run commands given as an argument to the shell command line use '-e' followed by a semicolon eparated list of commands.
+
+When using a command file (or the stdin) each commands must be put on a single line. 
+To span a command on several line you may use the escape character '\' as the last character on the line.  
+
+{bold}EXCEPTION HANDLING{bold}
+Unchecked exceptions are printed in red on the screen. Checked exceptions are not printed - only the exception 
+message is printed out. If you need to see the stack trace of the last exception type 'trace'. 
+
+{bold}CONNECTING TO A SERVER{bold}
+To connect to a server you should use the global 'connect' command. This command require 3 parameters:
+- the URL of the remote automation service.
+- the username to login
+- the password to login 
+
+You can either pass thse arguments to the connect command itself or to the shell command line when starting.
+You can use -u for the username, -p for the password and the URL should be given as argument.
+If password is not specified you will be prompted for a password when in interactive mode.
+
+{bold}EXAMPLE{bold}
+Here is an example of a short session: 
+After launching the shell you are in 'local' mode. So you can use the provided file system commands like:
+ls - to list the content of the current directory.
+cd, pushd, popd - to change the current directory
+cat, mv, cp etc. for other file based operations.
+
+To connect to a remote server type:
+connect http://localhost:8080/nuxeo/site/automation -u Administrator
+
+After the connection is done you are automatically switched in "remote" namespace.
+So doing now a 'ls' will list the content of the current document. (which for now the root document).
+To switch back in 'local' namespace type: 'use local'. To show the current namespace name type: 'use'. 
+
+Note that when doing file based auto-completion this will be relative to the current directory 
+(that you can change using cd, pushd, popd when in local namespace) 
+ 
+{bold}CREDITS{bold}
+
+Author: Bogdan Stefanescu -- bstefanescu@nuxeo.com
+
+This application uses Nuxeo Automation Client to access remote servers and jline for terminal integration.
