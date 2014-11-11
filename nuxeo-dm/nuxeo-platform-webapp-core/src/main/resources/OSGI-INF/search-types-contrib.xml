@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Think about updating the life cycle doc types mapping in GeideLifeCycleExtensions.xml-->
+
+<component name="org.nuxeo.ecm.webapp.search.types">
+
+  <require>org.nuxeo.ecm.platform.types.TypeService</require>
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+
+    <type id="search_results">
+      <label>label.document.searchResults</label>
+      <icon>/icons/file.gif</icon>
+      <layout>
+
+        <!-- uid -->
+        <widget jsfcomponent="h:inputText" schemaname="uid" fieldname="uid"
+          label="label.uid.uid" />
+        <widget jsfcomponent="h:inputText" schemaname="uid"
+          fieldname="major_version" label="label.uid.major_version" />
+        <widget jsfcomponent="h:inputText" schemaname="uid"
+          fieldname="minor_version" label="label.uid.minor_version" />
+
+        <!-- dublincore -->
+        <widget jsfcomponent="special" schemaname="dublincore" type="special"
+          fieldname="title" label="label.dublincore.title" />
+        <widget jsfcomponent="h:inputText" schemaname="dublincore"
+          fieldname="description" label="label.dublincore.description" />
+        <widget jsfcomponent="nxdir:chainSelect" schemaname="dublincore"
+          fieldname="subjects" directory="topic"
+          label="label.dublincore.subjects" />
+        <widget jsfcomponent="h:inputText" schemaname="dublincore"
+          fieldname="rights" label="label.dublincore.rights" />
+        <widget jsfcomponent="nxdir:selectManyListbox" schemaname="dublincore"
+          fieldname="source" directory="source" label="label.dublincore.source" />
+        <widget jsfcomponent="h:inputText" schemaname="dublincore"
+          fieldname="coverage" label="label.dublincore.coverage" />
+        <widget jsfcomponent="t:inputCalendar" schemaname="dublincore"
+          fieldname="created" label="label.dublincore.creationDate" />
+        <widget jsfcomponent="t:inputCalendar" schemaname="dublincore"
+          fieldname="modified" label="label.dublincore.modificationDate" />
+        <widget jsfcomponent="t:inputCalendar" schemaname="dublincore"
+          fieldname="issued" label="label.dublincore.issueDate" />
+        <widget jsfcomponent="t:inputCalendar" schemaname="dublincore"
+          fieldname="valid" label="label.dublincore.validationDate" />
+        <widget jsfcomponent="t:inputCalendar" schemaname="dublincore"
+          fieldname="expired" label="label.dublincore.expirationDate" />
+        <widget jsfcomponent="t:dataList" schemaname="dublincore"
+          fieldname="contributors" label="label.dublincore.contributors" />
+
+      </layout>
+    </type>
+
+  </extension>
+
+</component>
