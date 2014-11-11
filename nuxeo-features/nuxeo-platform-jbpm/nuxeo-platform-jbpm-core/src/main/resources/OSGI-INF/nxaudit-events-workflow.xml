@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.workflow.audit.events">
+
+  <documentation>
+      Core workflow audit related contributions.
+
+      @version 1.0
+      @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+  </documentation>
+
+  <require>org.nuxeo.ecm.platform.audit.service.NXAuditEventsService</require>
+
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+         point="event">
+
+        <documentation>
+
+          Contribute core auditable workflow events.
+
+          <p/>
+
+          The workflow operations generating those events will be audited by the
+          NXP audit service.
+
+        </documentation>
+
+        <event name="workflowNewProcessStarted"/>
+        <event name="workflowProcessEnded"/>
+        <event name="workflowProcessCanceled"/>
+        <event name="workflowAbandoned"/>
+        <event name="workflowTaskCompleted"/>
+        <event name="workflowTaskRejected"/>
+        <event name="workflowTaskAssigned"/>
+  </extension>
+
+  <extension point="extendedInfo" target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService">
+     <extendedInfo expression="#{message.properties.dueDate}" key="dueDate" />
+     <extendedInfo expression="#{message.properties.directive}" key="directive" />
+  </extension>
+
+</component>
