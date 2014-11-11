@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.commandline.executor.service.testContrib.magic2">
+
+  <require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib</require>
+  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+    point="command">
+
+    <command name="pdftohtml" enabled="true">
+      <commandLine>pdftohtml</commandLine>
+      <parameterString> -c -enc UTF-8 -noframes #{inFilePath} "#{outDirPath}/index.html"</parameterString>
+      <winParameterString> -c -enc UTF-8 -noframes #{inFilePath} "#{outDirPath}\index.html"</winParameterString>
+      <installationDirective>You need to install pdftohtml</installationDirective>
+    </command>
+
+  </extension>
+
+</component>
