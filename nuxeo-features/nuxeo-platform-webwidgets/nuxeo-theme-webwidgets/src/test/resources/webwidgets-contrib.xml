@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.theme.test.webwidgets">
+  <documentation>
+    @author Jean-Marc Orliaguet (jmo@chalmers.se)
+  </documentation>
+
+  <require>org.nuxeo.ecm.core.persistence.PersistenceComponent</require>
+    
+  <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
+        point="hibernate">
+        <hibernateConfiguration name="nxwebwidgets">
+          <properties>
+            <property name="hibernate.connection.url">jdbc:hsqldb:mem:.;sql.enforce_strict_size=true</property>;
+            <property name="hibernate.connection.driver_class">org.hsqldb.jdbcDriver</property>
+            <property name="hibernate.connection.auto_commit">true</property> 
+            <property name="hibernate.connection.pool_size">1</property>;
+            <property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property>;
+            <property name="hibernate.hbm2ddl.auto">update</property>;
+            <property name="hibernate.show_sql">false</property>; // true to debug
+            <property name="hibernate.format_sql">true</property>;
+           </properties>
+        </hibernateConfiguration>
+  </extension>
+    
+
+  <!-- Sample widgets -->
+  <extension target="org.nuxeo.theme.webwidgets.Service"
+    point="widgets">
+
+    <widget name="test widget">
+      <description>An example of a test widget.</description>
+      <category>tests</category>
+      <path>test-widget.html</path>
+    </widget>
+
+  </extension>
+
+
+  <extension target="org.nuxeo.theme.webwidgets.Service"
+    point="providers">
+
+    <provider name="test">
+      <class>org.nuxeo.theme.webwidgets.providers.DefaultProvider</class>
+    </provider>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.webwidgets.Service"
+    point="decorations">
+
+    <decoration name="test">
+      <resource>style.css</resource>
+
+      <panel-decoration mode="view">
+        <div>%REGION_NAME%</div>
+      </panel-decoration>
+
+      <panel-decoration mode="edit">
+        <div>%REGION_BODY%</div>
+      </panel-decoration>
+
+      <widget-decoration mode="view">
+        <span>%WIDGET_NAME%</span>
+      </widget-decoration>
+
+      <widget-decoration mode="edit">
+        <span>%ACTION_EDIT_PREFERENCES%</span>
+      </widget-decoration>
+
+    </decoration>
+
+  </extension>
+
+</component>
+
