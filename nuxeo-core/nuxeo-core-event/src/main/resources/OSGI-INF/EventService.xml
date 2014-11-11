@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.event.EventServiceComponent" version="1.0">
+  <documentation>
+    Mock Event service
+
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.event.EventServiceComponent"/>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.event.EventService"/>
+    <provide interface="org.nuxeo.ecm.core.event.EventProducer"/>
+    <provide interface="org.nuxeo.ecm.core.event.EventServiceAdmin"/>
+  </service>
+
+  <extension-point name="listener">
+    <documentation>Event listeners</documentation>
+    <object class="org.nuxeo.ecm.core.event.impl.EventListenerDescriptor"/>
+  </extension-point>
+
+</component>
