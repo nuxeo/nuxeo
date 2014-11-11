@@ -1,0 +1,32 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <ui:composition template="/view_user_template.xhtml">
+    <ui:param name="currentUserSubTab" value="edit" />
+
+    <ui:define name="mainContent">
+
+      <h:form id="editUser" rendered="#{userManagerActions.allowEditUser and notReadOnly}">
+        <nxl:layout name="user" mode="edit" value="#{userManagerActions.selectedUser}" />
+  
+        <table class="dataInput">
+          <tbody>
+            <tr>
+              <td></td>
+              <td>
+                <h:commandButton
+                  value="#{messages['command.save']}"
+                  action="#{userManagerActions.updateUser}"
+                  styleClass="button" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </h:form>
+
+    </ui:define>
+
+  </ui:composition>
+  
+</div>
