@@ -1,0 +1,142 @@
+<project name="nuxeo-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <target name="init" unless="init.done">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <antcall target="expand" />
+    <property name="init.done" value="true" />
+  </target>
+
+  <target name="expand">
+    <!-- Include your artifacts in the graph adding your groupId to groupPrefixes -->
+    <artifact:nuxeo-expand includeTestScope="true" groupPrefixes="org.nuxeo" />
+    <!-- For Nuxeo IDE being able to use that distribution as a SDK -->
+    <artifact:print output="${outdir}/artifacts-rest-api.properties" mode="sdk" />
+    <artifact:print output="${outdir}/test-artifacts-rest-api.properties"
+                    mode="sdk"
+                    scopes="test" />
+    <!-- Prints the graph for debugging purpose -->
+    <artifact:print output="${outdir}/dependency-tree.log" />
+  </target>
+
+  <target name="build"
+          depends="init"
+          description="Build Nuxeo CSV Marketplace package">
+    <tstamp />
+    <delete failonerror="false" dir="${outdir}/nxr" />
+    <mkdir dir="${outdir}/nxr" />
+    <delete failonerror="false" dir="${outdir}/marketplace" />
+    <mkdir dir="${outdir}/marketplace" />
+    <copy todir="${outdir}/marketplace">
+      <fileset dir="src/main/resources" />
+      <filterset>
+        <filter token="VERSION" value="${nuxeo.distribution.version}" />
+        <filter token="DISTRIB_VERSION" value="${nuxeo.distribution.version}" />
+      </filterset>
+    </copy>
+    <copy file="${outdir}/artifacts-rest-api.properties"
+          todir="${outdir}/marketplace/install" />
+    <copy file="${outdir}/test-artifacts-rest-api.properties"
+          todir="${outdir}/marketplace/install" />
+
+    <!-- Base distribution NXR -->
+    <copy todir="${outdir}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm::zip" />
+    </copy>
+
+    <!-- Nuxeo bundles -->
+    <copy todir="${outdir}/nxr/bundles" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="org.nuxeo*" scope="!test" type="!pom" />
+        </includes>
+      </artifact:set>
+    </copy>
+    <!-- Third-party libraries -->
+    <copy todir="${outdir}/nxr/lib" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="!org.nuxeo*" scope="!test" />
+        </includes>
+      </artifact:set>
+    </copy>
+    <move todir="${outdir}/nxr/lib">
+      <fileset dir="${outdir}/nxr/bundles">
+        <include name="nuxeo-generic-wss-front*" />
+        <include name="nuxeo-generic-wss-handler*" />
+      </fileset>
+    </move>
+    <nx:rmdups dir="${outdir}/nxr/lib" />
+    <!-- Temporary ZIP Nuxeo NXR to compare with base distribution NXR -->
+    <zip destfile="${outdir}/nxr-${nuxeo.distribution.version}.zip"
+         basedir="${outdir}/nxr" />
+
+    <!-- Your MP only needs to include files not already provided by the base distribution -->
+    <nx:zipdiff file1="${outdir}/nxr-${nuxeo.distribution.version}.zip"
+                file2="${outdir}/nuxeo-distribution-dm-${nuxeo.distribution.version}.zip"
+                includesfile="${outdir}/includes"
+                excludesfile="${outdir}/excludesfile"
+                patternsetid="rest-api.versus.dm"
+                ignoreContentPattern=".*jar$">
+    </nx:zipdiff>
+    <unzip src="${outdir}/nxr-${nuxeo.distribution.version}.zip"
+           dest="${outdir}/marketplace/install">
+      <patternset refid="rest-api.versus.dm" />
+    </unzip>
+
+    <!-- Generate install.xml file -->
+    <var name="install.bundles" value="" />
+    <if>
+      <available file="${outdir}/marketplace/install/bundles" />
+      <then>
+        <var name="install.bundles"
+             value="${line.separator}
+  &lt;update file=&quot;${package.root}/install/bundles&quot; todir=&quot;${env.bundles}&quot; /&gt;" />
+      </then>
+    </if>
+
+    <var name="install.libs" value="" />
+    <if>
+      <available file="${outdir}/marketplace/install/lib" />
+      <then>
+
+        <var name="install.libs"
+             value="${line.separator}
+  &lt;update file=&quot;${package.root}/install/lib&quot; todir=&quot;${env.lib}&quot; /&gt;" />
+      </then>
+    </if>
+
+    <var name="install.properties"
+          value="${line.separator}
+  &lt;copy file=&quot;${package.root}/install/artifacts-rest-api.properties&quot;${line.separator}
+    todir=&quot;${env.server.home}/sdk&quot; overwrite=&quot;true&quot; /&gt;${line.separator}
+  &lt;copy file=&quot;${package.root}/install/test-artifacts-rest-api.properties&quot;${line.separator}
+    todir=&quot;${env.server.home}/sdk&quot; overwrite=&quot;true&quot; /&gt;" />
+
+    <var name="install.templates" value="" />
+
+    <copy file="src/main/resources/install.xml"
+          todir="${outdir}/marketplace"
+          overwrite="true">
+      <filterset>
+        <filter token="BUNDLES" value="${install.bundles}" />
+        <filter token="LIBS" value="${install.libs}" />
+        <filter token="PROPERTIES" value="${install.properties}" />
+        <filter token="TEMPLATES" value="${install.templates}" />
+      </filterset>
+    </copy>
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${nuxeo.distribution.version}.zip"
+         basedir="${outdir}/marketplace" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${nuxeo.distribution.version}.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="zip" />
+  </target>
+
+</project>

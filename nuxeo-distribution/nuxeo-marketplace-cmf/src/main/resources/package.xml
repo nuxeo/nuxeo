@@ -1,0 +1,48 @@
+<package type="addon" name="nuxeo-cmf" version="@VERSION@">
+  <title>Nuxeo CMF</title>
+  <description>
+    <p>Nuxeo CMF is a robust, extensible, Case Management solution
+      available as Open Source Software (OSS) that helps marketing and brand
+      managers catalog, process, store, retrieve, and distribute contents.
+    </p>
+    <p>Streamlining these tasks enables creative users to focus on ideas and
+      design by freeing them from resource-intensive content control tasks.
+    </p>
+    <p>Nuxeo CMF, a state-of-the-art application built on a new generation of
+      ECM, provides:
+    </p>
+    <p> * An intuitive experience, designed for creative users</p>
+    <p> * Improved productivity, with the automation and streamlining of routine
+      tasks
+    </p>
+    <p> * A trusted repository, designed for secure and easy scaling as projects
+      expand
+    </p>
+    <p> * Adaptability, with Nuxeo Studio, a configuration and customization
+      environment
+    </p>
+    <p> * Inter-operability, with a CMIS-enabled platform</p>
+  </description>
+  <home-page>http://doc.nuxeo.com/display/CMDOC/Nuxeo+CMF+User+Guide</home-page>
+  <vendor>Nuxeo</vendor>
+  <installer restart="true" />
+  <uninstaller restart="true" />
+  <!-- <hotreload-support>false</hotreload-support> -->
+  <!-- <require-terms-and-conditions-acceptance>false -->
+  <!-- </require-terms-and-conditions-acceptance> -->
+  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
+  <production-state>production_ready</production-state>
+  <supported>true</supported>
+  <platforms>
+    <platform>cap-@VERSION@</platform>
+  </platforms>
+  <provides>
+    <package>nuxeo-content-browser:1.0.0-cmf:1.0.0-cmf</package>
+  </provides>
+  <conflicts>
+    <package>nuxeo-dm</package>
+    <package>nuxeo-dam</package>
+  </conflicts>
+  <license>LGPL</license>
+  <license-url>http://www.gnu.org/licenses/lgpl.html</license-url>
+</package>

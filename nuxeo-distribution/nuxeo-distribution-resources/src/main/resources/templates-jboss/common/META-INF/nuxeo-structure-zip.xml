@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<structure bundles="lib/nuxeo-*.jar:lib/*-fragment.xml:lib/*-fragments.xml:bundles/*.jar:bundles/*.rar:bundles/*-fragment.xml:bundles/*-fragments.xml:plugins/*.jar:plugins/*-fragment.xml:plugins/*-fragments.xml">
+    <preprocessor enabled="false" />
+    <properties>
+      <property name="nuxeo.home.dir">${jboss.server.data.dir}/NXRuntime</property>
+      <property name="nuxeo.config.dir">${nuxeo.ear.dir}/config</property>
+    </properties>
+</structure>
+
