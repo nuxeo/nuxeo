@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService"
+  version="1.0.0">
+
+  <implementation
+    class="org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService" />
+  </service>
+
+  <extension-point name="queryMaker">
+    <object class="org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerDescriptor" />
+  </extension-point>
+
+</component>
