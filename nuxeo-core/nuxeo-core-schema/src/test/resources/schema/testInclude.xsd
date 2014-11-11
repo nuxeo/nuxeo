@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<xs:schema
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:complexType name="typeA">
+    <xs:sequence>
+      <xs:element name="field1" type="xs:string"/>
+      <xs:element name="field2" type="xs:string"/>
+      <xs:element name="field3" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
+
+
