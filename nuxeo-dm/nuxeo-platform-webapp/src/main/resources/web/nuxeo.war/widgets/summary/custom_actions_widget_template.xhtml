@@ -1,0 +1,37 @@
+<c:if test="true"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+<nxu:set var="category"
+  value="#{nxu:test(empty widgetProperty_category, 'DOCUMENT_SUMMARY_CUSTOM_ACTIONS', widgetProperty_category)}"
+  cache="true">
+
+  <div class="#{widgetProperty_styleClass}">
+
+    <c:if test="#{!empty widget.label and widget.handlingLabels}">
+
+      <h3 class="summaryTitle">
+        <ui:include src="/widgets/incl/widget_label_template.xhtml">
+          <ui:param name="labelStyleClass" value="#{widgetProperty_headerStyleClass}" />
+        </ui:include>
+      </h3>
+
+    </c:if>
+
+    <div class="#{widgetProperty_subStyleClass}">
+      <nxl:widgetType name="documentActions" mode="#{widget.mode}"
+        widgetName="custom_#{widget.name}"
+        label="#{widget.label}"
+        value="#{currentDocument}" properties="#{widget.properties}"
+        widgetProperty_category="#{category}" actionsDisplay="#{widgetProperty_display}"
+        ignoreTemplateProperty="true" subWidgets="#{widget.subWidgets}"
+        addForm="false" />
+    </div>
+
+  </div>
+
+</nxu:set>
+
+</c:if>

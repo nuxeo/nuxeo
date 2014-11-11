@@ -1,0 +1,22 @@
+<div>
+
+  <script type="text/javascript">
+      jQuery(document).ready(function($) {
+        jQuery('.dropDownMenu').click(function(e) {
+          var display = jQuery(this).find('ul').css('display');
+          if (display === 'none') {
+            jQuery('.dropDownMenu').find('ul').hide();
+            jQuery(this).find('ul').show();
+          } else {
+            jQuery(this).find('ul').hide();
+          }
+          e.stopPropagation();
+        });
+
+        jQuery(document).click(function() {
+          jQuery('.dropDownMenu').find('ul').hide();
+        });
+      });
+    </script>
+
+</div>

@@ -1,0 +1,74 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes">
+
+  <h3><h:outputText value="#{messages['title.availableDocumentTypes']}" /></h3>
+
+  <div class="content">
+
+    <c:if test="#{empty typesMap.entrySet}">
+      <p class="popUpDescription">
+        <h:outputText value="#{messages['label.availableDocumentTypes.noTypeAvailable']}" />
+      </p>
+    </c:if>
+
+    <c:if test="#{not empty typesMap.entrySet}">
+
+      <h:form id="#{fancyboxFormId}">
+
+        <p class="popUpDescription">
+          <h:outputText value="#{messages['help.chooseDocumentType']}" />
+        </p>
+
+        <table cellspacing="2">
+          <tr>
+            <nxu:dataList var="typesList" value="#{typesMap.entrySet}"
+              id="selectDocumentTypeForCreationTable">
+              <td style="vertical-align : top;width : 300px;">
+                <div>
+                  <h4 class="documentTypes">
+                    <h:outputText value="#{messages[typesList.key]}" />
+                  </h4>
+                  <table>
+                    <tr>
+                      <nxu:dataList value="#{typesList.value}" var="typeColumn"
+                        id="selectDocumentTypeForCreationCategory">
+                        <td valign="top">
+                          <nxu:dataList value="#{typeColumn}" var="type"
+                            id="selectDocumentTypeForCreationCategoryTable">
+                            <div class="documentType">
+                              <h:commandLink action="#{documentActions.createDocument(type.id)}"
+                                id="selectDocumentTypeForCreationCategoryImageLink">
+                                <h:graphicImage height="32" width="32" value="#{type.bigIcon}"
+                                  rendered="#{!empty type.bigIcon}" />
+                              </h:commandLink>
+                              <h:commandLink class="documentTypeLink"
+                                action="#{documentActions.createDocument(type.id)}"
+                                id="selectDocumentTypeForCreationCategoryTitleLink">
+                                <h:outputText value="#{messages[type.label]}" />
+                              </h:commandLink>
+                              <div style="clear: both;"></div>
+                            </div>
+                          </nxu:dataList>
+                        </td>
+                      </nxu:dataList>
+                    </tr>
+                  </table>
+                </div>
+              </td>
+            </nxu:dataList>
+          </tr>
+        </table>
+
+      </h:form>
+
+    </c:if>
+
+  </div>
+
+</div>
