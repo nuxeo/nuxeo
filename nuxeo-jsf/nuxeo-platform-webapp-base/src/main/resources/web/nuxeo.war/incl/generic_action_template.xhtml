@@ -1,0 +1,148 @@
+<span xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+<c:if test="false">
+Template displaying an action depending of its type (@since 5.6).
+
+Parameters:
+- action: the action instance (mandatory)
+- fancybox 'include' property contains resource
+- fancybox 'iframe' property contains method to resolve
+</c:if>
+
+  <c:choose>
+
+    <c:when test="#{action.type == 'button'}">
+      <nxh:commandButton action="#{action.getLink()}"
+        id="#{idPrefix}#{action.id}"
+        onclick="#{action.confirm}"
+        value="#{messages[action.label]}"
+        styleClass="#{nxu:test(empty action.properties.styleClass, 'button', action.properties.styleClass)}">
+        <ui:insert name="inside_action" />
+      </nxh:commandButton>
+    </c:when>
+
+    <c:when test="#{action.type == 'link'}">
+      <nxh:commandLink action="#{action.getLink()}"
+        id="#{idPrefix}#{action.id}"
+        onclick="#{action.confirm}"
+        value="#{messages[action.label]}"
+        styleClass="#{action.properties.styleClass}">
+        <ui:insert name="inside_action" />
+      </nxh:commandLink>
+    </c:when>
+
+    <c:when test="#{action.type == 'link_icon_text'}">
+      <nxh:commandLink action="#{action.link}"
+        id="#{idPrefix}#{action.id}"
+        onclick="#{action.confirm}"
+        styleClass="#{action.properties.styleClass}">
+        <h:graphicImage value="#{action.icon}"
+          rendered="#{not empty action.icon}"
+          title="#{messages[action.label]}"
+          alt="#{messages[action.label]}"
+          styleClass="smallIcon" />
+        <h:outputText value=" #{messages[action.label]}" />
+        <ui:insert name="inside_action" />
+      </nxh:commandLink>
+    </c:when>
+
+    <c:when test="#{action.type == 'bare_link'}">
+      <h:outputLink value="#{action.getLink()}"
+        target="#{action.properties.target}"
+        onclick="#{action.confirm}"
+        styleClass="#{action.properties.styleClass}">
+        <h:graphicImage value="#{action.icon}"
+          rendered="#{not empty action.icon}"
+          title="#{messages[action.label]}"
+          alt="#{messages[action.label]}"
+          styleClass="smallIcon" />
+        <h:outputText value="#{messages[action.label]}" />
+        <ui:insert name="inside_action" />
+      </h:outputLink>
+    </c:when>
+
+    <c:when test="#{action.type == 'link_icon'}">
+      <nxh:commandLink action="#{action.getLink()}"
+        id="#{idPrefix}#{action.id}"
+        onclick="#{action.confirm}"
+        styleClass="#{nxu:test(empty action.properties.styleClass, 'button', action.properties.styleClass)}">
+        <h:graphicImage value="#{action.icon}"
+          rendered="#{not empty action.icon}"
+          title="#{messages[action.label]}"
+          alt="#{messages[action.label]}"
+          styleClass="smallIcon" />
+        <ui:insert name="inside_action" />
+      </nxh:commandLink>
+    </c:when>
+
+    <c:when test="#{action.getType() == 'fancybox'}">
+      <nxu:set var="include"
+        value="#{action.properties.fancybox.properties.include}">
+        <nxu:set var="iframe"
+          value="#{action.properties.fancybox.properties.iframe}"
+          resolveTwice="true">
+          <c:choose>
+            <c:when test="#{iframe eq null}">
+              <a4j:commandLink id="#{idPrefix}#{action.id}_link"
+                ajaxSingle="true"
+                ignoreDupResponses="true" requestDelay="100"
+                onclick="showFancyBox('##{action.id}_box');#{action.properties.fancybox.properties.onclick}"
+                styleClass="button">
+                <h:graphicImage value="#{action.icon}"
+                  rendered="#{not empty action.icon}"
+                  title="#{messages[action.label]}"
+                  alt="#{messages[action.label]}"
+                  styleClass="smallIcon" />
+              </a4j:commandLink>
+              <ui:insert name="inside_action" />
+              <div style="display: none;">
+                <div id="#{idPrefix}#{action.id}_box">
+                  <ui:include src="#{include}" />
+                </div>
+              </div>
+            </c:when>
+            <c:otherwise>
+              <a4j:commandLink id="#{idPrefix}#{action.id}_link"
+                ajaxSingle="true"
+                ignoreDupResponses="true" requestDelay="100"
+                onclick="javascript:showFancyBox('#{iframe}');"
+                styleClass="button">
+                <h:graphicImage value="#{action.icon}"
+                  rendered="#{not empty action.icon}"
+                  title="#{messages[action.label]}"
+                  alt="#{messages[action.label]}"
+                  styleClass="smallIcon" />
+                <ui:insert name="inside_action" />
+              </a4j:commandLink>
+            </c:otherwise>
+          </c:choose>
+        </nxu:set>
+      </nxu:set>
+    </c:when>
+
+    <!-- Return an icon + text link if type is null -->
+    <c:otherwise>
+      <nxh:commandLink action="#{action.getLink()}"
+        id="#{idPrefix}#{action.id}"
+        onclick="#{action.confirm}"
+        styleClass="#{action.properties.styleClass}">
+        <h:graphicImage value="#{action.icon}"
+          rendered="#{not empty action.icon}"
+          title="#{messages[action.label]}"
+          alt="#{messages[action.label]}"
+          styleClass="smallIcon" />
+        <h:outputText value=" #{messages[action.label]}" />
+        <ui:insert name="inside_action" />
+      </nxh:commandLink>
+    </c:otherwise>
+
+  </c:choose>
+
+</span>
