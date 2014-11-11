@@ -1,0 +1,4 @@
+## Edit this file to customize your configuration ##
+mongodb.target=.
+
+nuxeo.mongodb.server=localhost:27017

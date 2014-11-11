@@ -1,0 +1,45 @@
+<package type="addon" name="nuxeo-dm" version="@VERSION@">
+  <title>Nuxeo DM (deprecated)</title>
+  <description>
+    <p>
+      This is a transitional package with dependencies to the following
+      packages
+      providing equivalent features:
+      <ul>
+        <li>nuxeo-dam,</li>
+        <li>nuxeo-virtualnavigation,</li>
+        <li>nuxeo-imap-connector,</li>
+        <li>nuxeo-diff,</li>
+        <li>nuxeo-opensocial</li>
+      </ul>
+    </p>
+  </description>
+  <home-page>http://doc.nuxeo.com/x/bIEk</home-page>
+  <vendor>Nuxeo</vendor>
+  <installer restart="true" />
+  <uninstaller restart="true" />
+  <!-- <hotreload-support>false</hotreload-support> -->
+  <!-- <require-terms-and-conditions-acceptance>false -->
+  <!-- </require-terms-and-conditions-acceptance> -->
+  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
+  <production-state>production_ready</production-state>
+  <supported>true</supported>
+  <platforms>
+    <platform>cap-@VERSION@</platform>
+  </platforms>
+  <dependencies>
+    <package>nuxeo-dam</package>
+    <package>nuxeo-virtualnavigation</package>
+    <package>nuxeo-imap-connector</package>
+    <package>nuxeo-diff</package>
+    <package>nuxeo-opensocial</package>
+  </dependencies>
+  <provides>
+    <package>nuxeo-content-browser:1.0.0:1.0.0</package>
+  </provides>
+  <conflicts>
+    <package>nuxeo-cmf</package>
+  </conflicts>
+  <license>LGPL</license>
+  <license-url>http://www.gnu.org/licenses/lgpl.html</license-url>
+</package>

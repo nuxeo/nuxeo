@@ -1,0 +1,1 @@
+Put here the custom bundles to deploy when activating the custom template.
