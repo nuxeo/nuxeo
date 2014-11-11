@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerService"
+  version="1.0.0">
+
+  <documentation>
+    The HTML Sanitizer Service sanitizes some HTML fields
+    to remove potential cross-site scripting attack in them.
+
+    @author Florent Guillaume
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerService" />
+  </service>
+
+  <extension-point name="sanitizer">
+    <documentation>
+      Specify the types of documents and fields to sanitize.
+
+      The following example configures just based on field
+      names:
+
+      <code>
+        <sanitizer name="foo">
+          <field>note</field>
+          <field>comment:text</field>
+        </sanitizer>
+      </code>
+
+      The following specifies that only the note field of the Note type
+      will be sanitized:
+
+      <code>
+        <sanitizer name="foo">
+          <type>Note</type>
+          <field>note</field>
+        </sanitizer>
+      </code>
+
+      The following example disables a sanitizer:
+
+      <code>
+        <sanitizer name="default" enabled="false" />
+      </code>
+
+      Sanitizing can also be enabled on a field only if a field has a given value.
+      This is useful when the same document field can contain text, html or wiki markup.
+      For a webpage, you may want to only sanitize the webpages that are using HTML.
+      Here is an example configuration.
+
+     <code>
+       <sanitizer name="foo">
+         <field filter="webp:isRichtext" filterValue="true">webp:content</field>
+       </sanitizer>
+     </code>
+
+     In this example the field webp:content will be sanitized only when
+     the String representation of the webp:isRichtext is "true".
+
+     If you want to <em>not</em> sanitize when a given value is present, use:
+
+     <code>
+       <sanitizer name="foo">
+         <field filter="mime_type" filterValue="text/plain" sanitize="false">note</field>
+       </sanitizer>
+     </code>
+
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerDescriptor" />
+  </extension-point>
+
+  <extension-point name="antisamy">
+    <documentation>
+      The following allows you to change the AntiSamy policy file:
+
+      <code>
+        <antisamy policy="some-file.xml"/>
+      </code>
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerAntiSamyDescriptor" />
+  </extension-point>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <description>
+      Listener that runs (very early) the HTML Sanitizer.
+    </description>
+    <listener name="htmlsanitizerlistener"
+      class="org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerListener"
+      postCommit="false" async="false" priority="-10">
+    </listener>
+  </extension>
+
+</component>
