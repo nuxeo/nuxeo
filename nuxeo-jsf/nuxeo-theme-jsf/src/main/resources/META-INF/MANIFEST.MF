@@ -1,0 +1,11 @@
+Require-Bundle: org.nuxeo.theme.fragments
+Bundle-Vendor: Chalmers
+Bundle-Version: 0.0.0.SNAPSHOT
+Manifest-Version: 1.0
+Bundle-Category: web,
+ stateless
+Bundle-Name: NXThemes JSF components
+Bundle-Localization: bundle
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/nxthemes-jsf-contrib.xml
+Bundle-SymbolicName: org.nuxeo.theme.jsf;singleton:=true
