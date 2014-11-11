@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes">
+
+  <ui:define name="page title">
+    <h:outputText value="#{nuxeoApplicationName} - #{currentDomain.dublincore.title}"/>
+  </ui:define>
+
+  <ui:define name="body">
+    <div>
+
+      <h1><h:outputText value="#{messages['title.header.domain']}" /></h1>
+      <p class="currentItemDescription"><h:outputText
+         value="#{currentDomain.dublincore.description}"/></p>
+
+      <ui:include src="/incl/document_action_tabs.xhtml"/>
+
+      <div style="clear:both"></div>
+      <div class="tabsContent">
+        <ui:include src="#{webActions.currentTabAction.link}"/>
+      </div>
+
+      <div class="closedContent">
+        <h3>
+          <h:outputText value="#{messages['title.domainSearch']}"/>
+        </h3>
+        <ui:include src="/incl/tabs/search_modif_content.xhtml" />
+      </div>
+
+    </div>
+  </ui:define>
+</nxthemes:composition>

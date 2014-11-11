@@ -1,0 +1,25 @@
+/*====== Default Print CSS - lkemen@nuxeo.com - Sept 2011 ======*/
+
+body { color: "black (__FLAVOUR__ color)"; font-family: "default (__FLAVOUR__ font)" }
+h1,h2,h3,h4,h5,h6 { margin: 0; padding: 0 }
+
+div { background-color: #fff; float: none; }
+
+a:link, a:visited { background: transparent; color: "black (__FLAVOUR__ color)"; font-weight: bold; text-decoration: none; }
+
+/* Breadcrumb */
+.breadcrumbs { float:left; font-size: .8em; margin-bottom: 20px }
+
+/* Tables */
+.fieldColumn { padding-left: 5px }
+.dataOutput th, .dataList th { background-color: "neutral.lighter (__FLAVOUR__ background)"; color:; padding: 4px 5px; text-align: left;  }
+.dataOutput .iconColumn img, .dataInput .iconColumn img, .dataList .iconColumn img { display: block }
+.dataInput, .dataOutput, .dataOutput2Columns, .dataList { border: 1px solid #dbdbdb; border-collapse: collapse; }
+.dataOutput td, .dataList td { border-width: 1px; border-style: solid none; border-color: "light (__FLAVOUR__ border)"; padding: 5px 3px }
+.dataOutput2Columns td { padding: 5px 3px; vertical-align: top }
+
+/* Images */
+.smallIcon { height: 16px; width: 16px }
+
+/* Display:none :) for inputs, tabs, actions, tips, layout selector, rss links, filter */
+input, .tabsBar, .action_bar, .tooltip, .listingLayoutSelector, .syndicationLinks, .foldableLightBox { display: none }
