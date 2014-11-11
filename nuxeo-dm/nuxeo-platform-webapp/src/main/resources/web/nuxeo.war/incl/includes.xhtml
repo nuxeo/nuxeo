@@ -1,0 +1,344 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+ xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<script type="text/javascript" src="#{baseURL}seam/resource/remoting/interface.js?#{SeamRemotingBeanNames}"></script>
+<script type="text/javascript">
+<h:outputText
+   value="var currentConversationId='#{nxu:htmlEscape(org.jboss.seam.core.manager.currentConversationId)}';"/>
+  <h:outputText
+    value="var currentDocURL='#{currentServerLocation.name}/#{currentDocument.id}';"/>
+    // set the conversation id before doing any call
+    Seam.Remoting.getContext().setConversationId(currentConversationId);
+    Seam.Remoting.contextPath = '#{contextPath}';
+</script>
+
+<div style="display:none">
+ <span id="js-label.documents.confirmDeleteDocuments"> <h:outputText value="#{messages['label.documents.confirmDeleteDocuments']}" /></span>
+ <span id="js-label.documents.confirmUndeleteDocuments"> <h:outputText value="#{messages['label.documents.confirmUndeleteDocuments']}" /></span>
+ <span id="js-label.documents.confirmDeleteDocumentsForever"> <h:outputText value="#{messages['label.documents.confirmDeleteDocumentsForever']}" /></span>
+ <span id="js-label.review.confirmDeleteTask"> <h:outputText value="#{messages['label.review.confirmDeleteTask']}" /></span>
+</div>
+
+<script type="text/javascript" src="#{baseURL}js/?scripts=confirmAlerts.js|DragAndDrop.js|tableSelections.js|customSeamRemotingWaiter.js|custom-javascript.js|default-contextmenu-actions.js|custom-contextmenu-actions.js|tooltip.js"></script>
+
+<script type="text/javascript">
+<h:outputText
+value="var baseURL='#{baseURL}';"/>
+<!--
+var TestingMode=false;
+
+function getCurrentConversationId()
+{
+    return currentConversationId;
+}
+
+function getCurrentDocURL()
+{
+ return currentDocURL
+}
+
+function getBaseURL()
+{
+  return baseURL
+}
+
+function getUploadURL()
+{
+ return baseURL + "restAPI/" + currentDocURL;
+}
+
+ function addFileFromPlugin(fullName,content,mime,path,UseBase64){
+    //Seam.Remoting.contextPath = "/nuxeo";
+    // XXX use the path as a relative path on currentDocument
+   Seam.Component.getInstance("FileManageActions").addFileFromPlugin(content,mime,fullName,path,UseBase64,FileAddedCallback);
+ }
+
+ function addFolderFromPlugin(name,path){
+    //Seam.Remoting.contextPath = "/nuxeo";
+   Seam.Component.getInstance("FileManageActions").addFolderFromPlugin(name,path,FolderAddedCallback);
+ }
+
+var ECMFolderName="";
+var ECMFolderPath="";
+var ECMFileName="";
+var ECMFileContent;
+var ECMFileMime="";
+var ECMPluginCallBack=null;
+var ECMPluginCancelCallBack=null;
+var ECMUseBase64=true;
+var WaitScreenDisplayed=false;
+
+var ECMNBTotalFiles=0;
+var ECMNBFilesProcessed=0;
+
+var ECMWritePermission=null;
+
+ function canWrite(){
+    // Seam.Remoting.contextPath = "/nuxeo";
+   Seam.Component.getInstance("FileManageActions").canWrite(CanWriteCallback);
+ }
+
+// Called by Plugin to init transfert
+function initTransfert(nbFiles,CancelCB)
+{
+  ECMPluginCancelCallBack=CancelCB;
+  displayWaitScreen();
+  ECMNBFilesProcessed=0;
+  if (nbFiles)
+    ECMNBTotalFiles=nbFiles;
+}
+
+// Called by Plugin to end transfert
+function endTransfert()
+{
+  WaitScreenDisplayed=false;
+  window.location = window.location;
+}
+
+// Called by IE Plugin to end transfert
+function endIETransfert()
+{
+  window.location = window.location;
+  WaitScreenDisplayed=false;
+}
+
+// Called by Plugin to ask permission
+function fireCanWrite(plugin_callback){
+
+  ECMPluginCallBack=plugin_callback;
+  if (document.createEvent){
+    // FF : need event support to change the security context
+    var evt = document.createEvent("Events");
+    evt.initEvent("NXEventCanWrite", true, true);
+    window.dispatchEvent(evt);
+  } else {
+    // no custom event management in IE but we don't need it
+    doCanWrite(null);
+  }
+ }
+
+// Called by Plugin to send a file
+function fireCreateFile(fullName,content,mime,path,useBase64,plugin_callback)
+ {
+ ECMFileName=fullName;
+ ECMFileContent=content;
+ ECMFileMime=mime;
+ ECMFolderPath=path;
+ ECMPluginCallBack=plugin_callback;
+ ECMUseBase64=useBase64;
+
+ displayWaitScreen(ECMNBTotalFiles + ' to upload');
+
+
+  if (document.createEvent){
+   var evt = document.createEvent("Events");
+   evt.initEvent("NXEventCreateFile", true, true);
+   window.dispatchEvent(evt);
+  } else{
+    // no custom event management in IE but we don't need it
+    doCreateFile(null);
+  }
+
+ }
+
+// Called by Plugin to send a file
+function fireCreateFolder(name,path,plugin_callback)
+ {
+ ECMFolderName=name;
+ ECMFolderPath=path;
+ ECMPluginCallBack=plugin_callback;
+
+  if (document.createEvent)
+  {
+    // FF : need event support to change the security context
+    var evt = document.createEvent("Events");
+    evt.initEvent("NXEventCreateFolder", true, true);
+    window.dispatchEvent(evt);
+  }
+  else
+    {
+    // no custom event management in IE but we don't need it
+    doCreateFolder(null);
+    }
+ }
+
+// internal functions
+
+function transfertCanceled()
+{
+  closeWaiter();
+// RC: per Vlad's request
+//  ECMPluginCancelCallBack();
+  if (ECMPluginCancelCallBack)
+    {
+    if ( typeof(ECMPluginCancelCallBack)=="function" )
+      ECMPluginCancelCallBack(result);
+    else if ( typeof(ECMPluginCancelCallBack)=="string" )
+      eval( ECMPluginCancelCallBack + "(\"" + result + "\")");
+
+    }
+}
+
+function displayWaitScreen(nbFiles)
+{
+if (!WaitScreenDisplayed)
+  {
+  openWaiter();
+  WaitScreenDisplayed=true;
+  }
+}
+
+function updateWaitScreen()
+{
+try {
+  var txt = 'Processing file ' + ECMNBFilesProcessed + '/' + ECMNBTotalFiles;
+  $('waiter_message').innerHTML=txt;
+  }
+catch (e)
+  {
+  alert(e);
+  }
+}
+
+
+// Called by the NXEventCreateFile event
+// ie : the JS Seam calls can't be made from the XPI
+function doCanWrite(evt)
+{
+  canWrite()
+}
+
+
+// Called by the NXEventCreateFile event
+// This is usefull to change the security context
+// ie : the JS Seam calls can't be made from the XPI
+function doCreateFile(evt)
+{
+  ECMNBFilesProcessed+=1;
+  updateWaitScreen();
+  if (TestingMode)
+    setTimeout('FileAddedCallback(Math.random())',1000);
+  else
+    addFileFromPlugin(ECMFileName,ECMFileContent,ECMFileMime,ECMFolderPath,ECMUseBase64)
+
+}
+
+// Called by the NXEventCreateFolder event
+// This is usefull to change the security context
+// ie : the JS Seam calls can't be made from the XPI
+function doCreateFolder(evt)
+{
+  ECMNBFilesProcessed+=1;
+  updateWaitScreen();
+  //alert("CreateFolderEvent received");
+  if (TestingMode)
+    setTimeout('FolderAddedCallback(Math.random())',1000);
+  else
+    addFolderFromPlugin(ECMFolderName,ECMFolderPath)
+
+}
+
+// CallBack from the Seam AJAX request
+// Also call the Plugin callback to fetch next files
+var result;
+function FileAddedCallback(result)
+{
+  //alert("Return from Seam : " + result);
+  LogInBrowser( 'In FileAddedCallback');
+
+  if(typeof(result)!="undefined"){
+    if (ECMPluginCallBack)
+    {
+      if ( typeof(ECMPluginCallBack)=="function" )
+        ECMPluginCallBack(result);
+      else if ( typeof(ECMPluginCallBack)=="string" )
+        eval( ECMPluginCallBack + "(\"" + result + "\")");
+
+    }
+  } else{
+    alert("undefined result in FileAddedCallback")
+  }
+}
+
+// CallBack from the Seam AJAX request
+// Also call the Plugin callback to fetch next files
+var result;
+function FolderAddedCallback(result)
+{
+  //alert("Return from Seam : " + result);
+  LogInBrowser( 'In FolderAddedCallback');
+  if(typeof(result)!="undefined"){
+    if (ECMPluginCallBack)
+    {
+      if ( typeof(ECMPluginCallBack)=="function" )
+        ECMPluginCallBack(result);
+      else if ( typeof(ECMPluginCallBack)=="string" )
+        eval( ECMPluginCallBack + "(\"" + result + "\")");
+    }
+  } else{
+    alert("undefined result in FolderAddedCallback")
+  }
+}
+
+// CallBack from the Seam AJAX request*
+var result;
+function CanWriteCallback(result)
+{
+  //alert("Return from Seam : " + result);
+  LogInBrowser( 'In CanWriteCallback');
+  if(typeof(result)!="undefined"){
+    if (ECMPluginCallBack){
+      if ( typeof(ECMPluginCallBack)=="function" )
+        ECMPluginCallBack(result);
+      else if ( typeof(ECMPluginCallBack)=="string" )
+        eval( ECMPluginCallBack + "(\"" + result + "\")");
+    }
+  } else{
+    alert("undefined result in CanWriteCallback")
+  }
+}
+
+// apparently IEHelper doesn't like this
+//if(navigator.appCodeName=="Mozilla"){
+//  var external = null;
+//}
+
+function LogInBrowser(text)
+{
+  try
+  {
+    eval( 'window.external.LogText(\"' + text + '\")' );
+  }
+  catch(e)
+  {
+     if (TestingMode) {
+       alert("Error : " + e.name + "\n"+ e.message);
+     }
+  }
+}
+
+if (window.addEventListener)
+{
+  // register event listener for checkPermission
+  window.addEventListener ("NXEventCanWrite", doCanWrite, false);
+  // register event listener for file creation
+  window.addEventListener ("NXEventCreateFile", doCreateFile, false);
+  // register event listener for folder creation
+  window.addEventListener ("NXEventCreateFolder", doCreateFolder, false);
+}
+
+-->
+</script>
+
+
+<!-- waiter html -->
+<div id="waiter" style="display: none;">
+<span id="waiter_message"> upload in progress </span><br/>
+<img src="#{baseURL}/waitdialog/NXwaiter.gif"/><br/>
+<a id="waiter_close" href="#" onclick="transfertCanceled()">close</a>
+</div>
+<!--  waiter overlay  -->
+<div style="position: absolute; top: 0pt; left: 0pt; z-index: 9; width: 100%; opacity: 0.6; display: none;" class="overlay_waiter" id="overlay_modal"></div>
+<!--  don't remove or the plugin won't be activated -->
+<input id="Nx5PluginEnabled" type="hidden" value="true" />
+</div>
