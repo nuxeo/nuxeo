@@ -1,0 +1,9 @@
+<component name="org.nuxeo.ecm.webengine.core.service.json">
+
+  <implementation class="org.nuxeo.ecm.webengine.JsonFactoryManagerImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.webengine.JsonFactoryManager" />
+  </service>
+
+</component>
