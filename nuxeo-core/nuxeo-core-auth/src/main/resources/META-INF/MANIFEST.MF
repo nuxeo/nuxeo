@@ -1,0 +1,22 @@
+Export-Package: org.nuxeo.ecm.core.auth
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: org.nuxeo.ecm.core.auth
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 5.4.1.qualifier
+Bundle-ManifestVersion: 2
+Import-Package: javax.security.auth,
+ javax.security.auth.callback,
+ javax.security.auth.login,
+ javax.security.auth.spi,
+ org.nuxeo.common,
+ org.nuxeo.common.utils,
+ org.nuxeo.common.xmap,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.runtime.api.login,
+ org.osgi.framework
+Bundle-SymbolicName: org.nuxeo.ecm.core.auth
+Bundle-Activator: org.nuxeo.ecm.core.auth.Activator

@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.lifecycle.TestLifeCycleManagerReverseExtensions">
+
+
+	<extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+	           point="lifecycle">
+		<lifecycle name="defaultReverse" defaultInitial="work">
+			<states>
+			  <state name="work">
+			  	<transitions>
+			  		<transition>approve</transition>
+			  		<transition>cancel</transition>
+			  		<transition>obsolete</transition>
+			  	</transitions>
+			  </state>
+			  <state name="approved">
+			  	<transitions>
+			  		<transition>obsolete</transition>
+			  	</transitions>
+			  </state>
+			  <state name="cancelled">
+			  	<transitions>
+			  		<transition>backToWork</transition>
+			  	</transitions>
+			  </state>
+			  <state name="obsolete">
+			  </state>
+			</states>
+			<transitions>
+				<transition name="approve" destinationState="approved">
+					<description>Approve the document</description>
+				</transition>
+				<transition name="cancel" destinationState="cancelled">
+					<description>Cancel the document</description>
+				</transition>
+				<transition name="backToWork" destinationState="work">
+					<description>Document goes back to project</description>
+				</transition>
+				<transition name="obsolete" destinationState="obsolete">
+					<description>Document becomes obsolete</description>
+				</transition>
+			</transitions>
+		</lifecycle>
+	</extension>
+
+</component>
