@@ -1,0 +1,46 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<h3><h:outputText value="#{messages['label.comments.add']}"/></h3>
+<a name="add_comment"/>
+<table class="dataInput">
+  <tr>
+     <td class="labelColumn required">
+      <h:outputText value="#{messages['label.forum.post.title']}"/>
+    </td>
+    <td>
+      <h:inputText id="post_title" value="#{postAction.title}" required="true"/>
+      <h:message styleClass="errorMessage" for="post_title" />
+    </td>
+  </tr>
+  <tr>
+      <td class="labelColumn required">
+        <h:outputText value="#{messages['label.forum.post.description']}"/>
+      </td>
+    <td>
+      <h:inputTextarea rows="5" cols="50" id="post_description" value="#{postAction.text}" required="true"/>
+      <h:message styleClass="errorMessage" for="post_description" />
+    </td>
+  </tr>
+  <tr>
+    <td class="labelColumn">
+      <h:outputText value="#{messages['label.forum.post.attached_file']}"/>
+    </td>
+    <td>
+      <nxu:inputFile id="attached_file"
+        filename="#{postAction.filename}"
+        value="#{postAction.fileContent}"/>
+      <h:message styleClass="errorMessage" for="attached_file"/>
+    </td>
+  </tr>
+</table>
+
+<div class="buttonsGadget">
+  <h:commandButton value="#{messages['command.add']}"
+    action="#{postAction.addPost}" styleClass="button" />
+  <h:commandButton value="#{messages['command.cancel']}"
+    action="#{postAction.cancelPost}" styleClass="button"
+    immediate="true"/>
+</div>
+</div>

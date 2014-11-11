@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: nxnotificationservice-facade
+Bundle-SymbolicName: org.nuxeo.ecm.platform.notification.facade
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateful
+Export-Package: org.nuxeo.ecm.platform.ec.notification,
+ org.nuxeo.ecm.platform.ec.notification.ejb,
+ org.nuxeo.ecm.platform.ec.notification.interfaces,
+ org.nuxeo.ecm.platform.ec.notification.service
+Require-Bundle: org.nuxeo.ecm.platform.audit.api,
+ org.nuxeo.ecm.platform.notification.core
+Nuxeo-Component: OSGI-INF/PlatformBindings.xml

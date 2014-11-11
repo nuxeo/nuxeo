@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.forum.types">
+
+  <require>org.nuxeo.ecm.platform.types</require>
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+    <type id="Workspace" coretype="Workspace">
+      <subtypes>
+        <type>Forum</type>
+      </subtypes>
+    </type>
+
+    <type id="Forum" coretype="Forum">
+      <label>Forum</label>
+      <icon>/icons/forum.gif</icon>
+      <default-view>view_documents</default-view>
+      <bigIcon>/icons/forum_100.png</bigIcon>
+      <description>Forum.description</description>
+      <category>Collaborative</category>
+      <subtypes>
+        <type>Thread</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+    </type>
+
+    <type id="Thread" coretype="Thread">
+      <label>Thread</label>
+      <icon>/icons/forum_thread.gif</icon>
+      <bigIcon>/icons/forum_thread.gif</bigIcon>
+      <description>Thread.description</description>
+      <category>SimpleDocument</category>
+      <default-view>view_documents</default-view>
+      <create-view>thread_create</create-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+    </type>
+
+    <type id="Post" coretype="Post">
+      <icon>/icons/forum_post.gif</icon>
+      <label>label.document.post</label>
+    </type>
+  </extension>
+
+</component>
