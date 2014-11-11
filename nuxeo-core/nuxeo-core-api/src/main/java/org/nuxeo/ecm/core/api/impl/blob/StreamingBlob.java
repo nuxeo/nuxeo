@@ -1,0 +1,204 @@
+/*
+ * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
+package org.nuxeo.ecm.core.api.impl.blob;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Serializable;
+import java.net.URL;
+
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.streaming.ByteArraySource;
+import org.nuxeo.runtime.services.streaming.FileSource;
+import org.nuxeo.runtime.services.streaming.InputStreamSource;
+import org.nuxeo.runtime.services.streaming.StreamSource;
+import org.nuxeo.runtime.services.streaming.StringSource;
+import org.nuxeo.runtime.services.streaming.URLSource;
+
+/**
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
+ */
+public class StreamingBlob extends DefaultBlob implements Serializable {
+
+    // use in memory buffers for data under 1MB
+    public static final int MEM_MAX_LIMIT = 1024 * 1024;
+
+    private static final long serialVersionUID = 8275917049427979525L;
+
+    protected transient StreamSource src;
+
+    protected transient File persistedTmpFile;
+
+    public StreamingBlob(StreamSource src) {
+        this(src, null, null);
+    }
+
+    public StreamingBlob(StreamSource src, String mimeType) {
+        this(src, mimeType, null);
+    }
+
+    public StreamingBlob(StreamSource src, String mimeType, String encoding) {
+        this(src, mimeType, encoding, null, null);
+    }
+
+    public StreamingBlob(StreamSource src, String mimeType, String encoding,
+            String filename, String digest) {
+        this.src = src;
+        this.mimeType = mimeType;
+        this.encoding = encoding;
+        this.filename = filename;
+        this.digest = digest;
+    }
+
+    public static StreamingBlob createFromStream(InputStream is) {
+        return createFromStream(is, null);
+    }
+
+    public static StreamingBlob createFromStream(InputStream is, String mimeType) {
+        if (mimeType == null) {
+            mimeType = "application/octet-stream";
+        }
+        InputStreamSource src = new InputStreamSource(is);
+        return new StreamingBlob(src, mimeType);
+    }
+
+    public static StreamingBlob createFromByteArray(byte[] bytes) {
+        return createFromByteArray(bytes, null);
+    }
+
+    public static StreamingBlob createFromByteArray(byte[] bytes,
+            String mimeType) {
+        if (mimeType == null) {
+            mimeType = "application/octet-stream";
+        }
+        ByteArraySource src = new ByteArraySource(bytes);
+        return new StreamingBlob(src, mimeType);
+    }
+
+    public static StreamingBlob createFromString(String str) {
+        return createFromString(str, null);
+    }
+
+    public static StreamingBlob createFromString(String str, String mimeType) {
+        if (mimeType == null) {
+            mimeType = "application/octet-stream";
+        }
+        StringSource src = new StringSource(str);
+        return new StreamingBlob(src, mimeType);
+    }
+
+    public static StreamingBlob createFromFile(File file) {
+        return createFromFile(file, null);
+    }
+
+    public static StreamingBlob createFromFile(File file, String mimeType) {
+        if (mimeType == null) {
+            mimeType = "application/octet-stream";
+        }
+        FileSource src = new FileSource(file);
+        return new StreamingBlob(src, mimeType);
+    }
+
+    public static StreamingBlob createFromURL(URL url) {
+        return createFromURL(url, null);
+    }
+
+    public static StreamingBlob createFromURL(URL url, String mimeType) {
+        if (mimeType == null) {
+            mimeType = "application/octet-stream";
+        }
+        URLSource src = new URLSource(url);
+        return new StreamingBlob(src, mimeType);
+    }
+
+    @Override
+    public byte[] getByteArray() throws IOException {
+        return src.getBytes();
+    }
+
+    @Override
+    public long getLength() {
+        try {
+            return src.getLength();
+        } catch (IOException e) {
+            return -1;
+        }
+    }
+
+    @Override
+    public Reader getReader() throws IOException {
+        return new InputStreamReader(getStream());
+    }
+
+    @Override
+    public InputStream getStream() throws IOException {
+        return src.getStream();
+    }
+
+    @Override
+    public String getString() throws IOException {
+        return src.getString();
+    }
+
+    @Override
+    public boolean isPersistent() {
+        return src.canReopen();
+    }
+
+    public StreamSource getStreamSource() {
+        return src;
+    }
+
+    /**
+     * If the source is cannot be reopen, copy the binary content of the
+     * original source to a temporary file and replace the source inplace by a
+     * new FileSource instance pointing to the tmp file.
+     *
+     * return the current instance with a re-openable internal source
+     */
+    @Override
+    public Blob persist() throws IOException {
+        if (!isPersistent()) {
+            OutputStream out = null;
+            InputStream in = null;
+            try {
+                persistedTmpFile = File.createTempFile(
+                        "NXCore-persisted-StreamingBlob-", ".tmp");
+                in = src.getStream();
+                out = new FileOutputStream(persistedTmpFile);
+                copy(in, out);
+                src = new FileSource(persistedTmpFile);
+                Framework.trackFile(persistedTmpFile, this);
+            } finally {
+                FileUtils.close(in);
+                FileUtils.close(out);
+            }
+        }
+        return this;
+    }
+
+    public boolean isTemporary() {
+        return persistedTmpFile != null;
+    }
+
+}

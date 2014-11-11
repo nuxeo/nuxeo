@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.lock.LockManagerService"
+  version="1.0.0">
+
+  <documentation>
+    Manages Lock Managers.
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.core.storage.lock.LockManagerService" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.storage.lock.LockManagerService" />
+  </service>
+
+  <extension-point name="lockmanager">
+    <documentation>
+      Extension point to register lock managers.
+
+      A new Lock Manager can be contributed using the following extension point:
+      <code>
+        <lockmanager name="default" class="some.class.implementing.LockManager" />
+      </code>
+      A repository will use the Lock Manager of the same name.
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.core.storage.lock.LockManagerDescriptor" />
+  </extension-point>
+
+</component>
