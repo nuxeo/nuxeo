@@ -1,0 +1,30 @@
+syntax:glob
+.classpath
+.project
+.settings
+nuxeo-distribution-*/bin
+target
+target*
+*~
+*.orig
+.pydevproject
+*.pyc
+*.iml
+*.ipr
+*.iws
+*.bak
+nuxeo-distribution-dm/ftest/funkload/log/*
+nuxeo-distribution-dm/ftest/selenium/result-*.html
+nuxeo-distribution-dm/ftest/selenium/run.conf
+nuxeo-distribution-dm/ftest/selenium/user-extensions.js
+nuxeo-distribution-dm/ftest/selenium/ffprofile/prefs.js
+nuxeo-distribution-dm/ftest/selenium/selenium-server.jar
+nuxeo-distribution-windows/**/obj
+nuxeo-distribution-windows/**/bin
+.DS_Store
+
+# we are trying not to ignore: nuxeo-distribution-jboss/src/main/resources/jboss/bin/
+syntax: regexp
+nuxeo-distribution-[^/]*/bin
+nuxeo-platform-ear/bin
+nuxeo-embedded-launcher/bin
