@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.webengine.blogs.listeners">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="blogCreationListener" async="false" postCommit="false"
+      class="org.nuxeo.webengine.blogs.listeners.BlogActionListener" priority="140">
+      <event>aboutToCreate</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+    <documentation>
+      blog creation listener: set URL with name value
+      @author Rux
+    </documentation>
+  </extension>
+
+</component>
+

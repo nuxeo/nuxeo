@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM task Test
+Bundle-SymbolicName: org.nuxeo.ecm.platform.task.core.test;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateful
+Require-Bundle: org.nuxeo.ecm.platform.task.core

@@ -1,0 +1,38 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <h:form id="addEntryForm">
+
+    <div class="vocabularyEntryContent">
+
+      <h4>
+        <h:outputText
+          value="#{messages['title.vocabulary.entry.details']}" />
+      </h4>
+
+      <nxl:layout name="#{directoryUIActions.currentDirectory.layout}"
+        mode="create" value="#{directoryUIActions.creationDirectoryEntry}" />
+
+      <div class="buttons">
+        <a4j:commandButton value="#{messages['command.create']}"
+          styleClass="button"
+          action="#{directoryUIActions.createDirectoryEntry}"
+          reRender="viewDirectoryPanel" />
+        <a4j:commandButton value="#{messages['command.cancel']}"
+          styleClass="button"
+          action="#{directoryUIActions.resetCreateDirectoryEntry}"
+          immediate="true"
+          reRender="viewDirectoryPanel" />
+      </div>
+
+    </div>
+
+  </h:form>
+
+</div>
