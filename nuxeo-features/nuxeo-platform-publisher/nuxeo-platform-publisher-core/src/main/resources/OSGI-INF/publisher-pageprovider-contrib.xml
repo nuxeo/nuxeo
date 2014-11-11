@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.publisher.pageprovider.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+    <coreQueryPageProvider name="domains_for_publishing">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:primaryType = 'Domain'
+        AND ecm:parentId = ? AND ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>50</pageSize>
+    </coreQueryPageProvider>
+  </extension>
+
+</component>

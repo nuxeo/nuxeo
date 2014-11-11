@@ -1,0 +1,13 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <h:outputText value="#{fieldOrValue.post.creationDate}" rendered="#{fieldOrValue != null}">
+    <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormatter()}"
+      timeZone="#{timeZone}" />
+  </h:outputText>
+  <h:outputText value=" #{messages['label.forum.post.by']} " rendered="#{fieldOrValue != null}"/>
+  <h:outputText value="#{fieldOrValue.post.author}" rendered="#{fieldOrValue != null}"/>
+
+</div>

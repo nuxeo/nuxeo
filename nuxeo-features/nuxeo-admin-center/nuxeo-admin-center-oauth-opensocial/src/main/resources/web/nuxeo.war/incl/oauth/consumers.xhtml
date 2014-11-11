@@ -1,0 +1,24 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+
+  <h3>
+    <h:outputText value="#{messages['label.oauth.consumers']}"/>
+  </h3>
+  <ui:include src="directoryBasedEditor.xhtml">
+    <ui:param name="bean" value="#{oauthConsumersActions}"/>
+    <ui:param name="entryLayoutName" value="oauthConsumerLayoutAdmin"/>
+    <ui:param name="showAddControl" value="true"/>
+    <ui:param name="detailMode" value="edit"/>
+  </ui:include>
+
+  <h3>
+    <h:outputText value="#{messages['label.oauth2.clients']}"/>
+  </h3>
+  <ui:include src="directoryBasedEditor.xhtml">
+    <ui:param name="bean" value="#{oauth2ClientsActions}"/>
+    <ui:param name="entryLayoutName" value="oauth2ClientsLayoutAdmin"/>
+    <ui:param name="showAddControl" value="true"/>
+    <ui:param name="detailMode" value="edit"/>
+  </ui:include>
+
+</div>

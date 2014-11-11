@@ -1,0 +1,144 @@
+<component name="org.nuxeo.ecm.collections.actions">
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="Collections" link="user_center_fragment.xhtml" label="user.center.collections"
+      order="80" icon="/icons/collection_tab.png">
+      <category>USER_CENTER</category>
+      <properties>
+        <property name="alwaysDisplaySubTabs">true</property>
+      </properties>
+      <filter-id>not_anonymous</filter-id>
+    </action>
+
+    <action id="CollectionList" link="/incl/collection_listing.xhtml"
+      label="user.center.collections" order="0">
+      <category>Collections_sub_tab</category>
+      <filter-id>not_readonly</filter-id>
+    </action>
+
+    <action id="addToCollectionAction" order="0" label="label.addToCollection"
+      type="fancybox" icon="/icons/add_to_collection.png" accessKey="u">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>canAddToCollection</filter-id>
+      <properties>
+        <property name="include">/incl/add_to_collection.xhtml</property>
+        <property name="autoDimensions">false</property>
+        <property name="height">300</property>
+        <property name="width">500</property>
+      </properties>
+    </action>
+
+    <action id="selectDocumentToBeAddedToCollection" order="0" label="label.addToCollection.selectDocToBeAddedToCollection"
+      type="fancybox" icon="/icons/action_add.gif" accessKey="u">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>canSelectedToBeAddedToCollection</filter-id>
+      <properties>
+        <property name="include">/incl/select_doc_to_be_added_to_collection.xhtml</property>
+        <property name="autoDimensions">false</property>
+        <property name="height">300</property>
+        <property name="width">500</property>
+      </properties>
+    </action>
+
+
+    <action id="collectionContent" link="/incl/collection_content_listing.xhtml"
+      order="-1" label="action.view.content">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>collectionContentFilter</filter-id>
+    </action>
+
+    <action id="collectionsCurrentSelectionDelete"
+      link="#{deleteActions.purgeSelection('COLLECTIONS_CURRENT_SELECTION')}"
+      label="command.trashDocs" icon="" help="comand.deleteDocs.help"
+      confirm="if( !confirmDeleteDocumentsForever() ) return false;">
+      <category>COLLECTIONS_CURRENT_SELECTION_LIST</category>
+      <filter id="canDeleteCollections">
+        <rule grant="true">
+          <condition>#{deleteActions.getCanDelete('COLLECTIONS_CURRENT_SELECTION')}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="collectionCurrentSelectionDelete"
+      link="#{collectionActions.removeCurrentSelectionFromCollection()}"
+      label="label.removeCurrentSelectionFromCollection" icon="">
+      <category>COLLECTION_ACTION</category>
+      <filter id="canRemoveFromCollection" />
+    </action>
+
+    <action id="addSelectedToCollectionAction" order="1000" label="label.addToCollection"
+      type="fancybox" icon="/icons/add_to_collection.png" accessKey="j">
+      <category>CURRENT_SELECTION_LIST</category>
+      <filter-id>canAddSelectedToCollection</filter-id>
+      <properties>
+        <property name="include">/incl/add_selection_to_collection.xhtml</property>
+        <property name="autoDimensions">false</property>
+        <property name="height">400</property>
+        <property name="width">600</property>
+      </properties>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="create" append="true">
+      <rule grant="true">
+        <permission>AddChildren</permission>
+        <type>Collections</type>
+      </rule>
+    </filter>
+
+    <filter id="canAddToCollection">
+      <rule grant="true">
+        <condition>
+          #{collectionActions.canCurrentDocumentBeCollected()}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="canSelectedToBeAddedToCollection">
+      <rule grant="true">
+        <condition>
+          #{collectionActions.canAddToDocsToCurrentCollection()}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="canAddSelectedToCollection">
+      <rule grant="true">
+        <condition>
+          #{collectionActions.canAddSelectedDocumentBeCollected()}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="canRemoveFromCollection">
+      <rule grant="true">
+        <condition>
+          #{collectionActions.canRemoveFromCollection()}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="rights" append="true">
+      <rule grant="true">
+        <facet>Collection</facet>
+      </rule>
+    </filter>
+
+    <filter id="collectionContentFilter">
+      <rule grant="true">
+        <facet>Collection</facet>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>
