@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.reload">
+
+    <extension target="org.nuxeo.runtime.EventService" point="listeners">
+        <listener class="org.nuxeo.ecm.core.storage.sql.reload.RepositoryReloader">
+            <topic>org.nuxeo.runtime.reload</topic>
+        </listener>
+    </extension>
+
+</component>
