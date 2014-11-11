@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Search facade
+Bundle-SymbolicName: org.nuxeo.ecm.platform.search.ejb;singleton:=true
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: false
+Nuxeo-Component: OSGI-INF/nxsearch-platform-contrib.xml
+Require-Bundle: org.nuxeo.ecm.platform.search

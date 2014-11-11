@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService">
+
+  <implementation
+    class="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService" />
+
+  <extension target="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService"
+    point="sequencerFactory">
+    <className>org.nuxeo.ecm.platform.uidgen.SequencerDummyFactory</className>
+  </extension>
+
+  <extension-point name="generators">
+    <object
+      class="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorDescriptor" />
+  </extension-point>
+
+  <extension-point name="sequencerFactory">
+    <!-- no XObject, className is parsed using DOM calls -->
+  </extension-point>
+
+   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <documentation>
+     </documentation>
+
+    <listener name="uidlistener" async="false" postCommit="false" class="org.nuxeo.ecm.platform.uidgen.corelistener.DocUIDGeneratorListener" priority="10">
+      <event>documentCreated</event>
+    </listener>
+  </extension>
+
+</component>
