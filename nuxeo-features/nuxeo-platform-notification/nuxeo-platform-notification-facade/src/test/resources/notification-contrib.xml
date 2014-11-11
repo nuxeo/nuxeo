@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<component
+    name="org.nuxeo.ecm.platform.notification.service.NotificationContrib">
+
+  <!--  Extension to set the duplicable schemas and properties -->
+  <extension
+      target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+      point="notifications">
+
+    <notification name="Modification" channel="email" template="modif_template">
+      <event name="version_created"/>
+      <event name="doc_removed"/>
+      <event name="doc_created"/>
+      <event name="doc_modified"/>
+      <event name="etc"/>
+    </notification>
+  </extension>
+
+</component>
+
+
+

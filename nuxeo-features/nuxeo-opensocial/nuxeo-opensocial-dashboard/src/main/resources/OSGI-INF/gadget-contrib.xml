@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.opensocial.dashboard.gadget" version="1.0">
+
+  <extension target="org.nuxeo.opensocial.gadgets.service" point="gadget">
+
+    <internalGadget name="tasks">
+      <mountPoint>/tasks</mountPoint>
+      <entryPoint>tasks.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>tasks.png</icon>
+    </internalGadget>
+
+    <internalGadget name="waitingfor">
+      <mountPoint>/waitingfor</mountPoint>
+      <entryPoint>waitingfor.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>tasks.png</icon>
+    </internalGadget>
+
+    <internalGadget name="bbcnews">
+      <mountPoint>/bbcnews</mountPoint>
+      <entryPoint>bbcnews.xml</entryPoint>
+      <category>gadget.category.information</category>
+      <icon>bbc.png</icon>
+    </internalGadget>
+
+    <internalGadget name="hello">
+      <mountPoint>/hello</mountPoint>
+      <entryPoint>hello.xml</entryPoint>
+      <category>gadget.category.information</category>
+      <icon>hello.png</icon>
+    </internalGadget>
+
+    <internalGadget name="userworkspaces">
+      <mountPoint>/userworkspaces</mountPoint>
+      <directory>documentlists</directory>
+      <entryPoint>userworkspaces.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>workspace_64.png</icon>
+    </internalGadget>
+
+    <internalGadget name="userdocuments">
+      <mountPoint>/userdocuments</mountPoint>
+      <directory>documentlists</directory>
+      <entryPoint>userdocuments.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>note_64.png</icon>
+    </internalGadget>
+
+    <internalGadget name="usersites">
+      <mountPoint>/userdocuments</mountPoint>
+      <directory>documentlists</directory>
+      <entryPoint>usersites.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>website_64.png</icon>
+    </internalGadget>
+
+  </extension>
+</component>

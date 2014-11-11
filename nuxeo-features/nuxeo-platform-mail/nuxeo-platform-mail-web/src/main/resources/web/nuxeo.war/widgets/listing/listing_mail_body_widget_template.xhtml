@@ -1,0 +1,51 @@
+<f:subview id="#{widget.id}"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <rich:modalPanel id="#{widget.id}_MailPreviewPanel" autosized="true"
+    onmaskclick="Richfaces.hideModalPanel('#{widget.id}_MailPreviewPanel')">
+
+    <f:facet name="header">
+      <h:outputText value="#{field_2}" />
+    </f:facet>
+    
+    <f:facet name="controls">
+      <h:panelGroup>
+        <h:graphicImage value="/icons/action_delete_mini.gif" style="cursor:pointer;"
+          id="hideMailPopup" >
+          <rich:componentControl for="#{widget.id}_MailPreviewPanel" attachTo="hideMailPopup"
+            operation="hide" event="onclick" />
+        </h:graphicImage>
+      </h:panelGroup>
+    </f:facet>
+
+    <f:subview rendered="#{field_1 != null}" > 
+      <span>
+      <h:outputText escape="false" value="#{field_1}" />
+      </span>
+    </f:subview>  
+    <f:subview rendered="#{field_1 == null}" > 
+      <h:outputText value="#{field_0}" />
+    </f:subview>  
+
+  </rich:modalPanel>
+
+  <f:subview rendered="#{100 > fn:length(field_0)}" > 
+    <span title="#{field_0}" style="cursor:pointer;">
+      <h:outputText  value="#{field_0}" id="#{widget.id}_mailPreviewTrigger" >
+        <rich:componentControl for="#{widget.id}_MailPreviewPanel" attachTo="#{widget.id}_mailPreviewTrigger" operation="show" event="onclick" />
+      </h:outputText>
+    </span>
+  </f:subview>  
+  
+  <f:subview rendered="#{fn:length(field_0) > 99}" > 
+    <span title="#{field_0}"  style="cursor:pointer;">
+      <h:outputText value="#{fn:substring(field_0,0,99)}..." id="#{widget.id}_mailPreviewTrigger">
+        <rich:componentControl for="#{widget.id}_MailPreviewPanel" attachTo="#{widget.id}_mailPreviewTrigger" operation="show" event="onclick" />
+      </h:outputText>
+    </span>
+  </f:subview>  
+   
+</f:subview>
