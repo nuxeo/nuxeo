@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.work.config.test" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="SleepWork">
+      <name>Sleep Work Queue</name>
+      <maxThreads>2</maxThreads>
+      <category>SleepWork</category>
+      <clearCompletedAfterSeconds>1234</clearCompletedAfterSeconds>
+    </queue>
+    <queue id="PrioritizedSleepWork">
+      <name>Prioritized Queue</name>
+      <maxThreads>1</maxThreads>
+      <usePriority>true</usePriority>
+      <category>PrioritizedSleepWork</category>
+    </queue>
+  </extension>
+
+</component>
