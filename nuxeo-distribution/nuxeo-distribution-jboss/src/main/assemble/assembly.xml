@@ -1,0 +1,187 @@
+<project name="nuxeo-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+
+  <target name="init" unless="init.done">
+    <condition property="build.ep">
+      <or>
+        <isset property="maven.profile.nuxeo-ep" />
+        <isset property="maven.profile.all" />
+        <isset property="maven.profile.all-distributions" />
+      </or>
+    </condition>
+    <condition property="build.dm">
+      <or>
+        <isset property="maven.profile.nuxeo-dm" />
+        <isset property="maven.profile.all" />
+        <isset property="maven.profile.all-distributions" />
+      </or>
+    </condition>
+
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <antcall target="expand" />
+    <property name="init.done" value="true" />
+  </target>
+
+  <target name="expand" unless="no.build">
+    <artifact:expand depth="3" />
+  </target>
+
+  <target name="build" depends="init" unless="no.build">
+    <echo>Building JBoss distributions...</echo>
+    <property name="jboss" value="${outdir}/jboss.tmp" />
+
+    <antcall target="prepare-jboss" />
+    <artifact:attach file="pom.xml"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="pom" />
+    <antcall target="build-nuxeo-ep-jboss" />
+    <antcall target="build-nuxeo-dm-jboss" />
+
+    <delete dir="${jboss}" failonerror="false" />
+  </target>
+
+  <target name="prepare-jboss">
+    <unzip dest="${jboss}">
+      <artifact:resolveFile key="org.jboss:jboss-as:4.2.3.GA:zip"
+                            classifier="light" />
+      <patternset>
+        <exclude name="**/bin/classpath.sh" />
+        <exclude name="**/bin/run.conf" />
+        <exclude name="**/bin/jboss_init*.*" />
+        <exclude name="**/bin/probe.*" />
+        <exclude name="**/bin/run.sh" />
+        <exclude name="**/bin/run.bat" />
+        <exclude name="**/bin/shutdown.bat" />
+        <exclude name="**/bin/shutdown.sh" />
+        <exclude name="**/bin/wsconsume.bat" />
+        <exclude name="**/bin/wsconsume.sh" />
+        <exclude name="**/bin/wsprovide.bat" />
+        <exclude name="**/bin/wsprovide.sh" />
+        <exclude name="**/bin/wsrunclient.bat" />
+        <exclude name="**/bin/wsrunclient.sh" />
+        <exclude name="**/bin/wstools.bat" />
+        <exclude name="**/bin/wstools.sh" />
+      </patternset>
+    </unzip>
+    <unzip dest="${jboss}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="doc" />
+    </unzip>
+    <copy todir="${jboss}">
+      <fileset dir="src/main/resources/jboss" />
+    </copy>
+    <unzip dest="${jboss}/bin">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="bin" />
+    </unzip>
+    <chmod dir="${jboss}/bin" perm="ug+x" includes="*.sh,*ctl,*.command" />
+
+    <!-- Remove non-nuxeo information files from root -->
+    <mkdir dir="${jboss}/doc-jboss" />
+    <move todir="${jboss}/doc-jboss">
+      <fileset dir="${jboss}">
+        <include name="lgpl.html" />
+        <include name="JBossORG-EULA.txt" />
+        <include name="jar-versions.xml" />
+        <include name="derby.log" />
+        <include name="copyright.txt" />
+      </fileset>
+    </move>
+
+    <unzip dest="${jboss}/templates">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
+                            classifier="templates-jboss" />
+    </unzip>
+
+    <ant antfile="build.xml" target="patch">
+      <property name="jboss.dir" value="${jboss}" />
+    </ant>
+    <ant antfile="build.xml" target="copy-lib">
+      <property name="jboss.dir" value="${jboss}" />
+    </ant>
+    <copy todir="${jboss}/server/default/lib">
+      <!-- Required by rich faces -->
+      <artifact:resolveFile key="commons-digester:commons-digester" />
+      <!-- Required by rich faces -->
+      <artifact:resolveFile key="commons-beanutils:commons-beanutils" />
+      <!-- Required by tomahawk -->
+      <artifact:resolveFile key="commons-el:commons-el" />
+      <!-- jaxen is needed by dom4j 1.6.1 when using XPath -->
+      <artifact:resolveFile key="metro.webservices:webservices-api" />
+      <artifact:resolveFile key="metro.webservices:webservices-rt" />
+      <artifact:resolveFile key="metro.webservices:webservices-tools" />
+      <artifact:resolveFile key="org.hibernate:hibernate:3.2.4.SP1_CP01-brew_NXP-3881-NXP-4604" />
+      <!-- copy jdbc drivers -->
+      <artifact:resolveFile key="postgresql:postgresql:9.0-801.jdbc4" />
+      <artifact:resolveFile key="mysql:mysql-connector-java:5.1.6" />
+      <!-- copy logging monitor -->
+      <artifact:resolveFile key="org.jboss.services:logging-monitor" />
+    </copy>
+    <copy todir="${jboss}/server/default/deploy">
+      <artifact:resolveFile key="org.nuxeo:nuxeo-jboss-interceptors:4.2.3.GA.2" />
+    </copy>
+  </target>
+
+  <target name="build-nuxeo-ep-jboss"
+          if="build.ep"
+          description="Build JBoss distribution with Nuxeo EP">
+
+    <delete failonerror="false"
+            dir="${outdir}/nuxeo-ep-${maven.project.version}-jboss" />
+    <copy todir="${outdir}/nuxeo-ep-${maven.project.version}-jboss">
+      <fileset dir="${jboss}" />
+    </copy>
+    <chmod dir="${outdir}/nuxeo-ep-${maven.project.version}-jboss/bin"
+           perm="ug+x"
+           includes="*.sh,*ctl,*.command" />
+    <!-- Nuxeo EP EAR -->
+    <unzip dest="${outdir}/nuxeo-ep-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}:zip" />
+    </unzip>
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
+         basedir="${outdir}"
+         includes="nuxeo-ep-${maven.project.version}-jboss/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="nuxeo-ep"
+                     type="zip" />
+  </target>
+
+  <target name="build-nuxeo-dm-jboss"
+          if="build.dm"
+          description="Build JBoss distribution with Nuxeo DM">
+
+    <delete failonerror="false"
+            dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss" />
+    <copy todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss">
+      <fileset dir="${jboss}" />
+    </copy>
+    <chmod dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/bin"
+           perm="ug+x"
+           includes="*.sh,*ctl,*.command" />
+    <!-- Nuxeo DM EAR -->
+    <unzip dest="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
+    </unzip>
+    <!-- Complementary JBoss templates for DM -->
+    <unzip dest="${outdir}/nuxeo-dm-${maven.project.version}-jboss/templates">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
+                            classifier="templates-jboss-dm" />
+    </unzip>
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
+         basedir="${outdir}"
+         includes="nuxeo-dm-${maven.project.version}-jboss/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="nuxeo-dm"
+                     type="zip" />
+  </target>
+
+</project>

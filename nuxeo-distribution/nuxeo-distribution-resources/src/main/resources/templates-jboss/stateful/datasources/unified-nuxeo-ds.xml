@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources>
+  <local-tx-datasource>
+    <jndi-name>NuxeoDS</jndi-name>
+    <connection-url>
+      jdbc:derby:${nuxeo.data.dir}${file.separator}derby${file.separator}${nuxeo.db.name};create=true
+    </connection-url>
+    <driver-class>org.apache.derby.jdbc.EmbeddedDriver</driver-class>
+    <user-name>${nuxeo.db.user}</user-name>
+    <password>${nuxeo.db.password}</password>
+  </local-tx-datasource>
+</datasources>
