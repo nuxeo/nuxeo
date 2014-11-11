@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>importFile</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">importFile</td></tr>
+</thead><tbody>
+<!--@Test groups:importFile,upload|depends:introduction-->
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium importFile</td>
+	<td></td>
+</tr>
+<!--Identification-->
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/workspaces/testWorkspace1/testFilesFolder@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>You are logged as jdoe</td>
+	<td></td>
+</tr>
+<tr>
+	<td>retrieveTestFolderPath</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeExpression</td>
+	<td>javascript{storedVars.testfolderpath + 'hello.pdf';}</td>
+	<td>pdf_filepath</td>
+</tr>
+<tr>
+	<td>storeExpression</td>
+	<td>javascript{storedVars.testfolderpath + 'file_1.txt';}</td>
+	<td>txt_filepath</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${pdf_filepath}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${txt_filepath}</td>
+	<td></td>
+</tr>
+<!--Import d'un fichier pdf-->
+<tr>
+	<td>mouseDown</td>
+	<td>link=Import a file</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>importFileRichUploadForm:upload:file</td>
+	<td>${pdf_filepath}</td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>2000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Upload']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>File saved</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTitle</td>
+	<td>Nuxeo DM - hello</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=hello.pdf (1 kB)</td>
+	<td></td>
+</tr>
+<!--Import d'un fichier texte-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testFilesFolder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>mouseDown</td>
+	<td>link=Import a file</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>importFileRichUploadForm:upload:file</td>
+	<td>${txt_filepath}</td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>2000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Upload']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Note saved</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTitle</td>
+	<td>Nuxeo DM - file_1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>hello 1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=file_1.txt (8 B)</td>
+	<td></td>
+</tr>
+<!--Déconnexion-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
