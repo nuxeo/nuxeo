@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/relation/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/relation/">
+
+  <xs:element name="predicate" type="xs:string" />
+  <xs:element name="source" type="xs:string" />
+  <xs:element name="sourceUri" type="xs:string" />
+  <xs:element name="target" type="xs:string" />
+  <xs:element name="targetUri" type="xs:string" />
+  <xs:element name="targetString" type="xs:string" />
+
+</xs:schema>
