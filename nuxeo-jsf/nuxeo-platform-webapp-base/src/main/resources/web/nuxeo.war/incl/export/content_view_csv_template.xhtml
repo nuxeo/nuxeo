@@ -1,0 +1,49 @@
+<html xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:e="http://jboss.com/products/seam/excel">
+
+<c:if test="false">
+  displays a content view using csv JSF library
+  default column width is 20
+  
+  accepted parameters:
+  - when using template: exportFormat (jxl or csv)
+  - from request: contentViewName, currentPage, pageSize, contentViewState
+</c:if>
+
+  <nxu:set var="contentViewName" value="#{request.getParameter('contentViewName')}">
+  <nxu:set var="currentPage" value="#{request.getParameter('currentPage')}">
+  <nxu:set var="pageSize" value="#{request.getParameter('pageSize')}">
+  <nxu:set var="contentViewState" value="#{request.getParameter('contentViewState')}">
+
+  <nxu:set var="contentView"
+    value="#{contentViewRestActions.restoreContentView(contentViewName, currentPage, pageSize, null, contentViewState)}"
+    cache="true">
+  <nxu:set var="selectedResultLayoutColumns"
+    value="#{nxu:test(selectedResultLayoutColumns == null, contentView.currentResultLayoutColumns, selectedResultLayoutColumns)}"
+    cache="true">
+  <nxu:set var="provider" value="#{contentView.currentPageProvider}"
+    cache="true">
+
+    <e:workbook type="#{exportFormat}" filename="#{contentViewName}#{nxu:test(exportFormat == 'csv', '.csv', '.xls')}">
+      <e:worksheet value="#{provider.currentSelectPage.rows}" var="row"
+        defaultColumnWidth="20">
+        <nxl:layout name="#{contentView.currentResultLayout.name}"
+          value="#{row}" mode="csv"
+          selectedColumns="#{selectedResultLayoutColumns}" />
+      </e:worksheet>
+    </e:workbook>
+
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+
+</html>
