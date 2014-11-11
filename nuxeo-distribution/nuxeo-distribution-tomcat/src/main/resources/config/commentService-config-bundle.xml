@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.comment.service.CommentServiceConfig">
+
+  <require>org.nuxeo.ecm.platform.comment.service.CommentService</require>
+  <documentation>
+    This component gives the user the possibility to add comments to documents.
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.comment.service.CommentService"
+    point="config">
+    <config>
+      <converterClass>
+        org.nuxeo.ecm.platform.comment.impl.CommentConverterImpl
+      </converterClass>
+      <graphName>documentComments</graphName>
+      <!-- XXX AT: these namespaces should have an ending slash -->
+      <commentNamespace>http://www.nuxeo.org/comments/uid</commentNamespace>
+      <documentNamespace>http://www.nuxeo.org/document/uid</documentNamespace>
+      <predicateNamespace>
+        http://www.nuxeo.org/predicates/isCommentFor
+      </predicateNamespace>
+    </config>
+  </extension>
+
+  <!-- relation adapters -->
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="resourceadapters">
+    <!-- XXX AT: this namespace should have an ending slash -->
+    <adapter namespace="http://www.nuxeo.org/comments/uid"
+      class="org.nuxeo.ecm.platform.relations.adapters.DocumentModelResourceAdapter" />
+    <!-- XXX AT: this namespace should have an ending slash so that it can be
+      the standard adapter already registered -->
+    <adapter namespace="http://www.nuxeo.org/document/uid"
+      class="org.nuxeo.ecm.platform.relations.adapters.DocumentModelResourceAdapter" />
+  </extension>
+
+  <!-- relation graph -->
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="graphs">
+    <graph name="documentComments" type="jena">
+      <option name="backend">sql</option>
+      <option name="databaseType">Derby</option>
+      <option name="datasource">java:comp/env/jdbc/comment-relations</option>
+      <option name="databaseDoCompressUri">false</option>
+      <option name="databaseTransactionEnabled">false</option>
+      <namespaces>
+        <namespace name="comment">http://www.nuxeo.org/comments/uid</namespace>
+        <namespace name="isCommentFor">
+          http://www.nuxeo.org/predicates/isCommentFor
+        </namespace>
+        <namespace name="document">http://www.nuxeo.org/document/uid</namespace>
+      </namespaces>
+    </graph>
+  </extension>
+
+</component>

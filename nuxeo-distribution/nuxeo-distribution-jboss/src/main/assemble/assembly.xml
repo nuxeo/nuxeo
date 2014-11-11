@@ -1,0 +1,19 @@
+<assembly>
+
+  <assemble>
+    <set>jboss</set>
+    <outputFile>/</outputFile>
+  </assemble>
+  <fileSet id="jboss">
+    <directory>target/jboss</directory>
+  </fileSet>
+
+  <assemble>
+    <set>nuxeo-ear</set>
+    <outputFile>server/default/deploy/nuxeo.ear</outputFile>
+  </assemble>
+  <zipEntrySet id="nuxeo-ear">
+    <artifact>org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip</artifact>
+  </zipEntrySet>
+
+</assembly>
