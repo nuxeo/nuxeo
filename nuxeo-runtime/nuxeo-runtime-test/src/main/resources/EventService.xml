@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.EventService">
+
+  <implementation class="org.nuxeo.runtime.services.event.EventService"/>
+
+  <service>
+    <provide interface="org.nuxeo.runtime.services.event.EventService"/>
+  </service>
+
+  <extension-point name="listeners">
+    <object class="org.nuxeo.runtime.services.event.ListenerDescriptor"/>
+  </extension-point>
+
+</component>
