@@ -1,0 +1,89 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{field_0}</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+
+  <c:set var="cssClass"
+    value="#{nxu:test(!empty widget.properties.cssClass, widget.properties.cssClass, '')}" />
+  <div class="#{cssClass}">
+    <c:choose>
+      <c:when test="#{(field_1 == 'text/html') or (empty field_1)}">
+        <c:set var="preprocessedHtml"
+          value="#{nxu:test(!empty widget.properties.translatedHtml, widget.properties.translatedHtml, null)}" />
+        <c:if test="#{!empty preprocessedHtml}">
+          <nxh:outputText value="#{preprocessedHtml}" escape="false" />
+        </c:if>
+        <c:if test="#{empty htmlPreprocess}">
+          <h:outputText value="#{field_0}" escape="false" />
+        </c:if>
+      </c:when>
+      <c:otherwise>
+        <pre>
+          <h:outputText value="#{field_0}" />
+        </pre>
+      </c:otherwise>
+    </c:choose>
+  </div>
+
+</c:if>
+<c:if test="#{widget.mode == 'edit'}">
+
+  <c:set var="width"
+    value="#{nxu:test(!empty widget.properties.width, widget.properties.width, '640')}" />
+  <c:set var="height"
+    value="#{nxu:test(!empty widget.properties.height, widget.properties.height, '400')}" />
+  <c:set var="cols"
+    value="#{nxu:test(!empty widget.properties.cols, widget.properties.cols, '100')}" />
+  <c:set var="rows"
+    value="#{nxu:test(!empty widget.properties.rows, widget.properties.rows, '25')}" />
+  <c:set var="editorSelector"
+    value="#{nxu:test(!empty widget.properties.editorSelector, widget.properties.editorSelector, 'mceEditor')}" />
+
+  <c:choose>
+    <c:when test="#{(field_1 == 'text/html') or (empty field_1)}">
+      <nxu:editor id="#{widget.id}_editor" value="#{field_0}" width="#{width}"
+        cols="#{cols}" height="#{height}" rows="#{rows}"
+        editorSelector="#{editorSelector}" />
+    </c:when>
+    <c:otherwise>
+      <nxu:editor id="#{widget.id}_editor" value="#{field_0}" width="#{width}"
+        cols="#{cols}" height="#{height}" rows="#{rows}"
+        editorSelector="#{editorSelector}" disableHtmlInit="true" />
+    </c:otherwise>
+  </c:choose>
+
+  <br />
+
+  <h:outputText value="#{messages['label.richtext.format']} : " />
+  <h:selectOneMenu value="#{field_1}" onchange="changeEditorType(this)"
+    id="#{widget.id}_editorselector" styleClass="#{widget.id}">
+    <f:selectItem itemLabel="#{messages['mimetype.html']}" itemValue="text/html" />
+    <f:selectItem itemLabel="#{messages['mimetype.text']}"
+      itemValue="text/plain" />
+    <f:selectItem itemLabel="#{messages['mimetype.xml']}" itemValue="text/xml" />
+  </h:selectOneMenu>
+
+<script>
+function changeEditorType(cbo) {
+  var value = cbo.value;
+  var id = cbo.id.replace("_editorselector", "_editor");
+  if (value == "text/html") {
+    addTinyMCE(id);
+  } else {
+    removeTinyMCE(id);
+  }
+}
+</script>
+
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:html><h:outputText value="#{field_0}" escape="false" /></nxp:html>
+</c:if>
+</f:subview>

@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.webapp.contentview.users.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="users_listing_search_only">
+      <emptySentence>label.userManager.emptyUserList</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
+      <pageProvider name="users_listing">
+        <property name="usersListingMode">#{userManagementActions.listingMode}</property>
+        <parameter>#{userManagementActions.searchString}</parameter>
+      </pageProvider>
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <showRefreshCommand>false</showRefreshCommand>
+      <useGlobalPageSize>false</useGlobalPageSize>
+      <refresh>
+        <event>usersListingChanged</event>
+        <event>usersSearchChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+      <resultLayouts>
+        <layout name="users_listing" showCSVExport="false"
+          showPDFExport="false" />
+      </resultLayouts>
+    </contentView>
+
+    <contentView name="users_listing_tabbed">
+      <emptySentence>label.userManager.emptyUserList</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
+      <pageProvider name="users_listing">
+        <property name="usersListingMode">#{userManagementActions.listingMode}</property>
+        <parameter>#{userManagementActions.selectedLetter}</parameter>
+      </pageProvider>
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <showRefreshCommand>false</showRefreshCommand>
+      <useGlobalPageSize>false</useGlobalPageSize>
+      <refresh>
+        <event>selectedLetterChanged</event>
+      </refresh>
+      <reset>
+        <event>usersListingChanged</event>
+      </reset>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+      <resultLayouts>
+        <layout name="users_listing" showCSVExport="false"
+          showPDFExport="false" />
+      </resultLayouts>
+    </contentView>
+
+    <contentView name="groups_listing_search_only">
+      <emptySentence>label.groupManager.emptyGroupList</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
+      <pageProvider name="groups_listing">
+        <property name="groupsListingMode">#{groupManagementActions.listingMode}</property>
+        <parameter>#{groupManagementActions.searchString}</parameter>
+      </pageProvider>
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <showRefreshCommand>false</showRefreshCommand>
+      <useGlobalPageSize>false</useGlobalPageSize>
+      <refresh>
+        <event>groupsListingChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+      <resultLayouts>
+        <layout name="groups_listing" showCSVExport="false"
+          showPDFExport="false" />
+      </resultLayouts>
+    </contentView>
+
+  </extension>
+
+</component>
