@@ -1,0 +1,72 @@
+<c:if test="true"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<c:if test="false">
+Template displaying an action depending of its type (@since 5.6).
+
+Parameters:
+- action: the action instance (mandatory)
+- actionWidgetBinding: binding actions displaying widgets should be bound to
+  (mandatory if widgets need it)
+- idPrefix: a String prefix to put before the action id (optional but
+  recommanded)
+- actionType (optional): type to use if not set on action or needs to be
+  used by default if not set on action
+
+Display options:
+- hideIcon: hide the icon associated to the action if any. Defaults to false.
+- hideLabel: hide the label associated to the action if any. Defaults to false.
+- useButton: use a command button instead of a command link. Defaults to false.
+  This behaviour is only supported by actions with type 'link'.
+- useAjaxForm: boolean expression whether the action is done in an ajax form:
+  the action will be executed via an action listener to prevent any
+  navigation that would remove the ajax behaviour, defaults to false.
+  This behaviour is only supported by actions with type 'link'.
+- actionStyleClass: additional style class to put on link
+
+Templating zone that can be filled when useAjaxForm is set to false (default):
+- inside_action
+
+Templating zones that can be filled when useAjaxForm is set to true:
+- before_action_trigger
+- after_action_trigger
+
+TODO:
+- document properties used on actions (fancybox, style class)
+- make it possible to generate an action from templates
+
+</c:if>
+
+  <c:choose>
+
+    <c:when test="#{action.type == 'bare_link' or (empty action.type and actionType == 'bare_link')}">
+      <ui:include src="bare_link_action_template.xhtml" />
+    </c:when>
+
+    <c:when test="#{action.type == 'fancybox' or (empty action.type and actionType == 'fancybox')}">
+      <ui:include src="fancybox_action_template.xhtml" />
+    </c:when>
+
+    <c:when test="#{action.type == 'widget' or (empty action.type and actionType == 'widget')}">
+      <ui:include src="widget_action_template.xhtml" />
+    </c:when>
+
+    <c:when test="#{action.type == 'document_tab' or (empty action.type and actionType == 'document_tab')}">
+      <ui:include src="document_tab_action_template.xhtml" />
+    </c:when>
+
+    <c:when test="#{action.type == 'template' or (empty action.type and actionType == 'template')}">
+      <ui:include src="template_action_template.xhtml" />
+    </c:when>
+
+    <c:if test="false">
+      Use a link by default (also used if type is unknown)
+    </c:if>
+    <c:otherwise>
+      <ui:include src="link_action_template.xhtml" />
+    </c:otherwise>
+
+  </c:choose>
+
+</c:if>
