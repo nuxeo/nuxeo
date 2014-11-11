@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="BaseXPoint" version="1.0.0">
+
+  <documentation>
+    This component is declaring one extension point that will be
+    overrided by another extension point from OverrindingXPoint.xml
+  </documentation>
+
+  <implementation class="org.nuxeo.runtime.ComponentWithXPoint"/>
+
+  <extension-point name="xp">
+    <object class="org.nuxeo.runtime.DummyContribution"/>
+  </extension-point>
+
+</component>
