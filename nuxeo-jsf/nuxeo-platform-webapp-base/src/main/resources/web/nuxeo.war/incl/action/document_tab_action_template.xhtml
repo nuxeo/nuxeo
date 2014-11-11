@@ -1,0 +1,14 @@
+<ui:composition
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+<ui:insert name="action_template_content">
+
+  <nxd:restDocumentLink document="#{fieldOrValue}" tab="#{action.id}">
+    <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+    <ui:insert name="inside_action" />
+  </nxd:restDocumentLink>
+
+</ui:insert>
+</ui:composition>

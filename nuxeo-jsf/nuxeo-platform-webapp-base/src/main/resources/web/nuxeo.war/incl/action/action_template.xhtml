@@ -1,0 +1,61 @@
+<c:if test="true"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+<c:if test="false">
+Template displaying an action button (@since 5.6).
+
+Parameters:
+- action: the action instance (mandatory)
+- idPrefix: a String prefix to put before the action id (optional but
+  recommanded)
+- useAjaxForm: boolean expression whether the action is done in an ajax form:
+  the action will be executed via an action listener to prevent any
+  navigation that would remove the ajax behaviour, defaults to false.
+- actionsDisplay: if set to 'buttons', action will be displayed as a command button.
+  If set to 'links', action will be displayed as a command link. If set to
+  'icons', action will be displayed as an icon. Else (default behaviour),
+  action will be displayed as command link and display its icon when defined.
+- eventsQueueId: id for events queue of the ajax form (optional)
+
+Templating zone that can be filled when useAjaxForm is set to false (default):
+- inside_action
+
+Templating zones that can be filled when useAjaxForm is set to true:
+- before_action_trigger
+- after_action_trigger
+</c:if>
+
+<c:choose>
+
+  <c:when test="#{actionsDisplay == 'buttons'}">
+    <ui:include src="/incl/action/generic_action_template.xhtml">
+      <ui:param name="useButton" value="true" />
+      <ui:param name="hideIcon" value="true" />
+    </ui:include>
+  </c:when>
+
+  <c:when test="#{actionsDisplay == 'icons'}">
+    <ui:include src="/incl/action/generic_action_template.xhtml">
+      <ui:param name="hideLabel" value="true" />
+    </ui:include>
+  </c:when>
+
+  <c:when test="#{actionsDisplay == 'links'}">
+    <ui:include src="/incl/action/generic_action_template.xhtml">
+      <ui:param name="hideIcon" value="true" />
+    </ui:include>
+  </c:when>
+
+  <c:otherwise>
+    <ui:include src="/incl/action/generic_action_template.xhtml" />
+  </c:otherwise>
+
+</c:choose>
+
+</c:if>
