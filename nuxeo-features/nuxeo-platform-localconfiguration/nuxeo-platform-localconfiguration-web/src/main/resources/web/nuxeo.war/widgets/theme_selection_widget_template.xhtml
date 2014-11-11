@@ -1,0 +1,60 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:c="http://java.sun.com/jstl/core"
+  id="#{widget.id}">
+<c:if test="false">
+  Deprecated since 5.5: use flavor selection instead
+</c:if>
+
+  <a4j:region renderRegionOnly="true">
+
+    <a4j:outputPanel layout="block" id="#{widget.id}_panel">
+      <table class="listShuttleTable">
+        <tbody>
+          <tr>
+            <td class="labelColumn"><h:outputText
+              value="#{messages['label.theme.local.theme']}" /></td>
+            <td class="fieldColumn"><h:panelGroup
+              id="localThemePanel1">
+              <h:selectOneMenu value="#{field_0}">
+                <f:selectItem itemValue=""
+                  itemLabel="(#{messages['label.theme.local.notSpecified']})" />
+                <f:selectItems
+                  value="#{themeConfigurationActions.availableThemes}" />
+                <a4j:support event="onchange" ajaxSingle="true"
+                  actionListener="#{themeConfigurationActions.themeChange}"
+                  reRender="localThemePanel2" />
+              </h:selectOneMenu>
+            </h:panelGroup></td>
+          </tr>
+          <tr>
+            <td class="labelColumn"><h:outputText
+              value="#{messages['label.theme.local.page']}" /></td>
+            <td class="fieldColumn"><h:panelGroup
+              id="localThemePanel2">
+              <h:selectOneMenu value="#{field_1}">
+                <f:selectItems
+                  value="#{themeConfigurationActions.availablePages}" />
+              </h:selectOneMenu>
+            </h:panelGroup></td>
+          </tr>
+          <tr>
+            <td class="labelColumn"><h:outputText
+              value="#{messages['label.theme.local.perspective']}" /></td>
+            <td class="fieldColumn"><h:panelGroup
+              id="localThemePanel3">
+              <h:selectOneMenu value="#{field_2}">
+                <f:selectItem itemValue=""
+                  itemLabel="(#{messages['label.perspective.local.notSpecified']})" />
+                <f:selectItems
+                  value="#{themeConfigurationActions.availablePerspectives}" />
+              </h:selectOneMenu>
+            </h:panelGroup></td>
+          </tr>
+        </tbody>
+      </table>
+    </a4j:outputPanel>
+
+  </a4j:region>
+</f:subview>
