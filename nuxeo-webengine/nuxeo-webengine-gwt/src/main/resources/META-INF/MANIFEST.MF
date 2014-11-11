@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Webengine GWT
+Bundle-SymbolicName: org.nuxeo.ecm.webengine.gwt;singleton:=true
+Require-Bundle: org.nuxeo.ecm.webengine.core
