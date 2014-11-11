@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.security.testPolicies">
+
+  <documentation>TODO</documentation>
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="policies">
+    <policy name="author"
+      class="org.nuxeo.ecm.core.security.MockCreatorSecurityPolicy" order="5" />
+    <policy name="disabled"
+      class="org.nuxeo.ecm.core.security.MockCreatorSecurityPolicy"
+      enabled="false" />
+  </extension>
+
+</component>
