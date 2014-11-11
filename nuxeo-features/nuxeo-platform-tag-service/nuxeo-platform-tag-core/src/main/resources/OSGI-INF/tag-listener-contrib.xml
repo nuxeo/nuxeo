@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.tag.service.listener" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <listener name="taggedDocumentRemovedListener" async="true"
+      postCommit="true"
+      class="org.nuxeo.ecm.platform.tag.TaggedDocumentRemovedListener">
+      <event>documentRemoved</event>
+      <event>lifecycle_transition_event</event>
+    </listener>
+
+    <listener name="taggedVersionListener" async="true"
+      postCommit="true"
+      class="org.nuxeo.ecm.platform.tag.TaggedVersionListener">
+      <event>documentCheckedIn</event>
+      <event>documentRestored</event>
+      <event>documentProxyPublished</event>
+    </listener>
+
+  </extension>
+
+</component>

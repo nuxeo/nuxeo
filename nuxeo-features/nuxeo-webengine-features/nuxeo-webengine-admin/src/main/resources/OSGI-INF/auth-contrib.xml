@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.webengine.admin.auth">
+
+     <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="openUrl">
+       <openUrl name="Shell">
+            <grantPattern>${org.nuxeo.ecm.contextPath}/site/shell</grantPattern>
+       </openUrl>
+       <openUrl name="Shell_Resources">
+            <grantPattern>${org.nuxeo.ecm.contextPath}/site/shell/.*</grantPattern>
+       </openUrl>
+     </extension>
+
+</component>

@@ -1,0 +1,51 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<h:form id="document_view">
+
+  <script type="text/javascript">
+    var annotationConfiguration = {
+      annoteaServerUrl : "#{baseURL}Annotations",
+      annotationCssUrl : "#{contextPath}/org.nuxeo.ecm.platform.annotations.gwt.AnnotationPanel/annotation-style.css",
+      previewUrl: "#{previewActions.getPreviewWithBlobPostProcessingURL(previewDoc)}",
+      documentUrl: "#{nxd:documentUrl(previewDoc)}"
+
+    };
+
+    var serverSettings = {
+      repositoryName : "#{previewDoc.repositoryName}",
+      documentId : "#{previewDoc.id}",
+      contextPath : "#{contextPath}"
+    };
+
+    jQuery(document).ready(function() {
+       var fancyBox = jQuery('#fancybox-content', window.parent.document);
+       if (fancyBox.length > 0 &amp;&amp; fancyBox.height() > 0) {
+         // we know we are in a fancybox
+         var height = fancyBox.height();
+         var documentFileView = jQuery('#documentFilesView');
+         if (documentFileView.length > 0) {
+           height = height - documentFileView.height();
+         }
+         jQuery('#display').height(height - 20);
+       }
+     });
+
+  </script>
+
+  <script type="text/javascript"
+    src='#{contextPath}/org.nuxeo.ecm.platform.annotations.gwt.AnnotationModule/org.nuxeo.ecm.platform.annotations.gwt.AnnotationModule.nocache.js'></script>
+
+  <iframe src="javascript:''" id="__gwt_historyFrame"
+    style="width: 0; height: 0; border: 0"></iframe>
+
+  <div id="display" style="height: 600px"/>
+
+</h:form>
+
+</div>
