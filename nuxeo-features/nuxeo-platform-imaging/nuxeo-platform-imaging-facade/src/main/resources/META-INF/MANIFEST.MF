@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Platform Imaging Facade
+Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.facade;singleton=true
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.ecm.platform.picture.api,
+ org.nuxeo.ecm.platform.picture.core

@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Picture Imaging Core
+Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.core;singleton=true
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/ImagingComponent.xml,
+ OSGI-INF/picture-schemas-contrib.xml,
+ OSGI-INF/picture-life-cycle-contrib.xml,
+ OSGI-INF/picturebook-schemas-contrib.xml,
+ OSGI-INF/picturebook-life-cycle-contrib.xml,
+ OSGI-INF/libraryselector-config-framework.xml,
+ OSGI-INF/commandline-imagemagick-contrib.xml
+Eclipse-LazyStart: true
+Bundle-Category: core,stateful
+Require-Bundle: org.nuxeo.ecm.platform.types.api, org.nuxeo.ecm.core.api, org.nuxeo.ecm.platform.picture.api, org.nuxeo.ecm.platform.commandline.executor
+Export-Package: org.nuxeo.ecm.platform.picture.core
+Bundle-ClassPath: .,
+ lib/EditableImage.jar,
+ lib/Operations.jar,
+ lib/metadata-extractor.jar,
+ lib/JAI-Adapter.jar,
+ lib/jai_core.jar,
+ lib/jai_codec.jar,
+ lib/mlibwrapper_jai.jar,
+ lib/ij.jar
+Nuxeo-RequiredBy: org.nuxeo.ecm.platform.picture.web
