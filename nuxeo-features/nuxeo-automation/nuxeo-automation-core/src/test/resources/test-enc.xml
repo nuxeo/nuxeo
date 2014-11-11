@@ -1,0 +1,13 @@
+<component name="org.nuxeo.ecm.core.rules.test-operations" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="event-handlers">
+    <handler>
+      <event>aboutToCreate</event>
+      <filters>
+        <expression>a &lt; b &amp; b &gt; c</expression>
+      </filters>
+    </handler>
+  </extension>
+
+</component>
