@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Mail Web
+Bundle-SymbolicName: org.nuxeo.ecm.platform.mail.web;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Bundle-Category: stateless
+Eclipse-LazyStart: false
+Require-Bundle:  org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.webapp.core,
+ org.nuxeo.ecm.platform.mail
+Nuxeo-Component: OSGI-INF/nxmail-actions-contrib.xml,
+ OSGI-INF/nxmail-ecm-types-contrib.xml,
+ OSGI-INF/nxmail-layouts-contrib.xml

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+  <ModulePrefs title="Flash" height="95" scrolling="true"
+    scaling="true" directory_title="Flash"
+    description="File browser in the ECM system" author="Guillaume CUSNIEUX"
+    author_email="gcusnieux@leroymerlin.fr" author_affiliation="Leroy Merlin"
+    author_location="Lezennes, France">
+    <Require feature="dynamic-height" />
+    <Require feature="nuxeo" />
+    <Require feature="settitle" />
+    <Require feature="setprefs"/>
+    <Require feature="jquery" />
+    <Require feature="form" />
+    <Require feature="flash" />
+
+  </ModulePrefs>
+
+    <UserPref name="height" display_name="Hauteur (en px)" default_value="400"/>
+    <UserPref name="title-flash" default_value="" datatype="hidden"/>
+
+  <Content type="html" view="default">
+<![CDATA[
+ <style type='text/css'>
+ #hide img{
+     border:0;
+     padding:5px 5px 0 0;
+   }
+
+   *{
+      font-family:Trebuchet, Arial,Verdana;
+      font-size:11px;
+    }
+
+    label{
+       font-family:Tahoma, Arial,Verdana;
+       font-weight:bold;
+    }
+
+    #show a{
+      text-decoration:none;
+      padding-left:20px;
+      background:url(/nuxeo/img/edit.png) no-repeat 0 0;
+      color:#000000;
+      font-weight:bold;
+      display:inline-block;
+      height:16px;
+    }
+
+    #show a:hover{
+      text-decoration:underline;
+    }
+
+    #show{
+     text-align:right;
+    }
+
+
+    #title-flash{
+    font-size:14px;
+    color:#13506B;
+    text-align:center;
+    font-weight:bold;
+    }
+
+  #hideContainer{
+    background:#666666;
+    text-align:right;
+  }
+
+  #title-field,#link-field{
+    width:98%;
+    border:1px solid #ffffff;
+  }
+
+
+  #formFlash{
+   background:#666666;
+  }
+
+  #formFlash td{
+   color:#ffffff;
+  }
+
+  #upload{
+    padding-left:14px;
+    background:url(/nuxeo/img/accept.png) no-repeat 0 0;
+    color:#FFFFFF;
+    display:block;
+    float:right;
+    font-weight:bold;
+    padding-left:18px;
+    text-decoration:none;
+  }
+
+  #upload:hover{
+      text-decoration:underline;
+    }
+
+  </style>
+  <script type="text/javascript" language="javascript" src="flash.js"></script>
+   <script type="text/javascript">
+   var prefs = new _IG_Prefs(__MODULE_ID__);
+
+  gadgets.util.registerOnLoadHandler(function() {
+    launchGadget();
+  });
+   </script>
+   <div id="title-flash"></div>
+
+
+   <div style="text-align:center;margin:auto;">
+       <img id="loader" src="/nuxeo/img/standart_waiter.gif"/>
+       <div id="flash"></div>
+   </div>
+   <div id="perm">
+     <div id="show">
+        <a href="#">Modifier</a>
+     </div>
+      <div style="display:none;margin:auto" id="form">
+
+       <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a></div>
+       <table style="width:100%" id="formFlash">
+        <tr>
+          <td style="width:30%"><label for="title">Titre</label></td>
+          <td style="width:70%"><input type="text" name="title" id="title-field" /></td>
+        </tr>
+        <tr>
+          <td style="width:30%"><label for="photo">Animation</label> </td>
+          <td style="width:70%">
+          <form style="text-align:center;" method="post" id="formUpload" enctype="multipart/form-data" action="#">
+            <input type="file" name="file" id="file" size="20" />
+          </form>
+        </td>
+        </tr>
+        <tr>
+          <td style="width:30%"></td>
+          <td style="width:70%">
+            <a href="" id="upload">Valider</a>
+          </td>
+        </tr>
+       </table>
+     </div>
+   </div>
+
+  ]]>
+  </Content>
+
+</Module>

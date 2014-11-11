@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<fragment version="1">
+  <!--
+    Template:   nuxeo.ear/OSGI-INF/templates/faces-config.xml
+    End Result: nuxeo.ear/META-INF/faces-config.xml
+  -->
+  <extension target="faces-config#APPLICATION">
+    <locale-config>
+      <default-locale>en</default-locale>
+      <supported-locale>en_GB</supported-locale>
+      <supported-locale>en_US</supported-locale>
+      <supported-locale>fr</supported-locale>
+    </locale-config>
+    <message-bundle>messages</message-bundle>
+  </extension>
+
+  <install>
+    <!-- Unzip the contents of our nuxeo.war into the real nuxeo.war on the server -->
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+  </install>
+
+</fragment>

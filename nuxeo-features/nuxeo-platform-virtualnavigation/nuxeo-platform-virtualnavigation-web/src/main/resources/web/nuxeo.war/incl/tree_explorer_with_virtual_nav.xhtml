@@ -1,0 +1,60 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  class="menu">
+
+<div class="userClipboard">
+
+<c:if test="false">
+ DO NOT ajax enable this tree: it is useless and the tree must not be rerendered
+ when other ajax requests happen on the page
+</c:if>
+<a4j:region renderRegionOnly="true" id="userClipboard_ajaxRegion">
+  <a4j:outputPanel ajaxRendered="false" id="MultiTreeView">
+
+    <div class="tabsBar">
+      <h:form id="virtualNavTreeTab">
+        <nxu:dataList var="tree" layout="unorderedList" id="virtualNavTreeList"
+          value="#{multiNavTreeManager.availableNavigationTrees}"
+          itemStyleClass="#{nxu:test(multiNavTreeManager.selectedNavigationTree == tree.treeId, 'selected', '')}">
+          <a4j:commandLink id="virtualNavTreeLink"
+            action="#{multiNavTreeManager.setSelectedNavigationTree(tree.treeId)}"
+            reRender="MultiTreeView">
+            <nxu:graphicImage value="/img/#{tree.treeId}.png"
+              title="#{messages[tree.treeLabel]}"
+              styleClass="smallIcon" />
+          </a4j:commandLink>
+         </nxu:dataList>
+      </h:form>
+    </div>
+    <div style="clear:both" />
+
+    <div class="userClipboardContent">
+
+      <c:choose>
+       <c:when test="#{multiNavTreeManager.selectedNavigationTree == 'CONTENT_TREE'}">
+         <ui:include src="/incl/tree_explorer.xhtml"/>
+       </c:when>
+
+       <c:when test="#{selectedNavigationTreeDescriptor.directoryTreeBased}">
+        <ui:include src="/incl/single_directory_tree_explorer.xhtml">
+          <ui:param name="treeModel" value="#{directoryTreeManager.selectedTree}" />
+        </ui:include>
+       </c:when>
+
+       <c:when test="#{selectedNavigationTreeDescriptor.xhtmlview != null}">
+         <ui:include src="#{selectedNavigationTreeDescriptor.xhtmlview}"/>
+       </c:when>
+
+      </c:choose>
+
+    </div>
+
+  </a4j:outputPanel>
+</a4j:region>
+</div>
+
+</div>
