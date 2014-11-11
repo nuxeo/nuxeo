@@ -1,0 +1,80 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>rssOnTestWebsite</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">rssOnTestWebsite</td></tr>
+</thead><tbody>
+<tr>
+        <td>open</td>
+        <td>restAPI/systemLog?token=dolog&amp;level=WARN&amp;message=----- Selenium rssOnTestWebsite</td>
+        <td></td>
+</tr>
+<tr>
+    <td>setTimeout</td>
+    <td>30000</td>
+    <td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Administrator</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>site/sites/testWebSite1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>15000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Pages&quot;]</td>
+	<td></td>
+<tr>
+	<td>assertNotHtmlSource</td>
+	<td>text=Last published pages</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertNotHtmlSource</td>
+	<td>text=testWebPage1</td>
+	<td></td>
+</tr>
+
+</tr>
+
+</tbody></table>
+</body>
+</html>
