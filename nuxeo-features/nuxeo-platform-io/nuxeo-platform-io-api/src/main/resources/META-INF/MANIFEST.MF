@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Platform IO API Fragment
+Bundle-SymbolicName: org.nuxeo.ecm.platform.io.api;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: runtime
+Export-Package: org.nuxeo.ecm.platform.io.api
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.apache.commons.logging,
+ org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.api.impl,
+ org.nuxeo.ecm.core.io,
+ org.nuxeo.ecm.core.io.exceptions,
+ org.nuxeo.runtime.api

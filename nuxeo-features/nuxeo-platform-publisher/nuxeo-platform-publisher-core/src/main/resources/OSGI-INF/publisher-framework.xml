@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+
+<component
+    name="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl">
+  <implementation
+      class="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"/>
+
+  <documentation>
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide
+        interface="org.nuxeo.ecm.platform.publisher.api.PublisherService"/>
+    <provide
+        interface="org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager"/>
+  </service>
+
+
+  <extension-point name="tree">
+    <documentation>
+      Used to register the PublicationTree implementations available to build
+      treeInstance.
+
+      A sample contribution could be
+      <code>
+        <publicationTree name="CoreTree"
+                     class="org.nuxeo.ecm.platform.publisher.impl.core.SectionPublicationTree"/>
+      </code>
+      It registers a SectionPublicationTree, tree implementation used to publish documents on
+      local Section documents.
+
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+        class="org.nuxeo.ecm.platform.publisher.descriptors.PublicationTreeDescriptor"/>
+  </extension-point>
+
+  <extension-point name="treeInstance">
+    <documentation>
+      Used to register actual publication tree instances, where we define
+      the factory to use, the underlying tree to use, its name / title.
+
+      Here is the default contribution:
+      <code>
+        <publicationTreeConfig name="DefaultSectionsTree" tree="RootSectionsCoreTree"
+            factory="CoreProxy" localSectionTree="true"
+            title="label.publication.tree.local.sections" >
+          <parameters>
+            <!-- <parameter name="RootPath">/default-domain/sections</parameter> -->
+            <parameter name="RelativeRootPath">/sections</parameter>
+            <parameter name="enableSnapshot">true</parameter>
+            <parameter name="iconExpanded">/icons/folder_open.gif</parameter>
+            <parameter name="iconCollapsed">/icons/folder.gif</parameter>
+          </parameters>
+        </publicationTreeConfig>
+      </code>
+
+      Parameters:
+      - RootPath: it's used when you want to define the root publication node
+      of your PublicationTree. You can't use RootPath AND RelativeRoothPath
+      parameter.
+
+      - RelativeRootPath: used when you just want to define a relative path
+      (without specifying the domain path). A PublicationTree instance will be
+      created automatically for each Domain, appending the RelativeroothPath
+      value to each Domain.
+
+      - iconExpanded and iconCollapsed: specify which icons to use when
+      displaying the PublicationTree on the interface.
+
+      You can contribute other kinds of PublicationTree: here is a contribution
+      for a new tree that will be used to publish on the file system, on
+      '/opt/publishing-folder'.
+      <code>
+        <publicationTreeConfig name="FSTree" tree="LocalFSTree"
+                             factory="LocalFile" localSectionTree="false"
+                             title="label.publication.tree.fileSystem">
+          <parameters>
+            <parameter name="RootPath">/opt/publishing-folder</parameter>
+            <parameter name="enableSnapshot">true</parameter>
+            <parameter name="iconExpanded">/icons/folder_open.gif</parameter>
+            <parameter name="iconCollapsed">/icons/folder.gif</parameter>
+          </parameters>
+        </publicationTreeConfig>
+      </code>
+
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+        class="org.nuxeo.ecm.platform.publisher.descriptors.PublicationTreeConfigDescriptor"/>
+  </extension-point>
+
+  <extension-point name="factory">
+    <documentation>
+      A factory is used to actually create the published document.
+      It also manages the approval / rejection workflow on published documents.
+
+      <code>
+        <publishedDocumentFactory name="CoreProxy"
+            class="org.nuxeo.ecm.platform.publisher.impl.core.CoreProxyFactory"/>
+      </code>
+
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+        class="org.nuxeo.ecm.platform.publisher.descriptors.PublishedDocumentFactoryDescriptor"/>
+  </extension-point>
+
+  <extension-point name="validatorsRule">
+    <documentation>
+      A validators rule object is aiming at being
+      responsible of computing the validators of a just published document.
+
+      <code>
+        <validatorsRule name="CoreValidatorsRule"
+            class="org.nuxeo.ecm.platform.publisher.rules.DefaultValidatorsRule"/>
+      </code>
+
+      @author Thomas Roger(troger@nuxeo.com)
+    </documentation>
+    <object
+        class="org.nuxeo.ecm.platform.publisher.rules.ValidatorsRuleDescriptor"/>
+  </extension-point>
+
+  <extension-point name="rootSectionFinderFactory">
+    <documentation>
+      A factory is used to create the RootSectionFinder implementation that is used in the PublisherTree administration and in the RootSectionsPublicationTree implementation.
+      <code>
+        <rootSectionFinderFactory
+            class="org.nuxeo.ecm.platform.publisher.impl.finder.DefaultRootSectionsFinder"/>
+      </code>
+
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+        class="org.nuxeo.ecm.platform.publisher.descriptors.RootSectionFinderFactoryDescriptor"/>
+  </extension-point>
+
+
+</component>
