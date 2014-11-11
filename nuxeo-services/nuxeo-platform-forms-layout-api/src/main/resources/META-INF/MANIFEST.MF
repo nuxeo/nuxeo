@@ -1,0 +1,15 @@
+Export-Package: org.nuxeo.ecm.platform.forms.layout.api,
+ org.nuxeo.ecm.platform.forms.layout.api.exceptions,
+ org.nuxeo.ecm.platform.forms.layout.api.impl,
+ org.nuxeo.ecm.platform.forms.layout.api.service,
+ org.nuxeo.ecm.platform.forms.layout.api.service.ejb
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: Nuxeo ECM Forms Layout API Fragment
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.platform.forms.layout.api;singleton:=true
