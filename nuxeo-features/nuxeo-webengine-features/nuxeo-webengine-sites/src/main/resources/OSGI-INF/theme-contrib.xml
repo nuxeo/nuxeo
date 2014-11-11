@@ -1,0 +1,292 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.webengine.sites.theme">
+
+  <require>org.nuxeo.theme.webengine
+  </require>
+
+  <!-- Perspectives -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="perspectives">
+
+    <perspective name="view">
+      <title>VIEW mode</title>
+    </perspective>
+    <perspective name="create">
+      <title>CREATE mode</title>
+    </perspective>
+    <perspective name="edit">
+      <title>EDIT mode</title>
+    </perspective>
+
+  </extension>
+
+  <!-- Views -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="views">
+    <view name="Minisite Logo" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/logo.ftl</template>
+    </view>
+    <view name="Minisite Main" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/main.ftl</template>
+    </view>
+    <view name="Page Main" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/page_main.ftl</template>
+    </view>
+    <view name="Page Create" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/webpage_create.ftl</template>
+    </view>
+    <view name="Page Edit" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/webpage_edit.ftl</template>
+    </view>
+
+    <view name="Minisite Last Published" template-engine="freemarker">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <model-type>webpage</model-type>
+      <template>widgets/sites/last_published.xml</template>
+    </view>
+
+    <view name="Minisite Last Comments" template-engine="freemarker">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+    <model-type>webpage-comment</model-type>
+      <template>widgets/sites/minisite_last_comments.xml</template>
+    </view>
+
+    <view name="Minisite Contextual" template-engine="freemarker">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <model-type>contextual-link</model-type>
+      <template>widgets/sites/contextual.xml</template>
+    </view>
+
+    <view name="Minisite Tree" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/tree.ftl</template>
+    </view>
+    <view name="Minisite Attached files" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/files.ftl</template>
+    </view>
+
+    <view name="Page Last Comments" template-engine="freemarker">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+    <model-type>comment</model-type>
+      <template>widgets/sites/page_last_comments.xml</template>
+    </view>
+
+    <view name="All WebPages" template-engine="freemarker">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <model-type>webpage</model-type>
+      <template>widgets/sites/all_webpages.xml</template>
+    </view>
+
+    <view name="Search Results" template-engine="freemarker">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <model-type>search</model-type>
+      <template>widgets/sites/search_results.xml</template>
+    </view>
+
+    <view name="Minisite Search" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/search.ftl</template>
+    </view>
+    <view name="Minisite Buttons" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/buttons.ftl</template>
+    </view>
+    <view name="Minisite Email" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/email.ftl</template>
+    </view>
+
+    <view name="Tags" template-engine="freemarker">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <model-type>tag</model-type>
+      <template>widgets/sites/tags.xml</template>
+    </view>
+
+    <view name="Tags Cloud" template-engine="freemarker">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <model-type>tag cloud</model-type>
+      <template>widgets/sites/tags_cloud.xml</template>
+    </view>
+
+  </extension>
+
+  <!-- application settings -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="applications">
+    <application root="${org.nuxeo.ecm.contextPath}/sites" template-engine="freemarker">
+      <negotiation>
+        <strategy>web</strategy>
+        <default-engine>default</default-engine>
+        <default-theme>sites/default
+        </default-theme>
+        <default-perspective>default
+        </default-perspective>
+      </negotiation>
+    </application>
+    <!--  temporary fix for jboss -->
+    <application root="${org.nuxeo.ecm.contextPath}/site/sites"
+      template-engine="freemarker">
+      <negotiation>
+        <strategy>web</strategy>
+        <default-engine>default</default-engine>
+        <default-theme>sites/default
+        </default-theme>
+        <default-perspective>default
+        </default-perspective>
+      </negotiation>
+    </application>
+
+    <application root="${org.nuxeo.ecm.contextPath}/site"
+      template-engine="freemarker">
+      <negotiation>
+        <strategy>web</strategy>
+        <default-engine>default</default-engine>
+        <default-theme>sites/default
+        </default-theme>
+        <default-perspective>default
+        </default-perspective>
+      </negotiation>
+    </application>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+  point="models">
+    <model name="contextual-link">
+      <class>org.nuxeo.webengine.sites.models.ContextualLinkListModel</class>
+      <contains>contextual-link item</contains>
+    </model>
+    <model name="contextual-link item">
+      <class>org.nuxeo.webengine.sites.models.ContextualLinkModel</class>
+    </model>
+
+    <model name="webpage">
+      <class>org.nuxeo.webengine.sites.models.WebpageListModel</class>
+      <contains>webpage item</contains>
+    </model>
+    <model name="webpage item">
+      <class>org.nuxeo.webengine.sites.models.WebpageModel</class>
+    </model>
+
+    <model name="webpage-comment">
+      <class>org.nuxeo.webengine.sites.models.WebpageCommentListModel</class>
+      <contains>webpage-comment item</contains>
+    </model>
+    <model name="webpage-comment item">
+      <class>org.nuxeo.webengine.sites.models.WebpageCommentModel</class>
+    </model>
+
+    <model name="comment">
+      <class>org.nuxeo.webengine.sites.models.CommentListModel</class>
+      <contains>comment item</contains>
+    </model>
+    <model name="comment item">
+      <class>org.nuxeo.webengine.sites.models.CommentModel</class>
+    </model>
+
+    <model name="search">
+      <class>org.nuxeo.webengine.sites.models.SearchListModel</class>
+      <contains>search item</contains>
+    </model>
+    <model name="search item">
+      <class>org.nuxeo.webengine.sites.models.SearchModel</class>
+    </model>
+
+    <model name="tag">
+      <class>org.nuxeo.webengine.sites.models.TagListModel</class>
+      <contains>tag item</contains>
+    </model>
+    <model name="tag item">
+      <class>org.nuxeo.webengine.sites.models.TagModel</class>
+    </model>
+
+    <model name="tag cloud">
+      <class>org.nuxeo.webengine.sites.models.TagCloudListModel</class>
+      <contains>tag cloud item</contains>
+    </model>
+    <model name="tag cloud item">
+      <class>org.nuxeo.webengine.sites.models.TagCloudModel</class>
+    </model>
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+  point="fragments">
+  <fragment name="contextual links fragment">
+    <class>org.nuxeo.webengine.sites.fragments.ContextualLinkFragment</class>
+    <model-type>contextual-link</model-type>
+    <dynamic>true</dynamic>
+  </fragment>
+
+  <fragment name="all webpages fragment">
+    <class>org.nuxeo.webengine.sites.fragments.AllWebpageFragment</class>
+    <model-type>webpage</model-type>
+    <dynamic>true</dynamic>
+  </fragment>
+
+  <fragment name="minisite last published fragment">
+    <class>org.nuxeo.webengine.sites.fragments.MinisiteLastPublishedFragment</class>
+    <model-type>webpage</model-type>
+    <dynamic>true</dynamic>
+  </fragment>
+
+  <fragment name="minisite last comments fragment">
+    <class>org.nuxeo.webengine.sites.fragments.MinisiteLastCommentsFragment</class>
+    <model-type>webpage-comment</model-type>
+    <dynamic>true</dynamic>
+  </fragment>
+
+  <fragment name="page last comments fragment">
+    <class>org.nuxeo.webengine.sites.fragments.PageLastCommentsFragment</class>
+    <model-type>comment</model-type>
+    <dynamic>true</dynamic>
+  </fragment>
+
+  <fragment name="search results fragment">
+    <class>org.nuxeo.webengine.sites.fragments.SearchResultsFragment</class>
+    <model-type>search</model-type>
+    <dynamic>true</dynamic>
+  </fragment>
+  <fragment name="tags fragment">
+    <class>org.nuxeo.webengine.sites.fragments.TagFragment</class>
+    <model-type>tag</model-type>
+    <dynamic>true</dynamic>
+  </fragment>
+  <fragment name="tags cloud fragment">
+    <class>org.nuxeo.webengine.sites.fragments.TagCloudFragment</class>
+    <model-type>tag cloud</model-type>
+    <dynamic>true</dynamic>
+  </fragment>
+  </extension>
+
+  <!-- themes -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="themes">
+    <theme>
+      <src>
+        themes/theme-sites-setup.xml
+      </src>
+    </theme>
+  </extension>
+  <!-- Palettes -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="presets">
+    <palette name="Sites borders" src="themes/palettes/sites-borders.properties" category="border" />
+    <palette name="Sites backgrounds" src="themes/palettes/sites-backgrounds.properties" category="background" />
+    <palette name="Sites fonts" src="themes/palettes/sites-fonts.properties" category="font" />
+  </extension>
+
+
+</component>

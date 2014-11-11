@@ -1,0 +1,19 @@
+body {
+    background-image: none;
+    text-align: left;
+}
+
+#main {
+    background-image: none;
+    padding: 10px;
+}
+
+#main .main-content {
+    padding: 10px;
+    border: 1px solid #000;
+}
+
+.closeWindow {
+    text-align: center;
+    margin: 10px;
+}

@@ -1,0 +1,27 @@
+Bundle-Vendor: Nuxeo
+Bundle-Version: 0.0.0.SNAPSHOT
+Manifest-Version: 1.0
+Bundle-Name: nuxeo webengine server management
+Bundle-ManifestVersion: 1
+Import-Package: com.thoughtworks.xstream,
+ javax.ws.rs,
+ javax.ws.rs.core,
+ org.apache.commons.logging,
+ org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.management.api,
+ org.nuxeo.ecm.core.management.statuses,
+ org.nuxeo.ecm.platform.lock.api,
+ org.nuxeo.ecm.platform.queue.api,
+ org.nuxeo.ecm.platform.usermanager,
+ org.nuxeo.ecm.webengine,
+ org.nuxeo.ecm.webengine.forms,
+ org.nuxeo.ecm.webengine.model,
+ org.nuxeo.ecm.webengine.model.exceptions,
+ org.nuxeo.ecm.webengine.model.impl,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.model
+Provide-Package: org.nuxeo.ecm.webengine.management,
+ org.nuxeo.ecm.webengine.management.statuses
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule
+Bundle-SymbolicName: org.nuxeo.ecm.webengine.management;singleton=true
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
