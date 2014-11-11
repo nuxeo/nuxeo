@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.versioning.VersioningService">
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.versioning.VersioningService" />
+  </service>
+
+  <implementation class="org.nuxeo.ecm.core.versioning.VersioningComponent" />
+
+  <documentation>
+    The versioning service hold the versioning policy used to define what
+    happens to a document's version when it is created, saved, checked in,
+    checked out or restored, and what version increment options (none, minor,
+    major) are made available to the user.
+
+    @Since 5.4
+  </documentation>
+
+  <extension-point name="versioningService">
+    <documentation>
+      Extension point defining the implementation of the versioning policy.
+      Example:
+
+      <code>
+        <service class="some-class" />
+      </code>
+
+      The provided class must implement
+      org.nuxeo.ecm.core.versioning.VersioningService
+
+      The default implementation is
+      org.nuxeo.ecm.core.versioning.StandardVersioningService You can contribute
+      org.nuxeo.ecm.core.versioning.CompatVersioningService to get pre-Nuxeo 5.4
+      behavior.
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.versioning.VersioningServiceDescriptor" />
+
+  </extension-point>
+
+  <extension-point name="versioningRules">
+    <documentation>
+      Extension point defining default versioning rules or versioning rules by
+      document type. Contributions to this XP are available for
+      VersioningService implementing ExtendableVersioningService interface.
+
+      Example:
+
+      <code>
+        <defaultVersioningRule>
+          <initialState major="1" minor="0" />
+          <options lifeCycleState="*">
+            <none default="true" />
+            <minor />
+            <major />
+          </options>
+          <options lifeCycleState="approved">
+            <none default="true" />
+            <minor />
+          </options>
+        </defaultVersioningRule>
+
+        <versioningRule typeName="File" enabled="true">
+          <initialState major="1" minor="1" />
+          <options lifeCycleState="project">
+            <none />
+            <minor default="true" />
+          </options>
+          <options lifeCycleState="approved" />
+        </versioningRule>
+      </code>
+
+      The defaultVersioningRule will be used for all the document types if no
+      specific versioningRule is contributed.
+
+      typeName attribute is only available for versioningRule tag and should be
+      the name of a document type.
+
+      Initial state is the initial version number of the document. Default is
+      0.0 .
+
+      Options tag contains the different increment option available when saving
+      a document. Only none, minor and major tags are used. If the default
+      attribute isn't set, the first tag will be used as default. Options tag
+      should always have the lifeCycleState attribute. The life cycle state name
+      "*" can be used to match any state: it'll be used by default if no other
+      option with a matching state exists.
+
+      Following option gives no increment saving option when the current
+      lifeCycle of the document is approved.
+      <code>
+        <options lifeCycleState="approved" />
+      </code>
+
+      Following options removes major increment option and set the minor
+      increment option as default choice.
+      <code>
+        <options lifeCycleState="project">
+          <none />
+          <minor default="true" />
+        </options>
+      </code>
+
+      If no option is specified, the defaultVersioningRule is used. If there is
+      no defaultVersioningRule, we fall back on the service implementation.
+
+      @Since 5.4.2
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.versioning.VersioningRuleDescriptor" />
+    <object
+      class="org.nuxeo.ecm.core.versioning.DefaultVersioningRuleDescriptor" />
+
+  </extension-point>
+</component>
