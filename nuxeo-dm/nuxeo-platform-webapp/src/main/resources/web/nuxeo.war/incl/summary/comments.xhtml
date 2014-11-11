@@ -1,0 +1,36 @@
+<div class="comments_block"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <h3 class="summaryTitle">
+    <h:outputFormat value="#{messages['label.summary.comments']}" >
+      <f:param value="#{documentThreadedComments.size}"/>
+    </h:outputFormat>
+  </h3>
+
+  <h:outputText class="boldLabel" value="#{messages['label.summary.lastComments']}" />
+  <nxu:dataList var="threadEntry" value="#{documentThreadedComments}"
+    styleClass="commentsOutput" rowIndexVar="rowIndex" rows="5" first="0">
+
+    <h:panelGroup layout="block"
+      style="margin-left:#{threadEntry.depth*25}px;"
+      styleClass="#{nxu:test(rowIndex % 2 == 1, 'dataRowOdd commentBlock', 'dataRowEven commentBlock')}">
+
+      <div class="commentAuthor">
+        <h:outputText value="#{nxu:userFullName(threadEntry.comment.comment.author)}"/>
+        <h:outputText value=" "/>
+        <span class="commentCreationDate">
+          <h:outputText value="#{threadEntry.comment.comment.creationDate}" >
+            <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+              timeZone="#{timeZone}" />
+          </h:outputText>
+        </span>
+      </div>  
+      <div class="commentQuote">
+        <h:outputText value="#{threadEntry.comment.comment.text}"/>
+      </div>
+    </h:panelGroup>
+  </nxu:dataList>
+
+</div>

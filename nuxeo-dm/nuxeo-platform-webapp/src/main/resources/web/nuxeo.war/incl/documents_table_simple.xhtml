@@ -1,0 +1,160 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxf="http://nuxeo.org/nxweb/function"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+  <h:form rendered="${!empty documents}">
+  <a4j:region renderRegionOnly="true">
+  
+  <a4j:outputPanel  id="#{idParam}">
+    <ui:decorate template="/pagination/pageNavigationControls.xhtml">
+      <ui:param name="provider" value="#{provider}" />
+    </ui:decorate>
+    
+    <nxu:dataTable value="#{documents}" var="doc" preserveSort="true"
+      preserveDataModel="false" rowClasses="dataRowEven,dataRowOdd"
+      sortable="false" styleClass="dataList">
+
+      <!-- Icon + Type -->
+      <nxu:column styleClass="iconColumn">
+        <div id="docRef:#{doc.ref}" class="cell popupTarget" docRef="#{doc.ref}">
+        <nxu:graphicImage
+          value="#{nxd:iconPath(doc)}" alt="#{doc.type}" /></div>
+        <script type="text/javascript">
+          <h:outputText
+            value="new Draggable('docRef:#{doc.ref}', {revert:true});"/>
+          <h:outputText rendered="#{doc.folder}"
+            value="Droppables.add('docRef:#{doc.ref}', {accept:'cell', onDrop:function(element){moveElement(element,'docRef:#{doc.ref}')}, hoverclass:'dropInto'});"/>
+        </script>
+      </nxu:column>
+
+      <!--  Title -->
+      <nxu:column>
+        <f:facet name="header">
+        <h:panelGroup>
+          <h:commandLink immediate="true" action="#{sortActions.repeatSearch}"
+            rendered="#{provider.sortable and idParam != 'USER_SITES'}" >
+            <h:outputText value="#{messages['label.content.header.title']}" />
+            <f:param name="providerName" value="#{providerName}" />
+            <f:param name="sortColumn" value="dc:title" />
+            <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'dc:title'}" >
+              <h:graphicImage value="/icons/arrow_down.gif"
+                rendered="#{provider.sortInfo.sortAscending}" />
+              <h:graphicImage value="/icons/arrow_up.gif"
+                rendered="#{!provider.sortInfo.sortAscending}" />
+            </h:panelGroup>
+          </h:commandLink>
+          <h:commandLink immediate="true" action="#{sortActions.repeatSearch}"
+            rendered="#{provider.sortable and idParam == 'USER_SITES'}" >
+            <h:outputText value="#{messages['label.content.header.title']}" />
+            <f:param name="providerName" value="#{providerName}" />
+            <f:param name="sortColumn" value="webc:name" />
+            <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'webc:name'}" >
+              <h:graphicImage value="/icons/arrow_down.gif"
+                rendered="#{provider.sortInfo.sortAscending}" />
+              <h:graphicImage value="/icons/arrow_up.gif"
+                rendered="#{!provider.sortInfo.sortAscending}" />
+            </h:panelGroup>
+          </h:commandLink>
+        <h:outputText value="#{messages['label.content.header.title']}"
+          rendered="#{!provider.sortable}" />
+        </h:panelGroup>
+        </f:facet>
+
+        <nxd:restDocumentLink title="#{nxd:titleOrId(doc)}" document="#{doc}" rendered="#{idParam != 'USER_SITES'}">
+          <span id="title_#{row.data.ref}">
+          <h:outputText value="#{nxd:titleOrId(doc)}" />
+          </span>
+        </nxd:restDocumentLink>
+
+        <h:outputLink value="#{baseURL}site/sites/#{doc.webc.url}" target="_blank" rendered="#{idParam == 'USER_SITES'}">
+          <h:outputText value="#{doc.webc.name}" />
+        </h:outputLink> 
+      </nxu:column>
+      
+      <!-- Locking Icon -->
+      <nxu:column styleClass="iconColumn">
+        <h:graphicImage value="/icons/lock.gif"
+           rendered="#{not empty row.data.lock}"/>
+      </nxu:column>
+
+      <!--  Modification date -->
+      <nxu:column>
+        <f:facet name="header">
+        <h:panelGroup>
+          <h:commandLink immediate="true" action="#{sortActions.repeatSearch}"
+            rendered="#{provider.sortable}" >
+          <h:outputText value="#{messages['label.content.header.modified']}" />
+          <f:param name="providerName" value="#{providerName}" />
+          <f:param name="sortColumn" value="dc:modified" />
+          <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'dc:modified'}" >
+            <h:graphicImage value="/icons/arrow_down.gif"
+              rendered="#{provider.sortInfo.sortAscending}" />
+            <h:graphicImage value="/icons/arrow_up.gif"
+              rendered="#{!provider.sortInfo.sortAscending}" />
+          </h:panelGroup>
+        </h:commandLink>
+        <h:outputText value="#{messages['label.content.header.modified']}"
+          rendered="#{!provider.sortable}" />
+        </h:panelGroup>
+        </f:facet>
+
+        <h:outputText value="#{doc.dublincore.modified}">
+          <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+            timeZone="#{timeZone}" />
+        </h:outputText>
+      </nxu:column>
+
+      <!--  Author -->
+      <h:column>
+        <f:facet name="header">
+        <h:panelGroup>
+          <h:commandLink immediate="true" action="#{sortActions.repeatSearch}"
+            rendered="#{provider.sortable}" >
+          <h:outputText value="#{messages['label.content.header.author']}" />
+          <f:param name="providerName" value="#{providerName}" />
+          <f:param name="sortColumn" value="dc:creator" />
+          <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'dc:creator'}" >
+            <h:graphicImage value="/icons/arrow_down.gif"
+              rendered="#{provider.sortInfo.sortAscending}" />
+            <h:graphicImage value="/icons/arrow_up.gif"
+              rendered="#{!provider.sortInfo.sortAscending}" />
+          </h:panelGroup>
+        </h:commandLink>
+        <h:outputText value="#{messages['label.content.header.author']}"
+          rendered="#{!provider.sortable}" />
+        </h:panelGroup>
+        </f:facet>
+        <h:outputText value="#{nxu:userFullName(doc.dublincore.creator)}" />
+      </h:column>
+
+      <!-- Live edit -->
+      <nxu:column styleClass="iconColumn">
+        <nxu:methodResult name="editable"
+          value="#{liveEditHelper.isDocumentLiveEditable(doc, 'file', 'content')}">
+          <h:outputLink value="#{nxd:liveEditUrl(doc, 'file', 'content', 'filename')}"
+            rendered="#{editable}">
+            <h:graphicImage value="/icons/application_form_edit.png"
+              alt="#{messages['label.document.directEdit']}"
+              title="#{messages['label.document.directEdit']}"/>
+          </h:outputLink>
+        </nxu:methodResult>
+      </nxu:column>
+    </nxu:dataTable>
+
+    <a4j:commandButton value="#{messages['label.refresh']}" action="#{dashboardActions.refreshProvider(idParam)}" reRender="#{idParam}" styleClass="button"/>
+   </a4j:outputPanel>
+
+</a4j:region>
+</h:form>
+<ui:include src="/incl/popupMenu.xhtml"/>
+<script>
+// init menu
+//jQuery("table td div div.popupTarget").contextMenu("popupMenu");
+setupContextMenu("table td div div.popupTarget");
+</script>
+
+</div>
