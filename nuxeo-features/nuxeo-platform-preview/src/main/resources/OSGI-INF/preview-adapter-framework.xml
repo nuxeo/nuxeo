@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterManagerComponent">
+  <implementation
+    class="org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterManagerComponent" />
+
+  <documentation>
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterManager" />
+  </service>
+
+  <extension-point name="AdapterFactory">
+    <documentation>
+    @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.preview.adapter.AdapterFactoryDescriptor" />
+  </extension-point>
+
+  <extension-point name="MimeTypePreviewer">
+    <documentation>
+      Allows to contribute default implementation of preview according to the mime type.
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.preview.adapter.MimeTypePreviewerDescriptor"/>
+  </extension-point>
+
+  <extension-point name="blobPostProcessor">
+    <documentation>
+      Allows to contribute post processor to preview blobs after they got retrieved.
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.preview.adapter.BlobPostProcessorDescriptor"/>
+  </extension-point>
+
+</component>

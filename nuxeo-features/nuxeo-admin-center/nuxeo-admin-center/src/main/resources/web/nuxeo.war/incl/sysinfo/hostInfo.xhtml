@@ -1,0 +1,32 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  class="hostInfos">
+
+
+ <h2><h:outputText value="#{messages['adminsubtab.sysinfo.hostserverinfo']}" /></h2>
+ <script>
+ var nbActiveSessions=#{nbActiveUserHttpSessions};
+
+ function confirmRestart() {
+  var restartMessage = '<h:outputText value="#{messages['label.restart.confirm']}" />';
+  if (nbActiveSessions>1) {
+    restartMessage = restartMessage + "\n( " + (nbActiveSessions-1) + " " + "<h:outputText value="#{messages['label.restart.connectedusers']}" />" + ' )';
+  }
+  if (navigator.userAgent.indexOf("Nuxeo-Selenium-Tester") != -1) {
+    // webdriver sometimes has problems giving focus to alerts
+    return true;
+  }
+  return window.confirm(restartMessage);
+ }
+ </script>
+ <pre>
+   <h:outputText value="#{systemInfo.hostInfo}"/>
+ </pre>
+ <h:form>
+ <h:outputText value="#{systemInfo.uptime}"/> <h:commandButton onclick="return confirmRestart();" action="#{systemInfo.restartServer()}" value="#{messages['label.action.restart']}"/>
+ </h:form>
+
+</div>
