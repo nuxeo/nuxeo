@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.preview.actions">
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="TAB_PREVIEW" link="/incl/tabs/preview_tab.xhtml"
+      enabled="true" order="200" label="label.document.preview"
+      icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter id="view_preview">
+        <rule grant="true">
+          <condition>#{previewActions.hasPreview}</condition>
+        </rule>
+        <rule grant="false">
+          <facet>Folderish</facet>
+        </rule>
+      </filter>
+    </action>
+    
+    <action id="POPUP_PREVIEW" link="javascript:doPreview" order="130"
+      enabled="true" label="label.document.preview" icon="/icons/view_pdf.gif">
+      <category>POPUP</category>
+      <filter id="popup_view_preview">
+        <rule grant="true">
+          <condition>#{previewActions.documentHasPreview(document)}</condition>
+        </rule>
+        <rule grant="false">
+          <facet>Folderish</facet>
+        </rule>
+      </filter>
+    </action>
+  </extension>
+</component>
