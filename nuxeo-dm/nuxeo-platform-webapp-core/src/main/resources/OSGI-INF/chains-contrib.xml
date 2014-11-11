@@ -1,0 +1,13 @@
+<component name="org.nuxeo.ecm.platform.automation.defaultChains">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="chains">
+
+    <chain id="addCurrentDocumentToWorklist">
+      <operation id="Context.FetchDocument" />
+      <operation id="Seam.AddToWorklist" />
+    </chain>
+
+  </extension>
+
+</component>
