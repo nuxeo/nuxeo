@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ear.config.notification">
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="generalSettings">
+    <settings>
+      <serverPrefix>${nuxeo.url}/</serverPrefix>
+      <eMailSubjectPrefix>${nuxeo.notification.eMailSubjectPrefix} </eMailSubjectPrefix>
+      <mailSessionJndiName>${jndi.base}/Mail</mailSessionJndiName>
+    </settings>
+  </extension>
+
+</component>

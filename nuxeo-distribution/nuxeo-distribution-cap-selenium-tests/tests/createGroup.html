@@ -1,0 +1,490 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>createGroup</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">createGroup</td></tr>
+</thead><tbody>
+<!--@Test groups:CreateGroup,introduction|depends:CreateUsers-->
+<tr>
+	<td>setTimeout</td>
+	<td>30000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=WARN&amp;message=----- Selenium createGroup</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Administrator</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=Admin</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=Users &amp; Groups</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Groups</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<!--creation d'un groupe Johns-->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Create a new group</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createGroupView:createGroup:nxl_group:nxw_group_name']</td>
+	<td>Johns</td>
+</tr>
+<!-- Since 5.7.3 group is a select2 widget-->
+<tr>
+    <td>select2Type</td>
+    <td>css=div[id$='nxw_group_members_select2']</td>
+    <td>bre</td>
+</tr>
+<tr>
+    <td>waitForSelect2</td>
+    <td>10000</td>
+    <td></td>
+</tr>
+<tr>
+    <td>clickAt</td>
+    <td>css=.select2-result-selectable</td>
+    <td></td>
+</tr>
+<!--  -->
+<!-- Since 5.7.3 group is a select2 widget-->
+<tr>
+    <td>select2Type</td>
+    <td>css=div[id$='nxw_group_members_select2']</td>
+    <td>jdo</td>
+</tr>
+<tr>
+    <td>waitForSelect2</td>
+    <td>10000</td>
+    <td></td>
+</tr>
+<tr>
+    <td>clickAt</td>
+    <td>css=.select2-result-selectable</td>
+    <td></td>
+</tr>
+<!--  -->
+<!-- Since 5.7.3 group is a select2 widget-->
+<tr>
+    <td>select2Type</td>
+    <td>css=div[id$='nxw_group_members_select2']</td>
+    <td>jsmith</td>
+</tr>
+<tr>
+    <td>waitForSelect2</td>
+    <td>10000</td>
+    <td></td>
+</tr>
+<tr>
+    <td>clickAt</td>
+    <td>css=.select2-result-selectable</td>
+    <td></td>
+</tr>
+<!--  -->
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='s2id_createGroupView:createGroup:nxl_group:nxw_group_members_select2']/ul[@class='select2-choices']/li[@class='select2-search-choice'][1]/div</td>
+	<td>Bree Van de Kaamp bree</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='s2id_createGroupView:createGroup:nxl_group:nxw_group_members_select2']/ul[@class='select2-choices']/li[@class='select2-search-choice'][2]/div</td>
+	<td>John Doe jdoe</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='s2id_createGroupView:createGroup:nxl_group:nxw_group_members_select2']/ul[@class='select2-choices']/li[@class='select2-search-choice'][3]/div</td>
+	<td>John Smith jsmith</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Johns</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Back to the list</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='groupsListingView:searchForm:searchText']</td>
+	<td>Johns</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@id='groupsListingView:searchForm:searchButton']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Johns</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<!--Verification de la redirection sur la fiche du groupe-->
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Group's members</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=View</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Edit</td>
+	<td></td>
+</tr>
+<!--creation d'un groupe pour test unique id-->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Back to the list</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Create a new group</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createGroupView:createGroup:nxl_group:nxw_group_name']</td>
+	<td>Johns</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Group already exists</td>
+	<td></td>
+</tr>
+<!--creation d'un groupe pour suppression-->
+<tr>
+	<td>type</td>
+	<td>//input[@id='createGroupView:createGroup:nxl_group:nxw_group_name']</td>
+	<td>Suppr</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createGroupView:createGroup:nxl_group:nxw_group_label']</td>
+	<td>Suppress</td>
+</tr>
+<!-- Since 5.7.3 group is a select2 widget-->
+<tr>
+    <td>select2Type</td>
+    <td>css=div[id$='nxw_group_members_select2']</td>
+    <td>jdo</td>
+</tr>
+<tr>
+    <td>waitForSelect2</td>
+    <td>10000</td>
+    <td></td>
+</tr>
+<tr>
+    <td>clickAt</td>
+    <td>css=.select2-result-selectable</td>
+    <td></td>
+</tr>
+<!--  -->
+<!-- Since 5.7.3 group is a select2 widget-->
+<tr>
+    <td>select2Type</td>
+    <td>css=div[id$='nxw_group_members_select2']</td>
+    <td>jsmith</td>
+</tr>
+<tr>
+    <td>waitForSelect2</td>
+    <td>10000</td>
+    <td></td>
+</tr>
+<tr>
+    <td>clickAt</td>
+    <td>css=.select2-result-selectable</td>
+    <td></td>
+</tr>
+<!--  -->
+<!-- Since 5.7.3 group is a select2 widget-->
+<tr>
+    <td>select2Type</td>
+    <td>css=div[id$='nxw_group_members_select2']</td>
+    <td>lucien</td>
+</tr>
+<tr>
+    <td>waitForSelect2</td>
+    <td>10000</td>
+    <td></td>
+</tr>
+<tr>
+    <td>clickAt</td>
+    <td>css=.select2-result-selectable</td>
+    <td></td>
+</tr>
+<!--  -->
+<tr>
+    <td>verifyText</td>
+    <td>//*[@id='s2id_createGroupView:createGroup:nxl_group:nxw_group_members_select2']/ul[@class='select2-choices']/li[@class='select2-search-choice'][1]/div</td>
+    <td>John Doe jdoe</td>
+</tr>
+<tr>
+    <td>verifyText</td>
+    <td>//*[@id='s2id_createGroupView:createGroup:nxl_group:nxw_group_members_select2']/ul[@class='select2-choices']/li[@class='select2-search-choice'][2]/div</td>
+    <td>John Smith jsmith</td>
+</tr>
+<tr>
+    <td>verifyText</td>
+    <td>//*[@id='s2id_createGroupView:createGroup:nxl_group:nxw_group_members_select2']/ul[@class='select2-choices']/li[@class='select2-search-choice'][3]/div</td>
+    <td>Lucien Bramard lbramard</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Suppr</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Suppress</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Back to the list</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='groupsListingView:searchForm:searchText']</td>
+	<td>Suppr</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@id='groupsListingView:searchForm:searchButton']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Suppress</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Suppr</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<!--Verification de la redirection sur la fiche du groupe-->
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Group's members</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=View</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Edit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Suppr</td>
+	<td></td>
+</tr>
+<!--Deconnexion-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
