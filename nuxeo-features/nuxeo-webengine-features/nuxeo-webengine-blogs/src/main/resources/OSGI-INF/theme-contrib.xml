@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.webengine.blogs.theme">
+
+  <require>org.nuxeo.webengine.sites.theme</require>
+
+  <!-- Perspectives -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="perspectives">
+
+    <perspective name="view">
+      <title>VIEW mode</title>
+    </perspective>
+    <perspective name="create">
+      <title>CREATE mode</title>
+    </perspective>
+    <perspective name="edit">
+      <title>EDIT mode</title>
+    </perspective>
+
+  </extension>
+
+  <!-- Views -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="views">
+    <view name="Recent Blog Posts" template-engine="freemarker">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <model-type>blogpost</model-type>
+      <template>widgets/blogs/recent_blog_posts.xml</template>
+    </view>
+
+    <view name="Blog Site Archive" template-engine="freemarker">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <model-type>blogSiteArchive</model-type>
+      <template>widgets/blogs/blog_site_archive.xml</template>
+    </view>
+
+    <view name="Blog Post Main" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/blog_post_main.ftl</template>
+    </view>
+    <view name="Blog Post Create" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/blog_post_create.ftl</template>
+    </view>
+    <view name="Blog Post Edit" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/blog_post_edit.ftl</template>
+    </view>
+    <view name="Blog Site Buttons" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>skin/widgets/buttons.ftl</template>
+    </view>
+    <view name="Blog RSS" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>skin/widgets/rss.ftl</template>
+    </view>
+
+  </extension>
+
+  <!-- application settings -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="applications">
+    <!--  temporary fix for jboss -->
+    <application root="${org.nuxeo.ecm.contextPath}/site/blogs" template-engine="freemarker">
+      <negotiation>
+        <strategy>web</strategy>
+        <default-engine>default</default-engine>
+        <default-theme>blogs/default
+        </default-theme>
+        <default-perspective>default
+        </default-perspective>
+      </negotiation>
+    </application>
+
+    <application root="${org.nuxeo.ecm.contextPath}/site" template-engine="freemarker">
+      <negotiation>
+        <strategy>web</strategy>
+        <default-engine>default</default-engine>
+        <default-theme>blogs/default
+        </default-theme>
+        <default-perspective>default
+        </default-perspective>
+      </negotiation>
+    </application>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="models">
+
+    <model name="blogpost">
+      <class>org.nuxeo.webengine.blogs.models.BlogPostListModel</class>
+      <contains>blogpostDay item</contains>
+    </model>
+    <model name="blogpostDay item">
+      <class>org.nuxeo.webengine.blogs.models.BlogSiteArchiveDayModel
+      </class>
+      <contains>blogpost item</contains>
+    </model>
+    <model name="blogpost item">
+      <class>org.nuxeo.webengine.blogs.models.BlogPostModel</class>
+    </model>
+
+    <model name="blogSiteArchive">
+      <class>org.nuxeo.webengine.blogs.models.BlogSiteArchiveListModel
+      </class>
+      <contains>blogSiteArchiveYear item</contains>
+    </model>
+    <model name="blogSiteArchiveYear item">
+      <class>org.nuxeo.webengine.blogs.models.BlogSiteArchiveYearModel
+      </class>
+      <contains>blogSiteArchiveMonth item</contains>
+    </model>
+    <model name="blogSiteArchiveMonth item">
+      <class>org.nuxeo.webengine.blogs.models.BlogSiteArchiveMonthModel
+      </class>
+    </model>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="fragments">
+
+    <fragment name="recent blogposts fragment">
+      <class>org.nuxeo.webengine.blogs.fragments.RecentBlogPostsFragment
+      </class>
+      <model-type>blogpost</model-type>
+      <dynamic>true</dynamic>
+    </fragment>
+
+    <fragment name="blog site archive fragment">
+      <class>org.nuxeo.webengine.blogs.fragments.BlogSiteArchiveFragment
+      </class>
+      <model-type>blogSiteArchive</model-type>
+      <dynamic>true</dynamic>
+    </fragment>
+  </extension>
+
+  <!-- themes -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="themes">
+    <theme>
+      <src>
+        themes/theme-blogs-setup.xml
+      </src>
+    </theme>
+  </extension>
+  <!-- Palettes -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="presets">
+    <palette name="Sites borders" src="themes/palettes/sites-borders.properties"
+      category="border" />
+    <palette name="Sites backgrounds" src="themes/palettes/sites-backgrounds.properties"
+      category="background" />
+    <palette name="Sites fonts" src="themes/palettes/sites-fonts.properties"
+      category="font" />
+  </extension>
+
+
+</component>
