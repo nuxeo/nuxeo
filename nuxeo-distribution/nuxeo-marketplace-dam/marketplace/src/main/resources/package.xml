@@ -1,0 +1,78 @@
+<package type="addon" name="nuxeo-dam" version="@VERSION@">
+  <title>Nuxeo DAM</title>
+  <description>
+    <p>Nuxeo DAM is a robust, extensible, Digital Asset Management solution
+      available as Open Source Software (OSS) that helps marketing and brand
+      managers catalog, process, store, retrieve, and distribute rich media
+      content, including images, audio, and video.
+    </p>
+    <p>Streamlining these tasks enables creative users to focus on ideas and
+      design by freeing them from resource-intensive content control tasks.
+    </p>
+    <p>Nuxeo DAM, a state-of-the-art application built on a new generation of
+      ECM, provides:
+    </p>
+    <p> * An intuitive experience, designed for creative users</p>
+    <p> * Improved productivity, with the automation and streamlining of routine
+      tasks
+    </p>
+    <p> * A trusted repository, designed for secure and easy scaling as projects
+      expand
+    </p>
+    <p> * Adaptability, with Nuxeo Studio, a configuration and customization
+      environment
+    </p>
+    <p> * Inter-operability, with a CMIS-enabled platform</p>
+
+    <p>Nuxeo DAM features:</p>
+    <ul>
+      <li>
+        <p>Bulk Import</p>
+        <p>With Nuxeo DAM you can import for large amount of files, with its
+          metadata
+        </p>
+      </li>
+      <li>
+        <p>Video Story-boarding</p>
+        <p>Nuxeo DAM automatically generates a series of thumbnails upon import
+          that display the contents of a video file. Chapters of the video can
+          be reached by clicking on the thumbnail.
+        </p>
+      </li>
+      <li>
+        <p>Video Streaming</p>
+        <p>The streaming feature offers users the ability to share their
+          video (and soon audio) in streaming through Nuxeo DAM, which mean users don't need to wait
+          for the end of the download of the file to start watching it. Most used
+          video format can uploaded into Nuxeo DAM. Available for Windows
+          servers.
+        </p>
+      </li>
+      <li>
+        <p>Bulk Edit</p>
+        <p>Nuxeo DAM allows user to edit a selection of assets.</p>
+      </li>
+    </ul>
+  </description>
+  <home-page>http://doc.nuxeo.com/x/KQMz</home-page>
+  <vendor>Nuxeo</vendor>
+  <installer restart="true" />
+  <uninstaller restart="true" />
+  <!-- <hotreload-support>false</hotreload-support> -->
+  <!-- <require-terms-and-conditions-acceptance>false -->
+  <!-- </require-terms-and-conditions-acceptance> -->
+  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
+  <production-state>production_ready</production-state>
+  <supported>true</supported>
+  <platforms>
+    <platform>cap-@VERSION@</platform>
+  </platforms>
+  <dependencies>
+    <package>nuxeo-dm:@VERSION@</package>
+  </dependencies>
+  <conflicts>
+    <package>nuxeo-cmf</package>
+  </conflicts>
+  <license>LGPL</license>
+  <license-url>http://www.gnu.org/licenses/lgpl.html</license-url>
+</package>

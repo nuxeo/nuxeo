@@ -1,0 +1,21 @@
+<!-- See documentation at http://doc.nuxeo.com/x/HgIz -->
+<package type="addon" name="nuxeo-rest-api" version="@VERSION@">
+  <title>Nuxeo REST API</title>
+  <description>
+    <p>Nuxeo REST API exposes documents as REST resources allowing documents to be GET, PUT, DELETE and POST.</p>
+  </description>
+  <home-page>http://doc.nuxeo.com/x/QYLQ</home-page>
+  <vendor>Nuxeo</vendor>
+  <installer restart="true" />
+  <uninstaller restart="true" />
+  <!-- <hotreload-support>false</hotreload-support> -->
+  <!-- <require-terms-and-conditions-acceptance>false</require-terms-and-conditions-acceptance> -->
+  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
+  <production-state>production_ready</production-state>
+  <supported>false</supported>
+  <platforms>
+    <platform>cap-@DISTRIB_VERSION@</platform>
+  </platforms>
+  <license>LGPL</license>
+  <license-url>http://www.gnu.org/licenses/lgpl.html</license-url>
+</package>
