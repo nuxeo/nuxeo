@@ -1,0 +1,213 @@
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:s="http://jboss.com/products/seam/taglib">
+
+  <ui:define name="page title">
+    <h:outputText value="#{messages['title.imageUpload.form']}" />
+  </ui:define>
+
+  <ui:define name="body">
+<div style="padding: 5px 20px 20px 15px;">
+  <h1>#{messages['title.imageUpload.form']}</h1>
+
+  <div class="tabsBar">
+    <ul>
+    <li class="#{nxu:test(editorImageActions.selectedTab == 'UPLOAD', 'selected', '')}"><a href="#{baseURL}editor_image_upload.faces?conversationId=#{org.jboss.seam.core.manager.currentConversationId}&amp;conversationIsLongRunning=true&amp;selectedTab=UPLOAD">#{messages['label.imageUpload.uploadTab']}</a></li>
+    <li class="#{nxu:test(editorImageActions.selectedTab == 'SEARCH', 'selected', '')}"><a href="#{baseURL}editor_image_upload.faces?conversationId=#{org.jboss.seam.core.manager.currentConversationId}&amp;conversationIsLongRunning=true&amp;selectedTab=SEARCH">#{messages['label.imageUpload.searchTab']}</a></li>
+    </ul>
+  </div>
+
+  <div style="clear:both"></div>
+  <div class="tabsContent">
+
+    <f:subview rendered="#{editorImageActions.selectedTab == 'UPLOAD'}">
+
+      <f:subview rendered="#{!editorImageActions.inCreationMode}">
+
+        <f:subview rendered="#{editorImageActions.isImageUploaded}">
+          <script type="text/javascript">
+            if (window.opener.tinyMCE) {
+              var tinyMCE = window.opener.tinyMCE;
+              var html = '&lt;img src="' + '#{editorImageActions.urlForImage}' + '"/&gt;';
+              tinyMCE.execCommand('mceInsertContent', false, html);
+            }
+            self.close();
+          </script>
+        </f:subview>
+
+        <h3><h:outputText
+          value="#{messages['label.imageUpload.upload']}" /></h3>
+
+        <h:form enctype="multipart/form-data" id="uploadForm"
+          rendered="#{!editorImageActions.isImageUploaded}">
+          <table>
+            <tbody>
+              <tr>
+                <td><h:outputText
+                  value="#{messages['label.imageUpload.image']}" /></td>
+                <td><s:fileUpload data="#{editorImageActions.uploadedImage}"
+                  fileName="#{editorImageActions.uploadedImageName}"/></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td><h:commandButton
+                  value="#{messages['command.imageUpload.send']}"
+                  action="#{editorImageActions.uploadImage}"
+                  class="button" /></td>
+              </tr>
+            </tbody>
+          </table>
+        </h:form>
+
+      </f:subview>
+
+      <f:subview rendered="#{editorImageActions.inCreationMode}">
+
+        <h3><h:outputText styleClass="errorMessage"
+          value="#{messages['label.imageUpload.unableToUpload']}" /></h3>
+
+      </f:subview>
+
+    </f:subview>
+
+    <f:subview  rendered="#{editorImageActions.selectedTab == 'SEARCH'}">
+      <div>
+        <h3><h:outputText
+          value="#{messages['label.search.form.simple']}" /></h3>
+        <h:form>
+          <h:inputText value="#{editorImageActions.searchKeywords}" size="40"
+            class="searchField"
+            onkeydown="if (event.keyCode == 13) {this.nextSibling.click()} else return true" />
+          <h:commandButton
+            value="#{messages['command.search']}"
+            action="#{editorImageActions.searchImages}" class="button" />
+        </h:form>
+      </div>
+
+
+      <a4j:region>
+        <div id="content">
+          <h:outputText value="#{messages['label.content.emptyFolder']}"
+            rendered="#{!editorImageActions.hasSearchResults}" />
+
+          <f:subview rendered="#{editorImageActions.hasSearchResults}">
+
+          <h:form
+          id="search_results"
+          rendered="#{editorImageActions.hasSearchResults}">
+
+          <h3><h:outputText
+            value="#{messages['label.imageUpload.chooseSize']}" /></h3>
+          <div class="pictureItemSize">
+            <h:selectOneRadio value="#{editorImageActions.selectedSize}">
+              <nxu:selectItems value="#{editorImageActions.sizes}" var="item"
+              itemValue="#{item.value}" itemLabel="#{messages[item.label]}" />
+
+              <a4j:support ajaxSingle="true" reRender="search_results" event="onclick" />
+            </h:selectOneRadio>
+          </div>
+
+          <h3><h:outputText
+            value="#{messages['label.imageUpload.chooseFile']}" /></h3>
+
+          <h:selectOneRadio>
+            <nxu:dataTable id="dataTable"
+              value="#{editorImageActions.searchImageResults}"
+              var="document" rowClasses="dataRowEven,dataRowOdd"
+              styleClass="dataOutput">
+              <!-- id and selection -->
+              <nxu:column styleClass="iconColumn">
+                <input type="radio" id="selection" name="selection"
+                  value="#{document.id}" />
+                <div style="display: none;" id="#{document.id}"><h:graphicImage
+                  value="#{nxd:fileUrl('downloadPicture', document, editorImageActions.imageProperty, currentDocument.dublincore.modified)}" /></div>
+              </nxu:column>
+              <!-- Icon + Type -->
+              <nxu:column styleClass="iconColumn">
+                <nxu:graphicImage value="#{nxd:iconPath(document)}"
+                  alt="#{document.type}" />
+              </nxu:column>
+              <!--  Title -->
+              <nxu:column>
+                <f:facet name="header">
+                  <h:outputText
+                    value="#{messages['label.content.header.title']}" />
+                </f:facet>
+                  <h:outputText value="#{nxd:titleOrId(document)}" />
+              </nxu:column>
+              <!--  Image -->
+              <h:column>
+                <f:facet name="header">
+                  <h:outputText
+                    value="#{messages['label.imageUpload.image']}" />
+                </f:facet>
+                <h:graphicImage
+                  value="#{nxd:fileUrl('downloadPicture', document, 'Thumbnail:content', currentDocument.dublincore.modified)}" />
+              </h:column>
+            </nxu:dataTable>
+          </h:selectOneRadio>
+
+          <script type="text/javascript">
+            function getSelectedRadio(buttonGroup) {
+              if (buttonGroup[0]) {
+                for (var i=0; i&lt;buttonGroup.length; i++) {
+                  if (buttonGroup[i].checked) {
+                    return buttonGroup[i]
+                  }
+                }
+              } else if (buttonGroup.checked) {
+                return buttonGroup;
+              }
+              return null;
+            }
+
+            function getImage(radioButton) {
+              ele = radioButton;
+              while (ele.nodeName != 'div' &amp;&amp; ele.nodeName != 'DIV') {
+                ele = ele.nextSibling;
+              }
+
+              if (ele.childNodes.length > 0) {
+                for (var i = 0; i &lt; ele.childNodes.length; ++i) {
+                    e = ele.childNodes[i];
+                    if (e.nodeName == 'img' || e.nodeName == 'IMG') {
+                      return e;
+                    }
+                  }
+              }
+              return null;
+            }
+
+            function updateEditor(form) {
+              if (window.opener.tinyMCE) {
+                var tinyMCE = window.opener.tinyMCE;
+                var button = getSelectedRadio(form.elements.selection);
+                var img = getImage(button);
+                var html = '&lt;img src="' + img.src + '"/&gt;';
+                tinyMCE.execCommand('mceInsertContent', false, html);
+              }
+              self.close();
+            }
+          </script>
+          <input type="submit" id="button_update" class="button"
+            value="#{messages['command.ok']}"
+            onclick="javascript:updateEditor(this.form);" />
+
+          </h:form>
+          </f:subview>
+        </div>
+      </a4j:region>
+
+    </f:subview>
+
+    </div>
+</div>
+  </ui:define>
+
+</nxthemes:composition>
