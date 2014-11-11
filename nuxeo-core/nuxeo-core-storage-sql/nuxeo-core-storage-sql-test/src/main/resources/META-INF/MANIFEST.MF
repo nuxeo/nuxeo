@@ -1,0 +1,54 @@
+Export-Package: org.nuxeo.ecm.core.storage.sql
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: Nuxeo Core SQL Storage Tests
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-Vendor: Nuxeo SAS
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Bundle-License: http://www.gnu.org/copyleft/lesser.txt
+Bundle-Description: Nuxeo Core: SQL Storage Tests.
+Bundle-DocURL: http://www.nuxeo.com/en
+Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql.test
+Fragment-Host: org.nuxeo.ecm.core.storage.sql
+Import-Package: javax.naming,
+ javax.resource.cci;version="1.0.0",
+ javax.resource.spi;version="1.5.0",
+ javax.transaction;version="1.1",
+ junit.framework,
+ org.apache.commons.logging,
+ org.jmock,
+ org.junit.runner,
+ org.nuxeo.common.collections,
+ org.nuxeo.common.utils,
+ org.nuxeo.ecm.core,
+ org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.api.blobholder,
+ org.nuxeo.ecm.core.api.externalblob,
+ org.nuxeo.ecm.core.api.facet,
+ org.nuxeo.ecm.core.api.impl,
+ org.nuxeo.ecm.core.api.impl.blob,
+ org.nuxeo.ecm.core.api.model,
+ org.nuxeo.ecm.core.api.model.impl.primitives,
+ org.nuxeo.ecm.core.api.security,
+ org.nuxeo.ecm.core.api.security.impl,
+ org.nuxeo.ecm.core.event,
+ org.nuxeo.ecm.core.query,
+ org.nuxeo.ecm.core.query.sql,
+ org.nuxeo.ecm.core.schema,
+ org.nuxeo.ecm.core.schema.types,
+ org.nuxeo.ecm.core.security,
+ org.nuxeo.ecm.core.storage,
+ org.nuxeo.ecm.core.storage.sql,
+ org.nuxeo.ecm.core.storage.sql.coremodel,
+ org.nuxeo.ecm.core.storage.sql.jdbc,
+ org.nuxeo.osgi,
+ org.nuxeo.runtime,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.jtajca,
+ org.nuxeo.runtime.services.streaming,
+ org.nuxeo.runtime.test,
+ org.nuxeo.runtime.transaction,
+ org.osgi.framework;version="1.4"
+Require-Bundle: org.nuxeo.ecm.core

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.event.lifecycle.listener"
+  version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <documentation>
+      Listener for life cycle change events.
+
+      If event occurs on a folder, it will recurse on children to perform the
+      same transition if possible.
+
+      If the transition event is about marking documents as "deleted", and a
+      child cannot perform the transition, it will be removed.
+
+      Undelete transitions are not recursed on the children, however a special
+      documentUndeleted event has the same role and is processed by this listener.
+    </documentation>
+    <listener name="bulkLifeCycleChangeListener" async="true" postCommit="true"
+      class="org.nuxeo.ecm.core.lifecycle.event.BulkLifeCycleChangeListener">
+      <event>lifecycle_transition_event</event>
+      <event>documentUndeleted</event>
+      <event>documentCreatedByCopy</event>
+    </listener>
+
+  </extension>
+
+</component>
