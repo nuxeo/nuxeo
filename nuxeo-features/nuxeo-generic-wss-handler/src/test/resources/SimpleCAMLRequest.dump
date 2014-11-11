@@ -1,0 +1,20 @@
+POST /STSServer1/_vti_bin/_vti_aut/owssvr.dll?Cmd=DisplayPost
+MIME-Version: 1.0
+User-Agent: client_name/version
+Host: host_name
+Accept: auth/sicily
+Authorization: Basic.cm9iZjpUS3NvKjUw
+
+<?xml version="1.0" encoding="UTF-8"?>
+<ows:Batch OnError="Return">
+  <Method ID="0,NewList">
+    <SetVar Name="Cmd">NewList</SetVar>
+    <SetVar Name="ListTemplate">100</SetVar>
+    <SetVar Name="Title">Meeting Topics</SetVar>
+  </Method>
+  <Method ID="1,NewList">
+    <SetVar Name="Cmd">NewList</SetVar>
+    <SetVar Name="ListTemplate">100</SetVar>
+    <SetVar Name="Title">Volunteers</SetVar>
+  </Method>
+</ows:Batch>

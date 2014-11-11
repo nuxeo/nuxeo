@@ -1,0 +1,11 @@
+GET /_vti_inf.html HTTP/1.1
+Date: Fri, 04 Sep 2009 13:51:37 GMT
+MIME-Version: 1.0
+Accept: */*
+User-Agent: Mozilla/4.0 (compatible; MS FrontPage 6.0)
+Host: vm2k3
+Accept: auth/sicily
+Content-Length: 0
+Connection: Keep-Alive
+Cache-Control: no-cache
+

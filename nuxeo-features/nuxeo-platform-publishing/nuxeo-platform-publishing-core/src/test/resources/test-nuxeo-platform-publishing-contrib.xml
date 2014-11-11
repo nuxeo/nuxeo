@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.publishing.contrib.override"
+    version="1.0">
+
+  <documentation>
+    Nuxeo Platform Publishing Service default contributions.
+
+    @version 1.0
+    @author Julien Anguenot
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.publishing"
+      point="publishingValidDateField">
+    <documentation>The default valid date for publishing</documentation>
+
+    <publishingValidDateField prefixedFieldName="foo:bar"/>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.publishing"
+      point="publishingValidatorsRule">
+    <documentation>
+      The default rule to compute publishing validator
+    </documentation>
+
+    <publishingValidatorsRule class="org.nuxeo.ecm.platform.publishing.FakeValidatorsRule"/>
+  </extension>
+
+</component>
