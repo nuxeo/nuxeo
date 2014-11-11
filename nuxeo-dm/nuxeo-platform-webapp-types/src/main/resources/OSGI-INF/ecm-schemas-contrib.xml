@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.webapp.schemas">
+
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="advanced_search" src="schemas/advanced_search.xsd"
+      prefix="search" />
+    <schema name="documentsLists" src="schemas/documentsLists.xsd" />
+    <schema name="content_view_display" src="schemas/content_view_display.xsd"
+      prefix="cvd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+
+    <facet name="ContentViewDisplay">
+      <schema name="content_view_display" />
+    </facet>
+
+    <doctype name="AdvancedSearch" extends="Document">
+      <schema name="advanced_search" />
+    </doctype>
+
+  </extension>
+
+</component>

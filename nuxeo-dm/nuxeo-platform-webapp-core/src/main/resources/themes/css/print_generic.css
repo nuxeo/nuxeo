@@ -1,0 +1,398 @@
+/*
+Basics styles for Print
+author: lkemen@nuxeo.com
+*/
+
+body {
+  color: #000;
+  font-family: Arial, Helvetica, sans-serif }
+
+h1,h2,h3,h4,h5,h6 {
+  font-weight: bold;
+  margin: .2em 0 .6em;
+  padding: 0 }
+
+h1 {
+  font-size: 150% }
+
+h2 {
+  font-size: 130% }
+
+h3 {
+  font-size: 120% }
+
+h4, h5, h6 {
+  font-size: 110% }
+
+div {
+  background-color: #fff;
+  float: none }
+
+img {
+  padding: .2em .5em }
+
+a:link,
+a:visited {
+  background: transparent;
+  color: #000;
+  text-decoration: none }
+
+/* Page layout */
+.nxMainContainer {
+  margin: 0 auto;
+  width: 95% }
+
+.nxMainContainer content {
+  padding: 1.5em }
+
+/* Breadcrumb */
+.breadcrumbs {
+  float:left;
+  font-size: .8em;
+  margin-bottom: 1.8em }
+
+/* Tables */
+.labelColumn {
+  font-weight: bold;
+  text-align: left;
+  width: 12em }
+
+.labelColumn,
+.fieldColumn {
+  border-bottom: 1px solid #eee }
+
+.labelColumn span {
+  padding: .2em 0 0 0 }
+
+.fieldColumn {
+  line-height: 160%;
+  padding: .3em }
+
+.fieldColumn img {
+  margin-bottom: -3px }
+
+.fieldColumn .widgetPanel td.fieldColumn {
+   padding: 0 }
+
+.dataList th,
+.dataOutput th {
+  background-color: #eee;
+  padding: .4em .5em;
+  text-align: left }
+
+.dataList .iconColumn img,
+.dataInput .iconColumn img,
+.dataOutput .iconColumn img { display: block }
+
+.dataList,
+.dataOutput,
+.dataOutput2Columns {
+  border: 1px solid #dbdbdb;
+  border-collapse: collapse }
+
+.dataList td,
+.dataOutput td {
+  border-width: 1px;
+  border-style: solid none;
+  border-color: #dbdbdb;
+  padding: .4em .3em }
+
+.dataInput td {
+  padding: .4em .3em }
+
+.dataInput td td,
+.dataInput td td td {
+  border: none 0 }
+
+.dataOutput2Columns td {
+  padding: .4em .3em;
+  vertical-align: top }
+
+.dataOutput thead th {
+  white-space: nowrap }
+
+/* Images */
+.smallIcon {
+  height: 16px;
+  width: 16px }
+
+/* Document view*/
+.tabsContent {
+  padding: 0 0 1em }
+
+.currentDocumentDescription {
+  padding: .3em 0 }
+
+.gridBox img {
+  max-width: 15cm;
+  max-height: 15cm }
+
+.widgetPanel,
+.metadata_block,
+.comments_block {
+  margin: 1em 0 2em }
+
+.widgetPanel {
+  padding: 0 .8em 1em }
+
+.widgetTable {
+  width: 100% }
+
+.dataInput .listWidgetPanel {
+  margin: 0;
+  padding: 0 }
+
+.content_block {
+  margin: 1em 0 3em;
+  page-break-after: always }
+
+.content_block table {
+  width: 100% }
+
+.content_block .fieldColumn {
+  font-weight: bold }
+
+.metadata_block .dataInput {
+  width: 100% }
+
+.globalActionBar,
+.content_block .actionsColumn {
+  display: none }
+
+.description_block {
+  background-color: #f1f2f3;
+  border: 1px solid #ddd;
+  font-size: 110%;
+  font-weight: bold;
+  line-height: 130%;
+  margin: 1em 0;
+  padding: .5em }
+
+.description_block .documentDescription {
+  display: block;
+  padding: 0 0 1em }
+
+.description_block .createdBy,
+.description_block .creationDate,
+.description_block .versionNumber {
+  padding-right: 1em }
+
+.description_block .creationDate {
+  color: #888;
+  font-weight: normal }
+
+/* Note view */
+.textBlock,
+.note_content_block {
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  display: block;
+  font-size: 110%;
+  margin-bottom: 2em;
+  padding: 1em }
+
+.textBlock p,
+.textBlock div,
+.textBlock span,
+.note_content_block p,
+.note_content_block div,
+.note_content_block span {
+  line-height: 170% }
+
+.textBlock i,
+.textBlock em,
+.textBlock var,
+.textBlock dfn,
+.textBlock cite,
+.note_content_block i,
+.note_content_block em,
+.note_content_block var,
+.note_content_block dfn,
+.note_content_block cite {
+  font-style: italic }
+
+.textBlock p,
+.textBlock div,
+.note_content_block p,
+.note_content_block div {
+  padding: .2em 0 .9em }
+
+.textBlock img,
+.note_content_block img {
+  max-height: 150px;
+  max-width: 200px }
+
+.textBlock h1,
+.textBlock h2,
+.textBlock h3,
+.textBlock h4,
+.textBlock h5,
+.textBlock h6,
+.note_content_block h1,
+.note_content_block h2,
+.note_content_block h3,
+.note_content_block h4,
+.note_content_block h5,
+.note_content_block h6 {
+  font-weight: bold;
+  line-height: normal;
+  margin: 0 }
+
+.textBlock h1,
+.note_content_block h1 {
+  font-size: 2em;
+  padding: .5em 0 .8em }
+
+.textBlock h2,
+.note_content_block h2 {
+  font-size: 1.6em;
+  padding: .6em 0 .4em }
+
+.textBlock h3,
+.note_content_block h3 {
+  font-size: 1.4em;
+  padding: .45em 0 .38em }
+
+.textBlock h4,
+.note_content_block h4 {
+  color: "title.major (__FLAVOR__ color)";
+  font-size: 1.3em;
+  padding: .45em 0 .35em }
+
+.textBlock h5,
+.note_content_block h5 {
+  color: "title.major (__FLAVOR__ color)";
+  font-size: 1.1em;
+  padding: .35em 0 .25em }
+
+.textBlock h6,
+.note_content_block h6 {
+  color: "title.minor (__FLAVOR__ color)";
+  font-size: 1.1em;
+  padding: .35em 0 .25em }
+
+.textBlock ul,
+.textBlock ol,
+.note_content_block ul,
+.note_content_block ol {
+  list-style: disc outside none;
+  padding: 0 0 0 2.7em ;
+  margin: 0 0 .4em }
+
+.textBlock li,
+.note_content_block li {
+  line-height: 1.6em;
+  list-style: inherit }
+
+.textBlock ul,
+.textBlock ul ul ul,
+.textBlock ul ul ul ul ul,
+.note_content_block ul,
+.note_content_block ul ul ul,
+.note_content_block ul ul ul ul ul {
+  list-style-type: disc outside none }
+
+.textBlock ul ul,
+.textBlock ul ul ul ul,
+.textBlock ul ul ul ul ul ul,
+.note_content_block ul ul,
+.note_content_block ul ul ul ul,
+.note_content_block ul ul ul ul ul ul {
+  list-style: circle outside none }
+
+.textBlock ol,
+.note_content_block ol {
+  list-style: decimal outside none }
+
+.textBlock ol ol,
+.textBlock ol ol ol ol,
+.textBlock ol ol ol ol ol ol,
+.note_content_block ol ol,
+.note_content_block ol ol ol ol,
+.note_content_block ol ol ol ol ol ol {
+  list-style: lower-alpha outside none }
+
+.textBlock ol ol ol,
+.textBlock ol ol ol ol ol,
+.note_content_block ol ol ol,
+.note_content_block ol ol ol ol ol {
+  list-style: lower-roman outside none }
+
+.textBlock pre,
+.textBlock code,
+.note_content_block pre,
+.note_content_block code {
+  background-color: #f7f7f7;
+  border: 1px solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-radius: 3px;
+  font-family: "Lucida Console","Monaco","Courier",monospace;
+  font-size: 90%;
+  line-height: normal;
+  overflow: auto;
+  padding: 0 .2em }
+
+.textBlock pre,
+.note_content_block pre {
+  border-color: "neutral.light (__FLAVOR__ border)";
+  margin: 0 0 1em;
+  padding: .4em }
+
+.textBlock pre code,
+.note_content_block pre code {
+  border: none;
+  font-size: 100% }
+
+/* Comments */
+.commentBlock {
+  padding: 1em 0 0 }
+
+.commentBlock .commentAuthor {
+  color: #888;
+  font-weight: bold }
+
+.commentBlock .commentCreationDate {
+  font-weight: normal }
+
+.commentBlock .commentQuote {
+  line-height: 150% }
+
+/* Workflow */
+.reviewers,
+.reviewTable .dataInput,
+.abandonProcess {
+  display: none }
+
+.reviewTable {
+  padding-top: 1em }
+
+.simpleBox .dataInput td,
+.foldableBox .dataInput td,
+.reviewTable .dataOutput table td {
+  border: none }
+
+/* Tags */
+.tagLink {
+  background-color: #f1f2f3;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  margin: 0 .5em 0 0;
+  padding: 0 .2em .1em .3em }
+
+.tagLink img,
+.summaryTitle img {
+  display: none }
+
+/* Display:none for tabs, actions, tips, selector, filter, action icons, ... */
+h1 img,
+.tabsBar,
+.tooltip,
+.action_bar,
+input.tagInput,
+.popupTarget img,
+.syndicationLinks,
+.listingLayoutSelector,
+.pageNavigationControls,
+.contentViewHeaderSortTooltip img,
+.contextActions .actionsWidgetPanel {
+  display: none }
