@@ -1,0 +1,312 @@
+/*
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ */
+
+package org.nuxeo.connect.client.jsf;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Factory;
+import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.contexts.Contexts;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
+
+import org.nuxeo.connect.client.status.ConnectStatusHolder;
+import org.nuxeo.connect.client.status.ConnectUpdateStatusInfo;
+import org.nuxeo.connect.client.status.SubscriptionStatusWrapper;
+import org.nuxeo.connect.connector.NuxeoClientInstanceType;
+import org.nuxeo.connect.connector.http.ConnectUrlConfig;
+import org.nuxeo.connect.data.SubscriptionStatusType;
+import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
+import org.nuxeo.connect.identity.LogicalInstanceIdentifier.InvalidCLID;
+import org.nuxeo.connect.identity.TechnicalInstanceIdentifier;
+import org.nuxeo.connect.registration.ConnectRegistrationService;
+import org.nuxeo.connect.update.PackageUpdateService;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.runtime.api.Framework;
+
+/**
+ * Seam Bean to expose Connect Registration operations.
+ * <ul>
+ * <li>getting status
+ * <li>registering
+ * <li>...
+ * </ul>
+ *
+ * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
+ */
+@Name("connectStatus")
+@Scope(ScopeType.CONVERSATION)
+public class ConnectStatusActionBean implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    public static final String CLIENT_BANNER_TYPE = "clientSideBanner";
+
+    public static final String SERVER_BANNER_TYPE = "serverSideBanner";
+
+    private static final Log log = LogFactory.getLog(ConnectStatusActionBean.class);
+
+    @In(create = true, required = false)
+    protected FacesMessages facesMessages;
+
+    @In(create = true, required = true, value = "appsViews")
+    protected AppCenterViewsManager appsViews;
+
+    @In(create = true)
+    protected Map<String, String> messages;
+
+    protected String CLID;
+
+    protected String token;
+
+    protected ConnectUpdateStatusInfo connectionStatusCache;
+
+    public String getRegistredCLID() throws Exception {
+        if (isRegistred()) {
+            return LogicalInstanceIdentifier.instance().getCLID();
+        } else {
+            return null;
+        }
+    }
+
+    public String getCLID() {
+        return CLID;
+    }
+
+    public void setCLID(String cLID) {
+        CLID = cLID;
+    }
+
+    public String unregister() {
+        LogicalInstanceIdentifier.cleanUp();
+        resetRegister();
+        return null;
+    }
+
+    public List<SelectItem> getInstanceTypes() {
+        List<SelectItem> types = new ArrayList<>();
+        for (NuxeoClientInstanceType itype : NuxeoClientInstanceType.values()) {
+            SelectItem item = new SelectItem(itype.getValue(),
+                    "label.instancetype." + itype.getValue());
+            types.add(item);
+        }
+        return types;
+    }
+
+    protected ConnectRegistrationService getService() {
+        return Framework.getLocalService(ConnectRegistrationService.class);
+    }
+
+    @Factory(scope = ScopeType.APPLICATION, value = "registredConnectInstance")
+    public boolean isRegistred() {
+        return getService().isInstanceRegistred();
+    }
+
+    protected void flushContextCache() {
+        // A4J and Event cache don't play well ...
+        Contexts.getApplicationContext().remove("registredConnectInstance");
+        Contexts.getApplicationContext().remove("connectUpdateStatusInfo");
+        appsViews.flushCache();
+    }
+
+    @Factory(value = "connectServerReachable", scope = ScopeType.EVENT)
+    public boolean isConnectServerReachable() {
+        return !ConnectStatusHolder.instance().getStatus().isConnectServerUnreachable();
+    }
+
+    public String refreshStatus() {
+        ConnectStatusHolder.instance().getStatus(true);
+        flushContextCache();
+        return null;
+    }
+
+    public SubscriptionStatusWrapper getStatus() {
+        return ConnectStatusHolder.instance().getStatus();
+    }
+
+    public String resetRegister() {
+        flushContextCache();
+        return null;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) throws IOException, InvalidCLID {
+        if (token != null) {
+            String tokenData = new String(Base64.decodeBase64(token));
+            String[] tokenDataLines = tokenData.split("\n");
+            for (String line : tokenDataLines) {
+                String[] parts = line.split(":");
+                if (parts.length > 1 && "CLID".equals(parts[0])) {
+                    getService().localRegisterInstance(parts[1], " ");
+                    // force refresh of connect status info
+                    connectionStatusCache = null;
+                    flushContextCache();
+                    ConnectStatusHolder.instance().flush();
+                }
+            }
+        }
+    }
+
+    public String getCTID() throws Exception {
+        return TechnicalInstanceIdentifier.instance().getCTID();
+    }
+
+    public String localRegister() {
+        try {
+            getService().localRegisterInstance(CLID, "");
+        } catch (InvalidCLID e) {
+            facesMessages.addToControl("offline_clid",
+                    StatusMessage.Severity.WARN,
+                    messages.get("label.connect.wrongCLID"));
+        } catch (IOException e) {
+            facesMessages.addToControl("offline_clid",
+                    StatusMessage.Severity.ERROR,
+                    messages.get("label.connect.registrationError"));
+            log.error("Error while registering instance locally", e);
+        }
+        flushContextCache();
+        return null;
+    }
+
+    protected Blob packageToUpload;
+
+    protected String packageFileName;
+
+    public String getPackageFileName() {
+        return packageFileName;
+    }
+
+    public void setPackageFileName(String packageFileName) {
+        this.packageFileName = packageFileName;
+    }
+
+    public Blob getPackageToUpload() {
+        return packageToUpload;
+    }
+
+    public void setPackageToUpload(Blob packageToUpload) {
+        this.packageToUpload = packageToUpload;
+    }
+
+    public void uploadPackage() throws Exception {
+        if (packageToUpload == null) {
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    "label.connect.nofile");
+            return;
+        }
+        PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+        File tmpFile = File.createTempFile("upload", "nxpkg");
+        packageToUpload.transferTo(tmpFile);
+        try {
+            pus.addPackage(tmpFile);
+        } catch (Exception e) {
+            log.warn(e, e);
+            facesMessages.add(
+                    StatusMessage.Severity.ERROR,
+                    messages.get("label.connect.wrong.package") + ":"
+                            + e.getMessage());
+            return;
+        } finally {
+            tmpFile.delete();
+            packageFileName = null;
+            packageToUpload = null;
+        }
+    }
+
+    public ConnectUpdateStatusInfo getDynamicConnectUpdateStatusInfo() {
+        HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String bannerType = req.getParameter("bannerType");
+        if ("unregistered".equals(bannerType)) {
+            return ConnectUpdateStatusInfo.unregistered();
+        } else if ("notreachable".equals(bannerType)) {
+            return ConnectUpdateStatusInfo.connectServerUnreachable();
+        } else if ("notvalid".equals(bannerType)) {
+            return ConnectUpdateStatusInfo.notValid();
+        } else if ("ok".equals(bannerType)) {
+            return ConnectUpdateStatusInfo.ok();
+        }
+        return getConnectUpdateStatusInfo();
+    }
+
+    /**
+     * @since 5.9.2
+     */
+    @Factory(scope = ScopeType.APPLICATION, value = "connectBannerEnabled")
+    public boolean isConnectBannerEnabled() {
+        final String testerName = Framework.getProperty("org.nuxeo.ecm.tester.name");
+        if (testerName != null && testerName.equals("Nuxeo-Selenium-Tester")) {
+            // disable banner when running selenium tests
+            return false;
+        }
+        return true;
+    }
+
+    @Factory(scope = ScopeType.APPLICATION, value = "connectUpdateStatusInfo")
+    public ConnectUpdateStatusInfo getConnectUpdateStatusInfo() {
+        if (connectionStatusCache == null) {
+            try {
+                if (!isRegistred()) {
+                    connectionStatusCache = ConnectUpdateStatusInfo.unregistered();
+                } else {
+                    if (isConnectBannerEnabled() && isConnectServerReachable()) {
+                        if (getStatus().isError()) {
+                            connectionStatusCache = ConnectUpdateStatusInfo.connectServerUnreachable();
+                        } else {
+                            if (ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK) {
+                                connectionStatusCache = ConnectUpdateStatusInfo.ok();
+                            } else {
+                                connectionStatusCache = ConnectUpdateStatusInfo.notValid();
+                            }
+                        }
+                    } else {
+                        connectionStatusCache = ConnectUpdateStatusInfo.connectServerUnreachable();
+                    }
+                }
+            } catch (Exception e) {
+                log.error(e);
+                connectionStatusCache = null;
+            }
+        }
+        return connectionStatusCache;
+    }
+
+    @Factory("nuxeoConnectUrl")
+    public String getConnectServerUrl() {
+        return ConnectUrlConfig.getBaseUrl();
+    }
+
+}

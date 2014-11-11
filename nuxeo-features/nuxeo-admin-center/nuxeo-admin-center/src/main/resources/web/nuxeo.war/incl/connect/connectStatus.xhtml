@@ -1,0 +1,240 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core" xmlns:f="http://java.sun.com/jsf/core">
+  <a4j:outputPanel id="connectStatusPanel" layout="block">
+
+    <h:panelGroup rendered="#{!registredConnectInstance}">
+
+      <a4j:status>
+        <f:facet name="start">
+          <h:outputText
+            value="#{messages['label.nuxeo.connect.communicating.with.server']}" />
+          <h:graphicImage value="/img/standart_waiter.gif" />
+        </f:facet>
+      </a4j:status>
+
+      <div class="gridContainer">
+        <div class="gridRow">
+          <div class="gridBox gridStyle8">
+            <div class="bubbleBox bubbleShadow nxconnectBox">
+              <div class="gridContainer">
+                <div class="gridRow">
+                  <div class="gridBox gridStyle12">
+                    <h2><h:outputText value="#{messages['label.nuxeo.connect.onlineRegistration']}" /></h2>
+                  </div>
+                </div>
+                <div class="gridRow">
+                  <div class="gridBox gridStyle7">
+                    <div>
+                      <h:graphicImage value="/img/nxconnect_studio.png" />
+                      <h:outputText styleClass="nxconnectStudio" value="#{messages['label.nuxeo.connect.onlineRegistrationDescription']}" />
+                    </div>
+                    <div>
+                      <h:graphicImage value="/img/nxconnect_maintenance.png" />
+                      <h:outputText styleClass="nxconnectMaintenance" value="#{messages['label.nuxeo.connect.onlineRegistrationDescription2']}" />
+                    </div>
+                    <div>
+                      <h:graphicImage value="/img/nxconnect_connect.png" />
+                      <h:outputText styleClass="nxconnectInstance" value="#{messages['label.nuxeo.connect.onlineRegistrationDescription3']}" />
+                    </div>
+                  </div>
+                </div>
+                <div class="gridRow">
+                  <div class="gridBox gridStyle6">
+                    <div class="buttonsGadget">
+                      <div class="feedBackMessages">
+                        <h:message infoClass="infoMessage" warnClass="warningMessage"
+                          errorClass="errorMessage" for="online" id="online" />
+                      </div>
+
+                      <script type="text/javascript">
+                        function openInstanceRegistration() {
+                          var url = '#{nuxeoConnectUrl}connect/wizardInstanceRegistration/?wizardCallbackUrl=#{baseURL}site/connectClient/registerInstanceCallback?cb=yes';
+                          window.open(url, 'instanceRegistrationPopup', 'width=1024,height=768');
+                        }
+                      </script>
+
+                      <h:form>
+                        <a4j:jsFunction name="registerInstanceCallback" render="connectStatusPanel">
+                          <a4j:param name="param1" assignTo="#{connectStatus.token}"  />
+                        </a4j:jsFunction>
+                      </h:form>
+
+                      <a href="#" onclick="openInstanceRegistration(); return false;" class="button" target="_blank">
+                      #{messages['action.connect.register']}</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="gridRow separate">
+                  <div class="gridBox gridStyle6">
+                    <a href="https://doc.nuxeo.com/x/l4FH" class="detail connectLink"
+                       target="NuxeoConnectSite">#{messages['connect.message.discoverconnect']}</a>
+                  </div>
+                  <div class="gridBox gridStyle6 textAlignR">
+                    <a href="#{nuxeoConnectUrl}../../register"
+                      class="detail connectLink" target="NuxeoConnectSite">#{messages['connect.message.newaccount']}</a>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="bubbleBox nxofflineBox">
+              <div class="title">
+                <h3>
+                  <h:outputText
+                    value="#{messages['label.nuxeo.connect.offlineRegistration']}" />
+                </h3>
+              </div>
+              <div>
+                <div class="gridContainer">
+                  <h:form>
+                  <div class="gridRow">
+                    <div class="gridBox gridStyle1"><span class="chip chip-light">1</span></div>
+                    <div class="gridBox gridStyle11">
+                      <h:outputText styleClass="importantLabel" value="#{messages['label.nuxeo.connect.offlineReg.message1']}" />
+                      <h:outputText styleClass="tag boldLabel" value="#{connectStatus.getCTID()}" />
+                    </div>
+                  </div>
+                  <div class="gridRow">
+                    <div class="gridBox gridStyle1"><span class="chip chip-light">2</span></div>
+                    <div class="gridBox gridStyle11">
+                      <h:outputText value="#{messages['label.nuxeo.connect.offlineReg.message2']}" />
+                      <a href="#{nuxeoConnectUrl}connect/registerInstance" target="NuxeoConnectSite">
+                        <h:outputText value="#{messages['label.nuxeo.connect.offlineReg.webSite']}" />
+                      </a>
+                      <h:outputText value="#{messages['label.nuxeo.connect.offlineReg.message3']}" />
+                    </div>
+                  </div>
+                  <div class="gridRow">
+                    <div class="gridBox gridStyle1"><span class="chip chip-light">3</span></div>
+                    <div class="gridBox gridStyle11">
+                      <h:outputText value="#{messages['label.nuxeo.connect.offlineReg.message4']}" />
+                      <span class="required"><h:inputText required="true"
+                          value="#{connectStatus.CLID}"
+                          id="offline_clid" /></span>
+                      <h:message infoClass="infoMessage"
+                          warnClass="warningMessage" errorClass="errorMessage"
+                          for="offline_clid" />
+                    </div>
+                  </div>
+                  <div class="gridRow">
+                    <div class="gridBox gridStyle12">
+                      <p class="buttonsGadget">
+                        <a4j:commandButton
+                            value="#{messages['action.connect.register']}"
+                            styleClass="button"
+                            action="#{connectStatus.localRegister}"
+                            render="connectStatusPanel" />
+                      </p>
+                    </div>
+                  </div>
+                  </h:form>
+                </div>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+     </h:panelGroup>
+
+
+    <h:panelGroup rendered="#{registredConnectInstance}">
+
+
+      <c:if test="#{!connectStatus.status.isError()}">
+
+        <div class="processMessage completeSuccess">#{messages['connect.message.registred']}</div>
+
+        <h3>
+          <h:outputText
+            value="#{messages['label.nuxeo.connect.registration.summary.title']}" />
+        </h3>
+
+        <table class="dataTable">
+          <tr>
+            <td class="labelColumn"><h:outputText
+                value="#{messages['label.nuxeo.connect.contractStatus']}" /></td>
+            <td id="contractStatus"><h:outputText
+                value="#{messages[connectStatus.status.contractStatusLabel]}" />
+            </td>
+          </tr>
+          <tr>
+            <td class="labelColumn"><h:outputText
+                value="#{messages['label.nuxeo.connect.contractEndDate']}" /></td>
+            <td><h:outputText value="#{connectStatus.status.endDate}" styleClass="label label-warning"/></td>
+          </tr>
+          <tr>
+            <td class="labelColumn"><h:outputText
+                value="#{messages['label.nuxeo.connect.refreshDate']}" /></td>
+            <td><h:form>
+                <h:outputText value="#{connectStatus.status.refreshDate.time}">
+                  <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormatter()}"
+                    timeZone="#{timeZone}" />
+                </h:outputText>
+                <h:outputText value="&#160;" />
+                <a4j:commandButton
+                  value="#{messages['action.connect.refreshStatus']}"
+                  styleClass="button" action="#{connectStatus.refreshStatus}"
+                  render="connectStatusPanel" />
+              </h:form></td>
+          </tr>
+          <tr>
+            <td class="labelColumn"><h:outputText
+                value="#{messages['label.nuxeo.connect.id.CLID']}" /></td>
+            <td><h:outputText value="#{connectStatus.registredCLID}" /></td>
+          </tr>
+          <tr>
+            <td class="labelColumn"><h:outputText
+                value="#{messages['label.nuxeo.connect.id.CTID']}" /></td>
+            <td><h:outputText value="#{connectStatus.getCTID()}" /></td>
+          </tr>
+          <tr>
+            <td class="labelColumn"></td>
+            <td><h:form>
+                <h:outputText
+                  value="#{messages['label.nuxeo.connect.unregister']}" />
+                <h:outputText value="&#160;" />
+                <a4j:commandButton
+                  value="#{messages['action.connect.unregister']}"
+                  styleClass="button" action="#{connectStatus.unregister}"
+                  render="connectStatusPanel" />
+              </h:form></td>
+          </tr>
+        </table>
+      </c:if>
+      <c:if test="#{connectStatus.status.isError()}">
+        <br />
+        <div class="processMessage completeWarning">
+          #{messages['connect.message.registred.problem']}</div>
+        <br />
+        <h:form>
+          <h:outputText value="&#160;" />
+          <a4j:commandButton value="#{messages['action.connect.refreshStatus']}"
+            styleClass="button" action="#{connectStatus.refreshStatus}"
+            render="connectStatusPanel" />
+        </h:form>
+        <c:if test="#{connectStatus.status.isSecurityError()}">
+          <h:outputText value="#{messages['label.nuxeo.connect.securityError']}" />
+          <br />
+          (<h:outputText value="#{connectStatus.status.errorMessage}" />)
+      </c:if>
+
+        <c:if test="#{!connectStatus.status.isSecurityError()}">
+          <h:outputText value="#{messages['label.nuxeo.connect.statusError']}" />
+          <h:outputText value="#{connectStatus.status.errorMessage}" />
+        </c:if>
+        <h:form>
+          <h:outputText value="#{messages['label.nuxeo.connect.unregister']}" />
+          <h:outputText value="&#160;" />
+          <a4j:commandButton value="#{messages['action.connect.unregister']}"
+            styleClass="button" action="#{connectStatus.unregister}"
+            render="connectStatusPanel" />
+        </h:form>
+      </c:if>
+
+    </h:panelGroup>
+
+  </a4j:outputPanel>
+</div>

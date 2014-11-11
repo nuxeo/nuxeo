@@ -1,0 +1,32 @@
+<project name="automation-test-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+  <property name="outdir" value="${maven.project.build.directory}" />
+
+  <target name="build" description="Build Nuxeo sample Marketplace package">
+    <tstamp />
+    <delete failonerror="false" dir="${outdir}/marketplace" />
+    <mkdir dir="${outdir}/marketplace" />
+    <copy todir="${outdir}/marketplace">
+      <fileset dir="src/main/marketplace/resources" />
+      <filterset>
+        <filter token="VERSION" value="${maven.project.version}" />
+        <filter token="DISTRIB_VERSION" value="${maven.project.version}" />
+      </filterset>
+    </copy>
+
+    <copy file="${outdir}/${maven.project.artifactId}-${maven.project.version}.jar"
+          todir="${outdir}/marketplace/install/bundles" />
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+         basedir="${outdir}/marketplace" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+                     classifier="marketplace"
+                     type="zip" />
+  </target>
+</project>

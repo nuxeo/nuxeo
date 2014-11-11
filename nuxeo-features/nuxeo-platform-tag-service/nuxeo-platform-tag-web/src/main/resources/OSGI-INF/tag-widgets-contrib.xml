@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.tag.widgets">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="select_tags">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Tags selection</title>
+        <description>
+          <p>
+            This widget type allows to select multiple tags.
+          </p>
+        </description>
+        <categories>
+          <category>search</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="edit">
+            <property name="width">100%</property>
+          </defaultValues>
+          <layouts mode="edit">
+            <layout name="select_tags_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
+                </row>
+                <row>
+                  <widget>canSelectNewTag</widget>
+                </row>
+              </rows>
+              <widget name="canSelectNewTag" type="checkbox">
+                <labels>
+                  <label mode="any">Can Select New Tag</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Allow to select tags that don't exist yet.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>canSelectNewTag</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/select_tags_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+</component>

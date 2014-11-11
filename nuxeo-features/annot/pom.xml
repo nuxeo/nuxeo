@@ -1,0 +1,50 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>nuxeo-features-parent</artifactId>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <version>5.9.6-SNAPSHOT</version>
+  </parent>
+  <groupId>org.nuxeo.ecm.annot</groupId>
+  <artifactId>parent</artifactId>
+  <name>Nuxeo Platform Annotation Parent</name>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>nuxeo-annot-api</module>
+    <module>nuxeo-annot-core</module>
+    <module>nuxeo-annot-contrib</module>
+    <module>nuxeo-annot-http</module>
+    <module>nuxeo-annot-repo</module>
+  </modules>
+
+  <developers>
+    <developer>
+      <name>Alexandre Russel</name>
+      <email>arussel@nuxeo.com</email>
+      <organization>Nuxeo SAS</organization>
+    </developer>
+    <developer>
+      <name>Thierry Delprat</name>
+      <email>td@nuxeo.com</email>
+      <organization>Nuxeo SAS</organization>
+    </developer>
+    <developer>
+      <name>Thomas Roger</name>
+      <email>troger@nuxeo.com</email>
+      <organization>Nuxeo SAS</organization>
+    </developer>
+  </developers>
+
+  <profiles>
+    <profile>
+      <id>gwt</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>nuxeo-annot-gwt</module>
+      </modules>
+    </profile>
+  </profiles>
+</project>

@@ -1,0 +1,56 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxh="http://nuxeo.org/nxweb/html">
+
+  <a class="jsSlideShowAction" href="#">
+    <nxh:graphicImage value="/icons/slideshow_enabled.png"
+      styleClass="jsSlideShowActionImg tipsyShow tipsyGravitySE" />
+  </a>
+
+  <script>
+    (function() {
+      var canTriggerSlideShow = true;
+
+      function triggerSlideShow() {
+        if (canTriggerSlideShow) {
+          jQuery('div[id$=#{contentViewPanelId}]').openLightBoxAfterNP();
+        }
+      }
+
+      function setupSlideShowAction() {
+        var eles = jQuery('div[id$=#{contentViewPanelId}]').find('a.image-popup');
+        canTriggerSlideShow = eles.length !== 0;
+
+        var slideShowActionImg = jQuery('div[id$=#{contentViewPanelId}]')
+          .find('a .jsSlideShowActionImg');
+        if (canTriggerSlideShow) {
+          slideShowActionImg
+            .attr('title', "#{messages['label.contentview.slideshow.enabled']}")
+            .attr('alt', "#{messages['label.contentview.slideshow.enabled']}")
+            .attr('src', '#{contextPath}/icons/slideshow_enabled.png');
+        } else {
+          slideShowActionImg
+            .attr('title', "#{messages['label.contentview.slideshow.disabled']}")
+            .attr('alt', "#{messages['label.contentview.slideshow.disabled']}")
+            .attr('src', '#{contextPath}/icons/slideshow_disabled.png');
+        }
+      }
+
+      jQuery(document).ready(function() {
+        setupSlideShowAction();
+
+        jQuery('div[id$=#{contentViewPanelId}]').find('a.jsSlideShowAction').click(function(e) {
+          triggerSlideShow();
+          e.preventDefault();
+          e.stopPropagation();
+        })
+      });
+
+      jsf.ajax.addOnEvent(function(data) {
+        var ajaxstatus = data.status;
+        if (ajaxstatus == 'success') {
+          setupSlideShowAction();
+        }
+      });
+    })();
+  </script>
+</div>

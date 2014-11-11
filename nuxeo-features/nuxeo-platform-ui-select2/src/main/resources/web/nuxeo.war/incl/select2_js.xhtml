@@ -1,0 +1,48 @@
+<c:if test="true"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+
+  <ui:fragment rendered="#{select2Actions.mustIncludeResources()}">
+    <c:if test="false">
+      Here we cannot use c:if test because if select2 is used in another part
+      of the JSF tree which is not rendered, the test is even though evaluated
+      during the RENDER_RESPONSE Phase and the scripts will be included in a
+      JSF component which is not rendered/displayed.
+    </c:if>
+    <script>
+      var currentUserLang = "#{localeSelector.language}";
+    </script>
+
+    <h:outputScript library="org.nuxeo.select2" name="select2.js" />
+    <h:outputScript library="org.nuxeo.select2" name="select2_locale_#{localeSelector.language}.js" />
+    <h:outputScript library="org.nuxeo.select2" name="nuxeo-select2.js" />
+
+    <script>
+      jQuery(document).ready(function() {
+        if (window.Prototype) {
+          delete Object.prototype.toJSON;
+          delete Array.prototype.toJSON;
+          delete Hash.prototype.toJSON;
+          delete String.prototype.toJSON;
+        }
+        initSelect2Widgets();
+      });
+    </script>
+
+  </ui:fragment>
+
+  <c:if test="#{widgetProperty_inlinejs != null }">
+    <script>
+      <h:outputText value="#{widgetProperty_inlinejs}" escape="false"/>
+    </script>
+  </c:if>
+
+  <c:if test="#{facesContext.getPartialViewContext().isAjaxRequest()}">
+    <script>
+      initSelect2AjaxWidget("#{widget.id}", "#{model.rowIndex}");
+    </script>
+  </c:if>
+
+</c:if>

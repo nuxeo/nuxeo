@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.collections.schemas">
+
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+
+    <schema name="collection" src="schemas/collection.xsd" prefix="collection" />
+
+    <schema name="collectionMember" src="schemas/collectionMember.xsd"
+      prefix="collectionMember" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+
+    <facet name="Collection" perDocumentQuery="false" >
+      <schema name="collection" />
+    </facet>
+
+    <facet name="NotCollectionMember" perDocumentQuery="false"/>
+
+    <facet name="CollectionMember">
+      <schema name="collectionMember" />
+    </facet>
+
+    <doctype name="Collection" extends="Document">
+      <facet name="Collection" />
+      <facet name="NotCollectionMember" />
+      <schema name="dublincore" />
+      <schema name="common" />
+    </doctype>
+
+    <doctype name="Collections" extends="Folder">
+      <facet name="NotCollectionMember" />
+    </doctype>
+
+    <doctype name="WorkspaceRoot" append="true">
+      <facet name="NotCollectionMember" />
+    </doctype>
+
+    <doctype name="TemplateRoot" append="true">
+      <facet name="NotCollectionMember" />
+    </doctype>
+
+    <doctype name="SectionRoot" append="true">
+      <facet name="NotCollectionMember" />
+    </doctype>
+
+    <doctype name="Domain" append="true">
+      <facet name="NotCollectionMember" />
+    </doctype>
+
+    <doctype name="Root" append="true">
+      <facet name="NotCollectionMember" />
+    </doctype>
+
+  </extension>
+
+</component>

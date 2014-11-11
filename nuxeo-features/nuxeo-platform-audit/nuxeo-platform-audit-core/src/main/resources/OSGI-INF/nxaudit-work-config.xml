@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.audit.core.work"
+  version="1.0">
+
+  <documentation>
+    The queue configuration for the audit service, using a
+    separate queue and a single thread for logging.
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="audit">
+      <name>Audit queue</name>
+      <maxThreads>1</maxThreads>
+      <category>auditLoggerListener</category>
+      <!-- clear completed work instances older than 5 min -->
+      <clearCompletedAfterSeconds>300</clearCompletedAfterSeconds>
+    </queue>
+  </extension>
+
+</component>

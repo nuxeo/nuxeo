@@ -1,0 +1,65 @@
+<component name="org.nuxeo.ecm.automation.io.test.contrib" version="1.0">
+
+  <extension point="chains"
+    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+
+    <chain id="empty_chain" />
+
+    <chain id="chain">
+      <description>My desc</description>
+      <operation id="Context.FetchDocument" />
+      <operation id="Document.Create">
+        <param type="string" name="type">Note</param>
+        <param type="string" name="name">MyDoc</param>
+        <param type="properties" name="properties">
+          dc:title=My Doc
+          dc:description=My Doc desc
+        </param>
+      </operation>
+    </chain>
+
+    <chain id="chain_props">
+      <operation id="Context.FetchDocument" />
+      <operation id="Document.Create">
+        <param type="string" name="type">Note</param>
+        <param type="string" name="name">MyDoc</param>
+        <param type="properties" name="properties">
+          <property key="dc:title">My Doc</property>
+          <property key="dc:description">My Doc desc</property>
+        </param>
+      </operation>
+    </chain>
+
+    <chain id="chain_complex">
+      <operation id="Context.FetchDocument" />
+      <operation id="Document.Create">
+        <param type="string" name="type">Note</param>
+        <param type="string" name="name">note</param>
+        <param type="properties" name="properties">dc:title=MyDoc</param>
+      </operation>
+      <operation id="Document.Copy">
+        <param type="document" name="target">../../dst</param>
+        <param type="string" name="name">note_copy</param>
+      </operation>
+      <operation id="Document.SetProperty">
+        <param type="string" name="xpath">dc:description</param>
+        <param type="serializable" name="value">mydesc</param>
+      </operation>
+    </chain>
+
+    <chain id="chain_with_params">
+      <description>This is an awesome chain!</description>
+      <param type="string" name="foo">
+        <value>bar</value>
+      </param>
+      <param type="boolean" name="foo2" description="yop" />
+      <operation id="Context.FetchDocument" />
+      <operation id="Document.Create">
+        <param type="string" name="type">Note</param>
+        <param type="string" name="name">MyDoc</param>
+      </operation>
+    </chain>
+
+  </extension>
+
+</component>

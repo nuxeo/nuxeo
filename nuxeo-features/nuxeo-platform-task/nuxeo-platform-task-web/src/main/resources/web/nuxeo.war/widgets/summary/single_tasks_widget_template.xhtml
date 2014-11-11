@@ -1,0 +1,131 @@
+<div class="single_tasks_block"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <c:if test="#{!empty currentDashBoardItemsExceptPublishingTasks}">
+    <h3 class="summaryTitle">
+      <h:outputText value="#{messages['action.view.associatedTasks']}" />
+    </h3>
+
+    <table class="dataOutput">
+      <thead>
+        <tr>
+          <th><h:outputText
+            value="#{messages['label.workflow.task.name']}" /></th>
+          <th><h:outputText
+            value="#{messages['label.workflow.task.principal']}" /></th>
+          <th><h:outputText
+            value="#{messages['label.workflow.task.directive']}" /></th>
+          <th><h:outputText
+            value="#{messages['label.review.user.comment']}" /></th>
+          <th><h:outputText
+            value="#{messages['label.workflow.task.startdate']}" /></th>
+          <th><h:outputText
+            value="#{messages['label.workflow.task.duedate']}" /></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <nxu:repeat var="dashboardItem" value="#{currentDashBoardItemsExceptPublishingTasks}">
+          <tr>
+            <td>
+                #{dashboardItem.i18nTaskName}
+            </td>
+            <td>
+              <nxl:layout name="user_group_prefixed_suggestion"
+                mode="view" value="#{dashboardItem.task.actors}" />
+            </td>
+            <td>
+              <h:outputText
+                  value="#{dashboardItem.i18nDirective}" />
+            </td>
+            <td>
+              <table>
+                <c:forEach var="comment" items="${dashboardItem.task.comments}">
+                  <f:subview rendered="#{!empty comment}">
+                    <nxu:methodResult name="userInfo"
+                      value="#{userSuggestionActions.getPrefixedUserInfo(comment.author)}">
+                      <tr>
+                        <td>
+                          <f:subview rendered="#{userInfo.type == 'USER_TYPE'}">
+                            <h:outputText
+                              value="#{nxu:userDisplayName(userInfo.id, userInfo.entry[userSchema].firstName, userInfo.entry[userSchema].lastName)}" />
+                          </f:subview>
+                          <f:subview rendered="#{userInfo.type != 'USER_TYPE'}">
+                            <h:outputText value="#{comment.author}" />
+                          </f:subview>
+                        </td>
+                        <td>
+                          <h:outputText value=": #{comment.text}" />
+                        </td>
+                      </tr>
+                    </nxu:methodResult>
+                  </f:subview>
+                </c:forEach>
+              </table>
+            </td>
+            <td>
+              <h:outputText value="#{dashboardItem.task.created}">
+                <f:convertDateTime
+                  pattern="#{nxu:dateAndTimeFormatter('medium')}"
+                  timeZone="#{timeZone}" />
+              </h:outputText>
+            </td>
+            <td>
+              <h:outputText value="#{dashboardItem.task.dueDate}">
+                <f:convertDateTime
+                  pattern="#{nxu:dateAndTimeFormatter('medium')}"
+                  timeZone="#{timeZone}" />
+              </h:outputText>
+            </td>
+            <td>
+              <h:commandLink
+                value="#{messages['label.review.end.task']}"
+                action="#{taskActions.acceptTask(dashboardItem.task)}"
+                rendered="#{taskService.canEndTask(currentUser, dashboardItem.task)}" />
+            </td>
+            <td>
+              <h:commandLink
+                value="#{messages['label.review.reject.task']}"
+                action="#{taskActions.rejectTask(dashboardItem.task)}"
+                rendered="#{taskService.canEndTask(currentUser, dashboardItem.task)}" />
+            </td>
+          </tr>
+        </nxu:repeat>
+      </tbody>
+    </table>
+
+    <h:panelGroup class="dataInputGroup"
+      rendered="#{not empty currentSingleTasks}">
+      <div>
+        <i>
+          <h:outputText value="#{messages['label.review.my.tasks.help']}" />
+        </i>
+        <table class="dataInput">
+          <tr>
+            <td class="labelColumn">
+              <h:outputText class="required"
+                value="#{messages['label.review.user.comment']}" />
+            </td>
+            <td>
+              <h:inputTextarea id="#{widget.id}_taskActionComment" rows="5"
+                cols="50" value="#{taskActions.comment}" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="6">
+              <h:message styleClass="errorMessage"
+                for="#{widget.id}_taskActionComment" />
+            </td>
+          </tr>
+        </table>
+      </div>
+    </h:panelGroup>
+
+  </c:if>
+
+</div>

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<fragment version="1">
+  <!--
+    Template:   nuxeo.ear/OSGI-INF/templates/faces-config.xml
+    End Result: nuxeo.ear/META-INF/faces-config.xml
+  -->
+  <extension target="faces-config#APPLICATION_LOCALE">
+    <locale-config>
+      <default-locale>en</default-locale>
+      <supported-locale>en_GB</supported-locale>
+      <supported-locale>en_US</supported-locale>
+      <supported-locale>fr</supported-locale>
+      <supported-locale>fr_FR</supported-locale>
+    </locale-config>
+    <message-bundle>messages</message-bundle>
+  </extension>
+
+  <install>
+    <!-- Unzip the contents of our nuxeo.war into the real nuxeo.war on the server -->
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+
+    <!-- Add the content of messages_en.properties to use english as default if a
+         label does not exist -->
+    <append from="nuxeo.war/WEB-INF/classes/messages_en_US.properties"
+        to="nuxeo.war/WEB-INF/classes/messages.properties"
+        addNewLine="true"/>
+
+    <!-- Add fallback to two letters locale for browser compat -->
+    <copy from="nuxeo.war/WEB-INF/classes/messages_en_US.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_en.properties"/>
+    <copy from="nuxeo.war/WEB-INF/classes/messages_fr_FR.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_fr.properties"/>
+
+  </install>
+
+</fragment>

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.platform.userworkspace.UserWorkspaceService">
+  <implementation
+    class="org.nuxeo.ecm.platform.userworkspace.core.service.UserWorkspaceServiceImplComponent" />
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService" />
+  </service>
+
+  <documentation>
+    This component is used to provide the a personal workspace for each Nuxeo user.
+    The actual implementation logic for creating and storing this personal workspace can be contributed.
+  </documentation>
+
+  <extension-point name="userWorkspace">
+    <documentation>
+      Defines the class used create / resolve the personal workspace.
+      
+      The default implementation allows to configure doc types for Workspace and WorkspaceRoot, but if you need a more custom logic, you can simply provide a brand new class.
+    
+      Your implementation can inherit from org.nuxeo.ecm.platform.userworkspace.core.service.AbstractUserWorkspaceImpl.
+       
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.userworkspace.core.service.UserWorkspaceDescriptor" />
+  </extension-point>
+</component>

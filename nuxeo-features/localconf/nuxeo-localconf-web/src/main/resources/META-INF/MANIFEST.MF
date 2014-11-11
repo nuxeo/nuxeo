@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Platform Local Configuration Web
+Bundle-SymbolicName: org.nuxeo.ecm.localconf.web;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Nuxeo-Component: OSGI-INF/local-configuration-ui-types.xml,
+ OSGI-INF/local-configuration-theme.xml,
+ OSGI-INF/local-configuration-content-view.xml
