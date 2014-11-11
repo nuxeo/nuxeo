@@ -1,0 +1,28 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <a4j:outputPanel id="facesStatusMessagePanel" ajaxRendered="true">
+
+    <div class="facesStatusMessage">
+      <h:outputText value="#{messages['feedback.correctErrors']}"
+        rendered="#{facesContext.maximumSeverity.ordinal >= 3}"
+        class="errorFeedback" />
+    </div>
+    <div id="#{messagesFacesId}facesStatusMessage" class="facesStatusMessage">
+      <h:messages globalOnly="true"
+        infoClass="infoFeedback"
+        warnClass="warningFeedback"
+        errorClass="errorFeedback"/>
+    </div>
+
+    <c:if test="#{empty frameworkPropertyActions.getProperty('org.nuxeo.ecm.tester.name')}">
+      <script>
+      <!--
+      window.setTimeout('document.getElementById(\"#{messagesFacesId}facesStatusMessage\").style.visibility=\"hidden\"',5000);
+      -->
+      </script>
+    </c:if>
+
+  </a4j:outputPanel>
+</div>
