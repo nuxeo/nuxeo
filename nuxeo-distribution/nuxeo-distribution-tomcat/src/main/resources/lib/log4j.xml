@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+  debug="false">
+  <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n" />
+    </layout>
+  </appender>
+
+  <appender name="FILE" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="${nuxeo.log.dir}/server.log" />
+    <param name="Append" value="true" />
+    <!--    <param name="MaxFileSize" value="10MB" />-->
+    <param name="MaxBackupIndex" value="3" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%c] %m%n" />
+    </layout>
+  </appender>
+
+  <!-- Specific appenders for some important nxshell commands -->
+  <appender name="import" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="${nuxeo.log.dir}/import.log" />
+    <param name="Append" value="true" />
+    <param name="MaxFileSize" value="30MB" />
+    <param name="MaxBackupIndex" value="5" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%c] %m%n" />
+    </layout>
+  </appender>
+
+  <!-- Main logger -->
+  <!--  <logger name="org.nuxeo">-->
+  <!--    <level value="INFO" />-->
+  <!--  </logger>-->
+  <!-- Loggers for import commands -->
+  <logger name="org.nuxeo.ecm.shell.commands.io.ImportCommand">
+    <level value="INFO" />
+    <appender-ref ref="import" />
+  </logger>
+  <logger name="org.nuxeo.ecm.shell.commands.repository.FSImportCommand">
+    <level value="INFO" />
+    <appender-ref ref="import" />
+  </logger>
+  <logger name="org.nuxeo.ecm.shell.commands.repository.MTFSImportCommand">
+    <level value="INFO" />
+    <appender-ref ref="import" />
+  </logger>
+  <logger name="org.nuxeo.ecm.shell.commands.repository.ThreadedImportTask">
+    <level value="INFO" />
+    <appender-ref ref="import" />
+  </logger>
+  <category name="org.nuxeo.ecm.platform.ui.web.auth">
+    <priority value="INFO" />
+  </category>
+  <category name="org.nuxeo.runtime.osgi.OSGiRuntimeService">
+    <priority value="INFO" />
+  </category>
+  <category name="org.nuxeo.osgi.application.loader.FrameworkLoader">
+    <priority value="INFO" />
+  </category>
+  <category name="org.nuxeo.osgi.application.StandaloneApplication">
+    <priority value="INFO" />
+  </category>
+  <category name="org.nuxeo.osgi.application.FrameworkBootstrap">
+    <priority value="INFO" />
+  </category>
+  <category name="org.nuxeo.runtime.tomcat.NuxeoDeployer">
+    <priority value="INFO" />
+  </category>
+
+  <root>
+    <level value="WARN" />
+    <appender-ref ref="CONSOLE" />
+    <appender-ref ref="FILE" />
+  </root>
+
+</log4j:configuration>
