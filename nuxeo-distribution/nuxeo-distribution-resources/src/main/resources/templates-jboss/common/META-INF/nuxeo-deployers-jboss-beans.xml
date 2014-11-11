@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>                                                                                                                      
+                                                                                                                                                            
+<!--                                                                                                                                                        
+    Nuxeo launcher beans for JBossAS
+-->                                                                                                                                                         
+<deployment xmlns="urn:jboss:bean-deployer:2.0">                                                                                                            
+  
+  <!-- Nuxeo Launcher -->                                                                                                                                   
+  <bean name="NuxeoLauncher" class="org.nuxeo.runtime.jboss.deployer.NuxeoLauncher"/>                                                                       
+  
+</deployment>
