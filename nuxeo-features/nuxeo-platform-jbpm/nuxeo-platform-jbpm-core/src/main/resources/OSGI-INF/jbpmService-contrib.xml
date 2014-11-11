@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.jbpm.core.jbpmServiceContrib">
+
+  <extension target="org.nuxeo.ecm.platform.jbpm.core.JbpmService"
+    point="deployer">
+
+    <deployer name="always"
+      class="org.nuxeo.ecm.platform.jbpm.core.deployer.AlwaysDeployer" />
+    <deployer name="never"
+      class="org.nuxeo.ecm.platform.jbpm.core.deployer.NeverDeployer" />
+    <deployer name="ifChanged"
+      class="org.nuxeo.ecm.platform.jbpm.core.deployer.IfChangedDeployer" />
+    <deployer name="nuxeoProperties"
+      class="org.nuxeo.ecm.platform.jbpm.core.deployer.NuxeoPropertiesDeployer" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.jbpm.core.JbpmService"
+    point="configurationPath">
+
+    <configuration name="jboss" path="config/jboss-jbpm.cfg.xml" />
+    <configuration name="jetty" path="config/jetty-jbpm.cfg.xml" />
+    <configuration name="tomcat" path="config/tomcat-jbpm.cfg.xml" />
+  </extension>
+
+</component>

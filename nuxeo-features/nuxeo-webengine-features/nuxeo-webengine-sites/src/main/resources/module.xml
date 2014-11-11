@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<module name="sites" extends="base" path="/sites">
+  <links>
+    <link id="action_webpage_edit" path="edit">
+      <category>SITE_ACTIONS</category>
+      <type>WebPage</type>
+      <guard>Write</guard>
+    </link>
+    <link id="action_webpage_create" path="create">
+      <category>SITE_ACTIONS</category>
+      <guard>AddChildren</guard>
+    </link>
+  </links>
+</module>
