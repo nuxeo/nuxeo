@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<project name="Nuxeo Distribution Resources" default="" basedir=".">
+  <!-- Properties -->
+  <property file="build.properties" />
+  <property name="mvn.opts" value="" />
+  <property name="jboss.config" value="default" />
+  <property name="jboss.dir" value="/opt/jboss" />
+
+  <!-- set default root properties if not set -->
+  <target name="set.jboss.home" unless="jboss.home">
+    <property name="jboss.home" value="${jboss.dir}" />
+  </target>
+
+  <!-- set default properties if not set -->
+  <target name="setproperties" unless="jboss.server" depends="set.jboss.home">
+    <property name="jboss.server"
+              value="${jboss.home}/server/${jboss.config}" />
+  </target>
+
+  <!-- Deploy Nuxeo libraries into JBoss -->
+  <target name="copy-resources"
+          depends="setproperties,clean-resources"
+          description="Copy Nuxeo resources in JBoss">
+    <copy todir="${jboss.home}/templates" overwrite="true">
+      <fileset dir="${basedir}/target/templates-jboss-dm" />
+      <fileset dir="${basedir}/target/templates-jboss" />
+    </copy>
+    <copy file="${jboss.home}/bin/nuxeo.conf"
+          tofile="${jboss.home}/bin/nuxeo.conf.bak"
+          overwrite="true" />
+    <copy todir="${jboss.home}/bin" overwrite="true">
+      <fileset dir="${basedir}/target/bin" />
+    </copy>
+    <copy file="${jboss.home}/bin/nuxeo.conf"
+          tofile="${jboss.home}/bin/nuxeo.conf.sample"
+          overwrite="true" />
+    <copy file="${jboss.home}/bin/nuxeo.conf.bak"
+          tofile="${jboss.home}/bin/nuxeo.conf"
+          overwrite="true" />
+  </target>
+  <target name="clean-resources" depends="setproperties">
+    <delete dir="${jboss.home}/templates" failonerror="false" />
+    <!--
+    <delete>
+      <fileset dir="${jboss.home}/bin" includes="**/*" excludes="**/nuxeo.conf" />
+    </delete>
+    -->
+  </target>
+
+</project>
