@@ -1,0 +1,19 @@
+<component name="org.nuxeo.ecm.core.redis.contribs">
+
+  <require>org.nuxeo.ecm.core.redis</require>
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="implementation">
+    <queuing class="org.nuxeo.ecm.core.redis.contribs.RedisWorkQueuing" />
+  </extension>
+  <extension target="org.nuxeo.ecm.core.storage.lock.LockManagerService"
+    point="lockmanager">
+    <lockmanager name="default"
+      class="org.nuxeo.ecm.core.redis.contribs.RedisLockManager" />
+  </extension>
+  <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
+    <cache name="default-test-cache" class="org.nuxeo.ecm.core.redis.contribs.RedisCache">
+      <ttl>1</ttl>
+    </cache>
+  </extension>
+</component>
+

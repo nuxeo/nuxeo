@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.work.config" version="1.0">
+
+  <documentation>
+    The default queue configuration for the work manager,
+    the scheduled job to cleanup the completed work instances,
+    and the related listener.
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="default">
+      <name>Default queue</name>
+      <maxThreads>4</maxThreads>
+      <!-- clear completed work instances older than one hour -->
+      <clearCompletedAfterSeconds>3600</clearCompletedAfterSeconds>
+    </queue>
+    <queue id="fulltextUpdater">
+      <name>Fulltext updater queue</name>
+      <!-- fulltext updates are single-threaded to avoid concurrent
+        writes to the same column -->
+      <maxThreads>1</maxThreads>
+      <category>fulltextUpdater</category>
+      <!-- clear completed work quickly as it contains (potentially large)
+        text data -->
+      <clearCompletedAfterSeconds>600</clearCompletedAfterSeconds>
+    </queue>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.scheduler.SchedulerService"
+    point="schedule">
+    <schedule id="workManagerCleanup">
+      <event>workManagerCleanup</event>
+      <!-- cleanup every 5 minutes -->
+      <cronExpression>0 0/5 * * * ?</cronExpression>
+    </schedule>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <listener name="workManagerCleanup" async="false"
+      class="org.nuxeo.ecm.core.work.WorkManagerCleanupListener">
+      <event>workManagerCleanup</event>
+    </listener>
+  </extension>
+
+</component>

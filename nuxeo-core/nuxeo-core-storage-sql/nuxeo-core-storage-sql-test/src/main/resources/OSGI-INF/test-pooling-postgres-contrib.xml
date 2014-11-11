@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.test.repo.repository.${nuxeo.test.vcs.repository}">
+  <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
+    point="repositories">
+    <repository name="${nuxeo.test.vcs.repository}" />
+  </extension>
+  <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
+    point="repository">
+    <repository name="${nuxeo.test.vcs.repository}"
+      factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
+      <repository>
+        <idType>${nuxeo.test.vcs.idtype}</idType>
+        <schema>
+          <field type="largetext">note</field>
+          <field type="largetext">relatedtext</field>
+        </schema>
+        <indexing>
+          <fulltext analyzer="french">
+            <index> <!-- name="default" implied -->
+              <!-- all props implied -->
+            </index>
+            <index name="title">
+              <field>dc:title</field>
+            </index>
+          </fulltext>
+        </indexing>
+        <pathOptimizations enabled="true"/>
+        <xa-datasource>org.postgresql.xa.PGXADataSource</xa-datasource>
+        <property name="ServerName">${nuxeo.test.vcs.server}</property>
+        <property name="PortNumber">${nuxeo.test.vcs.port}</property>
+        <property name="DatabaseName">${nuxeo.test.vcs.database}</property>
+        <property name="User">${nuxeo.test.vcs.user}</property>
+        <property name="Password">${nuxeo.test.vcs.password}</property>
+      </repository>
+    </repository>
+  </extension>
+</component>
