@@ -1,0 +1,48 @@
+<#assign style_category = script("getSelectedStyleCategory.groovy") />
+<#assign preset_groups = script("getPresetGroupsForSelectedCategory.groovy") />
+<#assign presets_for_selected_group = script("getPresetsForSelectedGroup.groovy") />
+<#assign selected_preset_group = script("getSelectedPresetGroup.groovy") />
+
+<div class="nxthemesToolbox" id="nxthemesAreaStyleChooser">
+
+<div class="title">
+<img class="close" onclick="javascript:NXThemesEditor.closeAreaStyleChooser()"
+     src="/nuxeo/site/files/nxthemes-editor/img/close-button.png" width="14" height="14" alt="" />
+
+Style chooser - ${style_category}</div>
+
+<div class="header">PRESETS:
+  <div>
+    <select id="areaStyleGroupName" onchange="NXThemesEditor.setPresetGroup(this)">
+      <#list preset_groups as presetGroup>
+        <#if selected_preset_group == presetGroup>
+          <option value="${presetGroup}" selected="selected">${presetGroup}</option>
+        <#else>
+          <option value="${presetGroup}">${presetGroup}</option>
+        </#if>
+      </#list>
+    </select>
+  </div>
+</div>
+
+<div class="frame">
+  <#if presets_for_selected_group>
+    <#list presets_for_selected_group as presetInfo>
+      <div class="selection" onclick="NXThemesEditor.updateAreaStyle('&quot;${presetInfo.name}&quot;')">
+          ${presetInfo.preview}
+      </div>
+    </#list>
+  <#else>
+    <div class="selection" style="padding: 10px 5px; font-style: italic; font-weight: 1.2em;"
+      onclick="NXThemesEditor.updateAreaStyle(null)">
+      No style
+    </div>
+  </#if>
+</div>
+
+<div class="footer">
+&#32;
+</div>
+
+</div>
+
