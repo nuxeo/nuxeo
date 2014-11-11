@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.management.runtime.management.contribs">
+
+  <extension target="org.nuxeo.runtime.management.ResourcePublisher"
+    point="factories">
+    <factory name="managementStatusesFactory"
+      class="org.nuxeo.ecm.core.management.StatusesManagementFactory" />
+    <factory name="EventMonitoring"
+      class="org.nuxeo.ecm.core.management.events.EventMonitoringFactory" />
+     <factory name="WorkMonitoring"
+      class="org.nuxeo.ecm.core.management.works.WorksMonitoringFactory" />       
+  </extension>
+
+
+</component>

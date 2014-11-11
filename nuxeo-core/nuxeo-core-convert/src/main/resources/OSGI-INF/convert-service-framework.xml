@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl">
+  <documentation>
+    Service to handle conversions
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"/>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.convert.api.ConversionService"/>
+    <provide interface="org.nuxeo.ecm.core.convert.service.MimeTypeTranslationHelper"/>
+  </service>
+
+  <extension-point name="converter">
+    <documentation>
+      This extension can be used to register new converters
+    </documentation>
+    <object class="org.nuxeo.ecm.core.convert.extension.ConverterDescriptor"/>
+  </extension-point>
+
+  <extension-point name="configuration">
+    <documentation>
+      This extension can be used to configure conversion service
+    </documentation>
+    <object class="org.nuxeo.ecm.core.convert.extension.GlobalConfigDescriptor"/>
+  </extension-point>
+
+</component>

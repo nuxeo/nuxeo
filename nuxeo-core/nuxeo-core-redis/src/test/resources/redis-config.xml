@@ -1,0 +1,9 @@
+<component name="org.nuxeo.ecm.core.redis.test.config">
+    <extension target="org.nuxeo.ecm.core.redis.RedisExecutor" point="configuration">
+      <executor>
+         <prefix>nuxeo:test</prefix>
+         <timeout>${timeout}</timeout>
+      </executor>
+    </extension>
+    ${extension}
+</component>

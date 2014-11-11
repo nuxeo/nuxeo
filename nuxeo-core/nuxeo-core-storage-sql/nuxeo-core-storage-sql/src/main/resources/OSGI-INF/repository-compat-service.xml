@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.repository.RepositoryService" version="1.0.0">
+
+  <require>org.nuxeo.ecm.core.storage.sql.RepositoryService</require>
+
+  <documentation>
+    Compatibility component to register old extension point.
+    Use org.nuxeo.ecm.core.storage.sql.RepositoryService instead.
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryCompatService" />
+
+  <extension-point name="repository">
+    <documentation>
+      Compatibility extension point to register VCS repositories.
+      Use org.nuxeo.ecm.core.storage.sql.RepositoryService instead.
+    </documentation>
+    <object class="org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor" />
+  </extension-point>
+
+</component>

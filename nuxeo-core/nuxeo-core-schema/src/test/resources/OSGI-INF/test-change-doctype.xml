@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.test.supertype-loop">
+
+  <!-- uses schemas loaded by CoreTestExtensions.xml -->
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="doctype">
+    <doctype name="myDoc2" extends="Document">
+      <schema name="schema1" />
+      <schema name="common" />
+      <!-- don't readd myfacet -->
+    </doctype>
+  </extension>
+
+</component>
