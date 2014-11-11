@@ -1,0 +1,21 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+ xmlns:c="http://java.sun.com/jstl/core">
+
+  <ui:include src="/incl/dnd/dnd-ui.xhtml" />
+
+  <script>
+    jQuery(document).ready(function(){
+      // init Browser DnD import
+      jQuery(".dropzone").nxDropZone({
+        url : "#{contextPath}/site/automation/",
+        uploadRateRefreshTime : 500,
+        numConcurrentUploads : 3,
+        dropContext : ctx,
+        uploadTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.upload.timeout","30000")},
+        execTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.exec.timeout","30000")},
+        extendedModeTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.extendedmode.timeout","2000")}
+      });
+    });
+  </script>
+
+</div>
