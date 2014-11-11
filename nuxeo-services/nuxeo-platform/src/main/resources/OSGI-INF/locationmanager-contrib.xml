@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.util.LocationManagerService">
+
+  <documentation>
+    This service manage the different repository locations that can be accessed via the platform.
+    This service is available via a EJB3 facade that is used to retrive the lis of available cores.
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.util.LocationManagerService" version="1.0.0"/>
+
+  <extension-point name="location">
+    <documentation>
+      This extension point can be used to register new repository locations (new core instances).
+      The location registry is typically used to build the list of available servers on the first screen of the web app.
+      The XML extension can contain a arbitrary number of location declaration if the form:
+      <locationManagerPlugin>
+        <locationEnabled>true</locationEnabled>
+        <locationName>pgsql</locationName>
+      </locationManagerPlugin>
+
+      This extension point can be used to disable a previously declared location:
+      <locationManagerPlugin>
+        <locationEnabled>false</locationEnabled>
+        <locationName>demo</locationName>
+      </locationManagerPlugin>
+
+      The locationURI tag must point on an existing core instance that was declared using :
+      <extension target="org.nuxeo.ecm.core.repository.RepositoryService" point="repository">...</extension>
+    </documentation>
+
+    <object class="org.nuxeo.ecm.platform.util.LocationManagerPluginExtension"/>
+  </extension-point>
+
+</component>
