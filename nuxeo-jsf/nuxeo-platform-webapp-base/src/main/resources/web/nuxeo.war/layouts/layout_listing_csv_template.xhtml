@@ -1,0 +1,27 @@
+<nxl:layoutColumn
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxe="http://nuxeo.org/nxweb/seam/excel"  
+  xmlns:e="http://jboss.com/products/seam/excel">
+  <c:if test="#{not layoutColumn.properties.isHidden}">
+    <nxe:column>
+      <f:facet name="header">
+        <e:cell>
+          <c:if test="#{layoutColumn.properties.useFirstWidgetLabelAsColumnHeader}">
+            <h:outputText value="#{layoutColumn.widgets[0].label}"
+              rendered="#{!layoutColumn.widgets[0].translated}" />
+            <h:outputText value="#{messages[layoutColumn.widgets[0].label]}"
+              rendered="#{layoutColumn.widgets[0].translated}" />
+          </c:if>
+        </e:cell>
+      </f:facet>
+      <nxl:layoutColumnWidget>
+        <e:cell>
+          <nxl:widget widget="#{widget}" value="#{value}"/>
+        </e:cell>
+      </nxl:layoutColumnWidget>
+    </nxe:column>
+  </c:if>
+</nxl:layoutColumn>

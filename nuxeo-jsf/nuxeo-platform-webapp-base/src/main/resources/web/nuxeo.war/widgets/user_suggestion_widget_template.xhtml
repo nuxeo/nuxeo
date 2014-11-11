@@ -1,0 +1,162 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:rich="http://richfaces.org/rich"
+  class="UserSuggestionInput">
+
+  <c:set var="userSchema" value="#{userManager.userSchemaName}" />
+
+  <c:if test="#{widget.mode != 'edit'}">
+
+    <h:dataTable value="#{field_0}"
+      var="item" rendered="#{not empty field_0}">
+      <h:column>
+        <nxu:methodResult name="info" value="#{userSuggestionActions.getUserInfo(item)}">
+          <f:subview rendered="#{info.type == 'USER_TYPE'}">
+            <h:graphicImage value="/icons/user.gif" alt="user.gif" />
+            <h:commandLink value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" action="#{userManagerActions.viewUser(info.id)}"/>
+          </f:subview>
+          <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
+            <h:graphicImage value="/icons/group.gif" alt="group.gif" />
+            <h:commandLink value="#{info.id}"
+                action="#{groupManagerActions.viewGroup(info.id)}" />
+          </f:subview>
+          <f:subview rendered="#{empty info.type}">
+            <h:outputText value="#{item}" />
+          </f:subview>
+        </nxu:methodResult>
+      </h:column>
+    </h:dataTable>
+
+  </c:if>
+
+  <c:if test="#{widget.mode == 'edit'}">
+
+    <c:set var="minChars" value="#{nxu:test(!empty widget.properties.minChars, widget.properties.minChars, '3')}" />
+    <c:set var="frequency" value="#{nxu:test(!empty widget.properties.frequency, widget.properties.frequency, '0')}" />
+    <c:set var="requestDelay" value="#{nxu:test(!empty widget.properties.requestDelay, widget.properties.requestDelay, '100')}" />
+    <c:set var="searchType" value="#{nxu:test(!empty widget.properties.userSuggestionSearchType, widget.properties.userSuggestionSearchType, '')}" />
+    <c:set var="maxSearchResults" value="#{nxu:test(!empty widget.properties.userSuggestionMaxSearchResults, widget.properties.userSuggestionMaxSearchResults, 0)}" />
+    <c:set var="hideVirtualGroups" value="#{nxu:test(!empty widget.properties.hideVirtualGroups, widget.properties.hideVirtualGroups, false)}" />
+    <c:set var="hideSearchTypeText" value="#{nxu:test(!empty widget.properties.hideSearchTypeText, widget.properties.hideSearchTypeText, false)}" />
+    <c:set var="displayHorizontally" value="#{nxu:test(!empty widget.properties.displayHorizontally, widget.properties.displayHorizontally, true)}" />
+    <c:set var="displayHelpLabel" value="#{nxu:test(!empty widget.properties.displayHelpLabel, widget.properties.displayHelpLabel, true)}" />
+    <c:set var="suggestionWidth" value="${nxu:test(!empty widget.properties.width, widget.properties.width, '400')}" />
+
+    <c:if test="#{!hideSearchTypeText}">
+      <h:outputText value="#{messages['label.security.searchUsers']}"
+        rendered="#{searchType =='USER_TYPE'}"
+        class="rightsAddLabel" />
+      <h:outputText value="#{messages['label.security.searchGroups']}"
+        rendered="#{searchType =='GROUP_TYPE'}"
+        class="rightsAddLabel" />
+      <h:outputText value="#{messages['label.security.search']}"
+        rendered="#{searchType =='USER_GROUP_TYPE' or empty searchType}"
+        class="rightsAddLabel" />
+    </c:if>
+
+    <a4j:region renderRegionOnly="true" id="#{widget.id}_ajax_region">
+      <h:panelGrid id="#{widget.id}_panel" columns="${nxu:test(displayHorizontally, 2, 1)}">
+
+        <h:panelGroup id="#{widget.id}_panelGroup">
+          <span id="#{widget.id}_suggestDiv">
+            <h:inputText id="#{widget.id}_suggest"
+              onkeydown="if (event.keyCode == 13) {return false;}" />
+          </span>
+          <a4j:status>
+            <f:facet name="start">
+              <h:graphicImage value="/img/standart_waiter.gif" />
+            </f:facet>
+          </a4j:status>
+          <rich:suggestionbox id="#{widget.id}_suggestionBox"
+            for="#{widget.id}_suggest" tokens=""
+            suggestionAction="#{userSuggestionActions.getSuggestions}"
+            var="result"
+            fetchValue=""
+            nothingLabel="#{messages['label.suggestion.noSearchResultsOrSearchOverflow']}"
+            width="#{suggestionWidth}"
+            minChars="#{minChars}" frequency="#{frequency}" requestDelay="#{requestDelay}">
+            <f:param name="userSuggestionSearchType" value="#{searchType}" />
+            <f:param name="userSuggestionMaxSearchResults" value="#{maxSearchResults}" />
+            <f:param name="hideVirtualGroups" value="#{hideVirtualGroups}" />
+            <a4j:support event="onselect"
+              focus="#{widget.id}_suggest"
+              bypassUpdates="true"
+              reRender="#{widget.id}_listRegion"
+              id="#{widget.id}_listRegion_select">
+              <f:setPropertyActionListener value="#{result['id']}"
+                target="#{suggestionActions.selectedValue}" />
+              <nxu:actionListenerMethod value="#{suggestionActions.addBoundSelectionToList}" />
+              <f:param name="suggestionSelectionListId" value="#{widget.id}_list" />
+              <f:param name="userSuggestionSearchType" value="#{searchType}" />
+              <f:param name="userSuggestionMaxSearchResults" value="#{maxSearchResults}" />
+              <f:param name="hideVirtualGroups" value="#{hideVirtualGroups}" />
+            </a4j:support>
+            <h:column>
+              <f:subview rendered="#{result.type == 'USER_TYPE'}" id="#{widget.id}_user_result">
+                <h:graphicImage value="/icons/user.gif" alt="user.gif" />
+                <h:outputText value="#{nxu:userDisplayName(result.id, result.entry[userSchema].firstName, result.entry[userSchema].lastName)}" />
+              </f:subview>
+              <f:subview rendered="#{result.type == 'GROUP_TYPE'}" id="#{widget.id}_group_result">
+                <h:graphicImage value="/icons/group.gif" alt="group.gif" />
+                <h:outputText value="#{result.id}" />
+              </f:subview>
+              <f:subview rendered="#{empty result.type}" id="#{widget.id}_result">
+                <h:outputText value="#{result}" />
+              </f:subview>
+            </h:column>
+          </rich:suggestionbox>
+          <c:if test="#{displayHelpLabel}">
+            <br />
+            <h:outputFormat value="#{messages['label.suggestion.help.minChars']}">
+              <f:param value="#{minChars}" />
+            </h:outputFormat>
+          </c:if>
+        </h:panelGroup>
+
+        <h:panelGroup>
+          <a4j:outputPanel ajaxRendered="false" id="#{widget.id}_listRegion">
+            <nxu:inputList id="#{widget.id}_list" value="#{field_0}" model="model"
+              required="#{widget.required}">
+              <h:panelGroup id="#{widget.id}_listItem">
+                <h:panelGrid columns="2">
+                  <a4j:commandLink immediate="true"
+                    actionListener="#{editableListBean.performAction}"
+                    id="#{widget.id}_delete" reRender="#{widget.id}_listRegion"
+                    bypassUpdates="true">
+                    <h:graphicImage value="/icons/action_delete.gif" />
+                    <f:param name="for" value="#{widget.id}_list" />
+                    <f:param name="index" value="#{model.rowIndex}" />
+                    <f:param name="type" value="remove" />
+                  </a4j:commandLink>
+                  <nxu:methodResult name="info" value="#{userSuggestionActions.getUserInfo(model.rowData)}">
+                    <f:subview rendered="#{info.type == 'USER_TYPE'}">
+                      <h:graphicImage value="/icons/user.gif" alt="user.gif" />
+                      <h:outputText value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" />
+                    </f:subview>
+                    <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
+                      <h:graphicImage value="/icons/group.gif" alt="group.gif" />
+                      <h:outputText value="#{info.id}" />
+                    </f:subview>
+                    <f:subview rendered="#{empty info.type}">
+                      <h:outputText value="#{info}" />
+                    </f:subview>
+                  </nxu:methodResult>
+                </h:panelGrid>
+              </h:panelGroup>
+            </nxu:inputList>
+            <h:message styleClass="errorMessage" for="#{widget.id}_list"
+              id="#{widget.id}_message" />
+          </a4j:outputPanel>
+        </h:panelGroup>
+
+      </h:panelGrid>
+
+    </a4j:region>
+
+  </c:if>
+
+</div>
