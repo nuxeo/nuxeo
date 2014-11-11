@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Relations Web Fragment
+Bundle-SymbolicName: org.nuxeo.ecm.relations.web;singleton:=true
+Bundle-Category: stateless
+Require-Bundle: org.nuxeo.ecm.webapp.core
+Nuxeo-Component: OSGI-INF/actions-contrib.xml,
+ OSGI-INF/audit-contrib.xml,
+ OSGI-INF/search-type-contrib.xml,
+ OSGI-INF/search-layouts-contrib.xml,
+ OSGI-INF/contentviews-contrib.xml
