@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<component name="default-repository-config">
+  <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
+    point="repository">
+    <repository name="default"
+      factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
+      <repository name="default">
+        <clustering enabled="true" delay="${repository.clustering.delay}" />
+        <binaryStore path="${repository.binary.store}" />
+        <schema>
+          <field type="largetext">note</field>
+          <field type="largetext">webp:content</field>
+          <field type="largetext">webc:welcomeText</field>
+          <field type="largetext">comment:comment</field>
+          <field type="largetext">post</field>
+          <field type="largetext">mail:mail</field>
+        </schema>
+        <indexing>
+          <fulltext analyzer="english"/>
+        </indexing>
+        <xa-datasource>org.postgresql.xa.PGXADataSource</xa-datasource>
+        <property name="ServerName">${nuxeo.db.host}</property>
+        <property name="PortNumber">${nuxeo.db.port}</property>
+        <property name="DatabaseName">${nuxeo.db.name}</property>
+        <property name="User">${nuxeo.db.user}</property>
+        <property name="Password">${nuxeo.db.password}</property>
+      </repository>
+    </repository>
+  </extension>
+</component>

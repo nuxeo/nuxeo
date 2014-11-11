@@ -1,0 +1,55 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.distribution</groupId>
+    <artifactId>nuxeo-distribution</artifactId>
+    <version>5.4.0-I20100925_0829</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>nuxeo-distribution-tomcat</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo Tomcat Build</name>
+  <description>Builds a Nuxeo as a WAR for a Tomcat server</description>
+
+  <properties>
+    <distribution>nuxeo-dm</distribution>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>nuxeo-distribution-tools</artifactId>
+        <executions>
+          <execution>
+            <id>antbuild</id>
+            <phase>package</phase>
+            <configuration>
+              <buildFiles>
+                <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
+              </buildFiles>
+            </configuration>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-jtajca</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-ra</artifactId>
+    </dependency>
+  </dependencies>
+
+</project>
