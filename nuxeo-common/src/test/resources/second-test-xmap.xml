@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<document>
+
+  <inheritedAuthor id="test1">
+
+    <metadata>
+
+      <title>First test 22</title>
+      <description>bla bla</description>
+
+      <name type="author" gender="MALE">
+        <firstName>my first name</firstName>
+        <lastName>my last name</lastName>
+      </name>
+
+      <age>32</age>
+
+      <double>1.2</double>
+      <double>2.5</double>
+
+    </metadata>
+
+    <content>
+      The content
+    </content>
+
+    <list>
+      <item id="item1">Item 1</item>
+      <item id="item2">Item 2</item>
+      <item id="item3">Item 3</item>
+    </list>
+    <listHashSet>
+      <itemHashSet>item in HashSet1</itemHashSet>
+      <itemHashSet>item in HashSet2</itemHashSet>
+    </listHashSet>
+    <friends>
+      <friend>
+        <firstName>friend1_fn</firstName>
+        <lastName>friend1_ln</lastName>
+      </friend>
+      <friend>
+        <firstName>friend2_fn</firstName>
+        <lastName>friend2_ln</lastName>
+      </friend>
+    </friends>
+
+
+    <properties>
+      <property name="name">theName</property>
+      <property name="color">theColor</property>
+      <property name="weight">theWeight</property>
+    </properties>
+
+
+    <testContent>
+      Test
+      <b>content</b>
+    </testContent>
+
+    <item2>b</item2>
+    <item3>c</item3>
+    <item1>a</item1>
+
+    <persons>
+      <person>
+        <firstName>friend1_fn</firstName>
+        <lastName>friend1_ln</lastName>
+      </person>
+      <person>
+        <firstName>friend2_fn</firstName>
+        <lastName>friend2_ln</lastName>
+      </person>
+    </persons>
+
+    <notInherited>dummyContent</notInherited>
+  </inheritedAuthor>
+
+
+</document>
