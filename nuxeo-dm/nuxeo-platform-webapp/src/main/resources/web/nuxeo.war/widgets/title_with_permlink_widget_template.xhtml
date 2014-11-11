@@ -1,0 +1,36 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <c:if test="#{widget.mode != 'edit'}">
+
+   <h:panelGroup rendered="#{field_0.version}">
+      <h1>
+      <nxu:methodResult name="sourceDocument"
+        value="#{versionedActions.getSourceDocument(field_0)}">
+        <h:outputText value="#{nxd:titleOrId(sourceDocument)}"/>
+      </nxu:methodResult>
+      (
+      <h:outputText value="#{messages['label.version']}" />
+      <h:outputText value=" #{field_1}"/>.
+      <h:outputText value="#{field_2}"/>)
+      </h1>
+    </h:panelGroup>
+    <h:panelGroup rendered="#{! field_0.version}">
+      <h1>
+        <h:outputText value="#{nxd:titleOrId(field_0)}"/>
+        <span title="uid: #{field_0.id}">
+          <nxd:restDocumentLink document="#{field_0}" pattern="id">
+            <nxu:graphicImage value="/icons/permalink.png"
+              style="vertical-align:middle"
+              alt="#{messages['label.permalink']}"
+              title="#{messages['label.permalink']}"/>
+          </nxd:restDocumentLink>
+       </span>
+      </h1>
+    </h:panelGroup>
+
+  </c:if>
+
+</div>
