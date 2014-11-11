@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<compass-core-config
+    xmlns="http://www.opensymphony.com/compass/schema/core-config"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.opensymphony.com/compass/schema/core-config
+           http://www.opensymphony.com/compass/schema/compass-core-config.xsd">
+
+  <compass name="default">
+
+    <connection>
+      <file path="target/test-classes/test-index"/>
+    </connection>
+
+    <transaction isolation="read_committed"
+                 commitBeforeCompletion="true" lockTimeout="36000">
+      <batchInsertSettings maxBufferedDocs="100"/>
+    </transaction>
+
+    <converters>
+      <converter name="date"
+                 type="org.compass.core.converter.basic.CalendarConverter"/>
+      <converter name="int"
+                 type="org.compass.core.converter.basic.IntConverter">
+        <setting name="format" value="#0000000000"/>
+      </converter>
+      <converter name="long"
+                 type="org.compass.core.converter.basic.LongConverter">
+        <setting name="format" value="#00000000000000000000"/>
+      </converter>
+    </converters>
+
+    <searchEngine>
+      <analyzer name="french" type="CustomAnalyzer"
+                analyzerClass="org.nuxeo.ecm.core.search.backend.compass.TraceableAnalyzer"/>
+      <analyzer name="lowerWhitespace" type="CustomAnalyzer"
+                analyzerClass="org.nuxeo.ecm.core.search.backend.compass.LowerWhitespaceAnalyzer"/>
+      <analyzer name="standard" type="Standard"/>
+
+      <optimizer scheduleInterval="0" schedule="false"
+                 type="org.compass.core.lucene.engine.optimizer.NullOptimizer"/>
+    </searchEngine>
+
+    <mappings>
+      <resource location="testmappings.cpm.xml"/>
+    </mappings>
+
+  </compass>
+</compass-core-config>

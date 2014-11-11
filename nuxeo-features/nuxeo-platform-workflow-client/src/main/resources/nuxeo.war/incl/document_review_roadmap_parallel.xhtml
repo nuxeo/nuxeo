@@ -1,0 +1,190 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+  <nxu:methodResult
+    value="#{documentWorkflowActions.isWorkflowStarted()}"
+    name="isWorkflowStarted">
+
+    <div class="closedContent">
+      <h:form>
+        <h3>
+          <h:outputText
+            value="#{messages['label.workflow.review.task.list']}" />
+        </h3>
+
+        <h:dataTable var="workflowTaskInstance" value="${documentTasks}"
+          class="dataOutput" rowClasses="dataRowEven,dataRowOdd"
+          columnClasses="iconColumn,,,,,,,,,"
+          rendered="#{documentTasks.size > 0}">
+
+          <h:column>
+            <f:facet name="header">
+              <h:outputText
+                value="#{messages['label.workflow.task.validated']}" />
+            </f:facet>
+            <h:graphicImage value="/icons/review_refused.png"
+              rendered="#{workflowTaskInstance.rejected}" />
+            <h:graphicImage value="/icons/review_accepted.png"
+              rendered="#{workflowTaskInstance.ended}" />
+            <h:graphicImage value="/icons/review_pending.gif"
+              rendered="#{!workflowTaskInstance.ended and !workflowTaskInstance.rejected}" />
+          </h:column>
+
+          <h:column>
+            <f:facet name="header">
+              <h:outputText
+                value="#{messages['label.workflow.task.principal']}" />
+            </f:facet>
+            <h:outputText
+              value="#{nxu:userFullName(workflowTaskInstance.participantName)}" />
+          </h:column>
+
+          <h:column>
+            <f:facet name="header">
+              <h:outputText
+                value="#{messages['label.workflow.task.directive']}" />
+            </f:facet>
+            <h:outputText
+              value="#{messages[workflowTaskInstance.directive]}" />
+          </h:column>
+
+          <h:column>
+            <f:facet name="header">
+              <h:outputText
+                value="#{messages['label.review.user.comment']}" />
+            </f:facet>
+            <h:outputText
+              value="#{messages[workflowTaskInstance.comment]}" />
+          </h:column>
+
+          <h:column>
+            <f:facet name="header">
+              <h:outputText
+                value="#{messages['label.workflow.task.startdate']}" />
+            </f:facet>
+            <h:outputText value="#{workflowTaskInstance.startDate}">
+              <f:convertDateTime
+                pattern="#{nxu:dateAndTimeFormater('medium')}"
+                timeZone="#{timeZone}" />
+            </h:outputText>
+          </h:column>
+
+          <h:column>
+            <f:facet name="header">
+              <h:outputText
+                value="#{messages['label.workflow.task.duedate']}" />
+            </f:facet>
+            <h:outputText value="#{workflowTaskInstance.dueDate}">
+              <f:convertDateTime
+                pattern="#{nxu:dateAndTimeFormater('medium')}"
+                timeZone="#{timeZone}" />
+            </h:outputText>
+          </h:column>
+
+
+          <h:column>
+            <f:facet name="header">
+              <h:outputText value="" />
+            </f:facet>
+            <nxu:methodResult name="canRemoveWorkItem"
+              value="#{documentTaskActions.canRemoveWorkItem(workflowTaskInstance)}">
+              <nxh:commandLink
+                actionListener="#{documentTaskActions.removeOneTask}"
+                value="#{messages['label.review.remove.task']}"
+                rendered="#{canRemoveWorkItem}">
+                <f:param name="workflowTaskInstanceId"
+                  value="#{workflowTaskInstance.id}" />
+              </nxh:commandLink>
+            </nxu:methodResult>
+          </h:column>
+
+          <h:column>
+            <f:facet name="header">
+              <h:outputText value="" />
+            </f:facet>
+            <nxu:methodResult name="canEndWorkItem"
+              value="#{documentTaskActions.canApproveWorkItem(workflowTaskInstance)}">
+              <nxh:commandLink
+                action="#{documentTaskActions.endTask(workflowTaskInstance.id)}"
+                value="#{messages['label.review.end.task']}"
+                rendered="#{isWorkflowStarted and canEndWorkItem}">
+              </nxh:commandLink>
+            </nxu:methodResult>
+
+          </h:column>
+
+          <h:column>
+            <f:facet name="header">
+              <h:outputText value="" />
+            </f:facet>
+            <nxu:methodResult
+              value="#{documentTaskActions.canRejectWorkItem(workflowTaskInstance)}"
+              name="canRejectWorkItem">
+              <nxh:commandLink
+                actionListener="#{documentTaskActions.rejectOneTask}"
+                rendered="#{isWorkflowStarted and canRejectWorkItem}"
+                value="#{messages['label.review.reject.task']}">
+                <f:param name="workflowTaskInstanceId"
+                  value="#{workflowTaskInstance.id}" />
+              </nxh:commandLink>
+            </nxu:methodResult>
+          </h:column>
+
+        </h:dataTable>
+
+        <br />
+
+        <h:panelGroup class="dataInputGroup"
+          rendered="#{documentTasks.size > 0 and canManageWorkflow}">
+          <div>
+            <i>
+              <h:outputText
+                value="#{messages['label.review.my.tasks.help']}" />
+            </i>
+
+            <table class="dataInput">
+              <tr>
+                <td class="labelColumn">
+                  <h:outputText class="required"
+                    value="#{messages['label.review.user.comment']}" />
+                </td>
+                <td>
+                  <h:inputTextarea id="taskActionCommentParallel"
+                    rows="5" cols="50"
+                    value="#{documentTaskActions.taskActionComment}" />
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <h:message styleClass="errorMessage"
+                    for="taskActionCommentParallel" />
+                </td>
+              </tr>
+              <tr>
+                <td cellpadding="2">
+                  <h:commandButton type="submit"
+                    value="#{messages['label.workflow.start']}"
+                    styleClass="button"
+                    rendered="#{!isWorkflowStarted and reviewModel.processInstanceCreatorName == currentUser.name}"
+                    action="#{documentWorkflowActions.startWorkflowCallback}" />
+                </td>
+              </tr>
+            </table>
+          </div>
+        </h:panelGroup>
+
+        <div>
+          <i>
+            <h:outputText rendered="#{documentTasks.size == 0}"
+              value="#{messages['label.workflow.review.task.list.empty']}" />
+          </i>
+        </div>
+      </h:form>
+    </div>
+  </nxu:methodResult>
+</div>

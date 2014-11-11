@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<component name="filemanager.core.listener" version="1.0.0">
+
+  <extension
+      target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
+      point="listener">
+    <listener name="mimetypeIconUpdater"
+        class="org.nuxeo.ecm.platform.filemanager.core.listener.MimetypeIconUpdater"
+        order="0">
+      <eventId>aboutToCreate</eventId>
+      <eventId>beforeDocumentModification</eventId>
+    </listener>
+
+    <documentation>
+      Computes the mimetype of dirty blob fields and updates the document icon if necessary.
+    </documentation>
+  </extension>
+
+  <extension
+      target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
+      point="listener">
+    <listener name="digestListener"
+        class="org.nuxeo.ecm.platform.filemanager.core.listener.DigestComputer"
+        order="140"/>
+
+    <documentation>
+      Listens for Core event DOCUMENT_UPDATED and DOCUMENT_CREATED and generates digests
+      for blobs according to filemanager configuration.
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+  </extension>
+
+</component>

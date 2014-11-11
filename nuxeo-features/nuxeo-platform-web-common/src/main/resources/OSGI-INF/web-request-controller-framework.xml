@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService">
+  <implementation
+          class="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService" />
+  <documentation>
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager" />
+  </service>
+
+  <extension-point name="filterConfig">
+  <documentation>
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.web.common.requestcontroller.service.FilterConfigDescriptor" />
+  </extension-point>
+
+</component>

@@ -1,0 +1,16 @@
+<?xml version='1.0'?>
+<!DOCTYPE policy PUBLIC
+      "-//JBoss//DTD JBOSS Security Config 3.0//EN"
+      "http://www.jboss.org/j2ee/dtd/security_config.dtd">
+<policy>
+  <application-policy name="JmsNXRealm">
+    <authentication>
+        <login-module code="org.jboss.resource.security.ConfiguredIdentityLoginModule" flag="required">
+             <module-option name="principal">guest</module-option>
+             <module-option name="userName">guest</module-option>
+             <module-option name="password">guest</module-option>
+             <module-option name="managedConnectionFactoryName">jboss.jca:service=TxCM,name=JmsNX</module-option>
+      </login-module>
+    </authentication>
+  </application-policy>
+</policy>

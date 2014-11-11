@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process-definition
+    xmlns="" name="forum_review_moderation">
+
+  <start-state name="start">
+    <transition name="moderation_pending" to="moderation_pending">
+      <action class="org.nuxeo.ecm.platform.forum.workflow.ForumStartupActionHandler"/>
+    </transition>
+  </start-state>
+
+  <task-node name="moderation_pending" create-tasks="false" end-tasks="true" signal="first-wait">
+    <event type="node-enter">
+      <action class="org.nuxeo.ecm.platform.forum.workflow.ForumEnterModerationHandler"/>
+    </event>
+    <task name="moderation_pending"/>
+    <transition name="moderation_publish" to="end">
+      <action class="org.nuxeo.ecm.platform.forum.workflow.ForumEndPublishActionHandler"/>
+    </transition>
+    <transition name="moderation_reject" to="end">
+      <action class="org.nuxeo.ecm.platform.forum.workflow.ForumEndRejectActionHandler"/>
+    </transition>
+  </task-node>
+
+  <end-state name="end"/>
+</process-definition>

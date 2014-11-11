@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <ui:define name="page title">Nuxeo 5 EP</ui:define>
+
+  <ui:define name="body">
+    <ui:include src="/incl/message_banner.xhtml" />
+
+    <h:form id="createUser_form">
+
+      <div>
+        <ui:include src="/userManager_action_tabs.xhtml" />
+        <div style="clear: both"></div>
+      </div>
+
+      <div class="tabsContent">
+
+        <h3>
+          <h:outputText value="#{messages['title.createUser']}" />
+        </h3>
+
+        <c:if test="#{empty userManagerActions.changeableUserType.layout}">
+          <nxl:layout name="user" mode="create" value="#{newUser.model}" />
+        </c:if>
+
+        <c:if test="#{!empty userManagerActions.changeableUserType.layout}">
+
+          <h:dataTable class="dataInput" var="field"
+            value="#{userManagerActions.changeableUserCreateType.layout}"
+            columnClasses="labelColumn, fieldColumn">
+            <h:column>
+              <h:outputText value="${messages[field.fieldName]}"
+                styleClass="#{nxu:test(field.required, 'required', '')}" />
+            </h:column>
+
+            <h:column>
+              <h:inputText id="h_inputText"
+                value="#{newUser.model[field.schemaName][field.fieldName]}"
+                class="dataInputText" required="${field.required}"
+                rendered="${field.jsfComponent=='h:inputText'}" />
+              <h:message styleClass="errorMessage" for="h_inputText" />
+
+              <h:inputText id="h_inputTextReadOnly"
+                value="#{newUser.model[field.schemaName][field.fieldName]}"
+                class="dataInputText" required="${field.required}"
+                rendered="${field.jsfComponent=='h:inputTextReadOnly'}" />
+
+              <h:inputSecret id="h_inputSecret"
+                value="#{newUser.model[field.schemaName][field.fieldName]}"
+                class="dataInputText" required="${field.required}"
+                rendered="${field.jsfComponent=='h:inputSecret'}" />
+              <h:message styleClass="errorMessage" for="h_inputSecret" />
+
+              <h:inputTextarea id="h_inputTextarea"
+                value="#{newUser.model[field.schemaName][field.fieldName]}"
+                required="${field.required}" class="dataInputText"
+                rendered="${field.jsfComponent=='h:inputTextarea'}" />
+              <h:message styleClass="errorMessage" for="h_inputTextarea" />
+
+              <nxu:inputDateTime
+                  value="#{newUser.model[field.schemaName][field.fieldName]}"
+                  format="#{nxu:basicDateFormater()}"
+                  id="t_inputCalendar"
+                  rendered="${field.jsfComponent=='t:inputCalendar'}"
+                  required="${field.required}"
+              />
+
+              <h:message styleClass="errorMessage" for="t_inputCalendar" />
+
+              <nxu:editor id="nxeditor"
+                rendered="${field.jsfComponent=='nxu:editor'}"
+                value="#{newUser.model[field.schemaName][field.fieldName]}"
+                required="${field.required}" />
+
+              <nxu:inputFile id="t_inputFileUpload"
+                value="#{newUser.model[field.schemaName][field.fieldName]}"
+                filename="#{newUser.model.file.filename}" editFilename="false"
+                rendered="${field.jsfComponent=='t:inputFileUpload'}">
+              </nxu:inputFile>
+              <h:message styleClass="errorMessage" for="t_inputFileUpload" />
+
+              <nxdir:selectOneListbox id="nxdir_selectOneListbox"
+                rendered="${field.jsfComponent=='nxdir:selectOneListbox'}"
+                value="#{newUser.model[field.schemaName][field.fieldName]}"
+                directoryName="#{field.directory}" required="${field.required}" />
+              <h:message styleClass="errorMessage" for="nxdir_selectOneListbox" />
+
+              <nxdir:selectManyListbox id="nxdir_selectManyListbox"
+                rendered="${field.jsfComponent=='nxdir:selectManyListbox'}"
+                value="#{newUser.model[field.schemaName][field.fieldName]}"
+                directoryName="#{field.directory}" required="${field.required}" />
+              <h:message styleClass="errorMessage" for="nxdir_selectManyListbox" />
+
+            </h:column>
+          </h:dataTable>
+        </c:if>
+
+        <table class="dataInput">
+          <tbody>
+            <tr>
+              <td class="labelColumn">
+                <h:outputText styleClass="required"
+                  value="${messages['password.verify']}" />
+              </td>
+              <td class="fieldColumn">
+                <h:inputSecret
+                  id="h_inputText_passwordCreate2"
+                  value="#{userManagerActions.changed_password_verify}"
+                  required="true"
+                  class="dataInputText" />
+                <h:message styleClass="errorMessage"
+                  for="h_inputText_passwordCreate2" />
+              </td>
+            </tr>
+
+            <tr>
+              <td class="labelColumn">
+                <h:outputText
+                  value="#{messages['label.userManager.userGroups']}" />
+              </td>
+              <td class="fieldColumn">
+                <h:selectManyListbox
+                  value="#{newUser.groups}">
+                  <f:selectItems value="#{userManagerActions.availableGroups}" />
+                </h:selectManyListbox>
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>
+                <h:commandButton type="submit"
+                  value="#{messages['command.save']}"
+                  action="#{userManagerActions.saveUser}" class="button" />
+                <h:commandButton
+                  action="#{userManagerActions.viewUsers}" immediate="true"
+                  value="#{messages['command.cancel']}" class="button" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </h:form>
+
+  </ui:define>
+
+</nxthemes:composition>

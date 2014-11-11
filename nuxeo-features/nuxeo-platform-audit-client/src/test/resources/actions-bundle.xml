@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.actions.ActionService">
+
+  <implementation class="org.nuxeo.ecm.platform.actions.ActionService"/>
+
+  <extension-point name="filters">
+    <object class="org.nuxeo.ecm.platform.actions.DefaultActionFilter"/>
+    <object class="org.nuxeo.ecm.platform.actions.FilterFactory"/>
+  </extension-point>
+
+  <extension-point name="actions">
+    <object class="org.nuxeo.ecm.platform.actions.Action"/>
+  </extension-point>
+
+</component>
