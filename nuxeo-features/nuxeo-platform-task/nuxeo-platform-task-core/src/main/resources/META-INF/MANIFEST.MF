@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM JBPM
+Bundle-SymbolicName: org.nuxeo.ecm.platform.task.core;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateful
+Nuxeo-Component: OSGI-INF/task-core-types-contrib.xml,
+  OSGI-INF/TaskService.xml,
+  OSGI-INF/task-content-template-contrib.xml,
+  OSGI-INF/task-listener-contrib.xml,
+  OSGI-INF/task-adapter-contrib.xml,
+  OSGI-INF/task-lifecycle-contrib.xml,
+  OSGI-INF/task-pageprovider-contrib.xml
+Require-Bundle: org.nuxeo.ecm.core.api,
+  org.nuxeo.ecm.platform.task.api,
+  org.nuxeo.ecm.platform.usermanager,
+  org.nuxeo.ecm.platform.query.api

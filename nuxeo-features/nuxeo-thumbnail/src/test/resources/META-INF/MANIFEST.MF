@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Thumbnail tests
+Bundle-SymbolicName: org.nuxeo.ecm.platform.thumbnail.test;singleton:=true
