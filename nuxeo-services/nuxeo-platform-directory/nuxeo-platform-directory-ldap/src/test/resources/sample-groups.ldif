@@ -1,0 +1,112 @@
+version: 1
+
+# Branch to store groups of users
+#
+dn: ou=groups,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: groups
+
+dn: ou=editable,ou=groups,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: editable
+
+dn: cn=administrators,ou=editable,ou=groups,dc=example,dc=com
+uniqueMember: uid=Administrator,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: groupOfUniqueNames
+description: Group of users that have the Everything permissions by default
+cn: administrators
+
+dn: cn=members,ou=editable,ou=groups,dc=example,dc=com
+uniqueMember: uid=Administrator,ou=people,dc=example,dc=com
+uniqueMember: uid=user1,ou=people,dc=example,dc=com
+uniqueMember: uid=user2,ou=people,dc=example,dc=com
+uniqueMember: cn=submembers,ou=editable,ou=groups,dc=example,dc=com
+objectClass: top
+objectClass: groupOfUniqueNames
+description: Statically defined group of users that have the Read permissions by default
+cn: members
+
+dn: cn=submembers,ou=editable,ou=groups,dc=example,dc=com
+uniqueMember: uid=user2,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: groupOfUniqueNames
+description: A sample (static) subgroup of members
+cn: submembers
+
+dn: cn=group,ou=editable,ou=groups,dc=example,dc=com
+uniqueMember: uid=user3,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: groupOfUniqueNames
+cn: group
+description: A sample group
+
+dn: cn=subgroup,cn=group,ou=editable,ou=groups,dc=example,dc=com
+uniqueMember: uid=user1,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: groupOfUniqueNames
+cn: subgroup
+description: A sample child of a group
+
+dn: cn=subsubgroup,cn=subgroup,cn=group,ou=editable,ou=groups,dc=example,dc=com
+uniqueMember: uid=user4,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: groupOfUniqueNames
+cn: subsubgroup
+description: A sample subchild of a subgroup
+
+dn: cn=subsubsubgroup,cn=subsubgroup,cn=subgroup,cn=group,ou=editable,ou=groups,dc=example,dc=com
+uniqueMember: uid=user2,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: groupOfUniqueNames
+cn: subsubsubgroup
+description: A sample subchild of a subgroup
+
+dn: ou=unit,cn=group,ou=editable,ou=groups,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: unit
+
+dn: ou=subunit,cn=subgroup,cn=group,ou=editable,ou=groups,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: subunit
+
+
+#
+# The following emptygroup is not valid with OpenLDAP schemacheck
+# enabled (depending of the LDAP schema as uniqueMember might be a
+# compulsory attribute)
+#
+#dn: cn=emptygroup,ou=editable,ou=groups,dc=example,dc=com
+#objectClass: top
+#objectClass: groupOfUniqueNames
+#description: A sample empty group
+#cn: emptygroup
+
+dn: ou=someotherbranch,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: someotherbranch
+
+dn: cn=disabledgroup,ou=someotherbranch,dc=example,dc=com
+uniqueMember: uid=Administrator,ou=people,dc=example,dc=com
+uniqueMember: uid=user1,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: groupOfUniqueNames
+description: A group in someotherbranch that is not part of groupDirectory
+cn: disabledgroup
+
+dn: ou=readonly,ou=groups,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: readonly
+
+dn: cn=readonlygroup1,ou=readonly,ou=groups,dc=example,dc=com
+uniqueMember: uid=user2,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: groupOfUniqueNames
+description: Statically defined group that is not editable
+cn: readonlygroup1
