@@ -1,0 +1,181 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+  <f:view contentType="text/html" />
+  <head>
+    <title>
+      <ui:insert name="page title"></ui:insert>
+    </title>
+
+    <nxthemes:head />
+    <nxthemes:resources ignoreLocal="true"/>
+
+  </head>
+<body style="padding: 0; margin: 0">
+
+  <f:view>
+    <f:subview rendered="#{currentNuxeoPrincipal.administrator}">
+
+    <nxthemes:accesskeys />
+
+    <div id="nxthemesHeader">
+
+      <!--  Status message -->
+      <div id="nxthemesStatusMessage" style="display: none"></div>
+
+      <!--  theme selector -->
+      <nxthemes:panel identifier="theme selector"
+        url="%{contextPath}/site/nxthemes-editor/themeSelector"
+        controlledBy="editor perspectives,theme switcher"
+        visibleInPerspectives="canvas editor,element editor,padding editor,style manager,preset manager,dashboard,skin manager,theme options,css editor,image manager,bank manager" />
+
+      <!--  perspective selector -->
+      <nxthemes:panel identifier="perspective selector"
+        url="%{contextPath}/site/nxthemes-editor/perspectiveSelector"
+        controlledBy="editor perspectives,perspective selector"
+        visibleInPerspectives="add fragments,canvas editor,padding editor" />
+
+      <!-- undo actions -->
+      <nxthemes:panel identifier="undo actions"
+        url="%{contextPath}/site/nxthemes-editor/undoActions"
+        controlledBy="editor perspectives"
+        visibleInPerspectives="canvas editor,element editor,dashboard" />
+
+      <div id="nxthemesMainButtons">
+
+        <nxthemes:button identifier="quit"
+          icon="%{contextPath}/site/skin/nxthemes-editor/img/quit-14.png"
+          link="javascript:NXThemesEditor.exit()"
+          label="Quit" />
+
+      </div>
+
+      <div id="nxthemesLocalButtons">
+
+        <!-- theme actions -->
+        <nxthemes:panel identifier="theme actions"
+          url="%{contextPath}/site/nxthemes-editor/themeActions"
+          controlledBy="editor perspectives"
+          visibleInPerspectives="canvas editor" />
+
+        <!-- view modes -->
+        <nxthemes:panel identifier="view modes"
+          url="%{contextPath}/site/nxthemes-editor/viewModes"
+          controlledBy="editor perspectives"
+          visibleInPerspectives="canvas editor" />
+
+        <!-- dashboard actions -->
+        <nxthemes:panel identifier="dashboard actions"
+          url="%{contextPath}/site/nxthemes-editor/dashboardActions"
+          controlledBy="editor perspectives"
+          visibleInPerspectives="dashboard" />
+
+        <!-- editor actions -->
+        <nxthemes:panel identifier="editor actions"
+          url="%{contextPath}/site/nxthemes-editor/editorActions"
+          controlledBy="editor perspectives"
+          visibleInPerspectives="element editor,fragment factory,padding editor" />
+
+
+      </div>
+
+    </div>
+
+
+    <div id="nxthemesEditorArea">
+
+      <div id="nxthemesWaitAnimation" style="display:none">
+        <img src="#{contextPath}/site/skin/nxthemes-editor/img/loader.gif" alt="" width="16" height="16" /> LOADING ...
+      </div>
+
+      <nxthemes:model resource="theme-editor.json" />
+
+      <!--  canvas area -->
+      <div id="nxthemesCanvasArea">
+        <nxthemes:panel
+          identifier="canvas area"
+          url="%{here}?engine=page-editor"
+          loading="nxthemesWaitAnimation"
+          filter="clean up canvas"
+          controlledBy="editor perspectives,link disabler,element mover,layout editor actions,area style actions"
+          visibleInPerspectives="canvas editor,padding editor" />
+      </div>
+
+      <!-- element drag-and-drop -->
+      <nxthemes:controller resource="element-mover.json" />
+
+      <!-- contextual menu -->
+      <nxthemes:controller resource="context-menu-actions.json" />
+      <nxthemes:controller resource="toggle-context-menu.json" />
+      <nxthemes:view resource="context-menu.json" />
+
+      <!--  page selector -->
+      <nxthemes:panel identifier="page selector"
+        url="%{contextPath}/site/nxthemes-editor/pageSelector"
+        controlledBy="editor perspectives,page switcher"
+        visibleInPerspectives="canvas editor,padding editor" />
+
+    </div>
+
+    <nxthemes:controller resource="perspective-selector.json" />
+    <nxthemes:controller resource="color-picker.json" />
+    <nxthemes:controller resource="editor-perspectives.json" />
+
+    <nxthemes:controller resource="editor-buttons.json" />
+    <nxthemes:controller resource="theme-buttons.json" />
+    <nxthemes:controller resource="canvas-mode-selector.json" />
+    <nxthemes:controller resource="layout-editor-actions.json" />
+    <nxthemes:controller resource="area-style-perspectives.json" />
+    <nxthemes:controller resource="area-style-actions.json" />
+
+    <nxthemes:controller resource="toolbox-mover.json" />
+
+    <nxthemes:controller resource="theme-switcher.json" />
+    <nxthemes:controller resource="page-switcher.json" />
+
+    <nxthemes:controller resource="link-disabler.json" />
+
+    <!-- element editor -->
+    <nxthemes:panel identifier="element editor"
+      url="%{contextPath}/site/nxthemes-editor/elementEditor"
+      controlledBy="editor perspectives"
+      visibleInPerspectives="element editor" />
+
+    <!-- element padding editor -->
+    <nxthemes:panel identifier="element padding"
+      url="%{contextPath}/site/nxthemes-editor/elementPadding"
+      controlledBy="editor perspectives,layout editor actions,toolbox mover"
+      visibleInPerspectives="padding editor" />
+
+    <!--  Area style chooser -->
+    <nxthemes:panel
+      identifier="area style chooser"
+      url="%{contextPath}/site/nxthemes-editor/areaStyleChooser"
+      controlledBy="area style perspectives,toolbox mover"
+      visibleInPerspectives="style chooser" />
+
+    <!-- fragment factory -->
+    <nxthemes:panel identifier="fragment factory"
+      url="%{contextPath}/site/nxthemes-editor/fragmentFactory"
+      controlledBy="editor perspectives"
+      visibleInPerspectives="fragment factory" />
+
+    <!-- dashboard -->
+    <nxthemes:panel identifier="dashboard"
+      url="%{contextPath}/site/nxthemes-editor/dashboard"
+      controlledBy="editor perspectives"
+      visibleInPerspectives="dashboard" />
+
+  </f:subview>
+
+  <f:subview rendered="#{!currentNuxeoPrincipal.administrator}">
+    <script type="text/javascript"><!--
+      NXThemesEditor.accessDenied();
+    //--></script>
+  </f:subview>
+
+</f:view>
+
+</body>
+</html>

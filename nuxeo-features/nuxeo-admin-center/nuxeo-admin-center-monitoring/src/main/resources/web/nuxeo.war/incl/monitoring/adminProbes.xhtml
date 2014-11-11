@@ -1,0 +1,91 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core">
+
+
+ <h2><h:outputText value="#{messages['adminsubtab.monitoring.adminProbes']}" /></h2>
+
+<a4j:outputPanel id="probesTable">
+
+ <h:dataTable var="probe" value="#{monitoringAction.getProbeInfos()}" class="dataOutput"
+    rowClasses="dataRowEven,dataRowOdd">
+    <h:column>
+      <f:facet name="header"><h:outputText value="#{messages['label.monitoring.probe.label']}" />
+      </f:facet>
+      <h:outputText value="#{probe.descriptor.label}" />
+    </h:column>
+    <h:column>
+      <f:facet name="header"><h:outputText value="#{messages['label.monitoring.probe.success']}" />
+      </f:facet>
+        <h:graphicImage url="/img/state_active.png"
+     title="success" rendered="#{probe.status.success}"/>
+      <h:panelGroup rendered="#{!probe.status.success}">
+        <h:graphicImage url="/img/state_inactive.png"
+       title="unavailable" rendered="#{probe.status=='[unavailable]'}"/>
+        <h:graphicImage url="/img/state_error.png"
+       title="error" rendered="#{probe.status!='[unavailable]'}"/>
+      </h:panelGroup>
+    </h:column>
+    <h:column>
+      <f:facet name="header"><h:outputText value="#{messages['label.monitoring.probe.status']}" />
+      </f:facet>
+      <h:outputText value="#{probe.status}" />
+    </h:column>
+    <h:column>
+      <f:facet name="header"><h:outputText value="#{messages['label.monitoring.probe.history']}" />
+      </f:facet>
+      <table>
+      <tr>
+        <td> <h:outputText value="#{messages['label.monitoring.probe.lastRun']}" /> </td>
+        <td><h:outputText value="#{probe.lastRunnedDate}"><f:convertDateTime type="both" dateStyle="short" timeStyle="short"/></h:outputText></td>
+      </tr>
+      <tr>
+        <td><h:outputText value="#{messages['label.monitoring.probe.lastSuccess']}" /> </td>
+        <td><h:outputText value="#{probe.lastSucceedDate}"> <f:convertDateTime type="both" dateStyle="short" timeStyle="short"/> </h:outputText></td>
+       </tr>
+       <tr>
+         <td><h:outputText value="#{messages['label.monitoring.probe.lastFailure']}" /></td>
+         <td><h:outputText value="#{probe.lastFailedDate}" ><f:convertDateTime type="both" dateStyle="short" timeStyle="short"/></h:outputText></td>
+       </tr>
+     </table>
+    </h:column>
+    <h:column>
+      <f:facet name="header"><h:outputText value="#{messages['label.monitoring.probe.count']}" />
+      </f:facet>
+      <table>
+        <tr> <td><h:outputText value="#{messages['label.monitoring.probe.countRun']}" /></td><td> <h:outputText value="#{probe.runnedCount}" /></td>
+        </tr>
+        <tr><td><h:outputText value="#{messages['label.monitoring.probe.countSuccess']}" /></td><td> <h:outputText value="#{probe.succeedCount}" /></td>
+        </tr>
+        <tr>
+           <td><h:outputText value="#{messages['label.monitoring.probe.countFailure']}" /></td><td> <h:outputText value="#{probe.failedCount}" /></td>
+           </tr>
+      </table>
+    </h:column>
+    <h:column>
+      <f:facet name="header"><h:outputText value="#{messages['label.monitoring.probe.lastDuration']}" />
+      </f:facet>
+      <h:outputText value="#{probe.lastDuration}" />
+    </h:column>
+    <h:column>
+      <f:facet name="header"><h:outputText value="#{messages['label.monitoring.probe.description']}" />
+      </f:facet>
+      <h:outputText value="#{probe.descriptor.description}" />
+    </h:column>
+    <h:column>
+      <f:facet name="header"><h:outputText value="#{messages['label.monitoring.probe.action']}" />
+      </f:facet>
+      <h:form>
+        <a4j:commandLink  action="#{monitoringAction.runProbe()}" reRender="probesTable">
+        <h:outputText value="#{messages['action.monitoring.runProbe']}" />
+            <f:param name="probeName" value="#{probe.shortcutName}" />
+         </a4j:commandLink>
+       </h:form>
+    </h:column>
+</h:dataTable>
+
+</a4j:outputPanel>
+</div>

@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+  version="1.0">
+  <!-- TODO: cannot rename this component since studio is using the old name - fix this
+    <component name="org.nuxeo.ecm.automation.core.AutomationComponent" version="1.0">
+  -->
+
+  <documentation>@author Bogdan Stefanescu (bs@nuxeo.com)</documentation>
+
+  <implementation class="org.nuxeo.ecm.automation.core.AutomationComponent" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.automation.AutomationService" />
+    <provide
+      interface="org.nuxeo.ecm.automation.core.events.EventHandlerRegistry" />
+  </service>
+
+  <extension-point name="operations">
+    <documentation>Operation registration</documentation>
+    <object class="org.nuxeo.ecm.automation.core.OperationContribution" />
+  </extension-point>
+
+  <extension-point name="adapters">
+    <documentation>Type adapter registration</documentation>
+    <object class="org.nuxeo.ecm.automation.core.TypeAdapterContribution" />
+  </extension-point>
+
+  <extension-point name="chains">
+    <documentation>Operation Chain registration</documentation>
+    <object class="org.nuxeo.ecm.automation.core.OperationChainContribution" />
+  </extension-point>
+
+  <extension-point name="event-handlers">
+    <documentation>Core Event Handlers bound to operations</documentation>
+    <object class="org.nuxeo.ecm.automation.core.events.EventHandler" />
+  </extension-point>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="adapters">
+    <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.StringToDocRef"
+      accept="java.lang.String" produce="org.nuxeo.ecm.core.api.DocumentRef" />
+    <adapter
+      class="org.nuxeo.ecm.automation.core.impl.adapters.StringToDocModel"
+      accept="java.lang.String" produce="org.nuxeo.ecm.core.api.DocumentModel" />
+    <adapter
+      class="org.nuxeo.ecm.automation.core.impl.adapters.DocModelToDocRef"
+      accept="org.nuxeo.ecm.core.api.DocumentModel"
+      produce="org.nuxeo.ecm.core.api.DocumentRef" />
+    <adapter
+      class="org.nuxeo.ecm.automation.core.impl.adapters.DocRefToDocModel"
+      accept="org.nuxeo.ecm.core.api.DocumentRef"
+      produce="org.nuxeo.ecm.core.api.DocumentModel" />
+    <adapter
+      class="org.nuxeo.ecm.automation.core.impl.adapters.DocModelListToDocRefList"
+      accept="org.nuxeo.ecm.core.api.DocumentModelList"
+      produce="org.nuxeo.ecm.core.api.DocumentRefList" />
+    <adapter
+      class="org.nuxeo.ecm.automation.core.impl.adapters.DocModelToDocRefList"
+      accept="org.nuxeo.ecm.core.api.DocumentModel"
+      produce="org.nuxeo.ecm.core.api.DocumentRefList" />
+    <adapter
+      class="org.nuxeo.ecm.automation.core.impl.adapters.DocModelToDocModelList"
+      accept="org.nuxeo.ecm.core.api.DocumentModel"
+      produce="org.nuxeo.ecm.core.api.DocumentModelList" />
+    <adapter
+      class="org.nuxeo.ecm.automation.core.impl.adapters.DocRefListToDocModelList"
+      accept="org.nuxeo.ecm.core.api.DocumentRefList"
+      produce="org.nuxeo.ecm.core.api.DocumentModelList" />
+    <adapter
+      class="org.nuxeo.ecm.automation.core.impl.adapters.DocRefToDocModelList"
+      accept="org.nuxeo.ecm.core.api.DocumentRef"
+      produce="org.nuxeo.ecm.core.api.DocumentModelList" />
+    <adapter
+      class="org.nuxeo.ecm.automation.core.impl.adapters.DocRefToDocRefList"
+      accept="org.nuxeo.ecm.core.api.DocumentRef"
+      produce="org.nuxeo.ecm.core.api.DocumentRefList" />
+    <adapter
+      class="org.nuxeo.ecm.automation.core.impl.adapters.StringToProperties"
+      accept="java.lang.String"
+      produce="org.nuxeo.ecm.automation.core.util.Properties" />
+    <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.StringToURL"
+      accept="java.lang.String" produce="java.net.URL" />
+    <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.StringToDate"
+      accept="java.lang.String" produce="java.util.Date" />
+    <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.CalendarToDate"
+      accept="java.util.Calendar" produce="java.util.Date" />
+    <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.StringToList"
+      accept="java.lang.String"
+      produce="org.nuxeo.ecm.automation.core.util.StringList" />
+    <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.StringToBoolean"
+      accept="java.lang.String"
+      produce="java.lang.Boolean" />
+    <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.StringToInteger"
+      accept="java.lang.String"
+      produce="java.lang.Integer" />
+  </extension>
+
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <listener name="opchainlistener" async="false" postCommit="false"
+      class="org.nuxeo.ecm.automation.core.events.OperationEventListener"
+      priority="200">
+    </listener>
+
+    <listener name="opchainpclistener" async="true" postCommit="true"
+      class="org.nuxeo.ecm.automation.core.events.PostCommitOperationEventListener"
+      priority="200">
+    </listener>
+
+  </extension>
+
+</component>

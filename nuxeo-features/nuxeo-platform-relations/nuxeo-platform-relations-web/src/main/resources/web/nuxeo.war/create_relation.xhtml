@@ -1,0 +1,176 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <script language="javascript">
+
+    function popupSearch(createFormId, url) {
+      popup = window.open(url, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=712, height=480');
+      if(!popup.opener) {
+        popup.opener = window;
+      }
+      return false;
+    }
+
+    function selectObjectType(index) {
+      document.getElementsByName('createForm:objectType')[index].checked = true;
+    }
+
+    function showPopUpSearch() {
+      // hide all trees
+      hideAllRelationPopUps();
+
+      var popUp = jQuery("#relationSearchPopUp");
+      popUp.css('top', 0.1 * getDocumentHeight() + getScrollTop());
+      popUp.css('left', 0.15 * getDocumentWidth());
+
+      var popUpheader = jQuery("#closePopUpHeader");
+
+      var content = jQuery("#popUpContent");
+      content.css('height', popUp.height() - popUpheader.height() - 40);
+
+      popUp.show();
+    }
+
+    function hideAllRelationPopUps() {
+      jQuery('.relationSearchPopUp').each(function () {
+        jQuery(this).hide();
+      });
+    }
+
+    function hidePopUp() {
+      jQuery("#relationSearchPopUp").hide();
+    }
+
+    function getDocumentHeight() {
+      return jQuery(document).height();
+    }
+
+    function getDocumentWidth() {
+      return jQuery(document).width();
+    }
+
+    function getScrollTop() {
+      var scrollTop  = document.body.scrollTop  || document.documentElement.scrollTop;
+      return scrollTop;
+    }
+
+    jQuery(document).keydown(function(event) {
+      // escape
+      if (event.keyCode == '27') {
+        hideAllRelationPopUps();
+        event.preventDefault();
+      }
+    });
+
+    jQuery(document).click(function(event) {
+      var element = jQuery(event.target);
+      if (!(element.is('.relationSearchPopUp') || element.parents().is('.relationSearchPopUp')) &amp;&amp; !(element.is('.labelTool') || element.parents().is('.labelTool'))) {
+        hideAllRelationPopUps();
+      }
+    });
+  </script>
+
+  <h3>
+    <h:form>
+      <h:commandLink actionListener="#{relationActions.toggleCreateForm}">
+        <h:graphicImage url="/icons/toggle_plus.png" rendered="#{!relationActions.showCreateForm}" />
+        <h:graphicImage url="/icons/toggle_minus.png" rendered="#{relationActions.showCreateForm}" />
+        <h:outputText value="#{messages['title.create.relation']}" />
+      </h:commandLink>
+    </h:form>
+  </h3>
+
+  <h:form id="createForm" rendered="#{relationActions.showCreateForm}">
+    <nxu:selectOneRadio id="objectType" value="#{relationActions.objectType}"
+      binding="#{relationCreationBean.objectTypeInput}" layout="spread">
+      <f:selectItem itemLabel="#{messages['label.relation.object.text']}" itemValue="literal"/>
+      <f:selectItem itemLabel="#{messages['label.relation.object.uri']}" itemValue="uri"/>
+      <f:selectItem itemLabel="#{messages['label.relation.object.documentUid']}" itemValue="document"/>
+    </nxu:selectOneRadio>
+    <h:panelGrid columns="2" styleClass="dataInput"
+      columnClasses="relationCreateLabelColumn, relationCreateFieldColumn">
+      <h:outputLabel for="predicateUri" value="#{messages['label.relation.predicate']}"
+        class="required relationPredicateLabel" />
+      <h:panelGroup>
+        <nxdir:selectOneListbox
+          value="#{relationActions.predicateUri}"
+          directoryName="predicates"
+          id="predicateUri"
+          required="true"
+          localize="true" />
+        <h:message for="predicateUri" class="errorMessage" />
+      </h:panelGroup>
+      <h:outputLabel for="objectType" value="#{messages['label.relation.object']}"
+        class="required relationObjectLabel" />
+      <h:panelGroup>
+        <h:panelGrid columns="2">
+
+          <nxu:radio for="objectType" index="0" id="literal" />
+          <h:panelGroup>
+            <h:inputText id="objectLiteralValue" value="#{relationActions.objectLiteralValue}"
+              binding="#{relationCreationBean.objectLiteralValueInput}" size="60"
+              styleClass="dataInputTextNoSize" onfocus="javascript:selectObjectType(0)" />
+          </h:panelGroup>
+
+          <nxu:radio for="objectType" index="1" id="uri" />
+          <h:panelGroup>
+            <h:inputText id="objectUri" value="#{relationActions.objectUri}"
+              binding="#{relationCreationBean.objectUriInput}" size="60"
+              styleClass="dataInputTextNoSize" onfocus="javascript:selectObjectType(1)" />
+          </h:panelGroup>
+
+          <nxu:radio for="objectType" index="2" id="document" />
+          <h:panelGroup>
+            <h:outputText id="objectDocumentTitle"
+              value="#{relationCreationBean.objectDocumentTitleInput.localValue}" />
+            <h:inputHidden id="objectDocumentTitleSaved"
+              value="#{relationActions.objectDocumentTitle}"
+              binding="#{relationCreationBean.objectDocumentTitleInput}"/>
+            <h:inputHidden id="objectDocumentUid"
+              value="#{relationActions.objectDocumentUid}"
+              binding="#{relationCreationBean.objectDocumentUidInput}"/>
+            <nxu:set var="url" value="#{contextPath}/create_relation_search_document_popup.faces">
+              <nxu:set var="urlWithConversation"
+                value="#{restHelper.addCurrentConversationParameters(url)}">
+                <input type="button" value="#{messages['command.search']}" class="button"
+                  onclick="javascript:selectObjectType(2);showPopUpSearch();" />
+              </nxu:set>
+            </nxu:set>
+          </h:panelGroup>
+
+        </h:panelGrid>
+        <h:inputHidden id="objectCheck" validator="#{relationCreationBean.validateObject}"
+         value="needed"/>
+        <h:message for="objectCheck" class="errorMessage" />
+        <h:message for="objectType" class="errorMessage" />
+      </h:panelGroup>
+
+      <h:outputLabel for="comment" value="#{messages['label.relation.comment']}"
+        class="relationCommentLabel" />
+      <h:panelGroup>
+        <h:inputTextarea class="dataInputText" id="comment" value="#{relationActions.comment}" rows="3" cols="60"/>
+        <h:message for="comment" class="errorMessage" />
+      </h:panelGroup>
+
+      <h:outputLabel for="objectType" value="" />
+      <h:commandButton value="#{messages['command.add']}" styleClass="button"
+        action="#{relationActions.addStatement}" />
+    </h:panelGrid>
+  </h:form>
+
+  <!-- Search document popUp -->
+  <div id="relationSearchPopUp" class="genericPopUp bigPopUp">
+    <div class="closePopUpHeader" id="closePopUpHeader"><span class="popUpTitle">
+      <h:outputText value="#{messages['label.relation.search.popup.title']}" /></span>
+      <span class="closePopUp" onclick="hidePopUp('#relationSearchPopUp');">Close</span>
+    <div style="clear: both;"></div>
+    </div>
+    <ui:include src="/create_relation_search_document_popup.xhtml" />
+  </div>
+
+</div>

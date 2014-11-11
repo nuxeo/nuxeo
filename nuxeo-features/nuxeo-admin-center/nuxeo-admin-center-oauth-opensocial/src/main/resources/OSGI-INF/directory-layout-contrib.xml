@@ -1,0 +1,743 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.admin.oauth.directoryLayoutContrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="oauthConsumerLayoutAdmin">
+      <templates>
+        <template mode="any">
+          /directory/directoryOAuth_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>consumerKey</widget>
+        </row>
+        <row>
+          <widget>consumerSecret</widget>
+        </row>
+        <row>
+          <widget>publicKey</widget>
+        </row>
+        <row>
+          <widget>description</widget>
+        </row>
+        <row>
+          <widget>signedFetchSupport</widget>
+          <widget>dedicatedLogin</widget>
+        </row>
+        <row>
+          <widget>callbackURL</widget>
+        </row>
+        <row>
+          <widget>allowBypassVerifier</widget>
+        </row>
+        <row>
+          <widget>enabled</widget>
+        </row>
+
+      </rows>
+
+      <widget name="consumerKey" type="text">
+        <labels>
+          <label mode="any">Consumer Key</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthConsumer.consumerKey</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.consumerKey
+          </property>
+        </properties>
+      </widget>
+      <widget name="consumerSecret" type="text">
+        <labels>
+          <label mode="any">Consumer Secret (HMAC Signature) </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthConsumer.consumerSecret</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.consumerSecret
+          </property>
+        </properties>
+      </widget>
+      <widget name="publicKey" type="textarea">
+        <labels>
+          <label mode="any">Consumer Public Key (RSA Signature) </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthConsumer.publicKey</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.publicKey
+          </property>
+        </properties>
+      </widget>
+      <widget name="enabled" type="template">
+        <labels>
+          <label mode="any">Enabled</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthConsumer.enabled</field>
+        </fields>
+        <properties mode="any">
+        <property name="template">
+          /widgets/integer_yes_no_widget_template.xhtml
+        </property>
+          <property name="help">
+          label.oauth.help.enabled
+          </property>
+        </properties>
+      </widget>
+      <widget name="description" type="text">
+        <labels>
+          <label mode="any">Description</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthConsumer.description</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.description
+          </property>
+        </properties>
+      </widget>
+      <widget name="signedFetchSupport" type="template">
+        <labels>
+          <label mode="any">Allow 2 legged auth</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthConsumer.signedFetchSupport</field>
+          <field>oauthConsumer.dedicatedLogin</field>
+        </fields>
+        <properties mode="any">
+        <property name="template">
+          /widgets/signedFetch_widget_template.xhtml
+        </property>
+        <property name="help">
+        label.oauth.help.signedFetchSupport
+        </property>
+        </properties>
+      </widget>
+      <widget name="callbackURL" type="text">
+        <labels>
+          <label mode="any">Callback URL</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthConsumer.callbackURL</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.callbackURL
+          </property>
+        </properties>
+      </widget>
+      <widget name="allowBypassVerifier" type="template">
+        <labels>
+          <label mode="any">Allow OAuth verifier check bypass</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthConsumer.allowBypassVerifier</field>
+        </fields>
+        <properties mode="any">
+        <property name="template">
+          /widgets/integer_yes_no_widget_template.xhtml
+        </property>
+          <property name="help">
+          label.oauth.help.enabled
+          </property>
+        </properties>
+      </widget>
+
+    </layout>
+
+
+    <layout name="oauthServiceProviderLayoutAdmin">
+      <templates>
+        <template mode="any">
+          /directory/directoryOAuth_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>gadgetUrl</widget>
+        </row>
+        <row>
+          <widget>serviceName</widget>
+        </row>
+        <row>
+          <widget>consumerKey</widget>
+        </row>
+        <row>
+          <widget>consumerSecret</widget>
+        </row>
+        <!--<row>
+          <widget>publicKey</widget>
+        </row>-->
+        <row>
+          <widget>description</widget>
+        </row>
+        <row>
+          <widget>requestTokenURL</widget>
+        </row>
+        <row>
+          <widget>userAuthorizationURL</widget>
+        </row>
+        <row>
+          <widget>accessTokenURL</widget>
+        </row>
+        <row>
+          <widget>enabled</widget>
+        </row>
+      </rows>
+
+      <widget name="consumerKey" type="text">
+        <labels>
+          <label mode="any">Consumer Key</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthServiceProvider.consumerKey</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.consumerKey
+          </property>
+        </properties>
+      </widget>
+      <widget name="consumerSecret" type="text">
+        <labels>
+          <label mode="any">Consumer Secret (HMAC Signature) </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthServiceProvider.consumerSecret</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.consumerSecret
+          </property>
+        </properties>
+      </widget>
+      <widget name="publicKey" type="text">
+        <labels>
+          <label mode="any">Consumer Public Key (RSA Signature) </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthServiceProvider.publicKey</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.publicKey
+          </property>
+        </properties>
+      </widget>
+      <widget name="enabled" type="template">
+        <labels>
+          <label mode="any">Enabled</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthConsumer.enabled</field>
+        </fields>
+        <properties mode="any">
+        <property name="template">
+          /widgets/integer_yes_no_widget_template.xhtml
+        </property>
+          <property name="help">
+          label.oauth.help.enabled
+          </property>
+        </properties>
+      </widget>
+      <widget name="description" type="text">
+        <labels>
+          <label mode="any">Description</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthServiceProvider.description</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.description
+          </property>
+        </properties>
+      </widget>
+      <widget name="requestTokenURL" type="text">
+        <labels>
+          <label mode="any">Request Token URL</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthServiceProvider.requestTokenURL</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.requestTokenURL
+          </property>
+        </properties>
+      </widget>
+      <widget name="userAuthorizationURL" type="text">
+        <labels>
+          <label mode="any">Authorization URL</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthServiceProvider.userAuthorizationURL</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.userAuthorizationURL
+          </property>
+        </properties>
+      </widget>
+      <widget name="accessTokenURL" type="text">
+        <labels>
+          <label mode="any">AccessToken URL</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthServiceProvider.accessTokenURL</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.accessTokenURL
+          </property>
+        </properties>
+      </widget>
+      <widget name="gadgetUrl" type="text">
+        <labels>
+          <label mode="any">Gadget URL</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthServiceProvider.gadgetUrl</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.gadgetUrl
+          </property>
+        </properties>
+      </widget>
+      <widget name="serviceName" type="text">
+        <labels>
+          <label mode="any">Service name</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthServiceProvider.serviceName</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.serviceName
+          </property>
+        </properties>
+      </widget>
+
+    </layout>
+
+    <layout name="externalGadgetLayoutAdmin">
+      <templates>
+        <template mode="any">
+          /directory/directoryOAuth_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>id</widget>
+        </row>
+        <row>
+          <widget>label</widget>
+        </row>
+        <row>
+          <widget>enabled</widget>
+        </row>
+        <row>
+          <widget>category</widget>
+        </row>
+        <row>
+          <widget>url</widget>
+        </row>
+        <row>
+          <widget>iconUrl</widget>
+        </row>
+      </rows>
+
+      <widget name="id" type="text">
+        <labels>
+          <label mode="any">Name</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>externalgadget.id</field>
+        </fields>
+      </widget>
+      <widget name="label" type="text">
+        <labels>
+          <label mode="any">Label</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>externalgadget.label</field>
+        </fields>
+      </widget>
+      <widget name="enabled" type="template">
+        <labels>
+          <label mode="any">Enabled</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>externalgadget.enabled</field>
+        </fields>
+        <properties mode="any">
+        <property name="template">
+          /widgets/integer_yes_no_widget_template.xhtml
+        </property>
+      </properties>
+
+      </widget>
+      <widget name="category" type="text">
+        <labels>
+          <label mode="any">Category</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>externalgadget.category</field>
+        </fields>
+      </widget>
+      <widget name="url" type="text">
+        <labels>
+          <label mode="any">Gadget URL</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>externalgadget.url</field>
+        </fields>
+      </widget>
+
+      <widget name="iconUrl" type="text">
+        <labels>
+          <label mode="any">Icon URL</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>externalgadget.iconUrl</field>
+        </fields>
+      </widget>
+
+    </layout>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <layout name="oauthConsumerTokenLayoutAdmin">
+      <templates>
+        <template mode="any">
+          /directory/directoryOAuth_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>appId</widget>
+        </row>
+        <row>
+          <widget>consumerKey</widget>
+        </row>
+        <row>
+          <widget>token</widget>
+        </row>
+        <row>
+          <widget>tokenSecret</widget>
+        </row>
+        <row>
+          <widget>nuxeoLogin</widget>
+        </row>
+        <row>
+          <widget>creationDate</widget>
+        </row>
+        <row>
+          <widget>duration</widget>
+        </row>
+      </rows>
+
+      <widget name="consumerKey" type="text">
+        <labels>
+          <label mode="any">Consumer Key</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.consumerKey</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.consumerKey
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="appId" type="text">
+        <labels>
+          <label mode="any">AppId (Gadget) </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.appId</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.appId
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="token" type="text">
+        <labels>
+          <label mode="any">OAUth Token </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.token</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.token
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="tokenSecret" type="text">
+        <labels>
+          <label mode="any">OAUth Token Secret</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.tokenSecret</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.tokenSecret
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="nuxeoLogin" type="text">
+        <labels>
+          <label mode="any">Nuxeo Login </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.nuxeoLogin</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.nuxeoLogin
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="creationDate" type="datetime">
+        <labels>
+          <label mode="any">Creation Date </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.creationDate</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.creationDate
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="duration" type="int">
+        <labels>
+          <label mode="any">Duration (in minutes)</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.durationInMinutes</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.durationInMinutes
+          </property>
+        </properties>
+      </widget>
+
+    </layout>
+
+
+
+
+
+
+  <layout name="oauthProviderTokenLayoutAdmin">
+      <templates>
+        <template mode="any">
+          /directory/directoryOAuth_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>appId</widget>
+        </row>
+        <row>
+          <widget>consumerKey</widget>
+        </row>
+        <row>
+          <widget>token</widget>
+        </row>
+        <row>
+          <widget>tokenSecret</widget>
+        </row>
+        <row>
+          <widget>userId</widget>
+        </row>
+        <row>
+          <widget>creationDate</widget>
+        </row>
+        <!--<row>
+          <widget>duration</widget>
+        </row>-->
+      </rows>
+
+      <widget name="consumerKey" type="text">
+        <labels>
+          <label mode="any">Consumer Key</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.consumerKey</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.consumerKey
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="appId" type="text">
+        <labels>
+          <label mode="any">AppId (Gadget) </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.appId</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.appId
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="token" type="text">
+        <labels>
+          <label mode="any">OAUth Token </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.token</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.token
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="tokenSecret" type="text">
+        <labels>
+          <label mode="any">OAUth Token Secret</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.tokenSecret</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.tokenSecret
+          </property>
+        </properties>
+        <widgetModes>
+           <mode value="list">hidden</mode>
+        </widgetModes>
+      </widget>
+
+      <widget name="userId" type="text">
+        <labels>
+          <label mode="any">Nuxeo Login </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.clientId</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.nuxeoLogin
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="creationDate" type="datetime">
+        <labels>
+          <label mode="any">Creation Date </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.creationDate</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.creationDate
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="duration" type="int">
+        <labels>
+          <label mode="any">Duration (in minutes)</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.durationInMinutes</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.durationInMinutes
+          </property>
+        </properties>
+      </widget>
+
+    </layout>
+
+  </extension>
+
+
+</component>
