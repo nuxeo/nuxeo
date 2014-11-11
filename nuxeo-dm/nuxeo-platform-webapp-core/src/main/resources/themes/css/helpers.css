@@ -1,0 +1,60 @@
+/*
+Helpers to adjust the set of rules to specific needs.
+author: lkemen@nuxeo.com
+*/
+
+/* =Helpers */
+.boldLabel, /* to be deprecated in 5.7 */
+.bold { font-weight: bold }
+.nobold { font-weight: normal }
+.nowrap { white-space: nowrap }
+
+.textAlignR { text-align: right }
+.textAlignC { text-align: center }
+.textAlignL { text-align: left }
+.floatR { float: right }
+.floatL { float: left }
+.clear { clear:both }
+
+.displayN { display: none }
+.displayI { display: inline }
+.displayIB { display: inline-block }
+.displayB { display: block }
+.visibilityH { visibility: hidden }
+.visibilityV { visibility: visible }
+.overflowV { overflow: visible }
+.overflowH { overflow: hidden }
+.overflowS { overflow: scroll }
+.overflowYS { overflow: scroll }
+.overflowXS { overflow: scroll }
+.overflowA { overflow: auto }
+.positionR { position: relative }
+.positionA { position: absolute }
+.positionF { position: fixed }
+.positionI { position: inherit }
+.positionS { position: static }
+
+/* width for divs */
+.fullWidth {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  width:100% }
+
+.fullMaxWidth { max-width: 100% }
+.threeQuarterWidth{ margin: 0 auto; width: 70% }
+.halfWidth { width:45% }
+.quarterWidth { width: 22% }
+
+/* width for tables & columns */
+.tenPercent { width: 10% }
+.twentyPercent { width: 20% }
+.thirtyPercent { width: 30% }
+.fortyPercent { width: 40% }
+.fiftyPercent { width: 50% }
+.sixtyPercent { width: 60% }
+.seventyPercent { width: 70% }
+.eightyPercent { width: 80% }
+.ninetyPercent { width: 90% }
+
+/* reset width class */
+.autoWidth { width: auto }
