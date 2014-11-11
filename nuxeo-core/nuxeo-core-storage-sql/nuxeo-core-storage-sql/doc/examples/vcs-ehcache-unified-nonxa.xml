@@ -1,0 +1,16 @@
+<ehcache name="vcs" updateCheck="false">
+
+  <diskStore path="java.io.tmpdir"/>
+
+  <cache name="unifiedVCSCache"
+    maxEntriesLocalHeap="10000"
+    maxEntriesLocalDisk="100000"
+    eternal="true"
+    timeToLiveSeconds="0"
+    timeToIdleSeconds="0"
+    overflowToDisk="true"
+    diskPersistent="false"
+    memoryStoreEvictionPolicy="LRU"
+    statistics="true">
+    </cache>
+</ehcache>

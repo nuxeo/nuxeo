@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.test.repo.repository">
+  <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
+    point="repositories">
+    <repository name="${nuxeo.test.vcs.repository}" />
+  </extension>
+  <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
+    point="repository">
+    <repository name="${nuxeo.test.vcs.repository}"
+      factory="${nuxeo.test.vcs.repository-factory}">
+      <repository sendInvalidationEvents="true">
+        <schema>
+          <field type="largetext">note</field>
+          <field type="largetext">relatedtext</field>
+        </schema>
+        <indexing>
+          <neverPerDocumentFacets>
+            <facet>NotPerDocFacet</facet>
+          </neverPerDocumentFacets>
+          <fulltext>
+            <index> <!-- name="default" implied -->
+              <!-- all props implied -->
+            </index>
+            <index name="title">
+              <field>dc:title</field>
+            </index>
+          </fulltext>
+        </indexing>
+        <xa-datasource>com.ibm.db2.jcc.DB2XADataSource</xa-datasource>
+        <property name="URL">${nuxeo.test.vcs.url}</property>
+        <property name="User">${nuxeo.test.vcs.user}</property>
+        <property name="Password">${nuxeo.test.vcs.password}</property>
+      </repository>
+    </repository>
+  </extension>
+</component>
