@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.auth.defaultConfig">
+
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="authenticators">
+
+    <authenticationPlugin name="FORM_AUTH" enabled="true"
+        class="org.nuxeo.ecm.platform.ui.web.auth.plugins.FormAuthenticator">
+      <needStartingURLSaving>true</needStartingURLSaving>
+      <parameters>
+        <parameter name="LoginPage">login.jsp</parameter>
+        <parameter name="UsernameKey">user_name</parameter>
+        <parameter name="PasswordKey">user_password</parameter>
+      </parameters>
+    </authenticationPlugin>
+
+    <authenticationPlugin name="BASIC_AUTH" enabled="true"
+        class="org.nuxeo.ecm.platform.ui.web.auth.plugins.BasicAuthenticator">
+      <needStartingURLSaving>false</needStartingURLSaving>
+      <stateful>false</stateful>
+      <parameters>
+        <parameter name="RealmName">Nuxeo 5 EP</parameter>
+        <parameter name="AutoPrompt">false</parameter>
+        <parameter name="ForcePromptURL_RSS">
+          getSyndicationDocument.faces
+        </parameter>
+        <parameter name="ForcePromptURL_RSS_SEARCH">
+          getSyndicationSearch.faces
+        </parameter>
+        <parameter name="ForcePromptURL_Restlet">restAPI/</parameter>
+        <parameter name="ForcePromptURL_WebEngineRest">site/api/</parameter>
+        <parameter name="ForcePromptURL_WebEngineRSS">site/sites/@rss/</parameter>
+        <parameter name="ForcePromptURL_WebEngineBlogsRSS">site/blogs/@rss/</parameter>
+      </parameters>
+    </authenticationPlugin>
+
+    <authenticationPlugin name="ANONYMOUS_AUTH" enabled="true"
+        class="org.nuxeo.ecm.platform.ui.web.auth.plugins.AnonymousAuthenticator">
+      <loginModulePlugin>Trusting_LM</loginModulePlugin>
+    </authenticationPlugin>
+
+    <authenticationPlugin name="WEBSERVICES_AUTH" enabled="true"
+        class="org.nuxeo.ecm.platform.ui.web.auth.plugins.WebServicesAuthenticator">
+      <parameters>
+        <parameter name="URLSkip">webservices/</parameter>
+      </parameters>
+    </authenticationPlugin>
+  </extension>
+
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="chain">
+
+    <authenticationChain>
+      <plugins>
+        <plugin>BASIC_AUTH</plugin>
+        <plugin>FORM_AUTH</plugin>
+        <plugin>ANONYMOUS_AUTH</plugin>
+        <plugin>WEBSERVICES_AUTH</plugin>
+      </plugins>
+    </authenticationChain>
+
+  </extension>
+
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="startURL">
+
+    <startURLPattern>
+      <patterns>
+        <pattern>nxdoc/</pattern>
+        <pattern>nxpath/</pattern>
+        <pattern>getDocument.faces</pattern>
+        <pattern>nxstartup.faces</pattern>
+        <pattern>getSyndicationDocument.faces</pattern>
+        <pattern>getSyndicationSearch.faces</pattern>
+        <pattern>nxfile/</pattern>
+        <pattern>nxpdffile/</pattern>
+        <pattern>nxeditfile/</pattern>
+      </patterns>
+    </startURLPattern>
+
+  </extension>
+
+</component>
