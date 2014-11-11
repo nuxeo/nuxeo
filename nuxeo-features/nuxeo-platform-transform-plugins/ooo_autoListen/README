@@ -1,0 +1,24 @@
+nxOOoAutoListen
+---------------
+
+OOo has to be launched in listen mode to be driven by external programs
+It can be done by hand at each launch by using some command line like
+
+$ /opt/openoffice.org2.1/program/soffice -accept="socket,host=0,port=8100;urp;"
+
+nxOOoAutoListen is an OOo Extension that setup OOo to be in listen mode at every start
+Then this has only to be done at setup time and no need to deal with futher command line parameters
+
+- to install
+
+   - for all OOo users 
+   $ /opt/openoffice.org2.1/program/unopkg add --shared  nxOOoAutoListen.oxt
+
+   - for the current user
+   $ /opt/openoffice.org2.1/program/unopkg add nxOOoAutoListen.oxt
+
+- to uninstall
+    replace /add/ by /remove/ in the above lines
+
+For more information on OOo Listen mode, see
+http://api.openoffice.org/docs/DevelopersGuide/ProfUNO/ProfUNO.xhtml#1_3_1_1_Starting_OpenOffice.org_in_Listening_Mode

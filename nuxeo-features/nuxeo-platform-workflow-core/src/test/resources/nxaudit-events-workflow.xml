@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.workflow.audit.events">
+
+  <require>org.nuxeo.ecm.platform.audit.service.NXAuditEventsService</require>
+
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+         point="event">
+      <event name="workflowStarted"/>
+      <event name="workflowEnded"/>
+      <event name="workflowTaskAssigned"/>
+      <event name="workflowTaskUnassigned"/>
+      <event name="workflowTaskStarted"/>
+      <event name="workflowTaskEnded"/>
+  </extension>
+
+</component>

@@ -1,0 +1,134 @@
+/*
+ * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ */
+
+package org.nuxeo.ecm.platform.versioning.service;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.versioning.api.Evaluator;
+
+/**
+ * Rule option descriptor.
+ *
+ * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+ */
+@XObject("versioningRuleEdit")
+public class RuleOptionDescriptor {
+
+    private static final Log log = LogFactory.getLog(RuleOptionDescriptor.class);
+
+    /** The option value. */
+    @XNode("@value")
+    private String value;
+
+    /**
+     *  Lifecycle transition that will be performed if the option is selected.
+     *  May be null.
+     */
+    @XNode("@lifecycleTransition")
+    private String lifecycleTransition;
+
+    /**
+     * This field is used to tell if the value is the default one.
+     */
+    @XNode("@default")
+    private boolean isDefault;
+
+    @XNode("@availableEval")
+    private String evaluatorClassNames;
+
+    /**
+     * Default constructor - used normally when created as an XObject.
+     */
+    public RuleOptionDescriptor() {
+        log.debug("<AutoBasedRuleDescriptor:init>");
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getLifecycleTransition() {
+        return lifecycleTransition;
+    }
+
+    public void setLifecycleTransition(String lifecycleTransition) {
+        this.lifecycleTransition = lifecycleTransition;
+    }
+
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(boolean isDefault) {
+        this.isDefault = isDefault;
+    }
+
+    public String getEvaluatorClassNames() {
+        return evaluatorClassNames;
+    }
+
+    public void setEvaluatorClassNames(String evaluatorClassNames) {
+        this.evaluatorClassNames = evaluatorClassNames;
+    }
+
+    /**
+     * Instantiate an Evaluator object if the 'availableEval' attribute
+     * in descriptor is specified.
+     * @return <code>null</code> if no evaluator is specified
+     */
+    public Evaluator getEvaluator() {
+        Evaluator evaluator = null;
+        if(evaluatorClassNames != null&&evaluatorClassNames.length()!=0) {
+            try {
+                Class evalClass = Class.forName(evaluatorClassNames);
+                evaluator = (Evaluator) evalClass.newInstance();
+            } catch (ClassNotFoundException e) {
+                log.error("Cannot load evaluator class: " + evaluatorClassNames);
+            } catch (InstantiationException e) {
+                log.error("Cannot instantiate evaluator: " + evaluatorClassNames, e);
+            } catch (IllegalAccessException e) {
+                log.error("Cannot instantiate evaluator: " + evaluatorClassNames, e);
+            }
+        }
+        return evaluator;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder buf = new StringBuilder();
+        buf.append(getClass().getSimpleName());
+        buf.append(" {");
+        buf.append("value=");
+        buf.append(value);
+        buf.append(", isDefault=");
+        buf.append(isDefault);
+        buf.append(", lifecycleTransition=");
+        buf.append(lifecycleTransition);
+        buf.append('}');
+
+        return buf.toString();
+    }
+}

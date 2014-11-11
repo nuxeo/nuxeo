@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.security.PolicyService"
+  version="1.0">
+
+  <implementation class="org.nuxeo.ecm.core.security.PolicyServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.api.security.PolicyService" />
+  </service>
+
+  <extension-point name="policy">
+    <object class="org.nuxeo.ecm.core.security.PolicyDescriptor" />
+  </extension-point>
+
+</component>
