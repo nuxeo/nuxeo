@@ -1,0 +1,313 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layout.LayoutService.testContrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="nature" type="selectOneDirectory">
+      <labels>
+        <label mode="any">label.dublincore.nature</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:nature</field>
+      </fields>
+      <properties mode="any">
+        <property name="directoryName">nature</property>
+        <property name="localize">true</property>
+        <property name="ordering">ordering,label</property>
+      </properties>
+      <renderingInfos mode="any">
+        <renderingInfo level="error">
+          <translated>false</translated>
+          <message>This is my widget rendering message</message>
+        </renderingInfo>
+      </renderingInfos>
+    </widget>
+
+    <widget name="subjects" type="template">
+      <labels>
+        <label mode="any">label.dublincore.subject</label>
+      </labels>
+      <helpLabels>
+        <label mode="edit">label.dublincore.subjects.info</label>
+      </helpLabels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:subjects</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">/widgets/subjects_widget.xhtml</property>
+      </properties>
+    </widget>
+
+    <widget name="rights" type="text">
+      <labels>
+        <label mode="any">label.dublincore.rights</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:rights</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="source" type="text">
+      <labels>
+        <label mode="any">label.dublincore.source</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:source</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="coverage" type="template">
+      <labels>
+        <label mode="any">label.dublincore.coverage</label>
+      </labels>
+      <helpLabels>
+        <label mode="edit">label.dublincore.coverage.info</label>
+      </helpLabels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:coverage</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">/widgets/coverage_widget.xhtml</property>
+      </properties>
+    </widget>
+
+    <widget name="created" type="datetime">
+      <labels>
+        <label mode="any">label.dublincore.created</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:created</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+      </properties>
+      <widgetModes>
+        <mode value="any">view</mode>
+        <mode value="pdf">pdf</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="modified" type="datetime">
+      <labels>
+        <label mode="any">label.dublincore.modified</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:modified</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+      </properties>
+      <widgetModes>
+        <mode value="any">view</mode>
+        <mode value="pdf">pdf</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="format" type="text">
+      <labels>
+        <label mode="any">label.dublincore.format</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:format</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="language" type="text">
+      <labels>
+        <label mode="any">label.dublincore.language</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:language</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="expired" type="datetime">
+      <labels>
+        <label mode="any">label.dublincore.expired</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:expired</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateFormater()}</property>
+      </properties>
+      <properties widgetMode="edit">
+        <property name="format">#{nxu:basicDateFormater()}</property>
+      </properties>
+    </widget>
+
+    <widget name="author" type="template">
+      <labels>
+        <label mode="any">label.dublincore.creator</label>
+      </labels>
+      <helpLabels>
+        <label mode="edit">label.dublincore.author.info</label>
+      </helpLabels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:contributors/0</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+        <mode value="pdf">pdf</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="template">
+          /widgets/single_user_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="contributors" type="template">
+      <labels>
+        <label mode="any">label.dublincore.contributors</label>
+      </labels>
+      <helpLabels>
+        <label mode="edit">label.dublincore.contributors.info</label>
+      </helpLabels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:contributors</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">/widgets/contributors_widget.xhtml</property>
+      </properties>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="lastContributor" type="template">
+      <labels>
+        <label mode="any">label.dublincore.lastContributor</label>
+      </labels>
+      <helpLabels>
+        <label mode="edit">label.dublincore.lastContributor.info</label>
+      </helpLabels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:lastContributor</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+        <mode value="pdf">pdf</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="template">
+          /widgets/single_user_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="title" type="text">
+      <labels>
+        <label mode="any">title</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:title</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="description" type="textarea">
+      <labels>
+        <label mode="any">description</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>dc:description</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="dublincore">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>nature</widget>
+        </row>
+        <row>
+          <widget>subjects</widget>
+        </row>
+        <row>
+          <widget>rights</widget>
+        </row>
+        <row>
+          <widget>source</widget>
+        </row>
+        <row>
+          <widget>coverage</widget>
+        </row>
+        <row>
+          <widget>created</widget>
+        </row>
+        <row>
+          <widget>modified</widget>
+        </row>
+        <row>
+          <widget>format</widget>
+        </row>
+        <row>
+          <widget>language</widget>
+        </row>
+        <row>
+          <widget>expired</widget>
+        </row>
+        <row>
+          <widget>author</widget>
+        </row>
+        <row>
+          <widget>contributors</widget>
+        </row>
+        <row>
+          <widget>lastContributor</widget>
+        </row>
+      </rows>
+      <renderingInfos mode="any">
+        <renderingInfo level="error">
+          <translated>false</translated>
+          <message>This is my layout rendering message</message>
+        </renderingInfo>
+      </renderingInfos>
+    </layout>
+
+  </extension>
+
+</component>

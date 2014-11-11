@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM task Test
+Bundle-SymbolicName: org.nuxeo.ecm.platform.task.testing;singleton:=true
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/test-sql-directories-contrib.xml
+Require-Bundle: org.nuxeo.runtime

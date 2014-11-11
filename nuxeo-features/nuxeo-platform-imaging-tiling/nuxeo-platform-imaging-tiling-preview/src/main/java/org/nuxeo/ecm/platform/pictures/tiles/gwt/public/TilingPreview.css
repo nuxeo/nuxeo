@@ -1,0 +1,81 @@
+/** Add css rules here for your application. */
+button {
+display: block;
+font-size: 16pt;
+}
+
+.widePanel {
+width: 100%;
+}
+
+.thumbnail-panel {
+  border-left: 3px solid #3F3F3F;
+  border-top: 3px solid #3F3F3F;
+}
+
+div.thumbnailSelectedArea {
+  background-color: #FFCB66;
+  opacity: 0.3;
+  filter: alpha(opacity=30);
+  -khtml-opacity: 0.3;
+  -moz-opacity:0.3;
+  border: 2px solid #FFCB66;
+}
+
+div.thumbnailInnerSelectedArea {
+  border: 2px solid #FFCB66;
+}
+
+div.thumbnailMovingSelectedArea {
+  background: transparent;
+  border: 2px solid #FFCB66;
+}
+
+div.thumbnailInnerMovingSelectedArea {
+}
+
+.tilingMasterContainer {
+background-color:#b0b0b0;
+}
+
+.separator {
+padding-top:5px;
+}
+
+
+.tilingViewPanel {
+}
+
+.tilingPreviewPanel {
+}
+
+button.resetZoomButton {
+background:transparent url(../img/zoom_reset.png) no-repeat scroll left top;
+width: 30px;
+height: 30px;
+color:#fff;
+border:none;
+cursor: pointer;
+margin: 0px 10px 0px 0px;
+}
+
+button.zoomInButton {
+background:transparent url(../img/zoom_in.png) no-repeat scroll left top;
+width: 30px;
+height: 30px;
+color:#fff;
+border:none;
+cursor: pointer;
+margin: 0px 10px 0px 0px;
+}
+
+
+button.zoomOutButton {
+background:transparent url(../img/zoom_out.png) no-repeat scroll left top;
+width: 30px;
+height: 30px;
+color:#fff;
+border:none;
+cursor: pointer;
+margin: 0px 10px 0px 0px;
+}

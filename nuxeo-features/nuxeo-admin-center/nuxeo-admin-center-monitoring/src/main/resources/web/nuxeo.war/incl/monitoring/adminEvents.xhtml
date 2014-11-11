@@ -1,0 +1,161 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core">
+
+ <a4j:outputPanel id="eventStatsPanel">
+
+ <h2><h:outputText value="#{messages['adminsubtab.monitoring.events']}" /></h2>
+
+  <h:outputText value="#{messages['label.monitoring.eventStats']}" />
+  
+  <div class="evenStatsBloc">
+  <ul>
+    <li>
+      <h:panelGroup rendered="#{eventSyncTrackingEnabled}">
+    		<h:form>
+    			<h:graphicImage url="/img/state_active.png" title="active" />
+    			<h:outputText value=" "/>
+    			<h:outputText value="#{messages['label.monitoring.events.synctracking.on']}" />
+    			<h:outputText value=" "/>
+      		<a4j:commandButton
+        		action="#{eventMonitoringAction.disableSyncTracking()}" reRender="eventStatsPanel"
+        		value="#{messages['label.monitoring.events.synctracking.switch.off']}"
+        		styleClass="button"/>
+    		</h:form>
+  		</h:panelGroup>
+      <h:panelGroup rendered="#{!eventSyncTrackingEnabled}">
+    		<h:form>
+    			<h:graphicImage url="/img/state_inactive.png" title="inactive" />
+    			<h:outputText value=" "/>
+    			<h:outputText value="#{messages['label.monitoring.events.synctracking.off']}" />
+    			<h:outputText value=" "/>
+     		  <a4j:commandButton
+       			 action="#{eventMonitoringAction.enableSyncTracking()}" reRender="eventStatsPanel"
+       			 value="#{messages['label.monitoring.events.synctracking.switch.on']}"
+        		 styleClass="button"/>
+    		</h:form>
+ 			 </h:panelGroup>
+    </li>
+    <li>
+      <h:panelGroup rendered="#{eventAsyncTrackingEnabled}">
+    		<h:form>
+    			<h:graphicImage url="/img/state_active.png" title="active" />
+    			<h:outputText value=" "/>
+    			<h:outputText value="#{messages['label.monitoring.events.asynctracking.on']}" />
+   			  <h:outputText value=" "/>
+     		  <a4j:commandButton
+             action="#{eventMonitoringAction.disableAsyncTracking()}" reRender="eventStatsPanel"
+       			 value="#{messages['label.monitoring.events.asynctracking.switch.off']}"
+       			 styleClass="button"/>
+   		  </h:form>
+ 		  </h:panelGroup>
+      <h:panelGroup rendered="#{!eventAsyncTrackingEnabled}">
+   		  <h:form>
+   			  <h:graphicImage url="/img/state_inactive.png" title="inactive" />
+   			  <h:outputText value=" "/>
+    		  <h:outputText value="#{messages['label.monitoring.events.asynctracking.off']}" />
+   			  <h:outputText value=" "/>
+    		  <a4j:commandButton
+     			   action="#{eventMonitoringAction.enableAsyncTracking()}" reRender="eventStatsPanel"
+      		   value="#{messages['label.monitoring.events.asynctracking.switch.on']}"
+      		   styleClass="button"/>
+   		  </h:form>
+  		 </h:panelGroup>
+    </li>
+  </ul>
+  </div>
+
+  <h:outputText value="#{messages['label.monitoring.eventStats.threads']}" />:
+  <h:outputText value="#{eventMonitoringAction.getActiveThreads()}" /><br/>
+
+  <h:outputText value="#{messages['label.monitoring.eventStats.queuedEvents']}" />:
+  <h:outputText value="#{eventMonitoringAction.getQueuedEvents()}" /><br/>
+
+  <br/><h:outputText value="#{messages['label.monitoring.eventStats.syncStats']}" />: <br/>
+  <h:panelGroup rendered="#{eventSyncStats!=null and eventSyncStats.size()>0}">
+
+  <h:dataTable var="line" value="#{eventSyncStats}" class="dataOutput"
+    rowClasses="dataRowEven,dataRowOdd">
+   <h:column>
+      <f:facet name="header"><h:outputText value="#{messages['label.monitoring.eventStats.listenerId']}"/>
+      </f:facet>
+      <h:outputText value="#{line.get(0)}"/>
+    </h:column>
+    <h:column>
+      <f:facet name="header"><h:outputText value="#{messages['label.monitoring.eventStats.listenerClass']}"/>
+      </f:facet>
+      <h:outputText value="#{line.get(1)}"/>
+    </h:column>
+    <h:column>
+      <f:facet name="header"><h:outputText value="#{messages['label.monitoring.eventStats.listenerCalls']}"/>
+      </f:facet>
+      <h:outputText value="#{line.get(2)}"/>
+    </h:column>
+    <h:column>
+      <f:facet name="header"><h:outputText value="#{messages['label.monitoring.eventStats.listenerTime']}"/>
+      </f:facet>
+      <h:outputText value="#{line.get(3)}"/>
+    </h:column>
+    <h:column>
+      <f:facet name="header"><h:outputText value="#{messages['label.monitoring.eventStats.listenerPercent']}"/>
+      </f:facet>
+      <h:outputText value="#{line.get(4)}"/>
+    </h:column>
+   </h:dataTable>
+   <h:form>
+      <a4j:commandButton rendered="#{eventSyncTrackingEnabled}" reRender="eventStatsPanel"
+        action="#{eventMonitoringAction.refresh()}"
+        value="#{messages['label.monitoring.events.refresh']}"
+        styleClass="button"/>
+    </h:form>
+  </h:panelGroup>
+  <h:panelGroup rendered="#{eventSyncStats==null or eventSyncStats.size()==0}">
+    <h:outputText value="#{messages['label.monitoring.eventStats.noStats']}" /><br/>
+  </h:panelGroup>
+
+<br/>
+  <h:outputText value="#{messages['label.monitoring.eventStats.asyncStats']}" />: <br/>
+  <h:panelGroup rendered="#{eventAsyncStats!=null and eventAsyncStats.size()>0}">
+  <h:dataTable var="line" value="#{eventAsyncStats}" class="dataOutput"
+    rowClasses="dataRowEven,dataRowOdd">
+   <h:column>
+      <f:facet name="header"><h:outputText value="#{messages['label.monitoring.eventStats.listenerId']}"/>
+      </f:facet>
+      <h:outputText value="#{line.get(0)}"/>
+    </h:column>
+    <h:column>
+      <f:facet name="header"><h:outputText value="#{messages['label.monitoring.eventStats.listenerClass']}"/>
+      </f:facet>
+      <h:outputText value="#{line.get(1)}"/>
+    </h:column>
+    <h:column>
+      <f:facet name="header"><h:outputText value="#{messages['label.monitoring.eventStats.listenerCalls']}"/>
+      </f:facet>
+      <h:outputText value="#{line.get(2)}"/>
+    </h:column>
+    <h:column>
+      <f:facet name="header"><h:outputText value="#{messages['label.monitoring.eventStats.listenerTime']}"/>
+      </f:facet>
+      <h:outputText value="#{line.get(3)}"/>
+    </h:column>
+    <h:column>
+      <f:facet name="header"><h:outputText value="#{messages['label.monitoring.eventStats.listenerPercent']}"/>
+      </f:facet>
+      <h:outputText value="#{line.get(4)}"/>
+    </h:column>
+   </h:dataTable>
+    <h:form>
+      <a4j:commandButton rendered="#{eventAsyncTrackingEnabled}" reRender="eventStatsPanel"
+        action="#{eventMonitoringAction.refresh()}"
+        value="#{messages['label.monitoring.events.refresh']}"
+        styleClass="button"/>
+    </h:form>
+  </h:panelGroup>
+  <h:panelGroup rendered="#{eventAsyncStats==null or eventAsyncStats.size()==0}">
+    <h:outputText value="#{messages['label.monitoring.eventStats.noStats']}" /><br/>
+  </h:panelGroup>
+ </a4j:outputPanel>
+</div>

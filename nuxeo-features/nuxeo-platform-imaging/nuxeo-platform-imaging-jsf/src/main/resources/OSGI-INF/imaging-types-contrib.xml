@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.picture.jsf.types">
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+
+    <type id="PictureBook" coretype="PictureBook">
+      <label>PictureBook</label>
+      <icon>/icons/picturebook.gif</icon>
+      <bigIcon>/icons/picturebook_100.png</bigIcon>
+      <description>PictureBook.description</description>
+      <category>Collaborative</category>
+      <default-view>view_documents</default-view>
+      <create-view>create_picturebook</create-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>picturebook</layout>
+      </layouts>
+    </type>
+
+    <type id="Picture">
+      <label>Picture</label>
+      <default-view>view_documents</default-view>
+      <icon>/icons/image.gif</icon>
+      <bigIcon>/icons/image_100.png</bigIcon>
+      <category>SimpleDocument</category>
+      <description>Picture.description</description>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>picture</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>picture</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <layouts mode="summary">
+        <layout>picture_summary_layout</layout>
+      </layouts>
+    </type>
+
+    <type id="Folder" coretype="Folder">
+      <subtypes>
+        <type>Picture</type>
+        <type>PictureBook</type>
+      </subtypes>
+    </type>
+    <type id="PictureBook" coretype="PictureBook">
+      <subtypes>
+        <type>Picture</type>
+        <type>PictureBook</type>
+      </subtypes>
+    </type>
+    <type id="Workspace" coretype="Workspace">
+      <subtypes>
+        <type>Picture</type>
+        <type>PictureBook</type>
+      </subtypes>
+    </type>
+
+  </extension>
+
+</component>

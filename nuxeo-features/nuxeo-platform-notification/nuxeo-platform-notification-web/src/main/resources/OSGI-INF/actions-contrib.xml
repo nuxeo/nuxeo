@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.notifications.web.actions">
+
+  <documentation>
+    NXNotifications action contributions.
+
+    @version 1.0
+    @author Narcis Paslaru
+  </documentation>
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
+
+    <documentation>
+      Contribute a new tab where a user can subscribe to notifications.
+    </documentation>
+
+    <action id="TAB_MY_SUBSCRIPTIONS" link="/incl/tabs/document_subscriptions.xhtml"
+        order="70" enabled="true" label="action.subscriptions.tab" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>general_documents</filter-id>
+      <filter-id>not_anonymous</filter-id>
+    </action>
+
+    <action id="TAB_MANAGE_SUBSCRIPTIONS" link="/incl/tabs/document_group_subscriptions.xhtml"
+        order="80" enabled="true" label="action.groups.subscriptions.tab" icon="/icons/file.gif">
+      <category>TAB_MANAGE_sub_tab</category>
+      <filter-id>general_documents</filter-id>
+      <filter-id>manage_subscriptions</filter-id>
+    </action>
+
+    <action id="sendEmail" enabled="false"/>
+
+    <action id="sendNotificationEmail" link="send_notification_email" enabled="true"
+        order="17" label="action.email.document" icon="/icons/mail.gif">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>not_folder</filter-id>
+      <filter-id>not_anonymous</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
+
+    <filter id="general_documents">
+      <rule grant="false">
+        <type>Root</type>
+        <type>Domain</type>
+        <type>WorkspaceRoot</type>
+        <type>SectionRoot</type>
+      </rule>
+    </filter>
+
+    <filter id="manage_subscriptions">
+      <rule grant="true">
+        <permission>WriteSecurity</permission>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>
