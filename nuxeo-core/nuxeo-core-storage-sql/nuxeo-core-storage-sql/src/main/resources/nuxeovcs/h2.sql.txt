@@ -1,0 +1,177 @@
+# Copyright (c) 2008-2012 Nuxeo SA (http://nuxeo.com/) and others.
+#
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License v1.0
+# which accompanies this distribution, and is available at
+# http://www.eclipse.org/legal/epl-v10.html
+#
+# Contributors:
+#     Florent Guillaume
+#     Benoit Delbosc
+
+# Variables used:
+# ${idType} VARCHAR(36)
+# ${h2Functions} org.nuxeo.ecm.core.storage.sql.db.H2Functions
+# ${h2Fulltext} org.nuxeo.ecm.core.storage.sql.db.H2Fulltext
+# ${readPermissions} ('Browse'), ('Read'), ('ReadProperties'), ('ReadRemove'), ('ReadWrite'), ('Everything')
+# ${usersSeparator} default is set to "," but it configurable
+# Conditions used:
+# fulltextEnabled
+
+############################################################
+
+
+#CATEGORY: beforeTableCreation
+
+
+CREATE ALIAS IF NOT EXISTS NX_IN_TREE FOR "${h2Functions}.isInTreeString";
+
+CREATE ALIAS IF NOT EXISTS NX_ACCESS_ALLOWED FOR "${h2Functions}.isAccessAllowedString";
+
+#IF: clusteringEnabled
+CREATE ALIAS IF NOT EXISTS NX_CLUSTER_INVAL FOR "${h2Functions}.clusterInvalidateString";
+
+#IF: clusteringEnabled
+CREATE ALIAS IF NOT EXISTS NX_CLUSTER_GET_INVALS FOR "${h2Functions}.getClusterInvalidationsString";
+
+CREATE ALIAS IF NOT EXISTS nx_upgrade_versions FOR "${h2Functions}.upgradeVersions";
+
+CREATE ALIAS IF NOT EXISTS nx_upgrade_lastContributor FOR "${h2Functions}.upgradeLastContributor";
+
+CREATE ALIAS IF NOT EXISTS NX_ANCESTORS FOR "${h2Functions}.getAncestorsIds";
+
+#IF: fulltextEnabled
+CREATE ALIAS IF NOT EXISTS NXFT_INIT FOR "${h2Fulltext}.init";
+
+#IF: fulltextEnabled
+CALL NXFT_INIT();
+
+
+############################################################
+
+
+#CATEGORY: afterTableCreation
+
+DROP TRIGGER IF EXISTS nx_trig_acls_modified;
+
+DROP TRIGGER IF EXISTS nx_trig_hierarchy_modified;
+
+DROP TRIGGER IF EXISTS NX_TRIG_DESC;
+
+# ##### upgrade tag / nxp_tagging (since Nuxeo 5.3.2) #####
+
+#TEST:
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'NXP_TAGGING';
+
+#IF: ! emptyResult
+LOG.INFO Upgrading tags
+
+# make tags placeless
+
+#IF: ! emptyResult
+UPDATE hierarchy SET parentid = NULL WHERE primarytype = 'Tag' AND isproperty = 0;
+
+# make tagging hierarchy
+
+#IF: ! emptyResult
+UPDATE nxp_tagging SET id = random_uuid();
+
+#IF: ! emptyResult
+INSERT INTO hierarchy (id, name, isproperty, primarytype)
+  SELECT tg.id, t.label, 0, 'Tagging'
+    FROM nxp_tagging tg
+    JOIN tag t ON tg.tag_id = t.id;
+
+# make tagging relation
+
+#IF: ! emptyResult
+INSERT INTO relation (id, source, target)
+  SELECT id, document_id, tag_id FROM nxp_tagging;
+
+# make tagging dublincore (save is_private into coverage just in case)
+
+#IF: ! emptyResult
+INSERT INTO dublincore (id, title, creator, created, coverage)
+  SELECT tg.id, t.label, tg.author, tg.creation_date, tg.is_private
+    FROM nxp_tagging tg
+    JOIN tag t ON tg.tag_id = t.id;
+
+# drop now useless table
+
+#IF: ! emptyResult
+DROP TABLE nxp_tagging;
+
+# remove old tags root
+
+#IF: ! emptyResult
+DELETE FROM hierarchy
+  WHERE name = 'tags' AND primarytype = 'HiddenFolder' AND isproperty = 0
+    AND parentid IN (SELECT id FROM hierarchy WHERE primarytype = 'Root' AND isproperty = 0);
+
+
+############################################################
+
+
+#CATEGORY: upgradeVersions
+
+MERGE INTO hierarchy (id, isversion)
+  SELECT h.id, true
+    FROM hierarchy h JOIN versions v ON h.id = v.id;
+
+CALL NX_UPGRADE_VERSIONS();
+
+
+############################################################
+
+
+#CATEGORY: addClusterNode
+
+# delete nodes for sessions that don't exist anymore, and old node for this
+# session (session ids are recycled)
+DELETE FROM cluster_nodes N WHERE
+  NOT EXISTS(SELECT * FROM INFORMATION_SCHEMA.SESSIONS S WHERE N.nodeid = S.ID)
+  OR N.nodeid = SESSION_ID()
+
+# Remove orphan invalidations
+DELETE FROM CLUSTER_INVALS WHERE NODEID IN (
+  SELECT DISTINCT CLUSTER_INVALS.NODEID
+    FROM CLUSTER_INVALS LEFT JOIN CLUSTER_NODES ON CLUSTER_INVALS.NODEID = CLUSTER_NODES.NODEID
+    WHERE CLUSTER_NODES.NODEID IS NULL
+)
+
+INSERT INTO cluster_nodes (nodeid, created) VALUES (SESSION_ID(), CURRENT_TIMESTAMP);
+
+
+#CATEGORY: removeClusterNode
+
+DELETE FROM cluster_nodes WHERE nodeid = SESSION_ID();
+
+# Remove orphan invalidations
+DELETE FROM CLUSTER_INVALS WHERE NODEID IN (
+  SELECT DISTINCT CLUSTER_INVALS.NODEID
+    FROM CLUSTER_INVALS LEFT JOIN CLUSTER_NODES ON CLUSTER_INVALS.NODEID = CLUSTER_NODES.NODEID
+    WHERE CLUSTER_NODES.NODEID IS NULL
+)
+
+
+############################################################
+
+
+#CATEGORY: upgradeLastContributor
+
+CALL NX_UPGRADE_LASTCONTRIBUTOR();
+
+
+############################################################
+
+
+#CATEGORY: upgradeLocks
+
+ALTER TABLE locks DROP CONSTRAINT locks_id_hierarchy_fk;
+
+DELETE FROM locks WHERE lock IS NULL;
+
+UPDATE locks SET
+  owner = SUBSTRING(lock, 1, POSITION(':', lock) - 1),
+  created = PARSEDATETIME(SUBSTRING(lock, POSITION(':', lock) + 1), 'MMM d, yyyy', 'en_US')
+  WHERE owner IS NULL;
