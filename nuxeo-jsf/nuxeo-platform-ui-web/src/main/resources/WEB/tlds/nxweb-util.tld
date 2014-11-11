@@ -1,0 +1,1237 @@
+<!--
+  (C) Copyright 2006 Nuxeo SAS <http://nuxeo.com> and others
+  
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Public License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/legal/epl-v10.html
+  
+  Contributors:
+  Nuxeo - initial API and implementation
+-->
+
+<!DOCTYPE taglib
+  PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
+  "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+
+<taglib>
+
+  <tlib-version>1.0</tlib-version>
+  <jsp-version>1.2</jsp-version>
+  <short-name>nxu</short-name>
+  <uri>http://nuxeo.org/nxweb/util</uri>
+  <description>
+    <![CDATA[
+    <p>The NXWebPlatform (re)definition of basic tags.</p>
+    <p>
+      Basic tags can be seen as useful tags which are still not really specific
+      to the Nuxeo 5 framework.
+    </p>
+    <p>Also exposes utility functions like:</p>
+    <ul>
+      <li>
+        test(Boolean, Object, Object): performs the java "if-then-else"
+        operation.
+      </li>
+      <li>
+        join(String[], String): performs a join on given array using given
+        separator.
+      </li>
+      <li>
+        joinCollection(Collection, String): performs a join on given collection
+        using given separator.
+      </li>
+      <li>
+        userIsMemberOf(String): tests if the user belongs to the named group.
+      </li>
+      <li>
+        userFullName(String): returns the full name of a user given its id.
+      </li>
+      <li>
+        userDisplayName(String, String, String): returns the full name of a user
+        given its id, first name and last name.
+      </li>
+      <li>
+        htmlEscape(String): returns html escaped string (can be use to do safe
+        h:outputText in scripts).
+      </li>
+      <li>
+        javaScriptEscape(String): returns escaped string for use in
+        JavaScript code (excapes single quote characters for instance).
+      </li>
+      <li>
+        printFileSize(String size): same as printFormatedFileSize( size, "SI",
+        true)
+      </li>
+      <li>
+        printFormatedFileSize(String size, String format, bollean isShort)
+        pretty print the size of a file using the format given in its short or
+        long form. The format available are "SI", "IEC" or "JEDEC". See
+        <a href="http://en.wikipedia.org/wiki/Byte">
+          the wikipedia article on Byte
+        </a>
+        for more information on those format.
+      </li>
+      <li>
+        printFormattedDuration(Object durationInSeconds, Map<String , String>
+        messages): pretty print raw duration measured in seconds as "1 hr 23
+        min" or "31 min 29 sec" or "3 sec" for instance
+      </li>
+      <li>
+        printFormattedDuration(Object durationInSeconds): same as
+        printFormattedDuration(Object durationInSeconds, null)
+      </li>
+      <li>
+        translate(String messageKey, Object... params): returns translated
+        message with given parameters to be used when formatting the message
+        value.
+      </li>
+    </ul>
+    ]]>
+  </description>
+
+  <tag>
+    <name>methodResult</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>
+      <![CDATA[
+      <p>
+        Facelet tag handler that exposes the result of a method binding as a
+        variable. Note that this tag is <b>deprecated</b> since Seam 2.0 handles
+        method resolution natively.
+      </p>
+      <p>
+        This is helpful to avoid having to define a getter on a class to get
+        some rendering info. This is comparable to f:param or ui:param tags, but
+        using method bindings instead of value bindings.
+      </p>
+      <p>
+        <b>WARNING</b> : the variable is only exposed inside the tag: this is a
+        different behaviour than the c:set tag that can be closed immediately.
+      </p>
+      <p>
+        <b>WARNING bis</b> : the method result should be Serializable.
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+      <description>Name of the variable that will be set.</description>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Method binding that will be invoked to set the attribute value.
+      </description>
+    </attribute>
+    <attribute>
+      <name>immediate</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Boolean. Flag indicating if the method should be invoked when
+        constructing the JSF tree. If true, the method is only once and not
+        called again when resolving other expressions using the result variable.
+        However, the tag will not work as expected when using request variables
+        in its expression (like table variable). Set to "false" by default.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxu:methodResult name="actions" value="#{webActions.getActionsList('SUBVIEW_UPPER_LIST')}">
+  <nxu:dataList var="action"
+                value="#{actions}">
+...
+  </nxu:dataList>
+</nxu:methodResult>
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>set</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>
+      <![CDATA[
+      <p>
+      Facelet tag handler that exposes an expression as a variable, and makes
+      it possible to cache it.
+      </p>
+      <p>
+      This is very close to the c:set tag, but allows caching, and the variable
+      is only exposed inside the tag. Note that this tag will not work as
+      expected when used with iteration variables inside a standard table, for
+      instance.
+      </p>
+      <p>
+      <b>WARNING</b>: the expression evaluation result should be Serializable.
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+      <description>Name of the variable that will be set.</description>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Expression that will be evaluated to set the attribute value.
+      </description>
+    </attribute>
+    <attribute>
+      <name>cache</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Boolean. Flag indicating if the expression should be evaluated when
+        constructing the JSF tree. If true, it is evaluated only once and not
+        called again when resolving other expressions using the result variable.
+        However, the tag will not work as expected when using request variables
+        in its expression (like table variable). Set to "false" by default.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxu:set var="actions" value="#{webActions.getActionsList('SUBVIEW_UPPER_LIST')}" cache="true">
+  <nxu:dataList var="action"
+                value="#{actions}">
+...
+  </nxu:dataList>
+</nxu:set>
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>repeat</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>
+      <![CDATA[
+      <p>
+      Facelet tag handler that performs an iteration.
+      </p>
+      <p>
+      This handler is different from the standard one because it performs a real
+      iteration on the tree structure, instead of keeping the same components and
+      saving their state in each of the iteration.
+      </p>
+      <p>
+      A real iteration is the only viable solution when using variables that will
+      have an impact on the tree structure, like a layout name and mode.
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>value</name>
+      <required>false</required>
+      <description>
+        Value binding representing the object to iterate on.
+      </description>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Name of the variable representing each iteration item. Must be a string.
+      </description>
+    </attribute>
+    <attribute>
+      <name>index</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Name of the variable representing the iteration index. Must be a string.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxu:repeat value="#{layoutNames}" var="layout">
+  <nxl:layout name="#{layout}" value="#{document}" />
+</nxu:repeat>
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>actionListenerMethod</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>
+      <![CDATA[
+      <p>
+      Facelet tag handler that add an action listener to the parent component.
+      Available since 5.3.1.
+      </p>
+      <p>
+      Parent needs to be an action source for the action listener to be declared
+       on it.
+      </p>
+      <p>
+      This is useful when declaring several action listeners on the same parent
+      component, and when the order of calls needs to be respected: the action
+      listener method declared on a component is the first one called. So this
+      method makes it possible to add other action listeners before it, without
+      having to declare a class (when using the f:actionListener tag).
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>value</name>
+      <required>false</required>
+      <description>
+        MethodBinding representing an action listener method that will be
+        notified when this component is activated by the user. The expression
+        must evaluate to a public method that takes an ActionEvent parameters,
+        with a return type of void.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<h:commandLink value="Go">
+  <nxu:actionListenerMethod value="#{myBean.performFirstAction}" />
+  <nxu:actionListenerMethod value="#{myBean.performSecondAction}" />
+</h:commandLink>
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>selectItem</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>
+      <![CDATA[
+      <p>
+      Tag adapted from the EasySI package
+      (<a href="http://jsf-comp.sourceforge.net/components/easysi/index.html" target="_blank">
+      http://jsf-comp.sourceforge.net/components/easysi/index.html</a>).
+      </p>
+      <p>
+      This tag allows to iterate on any kind of data and have control on the
+      resulting selection value and label.
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>value</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Value binding representing the object to generate the select option
+        from.
+      </description>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Name of the request scope attribute that will be used to set an item
+        value and label with flexibility.
+      </description>
+    </attribute>
+    <attribute>
+      <name>itemValue</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Value binding resolved to build the item value.</description>
+    </attribute>
+    <attribute>
+      <name>itemLabel</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Value binding resolved to build the item label.</description>
+    </attribute>
+    <attribute>
+      <name>itemDisabled</name>
+      <required>false</required>
+      <description>
+        Value binding resolved to build the item disabled attribute. Available
+        since 5.4.
+      </description>
+    </attribute>
+    <attribute>
+      <name>itemRendered</name>
+      <required>true</required>
+      <description>
+        Value binding resolved to exclude the item from selections. Available
+        since 5.4.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxu:selectItem value="#{myBean.myElement}" var="item"
+  itemValue="#{item.id}" itemLabel="#{item.title}" />
+
+<nxu:selectItem value="#{document}" var="document"
+  itemValue="#{document.ref}" itemLabel="#{document.dublincore.title}" />
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>selectItems</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>
+      <![CDATA[
+      <p>
+      Tag adapted from the EasySI package
+      (<a href="http://jsf-comp.sourceforge.net/components/easysi/index.html" target="_blank">
+      http://jsf-comp.sourceforge.net/components/easysi/index.html</a>).
+      </p>
+      <p>
+      This tag allows to iterate on any kind of data and have control on the
+      resulting selections values and labels.
+      </p>
+      <p>
+      It has been adapted to work with datamodel lists wrapped by Seam (when
+      using the Datamodel annotation).
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>value</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Value binding representing the list to iterate on.
+      </description>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Name of the request scope attribute that will be used to set an item
+        value and label with flexibility.
+      </description>
+    </attribute>
+    <attribute>
+      <name>itemValue</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Value binding resolved to build the item value.</description>
+    </attribute>
+    <attribute>
+      <name>itemLabel</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Value binding resolved to build the item label.</description>
+    </attribute>
+    <attribute>
+      <name>itemDisabled</name>
+      <required>false</required>
+      <description>
+        Value binding resolved to build the item disabled attribute. Available
+        since 5.4.
+      </description>
+    </attribute>
+    <attribute>
+      <name>itemRendered</name>
+      <required>false</required>
+      <description>
+        Value binding resolved to exclude the item from the list of selections.
+        Available since 5.4.
+      </description>
+    </attribute>
+    <attribute>
+      <name>ordering</name>
+      <required>false</required>
+      <description>
+        Value binding resolved to sort options. Possible values are "id" and
+        "label". If not set, no ordering is done. Available since 5.4.
+      </description>
+    </attribute>
+    <attribute>
+      <name>caseSensitive</name>
+      <required>false</required>
+      <description>
+        Value binding resolved to a boolean value, to sort options
+        case-insensitively. Does not have any effect if ordering is not set.
+        Defaults to false. Available since 5.4.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxu:selectItems value="#{myBean.myList}" var="item"
+  itemValue="#{item.id}" itemLabel="#{item.title}" />
+
+<nxu:selectItems value="#{documentList}" var="document"
+  itemValue="#{document.ref}" itemLabel="#{document.dublincore.title}" />
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>inputFile</name>
+    <tag-class>None</tag-class>
+    <description>
+      <![CDATA[
+      <p>
+      Util tag to perform a complex file upload dealing with edition and
+      deletion.
+      </p>
+      <p>
+      It only deals with NXCoreAPI blobs.
+      </p>
+      <p>
+      This tag uses a component that will handle its rendering using other
+      existing components. It will present a radio menu with existing choices:
+      upload a file, keep it (eventually change its filename), delete it, or do
+      nothing. Choices will be presented automatically given values and tag
+      attributes (is there a blob set, is there a filename, is the blob
+      required, etc...).
+      </p>
+      <p>
+      It uses the nxu:outputFile related component rendering for the "keep"
+      option and the tomahwak t:inputFileUpload tag for the "upload" option.
+      </p>
+      <p>
+      It is possible to use a facet named "download" to override the default
+      "keep" option rendering (e.g the document download presentation).
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>value</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>org.nuxeo.ecm.core.api.Blob</type>
+      <description>Value binding representing the blob</description>
+    </attribute>
+    <attribute>
+      <name>filename</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Value binding representing the blob filename. If set, will be set using
+        the newly uploaded blob filename and will be presented as the download
+        link value unless the downloadLabel attribute is provided.
+      </description>
+    </attribute>
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        The component identifier for this component. This value must be unique
+        within the closest parent component that is a naming container.
+      </description>
+    </attribute>
+    <attribute>
+      <name>rendered</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Flag indicating whether or not this component should be rendered (during
+        Render Response Phase), or processed on any subsequent form submit.
+      </description>
+    </attribute>
+    <attribute>
+      <name>required</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Flag indicating that the user is required to provide a submitted value
+        for the blob.
+      </description>
+    </attribute>
+    <attribute>
+      <name>editFilename</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Flag indicating whether or not this component should present an input
+        area to set the blob filename. It is only presented on the "keep"
+        option.
+      </description>
+    </attribute>
+    <attribute>
+      <name>iconRendered</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Boolean flag indicating whether or not the file icon should be rendered.
+        Defaults to true.
+      </description>
+    </attribute>
+    <attribute>
+      <name>downloadLabel</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Value binding that will be used as the download link value, and will
+        attempt to be translated.
+      </description>
+    </attribute>
+    <attribute>
+      <name>editFilenameLabel</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Value binding that will be rendered before the edit file name input
+        text, and will attempt to be translated.
+      </description>
+    </attribute>
+    <attribute>
+      <name>onchange</name>
+      <description>
+        Javascript onchange event handler, set on the radio buttons
+      </description>
+    </attribute>
+    <attribute>
+      <name>onclick</name>
+      <description>
+        Javascript onclick event handler, set on the radio button
+      </description>
+    </attribute>
+    <attribute>
+      <name>onselect</name>
+      <description>
+        Javascript onselect event handler, set on the radio button
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxu:inputFile value="#{document.file.content"
+  filename="#{document.file.filename}"
+  editFilename="true" />
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>validateFileSize</name>
+    <description>
+      Register an InputFileSizeValidator instance on the UIComponent associated
+      with the closest parent UIComponent custom action.
+    </description>
+    <tag-class>Null</tag-class>
+    <attribute>
+      <name>maxSize</name>
+      <description>
+        String representing the maximum size accepted for a file. Examples:
+        10Ko, 10Mo, 10Go.
+      </description>
+    </attribute>
+    <attribute>
+      <name>binding</name>
+      <description>
+        A ValueExpression that evaluates to an instance of the validator.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxu:inputFile value="#{document.file.content"
+  filename="#{document.file.filename}"
+  editFilename="true">
+  <nxu:validateFileSize maxSize="10Mo" />
+</nxu:inputFile>
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>validateFileMimetype</name>
+    <description>
+      Register an InputFileMimetypeValidator instance on the UIComponent
+      associated with the closest parent UIComponent custom action.
+    </description>
+    <tag-class>Null</tag-class>
+    <attribute>
+      <name>extensions</name>
+      <description>
+        String representing the list of extensions to check for a file,
+        separated by commas.
+      </description>
+    </attribute>
+    <attribute>
+      <name>authorized</name>
+      <description>
+        Boolean indicating if the list of extensions represents authorized
+        extensions or unauthorized ones. Defaults to true.
+      </description>
+    </attribute>
+    <attribute>
+      <name>binding</name>
+      <description>
+        A ValueExpression that evaluates to an instance of the validator.
+      </description>
+    </attribute>
+    <attribute>
+      <name>hidden</name>
+      <description>
+        Boolean indicating if the list of extensions is displayed. Defaults to
+        false.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxu:inputFile value="#{document.file.content"
+  filename="#{document.file.filename}"
+  editFilename="true">
+  <nxu:validateFileMimetype extensions=".jpg, .png" />
+</nxu:inputFile>
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>outputFile</name>
+    <tag-class>None</tag-class>
+    <description>
+      <![CDATA[
+      <p>
+      Util tag to perform a file rendering.
+      </p>
+      <p>
+      It only deals with NXCoreAPI blobs.
+      </p>
+      <p>
+      Display is an immediate link to the blob, with filename as link value if
+      provided, together with the blob mimetype icon.
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>value</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>org.nuxeo.ecm.core.api.Blob</type>
+      <description>Value binding representing the blob</description>
+    </attribute>
+    <attribute>
+      <name>filename</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Value binding representing the blob filename. If set, will be presented
+        as the download link value unless the downloadLabel attribute is
+        provided.
+      </description>
+    </attribute>
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        The component identifier for this component. This value must be unique
+        within the closest parent component that is a naming container.
+      </description>
+    </attribute>
+    <attribute>
+      <name>rendered</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Flag indicating whether or not this component should be rendered (during
+        Render Response Phase), or processed on any subsequent form submit.
+      </description>
+    </attribute>
+    <attribute>
+      <name>iconRendered</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Boolean flag indicating whether or not the file icon should be rendered.
+        Defaults to true.
+      </description>
+    </attribute>
+    <attribute>
+      <name>downloadLabel</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Value binding that will be used as the download link value, and will
+        attempt to be translated.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxu:outputFile value="#{document.file.content"
+  filename="#{document.file.filename}" />
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>inputDateTime</name>
+    <tag-class>None</tag-class>
+    <description>
+      <![CDATA[
+      Calendar with date and time chosing.
+      ]]>
+    </description>
+    <attribute>
+      <name>value</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Value binding representing the date and time</description>
+    </attribute>
+    <attribute>
+      <name>rendered</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Flag indicating whether or not this component should be rendered (during
+        Render Response Phase), or processed on any subsequent form submit.
+      </description>
+    </attribute>
+    <attribute>
+      <name>required</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Flag indicating that the user is required to provide a submitted value
+        for the blob.
+      </description>
+    </attribute>
+    <attribute>
+      <name>format</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        String format for the date and time, as described by the
+        java.text.SimpleDateFormat class, and as used in the standard
+        DateTimeConverter. Default value is "dd/MM/yyyy HH:mm".
+      </description>
+    </attribute>
+    <attribute>
+      <name>showsTime</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Flag indicating that the calendar must show a time choice. Ignored since
+        5.4.2 as time is shown according to date format chosen.
+      </description>
+    </attribute>
+    <attribute>
+      <name>locale</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        String representing the locale to use for the calendar. Current locale
+        is used if not set.
+      </description>
+    </attribute>
+    <attribute>
+      <name>timeZone</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        String timeZone ID. The server time zone is used if not set.
+      </description>
+    </attribute>
+    <attribute>
+      <name>triggerImg</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Image path to use for the trigger. Available since 5.4.
+      </description>
+    </attribute>
+    <attribute>
+      <name>triggerLabel</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Label to display on the trigger image. Defaults to "...".
+      </description>
+    </attribute>
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>style class to set on the input tag.</description>
+    </attribute>
+    <attribute>
+      <name>triggerStyleClass</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        style class to set on the trigger button tag, defaults to
+        'calendarTrigger'.
+      </description>
+    </attribute>
+    <attribute>
+      <name>onchange</name>
+      <description>
+        Javascript onchange event handler, set on the text input
+      </description>
+    </attribute>
+    <attribute>
+      <name>onclick</name>
+      <description>
+        Javascript onclick event handler, set on the text input. Ignored since
+        5.4.2 as RichFaces calendar does not handle it.
+      </description>
+    </attribute>
+    <attribute>
+      <name>onselect</name>
+      <description>
+        Javascript onselect event handler, set on the text input. Ignored since
+        5.4.2 as RichFaces calendar does not handle it.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxu:inputDateTime
+  value="#{document.project.dueDate}"
+  format="mm/dd/YY"
+  required="false" />
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>editor</name>
+    <tag-class>None</tag-class>
+    <description>HTML editor</description>
+    <attribute>
+      <name>value</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Value binding representing the HTML text.</description>
+    </attribute>
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        The component identifier for this component. This value must be unique
+        within the closest parent component that is a naming container.
+      </description>
+    </attribute>
+    <attribute>
+      <name>rendered</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Flag indicating whether or not this component should be rendered (during
+        Render Response Phase), or processed on any subsequent form submit.
+      </description>
+    </attribute>
+    <attribute>
+      <name>required</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Flag indicating that the user is required to provide a submitted value
+        for the blob.
+      </description>
+    </attribute>
+    <attribute>
+      <name>width</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The textarea width. Defaults to "640".</description>
+    </attribute>
+    <attribute>
+      <name>height</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The textarea height. Defaults to "400".</description>
+    </attribute>
+    <attribute>
+      <name>editorSelector</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        The class to use to identify text areas to turn into html editors.
+        Defaults to "mceEditor". See the editor_selector option in tiny_mce
+        (http://wiki.moxiecode.com/index.php/TinyMCE:Configuration/editor_selector).
+      </description>
+    </attribute>
+    <attribute>
+      <name>cols</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        The cols attribute sets the number of columns to display. Available
+        since 5.3.1.
+      </description>
+    </attribute>
+    <attribute>
+      <name>rows</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        The rows attribute sets the number of rows to display. Available since
+        5.3.1.
+      </description>
+    </attribute>
+    <attribute>
+      <name>disableHtmlInit</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        If set to true, the default display will be the text display (not html
+        editor). Available since 5.3.1.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxu:editor
+  value="#{document.dublincore.description}"
+  required="false" />
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>inputList</name>
+    <tag-class>None</tag-class>
+    <description>
+      <![CDATA[
+      <p>
+      Tag to perform complex editions over a list of items.
+      </p>
+      <p>
+      It only deals with lists or arrays of serializable objects.
+      </p>
+      <p>
+      This tags puts a model in the request which can be accessed to get
+      information about each list item value.
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>value</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.util.List</type>
+      <description>Value binding representing the list to edit</description>
+    </attribute>
+    <attribute>
+      <name>defaultValue</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.util.List</type>
+      <description>
+        Value binding representing the default value for the list to edit. This
+        is only resolved when the value attribute resolves to a null or empty
+        value, and can be useful to set default values from the interface,
+        without having to resolve them in the original value binding method.
+        Available since 5.4.
+      </description>
+    </attribute>
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        The component identifier for this component. This value must be unique
+        within the closest parent component that is a naming container.
+      </description>
+    </attribute>
+    <attribute>
+      <name>rendered</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Flag indicating whether or not this component should be rendered (during
+        Render Response Phase), or processed on any subsequent form submit.
+      </description>
+    </attribute>
+    <attribute>
+      <name>required</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Flag indicating that the user is required to provide a submitted value
+        for the list. WARNING: when setting the "diff" attribute to true, this
+        flag will have no effect.
+      </description>
+    </attribute>
+    <attribute>
+      <name>model</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        <![CDATA[
+        <p>
+          String. The name of a request-scope attribute under which the data
+          model will be exposed. The data model handles current index, it gives
+          access to informations about the current item. For instance, following
+          value bindings can be used inside the tag:
+        </p>
+        <ul>
+          <li> #{model.rowCount}: size of the model.</li>
+          <li> #{model.rowData}: current item of the list (changes while
+               iterating).</li>
+          <li> #{model.rowIndex}: current index integer.</li>
+          <li> #{model.rowNew}: boolean indicating if this row was already
+               present in the original list.</li>
+        </ul>
+        ]]>
+      </description>
+    </attribute>
+    <attribute>
+      <name>diff</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Boolean (default value: false) indicating whether a diff (instead of the
+        whole new list) should be set when updating the model after validation.
+        This is useful when managing large lists. Note that if the list is set
+        on a document model, the document should be saved in repository after
+        updating the model, so that the whole list is refetched correctly. Note
+        also that no validation error will occur if the component is required.
+      </description>
+    </attribute>
+    <attribute>
+      <name>removeEmpty</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Boolean (default value: false) indicating whether empty values (null or
+        equal to template) should be removed from the list when saving.
+      </description>
+    </attribute>
+    <attribute>
+      <name>number</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Integer (default value: null) indicating the number of rows that should
+        be presented by default in edit mode. These rows are added when the
+        editable model is built.
+      </description>
+    </attribute>
+    <attribute>
+      <name>template</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Object representing the default value to add to the list. When using a
+        document model, you can use the function nxd:defaultValue(schemaName,
+        fieldName) to get the default value for thiss complex type.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+      <p>
+      Examples make extensive use of ajax4jsf so that validation of other
+      components that may be on the page does not occur while adding and deleting
+      items in the list.
+      </p>
+      <a4j:region renderRegionOnly="false">
+        <a4j:outputPanel ajaxRendered="true">
+          <nxu:inputList value="#{currentDocument.files.files}"
+            id="files" model="model" diff="true"
+            template="#{nxd:defaultValue('files', 'files')}">
+            <h:panelGrid columns="2">
+              <a4j:commandLink immediate="true"
+                actionListener="#{editableListBean.performAction}"
+                reRender="fichiers" bypassUpdates="true">
+                <h:graphicImage value="/icons/action_delete.gif" />
+                <f:param name="for" value="fichiers" />
+                <f:param name="index" value="#{model.rowIndex}" />
+                <f:param name="type" value="remove" />
+              </a4j:commandLink>
+              <h:panelGroup>
+                <nxu:inputFile value="#{model.rowData.file}"
+                  filename="#{model.rowData.fileName}" editFilename="false"
+                  id="file" />
+                <h:message for="file" />
+              </h:panelGroup>
+            </h:panelGrid>
+          </nxu:inputList>
+        </a4j:outputPanel>
+        <a4j:commandLink immediate="true"
+          actionListener="#{editableListBean.performAction}"
+          reRender="fichiers">
+          <h:graphicImage value="/icons/action_add.gif" />
+          <f:param name="for" value="fichiers" />
+          <f:param name="type" value="add" />
+        </a4j:commandLink>
+      </a4j:region>
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>dataList</name>
+    <tag-class>None</tag-class>
+    <description>Standard tomahawk tag</description>
+  </tag>
+  <tag>
+    <name>dataTable</name>
+    <tag-class>None</tag-class>
+    <description>Standard tomahawk tag</description>
+  </tag>
+  <tag>
+    <name>columns</name>
+    <tag-class>None</tag-class>
+    <description>Standard tomahawk tag</description>
+  </tag>
+  <tag>
+    <name>column</name>
+    <tag-class>None</tag-class>
+    <description>Standard tomahawk tag</description>
+  </tag>
+  <tag>
+    <name>inputDate</name>
+    <tag-class>None</tag-class>
+    <description>
+      DISABLED TAG for nuxeo > 5.2m2, otherwise deprecated standard tomahawk
+      tag.
+    </description>
+  </tag>
+  <tag>
+    <name>inputCalendar</name>
+    <tag-class>None</tag-class>
+    <description>
+      DISABLED TAG for nuxeo > 5.2m2, otherwise deprecated standard tomahawk
+      tag.
+    </description>
+  </tag>
+  <tag>
+    <name>schedule</name>
+    <tag-class>None</tag-class>
+    <description>
+      DISABLED TAG for nuxeo > 5.2m2, otherwise deprecated standard tomahawk
+      tag.
+    </description>
+  </tag>
+  <tag>
+    <name>graphicImage</name>
+    <tag-class>None</tag-class>
+    <description>Standard tomahawk tag</description>
+  </tag>
+  <tag>
+    <name>inputFileUpload</name>
+    <tag-class>None</tag-class>
+    <description>
+      DISABLED TAG for nuxeo > 5.2m2, otherwise deprecated standard trinidad
+      inputFile tag. Use s:fileUpload instead (available only for versions >
+      5.2m2).
+    </description>
+  </tag>
+  <tag>
+    <name>selectOneRadio</name>
+    <tag-class>None</tag-class>
+    <description>Standard tomahawk tag</description>
+  </tag>
+  <tag>
+    <name>radio</name>
+    <tag-class>None</tag-class>
+    <description>Standard tomahawk tag</description>
+  </tag>
+
+</taglib>

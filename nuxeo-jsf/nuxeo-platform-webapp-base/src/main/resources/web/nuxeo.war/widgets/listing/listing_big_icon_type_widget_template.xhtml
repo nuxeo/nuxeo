@@ -1,0 +1,34 @@
+<f:subview id="#{widget.id}"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{field_2}</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+
+  <div id="docRefTarget:#{field_1}">
+    <div id="docRef:#{field_1}" class="cell popupTarget" docRef="#{field_1}">
+      <nxu:graphicImage
+        value="#{nxd:bigIconPath(field_0)}" alt="#{field_2}" title="#{field_2}"
+        rendered="#{!empty nxd:bigIconPath(field_0)}"
+        styleClass="bigIcon" />
+    </div>
+  </div>
+  <script type="text/javascript">
+    <h:outputText value="new Draggable('docRef:#{field_1}', {revert:true});" />
+    <h:outputText rendered="#{field_3}"
+      value="Droppables.add('docRefTarget:#{field_1}', {accept:'cell', onDrop:function(element){moveElement(element,'docRef:#{field_1}')}, hoverclass:'dropInto'});"/>
+  </script>
+
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:html>
+    <nxu:graphicImage
+      value="#{nxd:iconPath(field_0)}" alt="#{field_2}" title="#{field_2}"
+      rendered="#{!empty nxd:iconPath(field_0)}"
+      styleClass="smallIcon" />
+  </nxp:html>
+</c:if>
+</f:subview>

@@ -1,0 +1,425 @@
+<!DOCTYPE facelet-taglib PUBLIC
+  "-//Sun Microsystems, Inc.//DTD Facelet Taglib 1.0//EN"
+  "http://java.sun.com/dtd/facelet-taglib_1_0.dtd">
+
+<!--
+  NXWebPlatform (re)definition of basic tags
+-->
+
+<facelet-taglib>
+  <namespace>http://nuxeo.org/nxweb/util</namespace>
+  <function>
+    <function-name>test</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.Object test(java.lang.Boolean, java.lang.Object,
+      java.lang.Object)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>printFileSize</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String printFileSize(java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>printFormatedFileSize</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String printFormatedFileSize(java.lang.String, java.lang.String,
+      java.lang.Boolean)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>printFormattedDuration</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String printFormattedDuration(java.lang.Object, java.util.Map)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>join</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String join(java.lang.String[], java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>joinCollection</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String joinCollection(java.util.Collection, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>joinCollectionWithFinalDelimiter</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String joinCollectionWithFinalDelimiter(java.util.Collection,
+      java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>joinArrayWithFinalDelimiter</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String joinArrayWithFinalDelimiter(java.lang.Object[],
+      java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>concat</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String concat(java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+
+  <function>
+    <function-name>indentString</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String indentString(java.lang.Integer, java.lang.String)
+    </function-signature>
+  </function>
+
+
+  <function>
+    <function-name>dateFormater</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String dateFormater(java.lang.String)
+    </function-signature>
+  </function>
+
+  <function>
+    <function-name>basicDateFormater</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String basicDateFormater()
+    </function-signature>
+  </function>
+
+  <function>
+    <function-name>formatDateUsingBasicFormatter</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String formatDateUsingBasicFormatter(java.util.Date)
+    </function-signature>
+  </function>
+
+  <function>
+    <function-name>dateAndTimeFormater</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String dateAndTimeFormater(java.lang.String)
+    </function-signature>
+  </function>
+
+  <function>
+    <function-name>basicDateAndTimeFormater</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String basicDateAndTimeFormater()
+    </function-signature>
+  </function>
+  <function>
+    <function-name>integerDivision</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.Integer integerDivision(java.lang.Integer, java.lang.Integer)
+    </function-signature>
+  </function>
+
+  <function>
+    <function-name>userIsMemberOf</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      boolean userIsMemberOf(java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>userFullName</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      String userFullName(java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>userDisplayName</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      String userDisplayName(java.lang.String, java.lang.String,
+      java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>htmlEscape</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String htmlEscape(java.lang.String)
+    </function-signature>
+  </function>
+
+  <function>
+    <function-name>javaScriptEscape</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String javaScriptEscape(java.lang.String)
+    </function-signature>
+  </function>
+
+  <function>
+    <function-name>translate</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String translate(java.lang.String, java.lang.Object[])
+    </function-signature>
+  </function>
+
+  <!-- XXX AT: should be in nxdirectory taglib, not util -->
+  <function>
+    <function-name>getCSLData</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.directory.DirectoryFunctions
+    </function-class>
+    <function-signature>List getCSLData(java.lang.String)</function-signature>
+  </function>
+  <!-- XXX AT: should be in nxdirectory taglib, not util -->
+  <function>
+    <function-name>getListSize</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.directory.DirectoryFunctions
+    </function-class>
+    <function-signature>int getListSize(java.lang.String)</function-signature>
+  </function>
+  <tag>
+    <tag-name>methodResult</tag-name>
+    <handler-class>
+      org.nuxeo.ecm.platform.ui.web.tag.handler.MethodResultTagHandler
+    </handler-class>
+  </tag>
+  <tag>
+    <tag-name>set</tag-name>
+    <handler-class>
+      org.nuxeo.ecm.platform.ui.web.tag.handler.SetTagHandler
+    </handler-class>
+  </tag>
+  <tag>
+    <tag-name>repeat</tag-name>
+    <handler-class>
+      org.nuxeo.ecm.platform.ui.web.tag.handler.RepeatTagHandler
+    </handler-class>
+  </tag>
+  <tag>
+    <tag-name>actionListenerMethod</tag-name>
+    <handler-class>
+      org.nuxeo.ecm.platform.ui.web.tag.handler.ActionListenerMethodTagHandler
+    </handler-class>
+  </tag>
+  <!-- selectItems easy utility -->
+  <tag>
+    <tag-name>selectItems</tag-name>
+    <component>
+      <!-- see http://jsf-comp.sourceforge.net/components/easysi/index.html, need to include license -->
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.UISelectItems
+      </component-type>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>selectItem</tag-name>
+    <component>
+      <!-- see http://jsf-comp.sourceforge.net/components/easysi/index.html, need to include license -->
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.UISelectItem
+      </component-type>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>inputFile</tag-name>
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.file.UIInputFile
+      </component-type>
+      <handler-class>
+        com.sun.facelets.tag.jsf.html.HtmlComponentHandler
+      </handler-class>
+    </component>
+  </tag>
+  <!-- validator tags for inputFile -->
+  <tag>
+    <tag-name>validateFileSize</tag-name>
+    <validator>
+      <validator-id>InputFileSizeValidator</validator-id>
+    </validator>
+  </tag>
+  <tag>
+    <tag-name>validateFileMimetype</tag-name>
+    <validator>
+      <validator-id>InputFileMimetypeValidator</validator-id>
+    </validator>
+  </tag>
+  <tag>
+    <tag-name>outputFile</tag-name>
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.file.UIOutputFile
+      </component-type>
+      <handler-class>
+        com.sun.facelets.tag.jsf.html.HtmlComponentHandler
+      </handler-class>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>inputList</tag-name>
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList
+      </component-type>
+      <handler-class>
+        com.sun.facelets.tag.jsf.html.HtmlComponentHandler
+      </handler-class>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>editor</tag-name>
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.editor.UIHtmlEditor
+      </component-type>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>inputDateTime</tag-name>
+    <component>
+      <component-type>org.richfaces.Calendar</component-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.tag.handler.InputDateTimeTagHandler
+      </handler-class>
+    </component>
+  </tag>
+
+  <!-- tomahawk tags -->
+  <tag>
+    <tag-name>dataList</tag-name>
+    <component>
+      <component-type>org.apache.myfaces.HtmlDataList</component-type>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>dataTable</tag-name>
+    <component>
+      <component-type>org.apache.myfaces.HtmlDataTable</component-type>
+      <renderer-type>org.apache.myfaces.Table</renderer-type>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>columns</tag-name>
+    <component>
+      <component-type>org.apache.myfaces.HtmlColumns</component-type>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>column</tag-name>
+    <component>
+      <component-type>org.apache.myfaces.HtmlColumn</component-type>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>inputDate</tag-name>
+    <component>
+      <component-type>nuxeo.web.disabled</component-type>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>inputCalendar</tag-name>
+    <component>
+      <component-type>nuxeo.web.disabled</component-type>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>schedule</tag-name>
+    <component>
+      <component-type>nuxeo.web.disabled</component-type>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>graphicImage</tag-name>
+    <component>
+      <component-type>org.apache.myfaces.HtmlGraphicImage</component-type>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>inputFileUpload</tag-name>
+    <component>
+      <component-type>nuxeo.web.disabled</component-type>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>selectOneRadio</tag-name>
+    <component>
+      <component-type>org.apache.myfaces.HtmlSelectOneRadio</component-type>
+      <renderer-type>org.apache.myfaces.Radio</renderer-type>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>radio</tag-name>
+    <component>
+      <component-type>org.apache.myfaces.HtmlRadio</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>lazyTree</tag-name>
+    <component>
+      <component-type>nuxeo.web.disabled</component-type>
+    </component>
+  </tag>
+
+</facelet-taglib>

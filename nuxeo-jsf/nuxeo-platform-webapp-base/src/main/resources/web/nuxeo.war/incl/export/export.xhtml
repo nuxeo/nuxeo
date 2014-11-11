@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <ui:define name="page title">
+    <h:outputText value="#{nuxeoApplicationName} - #{nxd:titleOrId(currentDocument)}"/>
+  </ui:define>
+
+  <ui:define name="bookmark">
+    <link rel="bookmark" href="#{navigationContext.currentDocumentFullUrl}"/>
+  </ui:define>
+
+  <ui:define name="body">
+    <div>
+
+      <div class="exportViewBrowseBack">
+        <p class="directoryBack">
+          <nxd:restDocumentLink document="#{currentDocument}">
+            <h:outputText value="#{messages['label.browse.backToDocumentView']}" />
+          </nxd:restDocumentLink>
+        </p>
+      </div>
+
+      <nxl:documentLayout mode="header" value="#{currentDocument}"
+        defaultLayout="document_header" includeAnyMode="false" />
+
+      <ui:include src="/incl/message_banner.xhtml"/>
+
+      <div class="tabsBar">
+        <ul>
+          <li class="selected">
+            <nxd:restDocumentLink document="#{currentDocument}" view="export">
+              <h:outputText value="#{messages['label.exportview']}" />
+            </nxd:restDocumentLink>
+          </li>
+        </ul>
+      </div>
+      <div style="clear:both"></div>
+      <div class="tabsContent">
+
+        <nxu:set var="exportActions"
+          value="#{webActions.getActionsList('DOCUMENT_EXPORT_VIEW_ACTION')}"
+          cache="true">
+        <nxu:set var="exportCommandActions"
+          value="#{webActions.getActionsList('DOCUMENT_EXPORT_VIEW_COMMAND_ACTION')}"
+          cache="true">
+          <c:if test="#{not empty exportActions or not empty exportCommandActions}">
+            <h1>#{messages['label.exportview.document']}</h1>
+            <c:forEach var="action" items="#{exportActions}">
+              <nxh:metaOutputLink value="#{action.getLink()}"
+                title="#{messages[action.label]}"
+                alt="#{messages[action.label]}"
+                target="_blank">
+                <h:graphicImage value="#{action.icon}" />
+                <h:outputText value=" #{messages[action.label]}" />
+              </nxh:metaOutputLink>
+              <br />
+            </c:forEach>
+            <h:form>
+              <c:forEach var="action" items="#{exportCommandActions}">
+                <nxh:commandLink action="#{action.getLink()}"
+                  title="#{messages[action.label]}"
+                  alt="#{messages[action.label]}">
+                  <h:graphicImage value="#{action.icon}" />
+                  <h:outputText value=" #{messages[action.label]}" />
+                </nxh:commandLink>
+                <br />
+              </c:forEach>
+            </h:form>
+          </c:if>
+        </nxu:set>
+        </nxu:set>
+        
+        <br /><br />
+
+        <nxu:set var="exportContentViews"
+          value="#{documentContentViewActions.getExportContentViewsForCurrentDocument()}"
+          cache="true">
+          <c:if test="#{not empty exportContentViews}">
+            <h1>#{messages['label.exportview.contentviews']}</h1>
+            <c:forEach var="contentViewByCategory"
+              items="#{documentContentViewActions.getExportContentViewsForCurrentDocument()}">
+              <h3>
+                <h:outputText
+                  value="#{messages['label.exportview.contentviews.category']} '#{contentViewByCategory.key}'" />
+              </h3>
+              <c:forEach var="contentViewHeader"
+                items="#{contentViewByCategory.value}">
+
+                <nxu:set var="contentView"
+                  value="#{contentViewActions.getContentViewWithProvider(contentViewHeader.name)}"
+                  cache="true">
+
+                  <c:set var="contentViewTitle"
+                    value="#{nxu:test(contentView.translateTitle, messages[contentView.title], contentView.title)}" />
+                  <h:outputText value="#{nxu:test(empty contentViewTitle, contentViewName, contentViewTitle)} " />
+
+                  <nxd:restDocumentLink document="#{currentDocument}"
+                    view="rss" addTabInfo="false"
+                    newConversation="true" target="_blank">
+                    <f:param name="contentViewName" value="#{contentView.name}" />
+                    <f:param name="currentPage" value="0" />
+                    <h:graphicImage value="/icons/rss_export.png"
+                      styleClass="smallIcon" />
+                    <h:outputText value=" #{messages['label.contentview.export.rss']}"/>
+                  </nxd:restDocumentLink>
+                  <h:outputText value="  " />
+
+                  <nxd:restDocumentLink document="#{currentDocument}"
+                    view="atom" addTabInfo="false"
+                    newConversation="true" target="_blank">
+                    <f:param name="contentViewName" value="#{contentView.name}" />
+                    <f:param name="currentPage" value="0" />
+                    <h:graphicImage value="/icons/atom_export.png"
+                      styleClass="smallIcon" />
+                    <h:outputText value=" #{messages['label.contentview.export.atom']}" />
+                  </nxd:restDocumentLink>
+                  <h:outputText value="  " />
+
+                  <c:if test="#{contentView.currentResultLayout.showCSVExport}">
+                    <nxd:restDocumentLink document="#{currentDocument}"
+                      view="xl" addTabInfo="false"
+                      newConversation="true" target="_blank">
+                      <f:param name="contentViewName" value="#{contentView.name}" />
+                      <f:param name="currentPage" value="0" />
+                      <f:param name="pageSize" value="0" />
+                      <h:graphicImage value="/icons/csv_export.png"
+                        alt="#{messages['label.contentview.export.xl']}"
+                        title="#{messages['label.contentview.export.xl']}" />
+                      <h:outputText value=" #{messages['label.contentview.export.xl']}"/>
+                    </nxd:restDocumentLink>
+                    <h:outputText value="  " />
+                  </c:if>
+
+                  <c:if test="#{contentView.currentResultLayout.showPDFExport}">
+                    <nxd:restDocumentLink document="#{currentDocument}"
+                      view="content_view_pdf" addTabInfo="false"
+                      newConversation="true" target="_blank">
+                      <f:param name="contentViewName" value="#{contentView.name}" />
+                      <f:param name="currentPage" value="0" />
+                      <f:param name="pageSize" value="0" />
+                      <h:graphicImage value="/icons/pdf_export.png"
+                        alt="#{messages['label.contentview.export.pdf']}"
+                        title="#{messages['label.contentview.export.pdf']}" />
+                      <h:outputText value=" #{messages['label.contentview.export.pdf']}"/>
+                    </nxd:restDocumentLink>
+                    <h:outputText value="  " />
+                  </c:if>
+
+                </nxu:set>
+                <br />
+
+              </c:forEach>
+              <br />
+            </c:forEach>
+          </c:if>
+        </nxu:set>
+
+      </div>
+
+    </div>
+  </ui:define>
+</nxthemes:composition>

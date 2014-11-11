@@ -1,0 +1,82 @@
+<f:subview
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  id="local_configuration_#{layout.id}">
+
+<c:if test="false">
+  Layout template to be used for local configuration layouts. It wraps the layout
+  template given as parameter into a foldable box. The local configuration
+  can be enabled or disabled through a button on the foldable box.
+
+  Properties to define on the layout:
+  - layoutTemplateToInclude: the layout to use inside the foldable box.
+  - localConfigurationFacet: the facet related to the local configuration this
+    layout handles.
+  - foldableBoxLabel: the label displayed as the title of the foldable box,
+  - helpLabel: the help label for the local configuration handled by this layout,
+    displayed as a tooltip
+</c:if>
+
+  <c:set var="layoutTemplateToInclude"
+    value="#{nxu:test(!empty layoutProperty_layoutTemplateToInclude, layoutProperty_layoutTemplateToInclude, '/layouts/default_layout_template.xhmtl')}" />
+
+    <a4j:outputPanel layout="block" id="local_configuration_#{layout.id}_panel">
+
+    <c:set var="hasLocalConfigurationFacet"
+      value="#{nxu:test(currentDocument.hasFacet(layoutProperty_localConfigurationFacet), true, false)}" />
+    <c:set var="titleClass"
+      value="#{nxu:test(hasLocalConfigurationFacet, 'unfolded', 'foldedDisabled')}" />
+
+      <a4j:form id="local_configuration_#{layout.id}_form">
+        <div class="foldableBox">
+          <h3 class="#{titleClass}">
+            <c:if test="#{hasLocalConfigurationFacet}">
+              <a href="#nologo" onclick="return toggleBox(this)">
+                <c:if test="#{not empty layoutProperty_foldableBoxLabel}">
+                  <h:outputText value="#{messages[layoutProperty_foldableBoxLabel]}" />
+                </c:if>
+              </a>
+            </c:if>
+            <c:if test="#{not hasLocalConfigurationFacet}">
+              <span>
+                <c:if test="#{not empty layoutProperty_foldableBoxLabel}">
+                  <h:outputText value="#{messages[layoutProperty_foldableBoxLabel]}" />
+                </c:if>
+              </span>
+            </c:if>
+            <h:graphicImage value="/icons/lightbulb.png"
+              onmouseover="tooltip.show('#{nxu:javaScriptEscape(messages[layoutProperty_helpLabel])}', 500);"
+              onmouseout="tooltip.hide();" />
+
+            <c:if test="#{not empty layoutProperty_localConfigurationFacet}">
+              <a4j:commandLink action="#{localConfigurationActions.toggleConfigurationForCurrentDocument(layoutProperty_localConfigurationFacet)}"
+                immediate="true" reRender="local_configuration_#{layout.id}_panel" rendered="#{not hasLocalConfigurationFacet}"
+                styleClass="action">
+                <h:outputText value="#{messages['label.local.configuration.enable']}"/>
+              </a4j:commandLink>
+              <a4j:commandLink action="#{localConfigurationActions.toggleConfigurationForCurrentDocument(layoutProperty_localConfigurationFacet)}"
+                immediate="true" reRender="local_configuration_#{layout.id}_panel" rendered="#{hasLocalConfigurationFacet}"
+                styleClass="action">
+                <h:outputText value="#{messages['label.local.configuration.disable']}"/>
+              </a4j:commandLink>
+            </c:if>
+
+          </h3>
+          <c:if test="#{hasLocalConfigurationFacet}">
+          <div class="boxBody" >
+            <ui:include src="#{layoutTemplateToInclude}" />
+            <a4j:commandButton value="#{messages['command.save']}"
+              styleClass="button"
+              action="#{localConfigurationActions.saveLocalConfiguration}"
+              reRender="local_configuration_#{layout.id}_form,facesStatusMessagePanel"/>
+          </div>
+          </c:if>
+        </div>
+      </a4j:form>
+    </a4j:outputPanel>
+
+</f:subview>
