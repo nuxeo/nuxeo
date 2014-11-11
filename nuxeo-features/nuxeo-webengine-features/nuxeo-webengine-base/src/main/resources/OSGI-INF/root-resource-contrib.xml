@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webengine.base.root">
+
+  <extension
+      target="org.nuxeo.ecm.webengine.WebEngineComponent"
+      point="resource">
+    <resource class="org.nuxeo.ecm.webengine.base.Main"/>
+  </extension>
+
+</component>

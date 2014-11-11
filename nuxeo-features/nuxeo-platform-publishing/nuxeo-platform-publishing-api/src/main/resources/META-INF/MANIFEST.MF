@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Publishing API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.publishing.api;singleton:=true
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: false
+Nuxeo-RequiredBy: org.nuxeo.ecm.webapp.core

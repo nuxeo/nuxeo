@@ -1,0 +1,191 @@
+/**** GWT Container ****/
+.containerPanel { /*background-color: transparent;*/
+  color: #000000;
+}
+
+.addGadget {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 88%;
+}
+
+#gwtContainerMask {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+}
+
+#containerPanel {
+  height: 100%;
+  min-height: 100px;
+}
+
+.containerPortal {
+  background-color: transparent;
+  height: 100%;
+  min-height: 100px;
+}
+
+.x-panel-body {
+  background: transparent;
+  min-width:100%;
+}
+
+.x-panel-mc { /*background-color: #60a524;*/
+
+}
+
+.gadgetPortlet {
+  background-color: green;
+}
+
+.x-panel-dd-spacer,.x-panel-tl {
+  border-color: #60a524;
+}
+
+.x-panel-ghost {
+  background: #7cb71d;
+}
+
+.x-panel-header {
+  color: white;
+}
+
+.gwt-Frame {
+  overflow: hidden;
+  width: 100%;
+  min-width: 100%;
+}
+
+.x-panel-nofooter .x-panel-bc {
+  height: 2px;
+}
+
+.x-panel-ml {
+  padding-left: 0;
+  background: 0;
+}
+
+.x-panel-mr {
+  padding-right: 0;
+  background: 0;
+}
+
+.x-panel-mc {
+  padding: 0px
+}
+
+.x-panel-bc {
+  background: 0;
+}
+
+.x-panel-br {
+  background: 0;
+}
+
+.x-field-form-nxdoc {
+  float: left;
+  width: 125px;
+  margin-right: 5px;
+}
+
+.x-button-form-nxdoc {
+  float: right;
+  margin-right: 65px;
+}
+
+.x-column-inner {
+  overflow: hidden;
+}
+
+.x-panel-bl {
+  background: 0;
+}
+
+#gadgetcontent {
+  padding-bottom: 5px;
+}
+
+.x-color-palette-label {
+  float: left;
+  margin-top: 37px;
+  font-size: 12px;
+}
+
+.x-color-palette-pickr {
+  float: left;
+  margin-left: 25px;
+  width: 190px;
+}
+
+.x-column-possible {
+  background-image: url(/nuxeo/opensocial/images/transparent.png);
+  background-repeat: repeat;
+  height: 100%;
+}
+
+.x-column {
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-top: 5px;
+  min-height: 188px;
+}
+
+#firstCol.x-3-header2cols {
+  min-width: 96%;
+  width: 96%;
+}
+
+.x-3-header2cols>.x-portlet {
+  min-width: 100%;
+  width: 100%
+}
+
+.x-1-default {
+  min-width: 98%;
+  width: 98%
+}
+
+.x-1-default>.x-portlet {
+  min-width: 100%;
+  width: 100%
+}
+
+.x-2-default {
+  min-width: 47%;
+  width: 47%
+}
+
+.x-2-default>.x-portlet,.x-3-default>.x-portlet {
+  min-width: 100%;
+  width: 100%;
+}
+
+.x-3-default {
+  min-width: 31%;
+  width: 31%;
+}
+
+#secondCol.x-3-header2cols,#thirdCol.x-3-header2cols {
+  min-width: 47%;
+  width: 47%;
+}
+
+#firstCol.x-4-footer3cols,#secondCol.x-4-footer3cols,#thirdCol.x-4-footer3cols
+  {
+  min-width: 31%;
+  width: 31%;
+}
+
+.x-4-footer3cols>.x-portlet {
+  min-width: 100%;
+  width: 100%;
+}
+
+#fourCol.x-4-footer3cols {
+  min-width: 97%;
+  width: 97%;
+}
