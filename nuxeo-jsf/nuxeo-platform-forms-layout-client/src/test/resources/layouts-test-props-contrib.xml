@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.forms.layout.LayoutService.testContrib.disabledProps">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="disabledPropertyRefs">
+
+    <disabledPropertyRef name="validator"
+      widgetTypeCategory="jsf" />
+    <disabledPropertyRef name="defaultTime" widgetType="datetime"
+      widgetTypeCategory="jsf" />
+    <disabledPropertyRef name="disabled" widgetType="*"
+      widgetTypeCategory="jsf" />
+
+  </extension>
+
+</component>
