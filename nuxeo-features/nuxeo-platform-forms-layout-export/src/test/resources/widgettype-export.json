@@ -1,0 +1,87 @@
+{
+  "name": "test",
+  "handlerClassName": "org.nuxeo.ecm.platform.layout.facelets.DummyWidgetTypeHandler",
+  "properties":   {
+    "foo1": "bar1",
+    "foo2": "bar2"
+  },
+  "configuration":   {
+    "title": "Test widget type",
+    "description": "This is a test widget type",
+    "fields":     {
+      "list": false,
+      "complex": false,
+      "supportedTypes": ["string"],
+      "defaultTypes": ["string"]
+    },
+    "categories":     [
+      "foo",
+      "bar"
+    ],
+    "properties": {"layouts":     {
+      "any": [      {
+        "templates": {},
+        "properties": {},
+        "rows": [        {
+          "properties": {},
+          "widgets": ["required_property"]
+        }],
+        "widgets": [        {
+          "name": "required_property",
+          "type": "text",
+          "labels": {"any": "Required"},
+          "helpLabels": {},
+          "translated": true,
+          "widgetModes": {},
+          "fields": [          {
+            "fieldName": "bar",
+            "schemaName": "foo",
+            "propertyName": "foo:bar"
+          }],
+          "subWidgets": [],
+          "properties": {},
+          "propertiesByWidgetMode": {}
+        }]
+      }],
+      "edit": [      {
+        "templates": {},
+        "properties": {},
+        "rows": [        {
+          "properties": {},
+          "widgets": ["rendered_property"]
+        }],
+        "widgets": [        {
+          "name": "rendered_property",
+          "type": "text",
+          "labels": {"any": "Rendered"},
+          "helpLabels": {},
+          "translated": true,
+          "widgetModes": {"any": "view"},
+          "fields": [          {
+            "fieldName": "bar",
+            "schemaName": "foo",
+            "propertyName": "foo:bar"
+          }],
+          "subWidgets": [          {
+            "name": "subwidget",
+            "type": "text",
+            "labels": {"any": "subwidget label"},
+            "helpLabels": {},
+            "translated": true,
+            "widgetModes": {},
+            "fields": [            {
+              "fieldName": "bar",
+              "schemaName": "foo",
+              "propertyName": "foo:bar"
+            }],
+            "subWidgets": [],
+            "properties": {},
+            "propertiesByWidgetMode": {}
+          }],
+          "properties": {},
+          "propertiesByWidgetMode": {}
+        }]
+      }]
+    }}
+  }
+}

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+  <ModulePrefs title="Rich text" height="95" scrolling="true"
+    scaling="true" directory_title="Rich text"
+    description="File browser in the ECM system" author="Guillaume CUSNIEUX"
+    author_email="gcusnieux@leroymerlin.fr" author_affiliation="Leroy Merlin"
+    author_location="Lezennes, France">
+    <Require feature="dynamic-height" />
+    <Require feature="nuxeo" />
+    <Require feature="setprefs"/>
+    <Require feature="jquery" />
+    <Require feature="form" />
+    <Require feature="nicedit" />
+  </ModulePrefs>
+
+  <UserPref name="templates" display_name="Templates"
+    datatype="enum" default_value="gauche">
+    <EnumValue value="gauche" display_value="Gauche" />
+    <EnumValue value="droite" display_value="Droite" />
+    <EnumValue value="centre" display_value="Centre" />
+  </UserPref>
+
+  <UserPref name="richTitle" datatype="hidden"/>
+  <UserPref name="link" datatype="hidden"/>
+  <UserPref name="legend" datatype="hidden"/>
+  <UserPref name="tmp" datatype="hidden"/>
+
+  <Content type="html" view="default">
+  <![CDATA[
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+  <link rel="stylesheet" type="text/css" href="template.css" title="template" media="screen" />
+
+  <style type='text/css'>
+
+    * {
+      font-family: Arial,Verdana;
+	}
+	
+	.nicEdit-main{
+	  font-size:11px;
+	}
+	
+	#show{
+	  text-align:right;
+	  font-size:11px;
+	}
+	
+    img{
+      border:0;
+    }
+
+    #hide img, #refresh img{
+     padding:5px 5px 0 0;
+    }
+
+
+    label{
+       font-family:Tahoma, Arial,Verdana;
+       font-weight:bold;
+       padding-left:8px;
+    }
+
+    #show a {
+      text-decoration:none;
+        padding-left:20px;
+        background:url(/nuxeo/img/edit.png) no-repeat 0 0;
+        color:#000000;
+        font-weight:bold;
+    }
+
+     #show a:hover {
+    text-decoration:underline;
+  }
+
+  #hideContainer {
+      background:#666666;
+      text-align:right;
+    }
+
+    #upload,#fileuploadBtn{
+      padding-left:14px;
+      background:url(/nuxeo/img/accept.png) no-repeat 0 0;
+      color:#FFFFFF;
+      display:block;
+      float:right;
+      font-weight:bold;
+      padding-left:18px;
+      text-decoration:none;
+    }
+
+    .form{
+       background:#666666;
+       font-family:Arial,Verdana;
+       font-size:11px;
+    }
+
+    #title-field,#link-field,#legend-field{
+      width:98%;
+      border:1px solid #ffffff;
+    }
+
+    .form td{
+       color:#ffffff;
+    }
+
+    #formUpload{
+     margin-bottom:0;
+    }
+
+    #upload:hover,#fileuploadBtn:hover{
+        text-decoration:underline;
+    }
+
+    </style>
+    <script type="text/javascript" language="javascript" src="richtext.js"></script>
+    <script type="text/javascript">
+       var prefs = new _IG_Prefs(__MODULE_ID__);
+
+     gadgets.util.registerOnLoadHandler( function() {
+       launchGadget();
+     });
+    </script>
+
+    <div id="mainContainer">
+      <div id="title"></div>
+      <div id="pictureContainer"></div>
+      <div style="clear:both"></div>
+    </div>
+    <div id="perm">
+        <div id="show"><a href="#">Modifier</a></div>
+    </div>
+
+   <div style="margin:auto;display:none;" id="form">
+    <div id="hideContainer">
+    <a href="#" id="refresh" title="refresh"><img src="page_refresh.png"></a>
+    <a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a>
+    </div>
+       <form method="post" id="formUpload" action="#">
+        <table style="width:100%;margin-bottom:10px;" class="form">
+          <tr>
+            <td style="width:30%"><label for="title">Titre</label></td>
+            <td style="width:70%"><input type="text" name="title" id="title-field" /></td>
+          </tr>
+        </table>
+        <textarea name="gadget:htmlContent" id="richtext" cols="35" style="width:100%"></textarea>
+        <table style="width:100%" class="form ">
+                <tr>
+                  <td style="width:30%"><label for="link">Lien</label></td>
+                    <td style="width:70%"><input type="text" name="link" id="link-field" /></td>
+                </tr>
+                <tr>
+                  <td style="width:30%"><label for="legend">Légende</label></td>
+                  <td style="width:70%"><input type="text" name="legend" id="legend-field" /></td>
+                </tr>
+                <tr>
+                  <td style="width:30%"></td>
+                  <td style="width:70%">
+                      <a href="" id="upload">Valider</a>
+                  </td>
+                </tr>
+        </table>
+       </form>
+
+       <form method="post" id="fileUploadForm" enctype="multipart/form-data" action="#">
+         <table style="width:100%" class="form">
+            <tr>
+              <td>
+                <div>
+                  <label>Photo</label><a href="" title="Supprimer la photo" id="deletePhoto"><img src="/nuxeo/img/x.png" style="vertical-align:middle;"></a>
+                </div>
+                <img id="imgPreview" width="60" />
+              </td>
+              <td>
+                <input type="file" name="file" id="file" size="12" />
+                <input type="hidden" name="resize_width" value="default" />
+              </td>
+
+            </tr>
+            <tr>
+              <td style="width:30%"></td>
+              <td style="width:70%">
+                  <a href="" id="fileuploadBtn">Télécharger</a>
+              </td>
+            </tr>
+         </table>
+       </form>
+
+    </div>
+
+  ]]>
+  </Content>
+</Module>
