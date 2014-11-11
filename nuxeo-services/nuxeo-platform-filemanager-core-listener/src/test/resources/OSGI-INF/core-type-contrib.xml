@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.test.filemanager.listener.test" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="noblob" prefix="nb" src="schema/noblob.xsd" />
+    <schema name="simpleblob" prefix="sb" src="schema/simpleblob.xsd" />
+    <schema name="wihtoutpref" src="schema/simpleblob.xsd" />
+    <schema name="blobinlist" prefix="bil" src="schema/blobinlist.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="NoBlobDocument" extends="Document">
+      <schema name="noblob" />
+      <schema name="dublincore" />
+      <schema name="common" />
+    </doctype>
+
+    <doctype name="SimpleBlobDocument" extends="Document">
+      <schema name="simpleblob" />
+      <schema name="dublincore" />
+      <schema name="common" />
+    </doctype>
+
+    <doctype name="WithoutPrefixDocument" extends="Document">
+      <schema name="wihtoutpref" />
+      <schema name="dublincore" />
+      <schema name="common" />
+    </doctype>
+
+    <doctype name="BlobInListDocument" extends="Document">
+      <schema name="blobinlist" />
+      <schema name="dublincore" />
+      <schema name="common" />
+    </doctype>
+
+  </extension>
+
+</component>

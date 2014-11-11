@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<component
+	name="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService">
+	<service>
+		<provide
+			interface="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService" />
+	</service>
+	<implementation
+		class="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingComponent" />
+	<documentation>
+		The pluggable exception service. All exceptions that
+		bubbles up outside
+		nuxeo are caught by the NuxeoExceptionFilter.
+		This
+		service customize the handler that will deal with an exception.
+		@author Alexandre Russel (arussel@nuxeo.com), Benjamin JALON (bjalon@nuxeo.com)
+	</documentation>
+	<extension-point name="exceptionhandler">
+		<documentation>
+			Define an exceptionHandler that manages exceptions
+			To override just contribute again on the extension point,
+			parameters will be keep. Default contributed is DefaultNuxeoExceptionHandler.
+		</documentation>
+		<object
+			class="org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ExceptionHandlerDescriptor" />
+	</extension-point>
+	<extension-point name="errorhandlers">
+		<documentation>
+			Define a set key/exception to be used to output error
+			message
+		</documentation>
+		<object
+			class="org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ErrorHandlersDescriptor" />
+	</extension-point>
+	<extension-point name="requestdump">
+		<documentation>
+			Define a class that will take a request and output a
+			string dumping
+			informations.
+	  </documentation>
+		<object
+			class="org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.RequestDumpDescriptor" />
+	</extension-point>
+	<extension-point name="listener">
+		<documentation>
+			Define a listener to exception handling.
+		</documentation>
+		<object
+			class="org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ListenerDescriptor" />
+	</extension-point>
+</component>
