@@ -1,0 +1,96 @@
+<f:subview
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  id="#{layout.id}">
+
+<c:if test="#{layout.mode != 'edit' and layout.mode != 'create' and layout.mode != 'bulkEdit'}">
+
+  <table class="dataInput">
+    <tbody>
+
+      <nxl:layoutRow>
+        <tr>
+          <nxl:layoutRowWidget>
+            <td class="labelColumn">
+              <c:choose>
+                <c:when test="#{widget.translated}">
+                  <h:outputText value="#{messages[widget.label]}" />
+                  <c:if test="#{!empty widget.helpLabel}">
+                    <h:outputText value=" " />
+                    <h:graphicImage value="/icons/info.gif"
+                      title="#{messages[widget.helpLabel]}"
+                      alt="#{messages[widget.helpLabel]}" />
+                  </c:if>
+                </c:when>
+                <c:otherwise>
+                  <h:outputText value="#{widget.label}" />
+                  <c:if test="#{!empty widget.helpLabel}">
+                    <h:outputText value=" " />
+                    <h:graphicImage value="/icons/info.gif"
+                      title="#{widget.helpLabel}"
+                      alt="#{widget.helpLabel}" />
+                  </c:if>
+                </c:otherwise>
+              </c:choose>
+            </td>
+            <td class="fieldColumn" colspan="#{nxu:test(layoutRow.size==1, 2*layout.columns-1, 1)}">
+              <nxl:widget widget="#{widget}" value="#{value}" />
+            </td>
+          </nxl:layoutRowWidget>
+        </tr>
+      </nxl:layoutRow>
+
+    </tbody>
+  </table>
+
+</c:if>
+
+<c:if test="#{layout.mode == 'edit' or layout.mode == 'create' or layout.mode == 'bulkEdit'}">
+
+  <table class="dataInput">
+    <tbody>
+
+      <nxl:layoutRow>
+        <tr>
+          <nxl:layoutRowWidget>
+            <td class="labelColumn">
+              <c:choose>
+                <c:when test="#{widget.translated}">
+                  <h:outputText value="#{messages[widget.label]}"
+                    styleClass="#{nxu:test(widget.required, 'required', '')}" />
+                  <c:if test="#{!empty widget.helpLabel}">
+                    <h:outputText value=" " />
+                    <h:graphicImage value="/icons/info.gif"
+                      title="#{messages[widget.helpLabel]}"
+                      alt="#{messages[widget.helpLabel]}" />
+                  </c:if>
+                </c:when>
+                <c:otherwise>
+                  <h:outputText value="#{widget.label}"
+                    styleClass="#{nxu:test(widget.required, 'required', '')}" />
+                  <c:if test="#{!empty widget.helpLabel}">
+                    <h:outputText value=" " />
+                    <h:graphicImage value="/icons/info.gif"
+                      title="#{widget.helpLabel}"
+                      alt="#{widget.helpLabel}" />
+                  </c:if>
+                </c:otherwise>
+              </c:choose>
+            </td>
+            <td class="fieldColumn" colspan="#{nxu:test(layoutRow.size==1, 2*layout.columns-1, 1)}">
+              <nxl:widget widget="#{widget}" value="#{value}" />
+            </td>
+          </nxl:layoutRowWidget>
+        </tr>
+      </nxl:layoutRow>
+
+    </tbody>
+  </table>
+
+</c:if>
+
+</f:subview>
