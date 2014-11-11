@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: DOM Synchronization Core Plug-in
+Bundle-SymbolicName: org.nuxeo.ecm.platform.domsync.core
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateful
+Export-Package: org.nuxeo.ecm.platform.domsync.core,
+ org.nuxeo.ecm.platform.domsync.core.events

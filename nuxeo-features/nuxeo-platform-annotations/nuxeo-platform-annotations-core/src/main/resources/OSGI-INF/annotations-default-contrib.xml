@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<component
+	name="org.nuxeo.ecm.platform.annotations.services.DefaultAnnotationContrib">
+	<extension
+		target="org.nuxeo.ecm.platform.annotations.services.AnnotationsService"
+		point="uriResolver">
+		<urlResolver
+			class="org.nuxeo.ecm.platform.annotations.service.DefaultUriResolver" />
+	</extension>
+	<extension
+		target="org.nuxeo.ecm.platform.annotations.services.AnnotationsService"
+		point="urlPatternFilter">
+		<urlPatternFilter order="Deny,Allow">
+			<deny>.*</deny>
+			<allow>.*</allow>
+		</urlPatternFilter>
+	</extension>
+	<extension
+		target="org.nuxeo.ecm.platform.annotations.services.AnnotationsService"
+		point="metadataMapper">
+		<metadataMapper
+			class="org.nuxeo.ecm.platform.annotations.service.DefaultMetadataMapper" />
+	</extension>
+	<extension
+		target="org.nuxeo.ecm.platform.annotations.services.AnnotationsService"
+		point="permissionManager">
+		<permissionManager
+			class="org.nuxeo.ecm.platform.annotations.service.DefaultPermissionManager" />
+	</extension>
+	<extension
+		target="org.nuxeo.ecm.platform.annotations.services.AnnotationsService"
+		point="annotabilityManager">
+		<annotabilityManager
+			class="org.nuxeo.ecm.platform.annotations.service.DefaultAnnotabilityManager" />
+	</extension>
+	<extension
+		target="org.nuxeo.ecm.platform.annotations.services.AnnotationsService"
+		point="annotationIDGenerator">
+		<IDGenerator
+			class="org.nuxeo.ecm.platform.annotations.service.DefaultIDGenerator" />
+	</extension>
+	<extension
+		target="org.nuxeo.ecm.platform.annotations.services.AnnotationsService"
+		point="permissionMapper">
+		<permissionMapper>
+			<createAnnotation>createAnnotation"</createAnnotation>
+			<readAnnotation>readAnnotation</readAnnotation>
+			<updateAnnotation>updateAnnotation</updateAnnotation>
+			<deleteAnnotation>deleteAnnotation</deleteAnnotation>
+		</permissionMapper>
+	</extension>
+</component>

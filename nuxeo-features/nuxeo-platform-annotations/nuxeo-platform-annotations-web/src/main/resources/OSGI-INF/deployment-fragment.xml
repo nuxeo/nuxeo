@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<fragment>
+
+  <extension target="web#FILTER-MAPPING">
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter
+      </filter-name>
+      <url-pattern>/adnotatio.HtmlAnnotatorClient/*</url-pattern>
+    </filter-mapping>
+  </extension>
+
+  <extension target="web#FILTER-MAPPING">
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModule/webConfiguration</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/org.nuxeo.ecm.platform.annotations.gwt.AnnotationModule/webConfiguration</url-pattern>
+    </filter-mapping>
+  </extension>
+
+  <!-- extension target="web#SERVLET">
+    <servlet>
+      <servlet-name>Annotation GWT Servlet</servlet-name>
+      <servlet-class>adnotatio.server.ServiceServlet
+      </servlet-class>
+      <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Annotation GWT Servlet</servlet-name>
+      <url-pattern>/adnotatio.HtmlAnnotatorClient/*
+      </url-pattern>
+    </servlet-mapping>
+  </extension-->
+
+  <extension target="web#SERVLET">
+    <servlet>
+      <servlet-name>Web configuration servlet</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.platform.annotations.gwt.server.configuration.WebConfigurationServiceImpl
+      </servlet-class>
+      <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Web configuration servlet</servlet-name>
+      <url-pattern>/org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModule/webConfiguration</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+      <servlet-name>Web configuration servlet</servlet-name>
+      <url-pattern>/org.nuxeo.ecm.platform.annotations.gwt.AnnotationModule/webConfiguration</url-pattern>
+    </servlet-mapping>
+  </extension>
+
+  <extension target="application#MODULE">
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
+
+  <extension target="faces-config#COMPONENT">
+    <component>
+      <component-type>nxthemes.head</component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.annotations.jsf.component.UIHeadForGWT
+      </component-class>
+    </component>
+  </extension>
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+  </install>
+
+</fragment>
