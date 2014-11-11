@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <ui:define name="page title">
+    <h:outputText value="#{nuxeoApplicationName} - #{messages['title.create.document']}" />
+  </ui:define>
+
+  <ui:define name="body">
+    <div>
+    <h3>
+      <h:outputText value="#{messages['title.create.document']} #{messages[changeableDocument.type]}" />
+    </h3>
+    <ui:include src="/incl/message_banner.xhtml" />
+    <h:form enctype="multipart/form-data" id="createThread">
+     <table class="dataInput">
+       <tr>
+         <td class="labelColumn required"><h:outputText value="#{messages['label.forum.thread.titre']}" /></td>
+          <td>
+            <h:inputText class="dataInputText" required="true"
+              value="#{threadAction.title}" id="title"/>
+            <h:message styleClass="errorMessage" for="title" />
+          </td>
+       </tr>
+       <tr>
+         <td class="labelColumn"><h:outputText value="#{messages['label.forum.thread.description']}" /></td>
+          <td>
+            <h:inputTextarea cols="30" rows="5" class="dataInputText"
+              value="#{threadAction.description}" id="description" />
+            <h:message styleClass="errorMessage" for="description" />
+          </td>
+       </tr>
+       <tr>
+         <td class="labelColumn"><h:outputText value="#{messages['label.forum.thread.moderated']}" /></td>
+          <td>
+            <h:selectOneRadio value="#{threadAction.moderated}"
+              layout="pageDirection">
+              <f:selectItem
+                itemLabel="#{messages['label.forum.thread.moderated.yes']}"
+                itemValue="true"/>
+              <f:selectItem
+                itemLabel="#{messages['label.forum.thread.moderated.no']}"
+                itemValue="false"/>
+            </h:selectOneRadio>
+          </td>
+       </tr>
+      </table>
+      <nxl:layout name="user_group_prefixed_suggestion" mode="create"
+        value="#{threadAction.selectedModerators}" />
+      <p class="buttonsGadget">
+        <h:commandButton class="button" value="#{messages['command.create']}"
+          action="#{threadAction.addThread}" />
+        <h:commandButton class="button" value="#{messages['command.cancel']}"
+          action="#{navigationContext.goBack()}" immediate="true" />
+      </p>
+    </h:form>
+    </div>
+  </ui:define>
+
+</nxthemes:composition>
