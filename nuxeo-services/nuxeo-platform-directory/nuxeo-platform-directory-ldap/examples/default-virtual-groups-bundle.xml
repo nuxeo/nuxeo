@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.usermanager.VirtualGroups">
+  <require>org.nuxeo.ecm.platform.usermanager.UserManagerImpl</require>
+
+<!--
+  Copy the following file in $NUXEO_DIR/nxserver/config/ in order to make
+  the user with id 'johndoe' have administration rights and all members of the
+  users directory virtually belong to the 'members' group so that thy can see
+  all the domains and their contents by default.
+-->
+
+  <extension target="org.nuxeo.ecm.platform.usermanager.UserService" point="userManager">
+
+    <userManager class="org.nuxeo.ecm.platform.usermanager.UserManagerImpl">
+
+      <defaultAdministratorId>johndoe</defaultAdministratorId>
+      <defaultGroup>members</defaultGroup>
+      <users>
+        <directory>userLdapDirectory</directory>
+      </users>
+      <groups>
+        <directory>groupLdapDirectory</directory>
+      </groups>
+    </userManager>
+
+  </extension>
+
+</component>
