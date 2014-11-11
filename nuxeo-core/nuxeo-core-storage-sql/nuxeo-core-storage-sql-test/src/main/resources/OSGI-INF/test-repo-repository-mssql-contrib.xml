@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.test.repo.repository">
+  <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
+    point="repositories">
+    <repository name="${nuxeo.test.vcs.repository}" />
+  </extension>
+  <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
+    point="repository">
+    <repository name="${nuxeo.test.vcs.repository}"
+      factory="${nuxeo.test.vcs.repository-factory}">
+      <repository sendInvalidationEvents="true">
+        <schema>
+          <field type="largetext">note</field>
+          <field type="largetext">relatedtext</field>
+        </schema>
+        <indexing>
+          <fulltext catalog="nuxeo" analyzer="french"/>
+        </indexing>
+        <xa-datasource>net.sourceforge.jtds.jdbcx.JtdsDataSource</xa-datasource>
+        <property name="ServerName">${nuxeo.test.vcs.server}</property>
+        <property name="PortNumber">${nuxeo.test.vcs.port}</property>
+        <property name="DatabaseName">${nuxeo.test.vcs.database}</property>
+        <property name="User">${nuxeo.test.vcs.user}</property>
+        <property name="Password">${nuxeo.test.vcs.password}</property>
+        <property name="UseCursors">true</property>
+      </repository>
+    </repository>
+  </extension>
+</component>
