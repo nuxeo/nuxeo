@@ -1,0 +1,118 @@
+<#escape x as x?xml>
+<?xml version="1.0"?>
+<component name="default-repository-config">
+  <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
+    point="repositories">
+    <repository name="default" label="Default Repository" />
+  </extension>
+  <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
+    point="repository">
+    <repository name="default"
+      factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
+      <repository name="default">
+        <pool minPoolSize="${nuxeo.vcs["min-pool-size"]}" maxPoolSize="${nuxeo.vcs["max-pool-size"]}"
+          blockingTimeoutMillis="100" idleTimeoutMinutes="10" />
+<#if "${nuxeo.core.binarymanager}" != "" >
+        <binaryManager class="${nuxeo.core.binarymanager}" />
+</#if>
+        <clustering enabled="${repository.clustering.enabled}" delay="${repository.clustering.delay}" />
+        <binaryStore path="${repository.binary.store}" />
+        <schema>
+          <field type="largetext">note</field>
+          <field type="largetext">relatedtext</field>
+          <field type="largetext">webp:content</field>
+          <field type="largetext">webc:welcomeText</field>
+          <field type="largetext">comment:comment</field>
+          <field type="largetext">post</field>
+          <field type="largetext">mail:mail</field>
+        </schema>
+<#if "${nuxeo.db.type}" == "postgresql">
+        <indexing>
+          <fulltext analyzer="english">
+            <index name="default">
+              <!-- all props implied -->
+            </index>
+            <index name="title">
+              <field>dc:title</field>
+            </index>
+            <index name="description">
+              <field>dc:description</field>
+            </index>
+          </fulltext>
+        </indexing>
+<#elseif "${nuxeo.db.type}" == "oracle">
+        <indexing>
+          <fulltext>
+            <index name="default">
+              <!-- all props implied -->
+            </index>
+            <index name="title">
+              <field>dc:title</field>
+            </index>
+            <index name="description">
+              <field>dc:description</field>
+            </index>
+          </fulltext>
+          <!--
+            For Oracle (Oracle Text indexing parameters):
+            <fulltext analyzer="LEXER MY_LEXER"/>
+            See doc at:
+            http://jira.nuxeo.org/browse/NXP-4035
+            http://download.oracle.com/docs/cd/B19306_01/text.102/b14218/cdatadic.htm
+          -->
+        </indexing>
+<#elseif "${nuxeo.db.type}" == "mssql">
+        <aclOptimizations enabled="true" concurrentUpdate="false"/>
+        <indexing>
+          <fulltext analyzer="english">
+            <index name="default">
+              <!-- all props implied -->
+            </index>
+            <!-- SQL Server does not support more than one fulltext index per
+            table: to add support for multiple fulltext index would required to
+            change the datamodel of VCS -->
+         </fulltext>
+        </indexing>
+<#elseif "${nuxeo.db.type}" == "mysql">
+        <indexing>
+          <!-- For MySQL -->
+          <fulltext>
+            <index name="default">
+              <!-- all props implied -->
+            </index>
+            <index name="title">
+              <field>dc:title</field>
+            </index>
+            <index name="description">
+              <field>dc:description</field>
+            </index>
+          </fulltext>
+        </indexing>
+<#else>
+        <indexing>
+          <!-- for H2 (Lucene Analyzer): -->
+          <fulltext analyzer="org.apache.lucene.analysis.standard.StandardAnalyzer">
+            <index name="default">
+              <!-- all props implied -->
+            </index>
+            <index name="title">
+              <field>dc:title</field>
+            </index>
+            <index name="description">
+              <field>dc:description</field>
+            </index>
+          </fulltext>
+        </indexing>
+</#if>
+<#if "${nuxeo.db.type}" != "mysql">
+        <usersSeparator key="${nuxeo.db.user_separator_key}" />
+</#if>
+<#if "${nuxeo.db.singleDataSource}"=="">
+        <xa-datasource>${nuxeo.db.xadatasource}</xa-datasource>
+<#include "xadatasource-params.ftl" parse=true />
+</#if>
+      </repository>
+    </repository>
+  </extension>
+</component>
+</#escape>
