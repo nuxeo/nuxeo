@@ -1,0 +1,102 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:rich="http://richfaces.org/rich">
+
+  <nxu:set var="currentLocalFlavorName"
+    value="#{themeConfigurationActions.currentLocalFlavorName}"
+    cache="true">
+  <nxu:set var="defaultFlavorName"
+    value="#{themeConfigurationActions.getDefaultFlavorName(themeActions.defaultTheme)}"
+    cache="true">
+  <nxu:set var="origSelectedFlavorName"
+    value="#{nxu:test(empty currentLocalFlavorName, defaultFlavorName, currentLocalFlavorName)}">
+
+  <a4j:region renderRegionOnly="true">
+    <h:panelGrid columns="3" columnClasses=",flavorPreview,flavorWaiter">
+
+      <h:panelGroup>
+        <nxu:set var="flavors"
+          value="#{themeConfigurationActions.getAvailableFlavors(themeActions.defaultTheme)}"
+          cache="true">
+          
+          <h:selectOneListbox id="#{widget.id}" value="#{field}">
+            <nxu:selectItems
+              var="flavor" value="#{flavors}"
+              itemValue="#{flavor.name}" itemLabel="#{messages[flavor.label]}" />
+            <a4j:support event="onchange"
+              bypassUpdates="true"
+              actionListener="#{selectionActions.onSelection}"
+              reRender="#{widget.id}_preview"
+              id="#{widget.id}_ajax_select">
+              <f:param name="selectorId" value="#{widget.id}" />
+              <f:param name="valueHolderId" value="#{widget.id}_valueHolder" />
+            </a4j:support>
+          </h:selectOneListbox>
+        </nxu:set>
+        <h:message for="#{widget.id}" id="#{widget.id}_message"
+          styleClass="errorStyleClass" />            
+      </h:panelGroup>
+
+      <nxu:valueHolder id="#{widget.id}_valueHolder"
+        var="selectedFlavorName"
+        defaultValue="#{origSelectedFlavorName}"
+        submitChanges="false">
+        <a4j:outputPanel id="#{widget.id}_preview">
+          <nxu:set var="selectedFlavor"
+            value="#{themeActions.getFlavor(selectedFlavorName)}"
+            cache="true">
+            <c:choose>
+              <c:when test="#{! empty selectedFlavor.logo.previewPath}">
+                <h:graphicImage value="#{selectedFlavor.logo.previewPath}" class="palettePreviewLogo" />
+              </c:when>
+              <c:otherwise>
+                <c:choose>
+                  <c:when test="#{! empty selectedFlavor.logo.path}">
+                    <h:graphicImage value="#{selectedFlavor.logo.path}" class="palettePreviewLogo" />
+                  </c:when>
+                  <c:otherwise>
+                    #{messages['label.local.configuration.theme.flavorSelection.noPreviewAvailable']}
+                  </c:otherwise>
+                </c:choose>
+              </c:otherwise>
+            </c:choose>
+            <c:if test="#{not empty selectedFlavor.palettePreview.colors}">
+              <table class="palettePreviewColors">
+                <tbody>
+                  <c:forEach var="colorIndex" begin="0" end="8"
+                    varStatus="paletteColorStatus">
+                    <nxu:set var="colorValue"
+                      value="#{nxu:test(not empty selectedFlavor.palettePreview.colors[colorIndex], selectedFlavor.palettePreview.colors[colorIndex], '#fff')}">
+                      <c:if test="#{paletteColorStatus.index % 3 == 0}">
+                        <f:verbatim escape="false">&lt;tr&gt;</f:verbatim>
+                      </c:if>
+                      <td style="background-color:#{colorValue}"><div></div></td>
+                      <c:if test="#{paletteColorStatus.index % 3 == 2}">
+                        <f:verbatim escape="false">&lt;/tr&gt;</f:verbatim>
+                      </c:if>
+                    </nxu:set>
+                  </c:forEach>
+                </tbody>
+              </table>
+            </c:if>
+          </nxu:set>
+        </a4j:outputPanel>
+      </nxu:valueHolder>
+
+      <a4j:status>
+        <f:facet name="start">
+          <h:graphicImage value="/img/standart_waiter.gif" />
+        </f:facet>
+      </a4j:status>
+
+    </h:panelGrid>
+  </a4j:region>
+
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+
+</div>
