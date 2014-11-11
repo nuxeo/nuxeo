@@ -1,0 +1,34 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+<c:if test="false">
+  This template is deprecated
+</c:if>
+
+  <f:facet name="header">
+    <h:panelGroup> 
+      <h:outputText rendered="#{!provider.sortable}"
+        value="#{messages[label]}"/>
+      <h:commandLink value="#{messages[label]}" immediate="true"
+        rendered="#{provider.sortable}"
+        action="#{sortActions.repeatSearch}">
+        <f:param name="providerName" value="#{providerName}" />
+        <f:param name="sortColumn" value="#{sortColumn}" />
+        <h:panelGroup rendered="#{provider.sortInfo.sortColumn == sortColumn}" >
+          <h:graphicImage value="/icons/arrow_up.gif"
+            rendered="#{provider.sortInfo.sortAscending}" />
+          <h:graphicImage value="/icons/arrow_down.gif"
+            rendered="#{!provider.sortInfo.sortAscending}" />
+        </h:panelGroup>
+      </h:commandLink>
+    </h:panelGroup>
+   </f:facet>
+</ui:composition>
+  
