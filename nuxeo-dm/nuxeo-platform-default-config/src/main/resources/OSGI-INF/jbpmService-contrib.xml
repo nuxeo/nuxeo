@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.jbpm.defaultContribs">
+
+  <extension target="org.nuxeo.ecm.platform.jbpm.core.JbpmService"
+    point="processDefinition">
+
+    <processDefinition path="process/parallel-review.xml" deployer="nuxeoProperties" />
+    <processDefinition path="process/validation-review.xml"
+      deployer="nuxeoProperties" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.jbpm.core.JbpmService"
+    point="securityPolicy">
+
+    <securityPolicy
+      class="org.nuxeo.ecm.platform.jbpm.core.service.DefaultJbpmSecurityPolicy"
+      for="review_parallel" />
+    <securityPolicy
+      class="org.nuxeo.ecm.platform.jbpm.core.service.DefaultJbpmSecurityPolicy"
+      for="review_approbation" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.jbpm.core.JbpmService"
+    point="typeFilter">
+
+    <type name="Note">
+      <processDefinition>review_parallel</processDefinition>
+      <processDefinition>review_approbation</processDefinition>
+    </type>
+    <type name="File">
+      <processDefinition>review_parallel</processDefinition>
+      <processDefinition>review_approbation</processDefinition>
+    </type>
+  </extension>
+
+</component>
