@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Annotations Client
+Bundle-SymbolicName: org.nuxeo.ecm.annotations.client;singleton:=true
+Bundle-ClassPath: lib/gwt-servlet-1.5.3.jar
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateless
+Require-Bundle: org.nuxeo.ecm.webapp.ui,
+  org.nuxeo.ecm.platform.preview,
+  org.nuxeo.theme.jsf
+Provide-Package: org.nuxeo.ecm.annotations.client
+Nuxeo-Component: OSGI-INF/default-contrib.xml,
+ OSGI-INF/web-configuration-service-framework.xml,
+ OSGI-INF/web-configuration-service-contrib.xml,
+ OSGI-INF/preview-adapter-contrib.xml

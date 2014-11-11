@@ -1,0 +1,10 @@
+<component name="org.nuxeo.ecm.automation.server.test-marshalling" version="1.0">
+
+  <extension target="org.nuxeo.ecm.automation.server.AutomationServer"
+    point="marshallers">
+    
+    <marshaller class="org.nuxeo.ecm.automation.server.test.MyObjectServerMarshaller" />
+
+  </extension>
+    
+</component>
