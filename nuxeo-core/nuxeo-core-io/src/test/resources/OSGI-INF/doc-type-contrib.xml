@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.io.test.doctypes">
+
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="complexSchema" src="schema/complex-schema.xsd"
+      prefix="cs" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+
+    <doctype name="CSDoc" extends="File">
+      <schema name="complexSchema"/>
+    </doctype>
+
+  </extension>
+
+</component>

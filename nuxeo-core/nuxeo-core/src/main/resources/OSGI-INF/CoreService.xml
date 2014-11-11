@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.CoreService" version="1.0">
+  <documentation>
+  The core service provides a way to register version removal policies
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.CoreService"/>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.CoreService" />
+  </service>
+
+  <extension-point name="versionRemovalPolicy">
+    <documentation>
+      Used to register the version removal policy, which must implement
+      VersionRemovalPolicy.
+      <code>
+        <policy class="..."/>
+      </code>
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.core.CoreServicePolicyDescriptor" />
+  </extension-point>
+
+  <extension-point name="orphanVersionRemovalFilter">
+    <documentation>
+      Used to register filter that are used by the default VersionRemovalPolicy implementation to check asynchronously what versions can really be removed.
+      <code>
+        <filter class="..."/>
+      </code>
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.core.CoreServiceOrphanVersionRemovalFilterDescriptor" />
+  </extension-point>
+
+</component>

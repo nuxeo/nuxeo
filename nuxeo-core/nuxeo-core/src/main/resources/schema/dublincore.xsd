@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+
+<xs:schema
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/dublincore/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/dublincore/"
+  >
+
+  <xs:simpleType name="subjectList">
+    <xs:list itemType="xs:string" />
+  </xs:simpleType>
+
+  <xs:simpleType name="contributorList">
+    <xs:list itemType="xs:string" />
+  </xs:simpleType>
+
+
+  <xs:element name="title" type="xs:string"/>
+  <xs:element name="description" type="xs:string"/>
+  <xs:element name="subjects" type="nxs:subjectList"/>
+  <xs:element name="rights" type="xs:string"/>
+  <xs:element name="source" type="xs:string"/>
+  <xs:element name="coverage" type="xs:string"/>
+  <xs:element name="created" type="xs:date"/>
+  <xs:element name="modified" type="xs:date"/>
+  <xs:element name="issued" type="xs:date"/>
+  <xs:element name="valid" type="xs:date"/>
+  <xs:element name="expired" type="xs:date"/>
+  <xs:element name="format" type="xs:string"/>
+  <xs:element name="language" type="xs:string"/>
+  <xs:element name="creator" type="xs:string"/>
+  <xs:element name="contributors" type="nxs:contributorList"/>
+  <xs:element name="lastContributor" type="xs:string"/>
+
+  <!-- Corresponds to the dublincore type element,
+  but renamed to avoid conflicts -->
+  <xs:element name="nature" type="xs:string"/>
+  
+  <!-- @Since 5.5 -->
+  <xs:element name="publisher" type="xs:string"/>
+
+</xs:schema>
+
+

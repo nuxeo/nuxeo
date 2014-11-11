@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.cache.testsConfig">
+
+  <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
+
+    <cache name="default-test-cache" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+      <ttl>1</ttl><!-- minutes -->
+      <option name="maxSize">3</option>
+    </cache>
+
+    <cache name="maxsize-test-cache" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+      <ttl>1</ttl><!-- minutes -->
+      <option name="maxSize">0</option>
+    </cache>
+
+
+  </extension>
+
+</component>

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.test.repo.repository.fulltext.noteonly">
+  <extension target="org.nuxeo.ecm.core.storage.sql.RepositoryService"
+    point="repository">
+    <repository name="${nuxeo.test.vcs.repository}"
+      factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory"
+      sendInvalidationEvents="true">
+      <schema>
+        <field type="largetext">note</field>
+        <field type="largetext">relatedtext</field>
+      </schema>
+      <indexing>
+        <excludedTypes>
+          <type>Folder</type>
+        </excludedTypes>
+        <includedTypes>
+          <type>File</type>
+        </includedTypes>
+        <fulltext analyzer="org.apache.lucene.analysis.fr.FrenchAnalyzer">
+          <index> <!-- name="default" implied -->
+            <!-- all props implied -->
+          </index>
+          <index name="title">
+            <field>dc:title</field>
+          </index>
+        </fulltext>
+      </indexing>
+      <xa-datasource>org.h2.jdbcx.JdbcDataSource</xa-datasource>
+      <property name="URL">${nuxeo.test.vcs.url}</property>
+      <property name="User">${nuxeo.test.vcs.user}</property>
+      <property name="Password">${nuxeo.test.vcs.password}</property>
+    </repository>
+  </extension>
+</component>

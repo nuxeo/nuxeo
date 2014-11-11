@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.RepositoryService" version="1.0.0">
+
+  <require>org.nuxeo.ecm.core.repository.RepositoryServiceComponent</require>
+  <require>org.nuxeo.ecm.core.api.repository.RepositoryManager</require>
+  <require>org.nuxeo.ecm.core.storage.binary.BinaryManagerService</require>
+  <require>org.nuxeo.ecm.core.storage.lock.LockManagerService</require>
+
+  <documentation>
+    Manages VCS repositories.
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService" />
+  </service>
+
+  <extension-point name="repository">
+    <documentation>
+      Extension points to register VCS repositories.
+      See http://doc.nuxeo.com/x/hwQz for documentation.
+    </documentation>
+    <object class="org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor" />
+  </extension-point>
+
+</component>

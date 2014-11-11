@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.api.repository.RepositoryManager" version="1.0.0">
+  <documentation>
+    Manages repositories.
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.api.repository.RepositoryManagerImpl"/>
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
+  </service>
+
+  <extension-point name="repositories">
+    <documentation>
+      Obsolete repositories definition.
+      Use org.nuxeo.ecm.core.storage.sql.RepositoryService instead.
+    </documentation>
+    <object class="org.nuxeo.ecm.core.api.repository.Repository"/>
+  </extension-point>
+
+</component>

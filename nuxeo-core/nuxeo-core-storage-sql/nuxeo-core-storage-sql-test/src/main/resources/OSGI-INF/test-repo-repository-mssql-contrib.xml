@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.test.repo.repository">
+  <extension target="org.nuxeo.ecm.core.storage.sql.RepositoryService"
+    point="repository">
+    <repository name="${nuxeo.test.vcs.repository}"
+      factory="${nuxeo.test.vcs.repository-factory}"
+      sendInvalidationEvents="true">
+      <binaryManager class="${nuxeo.test.vcs.binary-manager}"
+        key="${nuxeo.test.vcs.binary-manager-key}" />
+      <idType>${nuxeo.test.vcs.idtype}</idType>
+      <schema>
+        <field type="largetext">note</field>
+        <field type="largetext">relatedtext</field>
+      </schema>
+      <indexing>
+        <neverPerDocumentFacets>
+          <facet>NotPerDocFacet</facet>
+        </neverPerDocumentFacets>
+        <fulltext catalog="nuxeo" analyzer="French"/>
+      </indexing>
+      <xa-datasource>${nuxeo.test.vcs.xadatasource}</xa-datasource>
+      <property name="ServerName">${nuxeo.test.vcs.server}</property>
+      <property name="PortNumber">${nuxeo.test.vcs.port}</property>
+      <property name="DatabaseName">${nuxeo.test.vcs.database}</property>
+      <property name="User">${nuxeo.test.vcs.user}</property>
+      <property name="Password">${nuxeo.test.vcs.password}</property>
+      <property name="UseCursors">true</property>
+    </repository>
+  </extension>
+</component>
