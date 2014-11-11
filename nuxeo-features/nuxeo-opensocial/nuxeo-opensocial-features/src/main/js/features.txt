@@ -1,0 +1,4 @@
+# List each feature you want to support here
+nxfeatures/jquery/feature.xml
+nxfeatures/effects/feature.xml
+nxfeatures/ui/feature.xml

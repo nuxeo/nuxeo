@@ -1,0 +1,30 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:g="http://nuxeo.org/geide">
+
+  <table border="0" style="dataOutput">
+    <tr>
+      <td class="iconColumn">
+        <f:subview rendered="#{node.documentModel != null}">
+          <nxu:graphicImage value="#{nxd:iconPath(node.documentModel)}" />
+        </f:subview>
+        <nxu:graphicImage rendered="#{node.link}" value="/icons/html.png" />
+        <nxu:graphicImage rendered="#{node.text}" value="/icons/page_text.gif" />
+      </td>
+      <td>
+        <nxh:commandLink rendered="#{node.documentVisible}"
+          value="#{node.title}" action="#{node.getAction()}" />
+        <h:outputLink rendered="#{node.link}" value="#{node.href}" target="_blank">
+          <h:outputText value="#{node.title}" />
+        </h:outputLink>
+        <h:outputText rendered="#{node.text}" value="#{node.title}" />
+      </td>
+    </tr>
+  </table>
+
+</div>

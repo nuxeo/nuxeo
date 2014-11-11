@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.auth.OAuthService"
+  version="1.0">
+
+  <implementation class="org.nuxeo.ecm.platform.oauth.impl.OAuthServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.oauth.api.OAuthService" />
+  </service>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="authenticators">
+    <authenticationPlugin name="OAUTH_SIGNED_AUTH"
+      enabled="true"
+      class="org.nuxeo.ecm.platform.login.SignedAuthAuthenticator">
+      <loginModulePlugin>Trusting_LM</loginModulePlugin>
+    </authenticationPlugin>
+  </extension>
+
+
+  <extension-point name="oauthKey">
+    <documentation>
+      This is an extension point to declare keys for different consumer,
+      for instance
+
+
+      <keys consumer="lm-shindig">
+        <public-key>
+          MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8lBXqP+/FWBnM8Ui1io/+mtqA
+          7LoBr3fml 3SYU00lF0g0wJHgePqBrCHQsA6TwuTWc2RaArt8zWEjmDK07AfczCn
+          aksuZlAC+qcQI5ph5p8iof4hJmR48842oVWiL0N/ZS/llzmCA4ozqDzc8GqRvMns
+          mes0vugy69LoEsNqIwIDAQAB</public-key>
+        <private-key>
+        </private-key>
+      </keys>
+
+
+    </documentation>
+
+    <object class="org.nuxeo.ecm.platform.oauth.api.OAuthKeyDescriptor" />
+  </extension-point>
+</component>

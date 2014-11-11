@@ -1,0 +1,27 @@
+<module>
+  <!-- Inherit the core Web Toolkit stuff.                        -->
+  <inherits name='com.google.gwt.user.User' />
+  <inherits name="com.google.gwt.i18n.I18N"/>
+
+  <!--inherits name='com.extjs.gxt.ui.GXT'/-->
+  <inherits name='com.gwtext.GwtExt' />
+
+  <inherits name="com.google.gwt.http.HTTP" />
+  <inherits name="com.google.gwt.json.JSON" />
+
+
+  <!--  inherit css based theme -->
+
+  <!-- Specify the app entry point class.                         -->
+  <entry-point class='org.nuxeo.opensocial.container.client.ContainerEntryPoint' />
+
+  <!-- apport ext js -->
+  <stylesheet src="js/ext/resources/css/ext-all.css" />
+  <script src="js/ext/adapter/ext/ext-base.js" />
+  <script src="js/ext/ext-all.js" />
+
+
+    <!-- Specify the application specific style sheet.              -->
+  <stylesheet src='container.css' />
+
+</module>

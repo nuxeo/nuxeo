@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.spaces.core.spacemanager.service.default.contrib"
+  version="1.0">
+  <extension target="org.nuxeo.ecm.spaces.core.spacemanager.service"
+    point="universContrib">
+    <universContrib name="defaultUnivers">
+      <order>0</order>
+      <className>
+        org.nuxeo.ecm.spaces.core.contribs.impl.DefaultUniversProvider
+      </className>
+    </universContrib>
+  </extension>
+  <extension target="org.nuxeo.ecm.spaces.core.spacemanager.service"
+    point="spaceContrib">
+    <spaceContrib name="defaultSpaces">
+      <restrictToUniverse>intralm</restrictToUniverse>
+      <order>0</order>
+      <className>org.nuxeo.ecm.spaces.core.contribs.impl.DefaultSpaceProvider
+      </className>
+    </spaceContrib>
+  </extension>
+  <extension target="org.nuxeo.ecm.spaces.core.spacemanager.service"
+    point="gadgetContrib">
+    <gadgetContrib name="defaultGadgets">
+      <order>0</order>
+      <className>
+        org.nuxeo.ecm.spaces.core.contribs.impl.DefaultGadgetProvider
+      </className>
+    </gadgetContrib>
+  </extension>
+</component>

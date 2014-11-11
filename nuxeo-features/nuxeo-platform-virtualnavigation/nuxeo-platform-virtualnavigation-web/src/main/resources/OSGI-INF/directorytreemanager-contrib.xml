@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.virtualnavigation.directory.DirectoryTreeService.contrib">
+
+  <require>org.nuxeo.ecm.webapp.directory.DirectoryTreeService</require>
+
+  <extension target="org.nuxeo.ecm.webapp.directory.DirectoryTreeService"
+    point="trees">
+
+    <directoryTree name="bySubjectsNavigation" label="base.navigation.subjects"
+      querymodel="bySubjectsNavQueryModel" field="subjects" schema="querynav"
+      outcome="subjects_virtual_navigation">
+      <directory>topic</directory>
+      <directory>subtopic</directory>
+    </directoryTree>
+
+    <directoryTree name="byCoverageNavigation" label="base.navigation.coverage"
+      querymodel="byCoverageNavQueryModel" field="coverage" schema="querynav"
+      outcome="coverage_virtual_navigation">
+      <directory>continent</directory>
+      <directory>country</directory>
+    </directoryTree>
+
+    <directoryTree name="TAG_CLOUD">
+    </directoryTree>
+
+  </extension>
+
+</component>

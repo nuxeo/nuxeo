@@ -1,0 +1,14 @@
+<assembly>
+
+  <!-- Jboss -->
+  <assemble>
+    <set>jboss</set>
+    <outputFile>/</outputFile>
+  </assemble>
+  <zipEntrySet id="jboss">
+    <artifact>
+      org.nuxeo.ecm.distribution:nuxeo-distribution-jboss:${nuxeo.distribution.version}:zip
+    </artifact>
+  </zipEntrySet>
+
+</assembly>

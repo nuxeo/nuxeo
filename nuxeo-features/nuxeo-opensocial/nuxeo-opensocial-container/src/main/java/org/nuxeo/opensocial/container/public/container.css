@@ -1,0 +1,284 @@
+/**** GWT Container ****/
+.containerPanel { /*background-color: transparent;*/
+  color: #000000;
+}
+
+.addGadget {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 88%;
+}
+
+#gwtContainerMask {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+}
+
+#containerPanel {
+  height: 100%;
+  min-height: 100px;
+}
+
+.containerPortal {
+  background-color: transparent;
+  height: 100%;
+  min-height: 100px;
+}
+
+.x-panel-body {
+  background: transparent;
+  min-width:100%;
+}
+
+.x-panel-mc { /*background-color: #60a524;*/
+
+}
+
+.gadgetPortlet {
+  background-color: green;
+}
+
+.x-panel-dd-spacer,.x-panel-tl {
+  border-color: #60a524;
+}
+
+.x-panel-ghost {
+  background: #7cb71d;
+}
+
+.x-panel-header {
+  color: white;
+}
+
+.gwt-Frame {
+  overflow: hidden;
+  width: 100%;
+  min-width: 100%;
+}
+
+.x-panel-nofooter .x-panel-bc {
+  height: 2px;
+}
+
+.x-panel-ml {
+  padding-left: 0;
+  background: 0;
+}
+
+.x-panel-mr {
+  padding-right: 0;
+  background: 0;
+}
+
+.x-panel-mc {
+  padding: 0px
+}
+
+.x-panel-bc {
+  background: 0;
+}
+
+.x-panel-br {
+  background: 0;
+}
+
+.x-field-form-nxdoc {
+  float: left;
+  width: 125px;
+  margin-right: 5px;
+}
+
+.x-button-form-nxdoc {
+  float: right;
+  margin-right: 65px;
+}
+
+.x-column-inner {
+  overflow: hidden;
+}
+
+.x-panel-bl {
+  background: 0;
+}
+
+#gadgetcontent {
+  padding-bottom: 5px;
+}
+
+.x-color-palette-label {
+  float: left;
+  margin-top: 37px;
+  font-size: 12px;
+}
+
+.x-color-palette-pickr {
+  float: left;
+  margin-left: 25px;
+  width: 190px;
+}
+
+.x-column-possible {
+  background-image: url(transparent.png);
+  background-repeat: repeat;
+  height: 100%;
+}
+
+.x-column {
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-top: 5px;
+  min-height: 250px;
+}
+
+#firstCol.x-3-header2cols {
+  min-width: 96%;
+  width: 96%;
+}
+
+.x-3-header2cols>.x-portlet {
+  min-width: 100%;
+  width: 100%
+}
+
+.x-1-default {
+  min-width: 98%;
+  width: 98%
+}
+
+.x-1-default>.x-portlet {
+  min-width: 100%;
+  width: 100%
+}
+
+.x-2-default {
+  min-width: 47%;
+  width: 47%
+}
+
+.x-2-default>.x-portlet,.x-3-default>.x-portlet {
+  min-width: 100%;
+  width: 100%;
+}
+
+.x-3-default {
+  min-width: 31%;
+  width: 31%;
+}
+
+#secondCol.x-3-header2cols,#thirdCol.x-3-header2cols {
+  min-width: 47%;
+  width: 47%;
+}
+
+#firstCol.x-4-footer3cols,#secondCol.x-4-footer3cols,#thirdCol.x-4-footer3cols
+  {
+  min-width: 31%;
+  width: 31%;
+}
+
+.x-4-footer3cols>.x-portlet {
+  min-width: 100%;
+  width: 100%;
+}
+
+#fourCol.x-4-footer3cols {
+  min-width: 97%;
+  width: 97%;
+}
+
+.x-panel {
+ border:none;
+}
+
+.x-panel-tr {
+  background-image: none;
+ }
+
+.x-panel-tl {
+    background-image: none;
+    background-color: #4E9AE1;
+    border-style: none;
+    }
+
+.x-panel-tc {
+    background-image: none;
+}
+
+.x-panel-tl .x-panel-header {
+  font-family:'Lucida Grande',Verdana,Arial,sans-serif;
+  font-size:11px;
+  text-transform: capitalize;
+  font-weight: bold;
+ }
+
+.x-panel-ml {
+   border:1px solid #C0DCF5;
+}
+
+.gwt-Frame {
+  min-width: 99%}
+
+.x-panel iframe {
+  border:none;
+}
+
+.x-panel-mc {
+ background-color: transparent;
+}
+
+#gwtContainer {
+ background-color: white;
+}
+
+
+#closeLinkLayoutManager
+{background-image:url(close.gif);background-repeat:no-repeat;color:rgb(0, 0, 0);margin-right:10px;padding-left:15px;}
+
+.invisible
+{display:none;}
+
+.typeLayout
+{background-color:rgb(255, 255, 255);border:2px solid rgb(255,255,255);display:block;height:75px;width:100px;}
+
+ul.option li
+{float:left;list-style-type:none;margin:0 7px 7px 0;padding:2px 0;}
+
+#listCategories div.selected
+{background-color:rgb(187, 187, 187);}
+
+#tabGadgets li a.selected
+{border:2px solid rgb(0,0,0);}
+
+div.button-container {padding:5px;}
+
+.typeGadget
+{background-color:rgb(255, 255, 255);border:2px solid rgb(255,255,255);display:block;height:64px;width:64px;}
+ul.option
+{height:130px;margin-top:5px;margin-left:7px;overflow:auto;padding:0;}
+
+/******
+.directAdd
+{bottom:-19px;cursor:default;display:block;height:18px;line-height:18px;margin-top:10px;text-align:center;width:68px;}
+
+.directAdd a
+{color:rgb(255, 255, 255);cursor:pointer;display:inline-block;padding-right:8px;}
+
+.directAdd a.linkAdd
+{background:transparent url(/nuxeo/opensocial/images/buttons.png) no-repeat scroll 0 0;background-position:right 0;}
+
+.directAdd a.linkAdded
+{background:transparent url(/nuxeo/opensocial/images/ok.png) no-repeat scroll 0 0;padding-left:6px;}
+
+.directAdd span.addGadgetButton
+{background:transparent url(/nuxeo/opensocial/images/buttons.png) no-repeat scroll 0 0;background-position:left 0;cursor:pointer;display:inline-block;padding:0 2px 0 10px;}
+
+.directAdd span.addedGadgetButton
+{background-position:left 0;cursor:pointer;display:inline-block;padding:0 2px 0 10px;}
+
+.directAdd a:hover span.addGadgetButton
+{background-position:left -18px;}
+******/
