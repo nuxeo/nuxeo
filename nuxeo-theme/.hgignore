@@ -1,0 +1,13 @@
+syntax:glob
+.classpath
+.project
+.settings
+bin
+target
+*~
+*.orig
+*.ipr
+*.iml
+*.iws
+nuxeo-*/META-INF
+nuxeo-*/OSGI-INF
