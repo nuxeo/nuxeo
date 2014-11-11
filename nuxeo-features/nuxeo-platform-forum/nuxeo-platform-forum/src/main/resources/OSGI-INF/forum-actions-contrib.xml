@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.forum.actions">
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+  <require>org.nuxeo.ecm.platform.actions.relations.web</require>
+  <require>org.nuxeo.ecm.platform.audit.web</require>
+  <require>org.nuxeo.ecm.platform.comment.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="forumView" link="/incl/tabs/forum_content.xhtml" enabled="true"
+      label="action.forum.content" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter id="isForum">
+        <rule grant="true">
+          <type>Forum</type>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="TAB_CONTENT">
+      <filter id="display_forum">
+        <rule grant="false">
+          <type>Forum</type>
+        </rule>
+      </filter>
+    </action>
+
+    <!--  add the thread creation button -->
+    <action id="newForumThread"
+      link="#{documentActions.createDocument('Thread')}" enabled="true"
+      label="command.create.thread" icon="/icons/action_add.gif">
+      <category>SUBVIEW_UPPER_LIST</category>
+      <filter id="newThread">
+        <rule grant="true">
+          <permission>AddChildren</permission>
+          <type>Forum</type>
+        </rule>
+      </filter>
+    </action>
+
+    <!-- Filter tabs for thread -->
+    <action id="TAB_EDIT">
+      <filter id="no_edit_on_thread">
+        <rule grant="false">
+          <type>Thread</type>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="TAB_RELATIONS">
+      <filter id="no_relations_on_thread">
+        <rule grant="false">
+          <type>Thread</type>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="TAB_METADATA_EDIT">
+      <filter id="no_metadata_on_thread">
+        <rule grant="false">
+          <type>Thread</type>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="TAB_CONTENT_HISTORY">
+      <filter id="no_history_on_thread">
+        <rule grant="false">
+          <type>Thread</type>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="TAB_METADATA_VIEW">
+      <filter id="no_metadata_view_on_thread">
+        <rule grant="false">
+          <type>Thread</type>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="view_comments">
+      <filter id="no_comment_on_thread">
+        <rule grant="false">
+          <type>Thread</type>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="thread_rights" link="/incl/tabs/document_rights.xhtml"
+      order="50" enabled="true" label="action.view.rights"
+      icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter id="on_thread_rights">
+        <rule grant="true">
+          <permission>WriteSecurity</permission>
+          <type>Thread</type>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="TAB_THREAD" link="/incl/tabs/document_thread.xhtml"
+      enabled="true" label="action.view.thread">
+      <category>VIEW_ACTION_LIST</category>
+      <filter id="on_thread_view">
+        <rule grant="true">
+          <type>Thread</type>
+        </rule>
+      </filter>
+    </action>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+    <filter id="view" append="true">
+      <rule grant="false">
+        <type>Thread</type>
+      </rule>
+    </filter>
+  </extension>
+
+</component>
