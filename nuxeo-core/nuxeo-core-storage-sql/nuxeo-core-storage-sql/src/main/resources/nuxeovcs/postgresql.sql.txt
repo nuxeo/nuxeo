@@ -1,0 +1,1164 @@
+# Copyright (c) 2008-2012 Nuxeo SA (http://nuxeo.com/) and others.
+#
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License v1.0
+# which accompanies this distribution, and is available at
+# http://www.eclipse.org/legal/epl-v10.html
+#
+# Contributors:
+#     Florent Guillaume
+#     Benoit Delbosc
+
+# Variables used:
+# ${idType} varchar(36) / uuid
+# ${idTypeParam} varchar / uuid, to use as parameter in functions / variable declarations
+# ${idNotPresent} '-' / '00000000-FFFF-FFFF-FFFF-FFFF00000000', a non-existing uuid to use as marker
+# ${idSequenceName}
+# ${fulltextAnalyzer} english, or depending on config
+# ${fulltextTable} fulltext
+# ${fulltextTriggerStatements} repeated for all suffixes SFX:
+#   NEW.fulltextSFX := COALESCE(NEW.simpletextSFX}, ''::TSVECTOR) || COALESCE(NEW.binarytextSFX, ''::TSVECTOR);
+# ${readPermissions} ('Browse'), ('Read'), ('ReadProperties'), ('ReadRemove'), ('ReadWrite'), ('Everything')
+# ${usersSeparator} default is ",", but it depends on the configuration
+# ${unlogged} empty or "UNLOGGED" if postgresql >= 9.1
+
+# Conditions used:
+# sequenceEnabled
+# fulltextEnabled
+# aclOptimizationsEnabled
+# pathOptimizationsEnabled
+# softDeleteEnabled
+# proxiesEnabled
+
+############################################################
+
+
+#CATEGORY: beforeTableCreation
+
+
+#IF: sequenceEnabled
+#TEST:
+SELECT 1 FROM pg_class WHERE relname = '${idSequenceName}';
+
+
+#IF: sequenceEnabled
+#IF: emptyResult
+CREATE SEQUENCE ${idSequenceName};
+
+
+CREATE OR REPLACE FUNCTION NX_IN_TREE(id ${idType}, baseid ${idType})
+RETURNS boolean
+AS $$
+DECLARE
+  curid ${idType} := id;
+BEGIN
+  IF baseid IS NULL OR id IS NULL OR baseid = id THEN
+    RETURN false;
+  END IF;
+  LOOP
+    SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;
+    IF curid IS NULL THEN
+      RETURN false;
+    ELSEIF curid = baseid THEN
+      RETURN true;
+    END IF;
+  END LOOP;
+END $$
+LANGUAGE plpgsql
+STABLE
+COST 400;
+
+
+CREATE OR REPLACE FUNCTION NX_ACCESS_ALLOWED(id ${idType}, users varchar[], permissions varchar[])
+RETURNS boolean
+AS $$
+DECLARE
+  curid ${idType} := id;
+  newid ${idType};
+  r record;
+  first boolean := true;
+BEGIN
+  WHILE curid IS NOT NULL LOOP
+    FOR r in SELECT acls.grant, acls.permission, acls.user FROM acls WHERE acls.id = curid ORDER BY acls.pos LOOP
+      IF r.permission = ANY(permissions) AND r.user = ANY(users) THEN
+        RETURN r.grant;
+      END IF;
+    END LOOP;
+    SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;
+    IF first AND newid IS NULL THEN
+      SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;
+    END IF;
+    first := false;
+    curid := newid;
+  END LOOP;
+  RETURN false;
+END $$
+LANGUAGE plpgsql
+STABLE
+COST 500;
+
+#IF: clusteringEnabled
+CREATE OR REPLACE FUNCTION NX_CLUSTER_INVAL(i ${idType}, f varchar[], k int)
+RETURNS VOID
+AS $$
+DECLARE
+  nid int;
+BEGIN
+  FOR nid IN SELECT nodeid FROM cluster_nodes WHERE nodeid <> pg_backend_pid() LOOP
+    INSERT INTO cluster_invals (nodeid, id, fragments, kind) VALUES (nid, i, f, k);
+  END LOOP;
+END $$
+LANGUAGE plpgsql;
+
+
+#IF: fulltextEnabled
+CREATE OR REPLACE FUNCTION NX_TO_TSVECTOR(string VARCHAR)
+RETURNS TSVECTOR
+AS $$
+  SELECT TO_TSVECTOR('${fulltextAnalyzer}', SUBSTR($1, 1, 250000))
+$$
+LANGUAGE sql
+IMMUTABLE;
+
+
+#IF: pathOptimizationsEnabled
+#TEST:
+SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'ancestors')
+           AND NOT EXISTS(SELECT 1 FROM pg_indexes WHERE indexname='ancestors_ancestors_is_null_idx');
+
+
+#IF: pathOptimizationsEnabled
+#IF: ! emptyResult
+CREATE INDEX ancestors_ancestors_is_null_idx ON ancestors USING btree(ancestors) WHERE ancestors IS NULL;
+
+
+#IF: pathOptimizationsEnabled
+#TEST:
+SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'ancestors')
+           AND NOT EXISTS(SELECT 1 FROM pg_indexes WHERE indexname='ancestors_ancestors_idx');
+
+
+#IF: pathOptimizationsEnabled
+#IF: ! emptyResult
+CREATE INDEX ancestors_ancestors_idx ON ancestors USING gin(ancestors);
+
+
+#IF: pathOptimizationsEnabled
+CREATE OR REPLACE FUNCTION nx_ancestors_create_triggers()
+RETURNS void
+AS $$
+  -- drop old deprecated triggers
+  DROP TRIGGER IF EXISTS NX_TRIG_DESC_INSERT ON hierarchy;
+  DROP TRIGGER IF EXISTS NX_TRIG_DESC_UPDATE ON hierarchy;
+  DROP TRIGGER IF EXISTS NX_TRIG_ANCESTOS_UPDATE ON hierarchy;
+  -- setup new triggers
+  DROP TRIGGER IF EXISTS nx_trig_ancestors_insert ON hierarchy;
+  CREATE TRIGGER nx_trig_ancestors_insert
+    AFTER INSERT ON hierarchy
+    FOR EACH ROW EXECUTE PROCEDURE nx_ancestors_insert();
+  DROP TRIGGER IF EXISTS NX_TRIG_ANCESTORS_UPDATE ON hierarchy;
+  CREATE TRIGGER nx_trig_ancestors_update
+    AFTER UPDATE ON hierarchy
+    FOR EACH ROW EXECUTE PROCEDURE nx_ancestors_update();
+$$
+LANGUAGE sql
+VOLATILE;
+
+#IF: pathOptimizationsEnabled
+CREATE OR REPLACE FUNCTION nx_get_ancestors(id ${idTypeParam}) RETURNS ${idTypeParam}[]
+    AS $$
+DECLARE
+  curid ${idType} := id;
+  newid ${idType};
+  ret ${idTypeParam}[];
+BEGIN
+  WHILE curid IS NOT NULL LOOP
+    IF curid IS DISTINCT FROM id THEN
+      ret = array_prepend(curid, ret);
+    END IF;
+    SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;
+    curid := newid;
+  END LOOP;
+  RETURN ret;
+END $$
+    LANGUAGE plpgsql STABLE;
+
+
+#IF: pathOptimizationsEnabled
+CREATE OR REPLACE FUNCTION nx_init_ancestors()
+RETURNS void
+    AS $$
+BEGIN
+  TRUNCATE TABLE ancestors;
+  INSERT INTO ancestors
+    SELECT id, nx_get_ancestors(id)
+    FROM (SELECT id FROM hierarchy WHERE NOT isproperty) AS uids;
+  PERFORM nx_ancestors_create_triggers();
+  RETURN;
+END $$
+    LANGUAGE plpgsql;
+
+
+#IF: pathOptimizationsEnabled
+CREATE OR REPLACE FUNCTION nx_ancestors_insert()
+RETURNS trigger
+AS $$
+BEGIN
+  IF NEW.isproperty THEN
+    RETURN NULL;
+  END IF;
+  IF NEW.parentid IS NULL THEN
+    RETURN NULL;
+  END IF;
+  IF NEW.id IS NULL THEN
+    RAISE EXCEPTION 'Cannot have NULL id';
+  END IF;
+  INSERT INTO ancestors VALUES (NEW.id, nx_get_ancestors(NEW.id));
+  RETURN NULL;
+END $$
+LANGUAGE plpgsql
+VOLATILE;
+
+
+#IF: pathOptimizationsEnabled
+CREATE OR REPLACE FUNCTION nx_ancestors_update()
+RETURNS trigger
+AS $$
+BEGIN
+  IF NEW.isproperty THEN
+    RETURN NULL;
+  END IF;
+  IF OLD.parentid IS NOT DISTINCT FROM NEW.parentid THEN
+    RETURN NULL;
+  END IF;
+  IF OLD.id IS DISTINCT FROM NEW.id THEN
+    RAISE EXCEPTION 'Cannot change id';
+  END IF;
+  UPDATE ancestors SET ancestors = nx_get_ancestors(id)
+    WHERE id IN (SELECT id FROM ancestors
+                   WHERE ARRAY[NEW.id] <@ ancestors OR id = NEW.id);
+  RETURN NULL;
+END $$
+LANGUAGE plpgsql
+VOLATILE;
+
+
+# ancestors ids (since Nuxeo 5.5)
+
+#IF: pathOptimizationsEnabled
+CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids ${idType}[])
+RETURNS SETOF ${idType}
+AS $$
+DECLARE
+  id ${idType};
+  r record;
+BEGIN
+  FOR r IN SELECT anc.ancestors FROM ancestors anc
+      WHERE anc.id IN (SELECT * FROM unnest(ids)) LOOP
+    RETURN QUERY SELECT unnest(r.ancestors);
+  END LOOP;
+END $$
+LANGUAGE plpgsql
+VOLATILE;
+
+# TODO 8.4: use CTE
+#IF: !pathOptimizationsEnabled
+CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids ${idType}[])
+RETURNS SETOF ${idType}
+AS $$
+DECLARE
+  id ${idType};
+  curid ${idType};
+BEGIN
+  FOR id IN SELECT * FROM unnest(ids) LOOP
+    curid := id;
+    LOOP
+      SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;
+      EXIT WHEN curid IS NULL;
+      RETURN NEXT curid;
+    END LOOP;
+  END LOOP;
+END $$
+LANGUAGE plpgsql
+VOLATILE;
+
+
+############################################################
+
+
+#CATEGORY: afterTableCreation
+
+
+#IF: fulltextEnabled
+CREATE OR REPLACE FUNCTION NX_UPDATE_FULLTEXT()
+RETURNS trigger
+AS $$
+BEGIN
+  ${fulltextTriggerStatements}
+  RETURN NEW;
+END $$
+LANGUAGE plpgsql
+VOLATILE;
+
+
+#IF: fulltextEnabled
+DROP TRIGGER IF EXISTS NX_TRIG_FT_UPDATE ON ${fulltextTable};
+
+
+#IF: fulltextEnabled
+CREATE TRIGGER NX_TRIG_FT_UPDATE
+  BEFORE INSERT OR UPDATE ON ${fulltextTable}
+  FOR EACH ROW EXECUTE PROCEDURE NX_UPDATE_FULLTEXT();
+
+# -- migrate table from read_acls into aclr, since 5.4.2
+#TEST:
+SELECT 1 FROM pg_tables WHERE tablename = 'read_acls';
+
+#IF: !emptyResult
+ALTER TABLE read_acls RENAME TO aclr;
+ALTER TABLE aclr RENAME COLUMN id TO acl_id;
+
+
+# -- Remove useless primary key since 5.4.2
+#TEST:
+SELECT 1 FROM pg_constraint WHERE conname='read_acls_pkey';
+
+#IF: ! emptyResult
+ALTER TABLE aclr DROP CONSTRAINT read_acls_pkey;
+
+
+# ------------------------------------------------------------
+# -- Read acls table
+# -- acl ex: jsmith,administrators,-Everyone
+# -- acl_id = md5(acl)
+#TEST:
+SELECT 1 FROM pg_tables WHERE tablename = 'aclr';
+
+#IF: emptyResult
+CREATE TABLE aclr (
+  acl_id varchar(34) NOT NULL,
+  acl varchar(${readAclMaxSize})
+);
+
+
+#TEST:
+SELECT 1 FROM pg_indexes WHERE indexname = 'aclr_acl_id_idx';
+
+#IF: emptyResult
+CREATE INDEX aclr_acl_id_idx ON aclr USING btree(acl_id);
+
+
+# -- Migration since 5.4.2
+#TEST:
+SELECT 1 FROM pg_tables WHERE tablename = 'read_acls_cache';
+
+#IF: ! emptyResult
+DROP TABLE read_acls_cache;
+
+
+# -- Known users table
+# -- users ex: {members,jsmith,Everyone}
+# -- user_id = md5(users)
+#TEST:
+SELECT 1 FROM pg_tables WHERE tablename = 'aclr_user';
+
+#IF: emptyResult
+CREATE ${unlogged} TABLE aclr_user (
+  user_id varchar(34) NOT NULL,
+  users varchar(250)[]
+);
+
+
+#TEST:
+SELECT 1 FROM pg_indexes WHERE indexname = 'aclr_user_user_id_idx';
+
+#IF: emptyResult
+CREATE INDEX aclr_user_user_id_idx ON aclr_user USING btree(user_id);
+
+
+# -- Jonction between aclr and aclr_user
+#TEST:
+SELECT 1 FROM pg_tables WHERE tablename = 'aclr_user_map';
+
+#IF: emptyResult
+CREATE ${unlogged} TABLE aclr_user_map (
+  user_id varchar(34) NOT NULL,
+  acl_id varchar(34) NOT NULL
+);
+
+
+#TEST:
+SELECT 1 FROM pg_indexes WHERE indexname = 'aclr_user_map_user_id_idx';
+
+#IF: emptyResult
+CREATE INDEX aclr_user_map_user_id_idx ON aclr_user_map USING btree(user_id);
+
+
+#TEST:
+SELECT 1 FROM pg_indexes WHERE indexname = 'aclr_user_map_acl_id_idx';
+
+#IF: emptyResult
+CREATE INDEX aclr_user_map_acl_id_idx ON aclr_user_map USING btree(acl_id, user_id);
+
+
+# -- Associate a read acl for each hierarchy entry
+#TEST:
+SELECT 1 FROM pg_tables WHERE tablename='hierarchy_read_acl';
+
+#IF: emptyResult
+CREATE TABLE hierarchy_read_acl (
+  id ${idType} NOT NULL,
+  acl_id varchar(34),
+  CONSTRAINT hierarchy_read_acl_id_fk FOREIGN KEY(id) REFERENCES hierarchy(id) ON DELETE CASCADE
+);
+
+
+# -- Remove useless primary key
+#TEST:
+SELECT 1 FROM pg_constraint WHERE conname='hierarchy_read_acl_pkey';
+
+#IF: ! emptyResult
+ALTER TABLE hierarchy_read_acl DROP CONSTRAINT hierarchy_read_acl_pkey;
+
+
+#TEST:
+SELECT 1 FROM pg_indexes WHERE indexname='hierarchy_read_acl_id_idx';
+
+#IF: emptyResult
+CREATE INDEX hierarchy_read_acl_id_idx ON hierarchy_read_acl USING btree(id);
+
+
+#TEST:
+SELECT 1 FROM pg_indexes WHERE indexname='hierarchy_read_acl_acl_id_idx';
+
+#IF: emptyResult
+CREATE INDEX hierarchy_read_acl_acl_id_idx ON hierarchy_read_acl USING btree(acl_id);
+
+
+# -- Remove old table since 5.4.2
+#TEST:
+SELECT 1 FROM pg_tables WHERE tablename='hierarchy_modified_acl';
+
+#IF: ! emptyResult
+DROP TABLE hierarchy_modified_acl;
+
+
+# -- Log modified document that require an aclr update
+#TEST:
+SELECT 1 FROM pg_tables WHERE tablename='aclr_modified';
+
+#IF: emptyResult
+CREATE ${unlogged} TABLE aclr_modified (
+  hierarchy_id ${idType},
+  is_new boolean
+);
+
+
+# -- Remove old table since 5.4.2
+#TEST:
+SELECT 1 FROM pg_tables WHERE tablename='read_acl_permissions';
+
+#IF: ! emptyResult
+DROP TABLE read_acl_permissions;
+
+
+#-- List of permission that grant the read access
+#TEST:
+SELECT 1 FROM pg_tables WHERE tablename='aclr_permission';
+
+#IF: emptyResult
+CREATE TABLE aclr_permission (
+  permission character varying(250)
+);
+
+
+#TEST:
+SELECT 1 FROM aclr_permission;
+
+#IF: emptyResult
+INSERT INTO aclr_permission VALUES ${readPermissions};
+
+
+
+CREATE OR REPLACE FUNCTION nx_get_local_read_acl(id ${idType})
+RETURNS varchar
+AS $$
+-- Compute the read acl for a hierarchy id using a local acl
+DECLARE
+  curid ${idType} := id;
+  read_acl varchar(${readAclMaxSize}) := NULL;
+  r record;
+BEGIN
+  -- RAISE DEBUG 'call %', curid;
+  FOR r IN SELECT CASE
+      WHEN (NOT acls.grant) THEN '-'
+      WHEN (acls.grant) THEN ''
+      ELSE NULL
+    END || acls.user AS op
+  FROM acls
+  WHERE acls.id = curid AND
+      permission IN (SELECT permission FROM aclr_permission)
+  ORDER BY acls.pos LOOP
+    IF r.op IS NULL THEN
+      CONTINUE;
+    END IF;
+    IF read_acl IS NULL THEN
+      read_acl := r.op;
+    ELSE
+      read_acl := read_acl || '${usersSeparator}' || r.op;
+    END IF;
+  END LOOP;
+  RETURN read_acl;
+END $$
+LANGUAGE plpgsql
+STABLE;
+
+
+CREATE OR REPLACE FUNCTION nx_get_read_acl(id ${idTypeParam})
+RETURNS varchar
+AS $$
+-- Compute the read acl for a hierarchy id using inherited acl
+DECLARE
+  curid ${idType} := id;
+  newid ${idType};
+  first boolean := true;
+  read_acl varchar(${readAclMaxSize});
+  ret varchar(${readAclMaxSize});
+  pos integer;
+BEGIN
+  WHILE curid IS NOT NULL LOOP
+    SELECT nx_get_local_read_acl(curid) INTO read_acl;
+    IF read_acl IS NOT NULL THEN
+      IF ret is NULL THEN
+        ret := read_acl;
+      ELSE
+        ret := ret || '${usersSeparator}' || read_acl;
+      END IF;
+    END IF;
+    SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;
+    IF first AND newid IS NULL THEN
+      SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;
+    END IF;
+    first := false;
+    curid := newid;
+    -- Remove everything after a deny on Everyone
+    SELECT position('-${everyone}' in ret) INTO pos;
+    IF pos > 0 THEN
+      ret := substring(ret from 1 for pos + length('${everyone}'));
+      curid := NULL;
+    END IF;
+  END LOOP;
+  IF ret is NULL THEN
+    ret = '_empty';
+  END IF;
+  RETURN ret;
+END $$
+LANGUAGE plpgsql
+STABLE;
+
+
+CREATE OR REPLACE FUNCTION nx_get_read_acls_for(users varchar[])
+RETURNS SETOF text
+AS $$
+-- List read acl ids for a list of user/groups using cache
+DECLARE
+  in_cache boolean;
+  user_md5 varchar(34);
+BEGIN
+  SELECT md5(array_to_string(users, '${usersSeparator}')) INTO user_md5;
+  SELECT true INTO in_cache WHERE EXISTS (SELECT 1 FROM aclr_user WHERE user_id = user_md5);
+  IF in_cache IS NULL THEN
+    INSERT INTO aclr_user VALUES (user_md5, users);
+    INSERT INTO aclr_user_map SELECT user_md5, acl_id FROM nx_list_read_acls_for(users) AS acl_id;
+  END IF;
+  RETURN QUERY SELECT acl_id::text FROM aclr_user_map WHERE user_id = user_md5;
+  RETURN;
+END $$
+LANGUAGE plpgsql
+VOLATILE;
+
+
+CREATE OR REPLACE FUNCTION nx_list_read_acls_for(users varchar[])
+RETURNS SETOF text
+AS $$
+-- List read acl ids for a list of user/groups
+DECLARE
+  r record;
+  rr record;
+  users_blacklist varchar[];
+BEGIN
+  -- Build a black list with negative users
+  SELECT regexp_split_to_array('-' || array_to_string(users, '${usersSeparator}-'), '${usersSeparator}')
+    INTO users_blacklist;
+  <<acl_loop>>
+  FOR r IN SELECT aclr.acl_id, aclr.acl FROM aclr LOOP
+    -- RAISE DEBUG 'ACL %', r.acl_id;
+    -- split the acl into aces
+    FOR rr IN SELECT ace FROM regexp_split_to_table(r.acl, '${usersSeparator}') AS ace LOOP
+       -- RAISE DEBUG '  ACE %', rr.ace;
+       IF (rr.ace = ANY(users)) THEN
+         -- RAISE DEBUG '  GRANT %', users;
+         RETURN NEXT r.acl_id;
+         CONTINUE acl_loop;
+         -- ok
+       ELSEIF (rr.ace = ANY(users_blacklist)) THEN
+         -- RAISE DEBUG '  DENY';
+         CONTINUE acl_loop;
+       END IF;
+    END LOOP;
+  END LOOP acl_loop;
+  RETURN;
+END $$
+LANGUAGE plpgsql
+STABLE;
+
+
+CREATE OR REPLACE FUNCTION nx_log_acls_modified()
+RETURNS trigger
+AS $$
+-- Trigger to log change in the acls table
+DECLARE
+  doc_id ${idType};
+BEGIN
+  IF (TG_OP = 'DELETE') THEN
+    doc_id := OLD.id;
+  ELSE
+    doc_id := NEW.id;
+  END IF;
+  INSERT INTO aclr_modified VALUES(doc_id, 'f');
+  RETURN NEW;
+END $$
+LANGUAGE plpgsql;
+
+
+DROP TRIGGER IF EXISTS nx_trig_acls_modified ON acls;
+CREATE TRIGGER nx_trig_acls_modified
+  AFTER INSERT OR UPDATE OR DELETE ON acls
+  FOR EACH ROW EXECUTE PROCEDURE nx_log_acls_modified();
+
+#IF: ! aclOptimizationsEnabled
+ALTER TABLE acls DISABLE TRIGGER nx_trig_acls_modified;
+
+
+CREATE OR REPLACE FUNCTION nx_log_hierarchy_modified()
+RETURNS trigger
+AS $$
+-- Trigger to log doc_id that need read acl update
+BEGIN
+  IF (TG_OP = 'INSERT') THEN
+    IF (NEW.isproperty = 'f') THEN
+      -- New document
+      INSERT INTO aclr_modified VALUES(NEW.id, 't');
+    END IF;
+  ELSEIF (TG_OP = 'UPDATE') THEN
+    IF (NEW.isproperty = 'f' AND NEW.parentid != OLD.parentid) THEN
+      -- New container
+      INSERT INTO aclr_modified VALUES(NEW.id, 'f');
+    END IF;
+  END IF;
+  RETURN NEW;
+END $$
+LANGUAGE plpgsql;
+
+
+DROP TRIGGER IF EXISTS nx_trig_hierarchy_modified ON hierarchy;
+CREATE TRIGGER nx_trig_hierarchy_modified
+  AFTER INSERT OR UPDATE ON hierarchy
+  FOR EACH ROW EXECUTE PROCEDURE nx_log_hierarchy_modified();
+
+
+#IF: ! aclOptimizationsEnabled
+ALTER TABLE hierarchy DISABLE TRIGGER nx_trig_hierarchy_modified;
+
+
+CREATE OR REPLACE FUNCTION nx_aclr_modified()
+RETURNS trigger
+AS $$
+-- Trigger to update the user read alcs
+DECLARE
+  r record;
+  rr record;
+  users_blacklist varchar[];
+BEGIN
+  IF (NEW.acl IS NULL) THEN
+     RETURN NEW;
+  END IF;
+  <<user_loop>>
+  FOR r IN SELECT * FROM aclr_user LOOP
+    SELECT regexp_split_to_array('-' || array_to_string(r.users, '${usersSeparator}-'), '${usersSeparator}')
+      INTO users_blacklist;
+    FOR rr IN SELECT ace FROM regexp_split_to_table(NEW.acl, '${usersSeparator}') AS ace LOOP
+       -- RAISE DEBUG '  ACE %', rr.ace;
+       IF (rr.ace = ANY(r.users)) THEN
+         -- GRANTED
+         INSERT INTO aclr_user_map SELECT * FROM (SELECT r.user_id, NEW.acl_id) AS input
+            WHERE NOT EXISTS (SELECT 1 FROM aclr_user_map AS u WHERE u.user_id=r.user_id AND u.acl_id = NEW.acl_id);
+         CONTINUE user_loop;
+       ELSEIF (rr.ace = ANY(users_blacklist)) THEN
+         -- RAISE DEBUG '  DENY';
+         CONTINUE user_loop;
+       END IF;
+    END LOOP;
+  END LOOP user_loop;
+RETURN NEW;
+END $$
+LANGUAGE plpgsql;
+
+# -- remove old trigger since 5.4.2
+DROP TRIGGER IF EXISTS nx_trig_read_acls_modified ON aclr;
+
+DROP TRIGGER IF EXISTS nx_trig_aclr_modified ON aclr;
+CREATE TRIGGER nx_trig_aclr_modified
+  AFTER INSERT ON aclr
+  FOR EACH ROW EXECUTE PROCEDURE nx_aclr_modified();
+
+
+#IF: ! aclOptimizationsEnabled
+ALTER TABLE aclr DISABLE TRIGGER nx_trig_aclr_modified;
+
+
+CREATE OR REPLACE FUNCTION nx_rebuild_read_acls()
+RETURNS void
+AS $$
+-- Rebuild the read acls tables
+BEGIN
+  RAISE DEBUG 'nx_rebuild_read_acls truncating aclr_ tables ...';
+  TRUNCATE TABLE aclr;
+  TRUNCATE TABLE aclr_user;
+  TRUNCATE TABLE aclr_user_map;
+  TRUNCATE TABLE hierarchy_read_acl;
+  TRUNCATE TABLE aclr_modified;
+  RAISE DEBUG 'nx_rebuild_read_acls rebuilding hierarchy_read_acl ...';
+  INSERT INTO hierarchy_read_acl
+    SELECT id, md5(nx_get_read_acl(id))
+    FROM (SELECT id FROM hierarchy WHERE NOT isproperty) AS uids;
+  RAISE INFO 'nx_rebuild_read_acls done.';
+  RETURN;
+END $$
+LANGUAGE plpgsql
+VOLATILE;
+
+
+CREATE OR REPLACE FUNCTION nx_vacuum_read_acls()
+RETURNS void
+AS $$
+-- Remove unused read acls entries
+DECLARE
+  update_count integer;
+BEGIN
+  RAISE INFO 'nx_vacuum_read_acls vacuuming ...';
+  DELETE FROM aclr r WHERE NOT EXISTS (SELECT 1 FROM hierarchy_read_acl h
+    WHERE h.acl_id = r.acl_id LIMIT 1);
+  GET DIAGNOSTICS update_count = ROW_COUNT;
+  RAISE INFO 'nx_vacuum_read_acls done, % read acls removed.', update_count;
+  TRUNCATE aclr_user;
+  TRUNCATE aclr_user_map;
+  TRUNCATE aclr_modified;
+  RETURN;
+END $$
+LANGUAGE plpgsql
+VOLATILE;
+
+
+CREATE OR REPLACE FUNCTION nx_update_read_acls()
+RETURNS void
+AS $$
+-- Rebuild only necessary read acls
+DECLARE
+  update_count integer;
+BEGIN
+  --
+  -- 1/ New documents, no new ACL
+  RAISE DEBUG 'nx_update_read_acls inserting new hierarchy_read_acl ...';
+  INSERT INTO hierarchy_read_acl
+    SELECT id, md5(nx_get_read_acl(id))
+    FROM (SELECT DISTINCT(hierarchy_id) AS id
+        FROM aclr_modified
+        WHERE is_new AND
+            EXISTS (SELECT 1 FROM hierarchy WHERE aclr_modified.hierarchy_id=hierarchy.id LIMIT 1)) AS uids;
+  GET DIAGNOSTICS update_count = ROW_COUNT;
+  RAISE DEBUG 'nx_update_read_acls % entries added.', update_count;
+  DELETE FROM aclr_modified WHERE is_new;
+  --
+  -- 2/ Handles new ACLs, marking read acl with a NULL marker
+  RAISE DEBUG 'nx_update_read_acls updating hierarchy_read_acl ...';
+  UPDATE hierarchy_read_acl SET acl_id = NULL WHERE id IN (
+    SELECT DISTINCT(hierarchy_id) AS hierarchy_id FROM aclr_modified WHERE NOT is_new);
+  GET DIAGNOSTICS update_count = ROW_COUNT;
+  RAISE DEBUG 'nx_update_read_acls mark % lines to update', update_count;
+  DELETE FROM aclr_modified WHERE NOT is_new;
+  --
+  -- 3/ Mark all children with the NULL marker
+  LOOP
+    UPDATE hierarchy_read_acl SET acl_id = NULL WHERE id IN (
+      SELECT h.id
+      FROM hierarchy AS h
+      JOIN hierarchy_read_acl AS r ON h.id = r.id
+      WHERE r.acl_id IS NOT NULL
+        AND h.parentid IN (SELECT id FROM hierarchy_read_acl WHERE acl_id IS NULL));
+    GET DIAGNOSTICS update_count = ROW_COUNT;
+    RAISE DEBUG 'nx_update_read_acls mark % lines to udpate', update_count;
+    IF (update_count = 0) THEN
+      EXIT;
+    END IF;
+  END LOOP;
+  --
+  -- 4/ Compute the new read ACLs for updated documents
+  RAISE DEBUG 'nx_update_read_acls computing read acls ...';
+  UPDATE hierarchy_read_acl SET acl_id = md5(nx_get_read_acl(id)) WHERE acl_id IS NULL;
+  GET DIAGNOSTICS update_count = ROW_COUNT;
+  RAISE INFO 'nx_update_read_acls % updated.', update_count;
+  RETURN;
+END $$
+LANGUAGE plpgsql
+VOLATILE;
+
+
+CREATE OR REPLACE FUNCTION nx_log_hierarchy_read_acl_modified()
+RETURNS trigger
+AS $$
+-- Trigger to update the aclr tables
+BEGIN
+  IF (NEW.acl_id IS NOT NULL) THEN
+    INSERT INTO aclr
+      SELECT md5(acl), acl FROM (SELECT nx_get_read_acl(NEW.id) AS acl) AS input
+      WHERE NOT EXISTS (SELECT 1 FROM aclr AS r WHERE r.acl_id = NEW.acl_id);
+  END IF;
+  RETURN NEW;
+END $$
+LANGUAGE plpgsql;
+
+
+DROP TRIGGER IF EXISTS nx_trig_hierarchy_read_acl_modified ON hierarchy_read_acl;
+CREATE TRIGGER nx_trig_hierarchy_read_acl_modified
+  AFTER INSERT OR UPDATE ON hierarchy_read_acl
+  FOR EACH ROW EXECUTE PROCEDURE nx_log_hierarchy_read_acl_modified();
+
+
+# build the read acls if empty, this takes care of the upgrade
+#IF: aclOptimizationsEnabled
+#TEST:
+SELECT 1 FROM aclr LIMIT 1;
+
+#IF: aclOptimizationsEnabled
+#IF: emptyResult
+LOG.INFO Upgrading to optimized acls
+
+#IF: aclOptimizationsEnabled
+#IF: emptyResult
+SELECT * FROM nx_rebuild_read_acls();
+
+#IF: aclOptimizationsEnabled
+LOG.INFO Vacuuming tables used by optimized acls
+
+# Vacuum the read acls tables
+#IF: aclOptimizationsEnabled
+SELECT nx_vacuum_read_acls();
+
+
+# ##### soft delete #####
+
+
+#IF: softDeleteEnabled
+LOG.INFO Soft delete enabled
+
+
+#IF: softDeleteEnabled
+#IF: proxiesEnabled
+CREATE OR REPLACE FUNCTION NX_DELETE(ids ${idType}[], nowTime TIMESTAMP)
+RETURNS void
+AS $$
+-- Marks the given ids as deleted at the given time (null means now)
+-- Simulates foreign keys except for the parent-child one which is done in Java
+BEGIN
+  IF nowTime IS NULL THEN
+    nowTime := CURRENT_TIMESTAMP;
+  END IF;
+  UPDATE hierarchy
+    SET isdeleted = true, deletedtime = nowTime
+    WHERE id = ANY(ids);
+  -- do hard delete for foreign key proxies.targetid
+  DELETE FROM proxies WHERE proxies.targetid = ANY(ids);
+END $$
+LANGUAGE plpgsql
+VOLATILE;
+
+#IF: softDeleteEnabled
+#IF: ! proxiesEnabled
+CREATE OR REPLACE FUNCTION NX_DELETE(ids ${idType}[], nowTime TIMESTAMP)
+RETURNS void
+AS $$
+-- Marks the given ids as deleted at the given time (null means now)
+BEGIN
+  IF nowTime IS NULL THEN
+    nowTime := CURRENT_TIMESTAMP;
+  END IF;
+  UPDATE hierarchy
+    SET isdeleted = true, deletedtime = nowTime
+    WHERE id = ANY(ids);
+END $$
+LANGUAGE plpgsql
+VOLATILE;
+
+
+#IF: softDeleteEnabled
+CREATE OR REPLACE FUNCTION NX_DELETE_PURGE(max INTEGER, beforeTime TIMESTAMP)
+RETURNS INT
+AS $$
+-- Does hard delete on soft-deleted rows earlier than beforeTime (null means all).
+-- A maximum number of rows to delete can be provided (null means no limit).
+-- Returns the number of rows actually deleted.
+-- Rows are deleted leaves first.
+DECLARE
+  ndel INTEGER;
+  total INTEGER := 0;
+BEGIN
+  IF beforeTime IS NULL THEN
+    beforeTime := CURRENT_TIMESTAMP + '1d';
+  END IF;
+  IF max = 0 THEN
+    max := NULL;
+  END IF;
+  LOOP
+    -- delete some leaves in the tree of soft-deleted documents
+    IF max IS NULL THEN
+      DELETE FROM hierarchy
+        WHERE isdeleted AND deletedtime < beforeTime
+        AND id NOT IN (
+          -- not leaves: deleted nodes that have deleted children
+          SELECT DISTINCT hpar.id FROM hierarchy hpar
+            JOIN hierarchy h ON h.parentid = hpar.id
+            WHERE hpar.isdeleted AND h.isdeleted);
+    ELSE
+      DELETE FROM hierarchy WHERE id IN (
+        SELECT id FROM hierarchy
+        WHERE isdeleted AND deletedtime < beforeTime
+        AND id NOT IN (
+          -- not leaves: deleted nodes that have deleted children
+          SELECT DISTINCT hpar.id FROM hierarchy hpar
+            JOIN hierarchy h ON h.parentid = hpar.id
+            WHERE hpar.isdeleted AND h.isdeleted)
+        LIMIT max);
+    END IF;
+    GET DIAGNOSTICS ndel = ROW_COUNT;
+    EXIT WHEN ndel = 0;
+    total := total + ndel;
+    EXIT WHEN total >= max;     -- no exit when max = NULL
+  END LOOP;
+  RETURN total;
+END $$
+LANGUAGE plpgsql
+VOLATILE;
+
+
+# ##### upgrade tag / nxp_tagging (since Nuxeo 5.3.2) #####
+
+#TEST:
+SELECT 1 FROM pg_tables WHERE tablename = 'nxp_tagging';
+
+#IF: ! emptyResult
+LOG.INFO Upgrading tags
+
+#IF: ! emptyResult
+CREATE OR REPLACE FUNCTION nx_upgrade_tags()
+RETURNS void
+AS $$
+  -- make tags placeless
+  UPDATE hierarchy SET parentid = NULL WHERE primarytype = 'Tag' AND isproperty = false;
+  -- make tagging hierarchy
+  UPDATE nxp_tagging SET id = md5(id)::uuid;
+  INSERT INTO hierarchy (id, name, isproperty, primarytype)
+    SELECT tg.id, t.label, false, 'Tagging'
+      FROM nxp_tagging tg
+      JOIN tag t ON tg.tag_id = t.id;
+  -- make tagging relation
+  INSERT INTO relation (id, source, target)
+    SELECT id, document_id, tag_id FROM nxp_tagging;
+  -- make tagging dublincore (save is_private into coverage just in case)
+  INSERT INTO dublincore (id, title, creator, created, coverage)
+    SELECT tg.id, t.label, tg.author, tg.creation_date, tg.is_private::text
+      FROM nxp_tagging tg
+      JOIN tag t ON tg.tag_id = t.id;
+  -- drop now useless table
+  DROP TABLE nxp_tagging;
+  -- remove old tags root
+  DELETE FROM hierarchy
+    WHERE name = 'tags' AND primarytype = 'HiddenFolder' AND isproperty = false
+      AND parentid IN (SELECT id FROM hierarchy WHERE primarytype = 'Root' AND isproperty = false);
+$$
+LANGUAGE sql
+VOLATILE;
+
+#IF: ! emptyResult
+SELECT nx_upgrade_tags();
+
+
+############################################################
+# Temporary workaround that should be removed see NXP-7399.
+
+#TEST:
+SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'nxp_logs')
+           AND NOT EXISTS(SELECT 1 FROM pg_indexes WHERE indexname='nxp_logs_log_doc_uuid_idx');
+
+#IF: ! emptyResult
+CREATE INDEX nxp_logs_log_doc_uuid_idx ON nxp_logs USING btree(log_doc_uuid);
+
+
+#TEST:
+SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'nxp_logs')
+           AND NOT EXISTS(SELECT 1 FROM pg_indexes WHERE indexname='nxp_logs_log_event_date_idx');
+
+#IF: ! emptyResult
+CREATE INDEX nxp_logs_log_event_date_idx ON nxp_logs USING btree(log_event_date);
+
+
+#TEST:
+SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'nxp_logs')
+           AND NOT EXISTS(SELECT 1 FROM pg_indexes WHERE indexname='nxp_logs_log_date_idx');
+
+#IF: ! emptyResult
+CREATE INDEX nxp_logs_log_date_idx ON nxp_logs USING btree(log_date);
+
+
+############################################################
+# Adding miscellaneous indexes
+
+#TEST:
+SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'dc_contributors')
+           AND NOT EXISTS(SELECT 1 FROM pg_indexes WHERE indexname='dc_contributors_item_idx');
+
+#IF: ! emptyResult
+CREATE INDEX dc_contributors_item_idx ON dc_contributors USING btree(item);
+
+
+#TEST:
+SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'dublincore')
+           AND NOT EXISTS(SELECT 1 FROM pg_indexes WHERE indexname='dublincore_modified_idx');
+
+#IF: ! emptyResult
+CREATE INDEX dublincore_modified_idx ON dublincore USING btree(modified);
+
+#TEST:
+SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'fulltext')
+           AND NOT EXISTS(SELECT 1 FROM pg_indexes WHERE indexname='fulltext_jobid_idx');
+
+#IF: ! emptyResult
+CREATE INDEX fulltext_jobid_idx ON fulltext USING btree(jobid);
+
+
+############################################################
+
+
+#CATEGORY: upgradeVersions
+
+UPDATE hierarchy SET isversion = true
+  FROM versions WHERE hierarchy.id = versions.id;
+
+CREATE OR REPLACE FUNCTION nx_upgrade_versions()
+RETURNS void
+AS $$
+-- Upgrade versions: label, islatest, islatestmajor
+DECLARE
+  series ${idType} := ${idNotPresent};
+  latest boolean := false;
+  latestmajor boolean := false;
+  major boolean;
+  r record;
+BEGIN
+  FOR r in
+    SELECT v.id, v.versionableid, h.majorversion, h.minorversion
+      FROM versions v JOIN hierarchy h ON v.id = h.id
+      ORDER BY v.versionableid, v.created DESC
+  LOOP
+    IF r.versionableid <> series THEN
+      -- restart
+      latest := true;
+      latestmajor := true;
+      series := r.versionableid;
+    END IF;
+    major := r.minorversion = 0;
+    UPDATE versions SET
+        label = CAST(r.majorversion AS text) || '.' || CAST(r.minorversion AS text),
+        islatest = latest,
+        islatestmajor = major AND latestmajor
+      WHERE id = r.id;
+    -- next
+    latest := false;
+    IF major THEN latestmajor := false; END IF;
+  END LOOP;
+END $$
+LANGUAGE plpgsql;
+
+SELECT nx_upgrade_versions();
+
+DROP FUNCTION nx_upgrade_versions();
+
+############################################################
+
+
+#CATEGORY: addClusterNode
+
+# delete nodes for sessions that don't exist anymore
+
+# PostgreSQL 9.2 renamed pg_stat_activity.procpid to pg_stat_activity.pid
+# so we must use conditions
+
+#TEST:
+SELECT attname FROM pg_attribute
+  WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'pg_stat_activity')
+    AND attname = 'pid';
+
+#IF: ! emptyResult
+DELETE FROM cluster_nodes N WHERE
+  NOT EXISTS(SELECT * FROM pg_stat_activity S WHERE N.nodeid = S.pid);
+
+#TEST:
+SELECT attname FROM pg_attribute
+  WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'pg_stat_activity')
+    AND attname = 'procpid';
+
+#IF: ! emptyResult
+DELETE FROM cluster_nodes N WHERE
+  NOT EXISTS(SELECT * FROM pg_stat_activity S WHERE N.nodeid = S.procpid);
+
+# Remove orphan invalidations
+DELETE FROM CLUSTER_INVALS i
+  WHERE i.NODEID NOT IN (SELECT n.NODEID FROM CLUSTER_NODES n)
+
+INSERT INTO cluster_nodes (nodeid, created) VALUES (pg_backend_pid(), CURRENT_TIMESTAMP);
+
+
+#CATEGORY: removeClusterNode
+
+DELETE FROM cluster_nodes WHERE nodeid = pg_backend_pid();
+
+# Remove orphan invalidations
+DELETE FROM CLUSTER_INVALS i
+  WHERE i.NODEID NOT IN (SELECT n.NODEID FROM CLUSTER_NODES n)
+
+
+############################################################
+
+
+#CATEGORY: upgradeLastContributor
+
+UPDATE dublincore SET lastContributor = dc_c.item
+  FROM dublincore dc
+    JOIN (SELECT id, max(pos) AS pos FROM dc_contributors GROUP BY id) AS tmp ON (dc.id = tmp.id)
+    JOIN dc_contributors dc_c ON (tmp.id = dc_c.id AND tmp.pos = dc_c.pos)
+  WHERE dc.lastContributor IS NULL AND dublincore.id=dc_c.id;
+
+
+############################################################
+
+
+#CATEGORY: upgradeLocks
+
+ALTER TABLE locks DROP CONSTRAINT locks_id_hierarchy_fk;
+
+DELETE FROM locks WHERE lock IS NULL;
+
+UPDATE locks SET
+  owner = SUBSTRING(lock FROM 1 FOR POSITION(':' in lock) - 1),
+  created = SUBSTRING(lock FROM POSITION(':' in lock) + 1)::timestamp
+  WHERE owner IS NULL;
