@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.webapp.seam.debug.action">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="devModeFlush" link="#{seamReload.doFlush}" enabled="true"
+      label="Dev mode: force flush" order="100">
+      <category>USER_MENU_ACTIONS</category>
+      <filter-id>devModeEnabledForAdmin</filter-id>
+    </action>
+
+    <action id="seamReload" link="#{seamReload.doReload}" enabled="true"
+      label="Reload Seam" order="50">
+      <category>USER_MENU_ACTIONS</category>
+      <filter-id>seamHotReloadIsEnabled</filter-id>
+    </action>
+
+    <!-- NXP-7025: disable pdf export on doc -->
+    <!--
+      <action id="pdfExport" link="pdf" order="18"
+      label="label.exportview.pdfExport" icon="/icons/pdf_export.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      </action>
+    -->
+
+    <action id="exportViewPDFExport"
+      link="#{restHelper.getDocumentUrl(currentDocument, 'pdf', true)}" order="0"
+      label="label.exportview.pdfExport" icon="/icons/pdf_export.png">
+      <category>DOCUMENT_EXPORT_VIEW_ACTION</category>
+    </action>
+
+    <action id="exportViewZipBlobExport" link="#{clipboardActions.exportWorklistAsZip(currentDocument)}"
+      label="label.exportview.zipBlobExport" icon="/icons/action_export_zip.gif">
+      <category>DOCUMENT_EXPORT_VIEW_COMMAND_ACTION</category>
+    </action>
+
+    <!-- Contextual tools buttons contrib NXP-9039 -->
+    <action id="documentLock" link="#{lockActions.lockCurrentDocument}"
+      order="10" label="command.lock" type="link" icon="/icons/contextual_menu/unlocked.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>can_lock</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="documentUnlock" link="#{lockActions.unlockCurrentDocument}"
+      order="10" label="command.unlock" type="link" icon="/icons/contextual_menu/locked.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>can_unlock</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="permalinkAction" order="20" label="label.permalink" type="fancybox"
+      icon="/icons/contextual_menu/share.png" accessKey="k">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <properties>
+        <property name="include">/incl/permalink_box.xhtml</property>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="downloadAction" link="#{operationActionBean.doOperation('downloadFilesZip')}"
+      order="30" label="label.document.download" type="link"
+      icon="/icons/contextual_menu/download.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>documentHasBlobs</filter-id>
+    </action>
+
+    <action id="subscribesAllDocNotifications" link="#{subscriptionAction.updateAllSubscriptions}"
+      order="40" label="label.subscriptions.follow" type="link"
+      icon="/icons/contextual_menu/subscribe.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>hasNoSubscriptions</filter-id>
+      <filter-id>canSubscribe</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="unsubscribesAllDocNotifications" link="#{subscriptionAction.updateAllSubscriptions}"
+      order="40" label="label.subscriptions.unfollow" type="link"
+      icon="/icons/contextual_menu/unsubscribe.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>hasSubscriptions</filter-id>
+      <filter-id>canSubscribe</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="addCurrentDocumentToWorklist"
+      link="#{operationActionBean.doOperation('addCurrentDocumentToWorklist')}"
+      order="60" label="help.command.clipboard.addworklist" type="link"
+      icon="/icons/action_add.gif" immediate="true">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>not_folder</filter-id>
+      <filter-id>not_anonymous</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="print" link="#{restHelper.doPrint(themeActions.defaultTheme)}"
+      order="70" label="label.print" icon="/icons/printer.gif">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <properties>
+        <property name="target">_blank</property>
+      </properties>
+    </action>
+
+    <action id="restoreVersion" link="#{deleteActions.restoreCurrentDocument}"
+      order="1" label="command.undeleteDocs" immediate="true">
+      <category>DOCUMENT_SUMMARY_CUSTOM_ACTIONS</category>
+      <filter-id>restoreVersionDisplay</filter-id>
+    </action>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="restoreVersionDisplay">
+      <rule grant="true">
+        <condition>#{deleteActions.restoreActionDisplay()}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="devModeEnabledForAdmin">
+      <rule grant="true">
+        <condition>#{seamReload.getCanTriggerFlush()}</condition>
+      </rule>
+    </filter>
+
+    <filter id="seamHotReloadIsEnabled">
+      <rule grant="true">
+        <condition>#{seamHotReloadIsEnabled}</condition>
+      </rule>
+    </filter>
+
+    <filter id="hasSubscriptions">
+      <rule grant="true">
+        <condition>#{subscriptionAction.getSelectedNotifications().size() > 0}</condition>
+      </rule>
+    </filter>
+
+    <filter id="hasNoSubscriptions">
+      <rule grant="true">
+        <condition>#{subscriptionAction.getSelectedNotifications().size() == 0}</condition>
+      </rule>
+    </filter>
+
+    <filter id="canSubscribe">
+      <rule grant="false">
+        <type>Domain</type>
+        <type>WorkspaceRoot</type>
+      </rule>
+    </filter>
+
+    <filter id="documentHasBlobs">
+      <rule grant="true">
+        <condition>
+          #{popupHelper.isDocumentHasBlobs(document)}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="hasNote">
+      <rule grant="true">
+        <schema>note</schema>
+      </rule>
+    </filter>
+
+    <filter id="notHasNote">
+      <rule grant="false">
+        <schema>note</schema>
+      </rule>
+    </filter>
+
+    <filter id="denyForFile">
+      <rule grant="false">
+        <type>File</type>
+      </rule>
+    </filter>
+
+    <filter id="hasDublincore">
+      <rule grant="true">
+        <schema>dublincore</schema>
+      </rule>
+    </filter>
+
+    <filter id="canToggleLayoutToEditMode">
+      <documentation>
+        <p>
+          Filter used by the "toggleableLayoutWithForms" widget type
+          to check
+          wether the "edit" button should be displayed.
+        </p>
+        <p>
+          This filter is a combination of default filters "edit" and
+          "mutable_document" usually used to control rendering of the "edit" tab
+          on document views.
+        </p>
+        @since 5.6
+      </documentation>
+      <rule grant="true">
+        <permission>Write</permission>
+      </rule>
+      <rule grant="false">
+        <facet>Immutable</facet>
+      </rule>
+      <rule grant="false">
+        <condition>
+          document.getCurrentLifeCycleState().equals("deleted")
+        </condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="typeCompatibility">
+
+    <typeCompatibility type="link">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <category>DOCUMENT_HEADER_ACTIONS_LIST</category>
+      <category>DEFAULT_LIST</category>
+      <category>CLIPBOARD_LIST</category>
+      <category>CURRENT_SELECTION_COPY</category>
+      <category>CLIPBOARD_PASTE</category>
+      <category>CURRENT_SELECTION_ADDTOLIST</category>
+      <category>CURRENT_SELECTION_TRASH</category>
+      <category>CREATE_DOCUMENT_FORM</category>
+      <category>EDIT_DOCUMENT_FORM</category>
+      <category>USER_SERVICES</category>
+      <category>USER_MENU_ACTIONS</category>
+      <category>SUBVIEW_UPPER_LIST</category>
+    </typeCompatibility>
+
+    <typeCompatibility type="bare_link">
+      <category>DOCUMENT_HEADER_ACTIONS_LIST_HREF</category>
+      <category>SUBVIEW_UPPER_LIST_HREF</category>
+    </typeCompatibility>
+
+    <typeCompatibility type="rest_document_link">
+      <category>VIEW_ACTION_LIST</category>
+      <category>TAB_MANAGE_sub_tab</category>
+    </typeCompatibility>
+
+    <typeCompatibility type="main_tab">
+      <category>MAIN_TABS</category>
+    </typeCompatibility>
+
+  </extension>
+
+</component>

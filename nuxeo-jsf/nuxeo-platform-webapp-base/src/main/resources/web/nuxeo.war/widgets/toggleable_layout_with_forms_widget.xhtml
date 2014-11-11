@@ -1,0 +1,29 @@
+<ui:decorate template="/widgets/toggleable_layout_with_forms_widget_template.xhtml"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+
+  <ui:define name="initial_mode_content">
+    <nxl:layout
+      name="#{widgetProperty_initialLayoutName}"
+      category="#{widgetProperty_category}"
+      mode="#{layoutWidgetMode}"
+      value="#{fieldOrValue}"
+      template="#{widgetProperty_template}"
+      selectedRows="#{widgetProperty_selectedRows}"
+      selectAllByDefault="#{widgetProperty_selectAllByDefault}"
+      widgetsDisplay="#{widgetProperty_widgetsDisplay}" />
+  </ui:define>
+
+  <ui:define name="toggled_mode_content">
+    <nxl:layout
+      name="#{toggledLayoutName}"
+      category="#{widgetProperty_category}"
+      mode="#{layoutWidgetMode}"
+      value="#{fieldOrValue}"
+      template="#{widgetProperty_template}"
+      selectedRows="#{widgetProperty_selectedRows}"
+      selectAllByDefault="#{widgetProperty_selectAllByDefault}"
+      widgetsDisplay="#{widgetProperty_widgetsDisplay}" />
+  </ui:define>
+
+</ui:decorate>
