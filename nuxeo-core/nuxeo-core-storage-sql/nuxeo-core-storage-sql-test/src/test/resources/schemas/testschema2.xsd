@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<xs:schema
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/test/testschema2"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/test/testschema2"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:simpleType name="dateList">
+      <xs:list itemType="xs:date"/>
+  </xs:simpleType>
+
+  <xs:element name="title" type="xs:string" />
+  <xs:element name="dates" type="nxs:dateList"/>
+
+</xs:schema>
