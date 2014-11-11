@@ -1,0 +1,39 @@
+<div class="metadata_block"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<nxu:set var="hasSpecificFields"
+  value="#{!empty nxd:typeInfo(layoutValue).getLayouts('view', 'any')}"
+  cache="true">
+
+  <c:if test="#{hasSpecificFields}">
+
+    <c:if test="#{widget.handlingLabels}">
+      <c:if test="#{!empty widget.label}">
+        <ui:include src="/widgets/incl/widget_label_template.xhtml">
+          <ui:param name="labelStyleClass" value="summaryTitle #{widgetProperty_headerStyleClass}" />
+        </ui:include>
+      </c:if>
+      <c:if test="#{empty widget.label}">
+        <ui:include src="/widgets/incl/label_template.xhtml">
+          <ui:param name="label" value="action.view.metadata.specific" />
+          <ui:param name="helpLabel" value="#{widget.helpLabel}" />
+          <ui:param name="translated" value="true" />
+          <ui:param name="required" value="#{widget.required}" />
+          <ui:param name="labelStyleClass" value="summaryTitle #{widgetProperty_headerStyleClass}" />
+        </ui:include>
+      </c:if>
+    </c:if>
+
+    <div class="summaryLayout">
+      <nxl:documentLayout value="#{currentDocument}" mode="view" />
+    </div>
+  </c:if>
+
+</nxu:set>
+
+</div>
