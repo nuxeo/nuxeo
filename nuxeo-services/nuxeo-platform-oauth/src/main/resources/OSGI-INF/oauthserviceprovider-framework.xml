@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.oauth.providers.OAuthServiceProviderRegistryImpl">
+  <implementation
+          class="org.nuxeo.ecm.platform.oauth.providers.OAuthServiceProviderRegistryImpl" />
+  <documentation>
+    Component and Service to manage the OAuth Service providers that can be accessed from Nuxeo via OAuth
+
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+
+  <service>
+        <provide interface="org.nuxeo.ecm.platform.oauth.providers.OAuthServiceProviderRegistry" />
+  </service>
+
+</component>
