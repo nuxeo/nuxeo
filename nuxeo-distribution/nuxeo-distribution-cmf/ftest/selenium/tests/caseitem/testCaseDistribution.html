@@ -1,0 +1,618 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>testCaseDistribution</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<tbody>
+<tr>
+	<td>setTimeout</td>
+	<td>120000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>retrieveCurrentDateInfo</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>bree</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>bree1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>15000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>bree</td>
+	<td></td>
+</tr>
+<!-- add profile -->
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>document_edit:nxl_cm_mailbox:nxw_mailbox_profiles</td>
+	<td>label=Case creation</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Mailbox modified</td>
+	<td></td>
+</tr>
+<!-- Bree creates an incomming mail -->
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>bree</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>bree1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Draft</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>mouseDown</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Case</td>
+	<td></td>
+</tr>
+<tr>
+	<td>retrieveTestFolderPath</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_cm_case:nxw_title</td>
+	<td>Case incoming mail for John, cc to Smith</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Create</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Case saved</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Case incoming mail for John, cc to Smith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Case Item</td>
+	<td></td>
+</tr>
+<tr>
+	<td>retrieveTestFolderPath</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_cm_document:nxw_title</td>
+	<td>Incoming mail for John, cc to Smith</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>document_create:nxl_cm_document:nxw_document_type</td>
+	<td>Article</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>document_create:nxl_cm_document:nxw_contactsParticipants:nxw_contactsParticipants_add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_cm_document:nxw_contactsParticipants:nxw_contactsParticipants_list:0:nxw_contactsParticipants_name</td>
+	<td>Name1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_cm_document:nxw_contactsParticipants:nxw_contactsParticipants_list:0:nxw_contactsParticipants_surname</td>
+	<td>Surname1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_cm_document:nxw_contactsParticipants:nxw_contactsParticipants_list:0:nxw_contactsParticipants_service</td>
+	<td>Service1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_cm_document:nxw_document_dateInputDate</td>
+	<td>${currentMonth}/${currentDay}/${currentYear} 12:00 PM</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_cm_document:nxw_receive_dateInputDate</td>
+	<td>${currentMonth}/${currentDay}/${currentYear} 12:00 PM</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>document_create:nxl_cm_document:nxw_contactsSenders:nxw_contactsSenders_add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_cm_document:nxw_contactsSenders:nxw_contactsSenders_list:0:nxw_contactsSenders_name</td>
+	<td>Name2</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_cm_document:nxw_contactsSenders:nxw_contactsSenders_list:0:nxw_contactsSenders_surname</td>
+	<td>Surname2</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_cm_document:nxw_contactsSenders:nxw_contactsSenders_list:0:nxw_contactsSenders_service</td>
+	<td>Service2</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_cm_document:nxw_reference</td>
+	<td>Test Mail reference</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@type='file']</td>
+	<td></td>
+</tr>
+<tr>
+    <td>storeExpression</td>
+    <td>javascript{storedVars.testfolderpath + 'hello.pdf';}</td>
+    <td>importUrl</td>
+  </tr>
+<tr>
+	<td>type</td>
+	<td>//input[@type='file']</td>
+	<td>${importUrl}</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Create</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>Link=Incoming mail for John, cc to Smith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Incoming mail for John, cc to Smith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Case incoming mail for John, cc to Smith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Distribute</td>
+	<td></td>
+</tr>
+<!-- Start incomming mail distribution-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Mailboxes</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@id='distribution_participants:nxl_cm_participants:nxw_action_participants_suggest']</td>
+	<td>doe</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='distribution_participants:nxl_cm_participants:nxw_action_participants_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>John Doe (Nuxeo)</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='distribution_participants:nxl_cm_participants:nxw_action_participants_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@id='distribution_participants:nxl_cm_participants:nxw_copy_participants_suggest']</td>
+	<td>smith</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='distribution_participants:nxl_cm_participants:nxw_copy_participants_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>John Smith (Nuxeo)</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='distribution_participants:nxl_cm_participants:nxw_copy_participants_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>distribution_participants:nxl_cm_participants:nxw_distribution_comment</td>
+	<td>my distribution test comment</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=Send</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Incoming mail for John, cc to Smith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>The distribution is done</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Distribute</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Distribute</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Routing history</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='tab_history:cm_distribution_history']/table/thead/tr/th[4]</td>
+	<td>Comment</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='tab_history:cm_distribution_history']/table/tbody/tr/td[4]/div/pre</td>
+	<td>my distribution test comment</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='tab_history:cm_distribution_history']/table/thead/tr/th[5]</td>
+	<td>Action recipients</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='tab_history:cm_distribution_history']/table/tbody/tr/td[5]/div/pre</td>
+	<td>John Doe (Nuxeo)</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='tab_history:cm_distribution_history']/table/thead/tr/th[6]</td>
+	<td>Copy recipients</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='tab_history:cm_distribution_history']/table/tbody/tr/td[6]/div/pre</td>
+	<td>John Smith (Nuxeo)</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Bree Van de Kaamp (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Sent</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Case incoming mail for John, cc to Smith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Case incoming mail for John, cc to Smith</td>
+	<td></td>
+</tr>
+
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Incoming mail for John, cc to Smith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Incoming mail for John, cc to Smith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTitle</td>
+	<td>Nuxeo Platform - Incoming mail for John, cc to Smith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Incoming mail for John, cc to Smith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>jdoe</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>My Mailboxes</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Test Mailbox</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Draft</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>Case incoming mail for John, cc to Smith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+<!-- login as John-->
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>15000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>jdoe</td>
+	<td></td>
+</tr>
+<!-- look for mail in Inbox-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=John Doe (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Inbox</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Case incoming mail for John, cc to Smith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+<!-- login as Administrator-->
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jsmith</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jsmith1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>15000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>jsmith</td>
+	<td></td>
+</tr>
+<!-- look for mail in Inbox-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=John Smith (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Inbox</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Case incoming mail for John, cc to Smith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
