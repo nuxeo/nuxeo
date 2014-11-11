@@ -1,0 +1,76 @@
+<f:subview
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:r="http://jboss.com/products/seam/rss"
+  xmlns:nxr="http://nuxeo.org/nxweb/seam/rss"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<c:if test="false">
+  displays a content view using syndication JSF library, forcing sort on
+  last modified date, descending.
+
+  accepted parameters:
+  - when using template: feedFormat (RSS20 or ATOM10), feedTitle and feedTitleWithDocument 
+  - from request: contentViewName, currentPage, pageSize, contentViewState
+</c:if>
+
+  <nxu:set var="contentViewName" value="#{request.getParameter('contentViewName')}">
+  <nxu:set var="currentPage" value="#{request.getParameter('currentPage')}">
+  <nxu:set var="pageSize" value="#{request.getParameter('pageSize')}">
+  <nxu:set var="contentViewState" value="#{request.getParameter('contentViewState')}">
+  <nxu:set var="sortInfos" value="#{contentViewRestActions.getSortInfos('dc:modified', false)}">
+
+  <nxu:set var="contentView"
+    value="#{contentViewRestActions.restoreContentView(contentViewName, nxu:test(!empty currentPage, currentPage, -1), nxu:test(!empty pageSize, pageSize, -1), sortInfos, contentViewState)}"
+    cache="true">
+  <nxu:set var="selectedResultLayoutColumns"
+    value="#{nxu:test(selectedResultLayoutColumns == null, contentView.currentResultLayoutColumns, selectedResultLayoutColumns)}"
+    cache="true">
+  <nxu:set var="provider" value="#{contentView.currentPageProvider}"
+    cache="true">
+  
+    <c:set var="contentViewTitle"
+      value="#{nxu:test(contentView.translateTitle, messages[contentView.title], contentView.title)}" />
+    <c:if test="#{empty contentViewTitle}">
+      <c:set var="contentViewTitle" value="#{contentView.name}" />
+    </c:if>
+
+    <c:set var="resolvedFeedTitle"
+      value="#{nxu:translate(feedTitleWithDocument, currentDocument.dc.title, contentViewTitle)}" />
+
+    <c:if test="#{! empty currentDocument}">
+      <c:set var="resolvedFeedTitle"
+        value="#{nxu:translate(feedTitleWithDocument, currentDocument.dc.title, contentViewTitle)}" />
+    </c:if>
+    <c:if test="#{empty currentDocument}">
+      <c:set var="resolvedFeedTitle"
+        value="#{nxu:translate(feedTitle, contentViewName)}" />
+    </c:if>
+
+    <nxr:feed
+      title="#{resolvedFeedTitle}"
+      feedFormat="#{feedFormat}">
+      <ui:repeat var="doc" value="#{provider.currentPage}">
+        <r:entry
+          uid="#{doc.id}"
+          title="#{doc.dc.title}"
+          link="#{nxd:documentUrl(doc)}"
+          author="#{doc.dc.creator}"
+          summary="#{doc.dc.description}"
+          published="#{doc.dc.created}"
+          updated="#{doc.dc.modified}" />
+      </ui:repeat>
+    </nxr:feed>
+
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+
+</f:subview>
