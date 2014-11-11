@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Preview Plugin
+Bundle-SymbolicName: org.nuxeo.ecm.platform.preview;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Category: web,stateless
+Require-Bundle: org.nuxeo.ecm.platform.ui,
+ org.nuxeo.ecm.platform.convert,
+ org.nuxeo.ecm.platform.mimetype.api
+Nuxeo-Component: OSGI-INF/restAPI-contrib.xml,
+ OSGI-INF/document-adapter-contrib.xml,
+ OSGI-INF/preview-adapter-framework.xml,
+ OSGI-INF/preview-adapter-contrib.xml,
+ OSGI-INF/actions-contrib.xml,
+ OSGI-INF/docview-codec-contrib.xml,
+ OSGI-INF/convert-service-contrib.xml

@@ -1,0 +1,26 @@
+<f:subview xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:f="http://java.sun.com/jsf/core">
+
+       <c:if test="#{currentNuxeoPrincipal!=null and currentNuxeoPrincipal.isAdministrator()}">
+  <div class="bannerBottom unregistered">
+    <div class="bannerMessage">
+             <p>Nuxeo #{connectUpdateStatusInfo.distributionName} version: #{connectUpdateStatusInfo.distributionVersion}. Your Nuxeo #{connectUpdateStatusInfo.distributionName} instance is registered but <span class="bold">
+            <c:if test="#{connectUpdateStatusInfo.expired}">
+            your registration is expired
+            </c:if>
+            <c:if test="#{!connectUpdateStatusInfo.expired}">
+            your registration status can not be validated (#{messages[connectStatus.status.contractStatusLabel]})
+            </c:if>
+            </span>.</p>
+            <p><a href="mailto:connect-support@nuxeo.com?subject=Issue%20in%20Connect%20contract%20#{connectUpdateStatusInfo.identifier}">Contact connect-support@nuxeo.com to reactivate Nuxeo Connect</a></p>
+            <c:if test="#{connectUpdateStatusInfo.availableUpdateCount>0}">
+              <p><a target="marketplace" href="https://connect.nuxeo.com/nuxeo/site/marketplace/hotfixes/#{connectUpdateStatusInfo.distributionLabel}"><span class="bold"> #{connectUpdateStatusInfo.availableUpdateCount} hotfix(es) published since your last update.</span></a></p>
+            </c:if>
+          </div>
+    <div class="clear" />
+  </div>
+  </c:if>
+
+</f:subview>
