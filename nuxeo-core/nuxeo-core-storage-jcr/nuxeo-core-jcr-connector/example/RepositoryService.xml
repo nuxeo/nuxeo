@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.repository.RepositoryService">
+
+	<implementation class="org.nuxeo.ecm.core.repository.RepositoryService"/>
+	
+	<extension-point name="repository">
+		<object class="org.nuxeo.ecm.core.repository.RepositoryDescriptor"/>
+	</extension-point>		
+	
+</component>
