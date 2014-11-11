@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.local.configuration">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="directory_configuration" prefix="dirconf"
+      src="schemas/directory_configuration.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="doctype">
+
+    <facet name="DirectoryLocalConfiguration">
+      <schema name="directory_configuration" />
+    </facet>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService"
+    point="adapters">
+    <adapter
+      class="org.nuxeo.ecm.directory.localconfiguration.DirectoryConfiguration"
+      factory="org.nuxeo.ecm.directory.localconfiguration.DirectoryConfigurationFactory" />
+  </extension>
+
+</component>
