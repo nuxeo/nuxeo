@@ -1,0 +1,60 @@
+/*
+HTML5 Drag and Drop styles
+author: lkemen@nuxeo.com, tdelprat@nuxeo.com
+*/
+
+#dropzone-info-panel { display:none }
+#dropzone-info-panel td { vertical-align: top }
+
+.dndControlMessage { display: none }
+.loadingComplete { background: transparent url("${basePath}/icons/checked.gif") no-repeat left center; padding: .2em 0 0 1.6em }
+
+.dropPanel { padding: 1em; background: #BBBBCC; border-radius: 5px; height: 250px }
+
+.dropzone { display: block; margin : .3em }
+.dropzoneHL { border: 2px dashed #ccc; background-color: #F0F0F0 }
+
+.dropzoneTarget { border:2px solid #92cdff }
+.dropzoneTargetExtended { border: 2px solid #54d920 }
+.dropzoneTargetOverlay { position : absolute; background-color : rgba(200,220,250,0.3) }
+
+.dropzone-info-block { display: block; margin: .4em 0 0; text-align: center }
+.dropzone-info-summary { display: block; margin : .6em .9em 1.8em 4em }
+.dropzone-info-progress { background-color: #7ebbff; height: 3px; width: 0% }
+.dropzone-info-item { border : 1px solid #999; margin : 0 .2em 1em 0 }
+.dropzone-info-name { text-align: center }
+
+.dropzone-bar { height: 20px }
+.dropzone-bar-btn { visibility:hidden; float:right }
+.dropzone-bar-msg { display: block; padding-top: .2em }
+
+.dndFormPanel{
+    display: none;
+    position: absolute;
+    border: 1px solid #adadad;
+    background-color: white;
+    padding : 2.3em;
+    margin: .4em;
+    z-index: 5000;
+    max-height: 350px;
+    overflow: auto }
+.dndProgressPanel{
+    display: none;
+    border: 1px solid #adadad;
+    background-color: white;
+    padding : .5em 2.3em;
+    margin: 0 }
+.dndFormPanel th { text-align: left; padding-bottom: 1em; font-size: 1.1em }
+.dndFormPanel td { vertical-align: top; padding: 0 3.2em 1em 0 }
+.dndFormPanel input { margin: 1em 0 }
+.dndFormPanel .alignRight { text-align: right }
+.dndFormPanel body { margin: 0 }
+
+.uploadedFileList { font-size : 1.1em }
+
+.importOperationForm iframe { margin: 2.3em 0 0 }
+.importOperationForm .dataInput { margin: 0 0 1.4em }
+.importOperationForm .dataInput input { margin: 1.8em 0 0 }
+
+#dndContinueButton { display: none; cursor: hand; padding: 5px  }
+#operationForm { border-style: none none none solid; border-color: #444; border-width: 2px }
