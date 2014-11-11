@@ -1,0 +1,52 @@
+#!/bin/sh
+# openoffice.org3  headless server script
+# the server is listening on localhost:8100
+# and it should be started before nuxeo
+#
+
+OOO_HOME=/opt/openoffice.org3
+PIDFILE=$OOO_HOME/openoffice-headless.pid
+USER=nuxeo
+
+case "$1" in
+    start)
+        if [ -f $PIDFILE ]; then
+            ps -ef | grep -i soffice | grep -v grep > /dev/null
+            if [ $? -eq 0 ]; then
+                echo "OpenOffice headless is already running pid $(cat $PIDFILE)."
+                exit
+            fi
+        fi
+        echo "Starting OpenOffice headless server ...\c"
+        su - $USER -c "$OOO_HOME/program/soffice.bin -headless -nofirststartwizard -accept='socket,host=localhost,port=8100;urp;StarOffice.Service'" & > /dev/null 2>&1
+        echo $! | tee $PIDFILE
+        ;;
+
+    stop)
+        if [ -f $PIDFILE ]; then
+            echo "Stopping OpenOffice headless server..."
+            killall -9 soffice.bin
+            rm -f $PIDFILE
+            exit 0
+        fi
+        echo "No openoffice to stop."
+        ;;
+
+    status)
+        if [ -f $PIDFILE ]; then
+            echo "OpenOffice headless running pid $(cat $PIDFILE)."
+        else
+            echo "No pid file $PIDFILE"
+        fi
+        echo "Servers listening on port 8100:"
+        netstat -taupe | grep 8100
+        echo "Processes named soffice:"
+        ps -ef | grep -i soffice | grep -v grep
+        ;;
+
+    *)
+        echo "Usage: $0 {start|stop|status}"
+        exit 1
+esac
+
+exit 0
