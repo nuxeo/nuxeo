@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <ui:define name="page title"><h:outputText value="#{nuxeoApplicationName} - #{messages['label.groupManager.groups']}" /></ui:define>
+
+  <ui:define name="body">
+
+    <div>
+      <ui:include src="/incl/userManager_action_tabs.xhtml">
+        <ui:param name="currentUserTab" value="groups" />
+      </ui:include>
+      <div style="clear:both"></div>
+    </div>
+
+    <div class="tabsContent">
+
+      <h:form rendered="#{groupManagerActions.allowCreateGroup and notReadOnly}">
+        <div class="action_bar">
+          <ul>
+            <li class="selected">
+              <h:commandLink action="create_group"
+                immediate="true">
+                <h:graphicImage value="/icons/action_add_group.gif" />
+                <h:outputText value="#{messages['command.createGroup']}" />
+              </h:commandLink>
+            </li>
+          </ul>
+        </div>
+      </h:form>
+
+      <ui:include src="/incl/message_banner.xhtml"/>
+
+      <div style="clear:both" />
+
+      <h:form id="searchForm">
+        <h:inputText id="searchText"
+          value="#{groupManagerActions.searchString}"
+          onkeydown="trapEnter(event, 'searchForm:searchButton');"
+          class="directoryFilter" />
+        &nbsp;
+        <h:commandButton id="searchButton"
+          value="#{messages['command.search']}"
+          action="#{groupManagerActions.searchGroups}" styleClass="button" />
+        <h:commandButton id="clearButton"
+          value="#{messages['command.clearSearch']}"
+          action="#{groupManagerActions.clearSearch}" styleClass="button" />
+      </h:form>
+
+      <div>
+
+        <h:outputText
+          value="#{messages['label.groupManager.emptyGroupList']}"
+          rendered="#{groupList.rowCount == 0 and groupManagerActions.searchOverflow == false and !empty groupManagerActions.searchString}" />
+
+        <h:outputText
+          value="#{messages['label.security.searchOverFlow']}"
+          class="infoFeedback"
+          rendered="#{groupManagerActions.searchOverflow}" />
+
+        <h:form rendered="#{groupList.rowCount > 0}">
+
+          <h:dataTable var="group" value="#{groupList}"
+            styleClass="dataOutput">
+            <h:column>
+              <f:facet name="header">
+                <h:outputText
+                  value="#{messages['label.groupManager.groupName']}" />
+              </f:facet>
+              <h:commandLink value="#{group.id}"
+                action="#{groupManagerActions.viewGroup}" />
+            </h:column>
+          </h:dataTable>
+        </h:form>
+
+      </div>
+
+    </div>
+
+  </ui:define>
+
+</nxthemes:composition>
+
