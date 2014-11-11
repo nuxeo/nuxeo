@@ -1,0 +1,64 @@
+<c:if test="true" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <c:if test="#{widget.mode != 'edit'}">
+   <div>
+     <span class="tinyLabel"> 
+      <h:outputText value="#{messages['label.search.between']} " />
+     </span>
+     <nxl:widgetType name="datetime" mode="#{widget.mode}" label="#{widget.label}"
+      value="#{field_0}" properties="#{widget.properties}" />
+     <span class="tinyLabel"> 
+      <h:outputText value="#{messages['label.search.and']} " />
+     </span>
+     <nxl:widgetType name="datetime" mode="#{widget.mode}" label="#{widget.label}"
+      value="#{field_1}" properties="#{widget.properties}" />
+     </div>
+  </c:if>
+
+  <c:if test="#{widget.mode == 'edit'}">
+    <div>
+      <table class="nowrap">
+        <tbody>
+          <tr>
+            <td>
+              <span class="tinyLabel">
+                <h:outputText value="#{messages['label.search.between']} " />
+              </span>
+            </td>
+            <td>
+              <nxl:widgetType name="datetime" widgetName="#{widget.name}_startInputDate" mode="#{widget.mode}" label="#{widget.label}"
+                value="#{field_0}" properties="#{widget.properties}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <span class="tinyLabel">
+               <h:outputText value="#{messages['label.search.and']} " />
+              </span>
+            </td>
+            <td>
+              <nxl:widgetType name="datetime" widgetName="#{widget.name}_endInputDate" mode="#{widget.mode}" label="#{widget.label}"
+               value="#{field_1}" properties="#{widget.properties}" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <h:inputHidden value="dateRangeValidator" validator="#{dateRangeValidator.validateDateRange}"
+                id="#{widget.id}_dateRangeValidator">
+                <f:attribute name="startDateComponentId" value="nxw_#{widget.name}_startInputDate" />
+                <f:attribute name="endDateComponentId" value="nxw_#{widget.name}_endInputDate" />
+              </h:inputHidden>
+              <h:message for="#{widget.id}_dateRangeValidator" styleClass="errorMessage" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </c:if>
+
+</c:if> 
