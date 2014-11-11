@@ -1,0 +1,191 @@
+<project name="nuxeo-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+
+  <target name="init" unless="init.done">
+    <condition property="build.ep">
+      <or>
+        <isset property="maven.profile.nuxeo-ep" />
+        <isset property="maven.profile.all" />
+        <isset property="maven.profile.all-distributions" />
+      </or>
+    </condition>
+    <condition property="build.dm">
+      <or>
+        <isset property="maven.profile.nuxeo-dm" />
+        <isset property="maven.profile.cmis" />
+        <isset property="maven.profile.all" />
+        <isset property="maven.profile.all-distributions" />
+      </or>
+    </condition>
+    <condition property="build.cmis">
+      <or>
+        <isset property="maven.profile.cmis" />
+        <isset property="maven.profile.all" />
+        <isset property="maven.profile.all-distributions" />
+      </or>
+    </condition>
+
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <property name="stagedir" value="${outdir}/stage" />
+    <antcall target="expand" />
+    <property name="init.done" value="true" />
+  </target>
+
+  <target name="expand" unless="no.build">
+    <artifact:expand depth="3" />
+  </target>
+
+  <target name="build" depends="init" unless="no.build">
+    <echo>Building JBoss distributions...</echo>
+    <property name="jboss" value="${stagedir}/jboss" />
+
+    <antcall target="prepare-jboss" />
+    <artifact:attach file="pom.xml"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="pom" />
+    <antcall target="build-nuxeo-ep-jboss" />
+    <antcall target="build-nuxeo-dm-jboss" />
+  </target>
+
+  <target name="prepare-jboss">
+    <unzip dest="${jboss}">
+      <artifact:resolveFile key="org.jboss:jboss-as:4.2.3.GA:zip"
+                            classifier="light" />
+    </unzip>
+    <ant antfile="build.xml" target="patch">
+      <property name="jboss.dir" value="${jboss}" />
+    </ant>
+    <ant antfile="build.xml" target="copy-lib">
+      <property name="jboss.dir" value="${jboss}" />
+    </ant>
+    <copy todir="${jboss}">
+      <fileset dir="src/main/resources/jboss" />
+    </copy>
+    <chmod dir="${jboss}/bin" perm="750" includes="*.sh" />
+
+    <copy todir="${jboss}/server/default/lib">
+      <!-- copy jdbc drivers -->
+      <artifact:resolveFile key="postgresql:postgresql:8.3-604.jdbc3" />
+      <artifact:resolveFile key="mysql:mysql-connector-java:5.1.6" />
+      <!-- copy logging monitor -->
+      <artifact:resolveFile key="org.jboss.services:logging-monitor" />
+    </copy>
+  </target>
+
+  <target name="build-nuxeo-ep-jboss"
+          if="build.ep"
+          description="Build JBoss distribution with Nuxeo EP">
+
+    <delete failonerror="false" dir="${outdir}/nuxeo-ep-jboss" />
+    <copy todir="${outdir}/nuxeo-ep-jboss">
+      <fileset dir="${jboss}" />
+    </copy>
+    <unzip dest="${outdir}/nuxeo-ep-jboss/server/default/deploy/nuxeo.ear">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}:zip" />
+    </unzip>
+    <antcall target="jboss-third-party-libraries">
+      <param name="lib.dir"
+             value="${outdir}/nuxeo-ep-jboss/server/default/deploy/nuxeo.ear/lib" />
+    </antcall>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
+         basedir="${outdir}"
+         includes="nuxeo-ep-jboss/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="nuxeo-ep"
+                     type="zip" />
+  </target>
+
+  <target name="build-nuxeo-dm-jboss"
+          if="build.dm"
+          description="Build JBoss distribution with Nuxeo DM">
+
+    <delete failonerror="false" dir="${outdir}/nuxeo-dm-jboss" />
+    <copy todir="${outdir}/nuxeo-dm-jboss">
+      <fileset dir="${jboss}" />
+    </copy>
+    <unzip dest="${outdir}/nuxeo-dm-jboss/server/default/deploy/nuxeo.ear">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
+    </unzip>
+    <antcall target="jboss-third-party-libraries">
+      <param name="lib.dir"
+             value="${outdir}/nuxeo-dm-jboss/server/default/deploy/nuxeo.ear/lib" />
+    </antcall>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
+         basedir="${outdir}"
+         includes="nuxeo-dm-jboss/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="nuxeo-dm"
+                     type="zip" />
+
+    <!-- CMIS build requires Nuxeo DM build -->
+    <antcall target="build-nuxeo-dm-jboss-cmis" />
+  </target>
+
+  <target name="build-nuxeo-dm-jboss-cmis"
+          if="build.cmis"
+          description="Build JBoss distribution with Nuxeo DM and CMIS support">
+    <copy todir="${outdir}/nuxeo-dm-jboss/server/default/deploy/nuxeo.ear/system">
+      <artifact:resolveFile key="org.nuxeo.ecm.core:nuxeo-chemistry-impl" />
+      <artifact:resolveFile key="org.nuxeo.ecm.core:nuxeo-chemistry-bindings" />
+      <artifact:resolveFile key="org.nuxeo.ecm.webengine:nuxeo-webengine-core" />
+    </copy>
+    <antcall target="cmis-third-party-libraries">
+      <param name="lib.dir"
+             value="${outdir}/nuxeo-dm-jboss/server/default/deploy/nuxeo.ear/lib" />
+    </antcall>
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm-cmis.zip"
+         basedir="${outdir}"
+         includes="nuxeo-dm-jboss/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm-cmis.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="nuxeo-dm-cmis"
+                     type="zip" />
+  </target>
+
+  <target name="jboss-third-party-libraries">
+    <!--
+    <delete>
+      <fileset dir="${lib.dir}"> -->
+        <!-- Remove third-parties provided by JBoss -->
+        <!-- Remove duplicated third-parties -->
+    <!--
+      </fileset>
+    </delete> -->
+    <!-- Add libraries required under JBoss (not present in the dependency tree)
+    <copy todir="${lib.dir}" overwrite="true">
+    </copy>
+    -->
+  </target>
+
+  <target name="cmis-third-party-libraries">
+    <!-- Add libraries required under JBoss (not present in the dependency tree) -->
+    <copy todir="${lib.dir}" overwrite="true">
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-api" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-commons" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-atompub" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-atompub-server" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-ws" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-soap-server" />
+      <artifact:resolveFile key="org.antlr:antlr-runtime" />
+      <artifact:resolveFile key="org.apache.abdera:abdera-core" />
+      <artifact:resolveFile key="org.apache.abdera:abdera-i18n" />
+      <artifact:resolveFile key="org.apache.abdera:abdera-parser" />
+      <artifact:resolveFile key="org.apache.abdera:abdera-server" />
+      <artifact:resolveFile key="org.apache.ws.commons.axiom:axiom-api" />
+      <artifact:resolveFile key="org.apache.ws.commons.axiom:axiom-impl" />
+    </copy>
+  </target>
+
+  <target name="clean">
+    <delete dir="${stagedir}" />
+  </target>
+
+</project>
