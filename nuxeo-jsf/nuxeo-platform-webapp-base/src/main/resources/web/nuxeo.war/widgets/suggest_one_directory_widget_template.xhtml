@@ -1,0 +1,72 @@
+<c:if test="true" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+  <c:set var="namespace" value="#{widgetProperty_namespace}" />
+
+  <c:if test="#{nxl:isLikePlainMode(widget.mode)}">
+    <h:outputText
+      value="#{select2Actions.resolveSingleDirectoryEntryLabel(field_0, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}" />
+  </c:if>
+
+  <c:if test="#{widget.mode == 'pdf'}">
+    <nxp:html>
+    <h:outputText
+      value="#{select2Actions.resolveSingleDirectoryEntryLabel(field_0, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}" />
+    </nxp:html>
+  </c:if>
+
+  <c:if
+    test="#{nxl:isLikeViewMode(widget.mode) or widget.mode == 'edit'}">
+    <nxu:set var="helpLabel"
+      value="#{nxu:test(empty widgetProperty_helpLabel, messages['label.suggestion.help.minChars'], nxu:test(widgetProperty_localize, messages[widgetProperty_helpLabel], widgetProperty_helpLabel))}"
+      cache="true">
+      <ui:include src="/incl/select2_js.xhtml" />
+
+      <a4j:region>
+        <nxu:valueHolder id="#{widget.id}_select2" value="#{field_0}"
+          immediate="true" ajaxSingle="true"
+          required="#{widgetProperty_required}" var="currentValue">
+          <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
+            value="#{select2Actions.resolveSingleDirectoryEntry(currentValue, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}" />
+        </nxu:valueHolder>
+
+        <c:if test="#{not empty widgetProperty_ajaxReRender}">
+          <a4j:jsFunction name="#{widget.id}_reRender"
+            reRender="#{widgetProperty_ajaxReRender}" />
+        </c:if>
+      </a4j:region>
+
+      <c:if
+        test="#{widget.mode == 'edit' and !widgetProperty_hideHelpLabel}">
+        <p class="detail">
+          <h:outputFormat value="#{helpLabel}">
+            <f:param value="#{widgetProperty_minChars}" />
+          </h:outputFormat>
+        </p>
+      </c:if>
+
+      <h:inputHidden readonly="true" id="#{widget.id}_select2_params"
+        value="#{select2Actions.encodeParametersForDirectory(widget, widgetProperties)}" />
+      <nxu:set var="filterToCheck" value="#{nxu:test(empty widgetProperty_addNewEntryFilter, 'canAddEntryFromSuggestDirectoryWidget', widgetProperty_addNewEntryFilter)}"
+        cache="true">
+      <c:if test="#{widgetProperty_canAddNewEntry and directoryUIActions.checkContextualDirectoryFilter(filterToCheck, widgetProperty_directoryName)}">
+        <nxu:set var="directoryNameForPopup" value="#{widgetProperty_directoryName}"
+          cache="true">
+          <nxl:widgetType name="documentAction" value="null" mode="view"
+            actionId="#{nxu:test(empty widgetProperty_addNewEntryAction, 'addEntryFromSuggestDirectoryWidget', widgetProperty_addNewEntryAction)}" />
+        </nxu:set>
+      </c:if>
+      </nxu:set>
+      <h:message for="#{widget.id}_select2" styleClass="errorMessage" />
+
+    </nxu:set>
+  </c:if>
+
+</c:if>

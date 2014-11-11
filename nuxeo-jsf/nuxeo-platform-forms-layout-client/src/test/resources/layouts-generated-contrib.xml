@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="myproject.dublincore.generatedContrib">
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="layouts">
+    <layout name="dublincore">
+      <rows>
+        <row>
+          <widget>contributors</widget>
+        </row>
+        <row>
+          <widget>coverage</widget>
+        </row>
+        <row>
+          <widget>created</widget>
+        </row>
+        <row>
+          <widget>creator</widget>
+        </row>
+        <row>
+          <widget>description</widget>
+        </row>
+        <row>
+          <widget>expired</widget>
+        </row>
+        <row>
+          <widget>format</widget>
+        </row>
+        <row>
+          <widget>issued</widget>
+        </row>
+        <row>
+          <widget>language</widget>
+        </row>
+        <row>
+          <widget>modified</widget>
+        </row>
+        <row>
+          <widget>rights</widget>
+        </row>
+        <row>
+          <widget>source</widget>
+        </row>
+        <row>
+          <widget>subjects</widget>
+        </row>
+        <row>
+          <widget>title</widget>
+        </row>
+        <row>
+          <widget>valid</widget>
+        </row>
+      </rows>
+      <!--TODO: contributors-->
+      <widget name="coverage" type="text">
+        <fields>
+          <field>dc:coverage</field>
+        </fields>
+        <properties mode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="created" type="datetime">
+        <fields>
+          <field>dc:created</field>
+        </fields>
+        <properties mode="any">
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
+          <property name="format">#{nxu:basicDateFormatter()}</property>
+        </properties>
+      </widget>
+      <widget name="creator" type="text">
+        <fields>
+          <field>dc:creator</field>
+        </fields>
+        <properties mode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="description" type="text">
+        <fields>
+          <field>dc:description</field>
+        </fields>
+        <properties mode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="expired" type="datetime">
+        <fields>
+          <field>dc:expired</field>
+        </fields>
+        <properties mode="any">
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
+          <property name="format">#{nxu:basicDateFormatter()}</property>
+        </properties>
+      </widget>
+      <widget name="format" type="text">
+        <fields>
+          <field>dc:format</field>
+        </fields>
+        <properties mode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="issued" type="datetime">
+        <fields>
+          <field>dc:issued</field>
+        </fields>
+        <properties mode="any">
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
+          <property name="format">#{nxu:basicDateFormatter()}</property>
+        </properties>
+      </widget>
+      <widget name="language" type="text">
+        <fields>
+          <field>dc:language</field>
+        </fields>
+        <properties mode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="modified" type="datetime">
+        <fields>
+          <field>dc:modified</field>
+        </fields>
+        <properties mode="any">
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
+          <property name="format">#{nxu:basicDateFormatter()}</property>
+        </properties>
+      </widget>
+      <widget name="rights" type="text">
+        <fields>
+          <field>dc:rights</field>
+        </fields>
+        <properties mode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="source" type="text">
+        <fields>
+          <field>dc:source</field>
+        </fields>
+        <properties mode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <!--TODO: subjects-->
+      <widget name="title" type="text">
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties mode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="valid" type="datetime">
+        <fields>
+          <field>dc:valid</field>
+        </fields>
+        <properties mode="any">
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
+          <property name="format">#{nxu:basicDateFormatter()}</property>
+        </properties>
+      </widget>
+    </layout>
+  </extension>
+</component>

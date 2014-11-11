@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.invite.core.service.contrib">
+
+  <require>org.nuxeo.ecm.user.invite.core.types.contrib</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="UserInvitation" extends="File">
+      <facet name="UserInvitation"/>
+      <facet name="HiddenInNavigation"/>
+    </doctype>
+
+    <doctype name="UserInvitationContainer" extends="Workspace">
+      <facet name="HiddenInNavigation"/>
+    </doctype>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+             point="types">
+    <types>
+      <type name="UserInvitationContainer">default></type>
+      <type name="UserInvitation">registrationRequest</type>
+    </types>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.user.invite.UserInvitationService"
+             point="configuration">
+    <configuration>
+      <requestDocType>UserInvitation</requestDocType>
+      <container>
+        <docType>UserInvitationContainer</docType>
+        <parentPath>/management/</parentPath>
+        <name>invitationRequests</name>
+        <title>Invitation Requests Container</title>
+      </container>
+      <validationEmail>
+        <title>You are invited to access Nuxeo</title>
+        <template>skin/views/userRegistration/ValidationEmailTemplate.ftl</template>
+      </validationEmail>
+      <reviveEmail>
+        <title>You are invited to access Nuxeo</title>
+        <template>skin/views/userRegistration/ReviveEmailTemplate.ftl</template>
+      </reviveEmail>
+      <enterPasswordUrl>site/userInvitation/enterpassword/</enterPasswordUrl>
+      <validationRelUrl>site/userInvitation/validate</validationRelUrl>
+    </configuration>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+             point="event">
+    <event name="registrationSubmitted"/>
+    <event name="registrationAccepted"/>
+    <event name="registrationValidated"/>
+  </extension>
+
+</component>
