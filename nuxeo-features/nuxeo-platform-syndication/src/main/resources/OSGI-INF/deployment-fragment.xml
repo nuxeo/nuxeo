@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<fragment>
+  <extension target="application#MODULE">
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
+
+  <extension target="pages#PAGES">
+    <page view-id="/getSyndicationDocument.xhtml"
+        action="#{syndication.getSyndicationDocument}"/>
+
+    <page view-id="/getSyndicationSearch.xhtml"
+        action="#{syndication.getSyndicationSearch}"/>
+  </extension>
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+    <!--  create a temp dir -->
+    <!--  be sure no directory with that name exists -->
+    <delete path="nxsyndication.tmp"/>
+    <mkdir path="nxsyndication.tmp"/>
+
+    <unzip from="${bundle.fileName}" to="nxsyndication.tmp">
+      <include>META-INF/**</include>
+      <include>resources/**</include>
+    </unzip>
+
+    <delete path="nxsyndication.tmp"/>
+  </install>
+</fragment>

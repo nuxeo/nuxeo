@@ -1,0 +1,34 @@
+div.x-window-mr div.x-window-mc {
+  background: #666666;
+}
+
+div.x-panel-body  label,div.x-panel-palette label {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 11px;
+}
+
+div.x-panel-body  .x-color-palette em {
+  border: 0;
+  padding: 2px 0 0;
+}
+
+div.x-panel-body  .x-color-palette span {
+  width: 18px;
+  height: 18px;
+}
+
+div.x-panel-body  .x-color-palette a {
+  border: 0;
+  height: 22px;
+  width: 22px;
+}
+
+.x-panel-header-text {
+  color: #13506B;
+}
+
+.x-panel-tc {
+  background-image: none;
+  padding-top: 1px;
+}

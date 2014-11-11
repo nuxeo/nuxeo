@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<module name="blogs" root-type="blogs"  path="/blogs" extends="base" >
+  <links>
+    <link id="action_blogpost_edit" path="edit">
+      <category>BLOG_ACTIONS</category>
+      <type>BlogPost</type>
+      <guard>Write</guard>
+    </link>
+    <link id="action_blogpost_create" path="create">
+      <category>BLOG_ACTIONS</category>
+      <type>BlogSite</type>
+      <guard>AddChildren</guard>
+    </link>
+  </links>
+</module>  

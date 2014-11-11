@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo-platform-queue-core project
+Bundle-SymbolicName: org.nuxeo.ecm.platform.queue;singleton:=true
+Bundle-Vendor: Nuxeo
+Nuxeo-Require: org.nuxeo.runtime
+Nuxeo-Component: OSGI-INF/queue-framework.xml,
+ OSGI-INF/nx-queue-persister-contrib.xml
+

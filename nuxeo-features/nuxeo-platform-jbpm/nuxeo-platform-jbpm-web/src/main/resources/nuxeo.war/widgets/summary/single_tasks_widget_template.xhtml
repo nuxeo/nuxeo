@@ -1,0 +1,112 @@
+<div class="single_tasks_block"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <c:if test="#{!empty currentSingleTasks}">
+    <h3 class="summaryTitle">
+      <h:outputText value="#{messages['action.view.associatedTasks']}" />
+    </h3>
+    
+    <table class="dataOutput">
+      <thead>
+        <tr>
+          <th><h:outputText
+            value="#{messages['label.workflow.task.name']}" /></th>
+          <th><h:outputText
+            value="#{messages['label.workflow.task.principal']}" /></th>
+          <th><h:outputText
+            value="#{messages['label.workflow.task.directive']}" /></th>
+          <th><h:outputText
+            value="#{messages['label.review.user.comment']}" /></th>
+          <th><h:outputText
+            value="#{messages['label.workflow.task.startdate']}" /></th>
+          <th><h:outputText
+            value="#{messages['label.workflow.task.duedate']}" /></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <nxu:repeat var="task" value="#{currentSingleTasks}">
+          <tr>
+            <td>
+              <c:set var="createdFromCreateTaskOperation"
+                value="#{task.getVariableLocally('createdFromCreateTaskOperation') == 'true'}" />
+              <c:set var="taskNameLabel" value="label.workflow.task.#{task.name}" />
+              <c:if test="#{createdFromCreateTaskOperation}">
+                #{task.name}
+              </c:if>
+              <c:if test="#{!createdFromCreateTaskOperation}">
+                #{messages[taskNameLabel]}
+              </c:if>
+            </td>
+            <td>
+              <nxl:layout name="user_group_prefixed_suggestion"
+                mode="view" value="#{jbpmHelper.getPooledActorIds(task)}" />
+            </td>
+            <td>
+              <h:outputText
+                value="#{messages[task.variablesLocally.directive]}" />
+            </td>
+            <td>
+              <table>
+                <c:forEach var="comment" items="${task.comments}">
+                  <f:subview rendered="#{!empty comment}">
+                    <nxu:methodResult name="userInfo"
+                      value="#{userSuggestionActions.getPrefixedUserInfo(comment.actorId)}">
+                      <tr>
+                        <td>
+                          <f:subview rendered="#{userInfo.type == 'USER_TYPE'}">
+                            <h:outputText
+                              value="#{nxu:userDisplayName(userInfo.id, userInfo.entry[userSchema].firstName, userInfo.entry[userSchema].lastName)}" />
+                          </f:subview>
+                          <f:subview rendered="#{userInfo.type != 'USER_TYPE'}">
+                            <h:outputText value="#{comment.actorId}" />
+                          </f:subview>
+                        </td>
+                        <td>
+                          <h:outputText value=": #{comment.message}" />
+                        </td>
+                      </tr>
+                    </nxu:methodResult>
+                  </f:subview>
+                </c:forEach>
+              </table>
+            </td>
+            <td>
+              <h:outputText value="#{task.create}">
+                <f:convertDateTime
+                  pattern="#{nxu:dateAndTimeFormater('medium')}"
+                  timeZone="#{timeZone}" />
+              </h:outputText>
+            </td>
+            <td>
+              <h:outputText value="#{task.dueDate}">
+                <f:convertDateTime
+                  pattern="#{nxu:dateAndTimeFormater('medium')}"
+                  timeZone="#{timeZone}" />
+              </h:outputText>
+            </td>
+            <td>
+              <h:commandLink
+                value="#{messages['label.review.end.task']}"
+                action="#{jbpmTaskActions.acceptTask(task, null)}"
+                rendered="#{jbpmTaskService.canEndTask(currentUser, task)}" />
+            </td>
+            <td>
+              <h:commandLink
+                value="#{messages['label.review.reject.task']}"
+                action="#{jbpmTaskActions.rejectTask(task, null)}"
+                rendered="#{jbpmTaskService.canEndTask(currentUser, task)}" />
+            </td>
+          </tr>
+        </nxu:repeat>
+      </tbody>
+    </table>
+    
+  </c:if>
+
+</div>
