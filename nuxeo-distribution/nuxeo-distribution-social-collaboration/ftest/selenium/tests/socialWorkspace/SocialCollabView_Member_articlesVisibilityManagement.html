@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8080/nuxeo/" />
+<title>Social Collaboration View-Member- Articles Visibility Management</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Social Collaboration View-Member- Articles Visibility Management</td></tr>
+</thead><tbody>
+<tr>
+	<td>setTimeout</td>
+	<td>120000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=-----Selenium<br /><br /><br /> createSocialWorkspace</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>memberSW</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>pwd</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Document Management</td>
+	<td></td>
+</tr>
+<tr>
+  <td>clickAndWait</td>
+  <td>//form[@id='document_content']/table/tbody/tr/td[3]/div/a[1]</td>
+  <td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=SocialWorkspace_SocialCollaborationView_Visibility</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//img[@alt='Social Collaboration View']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Go to Articles</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//table[@class='dataOutput']/tbody/tr[1]/td//ul[@class='actions']/li/ul/li[3]/a[text()='make it public']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//table[@class='dataOutput']/tbody/tr[2]/td//ul[@class='actions']/li/ul/li[3]/a[text()='Restrict to the social workspace']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//table[@class='dataOutput']/tbody/tr[1]/td//ul[@class='actions']/li/ul/li[3]/a[text()='make it public']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//table[@class='dataOutput']/tbody/tr[1]/td//ul[@class='actions']/li/ul/li[3]/a[text()='Restrict to the social workspace']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//table[@class='dataOutput']/tbody/tr[1]/td//ul[@class='actions']/li/ul/li[3]/a[text()='make it public']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=title_One</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Restrict to the social workspace</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=make it public</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Restrict to the social workspace</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Go to Articles</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//table[@class='dataOutput']/tbody/tr[1]/td//ul[@class='actions']/li/ul/li[3]/a[text()='Restrict to the social workspace']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//table[@class='dataOutput']/tbody/tr[2]/td//ul[@class='actions']/li/ul/li[3]/a[text()='Restrict to the social workspace']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//table[@class='dataOutput']/tbody/tr[1]/td//ul[@class='actions']/li/ul/li[3]/a[text()='Restrict to the social workspace']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//table[@class='dataOutput']/tbody/tr[1]/td//ul[@class='actions']/li/ul/li[3]/a[text()='make it public']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//table[@class='dataOutput']/tbody/tr[1]/td//ul[@class='actions']/li/ul/li[3]/a[text()='Restrict to the social workspace']</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
