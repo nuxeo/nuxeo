@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo User Preferences tests
+Bundle-SymbolicName: org.nuxeo.ecm.platform.userpreferences.test;singleton:=true

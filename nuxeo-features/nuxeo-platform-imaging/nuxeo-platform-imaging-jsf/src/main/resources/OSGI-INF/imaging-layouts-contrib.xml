@@ -1,0 +1,467 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.picture.jsf.layouts">
+
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.summary</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="picture_view">
+      <configuration>
+        <title>Picture view</title>
+        <description>
+          <p>
+            The picture_view widget displays the configured View of a document
+            having the Picture facet.
+          </p>
+          <p>
+            It accepts the following properties:
+            <ul>
+              <li>
+                pictureView: the name of the view. Defaults to the 'Medium'
+                view.
+              </li>
+              <li>
+                width: the width of the img tag.
+              </li>
+              <li>
+                height: the height of the img tag.
+              </li>
+            </ul>
+          </p>
+        </description>
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">/widgets/picture_view_widget_template.xhtml</property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="imageFile" type="image">
+      <labels>
+        <label mode="any">label.file.content</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>file:content</field>
+        <field>file:filename</field>
+      </fields>
+    </widget>
+
+    <widget name="summary_picture_view" type="picture_view">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field></field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pictureView">Medium</property>
+      </properties>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="summary_picture_view" type="widget" order="50">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">summary_picture_view</property>
+      </properties>
+      <filter-id>hasPicture</filter-id>
+    </action>
+
+    <action id="summary_current_document_view">
+      <filter-id>notHasPicture</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="notHasPicture">
+      <rule grant="false">
+        <facet>Picture</facet>
+      </rule>
+    </filter>
+
+    <filter id="hasPicture">
+      <rule grant="true">
+        <facet>Picture</facet>
+      </rule>
+    </filter>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <!-- deprecated since 5.6 -->
+    <layout name="picture_summary_layout">
+      <templates>
+        <template mode="any">/layouts/layout_summary_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>summary_picture_view</widget>
+          <widget>summary_current_document_files</widget>
+          <widget>summary_current_document_comments</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_description</widget>
+          <widget>summary_current_document_states</widget>
+          <widget>summary_current_document_contributors</widget>
+          <widget>summary_current_document_custom_actions</widget>
+          <widget>summary_current_document_tagging</widget>
+          <widget>summary_current_document_relations</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_publications</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_single_tasks</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="picture">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>imageFile</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="picturebook">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>timeinterval</widget>
+        </row>
+      </rows>
+      <widget name="timeinterval" type="int">
+        <labels>
+          <label mode="any">label.picture.timeinterval</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="picturebook">timeinterval</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="exif_info">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>date_time_original</widget>
+        </row>
+        <row>
+          <widget>pixel_xdimension</widget>
+        </row>
+        <row>
+          <widget>pixel_ydimension</widget>
+        </row>
+        <row>
+          <widget>orientation</widget>
+        </row>
+        <row>
+          <widget>equipment</widget>
+        </row>
+        <row>
+          <widget>fnumber</widget>
+        </row>
+        <row>
+          <widget>exposure_time</widget>
+        </row>
+        <row>
+          <widget>iso_speed_ratings</widget>
+        </row>
+      </rows>
+      <widget name="date_time_original" type="datetime">
+        <translated>true</translated>
+        <fields>
+          <field>imd:date_time_original</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="pattern">#{nxu:basicDateFormater()}</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="format">#{nxu:basicDateFormater()}</property>
+          <property name="styleClass">dataInputTextDate</property>
+        </properties>
+      </widget>
+      <widget name="pixel_xdimension" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>imd:pixel_xdimension</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="pixel_ydimension" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>imd:pixel_ydimension</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="orientation" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>imd:orientation</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="equipment" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>imd:equipment</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="fnumber" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>imd:fnumber</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="exposure_time" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>imd:exposure_time</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="iso_speed_ratings" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>imd:iso_speed_ratings</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="iptc_info">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>object_name</widget>
+        </row>
+        <row>
+          <widget>headline</widget>
+        </row>
+        <row>
+          <widget>keywords</widget>
+        </row>
+        <row>
+          <widget>date_created</widget>
+        </row>
+        <row>
+          <widget>country_or_primary_location</widget>
+        </row>
+        <row>
+          <widget>province_or_state</widget>
+        </row>
+        <row>
+          <widget>city</widget>
+        </row>
+        <row>
+          <widget>caption</widget>
+        </row>
+        <row>
+          <widget>by_line</widget>
+        </row>
+        <row>
+          <widget>by_line_title</widget>
+        </row>
+        <row>
+          <widget>copyright_notice</widget>
+        </row>
+        <row>
+          <widget>credit</widget>
+        </row>
+        <row>
+          <widget>source</widget>
+        </row>
+        <row>
+          <widget>writer</widget>
+        </row>
+      </rows>
+      <widget name="caption" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>iptc:caption</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="country_or_primary_location" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>iptc:country_or_primary_location</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="province_or_state" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>iptc:province_or_state</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="city" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>iptc:city</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="by_line" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>iptc:by_line</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="by_line_title" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>iptc:by_line_title</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="copyright_notice" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>iptc:copyright_notice</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="credit" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>iptc:credit</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="date_created" type="datetime">
+        <translated>true</translated>
+        <fields>
+          <field>iptc:date_created</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="pattern">#{nxu:basicDateFormater()}</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="format">#{nxu:basicDateFormater()}</property>
+          <property name="styleClass">dataInputTextDate</property>
+        </properties>
+      </widget>
+      <widget name="headline" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>iptc:headline</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="keywords" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>iptc:keywords</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="object_name" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>iptc:object_name</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="source" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>iptc:source</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="writer" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>iptc:writer</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+    </layout>
+
+  </extension>
+
+</component>

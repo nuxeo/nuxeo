@@ -1,0 +1,15 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+  <head>
+    <title>
+      <ui:insert name="page title"></ui:insert>
+    </title>
+
+    <nxthemes:head />
+    <nxthemes:resources />
+    <nxthemes:themestyles cache="true" />
+
+  </head>
+  [nxthemes markup]
+</html>

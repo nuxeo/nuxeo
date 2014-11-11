@@ -1,0 +1,92 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <h:form enctype="multipart/form-data">
+       <nxu:dataList var="threadEntry" value="#{currentThreadPosts}" styleClass="commentsOutput"
+        rowIndexVar="rowIndex">
+        <h:panelGroup rendered="#{currentThreadPosts.size > 0}" layout="block"
+          style="margin-left:#{threadEntry.depth*25}px;"
+          styleClass="#{nxu:test(rowIndex % 2 == 1, 'dataRowOdd commentBlock', 'dataRowEven commentBlock')}">
+
+          <ui:include src="/incl/post_actions.xhtml"/>
+
+          <div class="commentAuthor">
+            <h:outputText value="#{threadEntry.comment.post.title}"/>
+            <h:outputText value=" - #{messages['label.forum.post.by']} "/>
+            <h:outputText value="#{threadEntry.comment.post.author}"/>
+            <h:outputText value=" "/>
+            <span class="commentCreationDate">
+              <h:outputText value="#{threadEntry.comment.post.creationDate}" >
+                <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+                  timeZone="#{timeZone}" />
+              </h:outputText>
+
+              <h:outputText value=" ( "/>
+              <h:outputText styleClass="error"
+                value="#{messages[threadEntry.comment.currentLifeCycleState]}"
+                rendered="#{threadEntry.comment.currentLifeCycleState == 'moderation_pending'}"/>
+              <h:outputText
+                value="#{messages[threadEntry.comment.currentLifeCycleState]}"
+                rendered="#{threadEntry.comment.currentLifeCycleState != 'moderation_pending'}"/>
+              <h:outputText value=" ) "/>
+
+            </span>
+          </div>
+
+          <div class="commentQuote">
+            <h:outputText value="#{threadEntry.comment.post.text}"/>
+          </div>
+          <div class="commentFile">
+            <nxu:outputFile filename="#{threadEntry.comment.post.filename}"
+              value="#{threadEntry.comment.post.fileContent}"/>
+          </div>
+
+          <nxu:methodResult name="isPrincipalModerator"
+            value="#{threadAction.isPrincipalModerator}">
+            <f:subview rendered="false">
+              <ui:include src="/incl/post_actions.xhtml"/>
+            </f:subview>
+          </nxu:methodResult>
+
+          <h:outputText rendered="false"> This h:panelGroup define the form to add a
+            comment inside the thread, i.e by replying an existing comment.
+            </h:outputText>
+
+          <h:panelGroup
+            rendered="#{commentManagerActions.commentStarted
+          and threadEntry.comment.id==commentManagerActions.savedReplyCommentId }">
+            <br/>
+            <ui:include src="/incl/create_post_form.xhtml"/>
+          </h:panelGroup>
+
+        </h:panelGroup>
+
+      </nxu:dataList>
+
+    <nxu:methodResult name="canWrite"
+          value="#{postAction.checkWritePermissionOnThread}">
+
+    <h:panelGroup
+      rendered="#{currentThreadPosts.size > 0 and !commentManagerActions.commentStarted}"
+      layout="block">
+      <h:commandButton value="#{messages['command.add']}"
+        action="#{commentManagerActions.beginComment}" styleClass="button" rendered="#{canWrite}"/>
+    </h:panelGroup>
+
+    <h:outputText rendered="false"> This h:panelGroup define the form to add a comment at
+      the end of the thread. </h:outputText>
+    <h:panelGroup
+      rendered="#{canWrite and (currentThreadPosts.size == 0 || commentManagerActions.commentStarted)
+       and commentManagerActions.savedReplyCommentId == null}">
+      <ui:include src="/incl/create_post_form.xhtml"/>
+    </h:panelGroup>
+    </nxu:methodResult>
+
+  </h:form>
+</div>
