@@ -1,0 +1,18 @@
+<script type="text/javascript">
+  function confirmDeleteDocuments() {
+    return confirm("#{messages['label.documents.confirmDeleteDocuments']}");
+  }
+  function confirmUndeleteDocuments() {
+    return confirm("#{messages['label.documents.confirmUndeleteDocuments']}");
+  }
+  function confirmDeleteDocumentsForever() {
+    return confirm("#{messages['label.documents.confirmDeleteDocumentsForever']}");
+  }
+  function confirmDeleteTask() {
+    return confirm("#{messages['label.review.confirmDeleteTask']}");
+  }
+  function confirmRemoveFiles(file) {
+    var message = "#{messages['label.documents.confirmRemoveFiles']} '" + file + "'#{messages['label.documents.confirmRemoveFilesEnd']}";
+    return confirm(message);
+  }
+</script>

@@ -1,0 +1,147 @@
+<div class="content_block"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <c:set var="canHaveMainBlob" value="#{!empty currentDocumentAsBlobHolder}" />
+  <c:set var="hasMainBlob" value="#{!empty currentDocumentAsBlobHolder.blob}" />
+  <c:set var="hasOtherBlobs" value="#{currentDocument.hasSchema('files') and !empty currentDocument.files.files}" />
+
+  <c:if test="#{hasMainBlob || hasOtherBlobs || canHaveMainBlob}">
+
+    <c:if test="#{widget.handlingLabels}">
+      <c:if test="#{!empty widget.label}">
+        <ui:include src="/widgets/incl/widget_label_template.xhtml">
+          <ui:param name="labelStyleClass" value="summaryTitle #{widgetProperty_headerStyleClass}" />
+        </ui:include>
+      </c:if>
+      <c:if test="#{empty widget.label}">
+        <ui:include src="/widgets/incl/label_template.xhtml">
+          <ui:param name="label" value="action.view.content" />
+          <ui:param name="helpLabel" value="#{widget.helpLabel}" />
+          <ui:param name="translated" value="true" />
+          <ui:param name="required" value="#{widget.required}" />
+          <ui:param name="labelStyleClass" value="summaryTitle #{widgetProperty_headerStyleClass}" />
+        </ui:include>
+      </c:if>
+    </c:if>
+
+  </c:if>
+
+  <c:if test="#{!hasMainBlob and canHaveMainBlob}">
+    <div class="dropzone dropArea" context="mainBlob" id="mainBlobDropZone">
+       #{messages['label.dnd.dropHere']}
+    </div>
+  </c:if>
+  <c:if test="#{hasMainBlob}">
+    <div class="dropzone" context="mainBlob" id="mainBlobDropZone">
+    <table class="dataTableNoBorder smallTable">
+      <tbody>
+        <tr>
+          <td class="labelColumn">
+            <h:outputText value="#{messages['label.summary.download.file']}" />
+          </td>
+          <td class="fieldColumn" docRef="#{currentDocument.id}">
+            <div class="dropout"
+              downloadUrl="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}"
+              fileName="#{currentDocumentAsBlobHolder.blob.filename}"
+              mimetype="#{currentDocumentAsBlobHolder.blob.mimeType}">
+              <nxh:graphicImage value="#{nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}"
+                rendered="#{! empty nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}" />
+              <h:outputText value="#{currentDocumentAsBlobHolder.blob.filename}"/>
+              <h:outputText styleClass="detail" value=" #{nxu:printFileSize(currentDocumentAsBlobHolder.blob.length)}"/>
+            </div>
+          </td>
+          <td class="actionsColumn">
+            <nxu:methodResult name="editable"
+              value="#{liveEditHelper.isDocumentLiveEditable(currentDocument, 'file', 'content')}">
+              <h:outputLink value="#{nxd:liveEditUrl(currentDocument, 'file', 'content', 'filename')}"
+                rendered="#{editable}">
+                <h:graphicImage value="/icons/application_form_edit.png"
+                  alt="#{messages['label.document.directEdit']}"
+                  title="#{messages['label.document.directEdit']}"/>
+              </h:outputLink>
+            </nxu:methodResult>
+            <nxu:methodResult name="hasPDFCapabilities"
+              value="#{conversionActions.isExportableToPDF(currentDocumentAsBlobHolder)}">
+              <h:panelGroup rendered="#{hasPDFCapabilities}">
+                <nxh:commandLink
+                  action="#{conversionActions.generatePdfFileFromBlobHolder(currentDocumentAsBlobHolder)}">
+                <nxh:graphicImage
+                  value="/icons/pdf.png"
+                  title="#{messages['label.document.generatePdf']}"
+                  alt="#{messages['label.document.generatePdf']}"/>
+              </nxh:commandLink>
+              </h:panelGroup>
+            </nxu:methodResult>
+            <nxh:outputLink
+              value="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}">
+              <nxh:graphicImage value="/icons/download.png"
+                title="#{messages['label.document.download']}"
+                alt="#{messages['label.document.download']}"/>
+            </nxh:outputLink>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </c:if>
+
+  <c:if test="#{hasOtherBlobs}">
+  <div class="dropzone" context="otherBlobs" id="otherBlobsDropZone">
+    <table class="dataTableNoBorder smallTable">
+      <tbody>
+        <nxu:inputList value="#{currentDocument.files.files}"  id="files_input" model="model">
+          <tr>
+            <td class="labelColumn">
+              <h:outputText value=" #{messages['label.summary.download.attachments']}"
+                rendered="#{model.rowIndex == 0}" />
+            </td>
+            <td class="fieldColumn">
+              <nxh:graphicImage
+                value="#{nxd:fileIconPath(currentDocument.files.files[model.rowIndex].file)}"
+                rendered="#{! empty nxd:fileIconPath(currentDocument.files.files[model.rowIndex].file)}" />
+              <h:outputText value="#{currentDocument.files.files[model.rowIndex].filename}"/>
+              <h:outputText styleClass="detail"
+                value=" #{nxu:printFileSize(currentDocument.files.files[model.rowIndex].file.length)}"/>
+            </td>
+            <td class="actionsColumn">
+              <nxu:methodResult name="hasPDFCapabilities"
+                value="#{conversionActions.isExportableToPDF(currentDocument.files.files[model.rowIndex].file)}">
+                <h:panelGroup rendered="#{hasPDFCapabilities}">
+                  <h:commandLink action="#{conversionActions.generatePdfFile}">
+                    <f:param name="fileFieldFullName"
+                      value="#{nxd:propertyPath('files:files', model.rowIndex, 'file')}" />
+                    <f:param name="filename" value="#{currentDocument.files.files[model.rowIndex].filename}" />
+                    <nxh:graphicImage value="/icons/pdf.png"
+                      title="#{messages['label.document.generatePdf']}"
+                      alt="#{messages['label.document.generatePdf']}"/>
+                  </h:commandLink>
+                </h:panelGroup>
+              </nxu:methodResult>
+              <c:if test="#{previewActions != null}">
+                <nxh:outputLink value="javascript:openFancyBox('${previewActions.getPreviewURL(currentDocument, nxd:propertyPath('files:files', model.rowIndex, 'file'))}');">
+                  <nxh:graphicImage value="/icons/preview.png"
+                    title="#{messages['label.document.preview']}"
+                    alt="#{messages['label.document.preview']}"/>
+                </nxh:outputLink>
+              </c:if>
+              <nxh:outputLink
+                value="#{nxd:complexFileUrl('downloadFile', currentDocument, 'files:files', model.rowIndex, 'file', currentDocument.files.files[model.rowIndex].filename)}">
+                <nxh:graphicImage value="/icons/download.png"
+                  title="#{messages['label.document.download']}"
+                  alt="#{messages['label.document.download']}"/>
+              </nxh:outputLink>
+            </td>
+          </tr>
+        </nxu:inputList>
+      </tbody>
+    </table>
+  </div>
+  </c:if>
+
+</div>
