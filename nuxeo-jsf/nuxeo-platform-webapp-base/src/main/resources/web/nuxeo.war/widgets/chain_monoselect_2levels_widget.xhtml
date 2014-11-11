@@ -1,0 +1,77 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  id="#{widget.id}">
+<c:if test="#{nxl:isLikePlainMode(widget.mode) or nxl:isLikeViewMode(widget.mode)}">
+  <nxdir:directoryEntryOutput
+    directoryName="#{widgetProperty_parentDirectory}"
+    value="#{fn:split(field, '/')[0]}"
+    localize="#{widgetProperty_localize}" />
+  <h:outputText value="/" rendered="#{field.contains('/')}" />
+  <nxdir:directoryEntryOutput
+    directoryName="#{widgetProperty_childDirectory}"
+    value="#{field}"
+    localize="#{widgetProperty_localize}"
+    rendered="#{field.contains('/')}"
+    keySeparator="/" />
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:html>
+    <nxdir:directoryEntryOutput
+      directoryName="#{widgetProperty_parentDirectory}"
+      value="#{fn:split(field, '/')[0]}"
+      localize="#{widgetProperty_localize}" />
+    <h:outputText value="/" rendered="#{field.contains('/')}" />
+    <nxdir:directoryEntryOutput
+      directoryName="#{widgetProperty_childDirectory}"
+      value="#{field}"
+      localize="#{widgetProperty_localize}"
+      rendered="#{field.contains('/')}"
+      keySeparator="/" />
+  </nxp:html>
+</c:if>
+<c:if test="#{widget.mode == 'edit'}">
+
+  <a4j:region id="#{widget.id}_region" renderRegionOnly="true">
+    <nxdir:chainSelect size="2"
+      value="#{field}"
+      id="#{widget.id}_editselect"
+      multiSelect="false"
+      multiParentSelect="false"
+      allowRootSelection="#{widgetProperty_allowRootSelection}"
+      allowBranchSelection="#{widgetProperty_allowBranchSelection}"
+      defaultRootKey=""
+      required="#{widget.required}">
+      <nxdir:chainSelectListbox index="0" size="1"
+        directoryName="#{widgetProperty_parentDirectory}"
+        localize="#{widgetProperty_localize}"
+        id="#{widget.id}_parent"
+        ordering="#{empty widgetProperty_ordering?'label':widgetProperty_ordering}">
+        <a4j:support event="onchange"
+          reRender="#{widget.id}_child,#{widget.id}_message"
+          immediate="true">
+          <a4j:ajaxListener type="org.ajax4jsf.ajax.ForceRender" />
+        </a4j:support>
+      </nxdir:chainSelectListbox>
+      <f:subview rendered="#{widgetProperty_on2rows}">
+        <br />
+      </f:subview>
+      <nxdir:chainSelectListbox size="1" index="1"
+        directoryName="#{widgetProperty_childDirectory}"
+        localize="#{widgetProperty_localize}"
+        id="#{widget.id}_child"
+        ordering="#{empty widgetProperty_ordering?'label':widgetProperty_ordering}" />
+    </nxdir:chainSelect>
+  </a4j:region>
+  <a4j:outputPanel ajaxRendered="true">
+    <h:message styleClass="errorMessage" for="#{widget.id}_editselect"
+      id="#{widget.id}_message" />
+  </a4j:outputPanel>
+</c:if>
+</f:subview>
