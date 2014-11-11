@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.automation.server.BatchManager"
+  version="1.0">
+
+  <documentation>This component provides a service to be able to upload some blobs and store them temporarly so that you can execute an Automation Operation on these Blobs.
+  @author Thierry Delprat (tdelprat@nuxeo.com)
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManagerComponent" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager" />
+  </service>
+
+</component>

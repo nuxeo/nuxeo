@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Annotations Repository Plugin
+Bundle-SymbolicName: org.nuxeo.ecm.annotations.repository;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateless
+Require-Bundle: org.nuxeo.ecm.annotations
+Nuxeo-Component: OSGI-INF/annotations-repository-core-contrib.xml,
+  OSGI-INF/AnnotationsRepositoryService.xml,
+  OSGI-INF/annotations-repository-contrib.xml,
+  OSGI-INF/annotations-repository-listener-contrib.xml

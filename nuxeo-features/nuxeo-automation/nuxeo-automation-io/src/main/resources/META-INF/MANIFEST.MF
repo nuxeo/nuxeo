@@ -1,0 +1,12 @@
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: nuxeo-automation-io
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.7.2.qualifier
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.automation.io;singleton:=true
+Nuxeo-Component: OSGI-INF/codec-service.xml,
+ OSGI-INF/restcontributor-service.xml,
+ OSGI-INF/marshaller-contrib.xml

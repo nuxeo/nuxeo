@@ -1,0 +1,17 @@
+<c:if test="#{fieldOrValue.hasFacet('Commentable')}"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <nxu:set var="commentsCount" value="#{commentManagerActions.getCommentsAsThreadOnDoc(fieldOrValue).size}" cache="true" >
+    <c:set var="baseLabel" value="#{nxu:test(commentsCount > 1, 'label.comments.moreComments', 'label.comments.oneComment')}" />
+    <c:set var="tooltip" value="#{nxu:translate(baseLabel, commentsCount)}" />
+
+    <div title="#{tooltip}" class="tipsyShow tipsyGravityS" >
+      <h:graphicImage value="/icons/comments.png" />
+      <h:outputText value="#{commentsCount}" />
+    </div>
+  </nxu:set>
+
+</c:if>

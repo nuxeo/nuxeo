@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.comment.lifecycle">
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+      point="lifecycle">
+
+    <lifecycle name="comment_moderation" defaultInitial="moderation_pending">
+
+      <transitions>
+        <transition name="moderation_publish" destinationState="moderation_published">
+          <description>Approve the comment</description>
+        </transition>
+        <transition name="moderation_reject" destinationState="moderation_rejected">
+          <description>Reject the comment</description>
+        </transition>
+      </transitions>
+      <states>
+        <state name="moderation_pending" description="Default state">
+          <transitions>
+            <transition>moderation_publish</transition>
+            <transition>moderation_reject</transition>
+          </transitions>
+        </state>
+        <state name="moderation_published" description="Comment published"/>
+        <state name="moderation_rejected" description="Comment Rejected"/>
+      </states>
+
+    </lifecycle>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+      point="types">
+    <types>
+      <type name="Comment">comment_moderation</type>
+    </types>
+  </extension>
+
+</component>

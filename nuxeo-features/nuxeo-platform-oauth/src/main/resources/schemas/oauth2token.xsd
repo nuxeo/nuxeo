@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://nuxeo.org/schemas/oauth2/token"
+  xmlns:oauthtoken2="http://nuxeo.org/schemas/oauth2/tokennamespace">
+
+  <xs:element name="id" type="xs:integer"/>
+  <xs:element name="serviceName" type="xs:string"/>
+  <xs:element name="accessToken" type="xs:string"/>
+  <xs:element name="refreshToken" type="xs:string"/>
+  <xs:element name="nuxeoLogin" type="xs:string"/>
+  <xs:element name="clientId" type="xs:string"/>
+
+  <xs:element name="expirationTimeMilliseconds" type="xs:integer"/>
+  <xs:element name="creationDate" type="xs:date"/>
+
+</xs:schema>

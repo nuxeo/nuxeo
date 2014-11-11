@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.collections.api.FavoritesManager">
+
+  <documentation>
+    Favorites generic service.
+
+    @author Guillaume Renard (grenard@nuxeo.com)
+    @since 5.9.4
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.collections.core.FavoritesManagerImpl"/>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.collections.api.FavoritesManager"/>
+  </service>
+
+</component>

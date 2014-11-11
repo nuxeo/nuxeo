@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.select2.theme.contrib">
+
+  <require>org.nuxeo.theme.nuxeo.default</require>
+
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+
+    <themePage name="*">
+      <styles append="true">
+        <style>nuxeo-select2</style>
+      </styles>
+    </themePage>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+
+    <view name="nuxeo5 includes" template-engine="jsf-facelets" merge="true">
+      <format-type>widget</format-type>
+      <resource>select2.css</resource>
+      <resource>jquery.ui.sortable.js</resource>
+      <!-- TODO Later, we can include nuxeo-select2.js here but for now we import
+        it inline because it'll be easier to debug if needed <resource>nuxeo-select2.js</resource> -->
+    </view>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="applications">
+    <application root="${org.nuxeo.ecm.contextPath}"
+      template-engine="jsf-facelets">
+      <view id="/widgets/suggest_add_new_directory_entry_iframe.xhtml">
+        <theme>galaxy/popup</theme>
+      </view>
+    </application>
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
+    <resource name="select2.css">
+      <path>css/select2.css</path>
+    </resource>
+    <resource name="select2.js">
+      <path>scripts/select2/select2.js</path>
+      <require>jquery.js</require>
+    </resource>
+    <resource name="nuxeo-select2.js">
+      <path>scripts/select2/nuxeo-select2.js</path>
+      <require>select2.js</require>
+    </resource>
+  </extension>
+
+  <extension target="org.nuxeo.theme.styling.service" point="styles">
+    <style name="nuxeo-select2">
+      <src>themes/css/nuxeo-select2.css</src>
+    </style>
+  </extension>
+
+</component>
