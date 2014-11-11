@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.opensocial.JSessionAuth">
+
+	<extension
+		target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+		point="authenticators">
+
+		<authenticationPlugin name="FORM_AUTH" enabled="true"
+			class="org.nuxeo.ecm.platform.ui.web.auth.plugins.FormAuthenticator">
+			<needStartingURLSaving>true</needStartingURLSaving>
+		</authenticationPlugin>
+
+	</extension>
+</component>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.webengine.blogs.ecm.types" version="1.0">
+
+  <require>org.nuxeo.ecm.core.schema.TypeService</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="configuration">
+    <configuration>
+      <prefetch>
+        common.icon, dc:title, dc:modified, dc:contributors, dc:creator
+      </prefetch>
+    </configuration>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+    <type id="BlogSite" coretype="BlogSite">
+      <label>Blog Site</label>
+      <icon>/icons/folder.gif</icon>
+      <bigIcon>/icons/website_100.png</bigIcon>
+      <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <category>Collaborative</category>
+      <description>BlogSite.description</description>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>BlogPost</type>
+        <type>ContextualLink</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>blogcontainer</layout>
+        <!-- The specifics are not shown for the moment. -->
+        <!-- <layout>blog</layout> -->
+      </layouts>
+      <layouts mode="edit">
+        <layout>blogcontainer</layout>
+        <!-- The specifics are not shown for the moment. -->
+        <!-- <layout>blog</layout> -->
+      </layouts>
+    </type>
+
+    <type id="BlogPost" coretype="BlogPost">
+      <label>Blog Post</label>
+      <icon>/icons/page_white_world.png</icon>
+      <bigIcon>/icons/webpage_100.png</bigIcon>
+      <icon-expanded>/icons/web_folder.png</icon-expanded>
+      <category>SimpleDocument</category>
+      <description>BlogPost.description</description>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>webpage</layout>
+        <!-- The specifics are not shown for the moment. -->
+        <!-- <layout>blogpost</layout> -->
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>webpage</layout>
+        <!-- The specifics are not shown for the moment. -->
+        <!-- <layout>blogpost</layout> -->
+        <layout>dublincore</layout>
+      </layouts>
+    </type>
+
+    <type id="Workspace" coretype="Workspace">
+      <subtypes>
+        <type>BlogSite</type>
+      </subtypes>
+    </type>
+
+    <type id="Folder" coretype="Folder">
+      <subtypes>
+        <type>BlogSite</type>
+      </subtypes>
+    </type>
+
+  </extension>
+
+</component>

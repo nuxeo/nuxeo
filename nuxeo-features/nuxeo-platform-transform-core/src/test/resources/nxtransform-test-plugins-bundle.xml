@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.transform.service.TransformService.Test">
+
+	<!--  Example for tests -->
+	<extension  target="org.nuxeo.ecm.platform.transform.service.TransformService" point="plugins">
+		<plugin name="any2pdf" class="org.nuxeo.ecm.platform.transform.FakePlugin"
+			destinationMimeType="application/pdf">
+			<sourceMimeType>application/msword</sourceMimeType>
+			<sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
+			<sourceMimeType>application/vnd.ms-excel</sourceMimeType>
+			<option name="host">localhost</option>
+			<option name="port">8080</option>
+		</plugin>
+	</extension>
+
+	<!--  Example for tests -->
+	<extension target="org.nuxeo.ecm.platform.transform.service.TransformService" point="transformers">
+		<transformer name="any2pdf" class="org.nuxeo.ecm.platform.transform.FakeTransformer">
+			<plugins>
+				<plugin name="any2pdf">
+					<option name="host">anotherhost</option>
+					<option name="port">9900</option>
+				</plugin>
+			</plugins>
+		</transformer>
+	</extension>
+
+</component>
+
+
+
