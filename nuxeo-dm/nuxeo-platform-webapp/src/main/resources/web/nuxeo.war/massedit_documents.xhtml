@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <ui:define name="body">
+    <div>
+    <h3><h:outputText value="#{messages['title.massedition']} #{currentType.id}" /></h3>
+    <ui:include src="/incl/message_banner.xhtml" />
+    <h:form>
+      <ui:include src="/incl/massdocs_editor.xhtml" />
+      <table class="dataInput">
+        <tbody>
+          <tr>
+            <td class="labelColumn"></td>
+            <td></td>
+            <td>
+              <h:commandButton value="#{messages['command.next']}"
+               action="#{massEditActions.previewChanges}" class="button"/>
+            </td>
+           </tr>
+         </tbody>
+        </table>
+    </h:form>
+    </div>
+  </ui:define>
+
+</nxthemes:composition>
