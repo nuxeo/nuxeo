@@ -1,0 +1,244 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.actions.ActionService">
+  <documentation>
+    The action service provides extension points for pluggable actions and
+    filters and manage UI type action compatibility (since 5.6)
+
+    Actions are commands that can be accessed and triggered from the site pages.
+    Their visibility is adapted to the current user and site possibilities using
+    filters.
+
+    @author Anahide Tchertchian (at@nuxeo.com)
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.actions.ActionService" />
+
+  <service>
+          <provide interface="org.nuxeo.ecm.platform.actions.ejb.ActionManager" />
+  </service>
+
+  <extension-point name="filters">
+    <documentation>
+      An action filter is a set of rules that will apply - or not - given an
+      action and a context.
+
+      Filter properties :
+
+      - id: will be used ot identify the filter from actions definitions.
+
+      - rules: set of rules composing the filter
+
+
+      The default filter implementation uses filter rules with the following
+      properties:
+
+      - grant: boolean indicating whether this is a granting rule or a denying
+      rule.
+
+      - permission: permission like "Write" that will be checked on the context
+      for the given user. A rule can hold several permissions: it applies if
+      user holds at least one of them.
+
+      - facet: facet like "Folderish" that can be set on the document type
+      ({@see org.nuxeo.ecm.core.schema.types.Type}) to desribe the document type
+      genral behaviour. A rule can hold several facets: it applies if current
+      document in context has at least one of them.
+
+      - group: group like "members" to check against current user in context. A rule
+       can hold several groups: it applies if current user is in one of them.
+
+      - condition: expression that can be evaluated against the current context.
+      A rule can hold several conditions; it applies if at least one of the conditions
+      is verified. The condition can be of the form #{somevar} or #{somevar.somemethod},
+      or #{somevar.somemethod(arg)}, in which case it will be interpreted a Seam expression,
+      otherwise it will be interpreted as a Jexl expression. A reference for Jexl can be found at
+      http://commons.apache.org/jexl/reference/syntax.html
+      The Jexl context for the expression contains the variables "document", "principal",
+      and "SeamContext".
+
+      - type: document type to check against current document in context. A rule
+      can hold several types: it applies if current document is one of them. The
+      fake 'Server' type is used to check the server context.
+
+      - schema: document schema to check against current document in context. A
+      rule can hold several schemas: it applies if current document has one of
+      them.
+
+      A filter is granting access to an action if, among its rules, no denying
+      rule is found and at least one granting rule is found. If no rule is set,
+      it is granted.
+
+      Custom filters can be defined on the extension point, provided they follow
+      the {@see org.nuxeo.ecm.platform.actions.ActionFilter} interface, using
+      the following syntax:
+
+      <code>
+        <object class="my.package.MyFilter" />
+      </code>
+
+      Example of action filter using default filter implementation:
+
+      <code>
+        <filter id="theFilter">
+          <rule grant="">
+            <permission>Write</permission>
+            <facet>Folderish</facet>
+            <condition>condition</condition>
+            <type>Workspace</type>
+            <type>Section</type>
+          </rule>
+          <rule grant="false">
+            <condition>condition 1</condition>
+            <condition>condition 2</condition>
+          </rule>
+        </filter>
+      </code>
+    </documentation>
+
+    <object class="org.nuxeo.ecm.platform.actions.DefaultActionFilter" />
+    <object class="org.nuxeo.ecm.platform.actions.FilterFactory" />
+  </extension-point>
+
+  <extension-point name="actions">
+    <documentation>
+      An action is defined by the following properties:
+
+      - id: string identifying the action
+
+      - label: the action name
+
+      - help: the action help message
+
+      - link: string representing the command the action will trigger
+
+      - category: a string useful to group actions that will be rendered in the
+      same area of a page. An action can define several categories.
+
+      - filter-ids: id of a filter that will be used to control the action
+      visibility. An action can have several filters: it is visible if all its
+      filters grant the access.
+
+      - filter: a filter definition can be done directly within the action
+      definition. It is a filter like others and can be referred by other
+      actions.
+
+      - icon: the optional icon path for this action
+
+      - confirm: an optional javascript confirmation string that can be
+      triggered when executing the command.
+
+      - enabled: boolean indicating whether the action is currently active. This
+      can be used to hide existing actions when customizing the site behaviour.
+
+      - order: an optional integer used to sort actions within the same
+      category. This attribute may be depracated in the future.
+
+      - immediate: an optional boolean (available since 5.4.2) that makes it
+      possible to call command actions without validating the enclosing form.
+
+      - type: the UI type action (available since 5.6)
+
+      UI Type properties, defined within a "properties" tag:
+      - property: the property value
+      - name: the property name
+
+      Properties also accept list or map-like values.
+
+      Before 5.6, it is important to understand that an action does *not*
+      define the way it will be rendered: this is left to pages, templates
+      and other components displaying it. Most of the time, actions will be
+      rendered as command link or command buttons.
+
+      Since 5.6, the template /incl/action/generic_action_template.xhtml handles
+      rendering of an action depending on its type.
+
+      Examples:
+
+      <code>
+        <action id="TAB_RIGHTS" link="/incl/tabs/document_rights.xhtml"
+          enabled="true" label="action.view.rights" icon="/icons/file.gif"
+          type="fancybox">
+          <category>VIEW_ACTION_LIST</category>
+          <filter-id>rights</filter-id>
+          <properties>
+            <property name="url">/incl/fancybox.xhtml</property>
+            <propertyList name="myListProp">
+              <value>item1</value>
+              <value>item2</value>
+            </propertyList>
+            <propertyMap name="myMapProp">
+              <property name="mySubProp">mySubPropValue</property>
+            </propertyMap>
+          </properties>
+        </action>
+
+        <action id="newFile" link="create_file" enabled="true"
+          label="action.new.file" icon="/icons/action_add_file.gif" type="button">
+          <category>SUBVIEW_UPPER_LIST</category>
+          <filter-id>create</filter-id>
+        </action>
+
+        <action id="newSection"
+          link="#{documentActions.createDocument('Section')}" enabled="true"
+          label="command.create.section" icon="/icons/action_add.gif" type="icon">
+          <category>SUBVIEW_UPPER_LIST</category>
+          <filter id="newSection">
+            <rule grant="true">
+              <permission>AddChildren</permission>
+              <type>SectionRoot</type>
+            </rule>
+          </filter>
+        </action>
+      </code>
+
+      Actions extension point provides mergeing features: you can change an
+      existing action definition in your custom extension point provided you use
+      the same identifier.
+
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.actions.Action" />
+  </extension-point>
+
+  <extension-point name="typeCompatibility">
+    <documentation>
+      Action compatibility type (since 5.6) defining the UI type action
+      from deprecated action category:
+
+      - category: category action
+
+      - type:
+      UI action type
+
+      Examples:
+
+      <code>
+        <typeCompatibility type="link_icon">
+          <category>DOCUMENT_UPPER_ACTION</category>
+          <category>DOCUMENT_HEADER_ACTIONS_LIST</category>
+        </typeCompatibility>
+        <typeCompatibility type="link_icon_text">
+          <category>DEFAULT_LIST</category>
+          <category>CLIPBOARD_LIST</category>
+        </typeCompatibility>
+        <typeCompatibility type="button">
+          <category>CURRENT_SELECTION_COPY</category>
+          <category>CLIPBOARD_PASTE</category>
+          <category>CURRENT_SELECTION_ADDTOLIST</category>
+          <category>CURRENT_SELECTION_TRASH</category>
+          <category>CREATE_DOCUMENT_FORM</category>
+          <category>EDIT_DOCUMENT_FORM</category>
+        </typeCompatibility>
+        <typeCompatibility type="link">
+          <category>USER_SERVICES</category>
+          <category>USER_MENU_ACTIONS</category>
+        </typeCompatibility>
+        <typeCompatibility type="bare_link">
+          <category>DOCUMENT_HEADER_ACTIONS_LIST_HREF</category>
+        </typeCompatibility>
+      </code>
+
+    </documentation>
+
+    <object class="org.nuxeo.ecm.platform.actions.TypeCompatibility" />
+  </extension-point>
+</component>
