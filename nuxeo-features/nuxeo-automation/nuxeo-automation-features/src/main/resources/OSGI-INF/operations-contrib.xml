@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.automation.featuresContrib" version="1.0">
+
+  <documentation>@author Bogdan Stefanescu (bs@nuxeo.com)</documentation>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.AuditLog" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.AuditQuery" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.CreateRelation" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.GetRelations" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.ResultSetPageProviderOperation" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.users.GetDocumentPrincipalEmails" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.users.GetDocumentUsersAndGroups" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.notification.SendMail" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.GetPictureView" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.PictureResize" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.FileManagerImport" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.BlobHolderAttach" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.GetActions" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.management.GetCounters" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.GetDirectoryEntries" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.UserWorkspace" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.CreatePicture" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.RunOperationOnProvider" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.directory.CreateDirectoryEntries" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.directory.DeleteDirectoryEntries" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.directory.UpdateDirectoryEntries" />
+
+    <operation
+        class="org.nuxeo.ecm.automation.core.operations.services.directory.ReadDirectoryEntries" />
+
+  </extension>
+
+  <extension point="chains"
+    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    <chain id="VersionAndAttachFile">
+      <operation id="Blob.PushList">
+      </operation>
+      <operation id ="Document.Fetch">
+        <param type="string" name="value">expr:Context.get("currentDocument")</param>
+      </operation>
+      <operation id="Document.CheckIn">
+        <param type="string" name="version">minor</param>
+        <param type="string" name="comment">Automatic checkin before file update</param>
+      </operation>
+      <operation id="Context.SetInputAsVar">
+        <param type="string" name="name">newDocument</param>
+      </operation>
+      <operation id="Context.SetVar">
+        <param type="string" name="name">currentDocument</param>
+        <param type="string" name="value">expr:Context.get("newDocument").id</param>
+      </operation>
+      <operation id="Blob.PopList">
+      </operation>
+      <operation id="BlobHolder.Attach">
+        <param type="boolean" name="useMainBlob">true</param>
+      </operation>
+    </chain>
+    <chain id="AttachFiles">
+      <operation id="BlobHolder.Attach">
+        <param type="boolean" name="useMainBlob">false</param>
+      </operation>
+    </chain>
+    <chain id="VersionAndAttachFiles">
+      <operation id="Blob.PushList">
+      </operation>
+      <operation id ="Document.Fetch">
+        <param type="string" name="value">expr:Context.get("currentDocument")</param>
+      </operation>
+      <operation id="Document.CheckIn">
+        <param type="string" name="version">minor</param>
+        <param type="string" name="comment">Automatic checkin before files update</param>
+      </operation>
+      <operation id="Context.SetInputAsVar">
+        <param type="string" name="name">newDocument</param>
+      </operation>
+      <operation id="Context.SetVar">
+        <param type="string" name="name">currentDocument</param>
+        <param type="string" name="value">expr:Context.get("newDocument").id</param>
+      </operation>
+      <operation id="Blob.PopList">
+      </operation>
+      <operation id="BlobHolder.Attach">
+        <param type="boolean" name="useMainBlob">false</param>
+      </operation>
+    </chain>
+    <chain id="FileManager.ImportWithMetaData">
+      <operation id="FileManager.Import">
+         <param type="boolean" name="overwite">true</param>
+      </operation>
+      <operation id="Document.Update">
+        <param type="properties" name="properties">expr:Context.get("docMetaData")</param>
+      </operation>
+    </chain>
+  </extension>
+
+</component>

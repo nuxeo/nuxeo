@@ -1,0 +1,52 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-localconfiguration-parent</artifactId>
+    <version>5.7-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-platform-localconfiguration-web</artifactId>
+  <name>Nuxeo Platform Local Configuration - Web</name>
+  <description>Nuxeo Platform Local Configuration - Web.</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-types-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-ui-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-webapp-base</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.theme</groupId>
+      <artifactId>nuxeo-theme-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.theme</groupId>
+      <artifactId>nuxeo-theme-styling</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.faces</groupId>
+      <artifactId>jsf-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+</project>

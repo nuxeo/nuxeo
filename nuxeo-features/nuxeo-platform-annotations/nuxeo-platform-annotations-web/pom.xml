@@ -1,0 +1,177 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-annotations-parent</artifactId>
+    <version>5.7-SNAPSHOT</version>
+  </parent>
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-platform-annotations-web</artifactId>
+  <name>Nuxeo Platform Annotation Service Client </name>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-servlet</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.allen-sauer.gwt.log</groupId>
+      <artifactId>gwt-log</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-url-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-preview</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-theme-jsf</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.faces</groupId>
+      <artifactId>jsf-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam</artifactId>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <configuration>
+              <webappDirectory>${project.build.outputDirectory}/web/nuxeo.war</webappDirectory>
+              <modules>
+                <module>org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModuleDev</module>
+                <module>org.nuxeo.ecm.platform.annotations.gwt.AnnotationModuleDev</module>
+              </modules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/.gwt-tmp/**</exclude>
+            <exclude>**/gwt-unitCache/**</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+<!--
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <downloadSources>false</downloadSources>
+          <additionalProjectnatures>
+            <projectnature>com.google.gwt.eclipse.core.gwtNature</projectnature>
+            <projectnature>com.google.gdt.eclipse.core.webAppNature</projectnature>
+          </additionalProjectnatures>
+          <additionalBuildcommands>
+            <buildCommand>
+              <name>com.google.gwt.eclipse.core.gwtProjectValidator</name>
+              <arguments>
+              </arguments>
+              <name>com.google.gdt.eclipse.core.webAppProjectValidator</name>
+              <arguments>
+              </arguments>
+            </buildCommand>
+          </additionalBuildcommands>
+          <classpathContainers>
+            <classpathContainer>org.eclipse.jdt.launching.JRE_CONTAINER</classpathContainer>
+            <classpathContainer>com.google.gwt.eclipse.core.GWT_CONTAINER</classpathContainer>
+          </classpathContainers>
+          <buildOutputDirectory>src/main/resources/web/nuxeo.war/WEB-INF/classes</buildOutputDirectory>
+        </configuration>
+      </plugin>
+ -->
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/GwtTest*.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+	  <plugin>
+	    <groupId>org.codehaus.mojo</groupId>
+	    <artifactId>gwt-maven-plugin</artifactId>
+            <executions>
+              <execution>
+		<configuration>
+                  <modules>
+                    <module>org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModule</module>
+                    <module>org.nuxeo.ecm.platform.annotations.gwt.AnnotationModule</module>
+                  </modules>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>nightly</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>gwt-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <configuration>
+                  <modules>
+                    <module>org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModule</module>
+                    <module>org.nuxeo.ecm.platform.annotations.gwt.AnnotationModule</module>
+                  </modules>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+</project>

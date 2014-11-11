@@ -1,0 +1,79 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-imaging-parent</artifactId>
+    <version>5.7-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-platform-imaging-core</artifactId>
+  <name>Nuxeo Platform Imaging Core</name>
+  <description>
+    Nuxeo Platform Imaging provides picture management to Nuxeo Web Platform
+    and RCP. It offers minor picture transformation like rotation or resizing.
+    Core module wich provides services for common picture processing operation,
+    metadata extraction and mime-type detection. With this addon one can
+    choose the picture processing library to use through the library selector
+    service. Right now available library are Mistral and ImageJ.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-imaging-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-commandline-executor</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-filemanager-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql</artifactId>
+    </dependency>
+
+    <!-- Mistral -->
+    <dependency>
+      <groupId>net.java.dev.mistral</groupId>
+      <artifactId>EditableImage</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.mistral</groupId>
+      <artifactId>Operations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.mistral</groupId>
+      <artifactId>metadata-extractor</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+     <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

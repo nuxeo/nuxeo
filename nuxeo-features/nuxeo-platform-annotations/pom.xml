@@ -1,0 +1,52 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>nuxeo-features-parent</artifactId>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <version>5.7-SNAPSHOT</version>
+  </parent>
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-platform-annotations-parent</artifactId>
+  <name>Nuxeo Platform Annotations service parent</name>
+  <packaging>pom</packaging>
+  <description>Nuxeo Platform Annotations provides an annotation service
+    based on W3C Annotea specification</description>
+
+  <modules>
+    <module>nuxeo-platform-annotations-api</module>
+    <module>nuxeo-platform-annotations-core</module>
+    <module>nuxeo-platform-annotations-core-contrib</module>
+    <module>nuxeo-platform-annotations-http</module>
+    <module>nuxeo-platform-annotations-repository-plugin</module>
+  </modules>
+
+  <developers>
+    <developer>
+      <name>Alexandre Russel</name>
+      <email>arussel@nuxeo.com</email>
+      <organization>Nuxeo SAS</organization>
+    </developer>
+    <developer>
+      <name>Thierry Delprat</name>
+      <email>td@nuxeo.com</email>
+      <organization>Nuxeo SAS</organization>
+    </developer>
+    <developer>
+      <name>Thomas Roger</name>
+      <email>troger@nuxeo.com</email>
+      <organization>Nuxeo SAS</organization>
+    </developer>
+  </developers>
+
+  <profiles>
+    <profile>
+      <id>gwt</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>nuxeo-platform-annotations-web</module>
+      </modules>
+    </profile>
+  </profiles>
+</project>
