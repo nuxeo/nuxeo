@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.relations.jena">
+
+  <extension
+    target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="graphtypes">
+    <graphtype name="jena"
+      class="org.nuxeo.ecm.platform.relations.jena.JenaGraph" />
+  </extension>
+
+</component>
