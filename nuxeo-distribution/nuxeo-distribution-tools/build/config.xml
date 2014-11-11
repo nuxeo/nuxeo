@@ -1,0 +1,72 @@
+<project name="nuxeo-configure" xmlns:artifact="urn:nuxeo-artifact"
+xmlns:nx="urn:nuxeo-build">
+  <property name="nuxeo.runtime.version" value="1.6.0-SNAPSHOT" />
+  <property name="nuxeo.core.version"
+  value="${nuxeo.runtime.version}" />
+  <property name="nuxeo.platform.version" value="5.3.0-SNAPSHOT" />
+  <property name="nuxeo.webengine.version"
+  value="${nuxeo.platform.version}" />
+  <property name="nuxeo.theme.version"
+  value="${nuxeo.platform.version}" />
+  <target name="configure" unless="configure">
+    <echo>Entering global configuration</echo>
+    <property name="outdir" value="${basedir}/target" />
+    <property name="stagedir" value="${outdir}/stage" />
+    <delete dir="${outdir}" />
+    <mkdir dir="${stagedir}" />
+    <property name="configure" value="true" />
+    <taskdef resource="org/nuxeo/build/antlib.xml"
+    uri="urn:nuxeo-build" />
+    <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+    uri="urn:nuxeo-artifact" />
+    <nx:if isSet="ant.profiles">
+      <nx:profile activate="${ant.profiles}" />
+    </nx:if>
+    <artifact:settings offline="true" debug="false">
+      <repositories>
+        <repository id="nuxeo_public"
+        url="http://maven.nuxeo.org/public"
+        name="Nuxeo Public Repository" layout="default">
+          <releases enabled="true" updatePolicy="never"
+          checksumPolicy="fail" />
+          <snapshots enabled="false" updatePolicy="never"
+          checksumPolicy="fail" />
+        </repository>
+        <repository id="nuxeo_public_snapshot"
+        url="http://maven.nuxeo.org/public-snapshot"
+        name="Nuxeo Public Snapshot Repository" layout="default">
+          <releases enabled="true" updatePolicy="never"
+          checksumPolicy="fail" />
+          <snapshots enabled="true" updatePolicy="never"
+          checksumPolicy="fail" />
+        </repository>
+        <repository id="jboss"
+        url="http://repository.jboss.com/maven2"
+        name="JBoss Repository" layout="default">
+          <releases enabled="true" updatePolicy="never"
+          checksumPolicy="fail" />
+          <snapshots enabled="false" updatePolicy="never"
+          checksumPolicy="fail" />
+        </repository>
+        <repository id="ibiblio"
+        url="http://mirrors.ibiblio.org/pub/mirrors/maven2"
+        layout="default">
+          <releases enabled="true" updatePolicy="never"
+          checksumPolicy="fail" />
+          <snapshots enabled="true" updatePolicy="never"
+          checksumPolicy="fail" />
+        </repository>
+      </repositories>
+    </artifact:settings>
+    <!-- construct the dependency tree to use for nuxeo products -->
+    <artifact:graph>
+      <resolve pattern="org.nuxeo:nuxeo-ecm:${nuxeo.platform.version}:pom" />
+      <resolve pattern="org.nuxeo.runtime:nuxeo-runtime-parent:${nuxeo.runtime.version}:pom" />
+      <resolve pattern="org.nuxeo.ecm.core:nuxeo-core-parent:${nuxeo.core.version}:pom" />
+      <resolve pattern="org.nuxeo.ecm.platform:nuxeo-platform-parent:${nuxeo.platform.version}:pom" />
+      <resolve pattern="org.nuxeo.ecm.webengine:nuxeo-webengine-parent:${nuxeo.webengine.version}:pom" />
+      <resolve pattern="org.nuxeo.common:nuxeo-common:${nuxeo.runtime.version}" />
+      <expand level="1" />
+    </artifact:graph>
+  </target>
+</project>

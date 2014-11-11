@@ -1,0 +1,16 @@
+<antlib>
+  <taskdef name="templates" classname="org.nuxeo.build.ant.ftl.ProcessTemplateTask" />
+    
+  <taskdef name="profile" classname="org.nuxeo.build.ant.profile.ProfileTask" />
+  
+  <taskdef name="archetype" classname="org.nuxeo.build.ant.archetype.ArchetypeTask" />
+  
+  <taskdef name="if" classname="org.nuxeo.build.ant.IfTask" />
+
+  <taskdef name="regexp" classname="org.nuxeo.build.ant.PropertyRegexp" />
+  
+  <typedef name="preprocess" classname="org.nuxeo.build.ant.processor.NuxeoBuildProcessor" />  
+
+  <typedef name="rename" classname="org.nuxeo.build.ant.RenameTask" />  
+
+</antlib>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="iso-8859-1"?> 
+	
+<project name="test" default="build">
+	<taskdef resource="org/nuxeo/build/antlib.xml"/>
+	
+	<echo>test!!</echo>
+
+	<maven offline="true" debug="true">
+		<repositories>
+			<repository id="nuxeo_public" url="http://maven.nuxeo.org/public" name="Nuxeo Public Repository" layout="default" >
+				<releases enabled="true" updatePolicy="never" checksumPolicy="fail"/>
+				<snapshots enabled="false" updatePolicy="never" checksumPolicy="fail"/>
+			</repository>
+			<repository id="nuxeo_public_snapshot" url="http://maven.nuxeo.org/public-snapshot" name="Nuxeo Public Snapshot Repository" layout="default" >
+				<releases enabled="true" updatePolicy="never" checksumPolicy="fail"/>
+				<snapshots enabled="true" updatePolicy="never" checksumPolicy="fail"/>
+			</repository>
+			<repository id="jboss" url="http://repository.jboss.com/maven2" name="JBoss Repository" layout="default" >
+				<releases enabled="true" updatePolicy="never" checksumPolicy="fail"/>
+				<snapshots enabled="false" updatePolicy="never" checksumPolicy="fail"/>
+			</repository>			
+			<repository id="ibiblio" url="http://mirrors.ibiblio.org/pub/mirrors/maven2" layout="default">
+				<releases enabled="true" updatePolicy="never" checksumPolicy="fail"/>
+				<snapshots enabled="true" updatePolicy="never" checksumPolicy="fail"/>
+			</repository>
+	    </repositories>
+	</maven>
+	
+	
+	<target name="build">
+		<echo>target!</echo>
+
+		
+		<!--artifactSet id="myset" select="*" include-dependencies="all" include-dependends="all">
+			<includes>
+			  <artifact id="org.nuxeo*"   />
+			</includes>
+			<excludes>
+				<artifact scope="test" />
+		    </excludes>
+		</artifactSet-->
+		
+		<!--graph resolve="org.nuxeo.ecm.core:nuxeo-core-parent:1.6.0-SNAPSHOT:pom"-->
+		<graph>
+			<resolveArtifact pattern="org.nuxeo.ecm.core:nuxeo-core-parent:1.6.0-SNAPSHOT:pom"/>
+			<expand level="1">
+				<includes>
+					<artifact groupId="org.nuxeo*"/>
+					<artifact scope="compile"/>
+				</includes>
+			    <excludes>
+			    	<artifact groupId="com.megginson.sax"/> <!-- there is a typo in this artifact that reference xml-apis:xml-apis:1.O.b2 - so we exclude it -->
+			    	<artifact pattern="javax.mail:mail:1.3.2" /> <!-- this artifact is missing from repo.Trail: [org.nuxeo.ecm.core:nuxeo-core-parent:1.6.0-SNAPSHOT:pom:, org.jbpm.jbpm3:jbpm-jpdl:3.3.0.GA:jar:, dumbster:dumbster:1.6:jar:] -->
+			    </excludes>				
+		    </expand>			
+		</graph>
+		
+		
+		<!--copy todir="/tmp/z">
+				 <artifactFile artifactId="nuxeo-common" />
+			 <artifactFile artifactId="nuxeo-core-facade" />
+	    </copy>
+
+		<unzip dest="/tmp/z">			
+				 <artifactFile artifactId="nuxeo-core" />
+			<artifactFile artifactId="nuxeo-core-api" />
+	    </unzip-->
+
+		<artifactSet id="test" pattern="org.nuxeo.common:nuxeo-common"/>
+		<copy todir="/tmp/z">				 
+				<artifactSet>
+				<artifactSet refid="test"/>			   			    
+				<artifact key="nuxeo-core"/>
+				<artifact key="org.nuxeo.ecm.core:nuxeo-core" classifier="sources" />
+				</artifactSet>
+	    </copy>
+		
+		<!--graph-export file="/tmp/z/graph.png" /-->
+
+			<process-templates basedir="/tmp/z/src" todir="/tmp/z/dst" />
+		
+		<!--unzip dest="/tmp/z">			
+				 <artifactFile artifactId="nuxeo-core" />
+			<artifactFile artifactId="nuxeo-core-api" />
+	    </unzip-->
+		
+		<copy file="/tmp/z/sr/test.ftl" todir="/tmp/z">
+			<filterchain>
+				<filterreader classname="org.nuxeo.build.ant.ftl.TemplateFilter"/>
+			</filterchain>
+		</copy>
+		
+	</target>
+</project>
+

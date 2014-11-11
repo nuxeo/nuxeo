@@ -1,0 +1,11 @@
+# format: artifactId[;classifier] or groupId:artifactId[:version[:type]][;classifier]
+# ant variables are expanded
+org.nuxeo.common:nuxeo-common
+org.nuxeo.runtime:nuxeo-runtime
+org.nuxeo.runtime:nuxeo-runtime-osgi
+org.nuxeo.ecm.core:nuxeo-core-api
+org.nuxeo.ecm.core:nuxeo-core-schema
+org.nuxeo.ecm.core:nuxeo-core-query
+org.nuxeo.ecm.core:nuxeo-core-io
+org.nuxeo.ecm.core:nuxeo-core-client
+org.nuxeo.ecm.platform:nuxeo-shell-core

@@ -1,0 +1,135 @@
+<project name="nuxeo-server-base" default="build"
+xmlns:artifact="urn:nuxeo-artifact" xmlns:nx="urn:nuxeo-build">
+  <import file="../config.xml" />
+  <nx:profile activate="webengine,themes,platform" />
+  <target name="build" depends="configure">
+    <ant dir="../nuxeo-app-base" />
+    <delete file="${stagedir}/nxclient.sh" />
+    <delete file="${stagedir}/nxclient.cmd" />
+    <copy todir="${stagedir}" overwrite="true">
+      <fileset dir="resources/core" />
+    </copy>
+    <copy todir="${stagedir}/bundles">
+      <artifact:file key="org.nuxeo.ecm.core:nuxeo-core" />
+      <artifact:file key="org.nuxeo.ecm.core:nuxeo-core-convert" />
+      <artifact:file key="org.nuxeo.ecm.core:nuxeo-core-convert-api" />
+      <artifact:file key="org.nuxeo.ecm.core:nuxeo-core-convert-plugins" />
+      <artifact:file key="org.nuxeo.ecm.core:nuxeo-core-event" />
+      <artifact:file key="org.nuxeo.ecm.core:nuxeo-core-event-compat" />
+      <artifact:file key="org.nuxeo.ecm.core:nuxeo-core-jcr-connector" />
+      <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-web-common" />
+      <!-- needed for UserIdentificationInfo - must be moved in web-common -->
+      <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-api" />
+      <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-login" />
+      <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-dublincore" />
+      <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-content-template-manager" />
+    </copy>
+    <nx:profile name="jca">
+      <artifact:file key="org.nuxeo.ecm.core:nuxeo-core-jca" />
+    </nx:profile>
+    <nx:profile name="platform">
+      <copy todir="${stagedir}" overwrite="true">
+        <fileset dir="resources/platform" />
+      </copy>
+      <copy todir="${stagedir}/bundles">
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-types-api" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-types-core" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-comment" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-comment-api" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-comment-core" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-directory-core" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-directory-api" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-directory-core" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-directory-sql" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-directory-types-contrib" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-events-api" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-relations-default-config" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-relations-api" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-relations-core" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-relations-core-listener" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-relations-jena-plugin" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-usermanager-api" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-usermanager-core" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-versioning-api" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-versioning-core" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-audit-api" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-audit-core" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-el" />
+      </copy>
+    </nx:profile>
+    <nx:profile name="webengine">
+      <copy todir="${stagedir}" overwrite="true">
+        <fileset dir="resources/webengine" />
+      </copy>
+      <copy todir="${stagedir}/bundles">
+        <artifact:file key="org.nuxeo.ecm.webengine:nuxeo-webengine-core" />
+        <artifact:file key="org.nuxeo.ecm.webengine:nuxeo-webengine-resteasy-adapter" />
+        <artifact:file key="org.nuxeo.ecm.webengine:nuxeo-webengine-admin" />
+        <artifact:file key="org.nuxeo.ecm.webengine:nuxeo-webengine-ui" />
+        <artifact:file key="org.nuxeo.ecm.webengine:nuxeo-webengine-base" />
+        <artifact:file key="org.nuxeo.ecm.webengine:nuxeo-webengine-sites" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-rendering" />
+      </copy>
+    </nx:profile>
+    <nx:profile name="themes">
+      <copy todir="${stagedir}" overwrite="true">
+        <fileset dir="resources/theme" />
+      </copy>
+      <copy todir="${stagedir}">
+        <fileset dir="resources/theme" />
+      </copy>
+      <copy todir="${stagedir}/bundles">
+        <artifact:file key="org.nuxeo.theme:nuxeo-theme-core" />
+        <artifact:file key="org.nuxeo.theme:nuxeo-theme-fragments" />
+        <artifact:file key="org.nuxeo.ecm.webengine:nuxeo-theme-webengine" />
+        <artifact:file key="org.nuxeo.theme:nuxeo-theme-html" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-theme-editor" />
+      </copy>
+      <copy todir="${stagedir}/lib">
+        <artifact:file key="org.w3c:sac" />
+        <artifact:file key="net.sourceforge.cssparser:cssparser" />
+        <artifact:file key="org.dojotoolkit:custom_rhino" />
+      </copy>
+    </nx:profile>
+    <copy todir="${stagedir}/lib">
+      <artifact:file key="javax.mail:mail" />
+      <artifact:file key="commons-beanutils:commons-beanutils" />
+      <artifact:file key="commons-io:commons-io" />
+      <artifact:file key="commons-fileupload:commons-fileupload" />
+      <artifact:file key="commons-lang:commons-lang" />
+      <artifact:file key="org.freemarker:freemarker" />
+      <artifact:file key="net.sf.json-lib:json-lib"
+      classifier="jdk15" />
+      <artifact:file key="net.sf.ezmorph:ezmorph" />
+      <artifact:file key="net.sf.opencsv:opencsv" />
+      <artifact:file key="xerces:xercesImpl" />
+      <artifact:file key="org.apache.derby:derby" />
+      <artifact:file key="org.hibernate:hibernate" />
+      <artifact:file key="org.hibernate:hibernate-annotations" />
+      <artifact:file key="org.slf4j:slf4j-api" />
+      <artifact:file key="org.slf4j:slf4j-log4j12" />
+      <artifact:file key="org.apache.lucene:lucene-core" />
+      <artifact:file key="commons-collections:commons-collections" />
+      <artifact:file key="concurrent:concurrent" />
+      <artifact:file key="org.jboss.resteasy:resteasy-jaxrs" />
+      <artifact:file key="org.jboss.resteasy:jaxrs-api" />
+      <artifact:file key="javax.mail:mail" />
+      <!-- profile el -->
+      <artifact:file key="javax.el:el-ri" />
+      <artifact:file key="javax.el:el-api" />
+      <!-- profile jpa -->
+      <artifact:file key="antlr:antlr" />
+      <artifact:file key="cglib:cglib-nodep" />
+      <artifact:file key="javax.persistence:persistence" />
+      <artifact:file key="javax.transaction:jta" />
+      <artifact:file key="org.hibernate:hibernate-entitymanager" />
+    </copy>
+    <unzip dest="${stagedir}/extras/archetype">
+      <artifact:file key="org.nuxeo.ecm.webengine:nuxeo-webengine-core" />
+      <patternset>
+        <include name="Archetype.class" />
+      </patternset>
+    </unzip>
+    <chmod dir="${stagedir}" perm="ugo+rx" includes="*.sh" />
+  </target>
+</project>
