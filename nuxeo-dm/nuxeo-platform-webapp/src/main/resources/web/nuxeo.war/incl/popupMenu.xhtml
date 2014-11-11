@@ -1,0 +1,18 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <div style="display: none;" class="contextMenu" id="popupMenu">
+    <ul>
+      <nxu:dataList var="action" layout="simple"
+        value="#{popupHelper.unfiltredPopupActions}">
+        <li id="ctxMenu_#{action.id}" action="#{action.link}">
+          <nxu:graphicImage value="#{action.icon}"/>
+          <h:outputText value=" #{messages[action.label]}" />
+        </li>
+      </nxu:dataList>
+    </ul>
+  </div>
+
+</div>
