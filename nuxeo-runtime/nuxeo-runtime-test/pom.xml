@@ -1,0 +1,181 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.runtime</groupId>
+    <artifactId>nuxeo-runtime-parent</artifactId>
+    <version>1.6.2-I20100610_0115</version>
+  </parent>
+
+  <groupId>org.nuxeo.runtime</groupId>
+  <artifactId>nuxeo-runtime-test</artifactId>
+  <name>Nuxeo Runtime Tests</name>
+  <description>Nuxeo Runtime: Nuxeo Runtime Tests.</description>
+
+  <properties>
+    <webdriver.version>0.9.7376</webdriver.version>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/ContributionTest*.java</exclude>
+            <exclude>**/MyTestComponent.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.google.code.guice</groupId>
+      <artifactId>guice</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
+    </dependency>
+
+    <!-- Use of compile scope for external dependencies because this module must only be used
+      with a test scope (except in [module]-test where you may use compile scope)-->
+    <dependency>
+      <groupId>jmock</groupId>
+      <artifactId>jmock</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi-core</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-jetty-adapter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jetty</artifactId>
+      <version>6.1H.7</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- for web driver support -->
+
+    <dependency>
+      <groupId>org.seleniumhq.webdriver
+      </groupId>
+      <artifactId>webdriver-htmlunit</artifactId>
+      <version>${webdriver.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sourceforge.htmlunit</groupId>
+      <artifactId>htmlunit</artifactId>
+      <version>2.6</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sourceforge.htmlunit</groupId>
+      <artifactId>htmlunit-core-js</artifactId>
+      <version>2.6</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.seleniumhq.webdriver
+      </groupId>
+      <artifactId>webdriver-ie</artifactId>
+      <version>${webdriver.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.seleniumhq.webdriver
+      </groupId>
+      <artifactId>webdriver-firefox</artifactId>
+      <version>${webdriver.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.seleniumhq.webdriver
+      </groupId>
+      <artifactId>webdriver-chrome</artifactId>
+      <version>${webdriver.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.seleniumhq.webdriver
+      </groupId>
+      <artifactId>webdriver-support</artifactId>
+      <version>${webdriver.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.seleniumhq.webdriver
+      </groupId>
+      <artifactId>webdriver-common</artifactId>
+      <version>${webdriver.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sourceforge.cssparser</groupId>
+      <artifactId>cssparser</artifactId>
+      <version>0.9.5-NXP-4018</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.w3c</groupId>
+      <artifactId>sac</artifactId>
+      <version>1.3</version>
+      <scope>compile</scope>
+    </dependency>
+
+  <!--  needed for webdriver wait code - should be removed when a new webdriver release will be available -->
+  <dependency>
+    <groupId>com.google.collections</groupId>
+    <artifactId>google-collections</artifactId>
+  </dependency>
+
+  <dependency>
+    <groupId>org.concordion</groupId>
+    <artifactId>concordion</artifactId>
+    <version>1.3.0</version>
+  </dependency>
+
+   <!--  nuxeo-distribution tools is generating classloader pb - we disabled it for now -->
+   <!--
+   <dependency>
+      <groupId>org.nuxeo.build</groupId>
+      <artifactId>nuxeo-distribution-tools</artifactId>
+      <classifier>all</classifier>
+    </dependency>
+    -->
+
+  </dependencies>
+
+</project>
