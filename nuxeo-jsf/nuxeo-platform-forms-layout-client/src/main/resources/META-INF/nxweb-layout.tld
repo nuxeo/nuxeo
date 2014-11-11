@@ -1,0 +1,599 @@
+<!--
+  (C) Copyright 2006 Nuxeo SAS <http://nuxeo.com> and others
+  
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Public License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/legal/epl-v10.html
+  
+  Contributors:
+  Nuxeo - initial API and implementation
+-->
+
+<!DOCTYPE taglib
+  PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
+  "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+
+<taglib>
+
+  <tlib-version>1.0</tlib-version>
+  <jsp-version>1.2</jsp-version>
+  <short-name>nxl</short-name>
+  <uri>http://nuxeo.org/nxforms/layout</uri>
+  <description>
+    <![CDATA[
+    <p>Tags for layout system usage.</p>
+    <p>Defines helpers tags to display layouts and widgets.</p>
+    <p>
+      Note that some attributes are used to determine what components will be
+      part of the jsf component tree, so they have to be resolved early: they
+      cannot use variables like iteration variables, coming for instance from a
+      ui:repeat or a h:dataTable tag. This is true for layout names, modes and
+      widget instances.
+    </p>
+    <p>
+      Library functions:
+      <ul>
+        <li>
+          widgetTypeDefinition(String): returns the widget type definition for
+          given widget type id. Available since 5.4.0.
+        </li>
+        <li>
+          fieldDefinitionsAsString(FieldDefinition[]): returns the list of
+          property names for each of the field definitions, separated by a
+          space.
+        </li>
+        <li>
+          selectedRows(Layout, List &lt;String&gt;, boolean) and alias
+          selectedColumns(Layout, List &lt;tring&gt;, boolean): returns the list
+          of LayoutRow instances that are selected given the Layout instance,
+          the list of row names selected, and a boolean that, if set to true,
+          will include rows that are marked as always selected.
+        </li>
+        <li>
+          notSelectedRows(Layout, List&lt; String&gt;) and alias
+          notSelectedColumns(Layout, List &lt;String&gt;): returns the list of
+          LayoutRow instances that are not selected given the Layout instance
+          and the list of row names selected.
+        </li>
+        <li>
+          defaultSelectedRowNames(Layout, boolean) and alias
+          defaultSelectedColumnNames(Layout, boolean): returns the list of row
+          names that are marked as selected by default given the Layout instance
+          and a boolean that, if set to true, will include rows that are marked
+          as always selected.
+        </li>
+        <li>
+          isBoundToEditMode(String): returns true if given layout mode should be
+          mapped to the 'edit' mode for widgets in the layout. Available since
+          5.4.0.
+        </li>
+        <li>
+          isLikePlainMode(String): returns true if given widget mode should be
+          considered as 'plain', for instance when rendering values for CSV export.
+          Available since 5.4.2.
+        </li>
+        <li>
+          isLikeViewMode(String): returns true if given widget mode should be
+          considered as 'view' (old default mode), e.g. non-null mode, and none of
+          edit, pdf, plain modes. Available since 5.4.2.
+        </li>
+      </ul>
+    </p>
+    ]]>
+  </description>
+
+  <tag>
+    <name>widgetType</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>
+      <![CDATA[
+      <p>
+        Facelet tag handler that renders a widget outside of a layout context,
+        in a given mode.
+      </p>
+      <p>
+        This is helpful to reuse an existing widget within templates that do not
+        need an entire layout to be defined.
+      </p>
+      <p>
+        In addition to the following attributes, any optional attributes are
+        accepted and are used as properties of the created widget.
+      </p>
+      <p>
+        When rendered, some variables are exposed to the resolution context:
+        <ul>
+          <li>
+            'value' references the given widget value, so that it can be used in
+            a generic template for widgets of type 'template', for instance.
+          </li>
+          <li>'widget' references the created widget.</li>
+          <li>
+            widgets of type 'template' also expose field values by 'field_0' or
+            'field_1',... the number being the field definition index in the
+            field definitions list.
+          </li>
+        </ul>
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <type>java.lang.String</type>
+      <description>
+        Name of the widget type that will be used: can be 'text', 'template',...
+        or any widget type registered on the pluggable layout system.
+      </description>
+    </attribute>
+    <attribute>
+      <name>mode</name>
+      <required>true</required>
+      <type>java.lang.String</type>
+      <description>Mode in which widget must be rendered.</description>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <required>false</required>
+      <description>
+        The value on which widget will apply. If the "fields" attribute is not
+        defined, it has to represent the bound property. Otherwise, it is used
+        as a base for fields definitions that will represent the bound
+        properties.
+      </description>
+    </attribute>
+    <attribute>
+      <name>fields</name>
+      <required>false</required>
+      <description>
+        The field definitions on which the widget will apply. Must resolve to a
+        list of FieldDefinition instances, or a list of String items.
+      </description>
+    </attribute>
+    <attribute>
+      <name>properties</name>
+      <required>false</required>
+      <description>
+        The widget properties. Must resolve to an instance of Map&lt;String,
+        Serializable&gt;. Any other tag attributes are accepted and will be
+        added on top of these properties.
+      </description>
+    </attribute>
+    <attribute>
+      <name>label</name>
+      <required>false</required>
+      <description>The String widget label.</description>
+    </attribute>
+    <attribute>
+      <name>helpLabel</name>
+      <required>false</required>
+      <description>The String widget help label.</description>
+    </attribute>
+    <attribute>
+      <name>translated</name>
+      <required>false</required>
+      <description>
+        The boolean value stating it the widget labels have to be translated.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxl:widgetType name="text" mode="#{myMode}" value="#{myText}" required="true" /> or
+<nxl:widgetType name="#{myWidgetType}" mode="#{myMode}" value="#{myBoundProperty}"
+  properties="#{myProperties}" />
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>widget</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>
+      <![CDATA[
+      <p>Facelet tag handler that renders a widget in a given mode.</p>
+      <p>
+        When rendered, some variables are exposed to the resolution context:
+        <ul>
+          <li>'value' references the given widget value.</li>
+          <li>
+            'widget' references the widget. It is also referenced by 'widget_0'
+            or 'widget_1',... the number being the widget level in the hierarchy
+            of widgets.
+          </li>
+          <li>
+            widgets of type 'template' also expose field values by 'field_0' or
+            'field_1',... the number being the field definition index in the
+            field definitions list.
+          </li>
+        </ul>
+      </p>
+      <p>
+        Any additional property set on the tag and that is not explicitely in the
+        list of handled attributes is added to the widget properties, overriding
+        properties that already set in the widget definition.
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>widget</name>
+      <required>true</required>
+      <type>org.nuxeo.ecm.platform.forms.layout.api.Widget</type>
+      <description>
+        The widget instance. This instance is often exposed by the layout system
+        inside of a layout template, but any widget instance created by
+        third-party code can be used as long as its type is registered on the
+        pluggable layout system.
+      </description>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <required>true</required>
+      <description>
+        The value on which widget will apply. If the widget holds field
+        definitions, they will be resolved based on this value. For instance, if
+        value is a document and the widget references the dc:title field,
+        standard widgets will apply on the given document property.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxl:widget widget=#{widget} mode="#{myMode}" value="#{myObject}" />
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>layout</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>
+      <![CDATA[
+      <p>Facelet tag handler that renders a layout in a given mode.</p>
+      <p>
+        When rendered, some variables are exposed to the resolution context and
+        can be used within the template attached to the layout.
+        <ul>
+          <li>'layout' references the computed layout.</li>
+          <li>
+            'value' or 'layoutValue' references the given value, so that it can
+            be used in the widget properties definitions, for instance. The
+            'value' variable is updated to the value passed to widget tag in a
+            widget rendering context.
+          </li>
+        </ul>
+      </p>
+      <p>
+        Any additional property set on the tag and that is not explicitely in the
+        list of handled attributes is added to the layout properties, overriding
+        properties that already set in the layout definition.
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <type>java.lang.String</type>
+      <description>
+        Name of the layout as registered on the pluggable layout system.
+      </description>
+    </attribute>
+    <attribute>
+      <name>mode</name>
+      <required>true</required>
+      <type>java.lang.String</type>
+      <description>Mode in which layout must be rendered.</description>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <required>true</required>
+      <description>The value on which layout will apply.</description>
+    </attribute>
+    <attribute>
+      <name>template</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The template to use for this layout, overriding the template declared in
+        the layout definition.
+      </description>
+    </attribute>
+    <attribute>
+      <name>selectedRows</name>
+      <required>false</required>
+      <type>java.util.List</type>
+      <description>
+        String list of row names that are selected. If not null, the layout rows
+        will be filtered according to this list. If null, only the rows marked
+        as selected by default will be taken into account, unless attribute
+        selectAllByDefault is set to true. Defaults to null. Is available since
+        version 5.4.
+      </description>
+    </attribute>
+    <attribute>
+      <name>selectedColumns</name>
+      <required>false</required>
+      <type>java.util.List</type>
+      <description>Alias of selectedRows attribute.</description>
+    </attribute>
+    <attribute>
+      <name>selectAllByDefault</name>
+      <required>false</required>
+      <type>java.lang.Boolean</type>
+      <description>
+        Boolean indicating if all rows should be considered selected by default.
+        Will have an impact only if attribute selectedRows or alias
+        selectedColumns resolve to a null value. Defaults to false. Is available
+        since version 5.4.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxl:layout name="dublincore" mode="#{myMode}" value="#{myObject}" />
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>layoutRow</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>
+      <![CDATA[
+      <p>
+        Facelet tag handler that iterates over layout rows in a layout template.
+      </p>
+      <p>
+        When rendered, some variables are exposed to the resolution context and
+        can be used inside the tag:
+        <ul>
+          <li>
+            'layoutRow' and since 5.3.1, alias 'layoutColumn' reference the
+            current layout row or column.
+          </li>
+          <li>
+            'layoutRowIndex' and since 5.3.1, alias 'layoutColumnIndex' reference
+            its index in the layout list of rows/columns.
+          </li>
+        </ul>
+      </p>
+      ]]>
+    </description>
+    <example>
+      <![CDATA[
+<table class="dataInput">
+  <tbody>
+
+    <nxl:layoutRow>
+      <tr>
+        <nxl:layoutRowWidget>
+          <td class="labelColumn">
+            <h:outputText value="#{widget.label}"
+              rendered="#{!widget.translated}" />
+            <h:outputText value="#{messages[widget.label]}"
+              rendered="#{widget.translated}" />
+          </td>
+          <td class="fieldColumn">
+            <nxl:widget widget="#{widget}" mode="#{widget.mode}"
+              value="#{value}" />
+          </td>
+        </nxl:layoutRowWidget>
+      </tr>
+    </nxl:layoutRow>
+
+  </tbody>
+</table>
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>layoutColumn</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>
+      Facelet tag handler equivalent to layoutRow tag, available since 5.3.1.
+    </description>
+  </tag>
+
+  <tag>
+    <name>layoutRowWidget</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>
+      <![CDATA[
+      <p>
+        Facelet tag handler that iterates over widgets in a layoutRow tag, in a
+        layout template.
+      </p>
+      <p>
+        When rendered, some variables are exposed to the resolution context and
+        can be used inside the tag:
+        <ul>
+          <li>
+            'widget' or 'widget_0' references the current widget, 0 being its
+            level in the widgets hierarchy.
+          </li>
+          <li>
+            'widgetIndex' references its index in the layout row list of
+            widgets.
+          </li>
+        </ul>
+      </p>
+      ]]>
+    </description>
+    <example>
+      <![CDATA[
+<table class="dataInput">
+  <tbody>
+
+    <nxl:layoutRow>
+      <tr>
+        <nxl:layoutRowWidget>
+          <td class="labelColumn">
+            <h:outputText value="#{widget.label}"
+              rendered="#{!widget.translated}" />
+            <h:outputText value="#{messages[widget.label]}"
+              rendered="#{widget.translated}" />
+          </td>
+          <td class="fieldColumn">
+            <nxl:widget widget="#{widget}" mode="#{widget.mode}"
+              value="#{value}" />
+          </td>
+        </nxl:layoutRowWidget>
+      </tr>
+    </nxl:layoutRow>
+
+  </tbody>
+</table>
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>layoutColumnWidget</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>
+      Facelet tag handler equivalent to layoutRowWidget tag, available since
+      5.3.1.
+    </description>
+  </tag>
+
+  <tag>
+    <name>subWidget</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>
+      <![CDATA[
+      <p>
+        Facelet tag handler that iterates over sub widgets in a template
+        attached to the widget of type 'template'.
+      </p>
+      <p>
+        When rendered, some variables are exposed to the resolution context and
+        can be used inside the tag:
+        <ul>
+          <li>
+            'widget' or 'widget_n' references the current widget, n being its
+            level in the widgets hierarchy. For instance, the root of all
+            widgets is always referenced as 'widget_0', while 'widget' is
+            updated to the current sub widget value.
+          </li>
+          <li>
+            'widgetIndex' or 'widgetIndex_n' references its index in the layout
+            row list of widgets or in the widget list of sub widgets. It is
+            *not* the sub widget iteration number when iterating over a list of
+            objects.
+          </li>
+        </ul>
+      </p>
+      ]]>
+    </description>
+    <example>
+      <![CDATA[
+<table>
+  <tbody>
+    <nxu:inputList value="#{field_0}" id="#{widget.id}_table" model="model"
+      rendered="#{not empty field_0}">
+      <nxl:subWidget>
+        <tr>
+          <td class="labelColumn"><h:outputText
+            value="#{messages[widget.label]}" styleClass="labelColumn" />
+          </td>
+          <td class="fieldColumn"><nxl:widget widget="#{widget}"
+            mode="#{widget.mode}" value="#{model.rowData}" /></td>
+        </tr>
+      </nxl:subWidget>
+    </nxu:inputList>
+  </tbody>
+</table>
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>documentLayout</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>
+      <![CDATA[
+      <p>
+        Facelet tag handler that renders all layouts attached to a document in a
+        given mode.
+      </p>
+      <p>
+        Layouts are built using the document type definition. This tag is
+        equivalent to rendering each layout in given mode, using document as
+        value.
+      </p>
+      <p>
+        Any additional property set on the tag and that is not explicitely in the
+        list of handled attributes is added to each of the layouts properties,
+        overriding properties that already set in the layout definitions.
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>mode</name>
+      <required>true</required>
+      <type>java.lang.String</type>
+      <description>
+        Mode in which layouts must be taken on the document definition, as well
+        as rendered if attribute "documentMode" is not defined.
+      </description>
+    </attribute>
+    <attribute>
+      <name>documentMode</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Mode in which layouts must be taken on the document definition, if
+        defined (otherwise, will use the "mode" attribute value).
+      </description>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <required>true</required>
+      <type>org.nuxeo.ecm.core.api.DocumentModel</type>
+      <description>
+        The document for which layouts will be built and rendered.
+      </description>
+    </attribute>
+    <attribute>
+      <name>template</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The template to use for layouts, overriding each of the templates
+        declared in the layouts definitions.
+      </description>
+    </attribute>
+    <attribute>
+      <name>defaultLayout</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The default layout to be rendered if no layout is found on the document
+        definition. Available since 5.4.2.
+      </description>
+    </attribute>
+    <attribute>
+      <name>includeAnyMode</name>
+      <required>false</required>
+      <type>java.lang.Boolean</type>
+      <description>
+        Boolean indicating if layouts declared in the 'any' mode on the document
+        definition should be used if no layout is found for the wanted mode.
+        Defaults to true. Available since 5.4.2.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxl:documentLayout mode="#{myMode}" value="#{myDocument}" />
+      ]]>
+    </example>
+  </tag>
+
+</taglib>
