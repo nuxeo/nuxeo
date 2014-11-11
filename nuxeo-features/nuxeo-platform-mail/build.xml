@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<project name="nuxeo-platform-mail" default="deploy" basedir=".">
+
+  <property file="build.properties" />
+  <property name="mvn.opts" value="" />
+  <property name="jboss.config" value="default" />
+  <property name="jboss.dir" value="/opt/jboss" />
+
+  <!-- set default root properties if not set -->
+  <target name="set.jboss.home" unless="jboss.home">
+    <property name="jboss.home" value="${jboss.dir}" />
+  </target>
+  <target name="set.assembly.name" unless="assembly.ear">
+    <property name="assembly.name" value="nuxeo" />
+  </target>
+  <!-- set default properties if not set -->
+  <target name="setproperties" unless="jboss.server" depends="set.jboss.home, set.assembly.name">
+    <property name="assembly.ear" value="${assembly.name}.ear" />
+    <property name="jboss.server" value="${jboss.home}/server/${jboss.config}" />
+    <property name="jboss.deploy" value="${jboss.server}/deploy" />
+    <property name="jboss.nuxeo.ear" value="${jboss.deploy}/nuxeo.ear" />
+    <property name="nuxeo.ear.build" value="${nuxeo.ear.root}/target/${assembly.ear}" />
+  </target>
+
+  <condition property="osfamily-unix">
+    <os family="unix" />
+  </condition>
+  <condition property="osfamily-windows">
+    <os family="windows" />
+  </condition>
+
+  <target name="web" description="Copy web files to a live JBoss"
+    depends="setproperties">
+    <copy todir="${jboss.nuxeo.ear}/nuxeo.war">
+      <fileset dir="${basedir}/nuxeo-platform-mail-web/src/main/resources/nuxeo.war/" />
+    </copy>
+  </target>
+
+  <target name="deploy" depends="install,copy" description="Deploy Nuxeo Mail Addon on jboss" />
+
+  <target name="clean" depends="clean-unix,clean-windows" description="Delete target directories" />
+  <target name="clean-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg value="clean" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+  <target name="clean-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="clean" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+  <target name="install" depends="clean,install-unix,install-windows" description="Run mvn install" />
+  <target name="install-unix" if="osfamily-unix">
+    <exec executable="env" />
+    <exec executable="mvn" failonerror="true">
+      <arg value="install" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+  <target name="install-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="install" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+  <target name="copy" depends="setproperties">
+    <copy todir="${jboss.nuxeo.ear}/system" overwrite="true" flatten="true">
+      <fileset dir="${basedir}">
+        <include name="*/target/*.jar" />
+        <exclude name="*/target/*-sources.jar" />
+      </fileset>
+    </copy>
+  </target>
+
+</project>
