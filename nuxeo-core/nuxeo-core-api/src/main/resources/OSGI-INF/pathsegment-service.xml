@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.api.pathsegment.PathSegmentService">
+
+  <implementation
+    class="org.nuxeo.ecm.core.api.pathsegment.PathSegmentComponent" />
+  <documentation>
+    Component defining the implementation to use to compute the path
+    segment for a new DocumentModel.
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.api.pathsegment.PathSegmentService" />
+  </service>
+
+  <extension-point name="pathSegmentService">
+    <documentation>
+      Extension point defining the implementation for the computation of
+      the path segment for new a DocumentModel. Example:
+
+      <code>
+        <service class="some-class" />
+      </code>
+
+      The provided class must implement org.nuxeo.ecm.core.api.pathsegment.PathSegmentService
+
+      The default implementation is org.nuxeo.ecm.core.api.pathsegment.PathSegmentServiceDefault
+      You can contribute org.nuxeo.ecm.core.api.pathsegment.PathSegmentServiceCompat
+      to get pre-Nuxeo 5.4 behavior.
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.core.api.pathsegment.PathSegmentServiceDescriptor" />
+
+  </extension-point>
+
+</component>
