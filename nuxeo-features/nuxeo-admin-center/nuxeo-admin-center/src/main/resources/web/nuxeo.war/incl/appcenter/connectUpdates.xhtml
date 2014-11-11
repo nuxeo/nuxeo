@@ -1,0 +1,72 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+<a4j:outputPanel id="connectAppListing">
+  <div class="actionBar">
+    <h:form>
+    <h:outputText value="#{messages['label.nuxeo.connect.applisting.package']}"/>
+    <h:selectOneListbox class="dataInputText" size="1"
+                  value="#{appsViews.packageTypeFilter}"
+                   onchange="Element.next(this).firstChild.click();">
+
+                  <nxu:selectItems
+                    value="#{appsViews.packageTypes}"
+                    var="itype"
+                    itemValue="#{itype.value}"
+                    itemLabel="#{messages[itype.label]}" />
+                </h:selectOneListbox>
+                  <div style="display: none;">
+                <a4j:commandButton value="submit" reRender="connectAppListing"/>
+            </div>
+    </h:form>
+        <h:form>
+                <h:selectBooleanCheckbox class="dataInputText"
+                  value="#{appsViews.platformFilter}"
+                   onchange="Element.next(this).firstChild.click();">
+
+                </h:selectBooleanCheckbox> <h:outputText value="#{messages['label.appcenter.platform.filter']}"/>
+                  <div style="display: none;">
+                <a4j:commandButton value="submit"  reRender="connectAppListing" />
+            </div>
+    </h:form>
+    <h:form>
+           <a4j:commandButton value="#{messages['admCommand.refresh']}" actionListener="#{appsViews.flushCache()}"  reRender="connectAppListing" />
+    </h:form>
+
+  </div>
+
+<script>
+function hideWaiter() {
+  jQuery('#connectLoaderWaiter').css('display','none');
+}
+</script>
+
+  <c:if test="#{connectServerReachable and registredConnectInstance}">
+    <iframe src="/nuxeo/site/connectClient/packages/updates?type=#{appsViews.packageTypeFilter}&amp;filterOnPlatform=#{appsViews.platformFilter}" frameborder="0" scrolling="auto" width="100%" height="500px"
+    style="display:none" onload="javascript:hideWaiter();this.style.display='block';" >
+    </iframe>
+
+  <div id="connectLoaderWaiter" style="width:100%;height:200px;text-align:center">
+      <img src="/nuxeo/img/big_loading.gif"/>
+  </div>
+
+  </c:if>
+
+  <c:if test="#{not connectServerReachable}">
+    <div class="infoMessage">
+      <h:outputText value="#{messages['adminsubtab.servernotreachable']}" />
+    </div>
+  </c:if>
+
+  <c:if test="#{not registredConnectInstance}">
+    <div class="infoMessage">
+     <h:outputText value="#{messages['adminsubtab.registrationRequired']}" />
+    </div>
+  </c:if>
+
+</a4j:outputPanel>
+
+</div>

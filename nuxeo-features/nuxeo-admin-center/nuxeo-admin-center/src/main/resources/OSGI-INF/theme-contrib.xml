@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.theme.nuxeo.connect">
+
+  <require>org.nuxeo.theme.core</require>
+  <require>org.nuxeo.theme.fragments</require>
+  <require>org.nuxeo.theme.html</require>
+  <require>org.nuxeo.theme.jsf</require>
+
+  <!--  themes -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
+
+    <theme>
+      <src>themes/theme-galaxy-admin.xml</src>
+    </theme>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+
+    <view name="Nuxeo DM logo (Galaxy Admin Theme)"
+      template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/logo_DM_galaxy_admin.xhtml</template>
+    </view>
+
+    <view name="User services (Galaxy Admin Theme)"
+      template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/user_services_galaxy_admin.xhtml</template>
+      <resource>screen.css</resource>
+    </view>
+
+    <view name="Nuxeo DM footer (Galaxy Admin Theme)"
+      template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/footer_galaxy_admin.xhtml</template>
+    </view>
+
+  </extension>
+
+  <!-- application settings -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="applications">
+
+    <application root="${org.nuxeo.ecm.contextPath}"
+      template-engine="jsf-facelets">
+
+      <view id="/view_admin.xhtml">
+        <theme>admin/default</theme>
+      </view>
+
+      <view id="/connect_confirm_download.xhtml">
+        <theme>admin/default</theme>
+      </view>
+
+    </application>
+
+  </extension>
+
+  <!-- Styles presets -->
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="presets">
+
+    <palette name="Galaxy Admin borders"
+      src="themes/palettes/galaxy-admin-borders.properties" category="border" />
+    <palette name="Galaxy Admin backgrounds"
+      src="themes/palettes/galaxy-admin-backgrounds.properties"
+      category="background" />
+    <palette name="Galaxy Admin fonts"
+      src="themes/palettes/galaxy-admin-fonts.properties" category="font" />
+    <palette name="Galaxy Admin colors"
+      src="themes/palettes/galaxy-admin-colors.properties" category="color" />
+
+  </extension>
+
+</component>
