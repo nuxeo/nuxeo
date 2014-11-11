@@ -1,0 +1,16 @@
+<div>
+<#assign items=nxthemesInfo.model.items>
+<#if items>
+<ul>
+  <#list items as item>
+    <li>
+      <#if item.selected>
+        <a class="selected" href="${item.url}">${item.title}</a>
+      <#else>  
+        <a href="${item.url}">${item.title}</a>
+      </#if>
+    </li>
+  </#list>
+</ul>
+</#if>
+</div>
