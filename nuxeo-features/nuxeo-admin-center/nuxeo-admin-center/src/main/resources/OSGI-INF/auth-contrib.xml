@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.connect.client.auth">
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="startURL">
+
+    <startURLPattern>
+      <patterns>
+        <pattern>nxconnectDownload.faces</pattern>
+        <pattern>nxadmin/</pattern>
+      </patterns>
+    </startURLPattern>
+
+  </extension>
+
+</component>

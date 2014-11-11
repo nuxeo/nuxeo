@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.picture.listeners">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+
+    <listener name="pictureChangedListener" async="false" postCommit="false"
+      class="org.nuxeo.ecm.platform.picture.listener.PictureChangedListener" priority="20">
+      <event>documentCreated</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+
+    <listener name="pictureViewListener" async="true" postCommit="true"
+      class="org.nuxeo.ecm.platform.picture.listener.PictureViewListener"
+      priority="20">
+      <event>updatePictureView</event>
+    </listener>
+
+  </extension>
+
+</component>
