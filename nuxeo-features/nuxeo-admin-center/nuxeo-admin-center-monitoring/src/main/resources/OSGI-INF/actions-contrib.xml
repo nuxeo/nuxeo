@@ -1,0 +1,62 @@
+<component
+  name="org.nuxeo.connect.client.actions.monitoring">
+
+  <require>org.nuxeo.connect.client.actions</require>
+
+  <extension
+    target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action
+      id="Monitoring"
+      type="admin_rest_document_link"
+      link="/view_admin-fragment.xhtml"
+      label="admcommand.monitoring"
+      order="40">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action
+      id="AdministrativeStatus"
+      type="admin_rest_document_link"
+      link="/incl/monitoring/adminStatus.xhtml"
+      label="tab.monitoring.status"
+      order="10">
+      <category>Monitoring_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action
+      id="Probes"
+      type="admin_rest_document_link"
+      link="/incl/monitoring/adminProbes.xhtml"
+      label="tab.monitoring.probes"
+      order="20">
+      <category>Monitoring_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action
+      id="Events"
+      type="admin_rest_document_link"
+      link="/incl/monitoring/adminEvents.xhtml"
+      label="tab.monitoring.events"
+      order="30">
+      <category>Monitoring_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action
+      id="Shell"
+      type="admin_rest_document_link"
+      link="/incl/monitoring/adminShell.xhtml"
+      label="tab.monitoring.shell"
+      order="40">
+      <category>Monitoring_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+  </extension>
+
+</component>

@@ -1,0 +1,222 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.relations.web.layouts.contrib">
+
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.listing</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="relation_listing_title_link">
+      <configuration>
+        <categories>
+          <category>configuration_not_ready</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/relation_listing_title_link_widget_template.xhtml
+      </property>
+
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="relation_search_title" type="text">
+      <labels>
+        <label mode="any">label.relation.search.title</label>
+      </labels>
+      <translated>true</translated>
+      <helpLabels>
+        <label mode="any">label.relation.search.title.info</label>
+      </helpLabels>
+      <fields>
+        <field>rel_srch:dc_title</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="relation_search_fulltext" type="text">
+      <labels>
+        <label mode="any">label.relation.search.all_words</label>
+      </labels>
+      <translated>true</translated>
+      <helpLabels>
+        <label mode="any">label.relation.search.all_words.info</label>
+      </helpLabels>
+      <fields>
+        <field>rel_srch:ecm_fulltext</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="relation_search_deleted_documents" type="template">
+      <labels>
+        <label mode="any">label.relation.deleted.documents</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>rel_srch:currentLifeCycleState</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">
+          /widgets/search_deleted_documents_widget.xhtml
+        </property>
+      </properties>
+      <widgetModes>
+        <mode value="any">
+          #{nxu:test(deleteActions.trashManagementEnabled, 'edit', 'hidden')}
+        </mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="relation_search_path" type="select_path_tree">
+      <labels>
+        <label mode="any">label.relation.search.path</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>rel_srch:ecm_path</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+        <property name="labelOpenPopUp">label.relation.addPath</property>
+        <property name="showAllDomains">true</property>
+      </properties>
+    </widget>
+
+    <widget name="relation_listing_title_link" type="relation_listing_title_link">
+      <labels>
+        <label mode="any">label.content.header.title</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data</field>
+        <field>data.ref</field>
+        <field>data.dc.title</field>
+        <field>data.file.content</field>
+        <field>data.file.filename</field>
+      </fields>
+      <properties mode="any">
+        <property name="file_property_name">file:content</property>
+        <property name="file_schema">file</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_path" type="text">
+      <labels>
+        <label mode="any">label.relation.search.path</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.pathAsString</field>
+      </fields>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="relation_search">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>relation_search_path</widget>
+        </row>
+        <row>
+          <widget>relation_search_title</widget>
+        </row>
+        <row>
+          <widget>relation_search_fulltext</widget>
+        </row>
+        <row>
+          <widget>relation_search_deleted_documents</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="relation_document_listing">
+      <templates>
+        <template mode="any">/layouts/layout_listing_template.xhtml</template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_icon_type</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:title</property>
+          </properties>
+          <widget>relation_listing_title_link</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_path</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="isSortable">false</property>
+          </properties>
+          <widget>listing_version</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:modified</property>
+            <property name="defaultSortAscending">false</property>
+          </properties>
+          <widget>listing_modification_date</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:lastContributor</property>
+          </properties>
+          <widget>listing_last_contributor</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:creator</property>
+          </properties>
+          <widget>listing_author</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">
+              ecm:currentLifeCycleState
+            </property>
+          </properties>
+          <widget>listing_lifecycle</widget>
+        </column>
+      </columns>
+    </layout>
+
+  </extension>
+
+</component>

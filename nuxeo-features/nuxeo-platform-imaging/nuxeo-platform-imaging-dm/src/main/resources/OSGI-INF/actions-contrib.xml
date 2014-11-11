@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.picture.actions">
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="tab_imageview" link="/incl/tabs/picture_view.xhtml"
+      enabled="true" label="action.view.picture" order="22" type="rest_document_link">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>hasPictureFacet</filter-id>
+    </action>
+
+    <action id="tab_metadata_picture" link="/incl/tabs/metadata_picture.xhtml"
+      enabled="true" label="action.view.metadata_picture" order="24"
+      type="rest_document_link">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>hasPictureFacet</filter-id>
+    </action>
+
+    <action id="triggerContentViewSlideshow" order="70"
+      label="label.contentview.trigger.slideshow" type="template">
+      <category>CONTENT_VIEW_ACTIONS</category>
+      <properties>
+        <property name="template">
+          /incl/action/content_view_slideshow.xhtml
+        </property>
+      </properties>
+      <filter-id>contentViewShowSlideshow</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="grantpicturebook">
+      <rule grant="true">
+        <type>PictureBook</type>
+      </rule>
+    </filter>
+
+    <!-- not used since 5.5, keep it for compatibility -->
+    <filter id="grantpicture">
+      <rule grant="true">
+        <type>Picture</type>
+      </rule>
+    </filter>
+
+    <filter id="hasPictureFacet">
+      <rule grant="true">
+        <facet>Picture</facet>
+      </rule>
+    </filter>
+
+    <filter id="contentViewShowSlideshow">
+      <rule grant="true">
+        <condition>
+          #{nxu:test(empty showSlideshow,
+          contentView.currentResultLayout.showSlideshow,
+          showSlideshow)}
+        </condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

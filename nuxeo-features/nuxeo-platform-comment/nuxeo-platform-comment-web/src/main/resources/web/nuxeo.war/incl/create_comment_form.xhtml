@@ -1,0 +1,23 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html">
+
+  <a name="add_comment"/>
+      <table class="dataInput">
+        <tr>
+          <td>
+            <h:inputTextarea rows="5" cols="50"
+              value="#{commentManagerActions.newContent}"/>
+            <br/>
+          </td>
+        </tr>
+      </table>
+
+  <ui:include src="/incl/comment_buttons.xhtml" />
+
+</div>

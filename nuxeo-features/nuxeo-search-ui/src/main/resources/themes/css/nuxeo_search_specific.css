@@ -1,0 +1,104 @@
+/*
+Specific styles for the Search View
+=Grid -> custom styles for the main grid
+author: lkemen@nuxeo.com
+*/
+
+/* =Grid */
+.gridBox {
+  padding: .5em 1.5em 1em }
+
+.nxSearchForm {
+  font-size: .8em;
+  background-color: #fff;
+  width: 19% }
+
+.nxSearchForm .containerSubWidget {
+  margin: 0 }
+
+.nxSearchResults {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
+  padding: 1em 3em 3em;
+  min-height: 900px;
+  width: 81% }
+
+.nxSearchResults .containerWidgetPanel {
+  padding: 0 }
+
+.nxSearchResults .contentViewUpperActions {
+  background: #fff;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  padding: .7em 1em .6em;
+  border-radius: .3em;
+  float: none }
+
+.searchFilterActions .horizontalAction:first-child .button {
+  border-radius: 0 3px 3px 0 }
+
+.searchFilterActions .horizontalAction:last-child .button {
+  border-radius: 3px 0 0 3px;
+  border-right: none }
+
+/* Search Column */
+.nxSearchForm .searchesSelector select {
+  border: none }
+
+.searchesSelector {
+  margin: 0 -1.5em;
+  padding: 1em;
+  background-color: "color.major.stronger (__FLAVOR__ background)" }
+
+.nxSearchForm.compactLayout .containerWidgetPanel {
+  padding: 0 0 1em }
+
+.nxSearchForm.compactLayout .fieldColumnn input[type="text"] {
+  margin-bottom: 0 }
+
+.nxSearchForm.compactLayout .fieldColumnn .dataInputTextDate input {
+  margin-bottom: .3em }
+
+.nxSearchForm.compactLayout .containerWidgetPanel h3 {
+  border: none;
+  margin: 0;
+  padding: 0 0 .5em }
+
+.nxSearchForm.compactLayout h3 .widgetLabel {
+  padding: 0 }
+
+.nxSearchForm .containerField label:hover {
+  cursor: pointer }
+
+.nxSearchForm .emptyResult {
+  padding: 0 0 .2em;
+  text-align: left }
+
+.nxSearchForm .nx-less-more-ctrl {
+  display: block;
+  margin: .3em 0 .1em;
+  padding: 0 }
+
+.nxSearchForm .nx-less-more-ctrl:before {
+  content: "+ ";}
+
+/* Main content */
+.searchViewTitle {
+  float: left }
+
+.searchViewTitle h3 {
+  border: none;
+  font-size: 1.4em;
+  margin: 0;
+  padding: 1.5em 0 2em }
+
+.widgetPanel.searchResultsActions {
+  float: right;
+  padding: 1.8em 0 2em }
+
+.searchResultsActions input.button {
+  margin: 0 0 .5em .5em }
+
+.searchResultsListing {
+  clear: both }
+
+.contentViewTitle {
+  border: none }

@@ -1,0 +1,448 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.select2.widgettype.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="widgets">
+
+    <widget name="select2_idProperty" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Id Property</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Name of the Document property that should be
+          used to
+          define the ID of entry.
+          If unset Document.uid will be
+          used, otherwise
+          Document.properties['idProperty'].
+        </label>
+      </helpLabels>
+      <fields>
+        <field>idProperty</field>
+      </fields>
+    </widget>
+
+    <widget name="select2_idFunction" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Id Function</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Name of the JavaScript function that will be called by
+          select2 to get the id from
+          the suggested objects. The target function should
+          take as input the
+          javascript object as returned by Automation and should
+          return the id to be
+          submitted. Use the "Inline Javascript" property field
+          to define your own
+          function.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>idFunction</field>
+      </fields>
+    </widget>
+
+    <widget name="select2_labelProperty" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Label Property</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Name of the Document property that should be
+          used to
+          define the Label of entry.
+          If unset Document.title
+          will be used,
+          otherwise
+          Document.properties['labelProperty'].
+        </label>
+      </helpLabels>
+      <fields>
+        <field>labelProperty</field>
+      </fields>
+    </widget>
+
+
+    <widget name="select2_operationId" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Operation Id</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          ID of the Automation Operation that will be
+          used to
+          fetch the suggestions.
+          If unsed,
+          Document.PageProvider will be used.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>operationId</field>
+      </fields>
+    </widget>
+
+    <widget name="select2_initOperationId" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Init Operation Id</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          ID of the Automation Operation that will be
+          used to
+          fetch the initial Document from the stored value..
+          If unsed, simple uid
+          resolution will be used.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>initOperationId</field>
+      </fields>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="select2Widget">
+      <configuration>
+        <sinceVersion>5.7.3</sinceVersion>
+        <title>Single generic suggestion (advanced)</title>
+        <description>
+          <p>Document Suggestion Widget based on Select2 JS library. Nuxeo
+            Automation is used to manage Select2 data binding.
+          </p>
+        </description>
+        <categories>
+          <category>dev</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <layouts mode="view">
+            <layout name="select2_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_repository</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_operationId</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_initOperationId</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">
+                    documentSuggestion_documentSchemas
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_idProperty</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_idFunction</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_labelProperty</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_containerCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_inlinejs</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_inlinejsDemoPreview</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_selectionFormatter</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="select2_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_minChars</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_query</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_queryDemoPreview</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_pageProviderName
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_repository</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_documentSchemas
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_helpLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_operationId</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_initOperationId</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_idProperty</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_idFunction</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_labelProperty</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_containerCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_dropdownCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_inlinejs</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_inlinejsDemoPreview</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_selectionFormatter</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_suggestionFormatter</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_dropdownOnArrow</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/select2_widget_template.xhtml
+      </property>
+    </widgetType>
+
+
+    <widgetType name="select2WidgetMultiple">
+      <configuration>
+        <sinceVersion>5.7.3</sinceVersion>
+        <title>Multiple generic suggestion (advanced)</title>
+        <description>
+          <p>Multiple Document Suggestion Widget based on Select2 JS library.
+            Nuxeo
+            Automation is used to manage Select2 data binding.
+          </p>
+        </description>
+        <categories>
+          <category>dev</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <layouts mode="view">
+            <layout name="select2Multiple_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_repository</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_operationId</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_initOperationId</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">
+                    documentSuggestion_documentSchemas
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_idProperty</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_idFunction</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_labelProperty</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_containerCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_inlinejs</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_inlinejsDemoPreview</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_selectionFormatter</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="select2Multiple_widget_type_properties_edit">
+              <rows>
+              <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_orderable</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_minChars</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_query</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_queryDemoPreview</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_pageProviderName
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_repository</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_documentSchemas
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_helpLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_operationId</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_initOperationId</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_idProperty</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_idFunction</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_labelProperty</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_containerCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_dropdownCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_inlinejs</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_inlinejsDemoPreview</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_selectionFormatter</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_suggestionFormatter</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_separator</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/select2_multiple_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+</component>

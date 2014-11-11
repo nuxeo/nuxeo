@@ -1,0 +1,17 @@
+<c:if test="true"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <nxu:set var="annotationsCount" value="#{annotationsActions.getAnnotationsCount(fieldOrValue)}" cache="true" >
+    <c:set var="baseLabel" value="#{nxu:test(annotationsCount > 1, 'label.annotations.moreAnnotations', 'label.annotations.oneAnnotation')}" />
+    <c:set var="tooltip" value="#{nxu:translate(baseLabel, annotationsCount)}" />
+
+    <div title="#{tooltip}" class="tipsyShow tipsyGravityS" >
+      <h:graphicImage value="/icons/annotate.png" />
+      <h:outputText value="#{annotationsCount}" />
+    </div>
+  </nxu:set>
+
+</c:if>

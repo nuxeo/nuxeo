@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.relations.services.RelationService">
+
+  <documentation>
+    This service allows the definition of graph types and graphs, and the
+    RelationManager interface gives access to the graphs.
+  </documentation>
+
+  <implementation
+      class="org.nuxeo.ecm.platform.relations.services.RelationService"/>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.relations.api.RelationManager"/>
+    <provide interface="org.nuxeo.ecm.platform.relations.api.DocumentRelationManager"/>
+  </service>
+
+  <extension-point name="graphtypes">
+    <documentation>
+      The definition of new graph types. Example:
+      <code>
+        <graphtype name="mytype" class="org.example.graph.MyGraph" />
+      </code>
+      The class can be an implementation of either
+      org.nuxeo.ecm.platform.relations.api.Graph or
+      org.nuxeo.ecm.platform.relations.api.GraphFactory.
+      <p />
+      The standard graph type "core" is defined by default.
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.relations.descriptors.GraphTypeDescriptor" />
+  </extension-point>
+
+  <extension-point name="graphs">
+    <description>
+      The definition of new graphs. You use a graph using
+      relationService.getGraphByName(name).
+      <p />
+      Example:
+      <code>
+        <graph name="myrelations" type="core">
+          <option name="doctype">DefaultRelation</option>
+          <namespaces>
+            <namespace name="dc">http://purl.org/dc/elements/1.1/
+            </namespace>
+          </namespaces>
+        </graph>
+      </code>
+      <p />
+      The options are graph-dependent. For the "core" graphs, you can
+      use a "doctype" to specify which subtype of "Relation" should be
+      used to store the relations. "DefaultRelation" is a standard
+      relation type.
+      <p />
+      The namespaces allows you to define when a resource is returned as
+      a QNameResource.
+    </description>
+    <object
+      class="org.nuxeo.ecm.platform.relations.descriptors.GraphDescriptor" />
+  </extension-point>
+
+  <extension-point name="resourceadapters">
+    <description>
+      The definition of new resource adapters. Resource adapters are
+      used when calling
+      relationService.getResourceRepresentation(resource) or
+      relationService.getResource().
+      <p />
+      Example:
+      <code>
+        <adapter namespace="http://www.nuxeo.org/document/uid/"
+          class="org.nuxeo.ecm.platform.relations.adapters.DocumentModelResourceAdapter" />
+      </code>
+    </description>
+    <object
+      class="org.nuxeo.ecm.platform.relations.descriptors.ResourceAdapterDescriptor" />
+  </extension-point>
+
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="resourceadapters">
+    <adapter namespace="http://www.nuxeo.org/document/uid/"
+      class="org.nuxeo.ecm.platform.relations.adapters.DocumentModelResourceAdapter" />
+    <!-- compat with incorrect code -->
+    <adapter namespace="http://www.nuxeo.org/document/uid"
+      class="org.nuxeo.ecm.platform.relations.adapters.DocumentModelResourceAdapter" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+      point="graphtypes">
+    <graphtype name="core"
+      class="org.nuxeo.ecm.platform.relations.CoreGraphFactory" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="doctype">
+    <doctype name="DefaultRelation" extends="Relation">
+      <facet name="HiddenInNavigation" />
+    </doctype>
+  </extension>
+
+</component>

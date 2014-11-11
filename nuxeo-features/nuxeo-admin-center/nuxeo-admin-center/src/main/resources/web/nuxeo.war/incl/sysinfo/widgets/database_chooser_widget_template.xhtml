@@ -1,0 +1,47 @@
+<span xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  id="#{widget.id}">
+<c:if test="#{widget.mode != 'edit'}">#{field}</c:if>
+<c:if test="#{widget.mode == 'edit'}">
+
+  <a4j:region id="#{widget.id}_region">
+
+    <h:selectOneMenu id="#{widget.id}" value="#{field}"
+      styleClass="#{widgetProperty_styleClass}"
+      required="#{widgetProperty_required}">
+
+      <!-- TODO migrate listener according to JSF2 -->
+      <a4j:ajax event="change"
+        render="#{widgetProperty_reRender}"
+        immediate="#{widgetProperty_immediate}"
+        execute="#{widgetProperty_ajaxSingle ? '@this' : '@form'}"
+        listener="#{setupWizardAction.templateChange}" />
+
+      <f:selectItem itemValue="default"
+        itemLabel="#{messages['label.setup.nuxeo.template.default']}" />
+      <f:selectItem itemValue="postgresql"
+        itemLabel="#{messages['label.setup.nuxeo.template.postgresql']}" />
+      <f:selectItem itemValue="oracle"
+        itemLabel="#{messages['label.setup.nuxeo.template.oracle']}" />
+      <f:selectItem itemValue="mysql"
+        itemLabel="#{messages['label.setup.nuxeo.template.mysql']}" />
+      <f:selectItem itemValue="mssql"
+        itemLabel="#{messages['label.setup.nuxeo.template.mssql']}" />
+
+    </h:selectOneMenu>
+
+    <a4j:status>
+      <f:facet name="start">
+        <h:graphicImage value="/img/standart_waiter.gif" />
+      </f:facet>
+    </a4j:status>
+
+    <h:message styleClass="errorMessage" for="#{widget.id}"
+      id="#{widget.id}_message" />
+
+  </a4j:region>
+
+</c:if>
+</span>

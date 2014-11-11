@@ -1,0 +1,25 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout" id="#{widget.id}">
+
+  <c:if test="#{widget.mode == 'view'}">
+    <h:outputText value="#{field}" />
+  </c:if>
+
+  <c:if test="#{widget.mode == 'edit'}">
+    <h:selectOneMenu value="#{field}" id="#{widget.id}"
+      required="#{widgetProperty_required}">
+      <f:selectItem itemValue="SSLv3" itemLabel="SSLv3" />
+      <f:selectItem itemValue="TLSv1.2" itemLabel="TLSv1.2" />
+      <f:selectItem itemValue="TLSv1.1" itemLabel="TLSv1.1" />
+      <f:selectItem itemValue="TLSv1" itemLabel="TLSv1" />
+      <f:selectItem itemValue="SSLv2Hello" itemLabel="SSLv2Hello" />
+    </h:selectOneMenu>
+    <h:message for="#{widget.id}_field"/>
+  </c:if>
+  
+</f:subview>

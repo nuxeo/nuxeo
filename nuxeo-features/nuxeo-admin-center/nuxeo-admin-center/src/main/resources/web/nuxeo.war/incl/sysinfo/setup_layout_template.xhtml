@@ -1,0 +1,86 @@
+<a4j:outputPanel
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  layout="block"
+  id="#{nxu:test(empty layout.properties.ajaxPanelId, layout.id, layout.properties.ajaxPanelId)}">
+
+<nxu:set var="renderedLayoutProp"
+  value="#{layout.properties.rendered}"
+  resolveTwice="true">
+   <f:subview rendered="#{nxu:test(empty layout.properties.rendered, true, false) or renderedLayoutProp}">
+
+<c:if test="#{not empty layout.rows}">
+
+<c:set var="isEditMode" value="#{nxl:isBoundToEditMode(layout.mode)}" />
+
+<table class="dataOutput">
+  <tbody>
+    <c:if test="#{not empty layout.properties.label}">
+      <tr>
+        <th colspan="2">
+          <h:outputText value="#{messages[layout.properties.label]}" />
+        </th>
+      </tr>
+    </c:if>
+
+    <tr><td><table><tbody>
+
+    <nxl:layoutRow>
+      <nxl:layoutRowWidget>
+        <tr>
+          <c:if test="#{not widget.handlingLabels}">
+            <td class="wideLabel">
+              <nxu:set var="renderedProp"
+                value="#{widget.properties.rendered}"
+                resolveTwice="true">
+                <c:if test="#{renderedProp != 'false'}">
+                  <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+                </c:if>
+              </nxu:set>
+            </td>
+          </c:if>
+          <nxu:set
+            var="fieldDef"
+            value="#{widget.fieldDefinitions[0].propertyName}">
+            <c:if test="#{not empty fieldDef}">
+              <c:set var="displayId"
+                value="#{fn:substring(fieldDef, 2, fn:length(fieldDef) - 2)}" />
+            </c:if>
+            <td class="fieldColumn"
+              id="#{displayId}"
+              colspan="#{nxu:test(widget.handlingLabels, 2, 1)}">
+              <nxu:set var="widgetStyleClass"
+                value="#{isEditMode and empty widget.properties.styleClass?'dataInputText':widget.properties.styleClass}"
+                cache="true" resolveTwice="true">
+              <nxu:set var="widgetSize"
+                value="#{isEditMode and not widget.properties.containsKey('size')?50:widget.properties['size']}"
+                cache="true" resolveTwice="true">
+                <nxl:widget widget="#{widget}" value="#{value}"
+                  styleClass="#{widgetStyleClass}"
+                  size="#{widgetSize}" />
+              </nxu:set>
+              </nxu:set>
+            </td>
+          </nxu:set>
+        </tr>
+
+      </nxl:layoutRowWidget>
+    </nxl:layoutRow>
+
+    </tbody></table></td></tr>
+
+  </tbody>
+</table>
+</c:if>
+
+  </f:subview>
+</nxu:set>
+
+</a4j:outputPanel>

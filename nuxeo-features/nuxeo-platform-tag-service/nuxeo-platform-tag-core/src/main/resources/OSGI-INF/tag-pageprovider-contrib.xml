@@ -1,0 +1,206 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.tag.service.pageprovider">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <genericPageProvider name="GET_DOCUMENT_IDS_FOR_TAG"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <pattern>
+        SELECT ecm:uuid FROM Tag WHERE tag:label = ? AND ecm:isProxy = 0
+      </pattern>
+      <pageSize>1</pageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="GET_FIRST_TAGGING_FOR_DOC_AND_TAG"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <pattern>
+        SELECT ecm:uuid FROM Tagging WHERE relation:source = ? AND
+        relation:target = ?
+      </pattern>
+      <pageSize>1</pageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="GET_FIRST_TAGGING_FOR_DOC_AND_TAG_AND_USER"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <pattern>
+        SELECT ecm:uuid FROM Tagging WHERE relation:source = ? AND
+        relation:target = ? AND dc:creator = ?
+      </pattern>
+      <pageSize>1</pageSize>
+    </genericPageProvider>
+
+    <!-- page provider that can be optimized using ES for instance -->
+    <genericPageProvider name="GET_TAGS_FOR_DOCUMENT"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <property name="language">NXTAG</property>
+      <pattern>
+        TAGISTARGET: SELECT DISTINCT tag:label FROM Tagging WHERE
+        relation:source = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </genericPageProvider>
+
+    <!-- page provider that should keep on using the VCS storage -->
+    <genericPageProvider name="GET_TAGS_FOR_DOCUMENT_CORE"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <property name="language">NXTAG</property>
+      <pattern>
+        TAGISTARGET: SELECT DISTINCT tag:label FROM Tagging WHERE
+        relation:source = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="GET_DOCUMENTS_FOR_TAG"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <property name="language">NXTAG</property>
+      <pattern>
+        TAGISTARGET: SELECT DISTINCT relation:source FROM Tagging WHERE
+        tag:label = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </genericPageProvider>
+
+    <!-- page provider that can be optimized using ES for instance -->
+    <genericPageProvider name="GET_TAGS_FOR_DOCUMENT_AND_USER"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <property name="language">NXTAG</property>
+      <pattern>
+        TAGISTARGET: SELECT DISTINCT tag:label FROM Tagging WHERE
+        relation:source = ? AND dc:creator = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </genericPageProvider>
+
+    <!-- page provider that should keep on using the VCS storage -->
+    <genericPageProvider name="GET_TAGS_FOR_DOCUMENT_AND_USER_CORE"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <property name="language">NXTAG</property>
+      <pattern>
+        TAGISTARGET: SELECT DISTINCT tag:label FROM Tagging WHERE
+        relation:source = ? AND dc:creator = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="GET_DOCUMENTS_FOR_TAG_AND_USER"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <property name="language">NXTAG</property>
+      <pattern>
+        TAGISTARGET: SELECT DISTINCT relation:source FROM Tagging WHERE
+        tag:label = ? AND dc:creator = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="GET_TAGS_TO_COPY_FOR_DOCUMENT"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <property name="language">NXTAG</property>
+      <pattern>
+        TAGISTARGET: SELECT tag:label, dc:created, dc:creator,
+        relation:target FROM Tagging
+        WHERE relation:source = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="GET_TAG_SUGGESTIONS"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <pattern>
+        SELECT DISTINCT tag:label FROM Tag WHERE tag:label LIKE ? AND
+        ecm:isProxy = 0
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="GET_TAG_SUGGESTIONS_FOR_USER"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <pattern>
+        SELECT DISTINCT tag:label FROM Tag WHERE tag:label LIKE ? AND
+        ecm:isProxy = 0
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="GET_ALL_TAGS"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <property name="language">NXTAG</property>
+      <pattern>
+        COUNTSOURCE: SELECT tag:label, relation:source FROM Tagging
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="GET_ALL_TAGS_FOR_USER"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <property name="language">NXTAG</property>
+      <pattern>
+        COUNTSOURCE: SELECT tag:label, relation:source FROM Tagging WHERE
+        dc:creator = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="GET_TAGS_FOR_DOCUMENTS"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <property name="language">NXTAG</property>
+      <pattern>
+        COUNTSOURCE: SELECT tag:label, relation:source FROM Tagging WHERE
+        relation:source IN ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="GET_TAGS_FOR_DOCUMENTS_AND_USER"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <property name="language">NXTAG</property>
+      <pattern>
+        COUNTSOURCE: SELECT tag:label, relation:source FROM Tagging WHERE
+        relation:source IN ? AND dc:creator = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="GET_TAGGED_DOCUMENTS_UNDER"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <pattern>
+        SELECT ecm:uuid FROM Document WHERE ecm:path STARTSWITH ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </genericPageProvider>
+
+  </extension>
+
+</component>

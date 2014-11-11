@@ -1,0 +1,40 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+  
+  <table class="dataInput">
+    <tr>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.action']}"/>
+      </td>
+      <td class="fieldColumn">
+        <h:selectOneMenu
+          value="#{groupsSubscriptionsAction.selectedGrant}"
+          class="rightsAddSelect">
+          <f:selectItems value="#{groupsSubscriptionsAction.notificationActionItems}"/>
+        </h:selectOneMenu>
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumn"><h:outputText value="#{messages['label.notification.notification']}" />
+      </td>
+      <td class="fieldColumn"><h:selectOneMenu
+            value="#{groupsSubscriptionsAction.selectedNotification}">
+          <f:selectItems value="#{groupsSubscriptionsAction.notificationList}"/>
+          </h:selectOneMenu>
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumn"></td>
+      <td class="fieldColumn"><h:commandButton value="#{messages['command.notifications.register']}"
+          class="button rightsAddButton"
+          disabled="#{!groupsSubscriptionsAction.canAddSubscriptions}"
+          action="#{groupsSubscriptionsAction.addSubscriptionsAndUpdate}" /></td>
+    </tr>
+  </table>
+      
+</div>
