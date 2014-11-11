@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<module name="sample6" root-type="sample6" path="/sample6">
+  <nature>groovy</nature>
+
+  <links>
+  <!-- link IDs are normally used as the keys of i18n messages - but in this example we are displaying them directly without using i18n mechanism-->
+  <!-- link to a info view available for all Documents (i.e. WebObjects that are derived from Document type) -->
+  <link id="Info" path="/@views/info">
+    <category>TOOLS</category>
+    <category>INFO</category>
+    <type>Document</type>
+  </link>
+
+  <!-- Link enabled only for folderish documents -->
+  <link id="Children" path="/@views/children">
+    <facet>Folderish</facet>
+    <type>Document</type>
+    <category>TOOLS</category>
+  </link>
+
+  <!-- this is only demonstrating link conditions - this is not a real link...
+       This link will be enabled only for WebObject derived from Workspace
+  -->
+  <link id="I am a workspace" path="">
+    <type>Workspace</type>
+    <category>TOOLS</category>
+  </link>
+  </links>
+
+</module>

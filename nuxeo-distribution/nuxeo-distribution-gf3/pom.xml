@@ -1,0 +1,139 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-parent</artifactId>
+    <version>5.2-20090225</version>
+  </parent>
+
+  <groupId>org.nuxeo.ecm.distribution</groupId>
+  <artifactId>nuxeo-distribution-gf3</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo GF3 template</name>
+  <description>Defines the skeleton of a glassfish3 nuxeo application</description>
+
+  <properties>
+    <gf3.version>3.0-nx</gf3.version>
+    <application.name>${project.artifactId}-${project.version}</application.name>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>glassfish-repository</id>
+      <name>Java.net Repository for Glassfish</name>
+      <url>http://download.java.net/maven/glassfish</url>
+      <snapshots>
+        <updatePolicy>never</updatePolicy>
+      </snapshots>
+    </repository>
+    <repository>
+      <!-- back up glassfish maven repository in case the 'glassfish-repository' goes down -->
+      <id>glassfish-repository-wsinterop</id>
+      <name>Java.net Repository for Glassfish</name>
+      <url>http://maven.dyndns.org/glassfish/</url>
+      <snapshots>
+        <updatePolicy>never</updatePolicy>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>glassfish-repository</id>
+      <name>Java.net Repository for Glassfish</name>
+      <url>http://download.java.net/maven/glassfish</url>
+      <snapshots>
+        <updatePolicy>never</updatePolicy>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.glassfish.jdbc.jdbc-ra.jdbc-ra-distribution</groupId>
+      <artifactId>jdbc-ra</artifactId>
+      <version>${gf3.version}</version>
+      <type>zip</type>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-jdbc</id>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/dependency</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.glassfish.jdbc.jdbc-ra.jdbc-ra-distribution</groupId>
+                  <artifactId>jdbc-ra</artifactId>
+                  <version>${gf3.version}</version>
+                  <type>zip</type>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+        <artifactId>maven-antrun-extended-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-nuxeo-plugin</artifactId>
+        <extensions>false</extensions>
+        <executions>
+          <execution>
+            <id>assemble-app</id>
+            <phase>package</phase>
+            <goals>
+              <goal>assembly</goal>
+            </goals>
+            <configuration>
+              <runPreprocessor>false</runPreprocessor>
+              <!--format>directory</format-->
+              <format>zip</format>
+              <zipRoot>nxserver</zipRoot>
+              <outputDirectory>target</outputDirectory>
+              <targetFile>${application.name}</targetFile>
+              <descriptor>
+                ${basedir}/src/main/assemble/assembly.xml
+              </descriptor>
+            </configuration>
+          </execution>
+          <execution>
+            <id>attach-app</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+            <configuration>
+              <file>${basedir}/target/${application.name}.zip</file>
+              <type>zip</type>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+
+</project>

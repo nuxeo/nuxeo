@@ -1,0 +1,62 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-parent</artifactId>
+    <version>5.2-20090225</version>
+  </parent>
+
+  <groupId>org.nuxeo.ecm.distribution</groupId>
+  <artifactId>nuxeo-distribution-jetty</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo Jetty Template</name>
+  <description>Defines the skeleton of a jetty nuxeo application</description>
+
+  <properties>
+    <application.name>${project.artifactId}-${project.version}</application.name>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-nuxeo-plugin</artifactId>
+        <extensions>false</extensions>
+        <executions>
+          <execution>
+            <id>assemble-app</id>
+            <phase>package</phase>
+            <goals>
+              <goal>assembly</goal>
+            </goals>
+            <configuration>
+              <runPreprocessor>false</runPreprocessor>
+              <!--format>directory</format-->
+              <format>zip</format>
+	            <zipRoot>nxserver</zipRoot>
+              <outputDirectory>target</outputDirectory>
+              <targetFile>${application.name}</targetFile>
+              <descriptor>
+                ${basedir}/src/main/assemble/assembly.xml
+              </descriptor>
+            </configuration>
+          </execution>
+          <execution>
+            <id>attach-app</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+            <configuration>
+              <file>${basedir}/target/${application.name}.zip</file>
+              <type>zip</type>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+    
+  </build>
+
+</project>

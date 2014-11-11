@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+  debug="false">
+  <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+    <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
+    <!--    <param name="Target" value="System.out" />-->
+    <layout class="org.apache.log4j.PatternLayout">
+      <!--      <param name="ConversionPattern" value="[%C{1}] %m%n" />-->
+      <param name="ConversionPattern" value="%m%n" />
+    </layout>
+  </appender>
+
+  <appender name="FILE" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="log/nxshell.log" />
+    <param name="Append" value="true" />
+    <!--    <param name="MaxFileSize" value="10MB" />-->
+    <param name="MaxBackupIndex" value="3" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p [%C{1}] %m%n" />
+    </layout>
+  </appender>
+
+  <!-- Specific appenders for some important nxshell commands -->
+  <appender name="import" class="org.apache.log4j.RollingFileAppender">
+    <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
+    <param name="File" value="log/import.log" />
+    <param name="Append" value="true" />
+    <param name="MaxFileSize" value="30MB" />
+    <param name="MaxBackupIndex" value="5" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p [%C{1}] %m%n" />
+    </layout>
+  </appender>
+
+  <!-- Main logger -->
+  <logger name="org.nuxeo">
+    <level value="INFO" />
+    <appender-ref ref="FILE" />
+  </logger>
+  <!-- Console output -->
+  <logger name="org.nuxeo.ecm.shell">
+    <level value="INFO" />
+    <appender-ref ref="CONSOLE" />
+  </logger>
+  <!-- Loggers for import commands -->
+  <logger name="org.nuxeo.ecm.shell.commands.io.ImportCommand">
+    <level value="INFO" />
+    <appender-ref ref="import" />
+  </logger>
+  <logger name="org.nuxeo.ecm.shell.commands.repository.FSImportCommand">
+    <level value="INFO" />
+    <appender-ref ref="import" />
+  </logger>
+  <logger name="org.nuxeo.ecm.shell.commands.repository.MTFSImportCommand">
+    <level value="INFO" />
+    <appender-ref ref="import" />
+  </logger>
+  <logger name="org.nuxeo.ecm.shell.commands.repository.ThreadedImportTask">
+    <level value="INFO" />
+    <appender-ref ref="import" />
+  </logger>
+
+  <root>
+    <level value="WARN" />
+  </root>
+
+</log4j:configuration>

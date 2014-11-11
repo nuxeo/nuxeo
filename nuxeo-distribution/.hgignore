@@ -1,0 +1,11 @@
+syntax:glob
+.classpath
+.project
+.settings
+bin
+target
+*~
+*.orig
+.pydevproject
+*.pyc
+nuxeo-platform-ear/ftest/funkload/log/*
