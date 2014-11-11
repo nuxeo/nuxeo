@@ -1,0 +1,1 @@
+DEPRECATED: use JAR file nuxeo-shell-${version}.jar produced by module "nuxeo-shell-distribution" in https://hg.nuxeo.org/addons/nuxeo-shell

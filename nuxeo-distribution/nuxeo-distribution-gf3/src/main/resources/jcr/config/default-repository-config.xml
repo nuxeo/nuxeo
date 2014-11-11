@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<component name="default-repository-config">
+
+	<documentation>
+	Defines the default JackRabbit repository used for development and testing.
+	</documentation>
+
+  <extension target="org.nuxeo.ecm.core.repository.RepositoryService" point="repository">
+  	<documentation>
+  	Declare a JackRabbit repository to be used for development and tests.
+  	The extension content is the jackrabbit XML configuration of the repository.
+  	</documentation>
+<repository name="default" factory="org.nuxeo.ecm.core.repository.jcr.JCRRepositoryFactory" securityManager="org.nuxeo.ecm.core.repository.jcr.JCRSecurityManager"
+		forceReloadTypes="false">
+      <Repository>
+        <!--
+        virtual file system where the repository stores global state
+        (e.g. registered namespaces, custom node types, etc.)
+        -->
+        <FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
+          <param name="path" value="${rep.home}/repository"/>
+        </FileSystem>
+        <!--
+        security configuration
+        -->
+        <Security appName="Jackrabbit">
+          <!--
+            access manager:
+            class: FQN of class implementing the AccessManager interface
+          -->
+          <AccessManager class="org.apache.jackrabbit.core.security.SimpleAccessManager">
+          <!-- <param name="config" value="${rep.home}/access.xml"/> -->
+          </AccessManager>
+          <LoginModule class="org.apache.jackrabbit.core.security.SimpleLoginModule">
+            <!-- anonymous user name ('anonymous' is the default value) -->
+            <param name="anonymousId" value="anonymous"/>
+            <!--
+              default user name to be used instead of the anonymous user
+              when no login credentials are provided (unset by default)
+            -->
+            <!-- <param name="defaultUserId" value="superuser"/> -->
+          </LoginModule>
+        </Security>
+
+        <!--
+        location of workspaces root directory and name of default workspace
+        -->
+        <Workspaces rootPath="${rep.home}/workspaces" defaultWorkspace="default"/>
+        <!--
+        workspace configuration template:
+        used to create the initial workspace if there's no workspace yet
+        -->
+        <Workspace name="${wsp.name}">
+          <!--
+            virtual file system of the workspace:
+            class: FQN of class implementing the FileSystem interface
+          -->
+          <FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
+            <param name="path" value="${wsp.home}"/>
+          </FileSystem>
+
+          <!--
+            persistence manager of the workspace:
+            class: FQN of class implementing the PersistenceManager interface
+          -->
+          <PersistenceManager class="org.apache.jackrabbit.core.state.obj.ObjectPersistenceManager">
+          </PersistenceManager>
+
+          <!--
+            Search index and the file system it uses.
+            class: FQN of class implementing the QueryHandler interface
+          -->
+          <SearchIndex class="org.apache.jackrabbit.core.query.lucene.SearchIndex">
+            <param name="path" value="${wsp.home}/index"/>
+          </SearchIndex>
+        </Workspace>
+
+        <!--
+          Configures the versioning
+        -->
+        <Versioning rootPath="${rep.home}/version">
+          <!--
+            Configures the filesystem to use for versioning for the respective
+            persistence manager
+          -->
+          <FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
+            <param name="path" value="${rep.home}/version"/>
+          </FileSystem>
+
+          <!--
+            Configures the persistence manager to be used for persisting version state.
+            Please note that the current versioning implementation is based on
+            a 'normal' persistence manager, but this could change in future
+            implementations.
+          -->
+          <PersistenceManager class="org.apache.jackrabbit.core.state.obj.ObjectPersistenceManager">
+          </PersistenceManager>
+        </Versioning>
+
+        <!--
+        Search index for content that is shared repository wide
+        (/jcr:system tree, contains mainly versions)
+        -->
+        <SearchIndex class="org.apache.jackrabbit.core.query.lucene.SearchIndex">
+          <param name="path" value="${rep.home}/repository/index"/>
+        </SearchIndex>
+      </Repository>
+    </repository>
+  </extension>
+
+</component>
