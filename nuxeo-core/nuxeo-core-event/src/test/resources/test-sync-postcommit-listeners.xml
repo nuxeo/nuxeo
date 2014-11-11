@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="test-sync-postcommit-listener">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <listener name="testPostCommit1" postCommit="true" async="false"
+      class="org.nuxeo.ecm.core.event.test.DummyPostCommitEventListener">
+      <event>testsyncpostcommit</event>
+    </listener>
+    <listener name="testPostCommit2" postCommit="true" async="false"
+      class="org.nuxeo.ecm.core.event.test.DummyPostCommitEventListener">
+      <event>testsyncpostcommit</event>
+    </listener>
+  </extension>
+
+</component>
