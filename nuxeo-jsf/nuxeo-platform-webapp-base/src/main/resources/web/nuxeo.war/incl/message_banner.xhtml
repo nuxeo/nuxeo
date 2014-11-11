@@ -1,0 +1,28 @@
+<div xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxh="http://nuxeo.org/nxweb/html">
+
+  <a4j:outputPanel id="facesStatusMessagePanel" ajaxRendered="true" layout="block">
+
+    <div class="facesStatusMessage">
+      <c:if test="#{facesContext.maximumSeverity.ordinal >= 2}">
+        <script type="text/javascript">
+          jQuery(document).ready(function() {
+            jQuery.ambiance({
+              title: "#{messages['feedback.correctErrors']}",
+              type: "error",
+              className: "errorFeedback",
+              timeout: 0
+            })
+          });
+        </script>
+      </c:if>
+    </div>
+
+    <nxh:messages globalOnly="true"
+      infoClass="infoFeedback"
+      warnClass="warningFeedback"
+      errorClass="errorFeedback"/>
+
+  </a4j:outputPanel>
+</div>

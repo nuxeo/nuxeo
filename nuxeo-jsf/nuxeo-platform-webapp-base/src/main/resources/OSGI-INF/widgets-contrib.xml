@@ -1,0 +1,323 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layouts.webapp.widgts">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="life_cycle_transitions">
+      <configuration>
+        <title>Life cycle transitions</title>
+        <description>
+          This widget type displays a selection of available life cycle
+          transitions
+          given a life cycle state and a life cycle policy.
+          <br />
+          It requires the configuration of the first field to map to a String
+          value storing the chosen life cycle transition.
+          <br />
+          It needs the following properties configuration:
+          <ul>
+            <li>
+              lifeCycleName: represents the life cycle from which to retrieve
+              the transitions.
+            </li>
+            <li>
+              currentLifeCycleState: the current state from where to start
+              finding the available transitions.
+            </li>
+          </ul>
+          <br />
+          A standard definition could be:
+          <div class="pre">
+            &lt;widget name="life_cycle_transitions"
+            type="life_cycle_transitions"&gt;
+            &lt;labels&gt;
+            &lt;label mode="any"&gt;&lt;/label&gt;
+            &lt;/labels&gt;
+            &lt;fields&gt;
+            &lt;field&gt;contextData['request/lifeCycleTransition']&lt;/field&gt;
+            &lt;/fields&gt;
+            &lt;properties widgetMode="edit"&gt;
+            &lt;property
+            name="currentLifeCycleState"&gt;#{layoutValue.currentLifeCycleState}&lt;/property&gt;
+            &lt;property
+            name="lifeCycleName"&gt;#{layoutValue.lifeCyclePolicy}&lt;/property&gt;
+            &lt;/properties&gt;
+            &lt;/widget&gt; </div>
+        </description>
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <layouts mode="edit">
+            <layout name="life_cycle_transitions_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>lifeCycleName</widget>
+                </row>
+                <row>
+                  <widget>currentLifeCycleState</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+              </rows>
+              <widget name="lifeCycleName" type="text">
+                <labels>
+                  <label mode="any">Lifecycle name</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The lifecycle containing transitions to
+                    choose.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>lifeCycleName</field>
+                </fields>
+                <properties mode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="currentLifeCycleState" type="text">
+                <labels>
+                  <label mode="any">Current life cycle state</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The life cycle state to choose transitions
+                    from.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>currentLifeCycleState</field>
+                </fields>
+                <properties mode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/life_cycle_transitions_widget_template.xhtml
+      </property>
+
+    </widgetType>
+
+    <widgetType name="image">
+      <configuration>
+        <sinceVersion>5.5</sinceVersion>
+        <title>Image</title>
+        <description>
+          <p>
+            The image widget displays a file uploader/editor in create or edit
+            mode, with additional message tag for errors, and an &lt;img&gt; tag
+            displaying the image in other modes.
+          </p>
+          <li>
+            width: the width of the img tag in view mode.
+          </li>
+          <li>
+            height: the height of the img tag in view mode.
+          </li>
+        </description>
+        <properties>
+          <layouts mode="view">
+            <layout name="image_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>width</widget>
+                </row>
+                <row>
+                  <widget>height</widget>
+                </row>
+              </rows>
+              <widget name="width" type="int">
+                <labels>
+                  <label mode="any">Width</label>
+                </labels>
+                <fields>
+                  <field>width</field>
+                </fields>
+              </widget>
+              <widget name="height" type="text">
+                <labels>
+                  <label mode="any">Height</label>
+                </labels>
+                <fields>
+                  <field>height</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="image_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget>acceptedExtensions</widget>
+                </row>
+              </rows>
+              <widget name="acceptedExtensions" type="text">
+                <labels>
+                  <label mode="any">Accepted extensions</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    A comma separated list of supported file
+                    extensions. Default value: '.jpg, .jpeg, .png, .gif, .tif,
+                    .tiff, .psd, .raw, .ai, .svg, .ps, .eps, .epsi, .epsf, .xcf,
+                    .bmp'.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>acceptedExtensions</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>blob</type>
+          </supportedTypes>
+        </fields>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">/widgets/image_widget_template.xhtml</property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="life_cycle_transitions" type="life_cycle_transitions">
+
+      <documentation>
+        Default widget listing available life cycle transitions from the
+        document's current state and document's life cycle policy.
+        <br />
+        The chosen transition is stored in the contextData of the document.
+      </documentation>
+
+      <labels>
+        <label mode="any">label.life.cycle.changeFor</label>
+      </labels>
+      <fields>
+        <field>contextData['request/lifeCycleTransition']</field>
+      </fields>
+      <widgetModes>
+        <mode value="create">hidden</mode>
+        <mode value="view">hidden</mode>
+      </widgetModes>
+      <properties widgetMode="edit">
+        <property name="currentLifeCycleState">#{layoutValue.currentLifeCycleState}</property>
+        <property name="lifeCycleName">#{layoutValue.lifeCyclePolicy}</property>
+      </properties>
+    </widget>
+
+    <!-- group's layout widgets -->
+    <widget name="group_name" type="text">
+      <labels>
+        <label mode="any">label.groupManager.groupName</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field schema="group">groupname</field>
+      </fields>
+      <widgetModes>
+        <mode value="create">edit</mode>
+        <mode value="any">hidden</mode>
+      </widgetModes>
+      <properties widgetMode="any">
+        <property name="required">true</property>
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+    <widget name="group_label" type="text">
+      <labels>
+        <label mode="any">label.groupManager.groupLabel</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field schema="group">grouplabel</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+    <widget name="group_members" type="template">
+      <labels>
+        <label mode="any">label.groupManager.userMembers</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field schema="group">members</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="template">
+          /widgets/user_suggestion_widget_template.xhtml
+        </property>
+        <property name="userSuggestionSearchType">USER_TYPE</property>
+        <property name="operationId">UserGroup.Suggestion</property>
+        <property name="hideHelpLabel">true</property>
+        <property name="suggestionFormatter">userEntryDefaultFormatter</property>
+        <property name="selectionFormatter">userEntryDefaultFormatter</property>
+      </properties>
+    </widget>
+    <widget name="group_subgroups" type="template">
+      <labels>
+        <label mode="any">label.groupManager.groupMembers</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field schema="group">subGroups</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="template">
+          /widgets/user_suggestion_widget_template.xhtml
+        </property>
+        <property name="userSuggestionSearchType">GROUP_TYPE</property>
+        <property name="operationId">UserGroup.Suggestion</property>
+        <property name="hideHelpLabel">true</property>
+        <property name="suggestionFormatter">userEntryDefaultFormatter</property>
+        <property name="selectionFormatter">userEntryDefaultFormatter</property>
+      </properties>
+    </widget>
+  </extension>
+
+</component>
