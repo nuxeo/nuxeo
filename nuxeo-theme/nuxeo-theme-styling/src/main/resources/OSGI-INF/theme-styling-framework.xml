@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.theme.styling.service">
+
+  <service>
+    <provide interface="org.nuxeo.theme.styling.service.ThemeStylingService" />
+  </service>
+  <implementation class="org.nuxeo.theme.styling.service.ThemeStylingServiceImpl" />
+
+  <extension-point name="pages">
+    <object class="org.nuxeo.theme.styling.service.descriptors.ThemePage" />
+  </extension-point>
+
+  <extension-point name="styles">
+    <object class="org.nuxeo.theme.styling.service.descriptors.SimpleStyle" />
+  </extension-point>
+
+  <extension-point name="flavors">
+    <object class="org.nuxeo.theme.styling.service.descriptors.Flavor" />
+  </extension-point>
+
+  <extension target="org.nuxeo.runtime.EventService" point="listeners">
+    <listener class="org.nuxeo.theme.styling.service.ThemeStylingNotifier">
+      <topic>org.nuxeo.theme</topic>
+    </listener>
+  </extension>
+
+</component>
