@@ -1,0 +1,26 @@
+.imagingCtxMenuItemStyle {
+      margin: 0px;
+      color: #e7e7e7;
+      display: block;
+      cursor: default;
+      padding: 3px;
+      border-bottom: none;
+      background-color: #DDEEFF;
+      background:#DDEEFF;
+}
+.imagingCtxMenuItemHoverStyle {
+      margin: 0px;
+      color: #OOOOOO;
+      display: block;
+      cursor: default;
+      padding: 3px;
+      border-bottom: none;
+      background-color: #2A90F6;
+}
+.imagingCtxMenuStyle {
+      list-style: none;
+      margin: 0px;
+      background-color: #DDEEFF;
+      width: 100px;
+
+}

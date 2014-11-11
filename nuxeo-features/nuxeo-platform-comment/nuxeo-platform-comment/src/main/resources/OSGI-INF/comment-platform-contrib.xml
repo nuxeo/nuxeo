@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component
+    name="org.nuxeo.ecm.platform.comment.service.binding.contrib">
+
+  <require>org.nuxeo.ecm.platform.comment.service.CommentService</require>
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement"
+      point="services">
+    <documentation>Define the Comment bean as a platform service.</documentation>
+    <service class="org.nuxeo.ecm.platform.comment.api.CommentManager" group="platform/comments">
+      <locator>%CommentManagerBean</locator>
+    </service>
+
+    <service class="org.nuxeo.ecm.platform.comment.workflow.services.CommentsModerationService" group="platform/comments">
+      <locator>%CommentsModerationBean</locator>
+    </service>
+  </extension>
+
+</component>

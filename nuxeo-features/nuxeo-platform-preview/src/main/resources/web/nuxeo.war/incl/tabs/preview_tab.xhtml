@@ -1,0 +1,14 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <h:form	id="document_view">
+
+    <iframe src="#{previewActions.previewURL}" frameborder="1" height="600px" width="100%" scrolling="auto" id="preview-frame" onload="loadGwtModule();">
+    </iframe>
+
+  </h:form>
+</div>
