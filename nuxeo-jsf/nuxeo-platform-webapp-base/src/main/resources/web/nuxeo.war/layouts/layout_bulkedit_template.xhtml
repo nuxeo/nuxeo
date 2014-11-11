@@ -1,0 +1,81 @@
+<f:subview
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  id="#{layout.id}">
+
+  <c:if test="#{nxl:isBoundToEditMode(layout.mode)}">
+
+    <table class="dataInput fullWidth">
+      <tbody>
+
+      <nxl:layoutRow>
+        <tr>
+          <nxl:layoutRowWidget>
+            <td class="iconColumn" data-bulkCheckBox="#{bulkEditCheckBoxId}">
+              <c:set var="bulkEditCheckBoxId"
+                value="bulkEdit_checkbox_#{layoutRowIndex}_#{widgetIndex}" />
+              <c:set var="contextDataKey"
+                value="bulkEdit/#{nxl:fieldDefinitionsAsString(widget.fieldDefinitions)}" />
+              <h:selectBooleanCheckbox
+                id="#{bulkEditCheckBoxId}"
+                value="#{value.contextData[contextDataKey]}" />
+            </td>
+            <td class="labelColumn">
+              <c:choose>
+                <c:when test="#{widget.translated}">
+                  <c:if test="#{empty widget.helpLabel}">
+                    <h:outputText value="#{messages[widget.label]}"
+                      styleClass="#{nxu:test(widget.required, 'required', '')}" />
+                  </c:if>
+                  <c:if test="#{!empty widget.helpLabel}">
+                    <div class="widgetHelpLabel">
+                      <h:outputText value="#{messages[widget.label]}"
+                        styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
+                    </div>
+                    <div class="tooltip">
+                      #{messages[widget.helpLabel]}
+                    </div>
+                  </c:if>
+                </c:when>
+                <c:otherwise>
+                  <c:if test="#{empty widget.helpLabel}">
+                    <h:outputText value="#{widget.label}"
+                      styleClass="#{nxu:test(widget.required, 'required', '')}" />
+                  </c:if>
+                  <c:if test="#{!empty widget.helpLabel}">
+                    <div class="widgetHelpLabel">
+                      <h:outputText value="#{widget.label}"
+                        styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
+                    </div>
+                    <div class="tooltip">
+                      #{widget.helpLabel}
+                    </div>
+                  </c:if>
+                </c:otherwise>
+              </c:choose>
+            </td>
+            <td class="fieldColumn" colspan="#{nxu:test(layoutRow.size==1, 3*layout.columns-2, 1)}">
+              <nxl:widget widget="#{widget}" value="#{value}"
+                onclick="jQuery(this).parents('td').siblings(':first').find('input').attr('checked', 'checked')"
+                onchange="jQuery(this).parents('td').siblings(':first').find('input').attr('checked', 'checked')" />
+            </td>
+          </nxl:layoutRowWidget>
+        </tr>
+      </nxl:layoutRow>
+
+      </tbody>
+    </table>
+
+    <script>
+      jQuery(document).ready(function() {
+        jQuery(".widgetHelpLabel").tooltip({relative: true, position: 'bottom center'});
+      });
+    </script>
+
+  </c:if>
+
+</f:subview>
