@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Comment project
+Bundle-SymbolicName: org.nuxeo.ecm.platform.comment;singleton=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateful
+Nuxeo-Component: OSGI-INF/CommentService.xml,
+  OSGI-INF/comment-platform-contrib.xml,
+  OSGI-INF/CommentService.xml  
+Eclipse-LazyStart: true
+Require-Bundle: org.nuxeo.ecm.relations,
+ org.nuxeo.ecm.platform.comment.api

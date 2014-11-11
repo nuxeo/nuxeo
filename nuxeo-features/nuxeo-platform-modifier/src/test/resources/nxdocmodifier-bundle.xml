@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.modifier.service.DocModifierService">
+
+  <implementation class="org.nuxeo.ecm.platform.modifier.service.DocModifierServiceImpl"/>
+
+  <extension-point name="docTypeToTransformer">
+    <object class="org.nuxeo.ecm.platform.modifier.service.DocModifierEPDescriptor"/>
+  </extension-point>
+
+  <require>org.nuxeo.ecm.core.listener.CoreEventListenerService</require>
+  <extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
+			   point="listener">
+    <listener name="docModifierListener"
+              class="org.nuxeo.ecm.platform.modifier.corelistener.DocModifierListener"
+    />
+  </extension>
+	
+</component>
+

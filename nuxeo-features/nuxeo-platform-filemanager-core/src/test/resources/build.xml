@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+
+<project name="NXJBossCache" default="deploy" basedir=".">
+  <property file="build.properties" />
+
+  <property name="lib.dir" value="${basedir}/lib" />
+  <property name="meta.inf" value="${basedir}/META-INF" />
+  <property name="osgi.inf" value="${basedir}/OSGI-INF" />
+  <property name="build.dir" value="${basedir}/build" />
+  <property name="dist.dir" value="${basedir}/dist" />
+  <property name="workspace" value="${basedir}/.." />
+  <property name="project.name" value="${ant.project.name}" />
+  <property name="targetPlatformLocation" value="${eclipse}" />
+
+  <path id="classpath">
+    <pathelement location="build" />
+    <fileset dir="${jboss.home}/server/default/deploy/ejb3.deployer">
+      <include name="jboss-*.jar" />
+    </fileset>
+    <fileset dir="${jboss.home}/server/default/lib">
+      <include name="jbosssx.jar" />
+    </fileset>
+    <fileset dir="${jboss.home}/lib">
+      <include name="*.jar" />
+    </fileset>
+    <fileset dir="${jboss.home}/server/${jboss.config}/lib">
+      <include name="*.jar" />
+    </fileset>
+    <fileset dir="${jboss.home}/server/${jboss.config}/deploy">
+      <include name="*.jar" />
+      <include name="*.sar" />
+    </fileset>
+    <fileset dir="lib">
+      <include name="*.jar" />
+    </fileset>
+    <fileset dir="../NXRuntime/dist">
+      <include name="org.nuxeo.runtime_1.0.0.jar" />
+    </fileset>
+    <fileset dir="../NXMimeType/out">
+      <include name="mimetype.jar" />
+    </fileset>
+  </path>
+
+  <path id="client.classpath">
+    <path refid="classpath" />
+  </path>
+
+  <path id="thepath">
+    <path refid="classpath" />
+  </path>
+
+  <target name="clean">
+    <delete dir="build" />
+    <delete dir="dist" />
+  </target>
+
+  <target name="compile" depends="clean">
+    <mkdir dir="build" />
+    <javac destdir="build" debug="on" deprecation="on" optimize="on" classpathref="thepath">
+      <src path="src" />
+      <!-- don't exclude the tests for now -->
+      <!-- exclude name="org/nuxeo/ecm/core/test/"/ -->
+    </javac>
+  </target>
+
+  <target name="dist" depends="compile">
+    <mkdir dir="dist" />
+    <jar jarfile="dist/${ant.project.name}.jar">
+      <fileset dir="build" />
+      <!--fileset dir="resources" /-->
+    </jar>
+  </target>
+
+  <target name="deploy" depends="dist">
+    <copy todir="${jboss.home}/server/${jboss.config}/lib" file="lib/jgroups.jar" />
+    <copy todir="${jboss.home}/server/${jboss.config}/lib" file="lib/jboss-cache-jdk50.jar" />
+
+    <copy todir="${jboss.home}/server/${jboss.config}/deploy" file="dist/${ant.project.name}.jar" />
+  </target>
+
+  <target name="undeploy">
+    <delete file="${jboss.home}/server/${jboss.config}/lib/jgroups.jar" />
+    <delete file="${jboss.home}/server/${jboss.config}/lib/jboss-cache-jdk50.jar" />
+
+    <delete file="${jboss.home}/server/${jboss.config}/deploy/${ant.project.name}.jar" />
+  </target>
+
+</project>
+

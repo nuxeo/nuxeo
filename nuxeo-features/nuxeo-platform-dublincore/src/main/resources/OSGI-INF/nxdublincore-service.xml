@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<component name="DublinCoreStorageService" version="1.0.0">
+
+  <implementation
+    class="org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService" />
+
+  <require>org.nuxeo.ecm.core.listener.CoreEventListenerService</require>
+
+  <documentation>
+    The DublinCoreStorageService listen to Core event DOCUMENT_UPDATED and
+    DOCUMENT_CREATED. If the target document has the dublincore schema, this
+    service will then update some meta-data. The fields calculated by this event
+    listener are : - the creation date - the modification date - the
+    contributors list
+
+    The DublinCoreStorageService exposes an simple api for updating meta-data.
+
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+  <extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
+    point="listener">
+    <listener name="dclistener"
+      class="org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener"
+      order="120" />
+    <documentation>
+      Listen for Core event DOCUMENT_UPDATED and DOCUMENT_CREATED and call the
+      DublinCoreStorageService.
+
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+
+  </extension>
+
+</component>
+
+

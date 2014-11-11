@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process-definition xmlns="" name="transition_node_loop">
+  <start-state name="start">
+    <transition name="assign" to="work" />
+  </start-state>
+  <task-node name="work" create-tasks="false" end-tasks="true"
+    signal="first-wait">
+    <task name="contribute">
+      <assignment
+        class="org.nuxeo.ecm.platform.workflow.jbpm.DefaultAssignmentHandler" />
+    </task>
+    <event type="node-enter">
+      <action
+        class="org.nuxeo.ecm.platform.workflow.jbpm.TestActionHandler" />
+    </event>
+    <transition name="submit" to="pending" />
+  </task-node>
+  <task-node name="pending" create-tasks="false" end-tasks="true"
+    signal="first-wait">
+    <task name="validate">
+      <assignment
+        class="org.nuxeo.ecm.platform.workflow.jbpm.DefaultAssignmentHandler" />
+    </task>
+    <event type="node-enter">
+      <action
+        class="org.nuxeo.ecm.platform.workflow.jbpm.TestActionHandler" />
+    </event>
+    <transition name="accept" to="validated" />
+    <transition name="reject" to="work" />
+  </task-node>
+  <end-state name="validated" />
+</process-definition>

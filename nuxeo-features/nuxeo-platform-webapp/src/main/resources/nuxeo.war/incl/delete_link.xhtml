@@ -1,0 +1,46 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+	 xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:h="http://java.sun.com/jsf/html">
+     
+	<f:subview rendered="#{doDelete=='delete_user'}">
+		<f:subview rendered="#{userManagerActions.allowDeleteUser}">
+		  	<script type="text/javascript">
+		        function confirmDeleteUser() {
+		            return confirm("#{messages['label.userManager.confirmDeleteUser']}");
+		        }
+	      	</script>
+	    	<div class="action_bar">
+	        <ul>
+	          <li class="selected"><h:commandLink
+	            action="#{userManagerActions.deleteUser}"
+	            onclick="return confirmDeleteUser();">
+	            <h:graphicImage value="/icons/action_delete.gif" />
+	            <h:outputText value="#{messages['command.delete']}" />
+	          </h:commandLink></li>
+	        </ul>
+	        </div>
+	        <div style="clear:both" />
+		</f:subview>
+	</f:subview>
+	<f:subview rendered="#{doDelete=='delete_group'}">
+		<f:subview rendered="#{groupManagerActions.allowDeleteGroup}">
+    	  <script type="text/javascript">
+			function confirmDeleteGroup() {
+			    return confirm("#{messages['label.userManager.confirmDeleteGroup']}");
+			}
+		  </script>
+          <div class="action_bar">
+            <ul>
+            <li class="selected">
+                <h:commandLink action="#{groupManagerActions.deleteGroup}"
+                    onclick="return confirmDeleteGroup();">
+                  <h:graphicImage value="/icons/action_delete.gif" />
+                  <h:outputText value="#{messages['command.delete']}"  />
+                </h:commandLink>
+            </li>
+            </ul>
+          </div>
+          <div style="clear:both"/>
+		</f:subview>
+	</f:subview>
+</div>

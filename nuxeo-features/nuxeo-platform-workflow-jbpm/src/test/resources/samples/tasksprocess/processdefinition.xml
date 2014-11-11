@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<process-definition
+  xmlns=""
+  name="tasksprocess_parallel">
+  <event type="process-start">
+    <script>
+      <expression> executionContext.setVariable("workflow_review_type",
+        "workflowDocumentReviewTypeParallel"); System.out.println("Setting
+        workflow review type....");
+        executionContext.setVariable("workflowDirectives", new String[] {"a", "b"});
+        </expression>
+   </script>
+   <action class="org.nuxeo.ecm.platform.workflow.jbpm.FakeJbpmWorkflowActionHandler"/>
+  </event>
+   <start-state name="start">
+      <transition name="review" to="review"/>
+   </start-state>
+
+   <task-node name="review" create-tasks="false" end-tasks="true" signal="last-wait">
+      <event type="node-enter">
+        <action
+          class="org.nuxeo.ecm.platform.workflow.jbpm.TestActionHandler"/>
+      </event>
+      <task name="review">
+        <assignment class="org.nuxeo.ecm.platform.workflow.jbpm.DefaultAssignmentHandler"/>
+        <controller>
+          <variable name="WORKLOW_TASK_PROP_DIRECTIVE" access="read,write" />
+        </controller>
+      </task>
+      <transition name="validate" to="validated">
+        <action class="org.nuxeo.ecm.platform.workflow.jbpm.ToReviewActionHandler"/>
+      </transition>
+   </task-node>
+
+   <end-state name="validated">
+     <event type="node-enter">
+        <action class="org.nuxeo.ecm.platform.workflow.jbpm.ToEndActionHandler"/>
+      </event>
+   </end-state>
+</process-definition>

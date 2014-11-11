@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.workflow.jbpm.Engine">
+
+	<require>org.nuxeo.ecm.platform.workflow.service.WorkflowService</require>
+
+	<extension target="org.nuxeo.ecm.platform.workflow.service.WorkflowService"
+			   point="engine">
+		<engine name="jbpm"
+			    default="true"
+				class="org.nuxeo.ecm.platform.workflow.jbpm.JbpmWorkflowEngine"/>
+	</extension>
+
+</component>

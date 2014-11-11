@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Workflow Integration Test
+Bundle-SymbolicName: org.nuxeo.ecm.platform.workflow.test;singleton:=true
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.ecm.platform.workflow
+Nuxeo-Component: OSGI-INF/MockWAPIService.xml,
+  OSGI-INF/LoginService.xml
+Eclipse-LazyStart: false
