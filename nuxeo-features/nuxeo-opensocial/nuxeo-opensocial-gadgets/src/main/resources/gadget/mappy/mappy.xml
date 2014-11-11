@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="Info Trafic - Mappy"
+    description="Info Trafic en France. Zoom possible sur différentes régions."
+    author="hiroyuki42" author_email="hiroyuki42_NO_SPAM_@gmail.com"
+    screenshot="http://hiroyuki42.googlepages.com/mappy.png" thumbnail="http://hiroyuki42.googlepages.com/mappy_thumb.png"
+    title_url="http://www.mappy.fr" directory_title="Info Trafic - Mappy"
+    height="420">
+    <Locale lang="fr" country="fr" />
+    <Require feature="dynamic-height" />
+  </ModulePrefs>
+  <UserPref name="evt" display_name="Afficher les événements"
+    datatype="enum" default_value="no">
+    <EnumValue value="yes" display_value="oui" />
+    <EnumValue value="no" display_value="non" />
+  </UserPref>
+  <UserPref name="mappy_region" display_name="Région"
+    default_value="idf_cg" datatype="enum" required="true">
+    <EnumValue value="france_cg" display_value="France" />
+    <EnumValue value="france_no" display_value="France - Nord Ouest" />
+
+    <EnumValue value="france_ne" display_value="France - Nord Est" />
+    <EnumValue value="france_ouest" display_value="France - Ouest" />
+    <EnumValue value="france_est" display_value="France - Est" />
+    <EnumValue value="france_so" display_value="France - Sud Ouest" />
+    <EnumValue value="france_se" display_value="France - Sud Est" />
+    <EnumValue value="idf_cg" display_value="Ile de France" />
+    <EnumValue value="idf_no" display_value="IdF - Nord Ouest" />
+    <EnumValue value="idf_ne" display_value="IdF - Nord Est" />
+    <EnumValue value="idf_so" display_value="IdF - Sud Ouest" />
+
+    <EnumValue value="idf_se" display_value="IdF - Sud Est" />
+    <EnumValue value="idf_pc" display_value="Paris" />
+    <EnumValue value="paris_ce" display_value="Paris - Centre" />
+    <EnumValue value="paris_no" display_value="Paris - Nord Ouest" />
+    <EnumValue value="paris_ne" display_value="Paris - Nord Est" />
+    <EnumValue value="paris_so" display_value="Paris - Sud Ouest" />
+    <EnumValue value="paris_se" display_value="Paris - Sud Est" />
+  </UserPref>
+  <Content type="html">
+
+<![CDATA[
+<html>
+  <head>
+    <meta http-equiv="refresh" content="120">
+  <meta name="description"
+        content="Info trafic et evenements de la circulation en france (source Mappy et v-trafic).">
+  <meta name="keywords"
+        content="info, trafic, infotrafic, infotraffic, mappy, evenement, circulation, accident, plan,
+                   carte, france, ile-de-france, voiture, moto, tuning, gps, mobile, v-trafic, vtrafic, vtraffic,
+           v-traffic, navigation, GPS, TMC, route, itineraire, itinéraire, bouchon, bouchons, radar, radars">
+    <style type="text/css">
+    p { border: 0px; margin: 0px }
+    div { border: 0px; margin: 0px }
+    div.center { left: 50%; margin-left: -240px }
+    </style>
+  </head>
+  <script>
+    var prefs = new _IG_Prefs(__MODULE_ID__);
+    var d = new Date();
+    var s = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + "-" + d.getHours() + "-" + d.getMinutes();
+
+    function do_back()
+    {
+      var img = _gel("back_img");
+      img.src = "http://x.mappy.net/x/i/v-trafic/fond___UP_mappy_region__.gif";
+    }
+    function do_trafic()
+    {
+      var img = _gel("trafic_img");
+      img.src = "http://x.mappy.net/x/static/infotrafic/__UP_mappy_region__cr.gif?when=" + s;
+    }
+    function do_evt()
+    {
+      var img = _gel("evt_img");
+    if (prefs.getString("evt") == "yes") {
+        img.src = "http://x.mappy.net/x/static/infotrafic/__UP_mappy_region__evt.gif?when=" + s;
+    img.style.visibility = "visible";
+      }
+    else {
+      img.style.visibility = "hidden";
+    }
+    _IG_AdjustIFrameHeight(360);
+    }
+  </script>
+  <body onload="do_back(); do_trafic(); do_evt();">
+    <div id="main">
+      <div id="back_div" class="center" style="position:absolute; top:0px; z-index:0"><img id="back_img" src="" /></div>
+      <div id="trafic_div" class="center" style="position:absolute; top:0px; z-index: 1"><img id="trafic_img" src="" /></div>
+      <div id="evt_div" class="center" style="position:absolute; top:0px; z-index: 2"><img id="evt_img" src="" /></div>
+    <p style="position:absolute; top:360px">
+    <script type="text/javascript"><!--
+        google_ad_client = "pub-4567476915106208";
+        google_ad_width = 468;
+        google_ad_height = 60;
+        google_ad_format = "468x60_as";
+        google_ad_type = "text_image";
+        google_ad_channel = "";
+        //-->
+      </script>
+
+    </p>
+  </div>
+  </body>
+</html>
+]]>
+  </Content>
+</Module>

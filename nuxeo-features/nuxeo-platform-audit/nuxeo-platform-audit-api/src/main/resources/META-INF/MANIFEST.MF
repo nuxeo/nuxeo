@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXAuditAPI
+Bundle-SymbolicName: org.nuxeo.ecm.platform.audit.api
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Export-Package: org.nuxeo.ecm.platform.audit.api, org.nuxeo.ecm.platform.audit.api.remote
+Require-Bundle: org.nuxeo.ecm.core.api, org.nuxeo.ecm.core.event

@@ -1,0 +1,33 @@
+<component name="org.nuxeo.ecm.platform.tag.tests.config">
+
+  <!--extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
+      point="hibernate">
+      <hibernateConfiguration name="nxtags">
+	<properties>
+          <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/nuxeojunittests</property>
+          <property name="hibernate.connection.user">nuxeo</property>
+          <property name="hibernate.connection.password">nuxeo</property>
+          <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+          <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+          <property name="hibernate.hbm2ddl.auto">update</property>
+          <property name="hibernate.show_sql">true</property>
+          <property name="hibernate.format_sql">true</property>
+	</properties>
+      </hibernateConfiguration>
+  </extension-->
+  
+  <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
+	     point="hibernate">
+    <hibernateConfiguration name="nxtags">
+      <properties>
+        <property name="hibernate.connection.url">${nuxeo.test.vcs.url};AUTO_SERVER=true</property>
+        <property name="hibernate.connection.user">${nuxeo.test.vcs.user}</property>
+        <property name="hibernate.connection.password">${nuxeo.test.vcs.password}</property>
+        <property name="hibernate.connection.driver_class">org.h2.Driver</property>
+        <property name="hibernate.dialect"> org.nuxeo.ecm.platform.tag.H2WithNoSequencesSupportDialect</property>
+      </properties>
+    </hibernateConfiguration>
+  </extension>
+  
+  
+</component>
