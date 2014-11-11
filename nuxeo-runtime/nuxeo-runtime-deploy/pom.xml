@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.runtime</groupId>
+    <artifactId>nuxeo-runtime-parent</artifactId>
+    <version>5.7-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.nuxeo.runtime</groupId>
+  <artifactId>nuxeo-runtime-deploy</artifactId>
+  <name>Nuxeo Runtime Deploy</name>
+
+  <description>Nuxeo Runtime: Deployment processors </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-launcher-commons</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.ejb</groupId>
+      <artifactId>ejb-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

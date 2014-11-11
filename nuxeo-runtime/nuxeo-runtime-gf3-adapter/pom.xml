@@ -1,0 +1,57 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.runtime</groupId>
+    <artifactId>nuxeo-runtime-parent</artifactId>
+    <version>5.7-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.nuxeo.runtime</groupId>
+  <artifactId>nuxeo-runtime-gf3-adapter</artifactId>
+  <name>Nuxeo Runtime GlassFish3 Adapter</name>
+  <description>Emebeds GlassFish3 in Nuxeo</description>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.glassfish.embedded</groupId>
+      <artifactId>glassfish-embedded-all</artifactId>
+      <type>jar</type>
+    </dependency>
+
+    <!-- 3.0-SNAPSHOT version 03-Nov-2008 is not containing stax api + impl -->
+    <!--dependency>
+      <groupId>javax.xml.stream</groupId>
+      <artifactId>stax-api</artifactId>
+      <version>1.0-2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.woodstox</groupId>
+      <artifactId>wstx-asl</artifactId>
+      <version>3.2.7</version>
+    </dependency-->
+
+  </dependencies>
+
+</project>
