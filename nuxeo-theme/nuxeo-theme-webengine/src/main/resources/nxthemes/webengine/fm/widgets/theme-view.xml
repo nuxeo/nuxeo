@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <title>
+       <@block name="title">
+       <#if Root??>${Root.document['dc:title']}<#else>NXThemes WebEngine</#if>
+       </@block>
+    </title>
+    <@nxthemes_head />
+    <@nxthemes_resources />
+    
+    <@block name="stylesheets" />
+    <@block name="header_scripts" />
+  </head>
+  [nxthemes markup]
+</html>
