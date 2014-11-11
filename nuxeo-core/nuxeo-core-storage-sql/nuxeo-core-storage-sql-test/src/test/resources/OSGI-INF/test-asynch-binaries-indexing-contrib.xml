@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.tests.binaries-indexing-synch">
+
+  <require>org.nuxeo.ecm.core.convert.plugins</require>
+  <require>org.nuxeo.ecm.core.event.EventServiceComponent</require>
+  <require>org.nuxeo.ecm.core.work.config</require>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener priority="10" async="true" class="org.nuxeo.ecm.core.storage.sql.TestSQLBinariesIndexing$SynchHandler" name="binariesIndexingSynchHandler"/>
+  </extension>
+
+  <!-- lower number of threads to allow higher priority listener to go first
+    and sync things for us -->
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="default">
+      <name>Default queue</name>
+      <maxThreads>1</maxThreads>
+    </queue>
+  </extension>
+
+</component>
