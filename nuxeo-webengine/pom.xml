@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-services-parent</artifactId>
+    <version>5.3.2-I20100322_1417</version>
+  </parent>
+
+  <groupId>org.nuxeo.ecm.webengine</groupId>
+  <artifactId>nuxeo-webengine-parent</artifactId>
+  <version>5.3.2-I20100322_1417</version>
+  <packaging>pom</packaging>
+  <name>Nuxeo WebEngine</name>
+  <description>
+    Nuxeo WebEngine is the lightweight content-centric web framework.
+  </description>
+
+  <modules>
+    <module>nuxeo-webengine-core</module>
+    <module>nuxeo-webengine-gwt</module>
+    <module>nuxeo-webengine-ui</module>
+    <module>nuxeo-theme-webengine</module>
+  </modules>
+
+  <properties>
+    <nuxeo.webengine.version>5.3.2-I20100322_1417</nuxeo.webengine.version>
+    <nuxeo.services.version>5.3.2-I20100322_1417</nuxeo.services.version>
+    <nuxeo.theme.version>5.3.2-I20100322_1417</nuxeo.theme.version>
+  </properties>
+
+  <dependencies>
+    <!-- needed by APT for annotation processing -->
+    <dependency>
+      <groupId>org.nuxeo.build</groupId>
+      <artifactId>nuxeo-apt-extensions</artifactId>
+    </dependency>
+    <!--this is required to index annotations at build time -->
+    <dependency>
+      <groupId>org.nuxeo.build</groupId>
+      <artifactId>nuxeo-webengine-apt</artifactId>
+    </dependency>
+  </dependencies>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-rendering</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-test</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-core</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-ui</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-theme-webengine</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.theme</groupId>
+        <artifactId>nuxeo-theme-core</artifactId>
+        <version>${nuxeo.theme.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.theme</groupId>
+        <artifactId>nuxeo-theme-fragments</artifactId>
+        <version>${nuxeo.theme.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.theme</groupId>
+        <artifactId>nuxeo-theme-html</artifactId>
+        <version>${nuxeo.theme.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-jetty-adapter</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-launcher</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-test</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.wikimodel</groupId>
+        <artifactId>wem</artifactId>
+        <version>2.0.2</version>
+      </dependency>
+
+      <!-- jetty -->
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty-plus</artifactId>
+        <version>6.1H.7</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty-naming</artifactId>
+        <version>6.1H.7</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty-annotations</artifactId>
+        <version>6.1H.7</version>
+      </dependency>
+      <dependency>
+        <groupId>jotm</groupId>
+        <artifactId>jotm</artifactId>
+        <version>2.0.10</version>
+      </dependency>
+
+      <!-- jboss -->
+      <dependency>
+        <groupId>jboss</groupId>
+        <artifactId>jboss-aspect-jdk50-client</artifactId>
+        <version>1.5</version>
+      </dependency>
+      <dependency>
+        <groupId>jboss</groupId>
+        <artifactId>jboss-transaction-client</artifactId>
+        <version>4.0.4.GA</version>
+      </dependency>
+      <dependency>
+        <groupId>jboss</groupId>
+        <artifactId>jboss-client</artifactId>
+        <version>4.0.2</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <downloadSources>true</downloadSources>
+          <downloadJavadocs>true</downloadJavadocs>
+        </configuration>
+      </plugin>
+      <!-- APT plugin for annotation preprocessing -->
+      <plugin>
+        <groupId>org.apache.myfaces.tobago</groupId>
+        <artifactId>maven-apt-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-bindings</id>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- end APT plugin -->
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <aggregate>true</aggregate>
+          <maxmemory>512m</maxmemory>
+          <!--
+            stylesheetfile> ${basedir}/src/site/resources/css/jdstyle.css
+            </stylesheetfile
+          -->
+          <windowtitle>
+            Nuxeo WebEngine ${project.version} API Documentation
+          </windowtitle>
+          <doctitle>
+            Nuxeo WebEngine ${project.version} API Documentation
+          </doctitle>
+          <header>Nuxeo WebEngine ${project.version}</header>
+          <links>
+            <link>http://doc.nuxeo.org/5.1/apidocs/</link>
+            <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
+            <link>http://java.sun.com/javaee/5/docs/api/</link>
+            <link>
+              http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_0/
+            </link>
+            <link>http://jakarta.apache.org/commons/fileupload/apidocs/</link>
+            <link>http://jakarta.apache.org/commons/httpclient/apidocs/</link>
+            <link>http://jakarta.apache.org/commons/logging/apidocs/</link>
+            <link>http://jakarta.apache.org/commons/io/apidocs/</link>
+            <link>http://junit.sourceforge.net/javadoc/</link>
+            <link>http://logging.apache.org/log4j/docs/api/</link>
+            <link>http://jackrabbit.apache.org/api-1/</link>
+            <link>http://www.day.com/maven/jsr170/javadocs/jcr-1.0/</link>
+            <link>http://myfaces.apache.org/tomahawk/apidocs/</link>
+            <link>http://www.restlet.org/documentation/1.0/api/</link>
+            <link>http://www.hibernate.org/hib_docs/v3/api/</link>
+            <link>http://docs.jboss.com/seam/1.1.5.GA/api/</link>
+            <link>http://docs.jboss.com/jbpm/v3.1/javadoc.jbpm/</link>
+            <link>http://docs.jboss.com/jbpm/v3.1/javadoc.identity/</link>
+            <link>http://labs.jboss.com/jbossremoting/docs/api/</link>
+          </links>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/public</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <site>
+      <id>maven-website</id>
+      <url>scpexe://gironde.nuxeo.com/home/mavenweb/webengine/</url>
+    </site>
+  </distributionManagement>
+
+  <scm>
+    <connection>
+      scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-webengine
+    </connection>
+    <developerConnection>
+      scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-webengine
+    </developerConnection>
+    <url>http://hg.nuxeo.org/nuxeo/nuxeo-webengine</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>bstefanescu</id>
+      <name>Bogdan Stefanescu</name>
+      <email>contact@nuxeo.com</email>
+      <organization>Nuxeo SAS</organization>
+      <organizationUrl>http://www.nuxeo.com/en</organizationUrl>
+      <url>http://blogs.nuxeo.com/section/blogs/bogdan_stefanescu</url>
+      <roles>
+        <role>Lead Architect</role>
+        <role>Project Manager</role>
+      </roles>
+    </developer>
+  </developers>
+
+</project>
