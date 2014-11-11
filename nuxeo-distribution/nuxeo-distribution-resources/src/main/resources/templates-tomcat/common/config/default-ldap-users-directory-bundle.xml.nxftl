@@ -1,0 +1,369 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.directory.ldap.storage.users">
+
+<#if "${nuxeo.directory.type}" == "default">
+  <!-- Using default configuration from default-sql-directory-bundle.xml -->
+<#else>
+  <implementation class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor" />
+  <implementation class="org.nuxeo.ecm.directory.ldap.LDAPServerDescriptor" />
+  <require>org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory</require>
+
+  <!-- the groups SQL directories are required to make this bundle work -->
+  <require>org.nuxeo.ecm.directory.sql.storage</require>
+  <require>org.nuxeo.ecm.platform.usermanager.UserManagerImpl</require>
+
+  <extension target="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"
+    point="servers">
+
+    <!-- Configuration of a server connection
+
+      A single server declaration can point to a cluster of replicated
+      servers (using OpenLDAP's slapd + sluprd for instance). To leverage
+      such a cluster and improve availability, please provide one
+      <ldapUrl/> tag for each replica of the cluster.
+    -->
+    <server name="default">
+
+      <ldapUrl>${nuxeo.ldap.url}</ldapUrl>
+      <!-- Optional servers from the same cluster for failover
+        and load balancing:
+
+        <ldapUrl>ldap://server2:389</ldapUrl>
+        <ldapUrl>ldaps://server3:389</ldapUrl>
+
+        "ldaps" means TLS/SSL connection.
+      -->
+
+      <!-- Credentials used by Nuxeo5 to browse the directory, create
+        and modify entries.
+
+        Only the authentication of users (bind) use the credentials entered
+        through the login form if any.
+      -->
+      <bindDn>${nuxeo.ldap.binddn}</bindDn>
+      <bindPassword>${nuxeo.ldap.bindpassword}</bindPassword>
+      <!-- Attempts to get a result when LDAP is temporary unavailable -->
+      <retries>${nuxeo.ldap.retries}</retries>
+    </server>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"
+    point="directories">
+
+    <directory name="ldapUserDirectory">
+      <server>default</server>
+      <schema>user</schema>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+
+      <searchBaseDn>${nuxeo.ldap.user.searchBaseDn}</searchBaseDn>
+      <searchClass>${nuxeo.ldap.user.searchClass}</searchClass>
+      <!-- To additionally restricte entries you can add an
+        arbitrary search filter such as the following:
+        Beware that "&" writes "&amp;" in XML.
+<#if "${nuxeo.ldap.user.searchFilter}" == "">
+        <searchFilter>(&amp;(sn=toto*)(myCustomAttribute=somevalue))</searchFilter>
+</#if>
+      -->
+<#if "${nuxeo.ldap.user.searchFilter}" != "">
+        <searchFilter></searchFilter>
+</#if>
+
+      <!-- use subtree if the people branch is nested -->
+      <searchScope>${nuxeo.ldap.user.searchScope}</searchScope>
+
+      <!-- using 'subany', search will match *toto*. use 'subfinal' to
+        match *toto and 'subinitial' to match toto*. subinitial is the
+        default  behaviour-->
+      <substringMatchType>${nuxeo.ldap.user.searchBehavior}</substringMatchType>
+
+      <readOnly>${nuxeo.ldap.user.readonly}</readOnly>
+
+      <!-- comment <cache* /> tags to disable the cache -->
+      <cacheEntryName>ldap-user-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>ldap-user-entry-cache-without-references</cacheEntryWithoutReferencesName>
+
+      <!--
+           If the id field is not returned by the search, we set it with the searched entry, probably the login.
+           Before setting it, you can change its case. Accepted values are 'lower' and 'upper',
+           anything else will not change the case.
+      -->
+      <missingIdFieldCase>lower</missingIdFieldCase>
+
+      <!-- Maximum number of entries returned by the search -->
+      <querySizeLimit>${nuxeo.ldap.query.sizeLimit}</querySizeLimit>
+
+      <!-- Time to wait for a search to finish. 0 to wait indefinitely -->
+      <queryTimeLimit>0</queryTimeLimit>
+
+      <creationBaseDn>ou=people,dc=example,dc=com</creationBaseDn>
+      <creationClass>top</creationClass>
+      <creationClass>person</creationClass>
+      <creationClass>organizationalPerson</creationClass>
+      <creationClass>inetOrgPerson</creationClass>
+
+      <rdnAttribute>${nuxeo.ldap.user.mapping.rdn}</rdnAttribute>
+      <fieldMapping name="username">${nuxeo.ldap.user.mapping.username}</fieldMapping>
+      <fieldMapping name="password">${nuxeo.ldap.user.mapping.password}</fieldMapping>
+      <fieldMapping name="firstName">${nuxeo.ldap.user.mapping.firstname}</fieldMapping>
+      <fieldMapping name="lastName">${nuxeo.ldap.user.mapping.lastname}</fieldMapping>
+      <fieldMapping name="company">${nuxeo.ldap.user.mapping.company}</fieldMapping>
+      <fieldMapping name="email">${nuxeo.ldap.user.mapping.email}</fieldMapping>
+
+      <references>
+<#if "${nuxeo.user.group.storage}" == "default">
+        <inverseReference field="groups" directory="ldapGroupDirectory"
+          dualReferenceField="members" />
+</#if>
+<#if "${nuxeo.user.group.storage}" == "userLdapOnly" ||  "${nuxeo.user.group.storage}" == "multiUserSqlGroup">
+        <inverseReference field="groups" directory="sqlGroupDirectory"
+          dualReferenceField="members" />
+</#if>
+<#if "${nuxeo.user.group.storage}" == "ldapUserMultiGroup" ||  "${nuxeo.user.group.storage}" == "multiUserGroup">
+        <inverseReference field="groups" directory="multiGroupDirectory"
+          dualReferenceField="members" />
+</#if>
+      </references>
+
+    </directory>
+
+<#if "${nuxeo.user.group.storage}" != "userLdapOnly" && "${nuxeo.user.group.storage}" != "multiUserSqlGroup">
+    <directory name="ldapGroupDirectory">
+
+      <!-- Reuse the default server configuration defined for ldapUserDirectory -->
+      <server>default</server>
+
+      <schema>group</schema>
+      <idField>groupname</idField>
+
+      <searchBaseDn>${nuxeo.ldap.group.searchBaseDn}</searchBaseDn>
+      <searchFilter>
+        ${nuxeo.ldap.group.searchFilter}
+      </searchFilter>
+      <searchScope>${nuxeo.ldap.group.searchScope}</searchScope>
+
+      <readOnly>${nuxeo.ldap.group.readonly}</readOnly>
+
+      <!-- comment <cache* /> tags to disable the cache -->
+      <cacheEntryName>ldap-group-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>ldap-group-entry-cache-without-references</cacheEntryWithoutReferencesName>
+
+      <creationBaseDn>ou=groups,dc=example,dc=com</creationBaseDn>
+      <creationClass>top</creationClass>
+      <creationClass>groupOfUniqueNames</creationClass>
+
+      <!-- Maximum number of entries returned by the search -->
+      <querySizeLimit>${nuxeo.ldap.query.sizeLimit}</querySizeLimit>
+
+      <!-- Time to wait for a search to finish. 0 to wait indefinitely -->
+      <queryTimeLimit>${nuxeo.ldap.query.timeLimit}</queryTimeLimit>
+
+      <rdnAttribute>${nuxeo.ldap.group.mapping.rdn}</rdnAttribute>
+      <fieldMapping name="groupname">${nuxeo.ldap.group.mapping.name}</fieldMapping>
+      <!-- Add another field to map reel group label -->
+      <fieldMapping name="grouplabel">${nuxeo.ldap.group.mapping.label}</fieldMapping>
+
+      <references>
+        <!-- LDAP reference resolve DNs embedded in uniqueMember attributes
+
+          If the target directory has no specific filtering policy, it is most
+          of the time not necessary to enable the 'forceDnConsistencyCheck' policy.
+
+          Enabling this option will fetch each reference entry to ensure its
+          existence in the target directory.
+        -->
+        <ldapReference field="members" directory="ldapUserDirectory"
+          forceDnConsistencyCheck="false" staticAttributeId="${nuxeo.ldap.group.mapping.members.staticAttributeId}"
+          dynamicAttributeId="${nuxeo.ldap.group.mapping.members.dynamicAttributeId}" />
+
+        <ldapReference field="subGroups" directory="ldapGroupDirectory"
+          forceDnConsistencyCheck="false"  staticAttributeId="${nuxeo.ldap.group.mapping.members.staticAttributeId}"
+          dynamicAttributeId="${nuxeo.ldap.group.mapping.members.dynamicAttributeId}" />
+
+<#if "${nuxeo.user.group.storage}" == "default">
+        <inverseReference field="parentGroups" directory="ldapGroupDirectory"
+<#else>
+        <inverseReference field="parentGroups" directory="multiGroupDirectory"
+</#if>
+          dualReferenceField="subGroups" />
+
+        <!-- LDAP tree reference resolves children following the ldap tree
+          structure.
+
+          Available scopes are "onelevel" (default), "subtree". Children with
+          same id than parent will be filtered.
+
+          Enabling this option will fetch each reference entry to ensure its
+          existence in the target directory.
+
+          WARNING: Edit is NOT IMPLEMENTED: modifications to this field will be
+          ignored when saving the entry.
+        -->
+        <ldapTreeReference field="directChildren" directory="unitDirectory"
+          scope="onelevel" />
+        <ldapTreeReference field="children" directory="unitDirectory"
+          scope="subtree" />
+
+      </references>
+
+    </directory>
+</#if>
+  </extension>
+
+<#if "${nuxeo.user.group.storage}" == "userLdapOnly" || "${nuxeo.directory.type}" == "multi">
+  <implementation class="org.nuxeo.ecm.directory.sql.SQLDirectoryDescriptor" />
+  <require>org.nuxeo.ecm.directory.sql.SQLDirectoryFactory</require>
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+    point="directories">
+
+<#if "${nuxeo.user.group.storage}" == "multiUserGroup" || "${nuxeo.user.group.storage}" == "multiUserSqlGroup">
+    <directory name="sqlUserDirectory">
+
+      <schema>user</schema>
+
+      <dataSource>jdbc/nxsqldirectory</dataSource>
+
+      <table>users</table>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+      <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
+      <autoincrementIdField>false</autoincrementIdField>
+      <computeMultiTenantId>false</computeMultiTenantId>
+      <dataFile>users.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <querySizeLimit>50</querySizeLimit>
+
+      <cacheEntryName>sql-user-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>sql-user-entry-cache-without-references</cacheEntryWithoutReferencesName>
+
+      <references>
+        <inverseReference field="groups" directory="sqlGroupDirectory"
+          dualReferenceField="members" />
+      </references>
+
+    </directory>
+</#if>
+<#if "${nuxeo.directory.type}" == "multi" || "${nuxeo.user.group.storage}" == "userLdapOnly">
+    <directory name="sqlGroupDirectory">
+
+      <schema>group</schema>
+      <dataSource>jdbc/nxsqldirectory</dataSource>
+      <table>groups</table>
+      <idField>groupname</idField>
+      <dataFile>groups.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <autoincrementIdField>false</autoincrementIdField>
+
+      <cacheEntryName>sql-group-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>sql-group-entry-cache-without-references</cacheEntryWithoutReferencesName>
+
+      <references>
+<#if "${nuxeo.user.group.storage}" == "userLdapOnly" || "${nuxeo.user.group.storage}" == "ldapUserMultiGroup">
+        <tableReference field="members" directory="ldapUserDirectory"
+<#else>
+        <tableReference field="members" directory="multiUserDirectory"
+</#if>
+          table="user2group" sourceColumn="groupId" targetColumn="userId" schema="user2group" 
+          dataFile="user2group.csv" />
+<#if "${nuxeo.user.group.storage}" == "multiUserGroup" || "${nuxeo.user.group.storage}" == "ldapUserMultiGroup">
+        <tableReference field="subGroups" directory="multiGroupDirectory"
+<#else>
+        <tableReference field="subGroups" directory="sqlGroupDirectory"
+</#if>
+          table="group2group" sourceColumn="parentGroupId" 
+          targetColumn="childGroupId" schema="group2group" />
+        <inverseReference field="parentGroups" directory="sqlGroupDirectory"
+          dualReferenceField="subGroups" />
+      </references>
+
+    </directory>
+</#if>
+  </extension>
+</#if>
+
+<#if "${nuxeo.directory.type}" == "multi">
+  <extension
+    target="org.nuxeo.ecm.directory.multi.MultiDirectoryFactory"
+    point="directories">
+
+    <directory name="multiUserDirectory">
+      <schema>user</schema>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+
+      <source name="userSQLsource" creation="true">
+        <subDirectory name="sqlUserDirectory" />
+      </source>
+
+      <source name="userLDAPsource">
+        <subDirectory name="ldapUserDirectory" />
+      </source>
+    </directory>
+
+    <directory name="multiGroupDirectory">
+      <schema>group</schema>
+      <idField>groupname</idField>
+
+      <source name="groupSQLsource" creation="true">
+        <subDirectory name="sqlGroupDirectory" />
+      </source>
+
+      <source name="groupLDAPsource">
+        <subDirectory name="ldapGroupDirectory" />
+      </source>
+    </directory>
+
+  </extension>
+</#if>
+
+  <extension target="org.nuxeo.ecm.platform.usermanager.UserService" point="userManager">
+
+    <userManager>
+      <userCacheName>default-cache</userCacheName>
+<#if "${nuxeo.ldap.defaultAdministratorId}" != "">
+      <defaultAdministratorId>${nuxeo.ldap.defaultAdministratorId}</defaultAdministratorId>
+</#if>
+<#if "${nuxeo.ldap.defaultMembersGroup}" != "">
+      <defaultGroup>${nuxeo.ldap.defaultMembersGroup}</defaultGroup>
+</#if>
+      <users>
+<#if "${nuxeo.directory.type}" == "ldap" || "${nuxeo.user.group.storage}" == "ldapUserMultiGroup">
+        <directory>ldapUserDirectory</directory>
+<#else>
+        <directory>multiUserDirectory</directory>
+</#if>
+<#if "${nuxeo.user.emergency.enable}" == "true">
+        <virtualUser id="${nuxeo.user.emergency.username}" searchable="false">
+          <password>${nuxeo.user.emergency.password}</password>
+          <property name="firstName">${nuxeo.user.emergency.firstname}</property>
+          <property name="lastName">${nuxeo.user.emergency.lastname}</property>
+          <group>administrators</group>
+        </virtualUser>
+</#if>
+<#if "${nuxeo.user.anonymous.enable}" == "true">
+        <anonymousUser id="Guest">
+          <property name="firstName">Guest</property>
+          <property name="lastName">User</property>
+        </anonymousUser>
+</#if>
+      </users>
+      <groups>
+<#if "${nuxeo.user.group.storage}" == "default">
+        <directory>ldapGroupDirectory</directory>
+<#elseif "${nuxeo.user.group.storage}" == "userLdapOnly" || "${nuxeo.user.group.storage}" == "multiUserSqlGroup">
+        <directory>sqlGroupDirectory</directory>
+<#else>
+        <directory>multiGroupDirectory</directory>
+</#if>
+      </groups>
+    </userManager>
+
+  </extension>
+</#if>
+
+</component>
+
+

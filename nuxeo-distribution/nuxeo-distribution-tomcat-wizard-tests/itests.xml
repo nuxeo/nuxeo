@@ -1,0 +1,19 @@
+<project name="integration-tests"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <property name="out.dir" value="${maven.project.build.directory}" />
+  <property name="classifier" value="nuxeo-cap" />
+  <property name="wizard.preset" value="nuxeo-cap" />
+  <property name="nuxeo.wizard.done" value="false" />
+
+  <unzip dest="${out.dir}/" overwrite="false">
+    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
+  </unzip>
+  <import file="${out.dir}/nuxeo-ftest.xml" />
+
+</project>

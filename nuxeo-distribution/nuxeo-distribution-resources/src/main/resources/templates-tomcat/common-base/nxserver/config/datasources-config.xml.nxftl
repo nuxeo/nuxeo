@@ -1,0 +1,37 @@
+<#escape x as x?xml>
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.datasource.server.contrib">
+
+<#if nuxeo.db.embeddedDatasources == "true">
+  <extension target="org.nuxeo.runtime.datasource" point="datasources">
+<#if nuxeo.db.xaMode == "false">
+    <datasource name="${nuxeo.db.commonds}" driverClassName="${nuxeo.db.driver}"
+      maxPoolSize="${nuxeo.db["max-pool-size"]}" minPoolSize="5" blockingTimeoutMillis="10000"
+      url="${nuxeo.db.jdbc.url}" validationQuery="${nuxeo.db.validationQuery}"
+      username="${nuxeo.db.user}" password="${nuxeo.db.password}"
+      accessToUnderlyingConnectionAllowed="true" >
+    </datasource>
+<#else>
+    <datasource name="${nuxeo.db.commonds}" xaDataSource="${nuxeo.db.xadatasource}"
+      maxPoolSize="${nuxeo.db["max-pool-size"]}" minPoolSize="5" blockTimeoutMillis="10000">
+<#include "xadatasource-params.ftl" parse=true />
+    </datasource>
+</#if>
+    <link name="jdbc/NuxeoDS" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+    <link name="jdbc/nxsqldirectory" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+    <link name="jdbc/nxrelations-default-jena" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+    <link name="jdbc/comment-relations" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+    <link name="jdbc/nxaudit-logs" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+    <link name="jdbc/nxjbpm" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+    <link name="jdbc/placeful_service_ds" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+    <link name="jdbc/nxwebwidgets" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+    <link name="jdbc/nxuidsequencer" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+    <link name="jdbc/repository_default" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+<#if "${nuxeo.quartz.enable}" == "true">
+    <link name="jdbc/nxquartz" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+    <link name="jdbc/nxquartz_no_tx" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+</#if>
+  </extension>
+</#if>
+</component>
+</#escape>
