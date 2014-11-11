@@ -1,0 +1,13 @@
+<component name="org.nuxeo.ecm.platform.placeful.theme">
+
+  <require>org.nuxeo.ecm.platform.ec.placeful.PlacefulService</require>
+  <extension target="org.nuxeo.ecm.platform.ec.placeful.PlacefulService"
+    point="annotations">
+
+    <annotation>
+      <class>org.nuxeo.ecm.webapp.theme.negotiation.LocalThemeConfig</class>
+    </annotation>
+
+  </extension>
+
+ </component>
