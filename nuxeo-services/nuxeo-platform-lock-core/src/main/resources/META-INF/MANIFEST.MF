@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo-platform-lock-core project
+Bundle-SymbolicName: org.nuxeo.ecm.platform.lock.core;singleton:=true
+Bundle-Vendor: Nuxeo
+Nuxeo-Require: org.nuxeo.runtime, org.nuxeo.ecm.core.persistence
+Require-Bundle: org.nuxeo.runtime, org.nuxeo.ecm.core.persistence, org.nuxeo.ecm.platform.lock.api
+Nuxeo-Component: OSGI-INF/nxlock-framework.xml

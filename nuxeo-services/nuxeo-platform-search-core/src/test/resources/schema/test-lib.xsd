@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+
+<xs:schema
+	xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:include schemaLocation="core-types.xsd"/>
+
+	<xs:simpleType name="MyString">
+		<xs:restriction base="xs:string">
+	    	<xs:pattern value="[a-z]"/>
+	  	</xs:restriction>
+	</xs:simpleType>
+
+
+	<xs:complexType name="Name">
+	  <xs:sequence>
+	    <xs:element name="FirstName" type="MyString"/>
+	    <xs:element name="LastName" type="xs:string"/>
+	  </xs:sequence>
+	</xs:complexType>
+
+
+	<xs:complexType name="Person">
+	  <xs:sequence>
+	    <xs:element name="pName" type="Name"/>
+	    <xs:element name="pAge" type="xs:long"/>
+	    <xs:element name="pJob" type="xs:string"/>
+	  </xs:sequence>
+	</xs:complexType>
+
+
+
+
+</xs:schema>
+
+
