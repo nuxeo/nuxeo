@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Relations API
+Bundle-SymbolicName: org.nuxeo.ecm.relations.api;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: runtime

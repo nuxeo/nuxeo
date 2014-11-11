@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <ui:define name="page title">Nuxeo 5 EP: Directories</ui:define>
+
+  <ui:define name="body">
+    <div id="content">
+    <h1><h:outputText value="#{messages['title.manageMembers']}" /></h1>
+    <h:form>
+    	<h:commandLink value="#{messages['label.manageUsers']}" action="view_users" />
+	    <br/>
+        <h:commandLink value="#{messages['label.manageGroups']}" action="view_groups" />
+    </h:form>
+    </div>
+  </ui:define>
+
+</nxthemes:composition>
+

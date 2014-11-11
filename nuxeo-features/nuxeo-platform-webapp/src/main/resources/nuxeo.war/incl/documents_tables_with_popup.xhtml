@@ -1,0 +1,96 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"><a4j:region
+  rendered="#{documents != null}">
+  <h:form id="#{documents.name}">
+    <h:outputText value="#{messages['label.content.emptyFolder']}"
+      rendered="#{documents.rowCount == 0}" />
+    <nxu:dataTable id="dataTable" value="#{documents.rows}" var="row"
+      rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput"
+      rendered="#{documents.rowCount > 0}">
+      <!-- id and selection -->
+      <nxu:column styleClass="iconColumn" rendered="#{showCheckboxes or false}">
+        <!-- XXX AT: select all buggy right now -->
+        <f:facet name="header">
+          <h:selectBooleanCheckbox rendered="false">
+            <a4j:support event="onclick"
+              onsubmit="onSelectAllCheckboxClick('#{documents.name}:dataTable', this.checked)">
+              <a4j:ajaxListener type="org.ajax4jsf.ajax.ForceRender" />
+            </a4j:support>
+          </h:selectBooleanCheckbox>
+        </f:facet>
+        <h:selectBooleanCheckbox value="#{row.selected}"
+          valueChangeListener="#{row.selectionChanged}">
+          <a4j:support event="onclick"
+            onsubmit="disableCheckBoxesIn('#{documents.name}:dataTable')"
+            oncomplete="enableCheckBoxesIn('#{documents.name}:dataTable')">
+            <a4j:ajaxListener type="org.ajax4jsf.ajax.ForceRender" />
+          </a4j:support>
+        </h:selectBooleanCheckbox>
+      </nxu:column>
+      <!-- Icon + Type -->
+      <nxu:column styleClass="iconColumn">
+        <div id="docRef:#{row.data.ref}" class="cell">
+        <nxu:graphicImage
+          value="#{nxd:iconPath(row.data)}" alt="#{row.data.type}">
+            <a4j:support
+                event="onclick"
+                action="#{popupHelper.setPopupDocRef(row.data.ref)}"
+                reRender="contextMenuRegion"
+                limitToList="true"
+                oncomplete="placePopup('#{row.data.ref}');"
+                />
+       </nxu:graphicImage></div>
+        <script type="text/javascript">
+          <h:outputText
+            value="new Draggable('docRef:#{row.data.ref}', {revert:true});"/>
+          <h:outputText rendered="#{row.data.folder}"
+            value="Droppables.add('docRef:#{row.data.ref}', {accept:'cell', onDrop:function(element){moveElement(element,'docRef:#{row.data.ref}')}, hoverclass:'dropInto'});"/>
+        </script>
+      </nxu:column>
+      <!--  Title -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.content.header.title']}" />
+        </f:facet>
+        <nxd:documentLink title="#{nxd:titleOrId(row.data)}"
+          document="#{row.data}" />
+      </nxu:column>
+      <!--  Modification date -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.content.header.modified']}" />
+        </f:facet>
+        <h:outputText value="#{row.data.dublincore.modified}">
+          <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+            timeZone="#{timeZone}" />
+        </h:outputText>
+      </nxu:column>
+      <!--  Author -->
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.content.header.author']}" />
+        </f:facet>
+        <h:outputText value="#{nxu:userFullName(row.data.dublincore.creator)}" />
+      </h:column>
+      <!--  Life cycle -->
+      <h:column>
+        <f:facet name="header">
+          <h:outputText
+            value="#{messages['label.content.header.currentLifecycleState']}" />
+        </f:facet>
+        <h:outputText value="#{messages[row.data.currentLifeCycleState]}" />
+      </h:column>
+    </nxu:dataTable>
+    <a4j:outputPanel ajaxRendered="true">
+      <ui:insert name="buttons" />
+    </a4j:outputPanel>
+  </h:form>
+
+<ui:include src="/incl/popupMenu.xhtml"/>
+
+</a4j:region>
+</div>

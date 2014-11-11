@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.comment.defaultPermissions">
+
+  <extension
+      target="org.nuxeo.ecm.platform.defaultPermissions.DefaultPermissionService"
+      point="config">
+    <configuration>
+      <document type="CommentRoot">
+        <principal name="members">
+          <permission isGranted="true">AddChildren</permission>
+          <permission isGranted="true">RemoveChildren</permission>
+        </principal>
+      </document>
+    </configuration>
+  </extension>
+
+</component>
