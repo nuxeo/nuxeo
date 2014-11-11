@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE server PUBLIC "-//JBoss//DTD MBean Service 4.0//EN" "http://www.jboss.org/j2ee/dtd/jboss-service_4_0.dtd">
+<server>
+  <mbean code="org.jboss.services.loggingmonitor.LoggingMonitor"
+         name="jboss.monitor:type=LoggingMonitor,name=JVMMonitor">
+    <attribute name="Filename">${jboss.server.log.dir}/jvm.log</attribute>
+    <attribute name="AppendToFile">false</attribute>
+    <attribute name="RolloverPeriod">DAY</attribute>
+    <attribute name="MonitorPeriod">5000</attribute>
+    <attribute name="MonitoredObjects">
+      <configuration>
+        <monitoredmbean name="jboss.system:type=ServerInfo" logger="jvm">
+          <attribute>ActiveThreadCount</attribute>
+          <attribute>FreeMemory</attribute>
+          <attribute>TotalMemory</attribute>
+          <attribute>MaxMemory</attribute>
+        </monitoredmbean>
+      </configuration>
+    </attribute>
+  </mbean>
+</server>
