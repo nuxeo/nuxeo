@@ -1,0 +1,25 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <h:form id="metadata_edit">
+
+    <nxl:layout name="dublincore" mode="edit" value="#{currentDocument}" />
+
+    <table class="dataInput" border="0">
+      <tbody>
+        <tr>
+          <td class="labelColumn"></td>
+          <td class="fieldColumn"><h:commandButton
+            value="#{messages['command.save']}" styleClass="button"
+            action="#{documentActions.updateCurrentDocument}" /></td>
+        </tr>
+      </tbody>
+    </table>
+
+  </h:form>
+
+</ui:composition>

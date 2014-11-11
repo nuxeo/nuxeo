@@ -1,0 +1,32 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <c:if test="#{widget.handlingLabels}">
+    <c:if test="#{!empty widget.label}">
+      <ui:include src="/widgets/incl/widget_label_template.xhtml">
+        <ui:param name="labelStyleClass" value="summaryTitle #{widgetProperty_headerStyleClass}" />
+      </ui:include>
+    </c:if>
+    <c:if test="#{empty widget.label}">
+      <ui:include src="/widgets/incl/label_template.xhtml">
+        <ui:param name="label" value="label.dublincore.contributors" />
+        <ui:param name="helpLabel" value="#{widget.helpLabel}" />
+        <ui:param name="translated" value="true" />
+        <ui:param name="required" value="#{widget.required}" />
+        <ui:param name="labelStyleClass" value="summaryTitle #{widgetProperty_headerStyleClass}" />
+      </ui:include>
+    </c:if>
+  </c:if>
+
+  <c:forEach var="contributor"
+    items="#{currentDocument.dc.contributors}">
+    <span class="user creator">
+      <a href="#{baseURL}user/#{contributor}">
+        <h:outputText value="#{nxu:userFullName(contributor)}" />
+      </a>
+    </span>
+  </c:forEach>
+</div>

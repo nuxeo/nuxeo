@@ -1,0 +1,88 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxh="http://nuxeo.org/nxweb/html">
+
+<c:if test="#{currentDocument.hasSchema('files')}">
+
+<h:form id="document_files_edit" disableDoubleClickShield="true" >
+
+  <a4j:jsFunction name="clearUpload" render="validateMultiplesUploadDiv" >
+    <a4j:param name="param1" assignTo="#{FileManageActions.fileToRemove}"  />
+    <nxu:actionListenerMethod value="#{FileManageActions.removeOneOrAllUploadedFiles  }" />
+  </a4j:jsFunction>
+  <a4j:jsFunction name="clearAllUpload" render="validateMultiplesUploadDiv">
+    <nxu:actionListenerMethod value="#{FileManageActions.removeOneOrAllUploadedFiles}" />
+  </a4j:jsFunction>
+  <script>
+    function processClear(event) {
+      if (event.rf.data.length == 1) {
+        if (event.rf.data.length) {
+          clearUpload(event.rf.data[0].name);
+        }
+      } else {
+        clearAllUpload();
+      }
+    }
+  </script>
+
+  <h3><h:outputText value="#{messages['label.upload.files.download']}" /></h3>
+
+  <h:panelGrid columns="2" styleClass="dataTableNoBorder smallTable"
+    columnClasses="fortyPercent,">
+
+    <rich:fileUpload fileUploadListener="#{FileManageActions.processUpload}"
+      listHeight="150" maxFilesQuantity="5"
+      id="upload"
+      locale="#{localeSelector.localeString}"
+      immediateUpload="true">
+      <a4j:ajax event="clear"
+        onbeforesubmit="processClear(event);"
+        render="validateMultiplesUploadDiv" />
+      <a4j:ajax event="uploadcomplete"
+        render="validateMultiplesUploadDiv" />
+    </rich:fileUpload>
+    <h:message styleClass="errorMessage" for="upload"
+      id="files_message" />
+
+    <a4j:region id="files_region">
+      <a4j:outputPanel id="files_panel" layout="block">
+        <c:forEach id="files_input" items="#{currentDocument.files.files}" var="file" varStatus="counter">
+          <div class="simpleBox">
+            <a4j:commandLink immediate="true"
+              onclick="if( !confirmRemoveFiles('#{nxu:javaScriptEscape(currentDocument.files.files[counter.count - 1].filename)}')) return false;"
+              actionListener="#{FileManageActions.performAction}"
+              id="files_delete" render="document_files_edit"
+              bypassUpdates="true">
+              <h:graphicImage value="/icons/delete.png" alt="#{messages['command.remove.file']}" />
+              <f:param name="index" value="#{counter.count - 1}" />
+            </a4j:commandLink>
+
+            <nxh:outputLink value="#{nxd:complexFileUrl('downloadFile', currentDocument, 'files:files', model.rowIndex, 'file', currentDocument.files.files[counter.count - 1].filename)}">
+              <nxh:outputText value="#{currentDocument.files.files[counter.count - 1].filename}" />
+            </nxh:outputLink>
+          </div>
+        </c:forEach>
+      </a4j:outputPanel>
+    </a4j:region>
+
+  </h:panelGrid>
+
+  <a4j:outputPanel id="validateMultiplesUploadDiv">
+    <a4j:commandButton
+      rendered="#{not empty FileManageActions.uploadedFiles}" render="document_files_edit"
+      value="#{messages['command.add.files']}" styleClass="button"
+      action="#{FileManageActions.validateMultiplesUpload}" />
+  </a4j:outputPanel>
+
+</h:form>
+</c:if>
+
+</ui:composition>

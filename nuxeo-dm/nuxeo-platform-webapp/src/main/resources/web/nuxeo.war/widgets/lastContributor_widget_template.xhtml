@@ -1,0 +1,22 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
+  id="#{widget.id}">
+
+  <c:if test="false">
+    Deprecated, to remove
+  </c:if>
+
+  <div>
+   <c:set var="username" value="#{field}" />
+   <h:outputText value="#{nxu:userFullName(username)}"
+                 title="#{username}"
+                 styleClass="tipsyShow" />
+  </div>
+
+  <em>The template 'lastContributor_widget_template.xhtml' is deprecated, use
+  'single_user_widget_template.xhtml' instead</em>
+
+</f:subview>
