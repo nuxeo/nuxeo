@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  <head>
+    <style>
+      body, input, select, .labelColumn{
+        font-size:9pt;
+        font-family:Arial;
+      }
+    </style>
+  </head>
+<body>
+<div><h:form>
+  <nxl:layout name="#{dndFormActions.getLayouts()}" mode="create"
+    value="#{dataCollector}" />
+
+  <h:commandButton action="#{dndFormActions.save()}" value="#{messages['command.continue']}"></h:commandButton>
+</h:form></div>
+</body>
+</html>

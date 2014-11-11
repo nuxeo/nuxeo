@@ -1,0 +1,3377 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.forms.layouts.webapp.base">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="widgets">
+
+    <widget name="userSuggestionSearchType" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Search type</label>
+      </labels>
+      <fields>
+        <field>userSuggestionSearchType</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Users and Groups" itemValue="" />
+        <option itemLabel="Users" itemValue="USER_TYPE" />
+        <option itemLabel="Groups" itemValue="GROUP_TYPE" />
+      </selectOptions>
+    </widget>
+
+    <widget name="userSuggestion_firstLabelField" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">First label field</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Field to use as the first label when displaying the
+          selected user. Defaults to 'firstName'.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>firstLabelField</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_secondLabelField" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Second label field</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Field to use as the second label when displaying the
+          selected user. Defaults to 'lastName'.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>secondLabelField</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_thirdLabelField" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Third label field</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Field to use as the third label when displaying the
+          selected user. Defaults to 'email'. Available since 5.5.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>thirdLabelField</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_hideFirstLabel" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Hide first label</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Boolean indicating if the first label should be
+          hidden. Defaults to false.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>hideFirstLabel</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_hideSecondLabel" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Hide second label</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Boolean indicating if the second label should be
+          hidden.Defaults to false.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>hideSecondLabel</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_hideThirdLabel" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Hide third label</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Boolean indicating if the third label should be
+          hidden. Defaults to false. Available since 5.5.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>hideThirdLabel</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_displayAction" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Display action</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The display action to use when rendering the user or
+          group. Can be 'nothing' to just display text only, 'view' to have a
+          link going to the user or group view, or 'edit' to have a link going
+          to the user or group edition. The 'edit' action assumes the widget is
+          used in the Users and Groups management.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>displayAction</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Nothing" itemValue="nothing" />
+        <option itemLabel="View" itemValue="view" />
+        <option itemLabel="Edit" itemValue="edit" />
+      </selectOptions>
+    </widget>
+
+    <widget name="userSuggestion_displayEmailInSuggestion" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Display email for users</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Boolean indicating if the email should be displayed
+          for users. Defaults to false. Available since 5.5.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>displayEmailInSuggestion</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestionMaxSearchResults" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Max search results</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Number of maximum search results in the suggestion
+          (defaults to 0 that means no limit).
+        </label>
+      </helpLabels>
+      <fields>
+        <field>userSuggestionMaxSearchResults</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_minChars" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Minimum characters</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The minimal number of characters to type for the
+          suggestion to be active. Defaults to 3.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>minChars</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_frequency" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Frequency</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Delay (in seconds) before activating the suggestion
+          pop-up. Default value is 0.
+        </label>
+      </helpLabels>
+
+      <fields>
+        <field>frequency</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_requestDelay" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Request delay</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The requestDelay attribute specifies an amount of time
+          in milliseconds for the request to wait in the queue before being sent
+          to the server. If a similar request is added to the queue before the
+          delay is over, the original request is removed from the queue and not
+          sent.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>requestDelay</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_width" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Width</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">The suggestion width.</label>
+      </helpLabels>
+      <fields>
+        <field>width</field>
+      </fields>
+    </widget>
+
+    <widget name="documentSuggestion_tab" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Tab</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The tab to select when clicking on the document link.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>tab</field>
+      </fields>
+    </widget>
+
+    <widget name="documentSuggestion_subTab" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Sub Tab</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The sub tab to select when clicking on the document
+          link.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>subTab</field>
+      </fields>
+    </widget>
+
+    <widget name="documentSuggestion_pageProviderName" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Document page provider name</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The page provider that will be called to perform a
+          search for the suggestion. It must accept one parameter that will be
+          replaced by the suggestion input. Since 5.7, additional parameters set
+          on the page provider definition will also be taken into account (but
+          the suggestion input will still be used as the first implicit
+          parameter). If no name is defined, a default page provider is used.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>pageProviderName</field>
+      </fields>
+    </widget>
+
+    <widget name="documentSuggestion_minChars" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Minimum characters</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The minimal number of characters to type for the
+          suggestion to be active. Defaults to 3.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>minChars</field>
+      </fields>
+    </widget>
+
+    <widget name="documentSuggestion_frequency" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Frequency</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Delay (in seconds) before activating the suggestion
+          pop-up. Default value is 0.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>frequency</field>
+      </fields>
+    </widget>
+
+    <widget name="documentSuggestion_requestDelay" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Request delay</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The requestDelay attribute specifies an amount of time
+          in milliseconds for the request to wait in the queue before being sent
+          to the server. If a similar request is added to the queue before the
+          delay is over, the original request is removed from the queue and not
+          sent.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>requestDelay</field>
+      </fields>
+    </widget>
+
+    <widget name="documentSuggestion_width" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Width</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">The suggestion width.</label>
+      </helpLabels>
+      <fields>
+        <field>width</field>
+      </fields>
+    </widget>
+
+    <widget name="suggestion_orderable" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Orderable</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          This attribute controls the possibility to order the
+          selected items. Available since 5.6.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>orderable</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_hideSearchTypeText" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Hide Search Type Label</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          This attribute controls the possibility to hide the
+          search type label. Available since 5.7.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>hideSearchTypeText</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_displaySuggestionOnTop" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Display Suggestion On Top</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          This attribute controls the possibility to display the
+          suggestion
+          box on top of the search results. Available since 5.7.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>displaySuggestionOnTop</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_hideHelpLabel" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Hide Help Label</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          This attribute controls the possibility to hide the
+          help label. Available since 5.7.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>hideHelpLabel</field>
+      </fields>
+    </widget>
+
+    <widget name="ajaxReRender" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Ajax reRender</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Ajax rerender ids, separated by commas.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>ajaxReRender</field>
+      </fields>
+    </widget>
+
+    <widget name="actionsDisplay" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Actions Display</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          If set to 'buttons', actions will be displayed as
+          command
+          buttons. If set to 'links', actions will be displayed as
+          command links. If set to 'icons', actions will be displayed
+          as icons.
+          Else (default behaviour), actions will be
+          displayed as command links
+          and display their icons when
+          defined.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>actionsDisplay</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Icons and links (default)" itemValue="icons_links" />
+        <option itemLabel="Icons" itemValue="icons" />
+        <option itemLabel="Buttons" itemValue="buttons" />
+        <option itemLabel="Links" itemValue="links" />
+      </selectOptions>
+    </widget>
+
+    <widget name="formActionsDisplay" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Actions Display</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          If set to 'buttons', actions will be displayed as
+          command
+          buttons. If set to 'links', actions will be displayed as
+          command links. If set to 'icons', actions will be displayed
+          as icons.
+          Else (default behaviour), actions will be
+          displayed as command links
+          and display their icons when
+          defined.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>actionsDisplay</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Buttons (default)" itemValue="buttons" />
+        <option itemLabel="Icons and links" itemValue="icons_links" />
+        <option itemLabel="Icons" itemValue="icons" />
+        <option itemLabel="Links" itemValue="links" />
+      </selectOptions>
+    </widget>
+
+    <widget name="actions_headerStyleClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Header style class</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Style class for the header, displaying this
+          widget
+          label.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>headerStyleClass</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_styleClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Style class</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Style class for the global container div.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>styleClass</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_subStyleClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Sub style class</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Style class for div containing actions.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>subStyleClass</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_actionStyleClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Action style class</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Style class for each action link.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>actionStyleClass</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_addForm" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Add form</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          If set to true, actions will be surrounded
+          by a form,
+          so there should be no other surrounding form.
+          This property is useful
+          when fancybox actions need to open a
+          popup in another form. Available
+          since 5.7, defaults to false.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>addForm</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_useAjaxForm" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Use ajax actions</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          If set to true, actions will be performed
+          using ajax.
+          Note that sometimes, selection actions will
+          require you to reload the
+          whole page for other elements than
+          the content view to be re-rendered,
+          so using ajax will not
+          be user friendly in these cases. Available from
+          5.7, defaults to false.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>useAjaxForm</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_disableFiltered" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Disable filtered actions</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          If set to true, actions will appear as disabled if
+          they are supposed to be filtered (instead of not being displayed at
+          all). Available from 5.7, defaults to false.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>disableFiltered</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_category" type="selectOneResource">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Category</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The category of actions to use.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>category</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit_demo_preview">hidden</mode>
+      </widgetModes>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+      </properties>
+      <properties mode="any">
+        <property name="resourceName">actionCategories</property>
+      </properties>
+    </widget>
+
+    <widget name="actions_actionId" type="selectOneResource">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Action</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The action to display.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>actionId</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit_demo_preview">hidden</mode>
+      </widgetModes>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+      </properties>
+      <properties mode="any">
+        <property name="resourceName">actions</property>
+      </properties>
+    </widget>
+
+    <widget name="actions_overallDisplay" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Overall display</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Overall display of actions.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>overallDisplay</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Vertical block (default)" itemValue="" />
+        <option itemLabel="Horizontal block" itemValue="horizontal_block" />
+        <option itemLabel="Menu" itemValue="menu" />
+      </selectOptions>
+    </widget>
+
+    <widget name="actions_maxActionsNumber" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Maximum number of actions</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Integer indicating the maximum number of
+          actions to
+          display. When this limit is reached, other
+          actions are displayed in a
+          menu.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>maxActionsNumber</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_moreMenuLabel" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Label for the "more" menu</label>
+      </labels>
+      <fields>
+        <field>moreMenuLabel</field>
+      </fields>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="select_path_tree">
+      <configuration>
+        <sinceVersion>5.4.0</sinceVersion>
+        <title>Path tree</title>
+        <description>
+          Widget allowing to select one or more values from a Tree
+          constructed
+          from the navigation tree.
+
+          Set 'showAllDomains' property to
+          true if you want to be able to select
+          a path from an other domain than
+          the current one.
+        </description>
+        <categories>
+          <category>search</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/select_path_tree_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="singleUserSuggestion">
+      <configuration>
+        <title>Single user/group suggestion</title>
+        <sinceVersion>5.4.2</sinceVersion>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <categories>
+          <category>document</category>
+        </categories>
+        <properties>
+          <layouts mode="view">
+            <layout name="singleUserSuggestion_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_firstLabelField</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_secondLabelField</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_thirdLabelField</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_hideFirstLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_hideSecondLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_hideThirdLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_displayAction</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_displayEmailInSuggestion</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="singleUserSuggestion_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestionSearchType</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestionMaxSearchResults</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_minChars</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_frequency</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_requestDelay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_displayEmailInSuggestion</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/single_user_suggestion_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="multipleUsersSuggestion">
+      <configuration>
+        <title>Multiple users/groups suggestion</title>
+        <sinceVersion>5.4.2</sinceVersion>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <categories>
+          <category>document</category>
+        </categories>
+        <properties>
+          <layouts mode="view">
+            <layout name="multipleUsersSuggestion_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestionSearchType</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_firstLabelField</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_secondLabelField</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_thirdLabelField</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_hideFirstLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_hideSecondLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_hideThirdLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_displayEmailInSuggestion</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="multipleUsersSuggestion_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestionSearchType</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestionMaxSearchResults</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_minChars</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_frequency</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_requestDelay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_orderable</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_displayEmailInSuggestion</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_displaySuggestionOnTop</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_hideHelpLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_hideSearchTypeText</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/user_suggestion_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="multiplePrefixedUsersSuggestion">
+      <configuration>
+        <title>Multiple prefixed users/groups suggestion</title>
+        <sinceVersion>5.4.2</sinceVersion>
+        <supportedModes>
+          <mode>view</mode>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <categories>
+          <category>document</category>
+        </categories>
+        <properties>
+          <layouts mode="edit">
+            <layout
+              name="multiplePrefixedUsersSuggestion_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestionSearchType</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestionMaxSearchResults</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_minChars</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_frequency</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_requestDelay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_orderable</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_displaySuggestionOnTop</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_hideHelpLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_hideSearchTypeText</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/user_prefixed_suggestion_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="multipleDocumentsSuggestion">
+      <configuration>
+        <title>Multiple documents suggestion</title>
+        <sinceVersion>5.4.2</sinceVersion>
+        <supportedModes>
+          <mode>view</mode>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <categories>
+          <category>document</category>
+        </categories>
+        <properties>
+          <layouts mode="view">
+            <layout name="multipleDocumentsSuggestion_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_tab</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_subTab</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="multipleDocumentsSuggestion_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_pageProviderName</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_tab</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_subTab</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_minChars</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_frequency</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_requestDelay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_orderable</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/multiple_document_suggestion_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="singleDocumentSuggestion">
+      <configuration>
+        <title>Single document suggestion</title>
+        <sinceVersion>5.5</sinceVersion>
+        <supportedModes>
+          <mode>view</mode>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <categories>
+          <category>document</category>
+        </categories>
+        <properties>
+          <layouts mode="view">
+            <layout name="singleDocumentSuggestion_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_tab</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_subTab</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="singleDocumentSuggestion_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_tab</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_subTab</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_pageProviderName</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_minChars</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_frequency</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_requestDelay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_width</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/single_document_suggestion_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="title_and_permlink">
+      <configuration>
+        <sinceVersion>5.4.2</sinceVersion>
+        <title>Title and permanent link</title>
+        <description>
+          This widgets displays the document title with a permlink icon. If the
+          document is a version, the major and minor are displayed in
+          parenthesis.
+
+          One field is required :
+          <ul>
+            <li>an empty field to map the document</li>
+          </ul>
+
+          Since 5.5, it also displays the document header related actions.
+          They
+          must be contributed in one of the following categories:
+          <ul>
+            <li>DOCUMENT_HEADER_ACTIONS_LIST</li>
+            <li>DOCUMENT_HEADER_ACTIONS_LIST_HREF</li>
+          </ul>
+
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field></field>
+            <field>uid:major_version</field>
+            <field>uid:minor_version</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>document</category>
+        </categories>
+        <properties>
+          <layouts mode="any">
+            <layout name="title_and_permlink_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">localize</widget>
+                </row>
+              </rows>
+              <widget name="localize" type="checkbox">
+                <categories>
+                  <category>widgetTypeConf</category>
+                </categories>
+                <labels>
+                  <label mode="any">Localize</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Available since 5.7.1. Flag indicating that the title is localized.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>localize</field>
+                </fields>
+            </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/title_with_permlink_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="select_l10n_vocabulary_tree">
+      <configuration>
+        <sinceVersion>5.5</sinceVersion>
+        <title>Localized vocabulary tree</title>
+        <description>
+          Widget allowing to select one or more values in a tree
+          constructed
+          from a l10nvocabulary or l10nxvocabulary directory.
+        </description>
+        <categories>
+          <category>search</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <layouts mode="any">
+            <layout name="select_l10n_vocabulary_tree_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>directoryName</widget>
+                </row>
+                <row>
+                  <widget>directoryNameDemoPreview</widget>
+                </row>
+                <row>
+                  <widget>selectIdOnly</widget>
+                </row>
+                <row>
+                  <widget>keySeparator</widget>
+                </row>
+              </rows>
+              <widget name="directoryName" type="selectOneResource">
+                <labels>
+                  <label mode="any">Vocabulary</label>
+                </labels>
+                <fields>
+                  <field>directoryName</field>
+                </fields>
+                <widgetModes>
+                  <mode value="edit_demo_preview">hidden</mode>
+                </widgetModes>
+                <properties mode="any">
+                  <property name="resourceName">vocabularies</property>
+                </properties>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="directoryNameDemoPreview" type="text">
+                <labels>
+                  <label mode="any">Vocabulary</label>
+                </labels>
+                <fields>
+                  <field>directoryName</field>
+                </fields>
+                <widgetModes>
+                  <mode value="any">hidden</mode>
+                  <mode value="edit_demo_preview">view</mode>
+                </widgetModes>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="selectIdOnly" type="checkbox">
+                <labels>
+                  <label mode="any">Select id only</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, only the entries id are
+                    stored instead of
+                    their path.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>selectIdOnly</field>
+                </fields>
+              </widget>
+              <widget name="keySeparator" type="text">
+                <labels>
+                  <label mode="any">Key separator</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The string used to separate directory keys
+                    in the value.
+                    Defaults to "/".
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>keySeparator</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="select_l10n_vocabulary_tree_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>multiSelect</widget>
+                </row>
+                <row>
+                  <widget>displayObsoleteEntries</widget>
+                </row>
+                <row>
+                  <widget>ordering</widget>
+                </row>
+              </rows>
+              <widget name="multiSelect" type="checkbox">
+                <labels>
+                  <label mode="any">Multiple selection</label>
+                </labels>
+                <fields>
+                  <field>multiSelect</field>
+                </fields>
+              </widget>
+              <widget name="displayObsoleteEntries" type="checkbox">
+                <labels>
+                  <label mode="any">Display obsolete entries</label>
+                </labels>
+                <fields>
+                  <field>displayObsoleteEntries</field>
+                </fields>
+              </widget>
+              <widget name="ordering" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Sort criterion</label>
+                </labels>
+                <fields>
+                  <field>ordering</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="Label (default)" itemValue="label" />
+                  <option itemLabel="Ordering" itemValue="ordering" />
+                  <option itemLabel="Id" itemValue="id" />
+                </selectOptions>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/select_l10n_vocabulary_tree_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="contentViewWithForms">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>Content view</title>
+        <description>
+          This widget displays a content view, with forms inside it.
+
+          Note that usually layouts do not contain any forms, but are surrounded
+          by one, and nesting forms breaks the available actions. So you should
+          make sure there is no enclosing form around the layout, or around this
+          widget, when using it.
+        </description>
+        <categories>
+          <category>tab_designer</category>
+        </categories>
+        <containingForm>true</containingForm>
+        <handlingLabels>true</handlingLabels>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="contentView_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>contentViewName</widget>
+                </row>
+                <row>
+                  <widget>styleClass</widget>
+                </row>
+                <row>
+                  <widget>useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget>useAjaxPagination</widget>
+                </row>
+                <row>
+                  <widget>ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget>hideTopPaginationControls</widget>
+                </row>
+                <row>
+                  <widget>defaultPageSize</widget>
+                </row>
+                <row>
+                  <widget>showPageSizeSelector</widget>
+                </row>
+                <row>
+                  <widget>showRefreshCommand</widget>
+                </row>
+                <row>
+                  <widget>showFilterForm</widget>
+                </row>
+                <row>
+                  <widget>showSyndicationLinks</widget>
+                </row>
+                <row>
+                  <widget>showCSVExport</widget>
+                </row>
+                <row>
+                  <widget>showPDFExport</widget>
+                </row>
+                <row>
+                  <widget>foldable</widget>
+                </row>
+                <row>
+                  <widget>foldedByDefault</widget>
+                </row>
+                <!-- not exposed in studio for now -->
+                <row>
+                  <widget>foldableBoxStyleClass</widget>
+                </row>
+                <row>
+                  <widget>foldedIfEmpty</widget>
+                </row>
+                <row>
+                  <widget>hideEmpty</widget>
+                </row>
+                <row>
+                  <widget>contentViewIconPath</widget>
+                </row>
+                <!-- not sure this is a good idea: there are other forms in the template -->
+                <!--
+                  <row>
+                  <widget>removeForm</widget>
+                  </row>
+                -->
+              </rows>
+              <widget name="contentViewName" type="selectOneResource">
+                <labels>
+                  <label mode="any">Content View name</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The content view to display.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>contentViewName</field>
+                </fields>
+                <properties mode="any">
+                  <property name="resourceName">contentViews</property>
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="styleClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The given style class will be put in a "div"
+                    element around the content view.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>styleClass</field>
+                </fields>
+              </widget>
+              <widget name="useAjaxForm" type="checkbox">
+                <labels>
+                  <label mode="any">Use ajax actions</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, selection actions will be
+                    performed using ajax. Note that sometimes, selection actions
+                    will require you to reload the whole page for other elements
+                    than the content view to be re-rendered, so using ajax will
+                    not be user friendly in these cases. Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>useAjaxForm</field>
+                </fields>
+              </widget>
+              <widget name="useAjaxPagination" type="checkbox">
+                <labels>
+                  <label mode="any">Use ajax pagination</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, pagination actions (first,
+                    previous, next, last) actions will be performed using ajax.
+                    Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>useAjaxPagination</field>
+                </fields>
+              </widget>
+              <widget name="ajaxReRender" type="text">
+                <labels>
+                  <label mode="any">Ajax reRender</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The given ajax reRender ids will be added to
+                    the zones to
+                    reRender on some actions (page navigation,
+                    result layout
+                    selection, selection actions...). Available
+                    since 5.7.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>ajaxReRender</field>
+                </fields>
+              </widget>
+              <widget name="hideTopPaginationControls" type="checkbox">
+                <labels>
+                  <label mode="any">Show only bottom pagination controls</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, pagination actions (first,
+                    previous, next, last) actions will only be displayed below
+                    the results. Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>hideTopPaginationControls</field>
+                </fields>
+              </widget>
+              <widget name="defaultPageSize" type="int">
+                <labels>
+                  <label mode="any">Default page size</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The default page size to use instead of the
+                    value set on the content view definition.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>defaultPageSize</field>
+                </fields>
+              </widget>
+              <widget name="showPageSizeSelector" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Show page size selector</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean to show or hide the page size
+                    selector, overriding the value set on the content view
+                    definition.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>showPageSizeSelector</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="(Default value from content view configuration)"
+                    itemValue="" />
+                  <option itemLabel="No" itemValue="false" />
+                  <option itemLabel="Yes" itemValue="true" />
+                </selectOptions>
+              </widget>
+              <widget name="showRefreshCommand" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Show refresh command</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean to show or hide the refresh command,
+                    overriding the value set on the content view
+                    definition.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>showRefreshCommand</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="(Default value from content view configuration)"
+                    itemValue="" />
+                  <option itemLabel="No" itemValue="false" />
+                  <option itemLabel="Yes" itemValue="true" />
+                </selectOptions>
+              </widget>
+              <widget name="showFilterForm" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Show filter form</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean to show or hide the filter form,
+                    overriding the value set on the content view
+                    definition.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>showFilterForm</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="(Default value from content view configuration)"
+                    itemValue="" />
+                  <option itemLabel="No" itemValue="false" />
+                  <option itemLabel="Yes" itemValue="true" />
+                </selectOptions>
+              </widget>
+              <widget name="showSyndicationLinks" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Show syndication links</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean to show or hide syndication links,
+                    overriding the value set on the content view
+                    definition.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>showSyndicationLinks</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="(Default value from content view configuration)"
+                    itemValue="" />
+                  <option itemLabel="No" itemValue="false" />
+                  <option itemLabel="Yes" itemValue="true" />
+                </selectOptions>
+              </widget>
+              <widget name="showCSVExport" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Show CSV export</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean to show or hide the CSV export link,
+                    overriding the value set on the content view definition for
+                    every result layouts. Warning: the content view result
+                    layouts should be configured to handle a CSV export.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>showCSVExport</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="(Default value from content view configuration)"
+                    itemValue="" />
+                  <option itemLabel="No" itemValue="false" />
+                  <option itemLabel="Yes" itemValue="true" />
+                </selectOptions>
+              </widget>
+              <widget name="showPDFExport" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Show PDF export</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean to show or hide the PDF export link,
+                    overriding the value set on the content view definition for
+                    every result layouts. Warning: the content view result
+                    layouts should be configured to handle a CSV export.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>showPDFExport</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="(Default value from content view configuration)"
+                    itemValue="" />
+                  <option itemLabel="No" itemValue="false" />
+                  <option itemLabel="Yes" itemValue="true" />
+                </selectOptions>
+              </widget>
+              <widget name="foldable" type="checkbox">
+                <labels>
+                  <label mode="any">Make this content view foldable</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, the content view will be
+                    displayed in a box that can be folded if users would like to
+                    hide this content view content. Note that this state is not
+                    persisted. Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>foldable</field>
+                </fields>
+                <widgetModes>
+                  <mode value="view_reference">view</mode>
+                </widgetModes>
+              </widget>
+              <widget name="foldedByDefault" type="checkbox">
+                <labels>
+                  <label mode="any">Folded by default</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>foldedByDefault</field>
+                </fields>
+                <widgetModes>
+                  <mode value="view_reference">view</mode>
+                </widgetModes>
+              </widget>
+              <!-- not exposed in studio for now -->
+              <widget name="foldableBoxStyleClass" type="text">
+                <labels>
+                  <label mode="any">Foldable Box Style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The given style class will be used on the
+                    foldable box.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>foldableBoxStyleClass</field>
+                </fields>
+                <widgetModes>
+                  <mode value="any">hidden</mode>
+                  <mode value="view_reference">view</mode>
+                </widgetModes>
+              </widget>
+              <widget name="foldedIfEmpty" type="checkbox">
+                <labels>
+                  <label mode="any">Folded if empty</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>foldedIfEmpty</field>
+                </fields>
+                <widgetModes>
+                  <mode value="any">hidden</mode>
+                  <mode value="view_reference">view</mode>
+                </widgetModes>
+              </widget>
+              <widget name="hideEmpty" type="checkbox">
+                <labels>
+                  <label mode="any">Hide if empty</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean to hide the complete rendering when
+                    content view is empty
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>hideEmpty</field>
+                </fields>
+                <widgetModes>
+                  <mode value="any">hidden</mode>
+                  <mode value="view_reference">view</mode>
+                </widgetModes>
+              </widget>
+              <widget name="contentViewIconPath" type="text">
+                <labels>
+                  <label mode="any">Content icon path</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The icon to display instead of the value set
+                    on the content view definition.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>contentViewIconPath</field>
+                </fields>
+                <widgetModes>
+                  <mode value="any">hidden</mode>
+                  <mode value="view_reference">view</mode>
+                </widgetModes>
+              </widget>
+              <widget name="removeForm" type="checkbox">
+                <labels>
+                  <label mode="any">Remove form on content listing</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>removeForm</field>
+                </fields>
+                <widgetModes>
+                  <mode value="any">hidden</mode>
+                  <mode value="view_reference">view</mode>
+                </widgetModes>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/content_view_with_forms_widget.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="saveBox">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Save box</title>
+        <description>
+          <p>This widget displays a save box with one input for the title and
+            one button to save.</p>
+
+          <p>The input is mapped to the field of the widget.</p>
+
+          <p>It needs the action id as property "actionId" for
+            the "save" button.</p>
+        </description>
+        <categories>
+          <category>tab_designer</category>
+        </categories>
+        <handlingLabels>true</handlingLabels>
+        <supportedModes>
+          <mode>view</mode>
+          <mode>edit</mode>
+        </supportedModes>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/save_box_widget.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="toggleableLayoutWithForms">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>Toggleable form</title>
+        <description>
+          This widget displays a form layout which mode can be
+          toggled, with forms inside it.
+
+          Note that usually layouts do not contain
+          any forms, but are surrounded by one, and nesting forms breaks the
+          available actions. So you should make sure there is no enclosing form
+          around the layout, or around this widget, when using it.
+        </description>
+        <categories>
+          <category>tab_designer</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <containingForm>true</containingForm>
+        <handlingLabels>true</handlingLabels>
+        <supportedModes>
+          <mode>view</mode>
+          <mode>edit</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="toggleableLayoutViewWithForms_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>initialLayoutName</widget>
+                </row>
+                <row>
+                  <widget>toggledLayoutName</widget>
+                </row>
+                <row>
+                  <widget>styleClass</widget>
+                </row>
+                <row>
+                  <widget>canToggleMode</widget>
+                </row>
+                <row>
+                  <widget>hideDefaultActions</widget>
+                </row>
+                <row>
+                  <widget>additionalActionsCategory</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">formActionsDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">widgetsDisplay</widget>
+                </row>
+                <row>
+                  <widget>showEditOptions</widget>
+                </row>
+                <row>
+                  <widget>useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget>foldable</widget>
+                </row>
+                <row>
+                  <widget>foldedByDefault</widget>
+                </row>
+                <row>
+                  <widget>displayToggleActionInHeader</widget>
+                </row>
+                <row>
+                  <widget>initialActionLabel</widget>
+                </row>
+                <row>
+                  <widget>cancelActionLabel</widget>
+                </row>
+                <row>
+                  <widget>template</widget>
+                </row>
+              </rows>
+              <widget name="initialLayoutName" type="selectOneResource">
+                <labels>
+                  <label mode="any">Layout(s)</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The layout to display before toggling the
+                    mode. Also accepts a list of multiple layout names,
+                    separated by commas.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>initialLayoutName</field>
+                </fields>
+                <properties mode="any">
+                  <property name="resourceName">layouts</property>
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="toggledLayoutName" type="selectOneResource">
+                <labels>
+                  <label mode="any">Toggled layout(s)</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The layout to display after toggling the
+                    mode. Also accepts a list of multiple layout names,
+                    separated by commas. If not filled, defaults to the initial
+                    layout name(s).
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>toggledLayoutName</field>
+                </fields>
+                <properties mode="any">
+                  <property name="resourceName">layouts</property>
+                </properties>
+              </widget>
+              <widget name="template" type="selectOneResource">
+                <labels>
+                  <label mode="any">Template</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The layout template to use instead of the
+                    one already set
+                    on the layout(s) definition(s).
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>template</field>
+                </fields>
+                <properties mode="any">
+                  <property name="resourceName">layout_templates</property>
+                </properties>
+              </widget>
+              <widget name="styleClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The given style class will be put in a "div"
+                    element around the layout.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>styleClass</field>
+                </fields>
+              </widget>
+              <widget name="canToggleMode" type="text">
+                <labels>
+                  <label mode="any">Can toggle mode</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The boolean property to resolve when
+                    deciding whether the toggle button should be displayed or
+                    not. Defaults to an EL expression checking permission
+                    'Write' on the document. Examples: false,
+                    #{nxd:hasPermission(value, 'Write') and
+                    currentUser.isMemberOf('togglers_groups')}.
+                    Default
+                    expression used:
+                    #{webActions.checkFilter('canToggleLayoutToEditMode')}
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>canToggleMode</field>
+                </fields>
+              </widget>
+              <widget name="hideDefaultActions" type="checkbox">
+                <labels>
+                  <label mode="any">Hide default actions</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, actions from the default
+                    category 'EDIT_DOCUMENT_FORM' will not be displayed on the
+                    layout in toggled mode. Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>hideDefaultActions</field>
+                </fields>
+              </widget>
+              <widget name="additionalActionsCategory" type="text">
+                <labels>
+                  <label mode="any">Additional actions category</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The additional actions category to use when
+                    displaying the layout in toggled mode.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>additionalActionsCategory</field>
+                </fields>
+              </widget>
+              <widget name="showEditOptions" type="checkbox">
+                <labels>
+                  <label mode="any">Show edit options</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, additional edit options
+                    (like a textarea for comment to be visible in the document
+                    history) will be visible after the layout in toggled (edit)
+                    mode. Only visible if value bound to the layout is a
+                    document model. Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>showEditOptions</field>
+                </fields>
+              </widget>
+              <widget name="displayToggleActionInHeader" type="checkbox">
+                <labels>
+                  <label mode="any">Display toggle action in header</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true (and widget has a header,
+                    because it handles its label), actions will be displayed in
+                    the header. This includes the "toggle" action, as well as
+                    "save" actions. Only the "toggle" action is hidden from the
+                    rendering when it is displayed on top. "Save" actions are
+                    shown twice. Available since 5.7, defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>displayToggleActionInHeader</field>
+                </fields>
+              </widget>
+              <widget name="useAjaxForm" type="checkbox">
+                <labels>
+                  <label mode="any">Use ajax actions</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, actions will be performed
+                    using ajax. Note that sometimes, actions will require you to
+                    reload the whole page for other elements than the current
+                    zone to be re-rendered, so using ajax will not be user
+                    friendly in these cases. Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>useAjaxForm</field>
+                </fields>
+              </widget>
+              <widget name="initialActionLabel" type="text">
+                <labels>
+                  <label mode="any">Initial action label</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The initial action label to display.
+                    Defaults to 'action.view.modification' (Edit), is translated
+                    when the widget is translated.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>initialActionLabel</field>
+                </fields>
+              </widget>
+              <widget name="cancelActionLabel" type="text">
+                <labels>
+                  <label mode="any">Cancel action label</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The toggled action label to display.
+                    Defaults to 'command.cancel' (Cancel), is translated when
+                    the widget is translated.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>cancelActionLabel</field>
+                </fields>
+              </widget>
+              <widget name="foldable" type="checkbox">
+                <labels>
+                  <label mode="any">Make this content view foldable</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, the content view will be
+                    displayed in a box that can be folded if users would like to
+                    hide this content view content. Note that this state is not
+                    persisted. Available since 5.7, defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>foldable</field>
+                </fields>
+                <widgetModes>
+                  <mode value="view_reference">view</mode>
+                </widgetModes>
+              </widget>
+              <widget name="foldedByDefault" type="checkbox">
+                <labels>
+                  <label mode="any">Folded by default</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Available since 5.7, defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>foldedByDefault</field>
+                </fields>
+                <widgetModes>
+                  <mode value="view_reference">view</mode>
+                </widgetModes>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/toggleable_layout_with_forms_widget.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="actions">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>Actions</title>
+        <description>
+          <p>This widget displays actions.</p>
+          <p>
+            It needs the list of actions as property "actions".
+            <br />
+            Its bound value is used for actions with type "widget".
+          </p>
+        </description>
+        <categories>
+          <category>hidden</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="actions_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>actions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_overallDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_maxActionsNumber</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_moreMenuLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_addForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+              </rows>
+              <widget name="actions" type="actions">
+                <labels>
+                  <label mode="any">Actions</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The list of actions to display.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>actions</field>
+                </fields>
+                <widgetModes>
+                  <mode value="edit_demo_preview">hidden</mode>
+                </widgetModes>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/actions/actions_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="action">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Action</title>
+        <description>
+          <p>This widget displays an action.</p>
+          <p>
+            It needs the action as property "action".
+            <br />
+            Its bound value is used for actions with type "widget".
+            <br />
+            It can add a form around its button to handle actions with type
+            "fancybox" that would need a form in their opened fancybox content.
+          </p>
+        </description>
+        <categories>
+          <category>hidden</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="action_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>action</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_addForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+              </rows>
+              <widget name="action" type="action">
+                <labels>
+                  <label mode="any">Action</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The action to display.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>action</field>
+                </fields>
+                <widgetModes>
+                  <mode value="edit_demo_preview">hidden</mode>
+                </widgetModes>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/actions/action_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="currentDocumentActions">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Form actions</title>
+        <description>
+          <p>This widget displays actions filtered on the current document.</p>
+          <p>
+            It will display actions in the category given in the 'category'
+            property. The widget label and help label will be displayed above
+            the actions.
+          </p>
+          <p>
+            This widget requires to be surrounded by a form, so if it displays
+            fancybox actions for instance, their popup content cannot contain
+            another form.
+          </p>
+        </description>
+        <categories>
+          <category>tab_designer</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <containingForm>false</containingForm>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="currentDocumentActions_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">actions_category</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_overallDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_maxActionsNumber</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_moreMenuLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_disableFiltered</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/actions/current_document_actions_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="currentDocumentActionsWithForms">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Toolbar actions</title>
+        <description>
+          <p>This widget displays actions filtered on the current document, and
+            surrounds them by a form.</p>
+          <p>
+            It will display actions in the category given in the 'category'
+            property. The widget label and help label will be displayed above
+            the actions.
+          </p>
+          <p>
+            The fact that actions are surrounded by their own form makes it
+            possible to use fancybox actions for instance, whose popup content
+            would use a different form.
+          </p>
+        </description>
+        <categories>
+          <category>tab_designer</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <containingForm>true</containingForm>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="currentDocumentActionsWithForms_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">actions_category</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_overallDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_maxActionsNumber</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_moreMenuLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_disableFiltered</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/actions/current_document_actions_with_forms_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="currentDocumentAction">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Form action</title>
+        <description>
+          <p>This widget displays an action filtered on current document context</p>
+          <p>
+            It needs the action id as property "actionId".
+            <br />
+            Its bound value is used for actions with type "widget".
+          </p>
+          <p>
+            This widget requires to be surrounded by a form, so if it displays
+            fancybox actions for instance, their popup content cannot contain
+            another form.
+          </p>
+        </description>
+        <categories>
+          <category>tab_designer</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <containingForm>false</containingForm>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="currentDocumentAction_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">actions_actionId</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_addForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_disableFiltered</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/actions/current_document_action_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="currentDocumentActionWithForms">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Toolbar action</title>
+        <description>
+          <p>This widget displays an action filtered on current document context</p>
+          <p>
+            It needs the action id as property "actionId".
+            <br />
+            Its bound value is used for actions with type "widget".
+          </p>
+          <p>
+            The fact that action is surrounded by its own form makes it
+            possible to use fancybox actions for instance, whose popup content
+            would use a different form.
+          </p>
+        </description>
+        <categories>
+          <category>tab_designer</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <containingForm>true</containingForm>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="currentDocumentActionWithForms_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">actions_actionId</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_addForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_disableFiltered</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/actions/current_document_action_with_forms_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="tabs">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Tabs</title>
+        <description>
+          <p>This widget displays tabs.</p>
+          <p>
+            It needs the list of actions as property "actions".
+            <br />
+            Its bound value is used for actions with type "widget".
+          </p>
+        </description>
+        <categories>
+          <category>hidden</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="tabs_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>actions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_addForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_styleClass</widget>
+                </row>
+              </rows>
+              <widget name="actions" type="actions">
+                <labels>
+                  <label mode="any">Actions</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The list of actions to display.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>actions</field>
+                </fields>
+                <widgetModes>
+                  <mode value="edit_demo_preview">hidden</mode>
+                </widgetModes>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/actions/tabs_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="currentDocumentTabsWithForms">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Document tabs</title>
+        <description>
+          <p>This widget displays tabs filtered on current document context</p>
+          <p>
+            It needs the action id as property "actionId".
+            <br />
+            Its bound value is used for actions with type "widget".
+          </p>
+          <p>
+            The fact that action is surrounded by its own form makes it
+            possible to use fancybox actions for instance, whose popup content
+            would use a different form.
+          </p>
+        </description>
+        <categories>
+          <category>tab_designer</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <containingForm>true</containingForm>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="currentDocumentTabsWithForms_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">actions_category</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_styleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/actions/current_document_tabs_with_forms_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="userVirtualGroups">
+      <configuration>
+        <sinceVersion>5.5</sinceVersion>
+        <title>User virtual groups</title>
+        <description>
+          This widget displays the user virtual groups.
+        </description>
+        <categories>
+          <category>configuration_not_ready</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/user_vgoups_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="datetimeRange">
+      <configuration>
+        <title>Datetime range</title>
+        <documentation>
+          Widget used to search on a date range.
+          Two fields are required:
+          <ul>
+            <li>A field to map the min date</li>
+            <li>A field to map the max date</li>
+          </ul>
+        </documentation>
+        <sinceVersion>5.7</sinceVersion>
+        <categories>
+          <category>search</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>date</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <layouts mode="view">
+            <layout name="daterange_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">datetime_pattern</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_timeZone</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="daterange_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_format</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_showsTime</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_locale</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_timeZone</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_triggerImg</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_triggerLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_triggerStyleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/date_range_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="path">
+      <configuration>
+        <title>Path</title>
+        <documentation>
+          The path widget displays a popup browser in the document
+          hierarchy.
+        </documentation>
+        <sinceVersion>5.7</sinceVersion>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+            <type>path</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>path</type>
+          </defaultTypes>
+        </fields>
+        <categories>
+          <category>document</category>
+        </categories>
+        <properties>
+          <layouts mode="edit">
+            <layout name="path_widget_type_properties">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">/widgets/search_path_widget.xhtml</property>
+    </widgetType>
+
+    <widgetType name="dropZone">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Drop zone</title>
+        <description>
+          <p>
+            The dropZone widget wraps its subwidgets with a div acting as
+            the
+            drop zone to be able to drop files inside.
+          </p>
+        </description>
+        <categories>
+          <category>decoration</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <acceptingSubWidgets>true</acceptingSubWidgets>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/drop_zone_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="document_edit_comment" type="textarea">
+      <labels>
+        <label mode="any">label.editComment</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">label.editComment.tooltip</label>
+      </helpLabels>
+      <translated>true</translated>
+      <fields>
+        <field>contextData['request/comment']</field>
+      </fields>
+      <widgetModes>
+        <mode value="create">hidden</mode>
+      </widgetModes>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="user">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>username</widget>
+        </row>
+        <row>
+          <widget>firstname</widget>
+        </row>
+        <row>
+          <widget>lastname</widget>
+        </row>
+        <row>
+          <widget>company</widget>
+        </row>
+        <row>
+          <widget>email</widget>
+        </row>
+        <row>
+          <widget>firstPassword</widget>
+        </row>
+        <row>
+          <widget>secondPassword</widget>
+        </row>
+        <row>
+          <widget>passwordMatcher</widget>
+        </row>
+        <row>
+          <widget>groups</widget>
+        </row>
+        <row>
+          <widget>vgroups</widget>
+        </row>
+      </rows>
+      <widget name="username" type="text">
+        <labels>
+          <label mode="any">username</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">username</field>
+        </fields>
+        <widgetModes>
+          <mode value="create">edit</mode>
+          <mode value="editPassword">hidden</mode>
+          <mode value="any">view</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="validator">
+            #{userManagementActions.validateUserName}
+          </property>
+        </properties>
+      </widget>
+      <widget name="firstname" type="text">
+        <labels>
+          <label mode="any">firstName</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">firstName</field>
+        </fields>
+        <widgetModes>
+          <mode value="editPassword">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="lastname" type="text">
+        <labels>
+          <label mode="any">lastName</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">lastName</field>
+        </fields>
+        <widgetModes>
+          <mode value="editPassword">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="company" type="text">
+        <labels>
+          <label mode="any">company</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">company</field>
+        </fields>
+        <widgetModes>
+          <mode value="editPassword">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="email" type="text">
+        <labels>
+          <label mode="any">email</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">email</field>
+        </fields>
+        <widgetModes>
+          <mode value="editPassword">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="firstPassword" type="secret">
+        <labels>
+          <label mode="any">password</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">password</field>
+        </fields>
+        <widgetModes>
+          <mode value="create">edit</mode>
+          <mode value="editPassword">edit</mode>
+          <mode value="any">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="secondPassword" type="secret">
+        <labels>
+          <label mode="any">password.verify</label>
+        </labels>
+        <translated>true</translated>
+        <widgetModes>
+          <mode value="create">edit</mode>
+          <mode value="editPassword">edit</mode>
+          <mode value="any">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="passwordMatcher" type="template">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>true</translated>
+        <widgetModes>
+          <mode value="create">edit</mode>
+          <mode value="editPassword">edit</mode>
+          <mode value="any">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <!-- XXX: depends on firstPassword and secondPassword widget names -->
+          <property name="template">
+            /widgets/user_password_validation_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="groups" type="template">
+        <labels>
+          <label mode="any">label.userManager.userGroups</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">groups</field>
+        </fields>
+        <widgetModes>
+          <mode value="edit">
+            #{nxu:test(webActions.checkFilter('usersGroupsManagementAccess'),
+            'edit', 'view')}
+          </mode>
+          <mode value="editPassword">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="any">
+          <property name="template">
+            /widgets/user_suggestion_widget_template.xhtml
+          </property>
+          <property name="hideVirtualGroups">true</property>
+          <property name="userSuggestionSearchType">GROUP_TYPE</property>
+        </properties>
+      </widget>
+      <widget name="vgroups" type="userVirtualGroups">
+        <labels>
+          <label mode="any">label.userManager.userVirtualGroups</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">username</field>
+        </fields>
+        <widgetModes>
+          <mode value="create">hidden</mode>
+          <mode value="editPassword">hidden</mode>
+        </widgetModes>
+      </widget>
+    </layout>
+
+    <layout name="group">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>group_name</widget>
+        </row>
+        <row>
+          <widget>group_label</widget>
+        </row>
+        <row>
+          <widget>group_members</widget>
+        </row>
+        <row>
+          <widget>group_subgroups</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="user_group_suggestion">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>selection</widget>
+        </row>
+      </rows>
+      <widget name="selection" type="template">
+        <!-- add empty field to map layout value directly -->
+        <fields>
+          <field></field>
+        </fields>
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <properties mode="any">
+          <property name="template">
+            /widgets/user_suggestion_widget_template.xhtml
+          </property>
+        </properties>
+
+      </widget>
+    </layout>
+
+    <layout name="user_group_prefixed_suggestion">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>selection</widget>
+        </row>
+      </rows>
+      <widget name="selection" type="template">
+        <!-- add empty field to map layout value directly -->
+        <fields>
+          <field></field>
+        </fields>
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <properties mode="any">
+          <property name="template">
+            /widgets/user_prefixed_suggestion_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="document_content_filter">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>search_title</widget>
+        </row>
+        <row>
+          <widget>search_modified_min</widget>
+          <widget>search_modified_max</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="document_edit_form_options">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>document_edit_comment</widget>
+        </row>
+      </rows>
+    </layout>
+
+  </extension>
+
+</component>

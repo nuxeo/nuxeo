@@ -1,0 +1,125 @@
+<ui:composition
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+<div class="#{widgetProperty_styleClass}">
+
+<nxu:set var="actionStyleClass"
+  value="#{widgetProperty_actionStyleClass}"
+  cache="true">
+
+  <c:if test="#{not empty widgetProperty_actions}">
+
+    <nxu:set var="idPrefix" value="#{widget.id}_"
+      cache="true">
+      <nxu:valueHolder id="#{idPrefix}clickedActionIdHolder"
+        var="clickedActionId">
+
+        <a4j:outputPanel id="#{widget.id}_panel" layout="block">
+
+          <div class="#{widgetProperty_subStyleClass}">
+            <c:choose>
+              <c:when test="#{widgetProperty_overallDisplay == 'horizontal_block'}">
+                <div class="widgetPanel actionsWidgetPanel">
+                  <nxu:repeat var="action" items="#{widgetProperty_actions}"
+                    begin="0"
+                    end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
+                    step="1">
+                    <ui:decorate template="/widgets/incl/form_template.xhtml">
+                      <ui:param name="addForm" value="#{widgetProperty_addForm}" />
+                      <ui:param name="formId" value="#{nxu:jsfTagIdEscape(widget.id)}_#{nxu:jsfTagIdEscape(action.id)}_form" />
+                      <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm and action.properties.ajaxSupport}" />
+                      <ui:param name="formStyleClass" value="displayI subWidgetForm" />
+                      <ui:define name="form_template_content">
+                        <ui:decorate template="/incl/action/action_template.xhtml">
+                          <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+                          <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
+                        </ui:decorate>
+                      </ui:define>
+                    </ui:decorate>
+                  </nxu:repeat>
+
+                  <ui:include src="./actions_more_menu.xhtml" />
+
+                </div>
+              </c:when>
+
+              <c:when test="#{widgetProperty_overallDisplay == 'menu'}">
+                <ul>
+                  <nxu:repeat var="action" items="#{widgetProperty_actions}"
+                    begin="0"
+                    end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
+                    step="1">
+                    <li class="#{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
+                      <ui:decorate template="/widgets/incl/form_template.xhtml">
+                        <ui:param name="addForm" value="#{widgetProperty_addForm}" />
+                        <ui:param name="formId" value="#{nxu:jsfTagIdEscape(widget.id)}_#{nxu:jsfTagIdEscape(action.id)}_form" />
+                        <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm and action.properties.ajaxSupport}" />
+                        <ui:param name="formStyleClass" value="displayI subWidgetForm" />
+                        <ui:define name="form_template_content">
+                          <ui:decorate template="/incl/action/action_template.xhtml">
+                            <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+                            <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
+                          </ui:decorate>
+                        </ui:define>
+                      </ui:decorate>
+                    </li>
+                  </nxu:repeat>
+                </ul>
+
+                <ui:include src="./actions_more_menu.xhtml" />
+              </c:when>
+
+              <!-- TODO: add rollover menu? -->
+
+              <c:otherwise>
+                <nxu:repeat var="action" items="#{widgetProperty_actions}"
+                  begin="0"
+                  end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
+                  step="1">
+                  <div class="widgetPanel actionsWidgetPanel">
+                    <ui:decorate template="/widgets/incl/form_template.xhtml">
+                      <ui:param name="addForm" value="#{widgetProperty_addForm}" />
+                      <ui:param name="formId" value="#{nxu:jsfTagIdEscape(widget.id)}_#{nxu:jsfTagIdEscape(action.id)}_form" />
+                      <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm and action.properties.ajaxSupport}" />
+                      <ui:param name="formStyleClass" value="subWidgetForm" />
+                      <ui:define name="form_template_content">
+                        <ui:decorate template="/incl/action/action_template.xhtml">
+                          <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+                          <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
+                        </ui:decorate>
+                      </ui:define>
+                    </ui:decorate>
+                  </div>
+                </nxu:repeat>
+
+                <ui:include src="./actions_more_menu.xhtml" />
+
+              </c:otherwise>
+
+            </c:choose>
+
+          </div>
+
+          <div class="clear" />
+
+        </a4j:outputPanel>
+
+        <nxu:repeat var="action" items="#{widgetProperty_actions}">
+          <ui:include src="/incl/action/generic_after_action_template.xhtml" />
+        </nxu:repeat>
+
+      </nxu:valueHolder>
+    </nxu:set>
+
+  </c:if>
+
+</nxu:set>
+</div>
+
+</ui:composition>

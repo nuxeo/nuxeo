@@ -1,0 +1,148 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j" id="#{widget.id}">
+
+<c:set var="keySeparator" value="#{nxu:test(!empty widgetProperty_keySeparator, widgetProperty_keySeparator, '/')}" />
+
+<c:if test="#{widget.mode != 'edit'}">
+
+  <c:if test="#{!widgetProperty_multiSelect and not empty field}">
+    <h:outputText value="#{vocabularyTreeActions.getLabelFor(widgetProperty_directoryName, field, keySeparator)}" />
+  </c:if>
+
+  <c:if test="#{widgetProperty_multiSelect and not empty field}">
+    <c:forEach var="item" items="#{field}">
+      <div><h:outputText value="#{vocabularyTreeActions.getLabelFor(widgetProperty_directoryName, item, keySeparator)}" /></div>
+    </c:forEach>
+  </c:if>
+
+</c:if>
+
+<c:if test="#{widget.mode == 'edit'}">
+
+  <script type="text/javascript">
+    jQuery(document).ready(function() {
+      var config = {
+        'width'              : '50%',
+        'height'             : '75%',
+        'autoScale'          : false,
+        'autoDimensions'     : false,
+        'transitionIn'       : 'none',
+        'transitionOut'      : 'none',
+        'type'               : 'inline',
+        'enableEscapeButton' : true,
+        'centerOnScroll'     : true
+      };
+      jQuery("##{widget.id}_openPopup").fancybox(config);
+
+      if (jQuery('.#{widget.id}_inputHidden').val()) {
+        jQuery("##{widget.id}_openPopup").hide();
+      } else {
+        jQuery(".#{widget.id}_deleteSingleValueLink").hide();
+      }
+    });
+
+    function set#{widget.id}SingleValue(label, path) {
+      jQuery('##{widget.id}_openPopup').hide();
+      jQuery('.#{widget.id}_outputText').text(label);
+      jQuery('.#{widget.id}_inputHidden').val(path);
+      jQuery('.#{widget.id}_deleteSingleValueLink').show();
+      jQuery.fancybox.close();
+      return false;
+    }
+
+    function remove#{widget.id}SingleValue() {
+      jQuery('##{widget.id}_openPopup').show();
+      jQuery('.#{widget.id}_outputText').text('');
+      jQuery('.#{widget.id}_inputHidden').val('');
+      jQuery('.#{widget.id}_deleteSingleValueLink').hide();
+      return false;
+    }
+
+  </script>
+
+  <a id="#{widget.id}_openPopup" href="##{widget.id}_tree" class="button smallButton">#{messages['command.add']}</a>
+
+  <div style="display:none">
+    <div id="#{widget.id}_tree">
+     <h3><h:outputText
+      value="#{messages['label.search.popup.title']}"/></h3>
+      <rich:tree
+        id="#{widget.id}_treeId"
+        iconExpanded="/icons/toggle_minus.png"
+        iconCollapsed="/icons/toggle_plus.png">
+        <rich:recursiveTreeNodesAdaptor
+          id="#{widget.id}_recursiveTreeNodesAdaptorId"
+          roots="#{vocabularyTreeActions.getRoots(widgetProperty_directoryName, widgetProperty_displayObsoleteEntries, keySeparator, widgetProperty_ordering)}"
+          nodes="#{node.children}"
+          var="node">
+          <rich:treeNode
+            id="#{widget.id}_treeNodeId"
+            highlightedClass="treeNodeHighlightedClass"
+            selectedClass="treeNodeSelectedClass">
+            <a4j:commandLink immediate="true"
+              id="#{widget.id}_addMultipleValueLink"
+              actionListener="#{treeWidgetActions.addSelectionToList}"
+              styleClass="treeLink" reRender="#{widget.id}_multipleValuePanel"
+              rendered="#{widgetProperty_multiSelect}">
+              <f:param name="selectionListId" value="#{widget.id}_list" />
+              <f:param name="selectedPath" value="#{widgetProperty_selectIdOnly ? node.id : node.path}" />
+              <h:outputText value="#{node.label}" />
+            </a4j:commandLink>
+            <a4j:commandLink
+              id="#{widget.id}_setSingleValueLink"
+              immediate="true"
+              onclick="set#{widget.id}SingleValue('#{widgetProperty_selectIdOnly ? node.label : vocabularyTreeActions.getLabelFor(widgetProperty_directoryName, node.path, keySeparator)}', '#{widgetProperty_selectIdOnly ? node.id : node.path}')"
+              rendered="#{!widgetProperty_multiSelect}"
+              styleClass="treeLink">
+              <h:outputText value="#{node.label}" />
+            </a4j:commandLink>
+          </rich:treeNode>
+        </rich:recursiveTreeNodesAdaptor>
+      </rich:tree>
+    </div>
+  </div>
+
+  <a4j:outputPanel id="#{widget.id}_multipleValuePanel"
+    layout="block"
+    ajaxRendered="true"
+    rendered="#{widgetProperty_multiSelect}">
+    <table class="dataInput thin">
+      <nxu:inputList id="#{widget.id}_list" value="#{field}"
+        model="model">
+        <tr>
+          <td>
+          <p><h:outputText value="#{vocabularyTreeActions.getLabelFor(widgetProperty_directoryName, model.rowData, keySeparator)}" /></p>
+          </td>
+          <td><a4j:commandLink immediate="true"
+            actionListener="#{editableListBean.performAction}"
+            id="#{widget.id}_delete" reRender="#{widget.id}_multipleValuePanel"
+            bypassUpdates="true">
+            <img src="#{contextPath}/icons/action_delete_mini_over.png" alt="Delete" />
+            <f:param name="for" value="#{widget.id}_list" />
+            <f:param name="index" value="#{model.rowIndex}" />
+            <f:param name="type" value="remove" />
+          </a4j:commandLink></td>
+        </tr>
+      </nxu:inputList>
+    </table>
+  </a4j:outputPanel>
+
+  <f:subview id="#{widget.id}_singleValuePanel" rendered="#{!widgetProperty_multiSelect}">
+    <h:outputText id="#{widget.id}_outputText" styleClass="#{widget.id}_outputText"
+      value="#{vocabularyTreeActions.getLabelFor(widgetProperty_directoryName, field, keySeparator)}" />
+    <a4j:commandLink
+      id="#{widget.id}_deleteSingleValueLink"
+      immediate="true"
+      onclick="remove#{widget.id}SingleValue()"
+      styleClass="#{widget.id}_deleteSingleValueLink">
+      <img src="#{contextPath}/icons/action_delete_mini_over.png" alt="Delete" />
+    </a4j:commandLink>
+    <h:inputText id="#{widget.id}_inputHidden" styleClass="#{widget.id}_inputHidden" style="display:none" value="#{field}" />
+  </f:subview >
+</c:if>
+
+</div>
