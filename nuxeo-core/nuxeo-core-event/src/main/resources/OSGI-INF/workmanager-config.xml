@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.work.config" version="1.0">
+
+  <documentation>
+    The default queue configuration for the work manager.
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="default">
+      <name>Default queue</name>
+      <maxThreads>4</maxThreads>
+    </queue>
+  </extension>
+
+</component>
