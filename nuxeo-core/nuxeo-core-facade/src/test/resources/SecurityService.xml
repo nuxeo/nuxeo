@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.security.SecurityService"
+  version="1.0">
+
+  <implementation class="org.nuxeo.ecm.core.security.SecurityService" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.security.SecurityService" />
+    <provide interface="org.nuxeo.ecm.core.api.security.PermissionProvider" />
+    <provide interface="org.nuxeo.ecm.core.security.SecurityPolicyService" />
+  </service>
+
+  <documentation>
+    The security service is responsible to check the permission on a
+    repository. Permission check will be usually forwarded to the
+    security manager defined on the repository. This may change later.
+    <p />
+    It holds a permission provider that defines the list of available permission
+    names and how they are combined into groups of permissions.
+    <p />
+    It also defines which permissions are high level permissions that are to be
+    managed through the end user interface and in which order they should be
+    display in management menus.
+    <p />
+    It also holds a security policy service that can stack custom policies.
+    These policies can override default permission checks based on acls set on
+    the document and/or its parents.
+
+    @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+    @author <a href="mailto:og@nuxeo.com">Olivier Grisel</a>
+    @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.security.SecurityService" />
+
+  <extension-point name="permissions">
+
+    <documentation>
+      Extension point to register permission definitions or override
+      existing permissions.
+      <p />
+
+      Example to define a single atomic permissions that are not meant
+      to be displayed in the rights management screen of folders:
+      <code>
+        <permission name="Browse" />
+        <permission name="ReadVersion" />
+        <permission name="ReadProperties" />
+        <permission name="ReadChildren" />
+        <permission name="ReadLifeCycle" />
+        <permission name="ReviewParticipant" />
+      </code>
+
+      <p />
+
+      Example to define a compound permission that holds many related
+      atomic permissions into a single high level (role-like)
+      permission:
+      <code>
+        <permission name="Read">
+          <include name="Browse" />
+          <include name="ReadVersion" />
+          <include name="ReadProperties" />
+          <include name="ReadChildren" />
+          <include name="ReadLifeCycle" />
+          <include name="ReviewParticipant" />
+        </permission>
+      </code>
+
+      Note that each of the included permissions should have been
+      previously registered with their on &lt;permission/&gt;
+      declaration.
+
+      <p />
+
+      It is later possible to override that definition in another
+      contribution to that extension-point to add a new permission
+      'CustomPerm' and remove 'ReviewParticipant':
+      <code>
+        <permission name="CustomPerm" />
+
+        <permission name="Read">
+          <include name="CustomPerm" />
+          <remove name="ReviewParticipant" />
+        </permission>
+      </code>
+
+      <p />
+
+      Eventually the permissions declaration also accept 'alias' tags to
+      handle backward compatibility with deprecated permissions:
+      <code>
+        <permission name="ReadVersion">
+          <!-- The Version permission is deprecated
+            since it's name is ambiguous, use
+            ReadPermission instead -->
+          <alias name="Version" />
+        </permission>
+      </code>
+
+      NB: the alias feature is parsed by the extension point but the
+      underlying SecurityManager implementation does not leverage it
+      yet.
+
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.security.PermissionDescriptor" />
+  </extension-point>
+
+  <extension-point name="permissionsVisibility">
+
+    <documentation>
+      Extension point to register permission visibility in user
+      interface or override existing settings.
+      <p />
+
+      Example to define the default list of permissions that are
+      manageable through the UI screens:
+      <code>
+        <visibility>
+          <item show="true" order="10">Read</item>
+          <item show="true" order="50">ReadWrite</item>
+          <item show="true" order="100">Everything</item>
+        </visibility>
+      </code>
+
+      This list of options items will be displayed if no type specific
+      settings are registered.
+
+      <p />
+      Example to define the default list of permissions that are
+      specific to the Section document type:
+      <code>
+        <visibility type="Section">
+          <item show="true" order="10">Read</item>
+          <item show="true" order="100">Everything</item>
+        </visibility>
+      </code>
+
+      Note: the 'show' attribute defaults to 'true' and the 'order'
+      attribute defaults to '0'.
+
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.core.security.PermissionVisibilityDescriptor" />
+  </extension-point>
+
+  <extension-point name="policies">
+
+    <documentation>
+      Extension point to register custom security policies or override existing
+      policies.
+      <p />
+
+      Policies are checked in the order they are defined. They can grant or deny
+      access, in case following policies - as well as the default security check
+      relying on the acp set on the document - will be ignored. They can also
+      return an undefined access, in case following policy checks will continue.
+
+      <p />
+
+      Example to define a custom policy :
+      <code>
+        <policy name="lock"
+          class="org.nuxeo.ecm.core.security.LockSecurityPolicy" order="10" />
+      </code>
+
+      The class used has to implement the
+      org.nuxeo.ecm.core.security.SecurityPolicy interface.
+
+      <p />
+
+      It is later possible to override that definition in another contribution
+      to that extension-point to disable or override a policy:
+      <code>
+        <policy name="lock" enabled="false" />
+
+        <policy name="lock"
+          class="org.nuxeo.ecm.core.security.LockSecurityPolicy" order="20" />
+      </code>
+
+      <p />
+
+      @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.security.SecurityPolicyDescriptor" />
+  </extension-point>
+
+</component>
