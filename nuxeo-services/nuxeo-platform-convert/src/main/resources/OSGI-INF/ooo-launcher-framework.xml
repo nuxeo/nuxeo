@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.convert.ooolauncher.OOoLauncherComponent">
+  <implementation
+          class="org.nuxeo.ecm.platform.convert.ooolauncher.OOoLauncherComponent" />
+
+  <documentation>
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.convert.ooolauncher.OOoLauncherService" />
+    <provide
+      interface="org.nuxeo.ecm.platform.convert.ooolauncher.OOoConnectionManager" />
+  </service>
+
+  <extension-point name="oooLauncherConfig">
+  <documentation>
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.convert.ooolauncher.OOoLauncherDescriptor" />
+  </extension-point>
+
+</component>
