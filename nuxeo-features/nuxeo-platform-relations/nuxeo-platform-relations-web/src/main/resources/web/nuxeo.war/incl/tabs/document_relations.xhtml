@@ -1,0 +1,166 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <h:outputText value="#{messages['label.relation.noRelation']}"
+      rendered="#{(empty currentDocumentIncomingRelations)
+      and (empty currentDocumentOutgoingRelations)}"/>
+
+  <c:if test="#{nxd:hasPermission(currentDocument, 'Write')}">
+    <ui:include src="/create_relation.xhtml" />
+  </c:if>
+
+<script type="text/javascript">
+  function toggleLayers(more_block, more_items) {
+    var objMoreBlock = document.getElementById(more_block).style;
+    var objMoreItems = document.getElementById(more_items).style;
+    if(objMoreBlock.display == "block")
+      objMoreBlock.display = "none";
+    if(objMoreItems.display == "none")
+      objMoreItems.display = "block";
+  }
+</script>
+
+<h:form rendered="#{not empty currentDocumentOutgoingRelations}">
+
+  <h3><h:outputText value="#{messages['title.relation.outgoing']}" /></h3>
+
+  <h:dataTable var="statement"
+    value="#{currentDocumentOutgoingRelations}"
+    styleClass="dataOutput"
+    rowClasses="dataRowEven, dataRowOdd"
+    columnClasses="relationPredicateColumn, relationObjectColumn, relationCommentColumn, relationCommentColumn, relationCommentColumn, relationActionsColumn">
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.relation.predicate']}" />
+      </f:facet>
+      <nxdir:directoryEntryOutput
+        value="#{statement.predicate.uri}"
+        directoryName="predicates"
+        localize="true" />
+    </h:column>
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.relation.object']}" />
+      </f:facet>
+      <ui:include src="/relation_node_template.xhtml">
+        <ui:param name="statement" value="#{statement}" />
+        <ui:param name="node" value="#{statement.objectInfo}" />
+      </ui:include>
+    </h:column>
+    <h:column>
+      <f:facet name="header">
+        <h:outputText
+          value="#{messages['label.content.header.created']}" />
+      </f:facet>
+      <h:outputText value="#{statement.creationDate}">
+        <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+          timeZone="#{timeZone}" />
+      </h:outputText>
+    </h:column>
+    <h:column>
+      <f:facet name="header">
+        <h:outputText
+          value="#{messages['label.content.header.author']}" />
+      </f:facet>
+      <h:outputText value="#{statement.author}" />
+    </h:column>
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.relation.comment']}" />
+      </f:facet>
+      <h:panelGroup>
+        <h:outputText rendered="#{30 > fn:length(statement.comment)}"
+          value="#{statement.comment}" />
+        <f:subview rendered="#{fn:length(statement.comment) > 30}">
+          <div id="#{statement}_show_more" style="display: block;">
+            <h:outputText value="#{fn:substring(statement.comment,0,30)}" />
+            <a href="javascript:toggleLayers('#{statement}_show_more', '#{statement}_more')">+</a>
+          </div>
+          <div id="#{statement}_more" style="display: none;">
+            <h:outputText value="#{statement.comment}" />
+          </div>
+        </f:subview>
+      </h:panelGroup>
+    </h:column>
+    <h:column rendered="#{nxd:hasPermission(currentDocument, 'Write')}">
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.operations']}" />
+      </f:facet>
+      <h:commandLink value="#{messages['command.delete']}"
+        action="#{relationActions.deleteStatement(statement)}" />
+    </h:column>
+  </h:dataTable>
+</h:form>
+
+<h:form rendered="#{not empty currentDocumentIncomingRelations}">
+
+  <h3><h:outputText value="#{messages['title.relation.incoming']}" /></h3>
+
+  <h:dataTable var="statement"
+    value="#{currentDocumentIncomingRelations}"
+    styleClass="dataOutput"
+    rowClasses="dataRowEven, dataRowOdd"
+    columnClasses="relationPredicateColumn, relationObjectColumn, relationCommentColumn, relationCommentColumn, relationCommentColumn">
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.relation.predicate']}" />
+      </f:facet>
+      <nxdir:directoryEntryOutput
+        value="#{statement.predicate.uri}"
+        directoryName="inverse_predicates"
+        localize="true" />
+    </h:column>
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.relation.object']}" />
+      </f:facet>
+      <ui:include src="/relation_node_template.xhtml">
+        <ui:param name="statement" value="#{statement}" />
+        <ui:param name="node" value="#{statement.subjectInfo}" />
+      </ui:include>
+    </h:column>
+    <h:column>
+      <f:facet name="header">
+        <h:outputText
+          value="#{messages['label.content.header.created']}" />
+      </f:facet>
+      <h:outputText value="#{statement.creationDate}">
+        <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+          timeZone="#{timeZone}" />
+      </h:outputText>
+    </h:column>
+    <h:column>
+      <f:facet name="header">
+        <h:outputText
+          value="#{messages['label.content.header.author']}" />
+      </f:facet>
+      <h:outputText value="#{statement.author}" />
+    </h:column>
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.relation.comment']}" />
+      </f:facet>
+      <h:panelGroup>
+        <h:outputText rendered="#{30 > fn:length(statement.comment)}"
+          value="#{statement.comment}" />
+        <f:subview rendered="#{fn:length(statement.comment) > 30}">
+          <div id="#{statement}_show_more" style="display: block;">
+            <h:outputText value="#{fn:substring(statement.comment,0,30)}" />
+            <a href="javascript:toggleLayers('#{statement}_show_more', '#{statement}_more')">+</a>
+          </div>
+          <div id="#{statement}_more" style="display: none;">
+            <h:outputText value="#{statement.comment}" />
+          </div>
+        </f:subview>
+      </h:panelGroup>
+    </h:column>
+  </h:dataTable>
+</h:form>
+
+</div>

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.pictures.tiles.api.adapters">
+  <documentation>
+    Defines Picture Tiles document adapter
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService"
+    point="adapters">
+    <adapter class="org.nuxeo.ecm.platform.pictures.tiles.api.adapter.PictureTilesAdapter"
+      factory="org.nuxeo.ecm.platform.pictures.tiles.api.adapter.PictureTilesAdapterFactory" />
+  </extension>
+
+</component>
