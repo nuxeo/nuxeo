@@ -1,0 +1,45 @@
+<c:if test="true" xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <c:if test="#{not empty widgetProperty_action}">
+
+    <a4j:outputPanel id="#{widget.id}_panel" layout="block">
+
+      <nxu:set var="action" value="#{widgetProperty_action}"
+        cache="true">
+      <nxu:set var="idPrefix" value="#{widget.id}_"
+        cache="true">
+      <nxu:set var="clickedActionIdHolder" value="#{idPrefix}clickedActionIdHolder"
+        cache="true">
+      <nxu:set var="formAdded" value="#{widgetProperty_addForm}" cache="true">
+        <nxu:valueHolder id="#{clickedActionIdHolder}"
+          var="clickedActionId">
+
+          <ui:decorate template="/incl/action/action_template.xhtml">
+            <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+            <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
+            <ui:param name="addForm" value="#{widgetProperty_addForm}" />
+            <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
+            <ui:param name="formStyleClass" value="displayI subWidgetForm" />
+          </ui:decorate>
+
+          <ui:include src="/incl/action/generic_mode_action_template.xhtml">
+            <ui:param name="mode" value="after_view" />
+          </ui:include>
+
+        </nxu:valueHolder>
+      </nxu:set>
+      </nxu:set>
+      </nxu:set>
+      </nxu:set>
+
+    </a4j:outputPanel>
+
+  </c:if>
+
+</c:if>

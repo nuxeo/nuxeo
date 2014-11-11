@@ -1,0 +1,67 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+<c:if test="false">
+ Template rendering pagination control actions using ajax.
+
+ Parameters :
+  - contentIdToBeReRendered: mandatory id(s) of components to re-render. if
+    empty, actions will not be displayed.
+</c:if>
+
+<c:if test="#{not empty contentIdToBeReRendered}">
+
+<a4j:region>
+  <h:panelGroup
+    layout="block" styleClass="pageNavigationControls"
+    rendered="#{provider.nextPageAvailable or provider.previousPageAvailable}">
+
+    <a4j:commandButton action="#{provider.rewind}"
+                     alt="#{messages['command.navigation.rewind']}"
+                     image="/icons/navigation_first.png"
+                     reRender="#{contentIdToBeReRendered}" >
+      <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
+    </a4j:commandButton>
+    <a4j:commandButton action="#{provider.previous}"
+                     alt="#{messages['command.navigation.previous']}"
+                     image="/icons/navigation_previous.png"
+                     reRender="#{contentIdToBeReRendered}" >
+      <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
+    </a4j:commandButton>
+
+    <h:panelGroup styleClass="currentPageStatus">
+      <h:outputText value="#{provider.currentPageStatus}"/>
+    </h:panelGroup>
+
+    <a4j:commandButton action="#{provider.next}"
+                     alt="#{messages['command.navigation.next']}"
+                     image="/icons/navigation_next.png"
+                     reRender="#{contentIdToBeReRendered}" >
+      <f:attribute name="disabled" value="#{not provider.nextPageAvailable}"/>
+    </a4j:commandButton>
+
+    <a4j:commandButton action="#{provider.last}"
+                     alt="#{messages['command.navigation.fastforward']}"
+                     image="/icons/navigation_last.png"
+                     reRender="#{contentIdToBeReRendered}" >
+      <f:attribute name="disabled" value="#{not provider.lastPageAvailable}"/>
+    </a4j:commandButton>
+
+    <a4j:status>
+      <f:facet name="start">
+        <h:graphicImage value="/img/standart_waiter.gif" />
+      </f:facet>
+      <f:facet name="stop">
+        <h:graphicImage value="/icons/icon_spacer.gif" />
+      </f:facet>
+    </a4j:status>
+
+  </h:panelGroup>
+
+
+</a4j:region>
+</c:if>
+
+</div>

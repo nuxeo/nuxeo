@@ -1,0 +1,63 @@
+<c:if xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  test="#{contentView != null}">
+
+<c:if test="false">
+Needed parameters:
+ - contentView: the content view instance, mandatory
+ - contentViewRenderId the unique identifier used in main
+   content view template
+
+Optional parameters used to override the content view definition when not
+empty:
+ - showPageSizeSelector
+</c:if>
+
+<nxu:set var="finalShowPageSizeSelector"
+  value="#{nxu:test(empty showPageSizeSelector, contentView.showPageSizeSelector, showPageSizeSelector)}">
+  <c:if test="#{finalShowPageSizeSelector}">
+
+    #{contentViewActions.setCurrentContentView(contentView)}
+    <c:if test="#{contentView.useGlobalPageSize}">
+      <c:set var="pageSizeBinding" value="#{contentViewActions.currentGlobalPageSize}" />
+    </c:if>
+    <c:if test="#{not contentView.useGlobalPageSize}">
+      <c:set var="pageSizeBinding" value="#{contentView.currentPageSize}" />
+    </c:if>
+
+    <span class="contentViewUpperAction">
+      <a4j:form id="contentViewGlobalPageSizeFrom_#{contentViewRenderId}"
+        ajaxSubmit="true">
+
+        <span class="contentViewPageSelectorDesc">
+          <h:outputText value="#{messages['label.contentview.pageSize']}" />
+        </span>
+        <h:selectOneMenu value="#{pageSizeBinding}"
+          id="contentViewPageSizeSelector"
+          styleClass="langSelect"
+          onchange="Element.next(this).firstChild.click();">
+          <f:convertNumber />
+          <f:selectItem itemValue="5" itemLabel="5" />
+          <f:selectItem itemValue="10" itemLabel="10" />
+          <f:selectItem itemValue="20" itemLabel="20" />
+          <f:selectItem itemValue="30" itemLabel="30" />
+          <f:selectItem itemValue="40" itemLabel="40" />
+          <f:selectItem itemValue="50" itemLabel="50" />
+        </h:selectOneMenu>
+        <span style="display: none;">
+          <a4j:commandButton value="submit"
+            reRender="#{contentIdToBeReRendered}" />
+        </span>
+
+      </a4j:form>
+    </span>
+
+  </c:if>
+</nxu:set>
+
+</c:if>
