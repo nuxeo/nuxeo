@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXPlatform
+Bundle-SymbolicName: org.nuxeo.ecm.platform
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Bundle-Category: web
+Require-Bundle: org.nuxeo.ecm.platform.api
+Export-Package: org.nuxeo.ecm.platform.cache.client
+Nuxeo-Component: OSGI-INF/service-platform-contrib.xml
