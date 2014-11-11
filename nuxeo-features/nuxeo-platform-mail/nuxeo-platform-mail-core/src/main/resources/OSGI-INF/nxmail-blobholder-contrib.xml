@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.mail.core.blobholder">
+
+  <extension
+    target="org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterComponent"
+    point="BlobHolderFactory">
+    <blobHolderFactory name="mailMessage" docType="MailMessage"
+      class="org.nuxeo.ecm.platform.mail.adapter.MailMessageBlobHolderfactory" />
+  </extension>
+
+</component>

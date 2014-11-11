@@ -1,0 +1,36 @@
+<project name="integration-test"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <property name="out.dir" value="${maven.project.build.directory}" />
+  <unzip dest="${out.dir}/" overwrite="false">
+    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
+  </unzip>
+  <import file="${out.dir}/nuxeo-ftest.xml" />
+  <!--<property name="nuxeo.home" value="${out.dir}/tomcat-${test.name}" />-->
+  <!-- Make Launcher JVM check permissive -->
+  <property name="launcher.debug" value="-Djvmcheck=nofail" />
+
+
+  <!-- Instruction for installing the MP to be tested -->
+  <property name="mp.install"
+            value="file:${out.dir}/${maven.project.artifactId}-${maven.project.version}.zip" />
+  <!-- Override default prepare-environment target to make it download your MP -->
+  <target name="prepare-environment"
+          depends="_init,prepare-db,prepare-tomcat,prepare-jboss">
+  </target>
+
+
+  <target name="download" unless="no.download">
+    <delete failonerror="false" dir="${nuxeo.home}" />
+    <unzip dest="${nuxeo.home}/">
+      <artifact:resolveFile key="${groupId}:${artifactId}:${nuxeo.tested.version}:zip:${classifier}" />
+      <cutdirsmapper dirs="1" />
+    </unzip>
+  </target>
+
+</project>
