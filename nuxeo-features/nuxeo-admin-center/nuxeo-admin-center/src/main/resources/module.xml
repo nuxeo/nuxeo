@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<module name="connectClientRoot" root-type="connectClientRoot"
+  path="/connectClient" extends="base">
+</module>
