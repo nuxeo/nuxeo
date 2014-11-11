@@ -1,0 +1,27 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"    
+    xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <script type="text/javascript">
+  function confirmDeleteDocuments() {
+      return confirm("#{messages['label.documents.confirmDeleteDocuments']}");
+  }
+  </script>
+  <!-- <script type="text/javascript"  src="#{baseURL}nxthemes-lib/jquery.js"/>
+    <script type="text/javascript"  src="#{baseURL}scripts/contextmenu.js"/> -->
+    <script type="text/javascript"  src="#{baseURL}scripts/default-contextmenu-actions.js"/>
+    <script type="text/javascript"  src="#{baseURL}scripts/custom-contextmenu-actions.js"/>
+
+    <div style="display: none;" class="contextMenu" id="popupMenu">
+  <ul>
+   <nxu:dataList var="action" layout="simple"
+       value="#{popupHelper.unfiltredPopupActions}" >
+          <li id="ctxMenu_#{action.id}" action="#{action.link}">
+            <nxu:graphicImage value="#{action.icon}"/>
+            <h:outputText value=" #{messages[action.label]}" />
+          </li>
+  </nxu:dataList>
+  </ul>
+</div>
+</div>

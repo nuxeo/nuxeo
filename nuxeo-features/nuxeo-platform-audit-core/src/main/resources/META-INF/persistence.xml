@@ -1,0 +1,16 @@
+<persistence>
+  <persistence-unit name="NXAudit">
+    <jta-data-source>java:/nxaudit-logs</jta-data-source>
+    <class>org.nuxeo.ecm.platform.audit.api.ExtendedInfo</class>
+    <class>org.nuxeo.ecm.platform.audit.api.ExtendedInfo$StringInfo</class>
+    <class>org.nuxeo.ecm.platform.audit.api.ExtendedInfo$BooleanInfo</class>
+    <class>org.nuxeo.ecm.platform.audit.api.ExtendedInfo$DoubleInfo</class>
+    <class>org.nuxeo.ecm.platform.audit.api.ExtendedInfo$LongInfo</class>
+    <class>org.nuxeo.ecm.platform.audit.api.ExtendedInfo$DateInfo</class>
+    <class>org.nuxeo.ecm.platform.audit.api.ExtendedInfo$BlobInfo</class>
+    <class>org.nuxeo.ecm.platform.audit.api.LogEntry</class>
+    <properties>
+      <property name="hibernate.hbm2ddl.auto">update</property>
+    </properties>
+  </persistence-unit>
+</persistence>
