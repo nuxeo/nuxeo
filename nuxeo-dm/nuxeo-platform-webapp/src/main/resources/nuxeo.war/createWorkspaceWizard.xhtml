@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  >
+
+  <ui:define name="page title">
+    <h:outputText value="#{nuxeoApplicationName} - #{messages['title.create.document']}" />
+  </ui:define>
+
+  <ui:define name="body">
+
+    <h3>
+      <h:outputText value="#{messages['title.create.workspace']} " />
+    </h3>
+
+    <ui:include src="/incl/message_banner.xhtml" />
+
+    <h:panelGroup id="wizard">
+      <a4j:include viewId="/wizards/createWorkspace/create_workspace.xhtml"/>
+      </h:panelGroup>
+
+  </ui:define>
+
+</nxthemes:composition>
