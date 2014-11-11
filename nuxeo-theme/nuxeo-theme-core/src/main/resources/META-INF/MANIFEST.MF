@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXThemes core
+Bundle-SymbolicName: org.nuxeo.theme.core;singleton:=true
+Bundle-Vendor: Chalmers
+Bundle-Localization: bundle
+Bundle-Category: web
+Nuxeo-Component: OSGI-INF/nxthemes-core-service.xml,OSGI-INF/nxthemes-core-contrib.xml
