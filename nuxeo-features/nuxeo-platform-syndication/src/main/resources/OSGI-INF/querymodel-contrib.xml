@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.restpack.RestpackQueryModels">
+
+   <extension
+    target="org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService"
+    point="model">
+
+    <queryModel name="SIMPLE_SEARCH_PATH">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:fulltext LIKE ? AND
+        ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isCheckedInVersion = 0 AND ecm:path STARTSWITH ?
+      </pattern>
+      <sortable value="true" defaultSortColumn="dc:title"
+        defaultSortAscending="true"/>
+      <max>10</max>
+    </queryModel>
+
+    <queryModel name="RELEVANT_DOCUMENTS">
+      <pattern>
+        SELECT * FROM Document
+        WHERE ecm:mixinType != 'Folderish'
+          AND ecm:mixinType != 'HiddenInNavigation'
+          AND ecm:isCheckedInVersion = 0
+          AND ecm:isProxy = 0
+          AND ecm:currentLifeCycleState != 'deleted'
+          AND ecm:uuid IN ?
+      </pattern>
+      <sortable value="true" defaultSortColumn="dc:modified"
+        defaultSortAscending="false" />
+      <max>5</max>
+    </queryModel>
+
+  </extension>
+
+</component>

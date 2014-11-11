@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+    version="1.0">
+
+  <service>
+    <provide
+        interface="org.nuxeo.ecm.core.search.api.client.SearchService"/>
+  </service>
+
+  <documentation>Core service that deals with searching.
+    @version 1.0
+    @author Julien Anguenot
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.search.service.SearchServiceImpl"/>
+
+  <extension-point name="searchEngineBackend">
+    <documentation>Extension point allowing the contributions of search engine plugin
+      implementation.
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.core.search.backend.SearchEngineBackendDescriptor"/>
+  </extension-point>
+
+  <extension-point name="resource">
+    <documentation>Extension point allowing the contributions of indexing configuration
+      per schema.
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceDescriptor"/>
+  </extension-point>
+
+  <extension-point name="indexableDocType">
+    <documentation>Extension point allowing the contributions of mappings from docType to
+      indexable resources names.
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.IndexableDocTypeDescriptor"/>
+  </extension-point>
+
+  <extension-point name="fullTextField">
+    <documentation>Extension point allowing the contributions full text index
+      definition.
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.FulltextFieldDescriptor"/>
+  </extension-point>
+
+  <extension-point name="indexingEvent">
+    <documentation>Extension point allowing the contributions of indexing
+      event definitions.
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.core.search.api.events.IndexingEventDescriptor"/>
+  </extension-point>
+
+  <extension-point name="blobExtractor">
+    <documentation>Extension point allowing the contributions of fulltext blob
+      extractors.
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.core.search.api.indexing.resources.configuration.blobs.BlobExtractorDescriptor"/>
+  </extension-point>
+
+  <extension-point name="resourceType">
+    <documentation>Extension point allowing the contributions of indexing resource
+      type.
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.core.search.api.indexing.resources.configuration.ResourceTypeDescriptor"/>
+  </extension-point>
+
+</component>
