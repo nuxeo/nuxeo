@@ -1,0 +1,79 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core">
+
+
+ <h2><h:outputText value="#{messages[adminsubtab.sysinfo.userinfo.title]}" /></h2>
+
+<a4j:outputPanel id="userEventsListing">
+
+ <h:form>
+<h:outputText value="#{messages['adminsubtab.sysinfo.userinfo.timerange']}" /> : 
+  <h:selectOneListbox class="dataInputText" size="1"
+                value="#{systemInfo.selectedTimeRange}"
+                 onchange="Element.next(this).firstChild.click();">
+
+                <nxu:selectItems
+                  value="#{systemInfo.timeRanges}"
+                  var="itype"
+                  itemValue="#{itype.value}"
+                  itemLabel="#{messages[itype.label]}" />
+              </h:selectOneListbox>
+                <div style="display: none;">
+              <a4j:commandButton value="submit"  reRender="userEventsListing" />
+          </div>
+
+  </h:form>
+
+  <h:form>
+  <center>
+          <a4j:commandLink value="#{messages['admcommand.audit.prevPage']}" actionListener="#{systemInfo.prevPage()}"  reRender="userEventsListing" />
+           -- <h:outputText value="#{messages['adminsubtab.sysinfo.userinfo.page']}" />: <h:outputText value="#{systemInfo.getCurrentAuditPage()}"/> --
+          <a4j:commandLink value="#{messages['admcommand.audit.nextPage']}" actionListener="#{systemInfo.nextPage()}"  reRender="userEventsListing" />
+  </center>
+  </h:form>
+
+  <nxu:dataTable id="dataTable" value="#{userLoginEvents}" var="row"
+      rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput">
+
+
+      <!--  Date -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.event.date']}"/>
+        </f:facet>
+        <h:outputText value="#{row.eventDate}">
+            <f:convertDateTime type="both" dateStyle="medium" timeStyle="medium"/>
+        </h:outputText>
+      </nxu:column>
+
+      <!--  Id -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.event.id']}"/>
+        </f:facet>
+        <h:outputText value="#{row.eventId}"/>
+      </nxu:column>
+
+      <!--  principal -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.event.principal']}"/>
+        </f:facet>
+        <h:outputText value="#{row.principalName}"/>
+      </nxu:column>
+
+      <!--  comment -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.event.comment']}"/>
+        </f:facet>
+        <h:outputText value="#{row.comment}"/>
+      </nxu:column>
+  </nxu:dataTable>
+
+</a4j:outputPanel>
+</div>
