@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.work.service" version="1.0">
+
+  <documentation>
+    The WorkManager executes Work instances asynchronously.
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.work.api.WorkManager" />
+  </service>
+
+  <implementation class="org.nuxeo.ecm.core.work.WorkManagerImpl" />
+
+  <extension-point name="queues">
+    <documentation>
+      Defines the characteristics of work queues:
+      <code>
+        <queue id="myqueue">
+          <name>My Queue</name>
+          <maxThreads>4</maxThreads>
+          <capacity>100</capacity>
+          <clearCompletedAfterSeconds>300</clearCompletedAfterSeconds>
+          <category>somecategory1</category>
+          <category>somecategory2</category>
+        </queue>
+      </code>
+      - id is the queue id.
+
+      - name is the human-readable name.
+
+      - maxThreads maximum number of worker threads (default 4).
+
+      - capacity when specified make the queue bounded, the scheduling of
+      new work is blocking when the queue is full (default unlimited).
+
+      - clearCompletedAfterSeconds (default 3600) is the delay after which completed work
+       may be automatically cleared from its queue. 0 means never.
+
+      - category is a list of Work categories that this queue will receive.
+      For event listeners work, the category is the listener name (or its simple class name).
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.work.api.WorkQueueDescriptor" />
+  </extension-point>
+
+  <extension-point name="implementation">
+    <documentation>
+      Defines the implementation of the queuing mechanism:
+      <code>
+        <queuing class="org.nuxeo.ecm.core.work.redis.WorkQueuingRedis"/>
+      </code>
+      The class must be a subclass of org.nuxeo.ecm.core.work.WorkQueuing.
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.work.api.WorkQueuingImplDescriptor" />
+  </extension-point>
+
+</component>
