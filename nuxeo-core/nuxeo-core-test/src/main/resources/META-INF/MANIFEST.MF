@@ -1,0 +1,30 @@
+Export-Package: org.nuxeo.ecm.core.test,
+ org.nuxeo.ecm.core.test.annotations
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: Nuxeo Core Test Framework
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-Vendor: Nuxeo SAS
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Bundle-Description: Nuxeo Core: Testing framewok
+Bundle-License: http://www.gnu.org/copyleft/lesser.txt
+Bundle-DocURL: http://www.nuxeo.com/en
+Bundle-SymbolicName: org.nuxeo.ecm.core.test
+Import-Package: com.google.inject,
+ com.google.inject.binder,
+ org.apache.commons.logging,
+ org.junit,
+ org.junit.runner,
+ org.junit.runner.notification,
+ org.junit.runners,
+ org.junit.runners.model,
+ org.nuxeo.ecm.core.event,
+ org.nuxeo.ecm.core.storage.sql;core=split,
+ org.nuxeo.ecm.core.test,
+ org.nuxeo.ecm.core.test.annotations,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.test.runner,
+ org.osgi.framework
+Require-Bundle: org.nuxeo.ecm.core
