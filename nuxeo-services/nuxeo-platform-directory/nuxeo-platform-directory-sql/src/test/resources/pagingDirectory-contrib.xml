@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.pagingDirectories">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="pagingschema" src="sqldirectoryschema/pagingschema.xsd"/>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+             point="directories">
+
+    <directory name="pagingDirectory">
+
+      <schema>pagingschema</schema>
+
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+
+      <table>pagingTest</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>test-paging.csv</dataFile>
+      <createTablePolicy>always</createTablePolicy>
+
+    </directory>
+
+  </extension>
+
+</component>
