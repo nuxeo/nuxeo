@@ -1,0 +1,245 @@
+<assembly>
+
+  <zipEntrySet id="base-template">
+    <artifact>
+      org.nuxeo.ecm.distribution:nuxeo-distribution-base:${project.version}:zip
+    </artifact>
+  </zipEntrySet>
+
+  <zipEntrySet id="archetype">
+    <artifact>
+      org.nuxeo.ecm.webengine:nuxeo-webengine-core:${nuxeo.webengine.version}:jar
+    </artifact>
+    <includes>
+      <include>Archetype.class</include>
+    </includes>
+  </zipEntrySet>
+
+  <fileSet id="template">
+    <directory>src/main/resources/core</directory>
+  </fileSet>
+
+  <fileSet id="platform-template" profile="platform">
+    <directory>src/main/resources/platform
+    </directory>
+  </fileSet>
+
+  <fileSet id="webengine-template" profile="webengine">
+    <directory>src/main/resources/webengine
+    </directory>
+  </fileSet>
+
+  <fileSet id="theme-template" profile="theme">
+    <directory>src/main/resources/theme</directory>
+  </fileSet>
+
+
+  <artifactSet id="bundles">
+    <artifacts>
+      <!-- group, name and version can be parameterized using pom properties -->
+      <!--
+        also works by not giving the version - if the version is managed it will
+        be guessed
+      -->
+      <!-- only if profile jca enabled -->
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-jca"
+        profile="jca" />
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core" />
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-persistence" />
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-convert" />
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-convert-api" />
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-convert-plugins" />
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-event" />
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-storage-sql" />
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-storage-sql-extensions" />
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-storage-sql-ra" />
+
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-web-common" />
+      <!-- needed for UserIdentificationInfo - must be moved in web-common -->
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-api" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-login" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-dublincore" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-content-template-manager" />
+    </artifacts>
+  </artifactSet>
+
+  <!-- only if platform profile enabled -->
+  <artifactSet id="platform-bundles" profile="platform">
+    <artifacts>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-types-api" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-types-core" />
+
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-comment" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-comment-api" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-comment-core" />
+
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-directory-core" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-directory-api" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-directory-core" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-directory-sql" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-directory-types-contrib" />
+
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-relations-default-config" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-relations-api" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-relations-core" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-relations-core-listener" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-relations-jena-plugin" />
+
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-usermanager-api" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-usermanager-core" />
+
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-versioning-api" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-versioning-core" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-audit-api" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-audit-core" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-el" />
+    </artifacts>
+  </artifactSet>
+
+  <artifactSet id="webengine-bundles" profile="webengine">
+    <artifacts>
+      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-core"
+        version="${nuxeo.webengine.version}" />
+      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-admin"
+        version="${nuxeo.webengine.version}" />
+      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-ui"
+        version="${nuxeo.webengine.version}" />
+      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-base"
+        version="${nuxeo.webengine.version}" />
+      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-sites"
+        version="${nuxeo.webengine.version}" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-rendering"
+        version="${nuxeo.features.version}" />
+    </artifacts>
+  </artifactSet>
+
+  <artifactSet id="theme-bundles" profile="theme">
+    <artifacts>
+      <artifact group="org.nuxeo.theme" name="nuxeo-theme-core"
+        version="${nuxeo.theme.version}" />
+      <artifact group="org.nuxeo.theme" name="nuxeo-theme-fragments"
+        version="${nuxeo.theme.version}" />
+      <artifact group="org.nuxeo.theme" name="nuxeo-theme-html"
+        version="${nuxeo.theme.version}" />
+      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-theme-webengine"
+        version="${nuxeo.webengine.version}" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-theme-editor"
+        version="${nuxeo.features.version}" />
+    </artifacts>
+  </artifactSet>
+
+  <artifactSet id="third-party-libs">
+    <artifacts>
+      <artifact group="commons-beanutils" name="commons-beanutils" />
+      <artifact group="commons-io" name="commons-io" />
+      <artifact group="commons-fileupload" name="commons-fileupload" />
+      <artifact group="commons-lang" name="commons-lang" />
+      <artifact group="commons-codec" name="commons-codec" />
+      <artifact group="org.freemarker" name="freemarker" version="2.3.11" />
+      <artifact group="net.sf.json-lib" name="json-lib" version="2.2.1"
+        classifier="jdk15" />
+      <artifact group="cup" name="java-cup" />
+      <artifact group="net.sf.ezmorph" name="ezmorph" />
+      <artifact group="net.sf.opencsv" name="opencsv" version="1.7" />
+      <artifact group="org.codehaus.plexus" name="plexus-utils" />
+      <artifact group="org.apache.derby" name="derby" />
+      <!--
+        <artifact group="hibernate" name="hibernate3"
+        version="3.2.1.ga-NXP-3881"/> <artifact group="org.hibernate"
+        name="hibernate-annotations" version="3.2.1.ga" />
+      -->
+      <artifact group="org.hibernate" name="hibernate" />
+      <artifact group="org.hibernate" name="hibernate-annotations" />
+      <artifact group="org.slf4j" name="slf4j-api" />
+      <artifact group="org.slf4j" name="slf4j-log4j12" />
+      <artifact group="org.apache.lucene" name="lucene-core" />
+      <artifact group="org.apache.lucene" name="lucene-analyzers" />
+      <artifact group="commons-collections" name="commons-collections" />
+      <artifact group="concurrent" name="concurrent" />
+      <artifact group="com.sun.jersey" name="jersey-core" version="1.1.5" />
+      <artifact group="com.sun.jersey" name="jersey-server" version="1.1.5" />
+      <artifact group="javax.ws.rs" name="jsr311-api" version="1.1.1" />
+      <artifact group="javax.mail" name="mail" version="1.4" />
+      <artifact group="org.apache.poi" name="ooxml-schemas" />
+      <artifact group="org.apache.poi" name="poi" />
+      <artifact group="org.apache.poi" name="poi-ooxml" />
+      <artifact group="org.apache.poi" name="poi-scratchpad" />
+      <artifact group="org.apache" name="xmlbeans" />
+      <artifact group="com.sun.xml" name="relaxngDatatype" />
+      <artifact group="org.wikimodel" name="wem" />
+      <artifact group="com.hp.hpl.jena" name="jena" />
+      <artifact group="javassist" name="javassist" version="3.6"/>
+      <artifact group="com.h2database" name="h2" />
+
+      <artifact group="javax.ejb" name="ejb-api" />
+      <artifact group="javax.servlet" name="servlet-api" />
+
+    </artifacts>
+  </artifactSet>
+
+  <artifactSet id="third-party-el-libs" profile="el">
+    <artifacts>
+      <artifact group="javax.el" name="el-ri" />
+      <artifact group="javax.el" name="el-api" />
+    </artifacts>
+  </artifactSet>
+
+  <artifactSet id="third-party-jpa-libs" profile="jpa">
+    <artifacts>
+      <artifact group="antlr" name="antlr" />
+      <artifact group="cglib" name="cglib-nodep" />
+      <artifact group="javax.persistence" name="persistence" />
+      <artifact group="javax.transaction" name="jta" />
+      <artifact group="org.hibernate" name="hibernate-entitymanager" />
+    </artifacts>
+  </artifactSet>
+
+  <artifactSet id="third-party-theme-libs" profile="theme">
+    <artifacts>
+      <artifact group="net.sourceforge.cssparser" name="cssparser" />
+      <artifact group="org.w3c" name="sac" />
+      <artifact group="org.dojotoolkit" name="custom_rhino" />
+    </artifacts>
+  </artifactSet>
+
+  <assemble>
+    <set>base-template</set>
+    <set>template</set>
+    <set>webengine-template</set>
+    <set>platform-template</set>
+    <set>platform-audit-template</set>
+    <set>theme-template</set>
+    <outputFile>/</outputFile>
+  </assemble>
+
+  <assemble>
+    <set>third-party-libs</set>
+    <set>third-party-el-libs</set>
+    <set>third-party-jpa-libs</set>
+    <set>third-party-theme-libs</set>
+    <outputFile>lib</outputFile>
+  </assemble>
+
+  <assemble>
+    <set>bundles</set>
+    <set>platform-bundles</set>
+    <set>webengine-bundles</set>
+    <set>theme-bundles</set>
+    <outputFile>bundles</outputFile>
+  </assemble>
+
+  <!-- remove nxshell scripts -->
+  <assemble>
+    <delete>true</delete>
+    <file>nxclient.sh</file>
+    <file>nxclient.cmd</file>
+  </assemble>
+
+  <assemble>
+    <set>archetype</set>
+    <outputFile>extras/archetype</outputFile>
+  </assemble>
+
+</assembly>
+
