@@ -1,0 +1,13 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <ui:composition template="/view_user_template.xhtml">
+    <ui:param name="currentUserSubTab" value="view" />
+
+    <ui:define name="mainContent">
+      <nxl:layout name="user" mode="view" value="#{userManagerActions.selectedUser}" />
+    </ui:define>
+
+  </ui:composition>
+  
+</div>
