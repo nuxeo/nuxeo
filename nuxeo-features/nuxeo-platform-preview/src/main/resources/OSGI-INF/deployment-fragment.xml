@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<fragment>
+
+  <extension target="application#MODULE">
+
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+
+  </extension>
+
+  <install>
+    <!--  Unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+
+  </install>
+
+
+</fragment>
+
