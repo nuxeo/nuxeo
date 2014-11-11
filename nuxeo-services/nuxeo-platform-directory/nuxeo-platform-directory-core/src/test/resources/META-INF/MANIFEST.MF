@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Bundle-Name: Nuxeo Directory tests
+Bundle-SymbolicName: org.nuxeo.ecm.directory.core.tests
+Nuxeo-Component: types-for-test-directory-local-configuration.xml

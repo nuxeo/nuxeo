@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layout.LayoutStore">
+
+  <implementation
+    class="org.nuxeo.ecm.platform.forms.layout.core.service.LayoutStoreImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore" />
+  </service>
+
+  <extension-point name="widgettypes">
+    <object
+      class="org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetTypeDescriptor" />
+  </extension-point>
+
+  <extension-point name="layouttypes">
+    <object
+      class="org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutTypeDescriptor" />
+  </extension-point>
+
+  <extension-point name="layouts">
+    <object class="org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutDescriptor" />
+  </extension-point>
+
+  <extension-point name="widgets">
+    <object class="org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetDescriptor" />
+  </extension-point>
+
+  <extension-point name="layoutConverters">
+    <object
+      class="org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutConverterDescriptor" />
+  </extension-point>
+
+  <extension-point name="widgetConverters">
+    <object
+      class="org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetConverterDescriptor" />
+  </extension-point>
+
+</component>
