@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM JCR connector for tests
+Bundle-SymbolicName: org.nuxeo.ecm.core.jcr-connector;singleton:=true
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.ecm.core
+Eclipse-LazyStart: false
+Nuxeo-Component: OSGI-INF/DemoRepository.xml,
+ OSGI-INF/CoreSessionFactory.xml

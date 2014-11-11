@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM SQL Storage RA
+Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql.ra;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Bundle-ClassPath: .
+Export-Package: org.nuxeo.ecm.core.storage.sql.ra
+Require-Bundle: org.nuxeo.ecm.core.storage.sql
+Bundle-Category: core
+Eclipse-LazyStart: true
