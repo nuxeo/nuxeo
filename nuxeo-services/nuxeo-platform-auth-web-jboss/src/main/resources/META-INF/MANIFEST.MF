@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Web Authentication Jboss extension
+Bundle-SymbolicName: org.nuxeo.ecm.platform.ui.web.auth.jboss
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateless
+Export-Package: org.nuxeo.ecm.platform.ui.web.auth.jboss
+Require-Bundle: org.nuxeo.ecm.platform.web.common
+Nuxeo-Component: OSGI-INF/authentication-jboss-contrib.xml
