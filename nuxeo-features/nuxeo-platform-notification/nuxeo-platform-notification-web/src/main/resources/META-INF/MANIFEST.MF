@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Notification Web Fragment
+Bundle-SymbolicName: org.nuxeo.ecm.platform.notification.web;singleton:=true
+Bundle-Category: stateless
+Require-Bundle: org.nuxeo.ecm.platform.notification.api,
+ org.nuxeo.ecm.webapp.core
+Nuxeo-Component: OSGI-INF/actions-contrib.xml
+Provide-Package: org.nuxeo.ecm.webapp.notification

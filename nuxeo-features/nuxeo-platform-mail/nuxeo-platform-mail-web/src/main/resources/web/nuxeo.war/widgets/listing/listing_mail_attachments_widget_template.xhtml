@@ -1,0 +1,37 @@
+<f:subview id="#{widget.id}"
+  rendered="#{not empty field_0}"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <h:outputText class="boldLabel" value=" #{messages['label.summary.download.attachments']}"/>
+  <div class="attachments">
+    <nxu:repeat value="#{field_0}" index="idx" var="file">
+      <div class="detailList">
+        <nxh:outputLink value="#{nxd:complexFileUrl('downloadFile', field_1, 'files:files', idx, 'file', file.filename)}">
+          <nxh:graphicImage value="#{nxd:fileIconPath(file.file)}"
+            rendered="#{! empty nxd:fileIconPath(file.file)}" />
+          <nxh:outputText value="#{file.filename}" />
+          <h:outputText value=" (#{nxu:printFileSize(file.length)})"/>
+            <nxh:graphicImage value="/icons/download.png" title="#{file.filename}"/>
+          </nxh:outputLink>
+
+      <nxu:methodResult name="hasPDFCapabilities"
+        value="#{conversionActions.isExportableToPDF(file.file)}">
+        <h:panelGroup rendered="#{hasPDFCapabilities}">
+          <h:commandLink action="#{conversionActions.generatePdfFile}">
+            <f:param name="fileFieldFullName"
+              value="#{nxd:propertyPath('files:files', idx, 'file')}" />
+            <f:param name="filename" value="#{file.filename}" />
+            <nxh:graphicImage value="/icons/pdf.png" title="#{messages['label.document.generatePdf']}"/>
+          </h:commandLink>
+        </h:panelGroup>
+      </nxu:methodResult>
+
+      </div>
+    </nxu:repeat>
+  </div>
+
+</f:subview>

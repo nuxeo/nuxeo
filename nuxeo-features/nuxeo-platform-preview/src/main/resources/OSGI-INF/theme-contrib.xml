@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.preview.theme">
+
+  <require>org.nuxeo.theme.nuxeo.default</require>
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="applications">
+
+    <application root="${org.nuxeo.ecm.contextPath}"
+      template-engine="jsf-facelets">
+      <view id="/preview_popup.xhtml">
+        <theme>galaxy/popup</theme>
+      </view>
+    </application>
+  </extension>
+
+</component>
