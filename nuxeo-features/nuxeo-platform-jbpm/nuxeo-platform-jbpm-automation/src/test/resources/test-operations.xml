@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.jbpm.automation.test-operations">
+
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+    <operation class="org.nuxeo.ecm.automation.jbpm.CreateTask" />
+    <operation class="org.nuxeo.ecm.automation.jbpm.GetUserTasks" />
+    <operation
+      class="org.nuxeo.ecm.automation.jbpm.UserTaskPageProviderOperation" />
+  </extension>
+      
+  <extension point="chains"
+    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+
+    <chain id="createSingleTaskChain">
+      <operation id="Context.FetchDocument" />
+      <operation id="Workflow.CreateJBPMTask">
+        <param type="string" name="task name">single test task</param>
+        <param type="date" name="due date">2006-07-06T15:10:15Z</param>
+        <param type="string" name="directive">test directive</param>
+        <param type="string" name="comment">test comment</param>
+        <!-- define actors here, it's easier for tests -->
+        <param type="string" name="additional list of actors prefixed ids">
+          user:Administrator, group:members, user:myuser
+        </param>
+        <param type="boolean" name="create one task per actor">false</param>
+      </operation>
+    </chain>
+
+    <chain id="createSingleTaskChainWithoutActors">
+      <operation id="Context.FetchDocument" />
+      <operation id="Workflow.CreateJBPMTask">
+        <param type="string" name="task name">
+          single test task without actors
+        </param>
+      </operation>
+    </chain>
+
+    <chain id="createSeveralTasksChain">
+      <operation id="Context.FetchDocument" />
+      <operation id="Workflow.CreateJBPMTask">
+        <param type="string" name="task name">several test tasks</param>
+        <!-- define actors here, it's easier for tests -->
+        <param type="string" name="additional list of actors prefixed ids">
+          user:Administrator, group:members, user:myuser
+        </param>
+        <param type="boolean" name="create one task per actor">true</param>
+      </operation>
+    </chain>
+
+    <chain id="createSingleTaskAndRunOperationChain">
+      <operation id="Context.FetchDocument" />
+      <operation id="Workflow.CreateJBPMTask">
+        <param type="string" name="task name">single test task</param>
+        <param type="string" name="accept operation chain">
+          taskAcceptedChain
+        </param>
+        <param type="string" name="reject operation chain">
+          taskRejectedChain
+        </param>
+        <!-- define actors here, it's easier for tests -->
+        <param type="string" name="additional list of actors prefixed ids">
+          user:Administrator, group:members, user:myuser
+        </param>
+        <param type="boolean" name="create one task per actor">false</param>
+      </operation>
+    </chain>
+
+    <chain id="taskAcceptedChain">
+      <operation id="Context.FetchDocument" />
+      <operation id="Document.SetProperty">
+        <param type="string" name="xpath">dc:description</param>
+        <param type="serializable" name="value">
+          This document has been accepted
+        </param>
+      </operation>
+    </chain>
+
+    <chain id="taskRejectedChain">
+      <operation id="Context.FetchDocument" />
+      <operation id="Document.SetProperty">
+        <param type="string" name="xpath">dc:description</param>
+        <param type="serializable" name="value">
+          This document has been rejected !!!
+        </param>
+      </operation>
+    </chain>
+
+  </extension>
+
+</component>
