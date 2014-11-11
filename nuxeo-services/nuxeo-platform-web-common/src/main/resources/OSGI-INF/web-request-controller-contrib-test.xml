@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService.testContrib">
+
+  <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
+    point="filterConfig">
+
+    <filterConfig name="SyncNoTx" transactional="false" synchonize="true">
+      <pattern>/SyncNoTx/.*</pattern>
+    </filterConfig>
+
+    <filterConfig name="NoSyncTx" transactional="true" synchonize="false">
+      <pattern>/NoSyncTx/.*</pattern>
+    </filterConfig>
+
+    <filterConfig name="SyncTx" transactional="true" synchonize="true">
+      <pattern>/SyncTx/.*</pattern>
+    </filterConfig>
+
+    <filterConfig name="DenySyncTx" transactional="true" synchonize="true" grant="false">
+      <pattern>/SyncTx/deny.*</pattern>
+    </filterConfig>
+
+    <filterConfig name="TestServlet" transactional="true" synchonize="true">
+      <pattern>/nuxeo/TestServlet.*</pattern>
+    </filterConfig>
+
+    <filterConfig name="TestDefaultCacheValues" transactional="true" synchonize="true">
+      <pattern>/nuxeo/CacheDefault.*</pattern>
+    </filterConfig>
+
+    <filterConfig name="TestCache" transactional="true" synchonize="true"
+      cached="true" cacheTime="3000" private="true">
+      <pattern>/nuxeo/Cache.*</pattern>
+    </filterConfig>
+
+<!-- WebEngine config
+    <filterConfig name="WebEngine" transactional="true" synchonize="true">
+      <pattern>/nuxeo/site/.*</pattern>
+    </filterConfig>
+
+    <filterConfig name="WebEngineResources" transactional="true" synchonize="true" grant="false">
+      <pattern>/nuxeo/site/files/.*</pattern>
+    </filterConfig>
+-->
+
+  </extension>
+
+</component>
