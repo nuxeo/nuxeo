@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="filemanager.core.listener.icon" version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <documentation>
+      Computes the mimetype of dirty blob fields and updates the document icon if necessary.
+     </documentation>
+    <listener name="mimetypeIconUpdater" async="false" postCommit="false" class="org.nuxeo.ecm.platform.filemanager.core.listener.MimetypeIconUpdater" priority="120">
+      <event>aboutToCreate</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+  </extension>
+
+</component>

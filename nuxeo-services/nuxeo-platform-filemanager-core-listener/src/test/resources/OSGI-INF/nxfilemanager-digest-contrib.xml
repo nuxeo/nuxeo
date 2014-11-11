@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.filemanager.service.FileManagerService.Plugins.test">
+
+  <extension target="org.nuxeo.ecm.platform.filemanager.service.FileManagerService"
+      point="unicity">
+    <unicitySettings>
+      <algo>sha-256</algo>
+      <field>file:content</field>
+      <enabled>true</enabled>
+      <computeDigest>true</computeDigest>
+    </unicitySettings>
+  </extension>
+
+</component>
