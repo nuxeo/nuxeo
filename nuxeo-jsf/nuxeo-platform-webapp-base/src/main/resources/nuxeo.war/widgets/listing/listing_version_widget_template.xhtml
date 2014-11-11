@@ -1,0 +1,6 @@
+<c:if test="#{field_0.hasFacet('Versionable')}"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+  <h:outputText value="#{versioningManager.getVersionLabel(field_0)}"
+    id="#{widget.id}" />
+</c:if>
