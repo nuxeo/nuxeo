@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.thumbnail.convert">
+
+  <require>org.nuxeo.ecm.platform.convert.plugins</require>
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
+    point="converter">
+
+    <converter name="pdfAndImageToThumbnail"
+      class="org.nuxeo.ecm.platform.thumbnail.converter.ThumbnailDocumentConverter">
+      <sourceMimeType>application/pdf</sourceMimeType>
+      <sourceMimeType>image/jpeg</sourceMimeType>
+      <sourceMimeType>image/png</sourceMimeType>
+      <sourceMimeType>image/gif</sourceMimeType>
+      <destinationMimeType>image/png</destinationMimeType>
+    </converter>
+
+    <converter name="anyToPdfToThumbnail">
+      <conversionSteps>
+        <subconverter>any2pdf</subconverter>
+        <subconverter>pdfAndImageToThumbnail</subconverter>
+      </conversionSteps>
+    </converter>
+
+    <converter name="anyToThumbnail"
+      class="org.nuxeo.ecm.platform.thumbnail.converter.AnyToThumbnailConverter">
+      <destinationMimeType>image/png</destinationMimeType>
+
+      <sourceMimeType>application/pdf</sourceMimeType>
+      <sourceMimeType>image/jpeg</sourceMimeType>
+      <sourceMimeType>image/png</sourceMimeType>
+      <sourceMimeType>image/gif</sourceMimeType>
+
+      <sourceMimeType>text/xml</sourceMimeType>
+      <sourceMimeType>text/html</sourceMimeType>
+      <sourceMimeType>text/plain</sourceMimeType>
+      <sourceMimeType>text/rtf</sourceMimeType>
+      <sourceMimeType>text/csv</sourceMimeType>
+      <sourceMimeType>text/tsv</sourceMimeType>
+
+
+      <!-- Microsoft office documents -->
+      <sourceMimeType>application/msword</sourceMimeType>
+      <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
+      <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
+
+      <!-- Microsoft office 2007 documents -->
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.presentationml.presentation
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+      </sourceMimeType>
+
+      <!-- OpenOffice.org 1.x documents -->
+      <sourceMimeType>application/vnd.sun.xml.writer</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.writer.template</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.impress</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.impress.template</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.calc</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.calc.template</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.draw</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.draw.template</sourceMimeType>
+
+      <!-- OpenOffice.org 2.x documents -->
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.spreadsheet
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.spreadsheet-template
+      </sourceMimeType>
+      <sourceMimeType>application/vnd.oasis.opendocument.text</sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.text-template
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.presentation
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.presentation-template
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.graphics
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.graphics-template
+      </sourceMimeType>
+
+      <!-- WordPerfect -->
+      <sourceMimeType>application/wordperfect</sourceMimeType>
+    </converter>
+
+  </extension>
+
+</component>

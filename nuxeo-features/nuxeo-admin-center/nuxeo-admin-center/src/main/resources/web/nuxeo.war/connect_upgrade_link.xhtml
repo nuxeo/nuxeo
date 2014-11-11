@@ -1,0 +1,22 @@
+<c:if test="true"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <nxd:restDocumentLink
+    view="#{mainTabsActions.getViewFor('admin')}"
+    addTabInfo="false"
+    document="#{mainTabsActions.getDocumentFor('admin')}"
+    tabs="MAIN_TABS:admin,NUXEO_ADMIN:ConnectApps:ConnectAppsUpdates"
+    accesskey="#{action.accessKey}"
+    id="#{widget.id}"
+    target="#{action.properties.target}"
+    onclick="#{onclick}">
+    <ui:include src="/incl/action/action_icon_label_template.xhtml">
+      <ui:param name="hideIcon" value="false" />
+      <ui:param name="hideLabel" value="true" />
+    </ui:include>
+    <ui:insert name="inside_action" />
+  </nxd:restDocumentLink>
+
+</c:if>

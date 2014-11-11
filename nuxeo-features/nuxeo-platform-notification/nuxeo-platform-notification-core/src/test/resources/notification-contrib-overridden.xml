@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.notifiactions.contribution.test.override">
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="notifications">
+
+    <notification name="test" channel="email-ov" enabled="true" availableIn="folder"
+      autoSubscribed="true" template="test-template-ov" subject="Test Notification Subject-ov"
+      label="Test Notification Label-ov" subjectTemplate="Test Notification Subject Template-ov"
+      templateExpr="NotificationContext['exp1-ov']">
+      <event name="testEvent-ov"/>
+    </notification>
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="templates">
+    <template name="test-template-ov" src="templates/test-template-ov.ftl" />
+    <template name="test-template" src="templates/test-template-ov.ftl" />
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="generalSettings">
+
+    <settings>
+      <serverPrefix>http://${org.nuxeo.ecm.notification.serverPrefix}/nuxeo</serverPrefix>
+      <eMailSubjectPrefix>${org.nuxeo.ecm.notification.eMailSubjectPrefix}</eMailSubjectPrefix>
+      <mailSessionJndiName>${not.existing.property}</mailSessionJndiName>
+    </settings>
+
+  </extension>
+
+</component>
