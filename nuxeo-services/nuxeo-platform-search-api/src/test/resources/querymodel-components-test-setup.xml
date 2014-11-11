@@ -1,0 +1,238 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.test.types">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="schema">
+    <schema name="base" src="schema/base.xsd"/>
+    <schema name="querymodel_common" src="schema/querymodel-common.xsd" />
+    <schema name="querymodel_test" src="schema/querymodel-test.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="doctype">
+
+    <doctype name="Root" extends="Folder">
+    </doctype>
+
+    <doctype name="TestQuery" extends="Document">
+      <schema name="querymodel_common" />
+      <schema name="querymodel_test" />
+      <!-- override because the standard one references common and dublincore
+      which produce errors -->
+      <prefetch/>
+    </doctype>
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService"
+    point="model">
+
+    <queryModel name="statelessModel">
+      <pattern>
+        SELECT * FROM Document WHERE dc:contributors = ? AND ecm:path STARTSWITH ?
+      </pattern>
+    </queryModel>
+
+    <queryModel name="statelessModelWithLongPattern">
+      <pattern>
+        SELECT * FROM Document WHERE dc:contributors = ? AND ecm:path STARTSWITH ?
+         AND ecm:title = 'the title' dc:created >= DATE '2006-10-12' AND ecm:isProxy = 0
+      </pattern>
+    </queryModel>
+
+    <queryModel name="statelessModelWithSort">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:primaryType in ('File')
+      </pattern>
+      <sortable defaultSortColumn="dc:modified" defaultSortAscending="true" />
+    </queryModel>
+
+    <queryModel name="statelessModelWithListParam">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:primaryType IN ?
+      </pattern>
+    </queryModel>
+
+    <queryModel name="statelessModelWithBooleanParam">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:booleanParameter = ?
+      </pattern>
+    </queryModel>
+
+    <queryModel name="statelessModelWithIntegerParam">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:integerParameter = ?
+      </pattern>
+    </queryModel>
+
+    <queryModel name="statelessModelWithFloatParam">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:floatParameter = ?
+      </pattern>
+    </queryModel>
+
+    <queryModel name="statefulModel" docType="TestQuery">
+
+      <whereClause>
+
+        <predicate parameter="textparameter" operator="=">
+          <field schema="querymodel_test" name="textfield" />
+        </predicate>
+
+        <predicate parameter="intparameter" operator="&lt;">
+          <field schema="querymodel_test" name="intfield" />
+        </predicate>
+
+        <predicate parameter="boolparameter" operator="=">
+          <field schema="querymodel_test" name="boolfield" />
+        </predicate>
+
+        <predicate parameter="dc:created" operator="BETWEEN">
+          <field schema="querymodel_test" name="date_min" />
+          <field schema="querymodel_test" name="date_max" />
+        </predicate>
+
+        <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+          <field schema="querymodel_test" name="fulltext_all"/>
+        </predicate>
+
+        <predicate parameter="ecm:fulltext_my_index" operator="FULLTEXT">
+          <field schema="querymodel_test" name="fulltext_my_index"/>
+        </predicate>
+
+      </whereClause>
+
+      <sortColumn>
+        <field schema="querymodel_common" name="sortColumn" />
+      </sortColumn>
+
+      <sortAscending>
+        <field schema="querymodel_common" name="sortAscending" />
+      </sortAscending>
+
+    </queryModel>
+
+
+    <queryModel name="statefulModel2" docType="TestQuery">
+
+      <whereClause>
+
+        <predicate parameter="dc:creator" operator="IN">
+          <field schema="querymodel_test" name="listfield"/>
+        </predicate>
+
+        <predicate parameter="someint" operator="=">
+          <field schema="querymodel_test" name="intfield"/>
+        </predicate>
+
+        <predicate parameter="textparameter" operator="ILIKE">
+          <field schema="querymodel_test" name="textfield" />
+        </predicate>
+
+      </whereClause>
+
+
+      <sortColumn>
+        <field schema="querymodel_common" name="sortColumn" />
+      </sortColumn>
+
+      <sortAscending>
+        <field schema="querymodel_common" name="sortAscending" />
+      </sortAscending>
+
+    </queryModel>
+
+    <queryModel name="statefulModelWithFixedPart" docType="TestQuery">
+
+      <whereClause>
+
+        <predicate parameter="intparameter" operator="=">
+          <field schema="querymodel_test" name="intfield"/>
+        </predicate>
+
+        <fixedPart>
+        sp:specific LIKE 'foo' OR ecm:isProxy = 1
+        </fixedPart>
+
+      </whereClause>
+    </queryModel>
+
+    <queryModel name="statefulModelWithSubClause" docType="TestQuery">
+
+      <whereClause>
+
+        <predicate parameter="intparameter" operator="=">
+          <field schema="querymodel_test" name="intfield"/>
+        </predicate>
+
+        <predicate type="subClause">
+          <field schema="querymodel_test" name="subclause"/>
+        </predicate>
+
+        <predicate parameter="textparameter" operator="=">
+          <field schema="querymodel_test" name="textfield" />
+        </predicate>
+
+      </whereClause>
+    </queryModel>
+
+    <queryModel name="statefulModelWithSingleStartswith" docType="TestQuery">
+
+      <whereClause>
+
+        <predicate parameter="ecm:path" operator="STARTSWITH">
+          <field schema="querymodel_test" name="textfield"/>
+        </predicate>
+
+      </whereClause>
+
+      <sortColumn>
+        <field schema="querymodel_common" name="sortColumn" />
+      </sortColumn>
+
+      <sortAscending>
+        <field schema="querymodel_common" name="sortAscending" />
+      </sortAscending>
+
+    </queryModel>
+
+    <queryModel name="statefulModelWithMultiStartswith" docType="TestQuery">
+
+      <whereClause>
+
+        <predicate parameter="ecm:path" operator="STARTSWITH">
+          <field schema="querymodel_test" name="listfield"/>
+        </predicate>
+
+      </whereClause>
+
+      <sortColumn>
+        <field schema="querymodel_common" name="sortColumn" />
+      </sortColumn>
+
+      <sortAscending>
+        <field schema="querymodel_common" name="sortAscending" />
+      </sortAscending>
+
+    </queryModel>
+
+    <queryModel name="statelessRedefinedModel" >
+      <pattern>
+      SELECT * FROM Document
+     </pattern>
+    </queryModel>
+
+    <queryModel name="statefullRedefinedModel" >
+      <whereClause>
+
+        <predicate parameter="dc:creator" operator="IN">
+          <field schema="querymodel_test" name="listfield"/>
+        </predicate>
+
+      </whereClause>
+    </queryModel>
+
+  </extension>
+
+</component>
