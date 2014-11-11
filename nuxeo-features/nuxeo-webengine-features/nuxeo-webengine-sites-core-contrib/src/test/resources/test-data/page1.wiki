@@ -1,0 +1,14 @@
+
+WikiLink
+
+[WikiPage1]
+
+[WikiPage2 link2]
+
+[http://www.nuxeo.com]
+
+[http://www.nuxeo.com AbsoluteLink]
+
+[image:Page relativeImage]
+
+[image:http://www.nuxeo.com absoluteImage]
