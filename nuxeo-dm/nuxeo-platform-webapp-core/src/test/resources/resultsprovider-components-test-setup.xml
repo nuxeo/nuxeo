@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.webapp.test.resultsprovider">
+
+  <extension
+    target="org.nuxeo.ecm.webapp.pagination.ResultsProviderService"
+    point="model">
+
+    <resultsProvider name="MY_SEARCH" farm="searchActions"/>
+    <resultsProvider name="MY_DOCUMENTS" farm="queryModelActions"/>
+  </extension>
+
+</component>
