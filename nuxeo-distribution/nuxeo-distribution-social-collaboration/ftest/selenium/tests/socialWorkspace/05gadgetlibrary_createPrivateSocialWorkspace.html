@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8080/nuxeo/" />
+<title>testBrowser_publication</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">testBrowser_publication</td></tr>
+</thead><tbody>
+<td>open</td>
+<td>
+  restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=-----Selenium<br/><br/>
+  createPrivateSocialWorkspace
+</td>
+<td></td>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Administrator</td>
+	<td></td>
+</tr>
+<tr>
+  <td>clickAndWait</td>
+  <td>//form[@id='document_content']/table/tbody/tr/td[3]/div/a[1]</td>
+  <td></td>
+</tr>
+<tr>
+	<td>mouseDown</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Social Workspace</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//td[@class=&quot;fieldColumn&quot;]/input[@type=&quot;text&quot;]</td>
+	<td>testPublicationSW</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=document_create:nxl_social_workspace_heading:nxw_social_workspace_is_public:nxw_social_workspace_is_public_checkbox:0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Create&quot;]</td>
+	<td></td>
+</tr>
+<!-- create news -->
+<tr>
+	<td>open</td>
+	<td>nxpath/default/collaboration/testPublicationSW/news-root@view_documents?tabIds=%3ATAB_CONTENT</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Create a News Item</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_social_document_heading:nxw_title</td>
+	<td>myNews</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_social_document_heading:nxw_required_description</td>
+	<td>news item used for tests</td>
+</tr>
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Create&quot;]</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
