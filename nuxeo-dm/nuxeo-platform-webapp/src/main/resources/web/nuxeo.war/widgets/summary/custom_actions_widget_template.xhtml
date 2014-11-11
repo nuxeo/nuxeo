@@ -1,0 +1,22 @@
+<c:if test="true"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+<nxu:set var="category"
+  value="#{nxu:test(empty widgetProperty_category, 'DOCUMENT_SUMMARY_CUSTOM_ACTIONS', widgetProperty_category)}"
+  cache="true">
+<nxu:set var="actions"
+  value="#{webActions.getActionsList(category)}"
+  cache="true">
+
+  <nxl:widgetType name="actions" mode="#{widget.mode}"
+    label="#{widget.label}"
+    value="#{fieldOrValue}" properties="#{widget.properties}"
+    actions="#{actions}" actionsDisplay="#{widgetProperty_display}"
+    ignoreTemplateProperty="true" subWidgets="#{widget.subWidgets}" />
+
+</nxu:set>
+</nxu:set>
+
+</c:if>
