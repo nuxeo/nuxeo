@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="locationManagerComponentContribute">
+
+  <extension target="org.nuxeo.ecm.platform.util.LocationManagerService" point="location">
+    <documentation>
+      Default server configuration for Nuxeo 5.
+    </documentation>
+
+    <locationManagerPlugin>
+      <locationEnabled>true</locationEnabled>
+      <locationName>default</locationName>
+    </locationManagerPlugin>
+
+    <!--  		<locationManagerPlugin>
+           <locationEnabled>true</locationEnabled>
+          <locationName>pgsql</locationName>
+        </locationManagerPlugin>
+         <locationManagerPlugin>
+           <locationEnabled>true</locationEnabled>
+          <locationName>demo2</locationName>
+        </locationManagerPlugin>
+    -->
+  </extension>
+
+</component>
