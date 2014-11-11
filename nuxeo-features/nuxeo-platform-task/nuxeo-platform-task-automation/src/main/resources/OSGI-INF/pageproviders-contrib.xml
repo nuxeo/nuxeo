@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.automation.task.pageprovider.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <genericPageProvider name="user_tasks"
+      class="org.nuxeo.ecm.platform.task.providers.UserTaskPageProvider">
+      <property name="locale">#{localeSelector.localeString}</property>
+      <pageSize>20</pageSize>
+      <sort ascending="true" column="nt:dueDate"/>
+    </genericPageProvider>
+
+  </extension>
+
+</component>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:nxs="http://www.nuxeo.org/ecm/schemas/test" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.nuxeo.org/ecm/schemas/test">
+
+  <xs:element name="list" type="nxs:listitems"/>
+
+  <xs:complexType name="listitems">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="item" type="nxs:item"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="item">
+    <xs:sequence>
+      <xs:element name="foo" type="xs:string"/>
+      <xs:element name="bar" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
