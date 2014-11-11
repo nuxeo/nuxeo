@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo-platform-queue-core test project
+Bundle-SymbolicName: org.nuxeo.ecm.platform.queue.test;singleton:=true
+Bundle-Vendor: Nuxeo
+Nuxeo-Require: org.nuxeo.runtime
+Nuxeo-Component: OSGI-INF/test-queue-contrib.xml

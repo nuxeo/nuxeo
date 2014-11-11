@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.virtualnavigation.querymodel">
+
+  <extension
+    target="org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService"
+    point="model">
+
+    <queryModel name="bySubjectsNavQueryModel" docType="QueryNav">
+      <max>10</max>
+      <whereClause>
+        <predicate parameter="dc:subjects" operator="STARTSWITH">
+          <field schema="querynav" name="subjects" />
+        </predicate>
+        <fixedPart>
+          ecm:mixinType != 'HiddenInNavigation' AND ecm:currentLifeCycleState !='deleted' AND ecm:isCheckedInVersion = 0
+        </fixedPart>
+        </whereClause>
+      <sortColumn>
+        <field schema="advanced_search" name="sortColumn" />
+      </sortColumn>
+      <sortAscending>
+        <field schema="advanced_search" name="sortAscending" />
+      </sortAscending>
+    </queryModel>
+
+    <queryModel name="byCoverageNavQueryModel" docType="QueryNav">
+      <max>10</max>
+      <whereClause>
+        <predicate parameter="dc:coverage" operator="STARTSWITH">
+          <field schema="querynav" name="coverage" />
+        </predicate>
+        <fixedPart>
+          ecm:mixinType != 'HiddenInNavigation' AND ecm:currentLifeCycleState !='deleted' AND ecm:isCheckedInVersion = 0
+        </fixedPart>
+      </whereClause>
+      <sortColumn>
+        <field schema="advanced_search" name="sortColumn" />
+      </sortColumn>
+      <sortAscending>
+        <field schema="advanced_search" name="sortAscending" />
+      </sortAscending>
+    </queryModel>
+
+  </extension>
+
+</component>

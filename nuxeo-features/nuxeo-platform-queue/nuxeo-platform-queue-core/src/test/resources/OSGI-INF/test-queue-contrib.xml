@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.queue.core.test">
+
+  <extension target="org.nuxeo.ecm.platform.queue" point="queue">
+    <queue name="myQueueDestination" executor="org.nuxeo.ecm.platform.queue.core.FakeExecutor"
+      persister="org.nuxeo.ecm.platform.queue.core.NuxeoQueuePersister" />
+  </extension>
+  
+  <!-- test to provide a executor for the orphans test -->
+  <extension target="org.nuxeo.ecm.platform.queue" point="queue">
+    <queue name="testOrphansQueue" executor="org.nuxeo.ecm.platform.queue.core.FakeOrphansExecutor"
+      persister="org.nuxeo.ecm.platform.queue.core.NuxeoQueuePersister" />
+  </extension>
+
+</component>

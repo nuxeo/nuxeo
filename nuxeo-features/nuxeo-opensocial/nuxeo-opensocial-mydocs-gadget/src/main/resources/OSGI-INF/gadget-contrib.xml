@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.opensocial.gadgets.myDocs" version="1.0">
+
+  <extension target="org.nuxeo.opensocial.gadgets.service"
+    point="gadget">
+
+    <internalGadget name="mydocs">
+      <mountPoint>/mydocs</mountPoint>
+      <entryPoint>mydocs.xml</entryPoint>
+      <category>gadget.category.collaborative</category>
+      <icon>documents_icon.png</icon>
+    </internalGadget>
+
+  </extension>
+</component>
