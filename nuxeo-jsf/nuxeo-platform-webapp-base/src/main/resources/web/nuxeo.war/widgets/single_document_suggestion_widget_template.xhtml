@@ -1,0 +1,159 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:rich="http://richfaces.org/rich">
+
+  <c:if test="#{widget.mode != 'edit'}">
+
+    <c:if test="#{not empty field_0}">
+      <nxu:set var="canSee"
+        value="#{docSuggestionActions.getDocumentExistsAndIsVisibleWithId(field_0)}"
+        cache="true">
+        <c:if test="#{canSee}">
+          <nxu:set var="doc"
+            value="#{docSuggestionActions.getDocumentWithId(field_0)}">
+            <nxu:graphicImage
+              value="#{nxd:iconPath(doc)}"
+              rendered="#{!empty nxd:iconPath(doc)}"
+              styleClass="smallIcon" />
+            <h:outputText value="#{doc.dublincore.title}" />
+            <nxd:restDocumentLink document="#{doc}"
+              newConversation="true" target="_blank"
+              tab="#{widgetProperty_tab}"
+              subTab="#{widgetProperty_subTab}">
+              <nxu:graphicImage value="/icons/external.gif"
+                style="vertical-align:middle"
+                alt="#{messages['permalink.newTab']}"
+                title="#{messages['permalink.newTab']}" />
+            </nxd:restDocumentLink>
+          </nxu:set>
+        </c:if>
+        <c:if test="#{not canSee}">
+          <h:outputText
+            value="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']} (#{field_0})" />
+        </c:if>
+      </nxu:set>
+    </c:if>
+
+  </c:if>
+
+  <c:if test="#{widget.mode == 'edit'}">
+
+    <c:set var="minChars" value="#{nxu:test(!empty widget.properties.minChars, widget.properties.minChars, '3')}" />
+    <c:set var="frequency" value="#{nxu:test(!empty widget.properties.frequency, widget.properties.frequency, '0')}" />
+    <c:set var="requestDelay" value="#{nxu:test(!empty widget.properties.requestDelay, widget.properties.requestDelay, '100')}" />
+
+    <a4j:region renderRegionOnly="true" id="#{widget.id}_ajax_region">
+      <h:panelGrid id="#{widget.id}_panel" columns="2">
+
+        <h:panelGroup>
+          <span id="#{widget.id}_suggestDiv">
+            <h:inputText id="#{widget.id}_suggest"
+              onkeydown="if (event.keyCode == 13) {return false;}" />
+          </span>
+          <a4j:status>
+            <f:facet name="start">
+              <h:graphicImage value="/img/standart_waiter.gif" />
+            </f:facet>
+          </a4j:status>
+          <rich:suggestionbox id="#{widget.id}_suggestionBox"
+            for="#{widget.id}_suggest" tokens=""
+            suggestionAction="#{docSuggestionActions.getDocSuggestions}"
+            var="result"
+            fetchValue=""
+            nothingLabel="#{messages['label.suggestion.noSearchResults']}"
+            minChars="#{minChars}" frequency="#{frequency}" requestDelay="#{requestDelay}">
+            <f:param name="pageProviderName" value="#{widgetProperty_pageProviderName}" />
+            <a4j:support event="onselect"
+              focus="#{widget.id}_suggest"
+              bypassUpdates="true"
+              reRender="#{widget.id}_selectionGroup"
+              id="#{widget.id}_suggestion_select">
+              <f:setPropertyActionListener value="#{result.id}"
+                target="#{suggestionActions.selectedValue}" />
+              <nxu:actionListenerMethod value="#{suggestionActions.addSingleBoundSelection}" />
+              <f:param name="suggestionSelectionHiddenId"
+                value="#{widget.id}" />
+              <f:param name="suggestionSelectionDeleteId"
+                value="#{widget.id}_selectionReset" />
+              <f:param name="pageProviderName" value="#{widgetProperty_pageProviderName}" />
+            </a4j:support>
+            <h:column>
+              <nxu:graphicImage
+                value="#{nxd:iconPath(result)}"
+                rendered="#{!empty nxd:iconPath(result)}"
+                styleClass="smallIcon" />
+            </h:column>
+            <h:column>
+              <h:outputText value="#{nxd:titleOrId(result)}" />
+            </h:column>
+            <h:column>
+              <h:outputText value="#{result.dublincore.modified}">
+                <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+                  timeZone="#{timeZone}" />
+              </h:outputText>
+            </h:column>
+          </rich:suggestionbox>
+          <br />
+          <h:outputText value="#{messages['label.suggestion.help.minChars.start']} " />
+          <h:outputText value="#{minChars} #{messages['label.suggestion.help.minChars.end']}" />
+        </h:panelGroup>
+
+        <h:panelGroup id="#{widget.id}_selectionGroup">
+          <nxu:valueHolder var="selectedDocId" value="#{field_0}"
+            id="#{widget.id}"
+            required="#{widget.required}">
+            <a4j:commandLink id="#{widget.id}_selectionReset"
+              actionListener="#{suggestionActions.clearSingleSelection}"
+              ignoreDupResponses="true" ajaxSingle="true" bypassUpdates="true"
+              reRender="#{widget.id}_selectionGroup"
+              rendered="#{!empty selectedDocId}">
+              <h:graphicImage value="/icons/action_delete.gif" />
+              <f:param name="suggestionSelectionHiddenId"
+                value="#{widget.id}" />
+              <f:param name="suggestionSelectionDeleteId"
+                value="#{widget.id}_selectionReset" />
+            </a4j:commandLink>
+            
+            <c:if test="#{not empty selectedDocId}">
+              <nxu:set var="canSee"
+                value="#{docSuggestionActions.getDocumentExistsAndIsVisibleWithId(selectedDocId)}">
+                <c:if test="#{canSee}">
+                  <nxu:set var="doc"
+                    value="#{docSuggestionActions.getDocumentWithId(selectedDocId)}">
+                    <nxu:graphicImage
+                      value="#{nxd:iconPath(doc)}"
+                      rendered="#{!empty nxd:iconPath(doc)}"
+                      styleClass="smallIcon" />
+                    <h:outputText value="#{doc.dublincore.title}" />
+                    <nxd:restDocumentLink document="#{doc}"
+                      newConversation="true" target="_blank"
+                      tab="#{widgetProperty_tab}"
+                      subTab="#{widgetProperty_subTab}">
+                      <nxu:graphicImage value="/icons/external.gif"
+                        style="vertical-align:middle"
+                        alt="#{messages['permalink.newTab']}"
+                        title="#{messages['permalink.newTab']}" />
+                    </nxd:restDocumentLink>
+                  </nxu:set>
+                </c:if>
+                <c:if test="#{not canSee}">
+                  <h:outputText
+                    value="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']} (#{selectedDocId})" />
+                </c:if>
+              </nxu:set>
+            </c:if>
+          </nxu:valueHolder>
+        </h:panelGroup>
+        <h:message for="#{widget.id}" styleClass="errorMessage" />
+
+      </h:panelGrid>
+
+    </a4j:region>
+
+  </c:if>
+
+</div>
