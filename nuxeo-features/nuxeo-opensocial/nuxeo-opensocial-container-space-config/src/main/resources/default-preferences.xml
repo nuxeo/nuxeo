@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="default-preferences" category="utils" author="Guillaume Cusnieux" directory_title="" singleton="true">
+  </ModulePrefs>
+  <UserPref name="title" display_name="Titre" default_value="none" value="none" datatype="string"/>
+  <UserPref name="COLOR_header" display_name="Encadre" default_value="none" value="none" datatype="enum">
+    <EnumValue display_value="red" value="FF0000"/>
+    <EnumValue display_value="pink" value="FF0066"/>
+    <EnumValue display_value="orange" value="FF6600"/>
+    <EnumValue display_value="green" value="99CC00"/>
+    <EnumValue display_value="blue" value="66CCFF"/>
+    <EnumValue display_value="gray" value="999999"/>
+    <EnumValue display_value="light gray" value="CCCCCC"/>
+    <EnumValue display_value="white" value="FFFFFF"/>
+    <EnumValue display_value="none" value="none"/>
+  </UserPref>
+  <UserPref name="COLOR_font" display_name="Police" default_value="none" datatype="enum" >
+    <EnumValue display_value="red" value="FF0000"/>
+    <EnumValue display_value="pink" value="FF0066"/>
+    <EnumValue display_value="orange" value="FF6600"/>
+    <EnumValue display_value="green" value="99CC00"/>
+    <EnumValue display_value="blue" value="66CCFF"/>
+    <EnumValue display_value="gray" value="999999"/>
+    <EnumValue display_value="light gray" value="CCCCCC"/>
+    <EnumValue display_value="white" value="FFFFFF"/>
+    <EnumValue display_value="none" value="none"/>
+  </UserPref>
+
+  <UserPref name="COLOR_border" display_name="Bordure" default_value="none" datatype="enum" >
+    <EnumValue display_value="red" value="FF0000"/>
+    <EnumValue display_value="pink" value="FF0066"/>
+    <EnumValue display_value="orange" value="FF6600"/>
+    <EnumValue display_value="green" value="99CC00"/>
+    <EnumValue display_value="blue" value="66CCFF"/>
+    <EnumValue display_value="gray" value="999999"/>
+    <EnumValue display_value="light gray" value="CCCCCC"/>
+    <EnumValue display_value="white" value="FFFFFF"/>
+    <EnumValue display_value="none" value="none"/>
+  </UserPref>
+
+  <Content type="html"></Content>
+</Module>

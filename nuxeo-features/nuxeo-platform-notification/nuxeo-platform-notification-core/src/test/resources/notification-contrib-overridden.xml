@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="com.nuxeo.project.arevanc.geide.notifiactions">
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="notifications">
+
+    <!-- Remove some default Nuxeo notifications -->
+    <notification name="Modification" enabled="false" />
+    <notification name="Publication" enabled="false" />
+
+    <!-- Additional notifications -->
+    <notification name="Publication de contenu" channel="email" enabled="true" availableIn="section"
+      autoSubscribed="false" template="publishContent">
+      <event name="sectionContentPublished"/>
+    </notification>
+
+    <notification name="Ajout d'un commentaire" channel="email" enabled="true" availableIn="*"
+      autoSubscribed="false" template="addComent">
+      <event name="commentAdded"/>
+    </notification>
+
+    <notification name="Création/modification de contenu" channel="email" enabled="true" availableIn="workspace"
+      autoSubscribed="false" template="modifContent">
+      <event name="contentSubdocumentModified"/>
+    </notification>
+
+    <notification name="Something important" channel="email" enabled="true" availableIn="section, workspace"
+      autoSubscribed="false" template="someTemplate">
+      <event name="someEvent"/>
+    </notification>
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="templates">
+
+    <template name="publishContent" src="templates/publishContent.ftl" />
+    <template name="addComent" src="templates/commentAdded.ftl" />
+    <template name="modifContent" src="templates/modifContent.ftl" />
+    <template name="modif" src="templates/modif_fr.ftl" />
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="generalSettings">
+
+    <settings>
+      <serverPrefix>http://${org.nuxeo.ecm.notification.serverPrefix}/nuxeo</serverPrefix>
+      <eMailSubjectPrefix>${org.nuxeo.ecm.notification.eMailSubjectPrefix}</eMailSubjectPrefix>
+      <mailSessionJndiName>${not.existing.property}</mailSessionJndiName>
+    </settings>
+
+  </extension>
+
+</component>

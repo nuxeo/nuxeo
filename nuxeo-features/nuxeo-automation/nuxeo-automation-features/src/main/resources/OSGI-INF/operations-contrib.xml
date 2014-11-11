@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.automation.featuresContrib"
+  version="1.0">
+
+  <documentation>@author Bogdan Stefanescu (bs@nuxeo.com)</documentation>
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+    <coreQueryPageProvider name="PageProviderOperation:Documents">
+      <pattern>
+        SELECT * FROM Document
+      </pattern>
+    </coreQueryPageProvider>
+  </extension>
+  
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.AuditLog" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.AuditQuery" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.CreateRelation" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.GetRelations" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.PageProviderOperation" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.users.GetDocumentPrincipalEmails" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.users.GetDocumentUsersAndGroups" />
+    
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.users.LoginAs" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.users.Logout" />
+      
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.notification.SendMail" />
+      
+  </extension>    
+
+</component>

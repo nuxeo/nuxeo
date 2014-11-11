@@ -1,0 +1,41 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <div class="closedContent">
+
+    <table class="dataInput">
+      <tr>
+        <td class="labelColumn">
+          <h:outputText value="#{messages['label.workflow.task.Creator']}"/>
+        </td>
+        <td class="fieldColumn">
+          <h:outputText
+            value="#{nxu:userFullName(jbpmActions.currentProcessInitiator)}"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="labelColumn">
+          <h:outputText value="#{messages['label.review.type']}"/>
+        </td>
+        <td class="fieldColumn">
+          <c:set var="label"
+            value="document_#{process.processDefinition.name}" />
+          <h:outputText value="#{messages[label]}" />
+        </td>
+      </tr>
+      <tr>
+        <td class="labelColumn">
+          <h:outputText value="#{messages['label.review.out.life.cycle']}"/>
+        </td>
+        <td class="fieldColumn">
+          <c:set var="state"
+            value="#{jbpmActions.currentProcessDestinationState}" />
+          <h:outputText value="#{messages[state]}" rendered="#{state != null}" />
+        </td>
+      </tr>
+    </table>
+
+  </div>
+</div>

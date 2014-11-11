@@ -1,0 +1,13 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html">
+
+  <nxu:methodResult name="actions"
+    value="#{commentManagerActions.getActionsForComment()}">
+    <nxu:dataList var="action" value="#{actions}">
+      <nxh:commandButton action="#{action.getLink()}"
+        value="#{messages[action.label]}" styleClass="button" />
+    </nxu:dataList>
+  </nxu:methodResult>
+
+</div>

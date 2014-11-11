@@ -1,0 +1,34 @@
+<component name="org.nuxeo.connect.client.actions.monitoring">
+
+  <require>org.nuxeo.connect.client.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="Monitoring" link="view_admin-fragment.xhtml"
+      label="admcommand.monitoring" order="40">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+        <action id="AdministrativeStatus" link="/incl/monitoring/adminStatus.xhtml"
+          label="tab.monitoring.status" order="10">
+          <category>NUXEO_ADMIN_Monitoring</category>
+          <filter-id>only_for_manager</filter-id>
+        </action>
+
+        <action id="Probes" link="/incl/monitoring/adminProbes.xhtml"
+          label="tab.monitoring.probes" order="20">
+          <category>NUXEO_ADMIN_Monitoring</category>
+          <filter-id>only_for_manager</filter-id>
+        </action>
+
+        <action id="Events" link="/incl/monitoring/adminEvents.xhtml"
+          label="tab.monitoring.events" order="30">
+          <category>NUXEO_ADMIN_Monitoring</category>
+          <filter-id>only_for_manager</filter-id>
+        </action>
+
+  </extension>
+
+</component>
