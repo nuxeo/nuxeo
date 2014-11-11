@@ -1,0 +1,485 @@
+= Nuxeo WebEngine
+
+{toc}{/toc}
+
+== Overview
+
+Nuxeo WebEngine is a framework to build RESTful web applications on top of the Nuxeo EP platform.
+
+The main goal for the WebEngine is to propose a framework to quickly build web applications on top of Nuxeo ECM.
+
+You don't need to have any advanced knowledge about JSF or other Java related web technologies.
+
+The only thing you need to know is how *JAX-RS* works. So, before reading this documentation it is *recommended* to familiarize yourself with JAX-RS.
+
+=== JAX-RS
+
+You can find some useful information about JAX-RS here:
+
+* http://jcp.org/aboutJava/communityprocess/final/jsr311/index.html 
+* http://wikis.sun.com/display/Jersey/Main
+
+Before starting to look at WebEngine, I will remember to you some aspects about JAX-RS.
+
+*JAX-RS* is a Java API to build *RESTful* Web Services. What the hell means that?
+
+I will not talk now about what REST is - you can find here more on this topic here:
+
+* http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm 
+* http://en.wikipedia.org/wiki/Representational_State_Transfer
+
+But let's forget for now the REST word. Generally speaking, JAX-RS defines an API that let you access Java objects through HTTP requests.
+
+Building a JAX-RS application is like creating an API to access and manage your Java objects through HTTP requests.
+
+An object is exposed as a JAX-RS __resource__ and can be manipulated via common HTTP methods like GET, POST, PUT, HEAD etc.
+
+JAX-RS uses Java annotations to define how the request will be dispatched. There are two type of resources:
+
+* Root Resources - These resources are explicitely bound to a fixed URL path. They are invoked when the request path match their own declared path. The binding is done using the __@Path__ annotation on the resource class.\
+These resource may directly serve the request or may forward it to sub resources depending on the current request path.
+* Sub Resources - As we've seen resources may forward the request handling to other resources that we can refer to as sub-resources. 
+Sub Resources are not explictely bound to a path. The binding is done by the resource that forwarded the request handling. 
+This binding is done using the __@Path__ annotation on a resource method.
+
+This way, request paths will be resolved to a chain of resources until the entire path is consumed.
+The last resource in the chain will be invoked to handle the current the HTTP method.
+
+JAX-RS makes a clean separation between the logical part (e.g. the request handling) and the rendering part (e.g. the response rendering) of your application. All the logic is done in the resource methods, that returns an object as a response. The returned object will be then write back to the client.\
+You can return any object you want as a response as long you provide a writer that knows how to write down your object.
+
+JAX-RS is provides a built-in set of writers that will handle commons objects like String, File etc.
+
+It is important to correctly understand this mechanism. This means you *cannot* modify the response headers when writing down the response object (at writer level). You can do this only from the resource method by returning a special response object derived from
+{{{javax.ws.rs.core.Response}}}
+
+Another important aspect of JAX-RS is the automatic media type management. When dispatching the request JAX-RS will try to find the method on the resource that is best suitable to return an acceptable response to the client. This detection is based on the HTTP __Accept__ headers sent by the client.
+
+By correctly using JAX-RS concepts, you can build very flexible web applications that may serve several type of clients like web browsers, ATOM clients etc.
+
+=== Nuxeo WebEngine
+
+Now, lets talk about how WebEngine is integrating over JAX-RS.
+
+One of the goal of WebEngine is to provide an object model that enforce building modular applications with JAX-RS.
+
+Apart its own object model based on JAX-RS, WebEngine also provides important features like:
+
+* Creating JAX-RS resources as Groovy classes.
+* Defining root resources dynamically (without needing the @Path annotation on classes)
+* Hot Redeploy of application classes and resources
+* Flexible template engine - based on Freemarker
+* Content Management using Nuxeo Platform
+
+==== Modules
+
+An WebEngine application is known as a Web Module. You can deploy how many modules you want in WebEngine. Each of these modules is defining an entry point bound to a fixed path. Web Modules are isolated one of each other, but you also have the option to extend an existing WebModule.
+
+A Web Module is a container of Web Resources. Any of these resources can be accessed through HTTP requests. Thus, any HTTP request to a resources in a Web Module will hit a resource inside the module if the object exists, otherwise a 404 will be returned. Web Resources are structured in a tree so that a request will be resolved to a path in the module resource tree. Each parent resource will resolve the next segments of the request path to a resource deeper in the tree.
+
+This tree is rooted in the module entry point which is itself a Web Resource.
+
+A Web Resource is a regular JAX-RS resource that have some additional annotations. Thus, the request path is always resolved to a sub-resource using the JAX-RS mechanism (though @Path annotations).
+
+==== Object Model
+
+The WebEngine model is defining two concepts:
++ The Web Module which is a container of Web Resources and template files.
++ The Web Resources which are real objects directly accessible using HTTP requests. An HTTP requests will optionally execute some action on the target object and it usually returns to the client an appropriate view for the object. Object views are usually created using Freemarker template files. 
+
+Any Web Resource has a mandatory type and an optional guard.
+The type is behaving like a java class - it defines a class of similar objects.
+
+Types can be inherited so that type hierarchies can be build. No multi inheritance is supported. Object Types may define any number of facets. 
+Facets are inherited from super types, and can be used to tag objects so that they can be selected or categorized depending on their facets. Type Facets can be seen as Java marker interfaces.
+
+A Resource guard can be used to protect accessing objects of that type when some conditions are not meet (e.g. current user has no privilege in accessing a type of objects).  
+
+There are three types of Web Resources in a module:
++ The Root Object - or the module entry point.
++ Zero or more regular Web Objects.
++ Zero or more Web Adapters.
+
+A Web Object is a regular JAX-RS sub resource that is used to expose through HTTP a real object or some logical entity.
+
+To create a new Web Object you must use the @WebObject annotation on your object and you must implement the 
+{{{org.nuxeo.ecm.webengine.model.Resource}}}
+interface. To ease implementation of new objects we provide a default implementation that you may extend:
+{{{org.nuxeo.ecm.webengine.model.impl.DefaultObject}}}
+
+The Root Object is a regular Web Object that may implement an additional interface to handle module specific operations like error handling etc. The interface is {{{org.nuxeo.ecm.webengine.model.ModuleResource}}}
+
+There is a default implementation you can extend when defining a new Root Object:
+{{{org.nuxeo.ecm.webengine.model.impl.ModuleRoot}}}
+
+A WebAdapter is a special kind of Web Resource that can be used to extend other Web Objects with new functionalities. To extend existing objects using adapters you don't need to modify the extended object. This type of resource make the life easier when you need to add more API on an existing object but cannot modify it because for example it may be a third party web object or the new API is too specialized to be put directly on the object. In this cases you can create web adapters that adapts the target object to a new API.
+
+Note that resources are by default instantiated at each request.
+
+WebEngine also provides a mechanism to define stateful resources (that are instantiated only once) - see Tutorial 1.
+
+
+==== Exposing Nuxeo Platform Documents
+
+Nuxeo Documents are transparently mapped to WebObjects so that you can easily access your documents through WebEngine. Document types and facets are automatically imported as Resource Types and Resource Facets. The base type of all documents __Document__ is mapped to a built-in resource class:
+{{{ org.nuxeo.ecm.core.rest.DocumentObject }}} 
+This builtin implementation covers all the basic functionalities of Documents as creation, update, browsing, versioning, locking etc.
+
+You can always write you custom Document Resource by extending the existing __DocumentObject__ class.
+
+Also, you can add new functionalities on your DOcument Resources by writing new Adapter Resources.
+
+Adapter Resources are explained in Tutorial 4.
+
+A Resource Adapter is conceptually very similar to Nuxeo Document Adapters. They are primarly used to add new __interfaces__ to resources without modifying the resource itself.
+
+==== Template Model
+
+WebEngine defines also a template model that is used to build responses. The template engine is based on FreeMarker, plus some custom extensions like template *blocks*. Using blocks you can build your web site in a modular fashion. Blocks are dynamic template parts that can be extended or replaced using derived blocks. Using blocks, you can write a base template that may define the site layout (using blocks containing empty or generic content) and then write final __skins__ for your layout by extending the base template and redefining blocks you are interested in.
+
+Templates are stored as files in the module bundle under the skin directory. Templates are resolved in the context of the current module. This way, if a module is extending another module, a template will be first looked up into the derived module, then in its super modules until a template it's found or no more parent modules exists.
+
+There is a special type of templates that we call *views*. The difference between views and regular templates is that views are always attached to an Web Object Resource. This means, views are inherited from super types. Because of this the view file resolution is a bit different from templates.
+
+Views are first searched in the current module, by iterating over all resource super types. If not found then the super module is searched (if any) and so on until a view file is found or no more parent modules exists.
+
+== Getting Started
+
+WebEngine is shipped in two flavors:
+* a standalone server
+* a Nuxeo EP module, that runs in a JBoss application server
+
+Both of these versions provides the same functionalities and the same JARs are used on both platforms.
+
+This is possible since WebEngine is build over the Nuxeo Runtime layer that works over any OSGi platform.
+
+In both standalone and JBoss versions the OSGi framework is emulated by a Nuxeo component: `nuxeo-runtime-osgi`.
+
+WebEngine is working on any platform supported by Nuxeo EP (UNIX-like systems, MAC OS X, Windows). 
+
+=== Standalone server
+
+The standalone server is the *light* version of WebEngine and doesn't requires an application server to work.
+
+This means that Nuxeo services required by WebEngine are not exposed as session beans. Anyway, all of the functionalities present in the JBoss version are available in the standalone server.
+
+The light version is embedding a Glassfish v3 server or a Jetty HTTP server and by default binds the WebEngine instance to the root web context: `/`.
+
+The light version is very useful for developing since the startup time is very fast (e.g. 2-3 seconds on my laptop using Java 6) - but can be also used in production.
+
+==== Installation
+
+To install the light version, download it from http://nuxeo.org/projects/webengine, unzip the content into a folder of your choice, and run `nxserver.sh` to launch the application. Then go to http://localhost:8080.
+
+==== Launcher
+
+To start WebEngine, simply run `./nxserver.sh` on linux or `nxserver.cmd` on windows.
+
+The common options are:
+
+* `-dev` - to start in development mode. This will enable hot deployment for java and groovy classes. This option implies -clear and -console.
+* `-clear` - to cleanup class-path cache before starting. This is needed if you add a JAR into `bundles` or `lib` directories - since the launcher is caching the classpath at the first start of the server.
+* `-console` - to activate the server administration console
+
+For more information on the launcher look into `nxserver.sh`
+
+==== Requirements
+
+* Java 5 or later - WebEngine is working fine on both Java 5 and 6.
+
+=== Nuxeo EP module
+
+WebEngine is part of the default Nuxeo EP product (starting with version 5.2.M3).
+
+In this version, WebEngine is bound by default to the `/nuxeo/site` context path.
+
+When deployed as a Nuxeo EP module, WebEngine will run in an application server so all required Nuxeo services will be exposed as session beans.
+
+==== Installation
+
+You don't need to install anything. WebEngine is part of Nuxeo EP.
+
+After JBoss is started go to http://localhost:8080/nuxeo/site.
+
+==== Requirements
+
+* JBoss 4.2.x GA 
+* Nuxeo EP > 5.2.M3 - WebEngine is not working with older versions
+* Java 5 - WebEngine is also working with Java 6.
+
+=== Web Module Structure
+
+A web module can be deployed as a JAR file or as a directory. When deployed as a JAR file it will be unzipped in a directory at first startup.
+
+The structure of the root of a deployed web module should follows this schema:
+{{{
+ /module.xml
+ /i18n
+ /skin
+ /skin/resources
+ /skin/views
+ /META-INF
+}}}
+
+Every module must have a module.xml descriptor in its root. This file is used by WebEngine to detect which bundles should be deployed as web modules.
+
+The /i18n directory contains message bundle property files.
+
+The /skin directory should contain the templates used to generate web pages and all the client resources (e.g. images, style sheets, client side scripts). The content of this directory is inherited from the super module if your module extend another module. This means if a resource is not found in your module skin directory the super module will be asked for that resource and so on until the resource is found or no more super modules exists.
+
+The /skin/resources directories contains all client resources. Here you should put any image, style sheet or script you want to use on the client. The content of this directory is directly visible in your web server under the path:
+{{{ <base_path>/skin/module_name }}}
+
+The /skin/views directory should be used to store object views. An object view is usually a Freemarker template file that will be rendered in the request context and served when necessarily by the web object.
+
+The /META-INF directory is usually storing the MANIFEST.MF and other configuration or generated files that are internally used by the server.
+We will discuss some of these files later in the chapter about hot reload.
+
+Be *aware* that the root directory of a module is added to the WebEngine classpath.
+
+For that reason module classes or Groovy scripts must be put in well named packages and the package root must reside directly under the the module root. Also, avoid to put classes in script directory.
+
+Look into an existing WebEngine module like admin, base or wiki for examples on how to classes are structured.    
+
+=== Web Module Deployment
+
+At server startup JARs containing module.xml files will be unzipped under *install_dir*/web/modules/*module_dir* directory. The *module_dir* name is the bundle symbolic ID of the unzipped JAR. This way you can find easily which bundle deployed which module.
+
+The *install_dir* is the installation directory for a standalone installation or  
+the jboss/server/default/data/NXRuntime for a JBoss installation.
+
+To deploy a module as a directory and not as an OSGi bundle you can simply copy the module directory into *install_dir*/web/deploy. If deploy directory doesn't exists you can create it.
+
+*Note* that when you deploy the module as an OSGi bundle the JAR will be unzipped only at first startup. If you update the JAR (the last modified time changes) then the JAR will be unzipped again and will override any existing files.
+
+=== Lazy Loading
+
+As we've seen when starting up WebEngine will unzip any OSGi module containing a module.xml file under the root. This will happen only once first time the module is detected. After starting up is done the web modules are not yet loaded. They will be loaded the first time a web request will be made.
+
+Also, only the module owning the requested resource is loaded. So, each module will be loaded as requested. This improves startup performance since loading a module may be costly (e.g. loading a groovy module is scanning module directories for Groovy classes and compile them).
+
+=== Hot Reload
+
+WebEngine modules can be reloaded at runtime in several ways:
++ If WebEngine was not started in development mode (using -dev option) then you can reload all modules using the Administration / Engine page.
++ If WebEngine was started in development mode then any modification on your deployed files will be immediately taken into account and the module reloaded if needed. Here are the files that will trigger a refresh when modified:
+  * changing modules.xml will reload the module
+  * any file change in i18n will reload i18n messages
+  * any file change inside skin directory will flush the skin cache of all modules.
+  * any other file change will flush the class loader cache.
+  * changing META-INF/web-types will flush web object type cache.
+
+In the default development mode all directories inside skin directory and almost all files outside it are tracked for changes.
+
+There is an option to optimize this and avoid tracking all files for modification. But this will work for now only when using Eclipse IDE to develop your project.
+
+When  using -dev option a Java system property will be set 
+{{{ -Dorg.nuxeo.dev=true }}}
+to enable hot reload in WebEngine.
+To optimize the way files are tracked you can use 
+{{{ -Dorg.nuxeo.dev=ide }}}
+that will switch WebEngine to the IDE development mode. In this mode only one file will be checked to know if some class changed. This file is
+{{{ META-INF/classes.reload }}}
+This is the mechanism used by the Nuxeo IDE Eclipse plugin to notify class changes.
+
+*Notes* 
++ The development mode is working for now only on standalone version of WebEngine.
++ In development mode you can deploy (and undeploy) at runtime any module by copying it (or removing it) in the deploy directory
++ Web modules are using a shared class loader which is isolated from the class loader shared by other bundles in the system. This ensure that a reload of the class loader is not affecting regular bundles (since some bundles in the system may not work correctly after a reload). Also, web module classes can see any class in the server but non web module bundles will not see classes in web modules. This means you must not depend on web module classes if your bundle is not an web module.
+
+=== Module Configuration File
+
+The module.xml file which is residing in the module root is the module configuration file. The minimal module declaration is the following:
+
+{{{ <module name="my_module" root-type="TheRoot" path="/my_module" /> }}}
+
+This will define a module which name is __my_module__ that is bind to the web path __/my_module__ and that uses an web object of type TheRoot as its root object (or entry point).
+
+To extend another module you can use the __extends__ attribute like this:
+{{{ <module name="my_module" root-type="TheRoot" path="/my_module" extends="admin" /> }}}
+and to declare your module as not having any GUI (this will hide your module from the home page of WebEngine) you can use the __headless__ attribute:
+{{{ <module name="my_module" root-type="TheRoot" path="/my_module" extends="base" headless="true"  /> }}}
+This mode can be used for pure REST modules that are only providing REST interfaces and don't provide any GUI.
+
+More things can be configured in this file but they will be explained later in this documentation as we will dig deeper into WebEngine concepts.
+
+=== Type Loading
+
+WebEngine is using types to classify web objects. When a request will be resolved to an web object the object type is retrieved first and asked to instantiate a new object of that type which will be used to handle the request. This means all types in a module and in super modules must be known after a module is loaded. Types are declared using annotations so detecting types at runtime may be costly. For this reason types are discovered at build time and written to a file in the META-INF directory of the module.
+{{{ /META-INF/web-types }}}
+To have this file generated you must use a correct maven pom.xml for your project that will load a custom 'java apt' processor during the build. See WebEngine pom files for how to write your pom files. 
+
+Also, it is recommended to force file generation using the 'clean' option when building your project: 'mvn clean install'
+
+The Eclipse plugin provided by WebEngine is correctly generating all needed files.
+
+=== Type Visibility
+
+Modules can use any types declared in super modules but cannot see types from other modules. We can say that types are protected.
+
+In future more flexibility may added through a notion of 'friend' modules which will be able to see other module types.
+
+=== Resources Visibility
+
+Resources inside the skin directory are inherited from super modules. This means if a template or static resource is not find in your module the super module will be used to search for that resource.
+
+For object views the inheritance is more complex, it is first inheriting the super type views then if nothing was found it will use super modules.
+
+=== Groovy Modules
+
+Groovy support is not enabled by default. If you want to define web objects using Groovy you need to enable the 'groovy' nature on the module. This is an example on how to do this:
+{{{
+<module name="my_module" root-type="TheRoot" path="/my_module" >
+  <nature>groovy</nature>
+  ...
+</module>
+}}}
+
+=== Developing a new Module
+
+As a web module must reside in its own JAR file the best way to develop a new module is to create a dedicated project for it. WebEngine provides a tool to generate a web module project structure. To generate an empty project follow these steps:
++ Install WebEngine standalone server (either Jetty or GlassFissh version). We assume you installed it in nxserver folder.
++ Go to nxserver/extras/archetype
++ Run {{{java Archetype webmodule.zip}}}
+
+You will be asked to provide some information on your project like:
+  * Which group Id to use for your maven project (defaults to org.sample)
+  * Which artifact Id to use for your maven project (defaults to sample)
+  * Which version to use for your maven project (defaults to 1.0-SNAPSHOT)
+  * Which name to use for your module (defaults to artifact Id). This value will be also used for the Root object type (the module entry point type) and for the WEB path to bind the module to.
+  * Which is the java package name you want to put your module entry point class (defaults to group Id). This value will be also used as the OSGi MANIFEST entry Bundle-SymbolicName.
+
+If you want to use default values just hit enter when asked. Also, you can run the generation tool in batch mode to avoid prompting. THis can be done using the -b flag. In this mode you can specify the needed information by using java system variable like this:
+{{{ java Archetype -DgroupId=org.my.group -DartifactId=myArtifact -Dversion=1.0 \\
+    -DmoduleId=myModule -Dpackage=org.my.module.package Archetype -b webmodule.zip }}}
+
+In both modes the project will be generated in a folder in the current directory who's name is the same as the artifact Id. 
+
+To change the target folder you can use a second argument on the command line like this:
+{{{ java Archetype -b webmodule.zip output/folder }}}
+
+To deploy your module just build it using
+{{{ mvn clean install }}}
+And then copy the JAR inside nxserver/bundles directory.
+Restart the server by using either 
+{{{ ./nxserver.sh -dev }}}
+or
+{{{ ./nxserver.sh -clean }}}
+The -dev (or -clear) option is flushing the classpath cache - which is needed since you added a new JAR.
+
+If you want to generate a groovy module use the gwebmodule.zip template: 
+{{{ java Archive gwebmodule.zip }}}
+Then after building your module you can unzip the JAR and copy the content directly into nxserver/web/deploy directory (without packaging it as a JAR). This way by starting the server in development mode you can modify at runtime your groovy classes and have these changes visible in the working server.
+
+=== Using the Eclipse Plugin
+
+WebEngine is providin an Eclipse Plugin to easy develop web modules in Eclipse IDE. Using this module you can:
+* deploy your Eclipse projects as web modules in a running WebEngine server.
+* starting / stopping / debugging the server from Eclipse IDE.
+* modify your classes and resources without the needed to restart the server to have changes taken into account.
+
+To install the plugin you can use our Eclipse update site: http://download.nuxeo.org/nuxeo-ide/updates/snapshots
+
+To get started using the plugin you need first to install a standalone WebEngine server and then import your web module project inside eclipse.
+
+To do this you should use maven to generate eclipse specific files as following:
+{{{
+cd /into/yout/project/root
+mvn -o eclipse:eclipse
+}}}
+Then in eclipse use File > Import > General > Existing Project into Workspace to select you project root and import it as an Eclipse project in your workspace.
+
+Then right click on the project, and select __Nuxeo Tools > Add WebEngine Nature__.
+
+Now your project was marked as an WebEngine module project and can be deployed on the server you instlalled server.
+
+To deploy it, you need to open the WebEngine Server view from __Window > Show View > Other > Nuxeo Views > WebEngine Server__.
+
+In this view you will have listed all your projects marked as WebEngine modules. Click on right most icon in the view bar (Server Configuration) and specify the install path of your WebEngine server. Click OK. Now you can start your server from Eclipse IDE. Check the projects (that are listed in the view) you want to deploy on the server and then click on Run button. WebEngine will start (see logs in Console View) and will deploy your plugin too.
+
+You can now modify classes from Eclipse IDE without needing to redeploy your plugin. The changes will be available in your browser as you made them.
+
+*Notes:*
+
+* The Plugin development is still in progress so many features will be added soon, like creation wizards, maven support etc.
+* You must make sure that projects being deployed from Eclipse are *not* already deployed in the server installation directory, otherwise we will have your moduels deployed twice. We will provide later a fix to check for duplicate modules.
+* If your module use external libraries as dependecies you must deploy them for now manually in the server nxserver/lib directory. This will be improved in the future.
+
+=== How to checkout WebEngine sources
+
+To obtain the WebEngine sources, you can checkout a WebEngine copy using mercurial as follows:
+{{{
+hg clone http://hg.nuxeo.org/nuxeo/nuxeo-webengine
+hg up -C 5.2
+}}}
+
+If you want to build webengine, you need to run the following commands:
+{{{
+cd nuxeo-webengine
+mvn clean install
+}}}
+
+You need to checkout the nuxeo-distribution module in order to be able to build a standalone WebEngine server.
+{{{
+hg clone http://hg.nuxeo.org/nuxeo/nuxeo-distribution
+}}}
+And build your WebEngine server with jetty embedded:
+{{{
+cd nuxeo-distributions
+mvn clean install -Pjetty
+}}}
+and you will find the server zip in nuxeo-distribiution-jetty/target.
+To build WebEngine server with GlassFish v3 embedded run:
+{{{
+mvn clean install -Pgf3
+}}}
+and you will find the server zip in nuxeo-distribiution-gf3/target.
+
+Unzip the nxserver.zip go into, make sure the shell files are executable and start it using ./nxserver.sh (on linux)
+
+=== Tutorials
+
+In this chapter we will go deeper into WebEngine model by proposing 7 samples on how to use common WebEngine concepts.
+
+After installing WebEngine you can find samples inside nxserver/examples directory.
+To access these samples through your browser you need to copy sample folders in nxserver/web/deploy directory. Then follow the instruction in each tutorial.
+
+To correctly understand the tutorials you need to look into all `.groovy` and `.ftl` files you find in the corresponding sample modules. Each sample is well documented in the corresponding Main.groovy class using java docs.
+
+==== Tutorial 1 - Web Module: Hello World.
+
+This tutorial demonstrates how to create a Hello World module. This is the simplest module. It requires only one Groovy class which represents the Resource Module (the module entry point).
+
+You can access the tutorial sample at: http://localhost:8080/sample1
+
+==== Tutorial 2 - Using Templates
+
+This tutorial demonstrates how to use templates to render dynamic content.
+
+You can access the tutorial sample at: http://localhost:8080/sample2
+
+==== Tutorial 3 - Web Object Model
+
+This tutorial demonstrates the basics of the WebEngine Object Model.
+You can see how to create new Module Resources, Object Resources, Adapter Resources and views.
+
+You can access the tutorial sample at: http://localhost:8080/sample3
+
+==== Tutorial 4 - Working with Nuxeo Platform Documents
+
+This tutorial demonstrates how to access Nuxeo Platform Documents through WebEngine.
+
+You can access the tutorial sample at: http://localhost:8080/sample4
+
+==== Tutorial 5 - Module Extensibility
+
+This tutorial demonstrates how modules can be extended. The module defined here will extend the one in Tutorial 5.
+
+You can access the tutorial sample at: http://localhost:8080/sample5
+
+==== Tutorial 6 - Managing Links
+
+This tutorial demonstrates the way links you are using in your templates can be managed to create easy to maintain and modular applications.
+
+You can access the tutorial sample at: http://localhost:8080/sample6
+

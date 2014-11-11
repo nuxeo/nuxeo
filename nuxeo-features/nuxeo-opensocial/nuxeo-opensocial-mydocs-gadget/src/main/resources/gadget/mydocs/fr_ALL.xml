@@ -1,0 +1,13 @@
+<messagebundle>
+  <msg name="myDocuments">Mes Documents</msg> 
+  <msg name="description">Navigateur de documents</msg>
+  <msg name="add">Ajouter</msg> 
+  <msg name="modified">Modifié</msg> 
+  <msg name="author">Auteur</msg> 
+  <msg name="displayNoWorkspaceFound">Pas de documents trouvés pour cet espace</msg>
+  <msg name="confirmDelete">Voulez vous réellement supprimer le document ?</msg>
+  <msg name="createFolder">Créer un répertoire</msg>
+  <msg name="defaultFolder">Associer ce répertoire au widget</msg>
+  <msg name="confirmDefault">Ce répertoire ne sera plus celui affiché par défault. Voulez vous continuer ?</msg>
+  <msg name="confirmFolder">Voulez vous réellement afficher ce répertoire par défault ?</msg>
+</messagebundle>

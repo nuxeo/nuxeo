@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.tag.service" version="1.0">
+
+  <documentation>Expose the Tag service bean service as a Nuxeo Platform service</documentation>
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement"
+      point="services">
+
+    <documentation>Define the Tag service bean as a platform service.</documentation>
+
+    <service class="org.nuxeo.ecm.platform.tag.TagService" group="platform/tag">
+      <locator>%TagServiceBean</locator>
+    </service>
+
+  </extension>
+
+</component>
