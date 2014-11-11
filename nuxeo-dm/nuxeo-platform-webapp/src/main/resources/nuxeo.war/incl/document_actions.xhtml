@@ -1,0 +1,59 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <ui:include src="/select_document_type.xhtml"/>
+  <ui:include src="/create_file.xhtml"/>
+
+  <h:form id="documentActionSubviewUpperListForm">
+    <nxu:set var="actions"
+      value="#{webActions.getActionsList('SUBVIEW_UPPER_LIST')}"
+      cache="true">
+      <c:if test="#{!empty actions}">
+        <div class="action_bar">
+          <nxu:dataList layout="unorderedList"
+            var="action"
+            value="#{actions}"
+            id="documentActionSubviewUpperListTable">
+            <nxh:commandLink action="#{action.getLink()}"
+              id="documentActionSubviewUpperListLink">
+              <h:graphicImage value="#{action.icon}" />
+              <h:outputText value="#{messages[action.label]}" />
+            </nxh:commandLink>
+          </nxu:dataList>
+        </div>
+      </c:if>
+    </nxu:set>
+    <nxu:set var="actions"
+      value="#{webActions.getActionsList('SUBVIEW_UPPER_LIST_HREF')}"
+      cache="true">
+      <c:if test="#{!empty actions}">
+        <div class="action_bar">
+          <nxu:dataList layout="unorderedList"
+            var="action"
+            value="#{actions}">
+            <a href="#{action.getLink()}">
+              <h:graphicImage value="#{action.icon}" />
+              <h:outputText value="#{messages[action.label]}" />
+            </a>
+          </nxu:dataList>
+        </div>
+      </c:if>
+    </nxu:set>
+
+    <c:if test="#{currentDocument.hasFacet('WebView') and currentDocument.webc.isWebContainer}">
+      <nxl:layout name="#{currentDocument.type}" mode="view" value="" />
+    </c:if>
+
+  </h:form>
+  
+  <c:if test="#{!documentContentViewActions.hasContentViewSupport(currentDocument, 'content')}">
+    <ui:include src="/incl/document_listing_layout_selector.xhtml" />
+    <div style="clear:both"></div>
+  </c:if>
+
+</div>
