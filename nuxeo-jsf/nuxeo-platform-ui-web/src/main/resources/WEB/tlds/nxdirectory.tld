@@ -1,0 +1,680 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE taglib
+  PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
+  "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+<taglib>
+  <tlib-version>1.0</tlib-version>
+  <jsp-version>1.2</jsp-version>
+  <short-name>nxdir</short-name>
+  <uri>http://nuxeo.org/nxdirectory</uri>
+  <description>
+    <![CDATA[
+    <p>
+    NXDirectory tag library.
+    </p>
+    <p>
+    Exposes specific tags as well as utility functions like:
+    </p>
+    <ul>
+      <li> directoryEntry(String, String): gets the document model
+           representing an entry for given directory name and
+           entry id.</li>
+      <li> directoryListEntries(String, Collection<String>): gets the
+           list of document models representing entries for given directory
+           name and entry ids.</li>
+      <li> directoryEntries(String, String[]): gets the list of
+           document models representing entries for given directory
+           name and entry ids.</li>
+      <li> getLabelFromId(String, String): gets the Label of a vocabulary
+           entry for the given id and vocabulary. Deprecated, use
+           directoryEntry(String, String) which is more generic.</li>
+    </ul>
+    ]]>
+
+  </description>
+
+
+  <tag>
+    <name>selectItems</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>
+      <![CDATA[
+      <p>
+      Select items from a directory
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>directoryName</name>
+      <required>true</required>
+      <description>
+        Name of the directory that will be used to resolve entries from the
+        given list of ids.
+      </description>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <required>true</required>
+      <description>
+        Value binding representing the list of directory entry ids.
+      </description>
+    </attribute>
+    <attribute>
+      <name>displayAll</name>
+      <required>false</required>
+      <description>
+        Boolean stating that all entries from the directory should be presented,
+        regardless of the value attribute. Defaults to true.
+      </description>
+    </attribute>
+    <attribute>
+      <name>displayObsoleteEntries</name>
+      <required>false</required>
+      <description>
+        Boolean stating that obsolete entries should be stated. Defaults to
+        false.
+      </description>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>true</required>
+      <description>
+        Name of the request scope attribute that will be used to set a directory
+        entry value and label with flexibility.
+      </description>
+    </attribute>
+    <attribute>
+      <name>itemValue</name>
+      <required>true</required>
+      <description>
+        Value binding resolved to build the directory entry value.
+      </description>
+    </attribute>
+    <attribute>
+      <name>itemLabel</name>
+      <required>true</required>
+      <description>
+        Value binding resolved to build the directory entry label.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<!-- show the subject directory entries -->
+<nxdir:selectItems directoryName="subject"
+  var="item" itemValue="#{item.id}" itemLabel="#{item.vocabulary.label}" />
+
+<!-- show the subject directory entries filtered by given list -->
+<nxdir:selectItems directoryName="subject"
+  value="#{document.dublincore.subjects}" showAll="false"
+  var="item" itemValue="#{item.id}" itemLabel="#{item.vocabulary.label}" />
+      ]]>
+    </example>
+  </tag>
+  <tag>
+    <name>suggestBox</name>
+    <tag-class>None</tag-class>
+    <attribute>
+      <name>id</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        The tag id. Have to be Unique. It uses tomahawk forceid so it won't be
+        prefixed with its parent id.
+      </description>
+    </attribute>
+    <attribute>
+      <name>directory</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        The name of the directory you want to associate with the suggestBox.
+      </description>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The value binding.</description>
+    </attribute>
+    <attribute>
+      <name>displayIdAndLabel</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Boolean, if true, shows id and Label in the suggestBox.
+      </description>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>selectOneListbox</name>
+    <tag-class>org.nuxeo.ecm.ui.web.directory.SelectOneListboxTag</tag-class>
+    <attribute>
+      <name>id</name>
+      <description>The value of the id</description>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <required>true</required>
+      <description>The id for the selected option</description>
+    </attribute>
+    <attribute>
+      <name>displayValueOnly</name>
+      <description>Display only the value in a div</description>
+    </attribute>
+    <attribute>
+      <name>directoryName</name>
+      <required>true</required>
+      <description>The name of the directory</description>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <description>The name attribute for the html select tag</description>
+    </attribute>
+    <attribute>
+      <name>localize</name>
+      <description>Translate the option values</description>
+    </attribute>
+    <attribute>
+      <name>displayIdAndLabel</name>
+      <description>Display both the id and the label</description>
+    </attribute>
+    <attribute>
+      <name>cssStyle</name>
+      <description>The css style for the component</description>
+    </attribute>
+    <attribute>
+      <name>cssStyleClass</name>
+      <description>The css style class for the component</description>
+    </attribute>
+    <attribute>
+      <name>ordering</name>
+      <description>
+        The column to sort on, one of "id" or "label", default "label"
+      </description>
+    </attribute>
+    <attribute>
+      <name>caseSensitive</name>
+      <description>
+        Boolean attribute, to order elements case-sensitively.
+      </description>
+    </attribute>
+    <attribute>
+      <name>displayObsoleteEntries</name>
+      <description>Display obsolete entries, default false</description>
+    </attribute>
+    <attribute>
+      <name>onchange</name>
+      <description>Javascript onchange event handler</description>
+    </attribute>
+    <attribute>
+      <name>onclick</name>
+      <description>Javascript onclick event handler</description>
+    </attribute>
+    <attribute>
+      <name>onselect</name>
+      <description>Javascript onselect event handler</description>
+    </attribute>
+    <attribute>
+      <name>size</name>
+      <description>Html select size attribute</description>
+    </attribute>
+    <attribute>
+      <name>notDisplayDefaultOption</name>
+      <description>
+        True if there should not be displayed a "Please select a value" option
+      </description>
+    </attribute>
+    <attribute>
+      <name>filter</name>
+      <description>
+        Display only entries having a certain parent. Assumes the directory
+        schema is xvocabulary
+      </description>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>selectManyListbox</name>
+    <tag-class>org.nuxeo.ecm.ui.web.vocabulary.SelectManyListboxTag</tag-class>
+    <attribute>
+      <name>id</name>
+      <description>The value of the id</description>
+    </attribute>
+    <attribute>
+      <name>size</name>
+      <description>The size attribute for the html select</description>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <required>true</required>
+      <description>The list with the keys of the selected items</description>
+    </attribute>
+    <attribute>
+      <name>displayValueOnly</name>
+      <description>Display only the value in a div</description>
+    </attribute>
+    <attribute>
+      <name>displayValueOnlyStyle</name>
+      <description>
+        The div style to use when displaying only the value
+      </description>
+    </attribute>
+    <attribute>
+      <name>displayValueOnlyStyleClass</name>
+      <description>
+        The css style class to use when displaying only the value
+      </description>
+    </attribute>
+    <attribute>
+      <name>displayValueOnlySeparator</name>
+      <description>
+        The separator to use between elements when displaying only the value
+      </description>
+    </attribute>
+    <attribute>
+      <name>directoryName</name>
+      <required>true</required>
+      <description>The name of the directory</description>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <description>The name attribute for the html select tag</description>
+    </attribute>
+    <attribute>
+      <name>localize</name>
+      <description>Translate the option values</description>
+    </attribute>
+    <attribute>
+      <name>displayIdAndLabel</name>
+      <description>Display both the id and the label</description>
+    </attribute>
+    <attribute>
+      <name>cssStyle</name>
+      <description>The css style for the component</description>
+    </attribute>
+    <attribute>
+      <name>cssStyleClass</name>
+      <description>The css style class for the component</description>
+    </attribute>
+    <attribute>
+      <name>ordering</name>
+      <description>
+        The column to sort on, one of "id" or "label", default "label"
+      </description>
+    </attribute>
+    <attribute>
+      <name>caseSensitive</name>
+      <description>
+        Boolean attribute, to order elements case-sensitively.
+      </description>
+    </attribute>
+    <attribute>
+      <name>displayObsoleteEntries</name>
+      <description>Display obsolete entries, default false</description>
+    </attribute>
+    <attribute>
+      <name>onchange</name>
+      <description>Javascript onchange event handler</description>
+    </attribute>
+    <attribute>
+      <name>onclick</name>
+      <description>Javascript onclick event handler</description>
+    </attribute>
+    <attribute>
+      <name>onselect</name>
+      <description>Javascript onselect event handler</description>
+    </attribute>
+    <attribute>
+      <name>notDisplayDefaultOption</name>
+      <description>
+        True if there should not be displayed a "Please select a value" option
+      </description>
+    </attribute>
+    <attribute>
+      <name>filter</name>
+      <description>
+        Display only entries having a certain parent. Assumes the directory
+        schema is xvocabulary
+      </description>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>directoryEntryOutput</name>
+    <tag-class>
+      org.nuxeo.ecm.ui.web.vocabulary.DirectoryEntryOutputTag
+    </tag-class>
+    <attribute>
+      <name>value</name>
+      <required>true</required>
+      <description>The entry identifier - can be a value binding</description>
+    </attribute>
+    <attribute>
+      <name>directoryName</name>
+      <required>true</required>
+      <description>
+        The name of the directory - can be a value binding
+      </description>
+    </attribute>
+    <attribute>
+      <name>localize</name>
+      <description>Localize the option values</description>
+    </attribute>
+    <attribute>
+      <name>displayIdAndLabel</name>
+      <description>Display both the id and the label</description>
+    </attribute>
+  </tag>
+
+  <!--  chain selects -->
+  <tag>
+    <name>chainSelectListbox</name>
+    <tag-class>org.nuxeo.ecm.ui.web.directory.ChainSelectListbox</tag-class>
+    <attribute>
+      <name>id</name>
+      <description>The value of the id</description>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <description>The name of the directory</description>
+    </attribute>
+    <attribute>
+      <name>displayIdAndLabel</name>
+      <description>Display both the id and the label</description>
+    </attribute>
+    <attribute>
+      <name>cssStyle</name>
+      <description>The css style for the component</description>
+    </attribute>
+    <attribute>
+      <name>cssStyleClass</name>
+      <description>The css style class for the component</description>
+    </attribute>
+    <attribute>
+      <name>index</name>
+      <description>Component index in chain</description>
+    </attribute>
+    <attribute>
+      <name>size</name>
+      <description>The html size attribute for the combo</description>
+    </attribute>
+    <attribute>
+      <name>localize</name>
+      <description>Translate the option values</description>
+    </attribute>
+    <attribute>
+      <name>onchange</name>
+      <description>Javascript onchange event handler</description>
+    </attribute>
+    <attribute>
+      <name>displayObsoleteEntries</name>
+      <description>Display obsolete entries, default false</description>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>chainSelectMultiListbox</name>
+    <tag-class>
+      org.nuxeo.ecm.ui.web.directory.ChainSelectMultiListbox
+    </tag-class>
+    <attribute>
+      <name>id</name>
+      <description>The value of the id</description>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <description>The name of the directory</description>
+    </attribute>
+    <attribute>
+      <name>displayIdAndLabel</name>
+      <description>Display both the id and the label</description>
+    </attribute>
+    <attribute>
+      <name>cssStyle</name>
+      <description>The css style for the component</description>
+    </attribute>
+    <attribute>
+      <name>cssStyleClass</name>
+      <description>The css style class for the component</description>
+    </attribute>
+    <attribute>
+      <name>index</name>
+      <description>Component index in chain</description>
+    </attribute>
+    <attribute>
+      <name>size</name>
+      <description>The html size attribute for the combo</description>
+    </attribute>
+    <attribute>
+      <name>localize</name>
+      <description>Translate the option values</description>
+    </attribute>
+    <attribute>
+      <name>onchange</name>
+      <description>Javascript onchange event handler</description>
+    </attribute>
+    <attribute>
+      <name>displayObsoleteEntries</name>
+      <description>Display obsolete entries, default false</description>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>chainSelect</name>
+    <tag-class>org.nuxeo.ecm.ui.web.directory.ChainSelect</tag-class>
+    <attribute>
+      <name>id</name>
+      <description>The id of the component</description>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <description>A string or string array</description>
+    </attribute>
+    <attribute>
+      <name>displayIdAndLabel</name>
+      <description>Display both the id and the label</description>
+    </attribute>
+    <attribute>
+      <name>cssStyle</name>
+      <description>The css style for the component</description>
+    </attribute>
+    <attribute>
+      <name>cssStyleClass</name>
+      <description>The css style class for the component</description>
+    </attribute>
+    <attribute>
+      <name>onchange</name>
+      <description>Javascript event</description>
+    </attribute>
+    <attribute>
+      <name>index</name>
+      <description>Component index in chain</description>
+    </attribute>
+    <attribute>
+      <name>multiSelect</name>
+      <description>Allow multiple elements to be selected</description>
+    </attribute>
+    <attribute>
+      <name>qualifiedParentKeys</name>
+      <description>
+        choose whether the parent keys contain just the parent id or the whole
+        path in the chain
+      </description>
+    </attribute>
+    <attribute>
+      <name>allowBranchSelection</name>
+      <description>
+        Option to allow the user to make a partial selection in the chain
+      </description>
+    </attribute>
+    <attribute>
+      <name>allowRootSelection</name>
+      <description>
+        Option to allow the user to not make any selection
+      </description>
+    </attribute>
+    <attribute>
+      <name>displayValueOnly</name>
+      <description>Display only the selection, without the combos</description>
+    </attribute>
+    <attribute>
+      <name>displayValueOnlyStyle</name>
+      <description>Css style to use when displaying only the value</description>
+    </attribute>
+    <attribute>
+      <name>displayValueOnlyStyleClass</name>
+      <description>
+        Css style class to use when displaying only the value
+      </description>
+    </attribute>
+    <attribute>
+      <name>defaultRootKey</name>
+      <description>
+        Parent key to filter on to get a directory roots. Defaults to null if
+        not set.
+      </description>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>chainSelectOne</name>
+    <tag-class>org.nuxeo.ecm.ui.web.directory.ChainSelectOne</tag-class>
+    <attribute>
+      <name>id</name>
+      <description>The id of the component</description>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <description>A string or value binding</description>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>chainSelectMany</name>
+    <tag-class>org.nuxeo.ecm.ui.web.directory.ChainSelectMany</tag-class>
+    <attribute>
+      <name>id</name>
+      <description>The id of the component</description>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <description>An array of values</description>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>chainSelectStatus</name>
+    <tag-class>org.nuxeo.ecm.ui.web.directory.ChainSelectStatus</tag-class>
+    <attribute>
+      <name>id</name>
+    </attribute>
+    <attribute>
+      <name>name</name>
+    </attribute>
+    <attribute>
+      <name>displayIncremental</name>
+    </attribute>
+    <attribute>
+      <name>displayRoot</name>
+    </attribute>
+    <attribute>
+      <name>cssStyle</name>
+    </attribute>
+    <attribute>
+      <name>cssStyleClass</name>
+    </attribute>
+    <attribute>
+      <name>entryCssStyle</name>
+    </attribute>
+    <attribute>
+      <name>entryCssStyleClass</name>
+    </attribute>
+    <attribute>
+      <name>entrySeparator</name>
+      <description>
+        A string to separate multiple selections, if the chainSelect is
+        multiselect
+      </description>
+    </attribute>
+    <attribute>
+      <name>display</name>
+      <description>
+        One of "value" or "selection". If equal to "value", the control will
+        display the value of the component. If equal to "selection", the control
+        will display the current selection.
+      </description>
+    </attribute>
+    <attribute>
+      <name>image</name>
+      <description>
+        A string to separate multiple selections, if the chainSelect is
+        multiselect
+      </description>
+    </attribute>
+    <attribute>
+      <name>label</name>
+      <description>
+        A string to label the selections, if there are any selections
+      </description>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>chainSelectOutput</name>
+    <tag-class>
+      org.nuxeo.ecm.ui.web.directory.ChainSelectOutputComponent
+    </tag-class>
+    <attribute>
+      <name>id</name>
+    </attribute>
+    <attribute>
+      <name>cssStyle</name>
+    </attribute>
+    <attribute>
+      <name>directoryNameList</name>
+    </attribute>
+    <attribute>
+      <name>cssStyleClass</name>
+    </attribute>
+    <attribute>
+      <name>entrySeparator</name>
+      <description>
+        A string to separate multiple selections, if the chainSelect is
+        multiselect
+      </description>
+    </attribute>
+    <attribute>
+      <name>keySeparator</name>
+      <description>
+        The string used to separate directory keys in the value
+      </description>
+    </attribute>
+    <attribute>
+      <name>displayKeySeparator</name>
+      <description>
+        The string used in display to separate elements of the chain (defaults
+        to keySeparator)
+      </description>
+    </attribute>
+    <attribute>
+      <name>display</name>
+      <description>One of "id", "label" or "idAndLabel".</description>
+    </attribute>
+    <attribute>
+      <name>localize</name>
+      <description>
+        Boolean indicating whether to localize the labels or not.
+      </description>
+    </attribute>
+    <attribute>
+      <name>handleMultipleValues</name>
+      <description>
+        Boolean to treat multi-valued fields as seperate entries (multi-line
+        rendering).
+      </description>
+    </attribute>
+  </tag>
+
+</taglib>
