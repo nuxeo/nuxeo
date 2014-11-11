@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXMimeType API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.mimetype.api
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: 
+Require-Bundle: org.nuxeo.ecm.core.api
+Export-Package: org.nuxeo.ecm.platform.mimetype,
+ org.nuxeo.ecm.platform.mimetype.interfaces
+Bundle-ClassPath: .
