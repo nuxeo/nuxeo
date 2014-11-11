@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.test.repo.repository">
+  <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
+    point="repositories">
+    <repository name="test" />
+  </extension>
+  <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
+    point="repository">
+    <repository name="test"
+      factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
+      <repository sendInvalidationEvents="true">
+        <schema>
+          <field type="largetext">note</field>
+        </schema>
+        <indexing>
+          <fulltext analyzer="org.apache.lucene.analysis.fr.FrenchAnalyzer">
+            <index> <!-- name="default" implied -->
+              <!-- all props implied -->
+            </index>
+            <index name="title">
+              <field>dc:title</field>
+            </index>
+          </fulltext>
+        </indexing>
+        <xa-datasource>org.apache.derby.jdbc.EmbeddedXADataSource</xa-datasource>
+        <property name="createDatabase">create</property>
+        <property name="databaseName">${nuxeo.test.vcs.database}</property>
+        <property name="user">${nuxeo.test.vcs.user}</property>
+        <property name="password">${nuxeo.test.vcs.password}</property>
+      </repository>
+    </repository>
+  </extension>
+</component>
