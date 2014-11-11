@@ -1,0 +1,112 @@
+<div class="publication_block"
+     xmlns:nxu="http://nuxeo.org/nxweb/util"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:nxh="http://nuxeo.org/nxweb/html"
+     xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <div>
+
+    <h:panelGroup rendered="#{publishActions.publishedDocument}">
+
+      <h3><h:outputText value="#{messages['label.publishing.title']}"/></h3>
+
+      <br/>
+
+      <nxu:methodResult name="canManagePublishing"
+                        value="#{publishActions.canManagePublishing}">
+
+        <h:outputText rendered="#{publishActions.pending}"
+                      value="#{messages['label.document.pending']}"/>
+
+        <h:panelGroup rendered="#{publishActions.hasValidationTask()}">
+          <table class="dataInput">
+            <tr>
+              <td>
+                <h:outputText class="required"
+                              value="#{messages['label.publishing.user.comment']}"/>
+              </td>
+              <td>
+                <h:inputTextarea id="rejectPublishingComment"
+                                 rows="5" cols="50"
+                                 value="#{publishActions.publishingComment}"/>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <h:message styleClass="errorMessage"
+                           for="rejectPublishingComment"/>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <h:commandButton
+                                 value="#{messages['label.publishing.accept']}"
+                                 styleClass="button"
+                                 rendered="#{canManagePublishing}"
+                                 action="#{publishActions.approveDocument}"/>
+                <h:commandButton
+                        value="#{messages['label.publishing.reject']}"
+                        styleClass="button"
+                        rendered="#{canManagePublishing}"
+                        action="#{publishActions.rejectDocument}"/>
+              </td>
+            </tr>
+          </table>
+        </h:panelGroup>
+
+        <div>
+          <h:outputText
+                  rendered="#{!publishActions.pending}"
+                  value="#{messages['label.document.published']}"/>
+          <br/>
+        </div>
+
+      </nxu:methodResult>
+
+    </h:panelGroup>
+  </div>
+
+  <nxu:repeat value="#{availablePublicationTrees}" var="tree"
+                 styleClass="dataOutput">
+
+      <nxu:set var="publishedDocuments"
+                        value="#{publishActions.getPublishedDocumentsFor(tree.name)}" cache="true">
+      <h:panelGroup rendered="#{publishedDocuments != null and publishedDocuments.size()>0}">
+      <h4><h:outputText value="#{messages[tree.title]}#{publishActions.getDomainName(tree.name)}"/></h4>
+      </h:panelGroup>
+        <nxu:dataTable value="#{publishedDocuments}"
+                       var="publishedDocument"
+                       rendered="#{publishedDocuments != null and publishedDocuments.size()>0}"
+                       styleClass="dataOutput">
+          <!-- id and selection -->
+          <nxu:column>
+            <h:panelGroup
+                    rendered="#{publishActions.isRemotePublishedDocument(publishedDocument)}">
+              <h:outputText value="Remote: #{publishedDocument.parentPath}"/>
+            </h:panelGroup>
+
+            <h:panelGroup
+                    rendered="#{publishActions.isLocalPublishedDocument(publishedDocument)
+                      and publishActions.hasReadRight(publishedDocument.parentPath)}">
+              <nxd:restDocumentLink
+                      document="#{publishActions.getDocumentModelFor(publishedDocument.parentPath)}">
+                <h:outputText
+                        value="#{publishActions.getFormattedPath(publishedDocument.parentPath)}"/>
+              </nxd:restDocumentLink>
+            </h:panelGroup>
+
+            <h:panelGroup
+                    rendered="#{publishActions.isFileSystemPublishedDocument(publishedDocument)}">
+              <h:outputText value="#{publishedDocument.parentPath}"/>
+            </h:panelGroup>
+          </nxu:column>
+          <nxu:column>
+            <h:outputText value="#{publishedDocument.sourceVersionLabel}"/>
+          </nxu:column>
+        </nxu:dataTable>
+      </nxu:set>
+  </nxu:repeat>
+</div>
