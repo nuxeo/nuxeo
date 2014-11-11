@@ -1,0 +1,24 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <h:form	id="document_view">
+
+    <iframe src="#{previewActions.previewURL}" frameborder="1" height="600px" width="100%" scrolling="auto" id="preview-frame">
+    </iframe>
+
+    <script type="text/javascript">
+      jQuery(document).ready(function() {
+        var fancyBox = jQuery('#fancybox-content', window.parent.document);
+        if (fancyBox.length > 0 &amp;&amp; fancyBox.height() > 0) {
+          // we know we are in a fancybox
+          jQuery('#preview-frame').height(fancyBox.height() - 20);
+        }
+      });
+    </script>
+
+  </h:form>
+</div>

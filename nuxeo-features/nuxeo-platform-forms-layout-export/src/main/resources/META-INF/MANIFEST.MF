@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Layout Export Fragment
+Bundle-SymbolicName: org.nuxeo.ecm.platform.forms.layout.export;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: stateless
+Require-Bundle: org.nuxeo.ecm.platform.forms.layout.api,
+ org.nuxeo.ecm.platform.forms.layout.client
+Nuxeo-WebModule: org.nuxeo.ecm.platform.forms.layout.export.WebLayoutApplication

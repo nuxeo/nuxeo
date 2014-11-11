@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.webengine.blogs.layouts">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+    
+    <layout name="blogcontainer">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>name</widget>
+        </row>
+        <row>
+          <widget>url</widget>
+        </row>
+        <row>
+          <widget>baseline</widget>
+        </row>
+        <row>
+          <widget>email</widget>
+        </row>
+        <row>
+          <widget>logo</widget>
+        </row>
+        <row>
+          <widget>welcomeText</widget>
+        </row>
+        <row>
+          <widget>welcomeMedia</widget>
+        </row>
+        <row>
+          <widget>useCaptcha</widget>
+        </row>
+        <row>
+          <widget>moderationType</widget>
+        </row>
+      </rows>
+
+      <widget name="name" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="validator">
+            #{siteActions.validateBlogTitle}
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="url" type="template">
+        <widgetModes>
+          <mode value="any">view</mode>
+        </widgetModes>
+        <translated>true</translated>
+        <fields>
+          <field>webc:url</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/blog_url_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+      
+      <widget name="baseline" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>webc:baseline</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+
+      <widget name="email" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>webc:email</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+
+      <widget name="logo" type="file">
+        <translated>true</translated>
+        <fields>
+          <field>webc:logo</field>
+        </fields>
+      </widget>
+
+      <widget name="welcomeText" type="htmltext">
+        <translated>true</translated>
+        <fields>
+          <field>webc:welcomeText</field>
+        </fields>
+      </widget>
+
+      <widget name="welcomeMedia" type="file">
+        <translated>true</translated>
+        <fields>
+          <field>webc:welcomeMedia</field>
+        </fields>
+      </widget>
+
+      <widget name="useCaptcha" type="checkbox">
+        <translated>true</translated>
+        <fields>
+          <field>webc:useCaptcha</field>
+        </fields>
+      </widget>
+
+      <widget name="moderationType" type="template">
+        <translated>true</translated>
+        <fields>
+          <field>webc:moderationType</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/moderation_type_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+
+    </layout>
+        
+    <layout name="blog">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>accept_trackback</widget>
+        </row>
+        <row>
+          <widget>accept_comment</widget>
+        </row>
+        <row>
+          <widget>feedburner_id</widget>
+        </row>
+        <row>
+          <widget>akismet_id</widget>
+        </row>
+        <row>
+          <widget>google_analytics_id</widget>
+        </row>
+      </rows>
+      <widget name="accept_trackback" type="checkbox">
+        <translated>true</translated>
+        <fields>
+          <field>blog:accept_trackback</field>
+        </fields>
+      </widget>
+      <widget name="accept_comment" type="checkbox">
+        <translated>true</translated>
+        <fields>
+          <field>blog:accept_comment</field>
+        </fields>
+      </widget>
+      <widget name="feedburner_id" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>blog:feedburner_id</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="akismet_id" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>blog:akismet_id</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="google_analytics_id" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>blog:google_analytics_id</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+    </layout>
+    
+    <layout name="blogpost">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>atomid</widget>
+        </row>
+        <row>
+          <widget>accept_trackback</widget>
+        </row>           
+      </rows>
+      <widget name="atomid" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>blogpost:atomid</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="accept_trackback" type="checkbox">
+        <translated>true</translated>
+        <fields>
+          <field>blogpost:accept_trackback</field>
+        </fields>
+      </widget>
+    </layout>
+    
+    <layout name="BlogSite">
+      <templates>
+        <template mode="any">
+          /layouts/layout_blog_url_link.xhtml
+        </template>
+      </templates>      
+    </layout>  
+        
+  </extension>
+
+</component>

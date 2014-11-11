@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Annotations Repository Plugin Test
+Bundle-SymbolicName: org.nuxeo.ecm.annotations.repository.test;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateful
+Nuxeo-Component: OSGI-INF/repository-contrib-test.xml

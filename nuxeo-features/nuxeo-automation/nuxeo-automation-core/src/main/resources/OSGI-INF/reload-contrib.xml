@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.automation.core.impl.ReloadListener">
+
+    <extension target="org.nuxeo.runtime.EventService" point="listeners">
+        <listener class="org.nuxeo.ecm.automation.core.impl.ReloadListener">
+            <topic>org.nuxeo.runtime.reload</topic>
+        </listener>
+    </extension>
+
+</component>
