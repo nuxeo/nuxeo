@@ -1,0 +1,31 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.distribution</groupId>
+    <artifactId>nuxeo-distribution</artifactId>
+    <version>5.3.2-I20100628_1446</version>
+  </parent>
+
+  <artifactId>nuxeo-distribution-windows</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo Distribution for Windows</name>
+  <description>Build Windows resources and installers</description>
+
+  <profiles>
+    <profile>
+      <id>installer-windows-nuxeo-dm</id>
+      <modules>
+        <module>windows-installer</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>windows-startup</id>
+      <modules>
+        <module>windows-startup</module>
+      </modules>
+    </profile>
+  </profiles>
+
+</project>
