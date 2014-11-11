@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>testIpRights</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">testIpRights</td></tr>
+</thead><tbody>
+  <tr>
+    <td>setTimeout</td>
+    <td>120000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>open</td>
+    <td>/nuxeo/logout</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>type</td>
+    <td>username</td>
+    <td>Administrator</td>
+  </tr>
+  <tr>
+    <td>type</td>
+    <td>password</td>
+    <td>Administrator</td>
+  </tr>
+  <tr>
+    <td>clickAndWait</td>
+    <td>Submit</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>clickAndWait</td>
+    <td>link=DAM</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>link=P-05.jpg</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>P-05</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>//*[@id='selectionView']/div/form/ul/li[2]/a</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>//*[@id='navigation:assetView']/div/div/div[1]/span[2]/a</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>select</td>
+    <td>//*[@id='navigation:assetView:editIPRights:nxl_ip_rights_1:nxw_media_type_1']</td>
+    <td>Web</td>
+  </tr>
+  <tr>
+    <td>select</td>
+    <td>//*[@id='navigation:assetView:editIPRights:nxl_ip_rights_1:nxw_geo_broadcast_1']</td>
+    <td>Europe</td>
+  </tr>
+  <tr>
+    <td>type</td>
+    <td>//*[@id='navigation:assetView:editIPRights:nxl_ip_rights_1:nxw_copyright_holder_1']</td>
+    <td>Great holder</td>
+  </tr>
+  <tr>
+    <td>select</td>
+    <td>//*[@id='navigation:assetView:editIPRights:nxl_ip_rights_1:nxw_licence_1:nxw_licence_1_dam_licence']</td>
+    <td>All rights reserved</td>
+  </tr>
+  <tr>
+    <td>type</td>
+    <td>//*[@id='navigation:assetView:editIPRights:nxl_ip_rights_1:nxw_embargo_date_1InputDate']</td>
+    <td>11/19/2009</td>
+  </tr>
+  <tr>
+    <td>type</td>
+    <td>//*[@id='navigation:assetView:editIPRights:nxl_ip_rights_1:nxw_expiration_date_1InputDate']</td>
+    <td>11/21/2009</td>
+  </tr>
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>//*[@id='navigation:assetView']/div/div/div[1]/span[1]/a</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyText</td>
+    <td>//*[@id='navigation:assetView']/div/div[2]/table/tbody/tr[1]/td[2]</td>
+    <td>Web</td>
+  </tr>
+  <tr>
+    <td>verifyText</td>
+    <td>//*[@id='navigation:assetView']/div/div[2]/table/tbody/tr[2]/td[2]</td>
+    <td>Europe</td>
+  </tr>
+  <tr>
+    <td>verifyText</td>
+    <td>//*[@id='navigation:assetView:viewIRights:nxl_ip_rights:nxw_copyright_holder']</td>
+    <td>Great holder</td>
+  </tr>
+  <tr>
+    <td>verifyText</td>
+    <td>//*[@id='navigation:assetView']/div/div[2]/table/tbody/tr[4]/td[2]</td>
+    <td>All rights reserved</td>
+  </tr>
+  <tr>
+    <td>verifyText</td>
+    <td>//*[@id='navigation:assetView:viewIRights:nxl_ip_rights:nxw_embargo_date']</td>
+    <td>11/19/2009</td>
+  </tr>
+  <tr>
+    <td>verifyText</td>
+    <td>//*[@id='navigation:assetView:viewIRights:nxl_ip_rights:nxw_expiration_date']</td>
+    <td>11/21/2009</td>
+  </tr>
+  <tr>
+    <td>verifyText</td>
+    <td>//*[@id='navigation:assetView']/div/div/h3</td>
+    <td>Intellectual property rights</td>
+  </tr>
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>//*[@id='navigation:assetView']/div/div/div[1]/span[2]/a</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>select</td>
+    <td>//*[@id='navigation:assetView:editIPRights:nxl_ip_rights_1:nxw_geo_broadcast_1']</td>
+    <td>United States of America</td>
+  </tr>
+  <tr>
+    <td>type</td>
+    <td>//*[@id='navigation:assetView:editIPRights:nxl_ip_rights_1:nxw_copyright_holder_1']</td>
+    <td>Great holder1</td>
+  </tr>
+  <tr>
+    <td>select</td>
+    <td>//*[@id='navigation:assetView:editIPRights:nxl_ip_rights_1:nxw_licence_1:nxw_licence_1_dam_licence']</td>
+    <td>Public domain</td>
+  </tr>
+  <tr>
+    <td>type</td>
+    <td>//*[@id='navigation:assetView:editIPRights:nxl_ip_rights_1:nxw_expiration_date_1InputDate']</td>
+    <td>11/29/2009</td>
+  </tr>
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>//*[@id='navigation:assetView']/div/div/div[1]/span[1]/a</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyText</td>
+    <td>//*[@id='navigation:assetView']/div/div[2]/table/tbody/tr[2]/td[2]</td>
+    <td>United States of America</td>
+  </tr>
+  <tr>
+    <td>type</td>
+    <td>//*[@id='navigation:assetView:viewIRights:nxl_ip_rights:nxw_copyright_holder']</td>
+    <td>Great holder1</td>
+  </tr>
+  <tr>
+    <td>verifyText</td>
+    <td>//*[@id='navigation:assetView']/div/div[2]/table/tbody/tr[4]/td[2]</td>
+    <td>Public domain</td>
+  </tr>
+  <tr>
+    <td>verifyText</td>
+    <td>//*[@id='navigation:assetView:viewIRights:nxl_ip_rights:nxw_expiration_date']</td>
+    <td>11/29/2009</td>
+  </tr>
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>//*[@id='navigation:assetView']/div/div/div[1]/span[2]/a</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>select</td>
+    <td>//*[@id='navigation:assetView:editIPRights:nxl_ip_rights_1:nxw_media_type_1']</td>
+    <td>Select a value</td>
+  </tr>
+  <tr>
+    <td>select</td>
+    <td>//*[@id='navigation:assetView:editIPRights:nxl_ip_rights_1:nxw_geo_broadcast_1']</td>
+    <td>Select a value</td>
+  </tr>
+  <tr>
+    <td>type</td>
+    <td>//*[@id='navigation:assetView:editIPRights:nxl_ip_rights_1:nxw_copyright_holder_1']</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>select</td>
+    <td>//*[@id='navigation:assetView:editIPRights:nxl_ip_rights_1:nxw_licence_1:nxw_licence_1_dam_licence']</td>
+    <td>Select a value</td>
+  </tr>
+  <tr>
+    <td>type</td>
+    <td>//*[@id='navigation:assetView:editIPRights:nxl_ip_rights_1:nxw_embargo_date_1InputDate']</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>type</td>
+    <td>//*[@id='navigation:assetView:editIPRights:nxl_ip_rights_1:nxw_expiration_date_1InputDate']</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>//*[@id='navigation:assetView']/div/div/div[1]/span[1]/a</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextNotPresent</td>
+    <td>//*[@id='navigation:assetView']/div/table/tbody/tr[2]/td[2]</td>
+    <td>United States of America</td>
+  </tr>
+  <tr>
+    <td>verifyTextNotPresent</td>
+    <td>//*[@id='navigation:assetView:viewIRights:nxl_ip_rights:nxw_copyright_holder']</td>
+    <td>Great holder1</td>
+  </tr>
+  <tr>
+    <td>verifyTextNotPresent</td>
+    <td>//*[@id='navigation:assetView']/div/div[2]/table/tbody/tr[4]/td[2]</td>
+    <td>Public domain</td>
+  </tr>
+  <tr>
+    <td>verifyTextNotPresent</td>
+    <td>//*[@id='navigation:assetView:viewIRights:nxl_ip_rights:nxw_expiration_date']</td>
+    <td>11/29/2009</td>
+  </tr>
+  <tr>
+    <td>open</td>
+    <td>/nuxeo/logout</td>
+    <td></td>
+  </tr>
+</tbody></table>
+</body>
+</html>
