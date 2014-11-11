@@ -1,0 +1,8 @@
+ {"id": "link disabler",
+   "type": "behaviour",
+   "rules": {
+     "a": {
+       "click": "cancel event"
+     }
+   }
+ }
