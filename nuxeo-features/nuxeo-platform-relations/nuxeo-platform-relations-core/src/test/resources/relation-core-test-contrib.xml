@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.relations.test.core">
+
+  <!-- Graph example for tests -->
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="graphs">
+    <graph name="myrelations" type="core">
+      <option name="doctype">DefaultRelation</option>
+    </graph>
+  </extension>
+
+</component>
