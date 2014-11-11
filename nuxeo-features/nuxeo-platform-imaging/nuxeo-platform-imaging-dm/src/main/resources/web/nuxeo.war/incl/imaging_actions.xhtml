@@ -1,0 +1,34 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core">
+    
+  <div class="action_bar">
+    <ul>
+       <c:if test="#{nxd:canModify(currentDocument)}">
+      <li>
+        <nxh:commandLink action="#{pictureManager.rotate90left}">
+          <h:graphicImage value="icons/page_rotateleft.gif" />
+          <h:outputText value="#{messages['action.picture.rotateLeft']}" />
+        </nxh:commandLink>
+      </li>
+      <li>
+        <nxh:commandLink action="#{pictureManager.rotate90right}">
+          <h:graphicImage value="icons/page_rotateright.gif" />
+          <h:outputText value="#{messages['action.picture.rotateRight']}" />
+        </nxh:commandLink>
+      </li>
+      </c:if>
+      <li>
+        <c:set var="filename" value="#{currentDocument.dublincore.title} - #{currentDocument.picture.views[pictureManager.index].title}"/>
+        <nxh:outputLink value="#{nxd:fileUrl('downloadPicture', currentDocument , url, filename)}">
+          <img src="icons/icone_download.gif" style="vertical-align: right"
+            alt="#{messages['label.outputFile.download']}"
+            title="#{messages['label.outputFile.download']}" />
+          <h:outputText value="#{messages['label.outputFile.download']}" />
+        </nxh:outputLink>
+      </li>
+    </ul>
+  </div>
+  <div style="clear: both"></div>
+</div>

@@ -1,0 +1,41 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  class="abandonProcess">
+  
+<c:if test="#{jbpmActions.canManageProcess}">
+
+  <h:form id="abandonProcess">
+    <div class="closedContent">
+      <h3>
+        <h:outputText value="#{messages['label.review.my.tasks']}"/></h3>
+      <br/>
+      <table class="dataInput">
+        <tr>
+          <td class="labelColumn">
+            <h:outputText class="required"
+              value="#{messages['label.review.user.comment']}"/>
+          </td>
+          <td>
+            <h:inputTextarea id="userWorkflowComment" rows="5" cols="50"
+              required="true" value="#{jbpmActions.userComment}"/>
+            <h:message styleClass="errorMessage" for="userWorkflowComment"/>
+          </td>
+        </tr>
+        <tr>
+          <td/>
+          <td>
+            <h:commandButton
+              value="#{messages['label.review.abandon.workflow']}"
+              styleClass="button"
+              action="#{jbpmActions.abandonCurrentProcess}"/>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </h:form>
+
+</c:if>
+
+</div>
