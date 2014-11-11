@@ -1,0 +1,13 @@
+<div class="tabsBar" xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+  <h:form>
+    <nxu:dataList layout="unorderedList" var="tab" value="#{tabsActionsList}"
+      itemStyleClass="#{nxu:test(webActions.currentTabAction == tab, 'selected', '')}">
+      <nxd:restDocumentLink document="#{currentDocument}" tab="#{tab.id}">
+        <h:outputText value="#{messages[tab.label]}" />
+      </nxd:restDocumentLink>
+    </nxu:dataList>
+  </h:form>
+</div>
