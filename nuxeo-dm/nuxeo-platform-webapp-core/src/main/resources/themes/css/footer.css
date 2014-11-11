@@ -1,0 +1,36 @@
+/*
+Styles for all the foldable boxes.
+=Footer -> Corporate footer
+=Connect Banner -> Only visible if your instance is not registered to Nuxeo Connect
+author: lkemen@nuxeo.com
+*/
+
+/* =Footer */
+.nxFooter { background: none "footer (__FLAVOR__ background)"; font-size: 12px;	width:100% }
+.footerDefaultLinks { padding: 1.4em }
+
+.nxFooter .content { text-align: right; width: 100% }
+.nxFooter a {	color: "link.footer (__FLAVOR__ color)" }
+
+.copyrights { color: "link.footer (__FLAVOR__ color)"; float: right; filter:alpha(opacity=65); opacity: .65; padding: .2em 2em 0 0 }
+.nuxLinks { float: right; padding-left: 2em }
+.nuxLinks a { vertical-align: middle }
+
+a.twitt, a.linkedin { display: inline-block; height: 16px; margin: 0 .4em; width: 16px }
+a.twitt{ background: transparent url("${basePath}/icons/icones-metanav.png") no-repeat left top }
+a.linkedin {background: transparent url("${basePath}/icons/icones-metanav.png") no-repeat -16px top }
+a.twitt:hover { background-position: left bottom }
+a.linkedin:hover { background-position: -16px bottom }
+a.twitt .footerLabel, a.linkedin .footerLabel { display: none }
+
+ /* =Connect Banner */
+.bannerBottom { font-size: 11px; text-align: left; padding: .3em 1.4em .1em }
+.bannerBottom .links a, .links a:link, .links a:visited { background-color: #108EBD; border: 1px solid #1191C1; color: #EFEFEF; cursor: pointer; display: block; margin: 2px; padding: 0 3em; text-decoration: none }
+.bannerBottom .links a:hover { background-color: #1aabe0; border: 1px solid #3ab6e3; color:#fff; text-decoration: none }
+
+.bannerMessage { padding: .1em }
+.bannerMessage p { margin: 0 0 .3em }
+
+.unregistered { background-color: #0e88b5; color:#fff }
+.unregistered .bannerMessage { float: left }
+.unregistered .links { float: right }
