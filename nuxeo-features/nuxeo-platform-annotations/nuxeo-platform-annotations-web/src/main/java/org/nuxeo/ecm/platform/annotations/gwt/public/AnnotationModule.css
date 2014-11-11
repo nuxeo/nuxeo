@@ -1,0 +1,276 @@
+/** Add css rules here for your application. */
+
+button {
+display: block;
+font-size: 16pt;
+}
+
+.widePanel {
+width: 100%
+}
+
+.previewFrame {
+border: none;
+margin-top:6px;
+}
+
+a.annotation {
+position: absolute;
+border: 2px groove black;
+padding: 0;
+display: none;
+}
+
+a.annotation span {
+display: block;
+background: white;
+width: 100%;
+height: 100%;
+opacity: 0.3;
+-moz-opacity: 0.3;
+filter:alpha(opacity=30);
+}
+
+a.annotation:hover {
+border-color: yellow;
+}
+
+img.annotated {
+border-width: 0;
+}
+
+.decorate {
+background-color: #ffcc30;
+}
+
+.gwt-Label {
+padding:3px !important;
+color:#343434;
+font-size:11px !important;
+}
+
+.gwt-smallLabel {
+color:#0066cc;
+font-size:12px !important;
+font-weight:bold  !important;
+padding: 5px 2px 10px 2px !important;
+}
+
+img.gwt-Image {
+margin:0px;
+padding: 3px 3px 3px 3px;
+}
+
+.gwt-TextArea {
+margin:5px 0px;
+padding:5px 0 5px 5px !important;
+background-color:#f4f9ff;
+border:1px solid #ddecff;
+color:#373632;
+font-family:Verdana,Arial,sans-serif;
+font-size:11px;
+}
+
+.gwt-RichTextArea {
+border:1px solid gray;
+margin:10px 0;
+padding:0;
+color:#373632;
+}
+
+.gwt-TextArea-readonly {
+color: #373632 !important;
+font-family:Verdana,Arial,sans-serif;
+font-size:11px;
+}
+
+.gwt-TextArea gwt-TextArea-readonly {
+padding:5px 0 5px 5px !important;
+margin:2px 0px 5px;
+background-color: #f4f9ff;
+overflow:hidden;
+}
+
+#annotation_list_id {
+background-color: #ddecff;
+padding: 0px 5px 15px;
+}
+
+.annotation-list {
+background-color:#ECF4FF;
+border:1px solid white;
+color:#373632;
+margin-top: 15px !important;
+width:100%;
+}
+
+table.annotation-action-list {
+width: 100%;
+}
+
+.shown-annotation {
+width:100%;
+}
+
+.shown-annotation table {
+width: 100%;
+border-width: 1px;
+border-style: dotted none;
+border-color: #a5a5a5;
+background-color: white;
+margin-top:25px;
+padding:5px 0;
+}
+
+div.annotation-body {
+color: #373632;
+background-color: #EFF9FE;
+border:1px solid white;
+padding: 10px 5px;
+margin: 2px 0px;
+font-size:10px;
+overflow: auto;
+}
+
+.gwt-Button {
+background:#E3E6EA url(../img/button_1.gif) repeat-x scroll 0 0;
+border-color:#CCCCCC #666666 #666666 #CCCCCC;
+border-style:solid;
+border-width:1px;
+color:#000000;
+cursor:pointer;
+font-family:Verdana,Arial,sans-serif;
+font-size:11px;
+padding:2px 5px;
+margin-right:5px;
+}
+
+.gwt-Button:hover {
+background:#3F89EF url(../img/button_2.gif) repeat-x scroll 0 0;
+border-color:#0099FF #0066CC #0066CC #0099FF;
+color:#FFFFFF;
+font-family:Verdana,Arial,sans-serif;
+font-size:11px;
+}
+
+
+
+.annotationsAnnotationsList {
+}
+
+.filterListBox {
+width: 100%;
+}
+
+.annotationListPopup {
+background-color:#FFFFFF;
+width: 100%;
+height: 100%;
+margin: 0;
+padding: 0;
+border: none;
+}
+
+.annotationListPopupTitleBar {
+background:#0069DC url(../img/table_header_background.gif) repeat-x scroll left top;
+}
+
+.annotationListPopupTitleBar .gwt-Label {
+padding:3px;
+color:#FFFFFF;
+font-size:11px;
+}
+
+.annotationListPopupClose {
+background:transparent url(../img/closePopup.png);
+width: 18px;
+height: 18px;
+margin: 1px;
+}
+
+.annotationListPopupFields {
+background-color:#DDECFF
+}
+
+.gwt-ToggleButton-up {
+background: transparent url(../img/hidePanel.gif) no-repeat center center;
+width: 10px;
+border: none;
+}
+
+.hideManagerButton {
+background: transparent url(../img/hidePanel.gif) no-repeat center center;
+width: 10px;
+border-right: 1px solid #E3E5E7;
+outline: none;
+margin-right:3px;
+}
+
+.hideManagerButton-up-hovering {
+background: #ECF4FF url(../img/hidePanel.gif) no-repeat center center;
+outline: none;
+}
+
+.hideManagerButton-down {
+background: transparent url(../img/showPanel.gif) no-repeat center center;
+outline: none;
+}
+
+.hideManagerButton-down-hovering {
+background: #ECF4FF url(../img/showPanel.gif) no-repeat center center;
+outline: none;
+}
+
+.selectedAnnotationInList {
+background-color: #b2def7;
+}
+
+div .annotation-hide-show-button-down {
+background:transparent url(../icons/annotation-icon-hide.png) no-repeat scroll left top;
+border:medium none;
+color:#4A4A4A;
+cursor:pointer;
+margin:0 5px;
+}
+
+div .annotation-hide-show-button-down-hovering {
+background:transparent url(../icons/annotation-icon-hide.png) no-repeat scroll left top;
+border:medium none;
+color:#4A4A4A;
+cursor:pointer;
+margin:0 5px;
+}
+
+div .annotation-hide-show-button-up {
+background:transparent url(../icons/annotation-icon-show.png) no-repeat scroll left top;
+border:medium none;
+color:#4A4A4A;
+cursor:pointer;
+margin:0 5px;
+}
+
+div .annotation-hide-show-button-up-hovering {
+background:transparent url(../icons/annotation-icon-show.png) no-repeat scroll left top;
+border:medium none;
+color:#4A4A4A;
+cursor:pointer;
+margin:0 5px;
+}
+
+
+div.annotation-hide-show-button-up div.html-face, div.annotation-hide-show-button-down div.html-face, div.annotation-hide-show-button-up-hovering div.html-face, div.annotation-hide-show-button-down-hovering div.html-face{
+padding:1px 0px 0px 22px !important;
+outline:none;
+}
+
+.annotationPopupMenu {
+background-color: gray;
+border-color: gray gray gray gray;
+border-width: 1px 3px 3px 1px;
+border-style: solid solid solid solid;
+}
+
+.annotationPopupMenuItem {
+font-weight: normal;
+font-size: 80%;
+}
