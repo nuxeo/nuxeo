@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.convert.plugins">
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
+    point="converter">
+
+    <converter name="pdf2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.PDF2TextConverter">
+      <sourceMimeType>application/pdf</sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+    </converter>
+
+    <converter name="xml2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.XML2TextConverter">
+      <sourceMimeType>text/xml</sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+    </converter>
+
+    <converter name="html2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.Html2TextConverter">
+      <sourceMimeType>text/html</sourceMimeType>
+      <sourceMimeType>text/xhtml</sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+    </converter>
+    
+    <converter name="md2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.MD2TextConverter">
+      <sourceMimeType>text/x-web-markdown</sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+    </converter>
+
+    <converter name="xl2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.XL2TextConverter">
+      <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+    </converter>
+
+    <converter name="xlx2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.XLX2TextConverter">
+      <sourceMimeType>
+      application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+      </sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+    </converter>
+
+    <converter name="msoffice2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.MSOffice2TextConverter">
+      <sourceMimeType>application/msword</sourceMimeType>
+      <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+    </converter>
+    
+    <converter name="docx2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.DOCX2TextConverter">
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      </sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+    </converter>
+    
+    <converter name="pptx2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.PPTX2TextConverter">
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.presentationml.presentation
+      </sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+    </converter>
+
+    <converter name="oo2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.OOo2TextConverter">
+      <sourceMimeType>application/vnd.sun.xml.impress</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.impress.template</sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.presentation
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.presentation-template
+      </sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.calc</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.calc.template</sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.spreadsheet
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.spreadsheet-template
+      </sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.writer</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.writer.template</sourceMimeType>
+      <sourceMimeType>application/vnd.oasis.opendocument.text</sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.text-template
+      </sourceMimeType>
+
+      <destinationMimeType>text/plain</destinationMimeType>
+    </converter>
+
+    <converter name="rfc822totext"
+      class="org.nuxeo.ecm.core.convert.plugins.text.extractors.RFC822ToTextConverter">
+      <destinationMimeType>text/plain</destinationMimeType>
+      <sourceMimeType>message/rfc822</sourceMimeType>
+    </converter>
+
+    <converter name="any2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.FullTextConverter">
+      <sourceMimeType>*</sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+    </converter>
+
+  </extension>
+
+</component>
