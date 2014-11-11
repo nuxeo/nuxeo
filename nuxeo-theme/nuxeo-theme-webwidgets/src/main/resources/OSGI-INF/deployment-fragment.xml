@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+
+<fragment>
+
+  <extension target="application#MODULE">
+
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+
+  </extension>
+
+  <extension target="web#LISTENER">
+
+    <listener>
+      <listener-class>
+        org.jboss.seam.servlet.SeamListener
+      </listener-class>
+    </listener>
+
+  </extension>
+
+  <extension target="web#FILTER">
+
+    <filter>
+      <filter-name>Seam Servlet Filter</filter-name>
+      <filter-class>
+        org.jboss.seam.servlet.SeamServletFilter
+      </filter-class>
+    </filter>
+
+    <filter-mapping>
+      <filter-name>Seam Servlet Filter</filter-name>
+      <url-pattern>/nxthemes-webwidgets-data/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>Seam Servlet Filter</filter-name>
+      <url-pattern>/nxthemes-webwidgets-file-upload/*</url-pattern>
+    </filter-mapping>
+
+  </extension>
+
+  <extension target="web#SERVLET">
+
+    <servlet>
+      <servlet-name>NXThemes Web Widgets Decoration</servlet-name>
+      <servlet-class>
+        org.nuxeo.theme.webwidgets.DecorationServlet
+      </servlet-class>
+    </servlet>
+
+    <servlet>
+      <servlet-name>NXThemes Web Widgets Data</servlet-name>
+      <servlet-class>
+        org.nuxeo.theme.webwidgets.DataServlet
+      </servlet-class>
+    </servlet>
+
+    <servlet>
+      <servlet-name>NXThemes Web Widgets File Upload</servlet-name>
+      <servlet-class>
+        org.nuxeo.theme.webwidgets.FileUploadServlet
+      </servlet-class>
+    </servlet>
+
+    <servlet>
+      <servlet-name>NXThemes Web Widgets Ajax Proxy</servlet-name>
+      <servlet-class>
+        org.nuxeo.theme.webwidgets.AjaxProxy
+      </servlet-class>
+    </servlet>
+
+  </extension>
+
+  <extension target="web#SERVLET-MAPPING">
+
+    <servlet-mapping>
+      <servlet-name>NXThemes Web Widgets Decoration</servlet-name>
+      <url-pattern>/nxthemes-webwidgets-decoration/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+      <servlet-name>NXThemes Web Widgets Data</servlet-name>
+      <url-pattern>/nxthemes-webwidgets-data/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+      <servlet-name>NXThemes Web Widgets File Upload</servlet-name>
+      <url-pattern>/nxthemes-webwidgets-file-upload/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+      <servlet-name>NXThemes Web Widgets Ajax Proxy</servlet-name>
+      <url-pattern>/nxthemes-webwidgets-ajax-proxy/*</url-pattern>
+    </servlet-mapping>
+
+  </extension>
+
+  <install>
+
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+
+  </install>
+
+</fragment>
+

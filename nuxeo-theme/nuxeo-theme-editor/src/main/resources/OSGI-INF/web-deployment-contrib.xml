@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.theme.editor.web.deployment">
+
+	<extension
+		target="org.nuxeo.ecm.webengine.WebEngineComponent"
+		point="install">
+
+	    <install guard="/WEB-INF/nxthemes-editor-webapp.xml">
+	      <copy path="OSGI-INF/nxthemes-editor-webapp.xml" target="/WEB-INF/nxthemes-editor-webapp.xml" />
+	      <copy path="web/nxthemes-editor" target="/" />
+          <copy path="nuxeo.war/icons" target="/nxthemes-editor" />
+          <copy path="nuxeo.war/img" target="/nxthemes-editor" />
+	      <append path="OSGI-INF/l10n/messages.properties" target="/i18n/messages.properties"/>
+	    </install>
+
+	</extension>
+
+  <extension
+            target="org.nuxeo.ecm.webengine.WebEngineComponent"
+            point="configuration">
+
+    <configuration path="/WEB-INF/nxthemes-editor-webapp.xml" />
+
+  </extension>
+
+</component>
