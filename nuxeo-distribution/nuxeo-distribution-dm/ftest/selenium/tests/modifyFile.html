@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>modifyFile</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">modifyFile</td></tr>
+</thead><tbody>
+<!--@Test groups:ModifyFile,upload|depends:CreateFile-->
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium modifyFile</td>
+	<td></td>
+</tr>
+<!--Identification-->
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/workspaces/testWorkspace1/testFilesFolder/testfile1@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jsmith</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jsmith1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<!-- debug: log page content -->
+<tr>
+    <td>storeEval</td>
+    <td>selenium.browserbot.getCurrentWindow().document.body.innerHTML</td>
+    <td>innerhtml</td>
+</tr>
+<tr>
+    <td>echo</td>
+    <td>${innerhtml}</td>
+    <td></td>
+</tr>
+<!-- end debug -->
+<tr>
+	<td>verifyTextPresent</td>
+	<td>You are logged as jsmith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTitle</td>
+	<td>Nuxeo DM - testFile1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>desc testFile1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>desc testFile1 modified</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=hello.pdf (1 kB)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>link=file_1.txt (1 kB)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>You are logged as jsmith</td>
+	<td></td>
+</tr>
+<!--Modify file-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Edit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_edit:nxl_heading:nxw_description</td>
+	<td>desc testFile1 modified</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_edit:nxl_heading:nxw_title</td>
+	<td>testFile1 modified</td>
+</tr>
+<tr>
+	<td>retrieveTestFolderPath</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeExpression</td>
+	<td>javascript{storedVars.testfolderpath + 'file_1.txt';}</td>
+	<td>filepath</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${filepath}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@type=&quot;file&quot;]</td>
+	<td>${filepath}</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value=&quot;upload&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value=&quot;ACTION_INCREMENT_MAJOR&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Save&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertTextNotPresent</td>
+	<td>Invalid file</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>File modified</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTitle</td>
+	<td>Nuxeo DM - testFile1 modified</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>desc testFile1 modified</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>link=hello.pdf (1 kB)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=file_1.txt (8 B)</td>
+	<td></td>
+</tr>
+<!--Modify files-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Files</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeExpression</td>
+	<td>javascript{storedVars.testfolderpath + 'file_2.txt';}</td>
+	<td>filepath</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${filepath}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_files_edit:upload:file</td>
+	<td>${filepath}</td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//div[@id='document_files_edit:upload:fileItems']/table/tbody/tr/td[1]/div[3]/b</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Add new files&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=file_2.txt</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Summary</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>link=hello.pdf (1 kB)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=file_1.txt (8 B)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=file_2.txt (8 B)</td>
+	<td></td>
+</tr>
+<!--Déconnexion-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
