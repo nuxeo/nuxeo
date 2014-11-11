@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webengine.rendering-template.test">
+
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="application">
+    <webapp id="test" extends="default">
+      <roots>
+        <root priority="0">default</root>
+      </roots>
+    </webapp>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="rendering-extension">
+	<rendering-extension name="ext1" class="org.nuxeo.ecm.webengine.rendering.MyRenderingExtension"/>
+	<rendering-extension name="ext2" class="org.nuxeo.ecm.webengine.rendering.MyRenderingExtensionFactory"/>
+  </extension>
+
+</component>
