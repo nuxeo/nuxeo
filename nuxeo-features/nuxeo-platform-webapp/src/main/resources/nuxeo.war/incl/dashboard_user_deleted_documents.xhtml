@@ -1,0 +1,14 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:nxu="http://nuxeo.org/nxweb/util">
+<nxu:methodResult name="provider"
+                  value="#{resultsProvidersCache.get('USER_DELETED_DOCUMENTS')}">
+  <ui:decorate template="/incl/foldable_box_document_listing.xhtml">
+    <ui:param name="documents" value="#{provider.currentPage}" />
+    <ui:param name="provider" value="#{provider}" />
+    <ui:param name="heading"
+      value="#{messages['title.dashboard.userDeletedDocuments']}" />
+    <ui:param name="idParam" value="USER_DELETED_DOCUMENTS" />
+  </ui:decorate>
+</nxu:methodResult>
+</div>

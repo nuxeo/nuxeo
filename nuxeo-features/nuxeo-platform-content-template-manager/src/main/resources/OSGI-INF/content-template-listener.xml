@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.content.template.listener">
+
+  <documentation> Core event listener that takes care of automatically creating children docs according to templates
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
+    point="listener">
+
+
+    <listener name="templateCreator"
+      class="org.nuxeo.ecm.platform.content.template.listener.ContentCreationListener"
+      order="100"/>
+
+  </extension>
+
+</component>
+
+

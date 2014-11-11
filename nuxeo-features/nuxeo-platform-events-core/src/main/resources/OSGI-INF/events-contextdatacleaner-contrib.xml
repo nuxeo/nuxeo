@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.events.listener.ContextDataCleanerListener">
+
+  <documentation>
+    Listener used to clean a document model context data.
+
+    Context data is sent together with a document to be used when processing an
+    event for the document. This listener is supposed to be called at the end of
+    the other event processings to clean this list.
+
+    Order is 700 so that it is notified after most of listeners.
+
+    @version 1.0
+    @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+  </documentation>
+
+  <require>org.nuxeo.ecm.core.listener.CoreEventListenerService</require>
+  <extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
+    point="listener">
+    <listener name="contextdatacleaner"
+      class="org.nuxeo.ecm.platform.events.listener.ContextDataCleanerListener"
+      order="700" />
+
+  </extension>
+
+</component>
+
+

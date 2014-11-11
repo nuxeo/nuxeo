@@ -1,0 +1,35 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+  <!-- START A REVIEW -->
+  <h:panelGroup rendered="#{reviewModel == null}">
+    <ui:include src="/incl/document_review_start_form.xhtml"/>
+  </h:panelGroup>
+
+  <!-- Review running -->
+  <h:panelGroup rendered="#{reviewModel != null}">
+    <ui:include src="/incl/document_review_title.xhtml"/>
+    <ui:include src="/incl/document_review_members_management.xhtml"/>
+  </h:panelGroup>
+
+  <!-- PARALLEL REVIEW -->
+  <h:panelGroup
+    rendered="#{reviewModel != null and reviewModel.reviewType == 'workflowDocumentReviewTypeParallel'}">
+    <ui:include src="/incl/document_review_roadmap_parallel.xhtml"/>
+  </h:panelGroup>
+
+  <!-- SERIAL REVIEW -->
+  <h:panelGroup
+    rendered="#{reviewModel != null and reviewModel.reviewType == 'workflowDocumentReviewTypeSerie'}">
+    <ui:include src="/incl/document_review_roadmap_serial.xhtml"/>
+  </h:panelGroup>
+
+  <h:panelGroup
+    rendered="#{reviewModel != null and reviewModel.processInstanceCreatorName == currentUser.name}">
+    <ui:include src="/incl/work_items_lists_form.xhtml"/>
+    <ui:include src="/incl/document_review_my_tasks.xhtml"/>
+  </h:panelGroup>
+</div>
