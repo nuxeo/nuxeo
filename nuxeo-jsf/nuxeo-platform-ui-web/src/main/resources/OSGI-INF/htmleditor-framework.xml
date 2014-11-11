@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.htmleditor.service.HtmlEditorPluginServiceImpl">
+
+  <documentation>
+    The HTMLEditorPLuginService provide extension points to configure TinyMCE in Nuxeo.
+    @author Thomas Roger (troger@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide
+        interface="org.nuxeo.ecm.platform.ui.web.htmleditor.api.HtmlEditorPluginService"/>
+  </service>
+
+  <implementation
+      class="org.nuxeo.ecm.platform.ui.web.htmleditor.service.HtmlEditorPluginServiceImpl"/>
+
+  <extension-point name="plugins">
+    <documentation>
+      @author Thomas Roger(troger@nuxeo.com)
+      This extension point let you contribute new plugins to TinyMCE.
+      Sample contribution :
+      <htmlEditorPlugin
+          pluginName="name of the plugin"
+          pluginButtonName="name of the plugin's button"
+          toolbarName="toolbar where to put the button">
+      </htmlEditorPlugin>
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.platform.ui.web.htmleditor.service.HtmlEditorPluginDescriptor"/>
+  </extension-point>
+
+</component>
