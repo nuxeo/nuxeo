@@ -1,0 +1,27 @@
+Export-Package: org.nuxeo.ecm.platform.audit.api,
+ org.nuxeo.ecm.platform.audit.api.delegate,
+ org.nuxeo.ecm.platform.audit.api.job,
+ org.nuxeo.ecm.platform.audit.api.query,
+ org.nuxeo.ecm.platform.audit.api.remote
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Localization: plugin
+Bundle-Name: NXAuditAPI
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.hibernate
+Bundle-Vendor: Nuxeo
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.platform.audit.api
+Import-Package: javax.annotation;version="1.0",
+ javax.persistence,
+ org.apache.commons.lang.builder,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.security,
+ org.nuxeo.ecm.core.event,
+ org.nuxeo.ecm.core.persistence,
+ org.nuxeo.ecm.directory;api=split,
+ org.nuxeo.runtime.api
