@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schedule>
+  <owner>
+    <name>
+      <first>Eric</first>
+      <last>Burke</last>
+    </name>
+  </owner>
+  <appointment>
+    <when>
+      <date month="03" day="15" year="2001"/>
+      <startTime hour="09" minute="30"/>
+      <endTime hour="10" minute="30"/>
+    </when>
+    <subject>Interview potential new hire</subject>
+    <location>Rm 103</location>
+    <note>Ask Bob for an updated resume.</note>
+  </appointment>
+  <appointment>
+    <when>
+      <date month="03" day="15" year="2001"/>
+      <startTime hour="15" minute="30"/>
+      <endTime hour="16" minute="30"/>
+    </when>
+    <subject>Dr. Appointment</subject>
+    <location>1532 Main Street</location>
+  </appointment>
+  <appointment>
+    <when>
+      <date month="03" day="16" year="2001"/>
+      <startTime hour="11" minute="30"/>
+      <endTime hour="12" minute="30"/>
+    </when>
+    <subject>Lunch w/Boss</subject>
+    <location>Pizza Place on First Capitol Drive</location>
+  </appointment>
+</schedule>

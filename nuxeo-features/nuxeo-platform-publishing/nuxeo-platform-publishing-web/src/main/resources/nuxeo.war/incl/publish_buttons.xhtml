@@ -1,0 +1,39 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
+  class="clipboard">
+
+  <f:subview rendered="#{nxd:hasPermission(currentDocument, 'Write')}">
+    <table class="dataInput" border="0">
+      <tr>
+        <td class="labelColumn">
+          <h:outputText value="#{messages['label.comment']}"/>
+        </td>
+        <td class="fieldColumn">
+          <h:inputTextarea rows="3" cols="30" value="#{publishActions.comment}" id="comment"/>
+        </td>
+      </tr>
+    </table>
+  </f:subview>
+
+  <div id="selection_buttons">
+    <nxu:dataList var="sel_action" value="#{publishActions.actionsForPublishDocument}"
+      rendered="#{nxd:hasPermission(currentDocument, 'Write')}">
+      <span id="#{sel_action.id}">
+        <nxh:commandButton
+          styleClass="button"
+          action="#{sel_action.getLink()}"
+          value="#{messages[sel_action.label]}"
+          onclick="#{sel_action.confirm}"
+          disabled="#{!sel_action.available}"
+          />
+      </span>
+    </nxu:dataList>
+  </div>
+  <div style="clear:both"></div>
+
+</div>
