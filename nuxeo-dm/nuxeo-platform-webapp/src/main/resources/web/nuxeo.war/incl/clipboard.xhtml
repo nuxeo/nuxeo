@@ -1,0 +1,29 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:s="http://jboss.com/products/seam/taglib"
+  class="clipboard">
+
+  <div id="selection_buttons">
+    <nxu:set var="actions" value="#{clipboardActions.actionsForSelection}"
+      cache="true">
+      <nxu:dataList var="sel_action" value="#{actions}"
+        id="clipboardActionsTable">
+      <span id="#{sel_action.id}">
+        <nxh:commandButton
+          styleClass="button"
+          action="#{sel_action.getLink()}"
+          value="#{messages[sel_action.label]}"
+          onclick="#{sel_action.confirm}"
+          disabled="#{!sel_action.available}"
+          id="clipboardActionsButton" />
+       </span>
+      </nxu:dataList>
+    </nxu:set>
+  </div>
+
+</div>
