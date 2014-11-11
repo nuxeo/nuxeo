@@ -1,0 +1,46 @@
+<component name="org.nuxeo.admin.urlservice">
+
+  <extension
+    target="org.nuxeo.ecm.platform.url.service.DocumentViewCodecService"
+    point="codecs">
+
+    <documentViewCodec name="docpathadmin" enabled="true" default="false"
+      prefix="nxadmin"
+      class="org.nuxeo.ecm.platform.url.codec.DocumentPathCodec" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.rest.URLService"
+    point="urlpatterns">
+
+    <urlPattern name="admin" enabled="true">
+      <defaultURLPolicy>false</defaultURLPolicy>
+      <needBaseURL>true</needBaseURL>
+      <needRedirectFilter>true</needRedirectFilter>
+      <needFilterPreprocessing>true</needFilterPreprocessing>
+      <codecName>docpathadmin</codecName>
+      <actionBinding>#{restHelper.initContextFromRestRequest}</actionBinding>
+      <documentViewBindingApplies>
+        #{mainTabsActions.isOnMainTab('admin')}
+      </documentViewBindingApplies>
+      <documentViewBinding>#{restHelper.documentView}</documentViewBinding>
+      <newDocumentViewBinding>
+        #{restHelper.getNewDocumentView(null)}
+      </newDocumentViewBinding>
+      <bindings>
+        <binding name="tabId" callGetter="false">
+          #{webActions.currentTabId}
+        </binding>
+        <binding name="subTabId" callGetter="false">
+          #{webActions.currentSubTabId}
+        </binding>
+        <binding name="tabIds">#{webActions.currentTabIds}</binding>
+        <binding name="language" callGetter="false">
+          #{restHelper.localeString}
+        </binding>
+      </bindings>
+    </urlPattern>
+
+  </extension>
+
+</component>
