@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.actions.test.override">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="TAB_VIEW" link="view2" label="View2" icon="/icons/view2.gif"
+      confirm="newConfirm">
+      <category>OVERRIDE</category>
+      <!-- duplicate view category to test merging -->
+      <category>view</category>
+      <!-- add new filters to test merging -->
+      <filter-id>newFilterId1</filter-id>
+      <filter id="newFilter2" />
+    </action>
+
+    <action id="TAB_VIEW" confirm=" ">
+      <!-- new nested filter to test merging -->
+      <filter id="newFilter3">
+        <rule grant="false">
+          <type>WorkspaceRoot</type>
+          <type>SectionRoot</type>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="TAB_VIEW">
+      <!-- add another external filter id to test merging -->
+      <filter-id>newFilterId4</filter-id>
+    </action>
+
+    <!-- NXP-7287: test merge of global filter -->
+    <action id="TAB_WITH_GLOBAL_FILTER">
+      <category>OVERRIDE</category>
+      <filter id="filter_defined_globally">
+        <rule grant="false">
+          <type>local override of global filter</type>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="actionTestProperties">
+      <properties append="true">
+        <property name="newProperty">
+          newProperty
+        </property>
+      </properties>
+    </action>
+
+    <action id="disabledAction" link="foo" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <!-- NXP-7287: test merge of local filter -->
+    <filter id="local_filter" append="true">
+      <rule grant="false">
+        <type>filter overriden globally</type>
+      </rule>
+    </filter>
+
+  </extension>
+
+
+</component>
