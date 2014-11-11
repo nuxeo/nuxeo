@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Web Platform Fragment API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.ui.api;singleton:=true
+Require-Bundle: org.nuxeo.ecm.core.api
