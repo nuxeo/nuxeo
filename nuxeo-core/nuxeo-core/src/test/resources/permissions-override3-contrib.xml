@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.security.test.override3">
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="permissionsVisibility">
+
+    <!-- hide ReadWrite and show Write instead -->
+    <visibility>
+      <item show="true" order="0">Write</item>
+      <item show="false">ReadWrite</item>
+    </visibility>
+
+    <!-- custom visibility settings for the Section document type -->
+    <!-- cheange order and visibility for permissions -->
+    <visibility type="Section">
+      <item order="120">Read</item>
+      <item show="false">Version</item>
+    </visibility>
+
+  </extension>
+
+</component>
