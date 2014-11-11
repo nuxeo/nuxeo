@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Type Manager
+Bundle-SymbolicName: org.nuxeo.ecm.platform.types.core;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Bundle-Category: web,stateless
+Eclipse-LazyStart: true
+Nuxeo-Component: OSGI-INF/nxtypes-framework.xml
+Require-Bundle: org.nuxeo.ecm.platform,
+ org.nuxeo.ecm.platform.types.api,
+ org.nuxeo.ecm.core.api
