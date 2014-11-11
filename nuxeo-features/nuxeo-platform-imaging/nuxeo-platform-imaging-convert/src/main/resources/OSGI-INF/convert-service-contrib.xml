@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.picture.convert">
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
+    point="converter">
+
+    <converter name="pictureRotation" class="org.nuxeo.ecm.platform.picture.convert.RotationPictureConverter">
+      <sourceMimeType>image/jpeg</sourceMimeType>
+      <destinationMimeType>image/jpeg</destinationMimeType>
+    </converter>
+    
+    <converter name="pictureResize" class="org.nuxeo.ecm.platform.picture.convert.ResizePictureConverter">
+      <sourceMimeType>image/jpeg</sourceMimeType>
+      <destinationMimeType>image/jpeg</destinationMimeType>
+    </converter>
+    
+    <converter name="pictureCrop" class="org.nuxeo.ecm.platform.picture.convert.CropPictureConverter">
+      <sourceMimeType>image/jpeg</sourceMimeType>
+      <destinationMimeType>image/jpeg</destinationMimeType>
+    </converter>
+
+  </extension>
+
+</component>

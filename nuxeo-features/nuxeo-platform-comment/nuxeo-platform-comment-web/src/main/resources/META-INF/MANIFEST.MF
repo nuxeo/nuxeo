@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: comment web client
+Bundle-SymbolicName: org.nuxeo.ecm.platform.comment.web
+Bundle-Vendor: Nuxeo
+Bundle-Category: stateless
+Nuxeo-Component: OSGI-INF/comment-actions-contrib.xml,
+  OSGI-INF/comment-types-contrib.xml,
+  OSGI-INF/widgets-contrib.xml
+Require-Bundle: org.nuxeo.ecm.actions,
+ org.nuxeo.ecm.platform.comment.api,
+ org.nuxeo.ecm.webapp.core

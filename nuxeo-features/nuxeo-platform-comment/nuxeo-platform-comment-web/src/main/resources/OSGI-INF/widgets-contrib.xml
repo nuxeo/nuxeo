@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.comment.widgets">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+    <widgetType name="summary_document_comments_status">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Comments Summary</title>
+        <description>
+          <p>This widgets displays how many comments a document has</p>
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/comments_status_widget_template.xhtml
+      </property>
+    </widgetType>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="summary_document_comments_status" type="summary_document_comments_status" />
+
+  </extension>
+
+</component>

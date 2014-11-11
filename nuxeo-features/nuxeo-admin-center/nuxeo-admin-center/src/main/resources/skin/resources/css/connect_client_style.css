@@ -1,0 +1,312 @@
+/* Global style */
+html, body {
+  height: 95%;
+}
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td
+  {
+  border: 0 none;
+  font: normal 12px "Lucida Grande", Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+p {
+  margin: 3px 0px 10px;
+}
+
+a,a:link, a:active, a:visited {
+  color: #06c;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #014A93;
+  text-decoration: underline;
+}
+
+blockquote:before, blockquote:after, q:before, q:after {
+  content: "";
+}
+
+blockquote, q {
+  quotes: "" "";
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+h1 {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 0.5em 0;
+}
+
+h2 {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin: 0.5em 0;
+}
+
+h3 {
+  font-size: 1.0em;
+  font-weight: bold;
+  margin: 0.3em 0;
+}
+
+/* Messages */
+.infoMessage {
+  background-color: #e6f1ff;
+  border: 1px solid #c6c6c6;
+  border-radius: 7px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  color: #000;
+  display: block;
+  font-weight: bold;
+  list-style: none;
+  margin: 1em auto;
+  padding: 1em;
+  width: 60%
+}
+
+/* Listing style */
+.packageListing {
+  border-bottom: 1px solid #cdcdcd;
+}
+
+.packageListing td {
+  padding: 5px;
+  border-top: 1px solid #cdcdcd;
+}
+
+.packageListing .detailRow td {
+  border-top: none;
+  vertical-align: top;
+}
+
+.packagePic {
+  border: 1px solid #DEDEDE;
+  display: block;
+  background-color: white;
+  width: 95px;
+}
+
+.packagePic img {
+  width: 95px;
+  max-height: 95px;
+}
+
+.packageInfo {
+  padding: 5px 0;
+}
+
+.packageInfo p {
+  margin: 4px 0px;
+}
+
+.boldLabel {
+  font-size: 11px;
+  font-weight: bold;
+  color: #555;
+}
+
+.packageLabel {
+  color: #555;
+  display: inline-block;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 0;
+  width: 160px;
+}
+
+.packageField {
+  background-color: white;
+  border: 3px solid #F7F7F7;
+  border-radius: 5px 5px 5px 5px;
+}
+
+.button, a.button {
+  box-shadow: 0 8px 3px rgba(255, 255, 255, 0.5) inset, 1px 1px 0 #efefef;
+  background-color: #EFEFEF;
+  border-radius: 3px;
+  border: 1px solid #bbb;
+  color: #333;
+  cursor: pointer;
+  display: inline-block;
+  margin: 2px;
+  max-width: 350px;
+  padding:  0 10px;
+  text-decoration: none;
+  text-shadow: 1px 1px 0px #fff;
+  vertical-align: top;
+  word-wrap: break-word
+}
+
+.button:hover, a.button:hover { background-color: #fff; border-color: #999 }
+
+.packageListing .restartNeeded {
+  color: red;
+}
+
+.packageListing .download, .packageListing .install {
+  color: #00bc66; font-weight: bold
+}
+
+.packageListing .uninstall {
+  color: #000; font-weight: bold
+}
+
+.packageListing .remove, .packageListing .cancel {
+  color: #e04f00; font-weight: bold
+}
+
+.row_odd {
+  background-color: #f6f6f6;
+}
+
+.row_even {
+  background-color: #eef;
+}
+
+.opentd {
+  background: transparent url("../images/plus.gif") center no-repeat;
+  cursor: pointer;
+}
+
+.closetd {
+  background: transparent url("../images/minus.gif") center no-repeat;
+  cursor: pointer;
+}
+
+/* Download screen */
+.genericBox {
+  width: 600px;
+  margin: 20px auto;
+  padding: 10px 20px;
+  text-align: center;
+  border: 1px solid #dedede;
+  border-radius: 5px
+}
+
+.genericBox h1 {
+  border-bottom: 1px dotted #ccc;
+  margin: .3em 0 1em;
+  padding: 0 0 .3em;
+}
+
+.genericBox table {
+  margin: 10px 0;
+}
+
+.inProgressDownloadBox {
+  width: 400px;
+  margin: 30px auto;
+  padding: 20px 30px;
+  text-align: center;
+  border-radius: 5px;
+  border: 1px solid #dedede;
+}
+
+.successfulDownloadBox {
+  font-size: 14px;
+  padding: 20px 30px 20px 50px;
+  margin: 50px;
+  border: 1px solid #dedede;
+  border-radius: 5px;
+  background: url("../images/ok-green.png") no-repeat scroll 20px 18px #fff;
+}
+
+.errorDownloadBox {
+  font-size: 14px;
+  padding: 20px 30px 20px 50px;
+  margin: 50px;
+  border: 1px solid #dedede;
+  border-radius: 5px;
+  background: #fff3f3 url("../images/ko-red.png") no-repeat 20px 18px;
+}
+
+.installWarningsTitle {
+  padding: 20px 30px 20px 50px;
+  margin: 20px 0px;
+  border: 1px solid #dedede;
+  background-color: #F7F7F7;
+  border-radius: 5px;
+}
+
+ul.installInfo {
+  padding: 5px 0;
+}
+
+ul.installInfo li {
+  padding: 1px 0;
+}
+
+.termsAndConditionsBlock {
+  margin: 10px 0;
+}
+
+.downloadDiv {
+  text-align: center;
+}
+
+.downloadTitle, .successfulDownloadBox p, .errorDownloadBox p {
+  font-weight: bold;
+}
+
+.downloadProgressContainer {;
+  border: 1px solid #939ba4;
+  border-radius: 3px;
+  padding: 2px;
+  margin: 20px auto;
+  height: 20px;
+  width: 110px;
+}
+
+.downloadProgressBar {
+  background-color: #7f9ef7;
+  height: 20px;
+}
+
+.downloadSize {
+  color: #666;
+}
+
+.installButton, a.installButton {
+  font-weight: bold;
+}
+
+a.installButton:hover {
+ color: #06c;
+}
+
+/* Generic */
+.alignCenter {
+  text-align: center;
+}
+
+.progressDownloadContainer {
+  width: 100px;
+  height: 10px;
+  background-color: grey;
+  display: none;
+}
+
+.progressDownload {
+  height: 8px;
+  background-color: green;
+}
+
+.manualModeCmd {
+  display: none;
+}
+
+.pkgDetail {
+  border-color: #ccc;
+  border-radius: 0 0 0 10px;
+  border-style: solid;
+  border-width: 0 1px 1px;
+  background-color: #F7F7F7;
+}
