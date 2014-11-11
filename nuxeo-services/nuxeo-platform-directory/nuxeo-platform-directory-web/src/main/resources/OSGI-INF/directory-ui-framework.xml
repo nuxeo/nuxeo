@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.ui.DirectoryUIManager">
+
+  <implementation class="org.nuxeo.ecm.directory.ui.DirectoryUIManagerImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.directory.api.ui.DirectoryUIManager" />
+  </service>
+
+  <extension-point name="directories">
+    <documentation>
+      This extension point can be used to register directory ui information.
+      <p />
+      Example:
+      <code>
+        <directory name="continent" layout="vocabulary" sortField="label">
+          <deleteConstraint
+            class="org.nuxeo.ecm.directory.api.ui.HierarchicalDirectoryUIDeleteConstraint">
+            <property name="targetDirectory">country</property>
+            <property name="targetDirectoryField">parent</property>
+          </deleteConstraint>
+        </directory>
+        <directory name="country" layout="country_vocabulary"
+          sortField="parent" />
+      </code>
+      <p />
+      The following fields can be used on a directory UI declaration :
+      <ul>
+        <li>
+          name: name of the directory to display, as used in the directory
+          declaration
+        </li>
+        <li>
+          layout: name of the layout to use for display. This layout must know
+          how to render elements in a table, so it uses a specific template.
+        </li>
+        <li>
+          sortField: name of the field to sort on when presenting directory
+          items in a table. Defaults to the directory id field if not set.
+        </li>
+        <li>
+          view: name of the JSF view to use to present the directory. Defaults
+          to "view_directory" if not set.
+        </li>
+        <li>
+          enabled: boolean stating if the declaration is enabled. This is
+          useful to disable some preceding declaration, as long as the same
+          directory name is used. Defaults to "false" if not set.
+        </li>
+      </ul>
+      <p />
+      Here the layouts "vocabulary" and "country_vocabulary" have to be
+      registered as layouts. The delete constraint uses a standard class that
+      checks if no child entry references a parent entry before granting
+      deletion of the parent entry. The following parameters can be used on this
+      class:
+      <ul>
+        <li>
+          targetDirectory: the directory holding the constraint (the child
+          directory).
+        </li>
+        <li>
+          targetDirectoryField: the field specifying the parent id in the
+          child directory.
+        </li>
+      </ul>
+      Any other delete constraint can be set, taking other specific parameters,
+      provided it follows the
+      <em>org.nuxeo.ecm.directory.api.ui.DirectoryUIDeleteConstraint
+      </em>
+      interface.
+    </documentation>
+
+    <object class="org.nuxeo.ecm.directory.api.ui.DirectoryUIDescriptor" />
+  </extension-point>
+
+</component>
