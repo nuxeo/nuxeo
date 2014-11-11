@@ -1,0 +1,89 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core" class="binariesInfos">
+
+
+<a4j:outputPanel id="binariesInfos">
+
+  <p><a4j:form id="binariesInfosForm">
+
+    <a4j:poll interval="1000"
+      enabled="#{systemInfo.isBinariesGCInProgress()}"
+      reRender="binariesInfos" />
+
+    <h:panelGroup rendered="#{systemInfo.isBinariesGCInProgress()}">
+      <div><h:outputText
+        value="#{messages['adminsubtab.sysinfo.binariesinfo.wait']}" /></div>
+      <img src="#{contextPath}/img/big_loading.gif" />
+    </h:panelGroup>
+
+    <h:panelGroup rendered="#{!systemInfo.isBinariesGCInProgress()}">
+      <p><a4j:commandButton
+        value="#{messages['adminsubtab.sysinfo.binariesinfo.start']}"
+        action="#{systemInfo.startBinariesGC()}"
+        reRender="binariesInfos"
+        styleClass="button" /></p>
+      <p><h:selectBooleanCheckbox class="dataInputText"
+        value="#{systemInfo.binariesGCDelete}">
+      </h:selectBooleanCheckbox> <span><h:outputText
+        value="#{messages['adminsubtab.sysinfo.binariesinfo.delete']}" /></span></p>
+    </h:panelGroup>
+  </a4j:form></p>
+
+  <div><h:panelGroup
+    rendered="#{systemInfo.isBinaryManagerStatusAvailable()}">
+    <p><h:outputText
+      value="#{messages['adminsubtab.sysinfo.binariesinfo.info']}" /></p>
+    <h:panelGroup rendered="#{!systemInfo.binariesWereDeleted}">
+      <p><h:outputText
+        value="#{messages['adminsubtab.sysinfo.binariesinfo.notdeleted']}" /></p>
+    </h:panelGroup>
+    <table class="dataOutput">
+      <tr class="dataRowEven">
+        <td><h:outputText
+          value="#{messages['adminsubtab.sysinfo.binariesinfo.gcduration']}" /></td>
+        <td><h:outputText
+          value="#{binaryManagerStatus.GCDuration / 1000}">
+          <f:convertNumber type="number" maxFractionDigits="1" />
+        </h:outputText></td>
+      </tr>
+      <tr class="dataRowOdd">
+        <td><h:outputText
+          value="#{messages['adminsubtab.sysinfo.binariesinfo.numbinaries']}" /></td>
+        <td><h:outputText
+          value="#{binaryManagerStatus.numBinaries}">
+          <f:convertNumber type="number" />
+        </h:outputText></td>
+      </tr>
+      <tr class="dataRowEven">
+        <td><h:outputText
+          value="#{messages['adminsubtab.sysinfo.binariesinfo.sizebinaries']}" /></td>
+        <td><h:outputText
+          value="#{binaryManagerStatus.sizeBinaries}">
+          <f:convertNumber type="number" />
+        </h:outputText></td>
+      </tr>
+      <tr class="dataRowOdd">
+        <td><h:outputText
+          value="#{messages['adminsubtab.sysinfo.binariesinfo.numbinariesgc']}" /></td>
+        <td><h:outputText
+          value="#{binaryManagerStatus.numBinariesGC}">
+          <f:convertNumber type="number" />
+        </h:outputText></td>
+      </tr>
+      <tr class="dataRowEven">
+        <td><h:outputText
+          value="#{messages['adminsubtab.sysinfo.binariesinfo.sizebinariesgc']}" /></td>
+        <td><h:outputText
+          value="#{binaryManagerStatus.sizeBinariesGC}">
+          <f:convertNumber type="number" />
+        </h:outputText></td>
+      </tr>
+    </table>
+  </h:panelGroup></div>
+
+</a4j:outputPanel></div>
