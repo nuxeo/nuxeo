@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <extension target="faces-config#NAVIGATION">
+    <!-- generic pages -->
+
+    <navigation-case>
+      <from-outcome>create_picturebook</from-outcome>
+      <to-view-id>/create_picturebook.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+  </extension>
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+
+  </install>
+
+</fragment>

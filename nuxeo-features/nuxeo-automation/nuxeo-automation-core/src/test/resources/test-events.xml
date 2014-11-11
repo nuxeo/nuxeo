@@ -1,0 +1,36 @@
+<component name="org.nuxeo.ecm.core.rules.test-events">
+
+  <extension point="chains"
+    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+
+    <chain id="changeSource">
+      <operation id="Context.FetchDocument" />
+      <operation id="Document.SetProperty">
+        <param type="string" name="xpath">dc:source</param>
+        <param type="serializable" name="value">
+          New source
+        </param>
+      </operation>
+    </chain>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="event-handlers">
+
+    <!-- change dc:source if this is dc:description == "ChangeMySource" -->
+    <handler chainId="changeSource" postCommit="true">
+      <event>documentCreated</event>
+      <filters>
+        <!-- this condition cannot be evaluated
+             on a ShallowDocumentModel -->
+        <condition>
+          Document.getProperty("dc:description") == "ChangeMySource"
+        </condition>
+      </filters>
+    </handler>
+
+  </extension>
+
+
+</component>

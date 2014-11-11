@@ -1,0 +1,87 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:s="http://jboss.com/products/seam/taglib">
+
+  <h:outputText value="#{messages['picturebook.slideshow.without.pictures']}" rendered="#{slideShowManager.childrenSize == 0}" />
+
+  <a4j:region rendered="#{slideShowManager.childrenSize > 0}">
+
+    <div class="slideshowContent">
+
+  <h:form id="slideshowPoll">
+
+    <h3><h:outputText value="#{slideShowManager.child.title}" /></h3>
+
+      <div class="slideShowControl">
+    <a4j:poll interval="#{currentDocument.picturebook.timeinterval * 1000}"
+      reRender="slideshow,slideshowPoll" action="#{slideShowManager.incIndex}"
+      rendered="#{(slideShowManager.childrenSize >slideShowManager.index or slideShowManager.repeat) and !slideShowManager.stopped }" />
+
+    <a4j:commandButton image="icons/control_start_blue.png"
+      action="#{slideShowManager.firstPic}" reRender="slideshow,slideshowPoll"
+      disabled="#{slideShowManager.index == 1}" />
+    <a4j:commandButton image="icons/control_rewind_blue.png"
+      action="#{slideShowManager.decIndex}"  reRender="slideshow,slideshowPoll"
+      disabled="#{slideShowManager.index == 1}" />
+     <h:inputText value="#{slideShowManager.index}" size="7"
+      styleClass="indexPicture">
+      <a4j:support event="onkeyup"  reRender="slideshow,slideshowPoll"
+        actionListener="#{slideShowManager.inputValidation}" />
+    </h:inputText>
+    <a4j:commandButton image="icons/control_fastforward_blue.png"
+      action="#{slideShowManager.incIndex}"  reRender="slideshow,slideshowPoll"
+      disabled="#{slideShowManager.childrenSize == slideShowManager.index}" />
+    <a4j:commandButton image="icons/control_end_blue.png"
+      action="#{slideShowManager.lastPic}"  reRender="slideshow,slideshowPoll"
+      disabled="#{slideShowManager.childrenSize  == slideShowManager.index}" />
+
+
+      <span>
+
+  <a4j:commandButton  image="icons/control_pause_blue.png"
+      action="#{slideShowManager.togglePause}" rendered="#{!slideShowManager.stopped}" reRender="slideshowPoll" />
+
+   <a4j:commandButton  image="icons/control_play_blue.png"
+      action="#{slideShowManager.start}" rendered="#{slideShowManager.stopped}"  reRender="slideshowPoll" />
+
+   <a4j:commandButton  image="icons/control_stop_blue.png"
+      action="#{slideShowManager.stop}"  reRender="slideshow,slideshowPoll" />
+
+   <a4j:commandButton  image="icons/control_repeat_blue.png"
+      action="#{slideShowManager.toggleRepeat}" rendered="#{slideShowManager.repeat}"  reRender="slideshowPoll" />
+
+   <a4j:commandButton  image="icons/control_repeat_disabled.png"
+      action="#{slideShowManager.toggleRepeat}" rendered="#{!slideShowManager.repeat}"  reRender="slideshowPoll" />
+
+        <h:outputText value="#{slideShowManager.index}/#{slideShowManager.childrenSize}" />
+      </span>
+    </div>
+    </h:form>
+
+  <h:form id="slideshow">
+    <nxd:restDocumentLink document="#{slideShowManager.child}"
+      tab="tab_imageview">
+      <div class="slideshowContainer">
+      <div id="apear-div" style="display: none;">
+      <f:subview rendered="#{slideShowManager.child.type eq 'PictureBook'}">
+        <img onload="Effect.Appear('apear-div');"
+          src="icons/big_picturebook.png" />
+      </f:subview>
+      <f:subview rendered="#{slideShowManager.child.type eq 'Picture'}">
+        <img onload="Effect.Appear('apear-div');"
+          src="#{nxd:fileUrl('downloadPicture', slideShowManager.child, 'Medium:content', slideShowManager.child.dublincore.modified)}" />
+      </f:subview>
+      </div>
+      </div>
+    </nxd:restDocumentLink>
+  </h:form>
+    </div>
+  </a4j:region>
+</div>
