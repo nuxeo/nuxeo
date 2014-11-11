@@ -1,0 +1,22 @@
+<component name="org.nuxeo.ecm.platform.transform.service.platform"
+  version="1.0">
+
+  <documentation> Expose the tranform service as a platform service.
+    @version 1.0 @author
+    <a href="mailto:ja@nuxeo.com">Julien Anguenot</a> </documentation>
+
+  <require></require>
+
+  <extension target="org.nuxeo.ecm.platform.api.PlatformService" point="servers">
+
+    <documentation> Define the search service as a platform service. </documentation>
+
+    <server name="default" host="localhost">
+
+      <service
+        class="org.nuxeo.ecm.platform.transform.interfaces.TransformServiceCommon"
+        jndiName="%NXTransformBean"/>
+    </server>
+
+  </extension>
+</component>
