@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <require>org.nuxeo.ecm.webapp.ui</require>
+
+  <extension target="faces-config#MANAGED-BEAN">
+    <managed-bean>
+      <managed-bean-name>relationCreationBean</managed-bean-name>
+      <managed-bean-class>
+        org.nuxeo.ecm.platform.relations.web.listener.ejb.RelationCreationBean
+      </managed-bean-class>
+      <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+  </extension>
+
+  <extension target="faces-config#NAVIGATION">
+    <navigation-case>
+      <from-outcome>create_relation_search_document_popup</from-outcome>
+      <to-view-id>/create_relation_search_document_popup.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+  </extension>
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+  </install>
+
+</fragment>

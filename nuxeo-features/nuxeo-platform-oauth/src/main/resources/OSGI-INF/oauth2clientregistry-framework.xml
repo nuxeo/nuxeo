@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry">
+  <implementation
+    class="org.nuxeo.ecm.platform.oauth2.clients.ClientRegistryImpl" />
+  <documentation>
+    Component and Service to manage the OAuth2 clients registration
+
+    @author Arnaud Kervern (ak@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry" />
+  </service>
+
+  <extension-point name="clients">
+
+    <documentation>
+      Registering OAuth2 client
+
+      For instance :
+      <code>
+        <client name="description name" id="clientId" secret="clientSecret" enabled="true" />
+      </code>
+    </documentation>
+
+    <object class="org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client" />
+  </extension-point>
+
+</component>

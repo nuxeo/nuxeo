@@ -1,0 +1,254 @@
+<?xml version="1.0"?>
+
+<project name="Nuxeo EP Language Pack" default="lang" basedir=".">
+  <!-- build.xml not used in the real build. It was probably written just for testing -->
+  <property file="build.properties" />
+
+  <target name="lang" depends="copy,concat" description="Update language files" />
+
+  <target name="copy" description="Copy default properties files">
+    <copy
+      todir="${basedir}/src/main/resources/web/nuxeo.war/WEB-INF/classes/">
+      <fileset dir="${basedir}/.." casesensitive="yes">
+        <include
+          name="nuxeo-platform-webapp/src/main/resources/web/nuxeo.war/WEB-INF/classes/messages_fr.properties" />
+        <include
+          name="nuxeo-platform-webapp/src/main/resources/web/nuxeo.war/WEB-INF/classes/messages_en.properties" />
+        <include
+          name="nuxeo-platform-webapp/src/main/resources/web/nuxeo.war/WEB-INF/classes/messages.properties" />
+      </fileset>
+    </copy>
+
+  </target>
+
+  <target name="concat"
+    description="concat all properties files from all nuxeo packages including addons">
+    <concat
+      destfile="${basedir}/src/main/resources/nuxeo.war/WEB-INF/classes/messages_fr.properties"
+      force="no">
+      <fileset dir="${basedir}/.." casesensitive="yes">
+        <include name="**/src/main/resources/**/messages_fr.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+        <exclude
+          name="nuxeo-platform-lang/src/main/resources/nuxeo.war/WEB-INF/classes/messages_fr.properties" />
+      </fileset>
+
+      <fileset dir="${nuxeo.addons}" casesensitive="yes">
+        <include name="**/src/main/resources/**/messages_fr.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+      </fileset>
+
+    </concat>
+
+    <concat
+      destfile="${basedir}/src/main/resources/nuxeo.war/WEB-INF/classes/messages_en.properties"
+      force="no">
+      <fileset dir="${basedir}/.." casesensitive="yes">
+        <include name="**/src/main/resources/**/messages_en.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+        <exclude
+          name="nuxeo-platform-lang/src/main/resources/nuxeo.war/WEB-INF/classes/messages_en.properties" />
+      </fileset>
+
+      <fileset dir="${nuxeo.addons}" casesensitive="yes">
+        <include name="**/src/main/resources/**/messages_en.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+      </fileset>
+
+    </concat>
+
+    <concat
+      destfile="${basedir}/src/main/resources/nuxeo.war/WEB-INF/classes/messages.properties"
+      force="no">
+      <fileset dir="${basedir}/.." casesensitive="yes">
+        <include name="**/src/main/resources/**/messages.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+        <exclude
+          name="nuxeo-platform-lang/src/main/resources/nuxeo.war/WEB-INF/classes/messages.properties" />
+      </fileset>
+
+      <fileset dir="${nuxeo.addons}" casesensitive="yes">
+        <include name="**/src/main/resources/**/messages.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+      </fileset>
+
+    </concat>
+
+    <concat
+      destfile="${basedir}/src/main/resources/nuxeo.war/WEB-INF/classes/messages_cn.properties"
+      force="no">
+      <fileset dir="${basedir}/.." casesensitive="yes">
+        <include name="**/src/main/resources/**/messages_cn.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+        <exclude
+          name="nuxeo-platform-lang/src/main/resources/nuxeo.war/WEB-INF/classes/messages_cn.properties" />
+      </fileset>
+
+      <fileset dir="${nuxeo.addons}" casesensitive="yes">
+        <include name="**/src/main/resources/**/messages_cn.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+      </fileset>
+
+    </concat>
+
+    <concat
+      destfile="${basedir}/src/main/resources/nuxeo.war/WEB-INF/classes/messages_de.properties"
+      force="no">
+      <fileset dir="${basedir}/.." casesensitive="yes">
+        <include name="**/src/main/resources/**/messages_de.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+        <exclude
+          name="nuxeo-platform-lang/src/main/resources/nuxeo.war/WEB-INF/classes/messages_de.properties" />
+      </fileset>
+
+      <fileset dir="${nuxeo.addons}" casesensitive="yes">
+        <include name="**/src/main/resources/**/messages_de.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+      </fileset>
+
+    </concat>
+
+    <concat
+      destfile="${basedir}/src/main/resources/nuxeo.war/WEB-INF/classes/messages_es.properties"
+      force="no">
+      <fileset dir="${basedir}/.." casesensitive="yes">
+        <include name="**/src/main/resources/**/messages_es.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+        <exclude
+          name="nuxeo-platform-lang/src/main/resources/nuxeo.war/WEB-INF/classes/messages_es.properties" />
+      </fileset>
+
+      <fileset dir="${nuxeo.addons}" casesensitive="yes">
+        <include name="**/src/main/resources/**/messages_es.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+      </fileset>
+
+    </concat>
+
+    <concat
+      destfile="${basedir}/src/main/resources/nuxeo.war/WEB-INF/classes/messages_ar.properties"
+      force="no">
+      <fileset dir="${basedir}/.." casesensitive="yes">
+        <include name="**/src/main/resources/**/messages_ar.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+        <exclude
+          name="nuxeo-platform-lang/src/main/resources/nuxeo.war/WEB-INF/classes/messages_ar.properties" />
+      </fileset>
+
+      <fileset dir="${nuxeo.addons}" casesensitive="yes">
+        <include name="**/src/main/resources/**/messages_ar.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+      </fileset>
+
+    </concat>
+
+    <concat
+      destfile="${basedir}/src/main/resources/nuxeo.war/WEB-INF/classes/messages_ru.properties"
+      force="no">
+      <fileset dir="${basedir}/.." casesensitive="yes">
+        <include name="**/src/main/resources/**/messages_ru.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+        <exclude
+          name="nuxeo-platform-lang/src/main/resources/nuxeo.war/WEB-INF/classes/messages_ru.properties" />
+      </fileset>
+
+      <fileset dir="${nuxeo.addons}" casesensitive="yes">
+        <include name="**/src/main/resources/**/messages_ru.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+      </fileset>
+
+    </concat>
+
+    <concat
+      destfile="${basedir}/src/main/resources/nuxeo.war/WEB-INF/classes/messages_it.properties"
+      force="no">
+      <fileset dir="${basedir}/.." casesensitive="yes">
+        <include name="**/src/main/resources/**/messages_it.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+        <exclude
+          name="nuxeo-platform-lang/src/main/resources/nuxeo.war/WEB-INF/classes/messages_it.properties" />
+      </fileset>
+
+      <fileset dir="${nuxeo.addons}" casesensitive="yes">
+        <include name="**/src/main/resources/**/messages_it.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+      </fileset>
+
+    </concat>
+
+    <concat
+      destfile="${basedir}/src/main/resources/nuxeo.war/WEB-INF/classes/messages_ja.properties"
+      force="no">
+      <fileset dir="${basedir}/.." casesensitive="yes">
+        <include name="**/src/main/resources/**/messages_ja.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+        <exclude
+          name="nuxeo-platform-lang/src/main/resources/nuxeo.war/WEB-INF/classes/messages_ja.properties" />
+      </fileset>
+
+      <fileset dir="${nuxeo.addons}" casesensitive="yes">
+        <include name="**/src/main/resources/**/messages_ja.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+      </fileset>
+
+    </concat>
+
+    <concat
+      destfile="${basedir}/src/main/resources/nuxeo.war/WEB-INF/classes/messages_vn.properties"
+      force="no">
+      <fileset dir="${basedir}/.." casesensitive="yes">
+        <include name="**/src/main/resources/**/messages_vn.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+        <exclude
+          name="nuxeo-platform-lang/src/main/resources/nuxeo.war/WEB-INF/classes/messages_vn.properties" />
+      </fileset>
+
+      <fileset dir="${nuxeo.addons}" casesensitive="yes">
+        <include name="**/src/main/resources/**/messages_vn.properties" />
+        <exclude name="**/target/**" />
+        <exclude name="**/bin**" />
+      </fileset>
+
+    </concat>
+
+  </target>
+
+  <target name="delete"
+    description="Remove all properties files except en and fr">
+    <delete>
+      <fileset dir="${basedir}/..">
+        <include name="**/src/main/resources/**/messages_vn.properties" />
+        <include name="**/src/main/resources/**/messages_ja.properties" />
+        <include name="**/src/main/resources/**/messages_ar.properties" />
+        <include name="**/src/main/resources/**/messages_it.properties" />
+        <include name="**/src/main/resources/**/messages_es.properties" />
+        <include name="**/src/main/resources/**/messages_de.properties" />
+        <include name="**/src/main/resources/**/messages_ru.properties" />
+      </fileset>
+
+    </delete>
+  </target>
+
+</project>
+

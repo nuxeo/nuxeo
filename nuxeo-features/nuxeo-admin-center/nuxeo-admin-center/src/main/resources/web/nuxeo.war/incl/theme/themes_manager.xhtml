@@ -1,0 +1,22 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core">
+
+  <div class="processMessage completeInfo">
+    <h:outputText escape="false"
+      value="#{messages['label.themes.management.description']}" />
+  </div>
+  <div class="processMessage completeWarning">
+    <h:outputText escape="false"
+      value="#{messages['label.themes.management.migrationWarning']}" />
+  </div>
+  <h:form>
+    <h:commandLink action="#{themeEditorAction.startEditor}"
+      value="#{messages['label.themes.management.editor']}"
+      styleClass="button"/>
+  </h:form>
+
+</div>
