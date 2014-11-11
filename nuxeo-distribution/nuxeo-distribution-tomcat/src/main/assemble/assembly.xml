@@ -1,0 +1,301 @@
+<project name="nuxeo-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+
+  <target name="init" unless="init.done">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <property name="tomcat" value="nuxeo-dm-${maven.project.version}-tomcat" />
+    <property name="coreserver"
+              value="nuxeo-coreserver-${maven.project.version}-tomcat" />
+    <antcall target="expand" />
+    <property name="init.done" value="true" />
+  </target>
+
+  <target name="expand" unless="no.build">
+    <artifact:expand depth="2" />
+  </target>
+
+  <target name="build" depends="init" unless="no.build">
+    <echo>Building Tomcat standard distribution...</echo>
+    <antcall target="prepare-tomcat" />
+
+    <unzip dest="${outdir}/${tomcat}/templates">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="templates-tomcat" />
+    </unzip>
+
+    <!-- Extract Nuxeo webapp -->
+    <unzip dest="${outdir}/${tomcat}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-jetty:${nuxeo.dm.version}:zip"
+                            classifier="nuxeo-dm" />
+      <patternset>
+        <exclude name="**/bin" />
+        <exclude name="**/bin/*.*" />
+        <exclude name="**/bin/*" />
+        <exclude name="**/nxserver*.*" />
+        <exclude name="**/readme.html" />
+        <exclude name="**/config/log4j.xml" />
+        <exclude name="**/config/default-repository-config.xml" />
+        <exclude name="**/config/nuxeo.properties" />
+        <exclude name="**/config/opensocial.properties" />
+      </patternset>
+    </unzip>
+    <nx:rename from="${outdir}/${tomcat}/nuxeo-dm-${nuxeo.dm.version}-jetty"
+               to="${outdir}/${tomcat}/nxserver" />
+    <delete>
+      <fileset dir="${outdir}/${tomcat}/nxserver/config"
+               includes="webbindings-config.xml" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/config" includes="jetty.xml" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/config"
+               includes="default-web.xml" />
+    </delete>
+    <copy todir="${outdir}/${tomcat}" overwrite="true" failonerror="true">
+      <fileset dir="src/main/resources" />
+    </copy>
+
+    <unzip dest="${outdir}/${tomcat}/bin">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="bin" />
+    </unzip>
+    <chmod dir="${outdir}/${tomcat}/bin"
+           perm="ug+x"
+           includes="*.sh,*ctl,*.command" />
+
+    <copy todir="${outdir}/${tomcat}/nxserver/bundles">
+      <!-- Setting transaction management and pooling support... -->
+      <artifact:file groupId="org.nuxeo.runtime"
+                     artifactId="nuxeo-runtime-jtajca" />
+      <artifact:file groupId="org.nuxeo.ecm.core"
+                     artifactId="nuxeo-core-storage-sql-ra"
+                     type="jar" />
+      <!-- Add CMIS bundles and dependent libraries -->
+      <artifact:resolveFile key="org.nuxeo.ecm.core:nuxeo-chemistry-impl" />
+      <artifact:resolveFile key="org.nuxeo.ecm.core:nuxeo-chemistry-bindings" />
+      <artifact:resolveFile key="org.nuxeo.ecm.webengine:nuxeo-webengine-core" />
+    </copy>
+
+    <antcall target="third-party-libraries" />
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
+         basedir="${outdir}"
+         includes="${tomcat}/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
+                     classifier="${distribution}"
+                     type="zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}" />
+
+    <echo>Preparing Nuxeo Chemistry...</echo>
+    <antcall target="set-coreserver" />
+    <nx:rename from="${outdir}/${tomcat}" to="${outdir}/${coreserver}" />
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-coreserver.zip"
+         basedir="${outdir}"
+         includes="${coreserver}/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-coreserver.zip"
+                     classifier="coreserver"
+                     type="zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}" />
+  </target>
+
+  <target name="set-coreserver">
+    <!-- CoreServer resources -->
+    <copy todir="${outdir}/${tomcat}" overwrite="true" failonerror="true">
+      <fileset dir="src/main/resources-coreserver" />
+    </copy>
+
+    <delete>
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-opensocial*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-annotations*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-audit*"
+               excludes="nuxeo-platform-audit-api*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-comment*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-forum*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-imaging*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-jbpm*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-publisher*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-tag*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-userworkspace*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-virtualnavigation*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-spaces*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-theme-*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-webengine-blogs*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-${maven.project.version}*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-actions-core*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-forms-layout*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-mail*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-notification*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-placeful*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-preview*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-syndication*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-ui-*"
+               excludes="nuxeo-platform-ui-api*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-uidgen*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-url*"
+               excludes="nuxeo-platform-url-api*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-webapp*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-webengine-*"
+               excludes="nuxeo-webengine-core*,nuxeo-webengine-base*,nuxeo-webengine-admin*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-directory-web-*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-relations-web-*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-default-config-*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-io-client-*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-platform-lang-*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-webengine-*"
+               excludes="nuxeo-webengine-core*,nuxeo-webengine-base*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/config"
+               includes="commentService-config-bundle.xml" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/config"
+               includes="notification-config.xml" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/config"
+               includes="default-opensocial-config.xml" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/OSGI-INF/templates"
+               includes="faces-config.xml" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/OSGI-INF/templates"
+               includes="pages.xml" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/OSGI-INF/templates"
+               includes="components.xml" />
+      <!-- Remove unused third-party libraries to reduce total size -->
+      <fileset dir="${outdir}/${tomcat}/nxserver/lib"
+               includes="ooxml-schemas*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="richfaces*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="gwt*" />
+    </delete>
+  </target>
+
+  <target name="prepare-tomcat">
+    <mkdir dir="${outdir}" />
+    <!-- Extract Tomcat -->
+    <unzip dest="${outdir}">
+      <artifact:resolveFile key="org.apache.tomcat:apache-tomcat:6.0.20:zip" />
+      <patternset>
+        <exclude name="**/webapps/examples/**" />
+        <exclude name="**/webapps/docs/**" />
+        <exclude name="**/bin/*.bat" />
+        <exclude name="**/bin/*.exe" />
+        <exclude name="**/bin/*.sh" />
+        <exclude name="**/bin/*.tar.gz" />
+        <exclude name="**/conf/logging.properties" />
+        <exclude name="**/logs" />
+      </patternset>
+    </unzip>
+    <nx:rename from="${outdir}/apache-tomcat-6.0.20" to="${outdir}/${tomcat}" />
+    <unzip dest="${outdir}/${tomcat}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="doc" />
+    </unzip>
+    <!-- Remove non-nuxeo information files from root -->
+    <mkdir dir="${outdir}/${tomcat}/doc-tomcat" />
+    <move todir="${outdir}/${tomcat}/doc-tomcat">
+      <fileset dir="${outdir}/${tomcat}">
+        <include name="LICENSE" />
+        <include name="NOTICE" />
+        <include name="RELEASE-NOTES" />
+        <include name="RUNNING.txt" />
+      </fileset>
+    </move>
+  </target>
+
+  <target name="third-party-libraries">
+    <!-- Cleanup and reorganize libraries -->
+    <delete>
+      <fileset dir="${outdir}/${tomcat}/nxserver"
+               includes="nuxeo-runtime-launcher-*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-runtime-jetty-*" />
+      <!--fileset dir="${outdir}/${tomcat}/nxserver/bundles" includes="nuxeo-platform-virtualnavigation-*" /-->
+      <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="core-*" />
+      <!-- jetty-util is needed by jsp impl jar - which is referring jetty log classes -->
+      <fileset dir="${outdir}/${tomcat}/nxserver/lib"
+               includes="jetty-*"
+               excludes="jetty-util*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="jsp-api*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/lib"
+               includes="servlet-api-*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="el-api*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="jsp-*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="gwt-servlet*" />
+    </delete>
+
+    <copy todir="${outdir}/${tomcat}/nxserver/lib">
+      <artifact:resolveFile key="com.google.gwt:gwt-servlet:1.7.0:jar" />
+      <artifact:resolveFile key="jstl:jstl:1.1.2:jar" />
+      <!-- we need el-ri impl in lib - why is this not part of jetty distrib? -->
+      <artifact:resolveFile key="javax.el:el-ri:unknown:jar" />
+      <artifact:resolveFile key="org.apache.geronimo.components:geronimo-connector" />
+      <artifact:resolveFile key="org.apache.geronimo.components:geronimo-transaction" />
+      <artifact:resolveFile key="org.objectweb.howl:howl" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-api" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-commons" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-atompub" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-atompub-server" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-ws" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-soap-server" />
+      <artifact:resolveFile key="org.antlr:antlr-runtime" />
+      <artifact:resolveFile key="org.apache.abdera:abdera-core" />
+      <artifact:resolveFile key="org.apache.abdera:abdera-i18n" />
+      <artifact:resolveFile key="org.apache.abdera:abdera-parser" />
+      <artifact:resolveFile key="org.apache.abdera:abdera-server" />
+      <artifact:resolveFile key="org.apache.ws.commons.axiom:axiom-api" />
+      <artifact:resolveFile key="org.apache.ws.commons.axiom:axiom-impl" />
+      <artifact:resolveFile key="jaxen:jaxen" />
+    </copy>
+
+    <copy todir="${outdir}/${tomcat}/lib">
+      <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-runtime-tomcat-adapter:${nuxeo.runtime.version}:jar" />
+    </copy>
+
+    <!-- we need to move DS related jars into tomcat lib -->
+    <move todir="${outdir}/${tomcat}/lib">
+      <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="derby-*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="h2-*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="log4j-*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="lucene-*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/lib"
+               includes="commons-logging-*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/lib"
+               includes="commons-lang-*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="freemarker-*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-core-storage-sql-extensions-*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
+               includes="nuxeo-generic-wss-handler-*" />
+    </move>
+  </target>
+
+</project>
