@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="core" default="gwt-compile" basedir=".">
+  <description>
+    core build file.  This is used to package up your project as a jar,
+    if you want to distribute it.  This isn't needed for normal operation.
+  </description>
+
+  <!-- set classpath -->
+  <property environment="env"/>
+  <path id="project.class.path">
+    <pathelement path="${java.class.path}/"/>
+    <!--pathelement path="${env.GWT_HOME}/gwt-user.jar"/-->
+	<fileset dir="${env.GWT_HOME}">
+		  <include name="**/*.jar"/>
+    </fileset>
+
+    <!-- Additional dependencies (such as junit) go here -->
+  </path>
+
+  <target name="compile" description="Compile src to bin">
+    <mkdir dir="bin"/>
+    <javac srcdir="src" destdir="bin" includes="**" debug="on" debuglevel="lines,vars,source" source="1.5">
+      <classpath refid="project.class.path"/>
+    </javac>
+  </target>
+
+  <target name="package" depends="compile" description="Package up the project as a jar">
+    <jar destfile="core.jar">
+      <fileset dir="bin">
+        <include name="**/*.class"/>
+      </fileset>
+      <!-- Get everything; source, modules, html files -->
+      <fileset dir="src">
+        <include name="**"/>
+      </fileset>
+      <fileset dir="test">
+        <include name="**"/>
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="clean">
+    <!-- Delete the bin directory tree -->
+    <delete file="core.jar"/>
+    <delete>
+      <fileset dir="bin" includes="**/*.class"/>
+    </delete>
+  </target>
+
+
+  <target name="all" depends="package"/>
+
+  <target name="gwt-compile" depends="compile">
+   <java classname="com.google.gwt.dev.GWTCompiler">
+         <classpath>
+                 <pathelement path="core.jar"/>
+                 <pathelement path="src"/>
+                 <pathelement path="bin"/>
+                 <pathelement path="${env.ANT_HOME}/lib/xercesImpl.jar"/>
+                  <fileset dir="${env.GWT_HOME}">
+                    <include name="*.jar"/>
+                  </fileset>
+         </classpath>
+        <arg line="-out www -gen ${gen} -style PRETTY org.nuxeo.ecm.webengine.gwt.Core"/>
+        </java>
+  </target> 
+
+</project>

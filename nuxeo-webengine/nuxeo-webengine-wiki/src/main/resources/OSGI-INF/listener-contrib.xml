@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.wiki.listener">
+
+  <extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService" point="listener">
+    <listener name="wikilistener" class="org.nuxeo.ecm.wiki.listener.WikiListener" order="120"/>
+    <documentation>
+      wiki listener
+      @author Eugen Ionica (eionica@nuxeo.com)
+    </documentation>
+  </extension>
+
+</component>
+

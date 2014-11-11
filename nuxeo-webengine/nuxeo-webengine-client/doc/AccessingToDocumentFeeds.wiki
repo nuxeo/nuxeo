@@ -1,0 +1,24 @@
+The entry point to be used is  org.nuxeo.ecm.client.impl.DefaultContentManager
+The following snipset gives you an example of how connecting to the newswave content
+manager using the Atom Publication protocol.
+
+ contentManager = new DefaultContentManager();
+ contentManager.init(new URL("http://localhost:8080/cmis", AtomPubConnector.class);
+ 
+The next step is to get a reference to the query entries
+
+ Repository defaultRepository = managerUnderTest.getDefaultRepository();
+ List<QueryEntry> queries = defaultRepository.getQueries();
+ 
+Each queries is a document feed descriptor available in the newswave server
+(see Eclipse:nuxeo-newswave-cws/doc/FeedService.wiki)
+
+Then, from each query entries you can fetch a document feed 
+
+ DocumentFeed feed = queries.get(index).getFeed();
+
+Synchronizing the feed with the server side can be done as follow 
+
+ DocumentFeed synchedFeed = feed.refresh();
+
+New

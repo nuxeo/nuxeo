@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.webengine.sites.layouts">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+    <layout name="webpage">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>pushtomenu</widget>
+        </row>
+        <row>
+          <widget>theme</widget>
+        </row>
+        <row>
+          <widget>content</widget>
+        </row>        
+      </rows>
+
+      <widget name="theme" type="template">
+        <translated>true</translated>
+        <fields>
+          <field>webp:theme</field>
+          <field>webp:themePage</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/site_theme_widget.xhtml
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="pushtomenu" type="checkbox">
+        <translated>true</translated>
+        <fields>
+          <field>webp:pushtomenu</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+
+
+
+      <widget name="content" type="htmltext">
+        <translated>true</translated>
+        <fields>
+          <field>webp:content</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+
+    </layout>
+
+  </extension>
+
+</component>

@@ -1,0 +1,18 @@
+Applications that need to access to a remote content manager
+have to use org.nuxeo.ecm.client.ContentManager as the main entry point.
+From that entry point, applications can get access to 
+* org.nuxeo.ecm.client.Repository
+* org.nuxeo.ecm.client.DocumentFeed
+* org.nuxeo.ecm.client.DocumentEntry
+
+Theses documents are published by the following content services 
+* org.nuxeo.ecm.client.NavigationService
+* org.nuxeo.ecm.client.RepositoryService
+* org.nuxeo.ecm.client.ObjectService
+* org.nuxeo.ecm.client.DiscoveryService
+
+The client framework operates with the remote content manager using AtomPub or SOAP.
+Content services 
+It mainly generates org.nuxeo.ecm.client.Command that are executed by a org.nuxeo.ecm.client.Connector .
+The org.nuxeo.ecm.client.Connector manages the connection with servers.
+The client mainly 
