@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.webengine.sites.layouts">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="webpage">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>pushtomenu</widget>
+        </row>
+        <row>
+          <widget>content</widget>
+        </row>
+      </rows>
+      <widget name="pushtomenu" type="template">
+        <translated>true</translated>
+        <fields>
+          <field>webp:pushtomenu</field>
+        </fields>
+        <properties mode="any">
+          <property name="required">true</property>
+          <property name="template">
+            /widgets/boolean_radio_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="content" type="htmltext">
+        <translated>true</translated>
+        <fields>
+          <field>webp:content</field>
+        </fields>
+      </widget>
+    </layout>
+
+    <!-- ContextualLink layout definition -->
+    <layout name="contextualLink">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>link</widget>
+        </row>
+      </rows>
+      <widget name="link" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>clink:link</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+    </layout>
+
+  </extension>
+
+</component>

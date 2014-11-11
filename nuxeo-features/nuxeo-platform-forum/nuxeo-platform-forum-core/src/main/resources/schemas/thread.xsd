@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/thread"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:nxs="http://www.nuxeo.org/ecm/schemas/thread">
+
+  <xs:complexType name="moderatorList">
+    <xs:sequence>
+      <xs:element name="moderator" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="moderated" type="xs:boolean"/>
+  <xs:element name="moderators" type="nxs:moderatorList"/>
+
+</xs:schema>
