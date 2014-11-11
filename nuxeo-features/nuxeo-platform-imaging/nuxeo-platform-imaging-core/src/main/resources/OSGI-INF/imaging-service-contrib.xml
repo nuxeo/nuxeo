@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.picture.ImagingComponent.default.config">
+  <documentation>
+    Defines configurations for imaging service
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.picture.ImagingComponent"
+    point="configuration">
+
+  <configuration>
+    <parameters>
+      <!-- global configuration variables -->
+      <parameter name="conversionFormat">jpg</parameter>
+    </parameters>
+  </configuration>
+
+  </extension>
+
+</component>

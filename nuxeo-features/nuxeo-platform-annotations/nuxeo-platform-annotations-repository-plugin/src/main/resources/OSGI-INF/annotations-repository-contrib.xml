@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.annotations.repository.contrib">
+  <extension target="org.nuxeo.ecm.platform.annotations.AnnotationsRepositoryService"
+    point="documentAnnotability">
+    <documentAnnotability class="org.nuxeo.ecm.platform.annotations.repository.service.DefaultDocumentAnnotability"/>
+  </extension>
+  <extension target="org.nuxeo.ecm.platform.annotations.AnnotationsRepositoryService" point="jcrLifecycleEventId">
+    <eventId>documentCheckedIn</eventId>
+    <eventId>documentRemoved</eventId>
+    <eventId>versionRemoved</eventId>
+    <eventId>documentRestored</eventId>
+  </extension>
+  <extension target="org.nuxeo.ecm.platform.annotations.AnnotationsRepositoryService" point="graphManagerEventListener">
+    <listener class="org.nuxeo.ecm.platform.annotations.repository.service.DocumentVersionnedGraphManager"/>
+  </extension>
+  <extension target="org.nuxeo.ecm.platform.annotations.AnnotationsRepositoryService"
+    point="documentEventListener">
+    <listener name="defaultAnnotatedDocumentListener"
+      class="org.nuxeo.ecm.platform.annotations.repository.service.AnnotatedDocumentEventListenerImpl" />
+  </extension>
+</component>
