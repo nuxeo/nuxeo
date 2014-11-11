@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Annotation
+Bundle-SymbolicName: org.nuxeo.ecm.annotation.facade;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateless
+Require-Bundle: org.nuxeo.ecm.platform.annotations.api, org.nuxeo.ecm.core.api
+Nuxeo-Component: OSGI-INF/annotation-platform-contrib.xml

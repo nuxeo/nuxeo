@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXAudit Search
+Bundle-SymbolicName: org.nuxeo.ecm.platform.audit.search
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Export-Package: org.nuxeo.ecm.platform.audit.search
+Require-Bundle: org.nuxeo.ecm.platform.audit.api,
+  org.nuxeo.ecm.platform.search.api
+Nuxeo-Component: OSGI-INF/nxsearch-contrib.xml

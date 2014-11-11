@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.webengine.sites.theme">
+
+  <require>org.nuxeo.theme.webengine
+  </require>
+
+  <!-- Views -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="views">
+    <view name="Minisite Logo" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/logo.ftl</template>
+    </view>
+    <view name="Minisite Main" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/main.ftl</template>
+    </view>
+    <view name="Minisite Last Published" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/last_published.ftl</template>
+    </view>
+    <view name="Minisite Last Comments" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/last_comments.ftl</template>
+    </view>
+    <view name="Minisite Contextual" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/contextual.ftl</template>
+    </view>
+    <view name="Minisite Tree" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/tree.ftl</template>
+    </view>
+    <view name="Minisite Attached files" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/files.ftl</template>
+    </view>
+    <view name="Page Last Comments" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/page_last_comments.ftl</template>
+    </view>
+    <view name="All WebPages" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/all_webpages.ftl</template>
+    </view>
+    <view name="Search Results" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/search_results.ftl</template>
+    </view>
+    <view name="Minisite Search " template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/search.ftl</template>
+    </view>
+  </extension>
+
+  <!-- application settings -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="applications">
+    <application root="${org.nuxeo.ecm.contextPath}/sites" template-engine="freemarker">
+      <negotiation>
+        <strategy>web</strategy>
+        <default-engine>default</default-engine>
+        <default-theme>sites/default
+        </default-theme>
+        <default-perspective>default
+        </default-perspective>
+      </negotiation>
+    </application>
+    <!--  temporary fix for jboss -->
+    <application root="${org.nuxeo.ecm.contextPath}/site/sites"
+      template-engine="freemarker">
+      <negotiation>
+        <strategy>web</strategy>
+        <default-engine>default</default-engine>
+        <default-theme>sites/default
+        </default-theme>
+        <default-perspective>default
+        </default-perspective>
+      </negotiation>
+    </application>
+
+    <application root="${org.nuxeo.ecm.contextPath}/site"
+      template-engine="freemarker">
+      <negotiation>
+        <strategy>web</strategy>
+        <default-engine>default</default-engine>
+        <default-theme>sites/default
+        </default-theme>
+        <default-perspective>default
+        </default-perspective>
+      </negotiation>
+    </application>
+
+
+
+  </extension>
+  <!-- themes -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="themes">
+    <theme>
+      <src>
+        themes/theme-sites-setup.xml
+      </src>
+    </theme>
+  </extension>
+  <!-- Palettes -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="presets">
+    <palette name="Sites borders" src="themes/palettes/sites-borders.properties" category="border" />
+    <palette name="Sites backgrounds" src="themes/palettes/sites-backgrounds.properties" category="background" />
+    <palette name="Sites fonts" src="themes/palettes/sites-fonts.properties" category="font" />
+  </extension>
+
+
+</component>

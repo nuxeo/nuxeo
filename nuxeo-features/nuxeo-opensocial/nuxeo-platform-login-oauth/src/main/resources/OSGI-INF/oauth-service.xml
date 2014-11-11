@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.auth.OAuthService"
+  version="1.0">
+
+  <implementation class="org.nuxeo.ecm.platform.oauth.impl.OAuthServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.oauth.api.OAuthService" />
+  </service>
+
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="authenticators">
+    <authenticationPlugin name="OAUTH_SIGNED_AUTH"
+      enabled="true"
+      class="org.nuxeo.ecm.platform.login.SignedAuthAuthenticator">
+      <loginModulePlugin>Trusting_LM</loginModulePlugin>
+    </authenticationPlugin>
+  </extension>
+
+
+  <extension-point name="oauthKey">
+    <documentation>
+      This is an extension point to declare keys for different consumer,
+      for instance
+
+
+      <keys consumer="nuxeo opensocial">
+        <public-key>
+MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKQp1iPsCXjTuXAxkaI48OQ7BQ8G9Ni8
+/L0A7WL5bDssbS7LWnlB2qhuY8rLjIcS6+SrvBT0rWnoDYe9vf0wfycCAwEAAQ==
+        </public-key>
+        <private-key>
+MIIBOgIBAAJBAKQp1iPsCXjTuXAxkaI48OQ7BQ8G9Ni8/L0A7WL5bDssbS7LWnlB
+2qhuY8rLjIcS6+SrvBT0rWnoDYe9vf0wfycCAwEAAQJBAKMMeogLNA0yHQh18zOw
+YnIMvKWEP0PV0SDX/u9C1GCf1AO9i7ggr+uJTPhybdZWfrMkzvdkriP970nXx5/Z
+W+ECIQDUiWfF5jwBATAy7Ne7kzMHsRMiHIhBTceyt9ghValPXQIhAMW8BUWMScNk
+aQ609VFFqWirtWnUut6iFJsnttoWcpRTAiA61aayc9+cb5XGIyY9OKxhrrUbNkbJ
+vRxQ7u+Xmrz5yQIgB4J5jMekMYiJuOZEft6vbWtAC5HpuvTa5X2foy7BEUMCIAT6
+XC791M89RviD+U+aeQNNOKqwoW8YGELOR1mPE9je
+        </private-key>
+      </keys>
+
+
+    </documentation>
+
+    <object class="org.nuxeo.ecm.platform.oauth.api.OAuthKeyDescriptor" />
+  </extension-point>
+</component>
