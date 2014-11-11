@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+
+<fragment>
+
+  <extension target="application#MODULE">
+  <module>
+      <java>${bundle.fileName}</java>
+  </module>
+  </extension>
+
+  <extension target="faces-config#NAVIGATION">
+    <navigation-case>
+      <from-outcome>thread_create</from-outcome>
+      <to-view-id>/thread_create.xhtml</to-view-id>
+    </navigation-case>
+  </extension>
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+    <!--  create a temp dir -->
+    <!--  be sure no directory with that name exists -->
+    <delete path="nxforum.tmp" />
+    <mkdir path="nxforum.tmp" />
+
+    <unzip from="${bundle.fileName}" to="nxforum.tmp">
+      <include>OSGI-INF/l10n/**</include>
+    </unzip>
+
+    <append from="nxforum.tmp/OSGI-INF/l10n/messages.properties"
+      to="nuxeo.war/WEB-INF/classes/messages.properties"
+      addNewLine="true" />
+    <append
+      from="nxforum.tmp/OSGI-INF/l10n/messages_en.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_en.properties"
+      addNewLine="true" />
+    <append
+      from="nxforum.tmp/OSGI-INF/l10n/messages_fr.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_fr.properties"
+      addNewLine="true" />
+    <append
+      from="nxforum.tmp/OSGI-INF/l10n/messages_it.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_it.properties"
+      addNewLine="true" />
+    <append
+      from="nxforum.tmp/OSGI-INF/l10n/messages_de.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_de.properties"
+      addNewLine="true" />
+
+    <!-- Other languages, if available, should appened here -->
+
+    <delete path="nxforum.tmp" />
+  </install>
+
+
+</fragment>
+

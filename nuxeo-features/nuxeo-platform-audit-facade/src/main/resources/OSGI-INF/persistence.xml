@@ -1,0 +1,9 @@
+<persistence>
+  <persistence-unit name="NXAudit">
+    <jta-data-source>java:/nxaudit-logs</jta-data-source>
+    %{CLASS}%
+    <properties>
+      <property name="hibernate.hbm2ddl.auto">update</property>
+    </properties>
+  </persistence-unit>
+</persistence>

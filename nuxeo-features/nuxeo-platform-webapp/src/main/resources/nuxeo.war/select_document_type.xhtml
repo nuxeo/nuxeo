@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes">
+
+  <ui:define name="page title">
+    <h:outputText value="#{message[title.create.document]}"/>
+  </ui:define>
+
+  <ui:define name="body">
+    <div class="mainNoTabs">
+      <h3><h:outputText value="#{messages['title.availableDocumentTypes']}"/></h3>
+      <h:outputText value="#{messages['help.chooseDocumentType']}"/>
+      <h:form>
+        <h:dataTable var="type" value="#{typesList}"
+          class="selectDocumentType">
+          <h:column>
+            <h:commandLink action="#{documentActions.createDocument(type.id)}">
+              <h:graphicImage value="#{type.icon}" />
+              <h:outputText value="#{messages[type.label]}" />
+            </h:commandLink>
+          </h:column>
+        </h:dataTable>
+      </h:form>
+    </div>
+  </ui:define>
+
+</nxthemes:composition>

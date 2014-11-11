@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.relations.io.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.io.test.IOManager"
+    point="adapters">
+
+    <adapter name="all"
+      class="org.nuxeo.ecm.platform.relations.io.IORelationAdapter">
+      <property name="graph">myrelations</property>
+    </adapter>
+
+    <adapter name="ignore-external"
+      class="org.nuxeo.ecm.platform.relations.io.IORelationAdapter">
+      <property name="graph">myrelations</property>
+      <property name="ignore-external">true</property>
+    </adapter>
+
+    <adapter name="ignore-literals"
+      class="org.nuxeo.ecm.platform.relations.io.IORelationAdapter">
+      <property name="graph">myrelations</property>
+      <property name="ignore-literals">true</property>
+    </adapter>
+
+    <adapter name="no-simple-resource"
+      class="org.nuxeo.ecm.platform.relations.io.IORelationAdapter">
+      <property name="graph">myrelations</property>
+      <property name="ignore-simple-resources">true</property>
+    </adapter>
+
+    <adapter name="filter-predicates"
+      class="org.nuxeo.ecm.platform.relations.io.IORelationAdapter">
+      <property name="graph">myrelations</property>
+      <properties name="filter-predicates">
+        <value>http://purl.org/dc/terms/IsBaseOn</value>
+      </properties>
+    </adapter>
+
+    <adapter name="ignore-predicate"
+      class="org.nuxeo.ecm.platform.relations.io.IORelationAdapter">
+      <property name="graph">myrelations</property>
+      <properties name="ignore-predicate">
+        <value>http://purl.org/dc/terms/References</value>
+      </properties>
+    </adapter>
+
+    <adapter name="filter-metadata"
+      class="org.nuxeo.ecm.platform.relations.io.IORelationAdapter">
+      <property name="graph">myrelations</property>
+      <properties name="filter-metadata">
+        <value>http://www.nuxeo.org/metadata/Author</value>
+      </properties>
+    </adapter>
+
+    <adapter name="ignore-metadata"
+      class="org.nuxeo.ecm.platform.relations.io.IORelationAdapter">
+      <property name="graph">myrelations</property>
+      <properties name="ignore-metadata">
+        <value>http://www.nuxeo.org/metadata/Ignored</value>
+      </properties>
+    </adapter>
+
+    <adapter name="ignore-all-metadata"
+      class="org.nuxeo.ecm.platform.relations.io.IORelationAdapter">
+      <property name="graph">myrelations</property>
+      <properties name="ignore-metadata">
+        <value>http://www.nuxeo.org/metadata/Ignored</value>
+      </properties>
+    </adapter>
+
+    <adapter name="update-date-metadata"
+      class="org.nuxeo.ecm.platform.relations.io.IORelationAdapter">
+      <property name="graph">myrelations</property>
+      <properties name="update-date-metadata">
+        <value>http://www.nuxeo.org/metadata/CreationDate</value>
+      </properties>
+    </adapter>
+
+  </extension>
+
+</component>
