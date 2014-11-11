@@ -1,0 +1,12 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<h:form rendered="#{currentDocument.hasSchema('files')}"
+  id="document_files_view">
+
+  <nxl:layout name="files" mode="view" value="#{currentDocument}" />  
+
+</h:form>
+
+</div>
