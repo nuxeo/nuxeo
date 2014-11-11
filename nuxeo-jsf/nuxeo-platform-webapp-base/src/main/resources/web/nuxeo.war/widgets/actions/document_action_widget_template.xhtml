@@ -1,0 +1,20 @@
+<c:if test="#{not empty widgetProperty_actionId}"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+<nxu:set var="actionContextDocument"
+  value="#{nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument)}"
+  cache="true">
+<nxu:set var="widgetProperty_action"
+  value="#{webActions.getActionForDocument(widgetProperty_actionId, actionContextDocument, not widgetProperty_disableFiltered)}"
+  cache="true">
+<nxu:set var="widgetProperty_addForm"
+  value="false"
+  cache="true">
+  <ui:include src="/widgets/actions/action_widget_template.xhtml" />
+</nxu:set>
+</nxu:set>
+</nxu:set>
+
+</c:if>

@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.webapp.pageproviders.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <documentation>
+      This contribution declares page providers used by UI components.
+
+      The page provider 'tree_children' is used to list children in the tree
+      navigation.
+
+      Note the "ecm:isProxy = 0" predicate optimization that is required to
+      simplify greatly the request performed by the tree manager when browsing
+      on folders with a lot of files when using the Visible SQL Storage.
+
+      The page provider 'default_document_suggestion' is used by default by the
+      component performing document suggestions.
+    </documentation>
+
+    <coreQueryPageProvider name="tree_children">
+      <property name="maxResults">PAGE_SIZE</property>
+      <pattern>
+        SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:isProxy = 0 AND
+        ecm:mixinType = 'Folderish' AND ecm:mixinType != 'HiddenInNavigation'
+        AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
+        'deleted'
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>50</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="default_document_suggestion">
+      <property name="maxResults">PAGE_SIZE</property>
+      <pattern quoteParameters="false" escapeParameters="true">
+        SELECT * FROM Document WHERE ecm:fulltext LIKE '?*' AND ecm:mixinType !=
+        'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
+        ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <!-- sort column="dc:title" ascending="true" / sort by fulltext relevance -->
+      <pageSize>5</pageSize>
+    </coreQueryPageProvider>
+
+  </extension>
+
+</component>

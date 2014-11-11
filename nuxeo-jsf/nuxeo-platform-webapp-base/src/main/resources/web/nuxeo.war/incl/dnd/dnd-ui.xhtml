@@ -1,0 +1,86 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+ xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<div style="display:none">
+ <span id="dndMessageNoOperation"> <h:outputText value="#{messages['label.dnd.nooperation']}" /></span>
+ <span id="dndErrorMessage"> <h:outputText value="#{messages['label.dnd.error']}" /></span>
+ <span id="dndSecurityErrorMessage"> <h:outputText value="#{messages['label.dnd.security.error']}" /></span>
+ <span id="dndTimeoutMessage"> <h:outputText value="#{messages['label.dnd.timeout']}" /></span>
+ <span id="dndServerErrorMessage"> <h:outputText value="#{messages['label.dnd.server.error']}" /></span>
+ <span id="dndUnknownErrorMessage"> <h:outputText value="#{messages['label.dnd.unknown.error']}" /></span>
+ <span id="dndNoResponseMessage"> <h:outputText value="#{messages['label.dnd.no.response']}" /></span>
+</div>
+
+  <!-- Information panel for DnD import -->
+  <div id="dropzone-info-panel" class="dndProgressPanel" style="display:none;">
+    <table width="100%">
+      <tr>
+        <td colspan="3">
+          <div class="dropzone-info-block" id="dropzone-info-block">
+            <div class="dropzone-info" id="dropzone-info"></div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td style="display: none;">
+          <div class="dropzone-info-summary" id="dropzone-info-summary" style="display: none;">
+          </div>
+        </td>
+        <td>
+           <span id="dropzone-bar-msg" class="dropzone-bar-msg"></span>
+        </td>
+        <td>
+          <span id="dndMsgUploadInProgress" class="dndControlMessage">
+          <nxu:graphicImage value="/img/big_loading.gif"
+          style="vertical-align:middle" width="20px"/>
+          <h:outputText value="#{messages['label.dnd.upload.inprogress']}"/></span>
+          <span id="dndMsgUploadCompleted" class="dndControlMessage loadingComplete"><h:outputText value="#{messages['label.dnd.upload.ok.continue']}"/></span>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3">
+          <input id="dropzone-bar-btn" class="dropzone-bar-btn button" type="button" value="#{messages['command.continue']}"></input>
+          <input id="dropzone-bar-btn-cancel"
+          onClick="window.location.reload()"
+          class="dropzone-bar-btn button" type="button"
+          value="#{messages['command.cancel']}"></input>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Form used to choose import operation -->
+  <div id="dndFormPanel" class="dndFormPanel" style="display:none;">
+    <table width="100%">
+      <tr>
+        <th> <h:outputText value="#{messages['label.dnd.uploaded.files']}"/> </th>
+        <th> <h:outputText value="#{messages['label.dnd.choose.operation']}"/> </th>
+      </tr>
+      <tr>
+        <td><div id="uploadedFileList"></div>
+        </td>
+        <td>
+          <form name="operationForm" class="importOperationForm">
+            <select id="operationIdSelector" name="operationId"></select>
+            <div id="dndSubForm"></div>
+            <input id="dndFormSubmitButton" class="button" type="button" value="#{messages['import.continue']}"/>
+          </form>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div id="dndContinueButton" style="display:none;">
+     <span id="dndContinueButtonNext">
+     <nxu:graphicImage value="/img/ImportContinue.png"
+      style="vertical-align:middle"
+      alt="#{messages['import.continue']}"
+      title="#{messages['import.continue']}"/>
+     </span>
+     <span id="dndContinueButtonWait" style="display:none">
+       <nxu:graphicImage value="/img/big_loading.gif"
+          style="vertical-align:middle"/>
+     </span>
+  </div>
+
+</div>
