@@ -1,0 +1,25 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <nxu:set var="actions"
+    value="#{webActions.getActionsList('LOCAL_CONFIGURATION')}">
+
+    <c:if test="#{not empty actions}">
+      <a4j:outputPanel id="local_configuration_panel" layout="block">
+        <c:forEach var="action" items="#{actions}">
+
+          <ui:include src="#{action.link}" />
+
+        </c:forEach>
+      </a4j:outputPanel>
+    </c:if>
+
+  </nxu:set>
+
+</ui:composition>

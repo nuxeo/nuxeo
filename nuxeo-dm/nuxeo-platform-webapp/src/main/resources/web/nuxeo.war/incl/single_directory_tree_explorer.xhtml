@@ -1,0 +1,54 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:rich="http://richfaces.org/rich"
+  class="menu">
+
+<nxu:set var="treeModel" value="#{directoryTreeManager.selectedTreeAsList}">
+<a4j:region renderRegionOnly="true">
+  <h:form id="directoryTreeForm" rendered="#{directoryTreeManager.initialized}">
+    <div class="floatR">
+      <a4j:commandLink action="#{directoryTreeManager.resetCurrentTree}" render="directoryTreeNav">
+        <h:graphicImage value="/icons/refresh.png"
+          alt="#{messages['label.refresh']}"
+          title="#{messages['label.refresh']}"
+          styleClass="tipsyShow tipsyGravitySW" />
+      </a4j:commandLink>
+    </div>
+    <h:panelGroup id="directoryTreeNav">
+      <rich:tree
+        toggleListener="#{treeActions.toggleListener}"
+        styleClass="nx-no-trn-ico"
+        rowKeyVar="rowKey"
+        id="directoryNavTree"
+        stateVar="nodeState"
+        var="node">
+        <rich:treeModelRecursiveAdaptor
+          roots="#{treeModel}"
+          nodes="#{node.children}"
+          leaf="#{node.children.size lt 1}"
+          id="directoryNavRecursiveAdaptor">
+          <rich:treeNode
+            expanded="#{node.open}"
+            highlightedClass="treeNodeHighlightedClass"
+            id="directoryNavTreeNode"
+            selectedClass="treeNodeSelectedClass">
+            <div class="#{nxu:test(node.selected, 'selected', '')}">
+              <h:commandLink immediate="true"
+                id="directoryNavCommandLink"
+                action="#{node.selectNode}" styleClass="treeLink">
+                <h:outputText value="#{node.description}" />
+              </h:commandLink>
+            </div>
+          </rich:treeNode>
+        </rich:treeModelRecursiveAdaptor>
+      </rich:tree>
+    </h:panelGroup>
+  </h:form>
+</a4j:region>
+</nxu:set>
+
+</div>

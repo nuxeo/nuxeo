@@ -1,0 +1,20 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <c:choose>
+    <c:when test="#{documentContentViewActions.hasContentViewSupport(currentDocument, 'trash_content')}">
+      <ui:include src="/incl/document_content_view.xhtml">
+        <ui:param name="contentViewCategory" value="trash_content" />
+      </ui:include>
+    </c:when>
+    <c:otherwise>
+      <nxu:set var="contentViewName" value="document_trash_content">
+        <ui:decorate template="/incl/content_view.xhtml" />
+      </nxu:set>
+    </c:otherwise>
+  </c:choose>
+
+</ui:composition>

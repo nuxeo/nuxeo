@@ -1,0 +1,107 @@
+/*
+Starting CSS who define the very basic styles.
+=Reset and default values -> reduce browser inconsistencies in styles and define the default font
+=Links and Titles -> generic styles for links and titles
+author: lkemen@nuxeo.com
+*/
+
+/* =Reset and default values */
+html, body, form, div, p, ul, a, h1, h2, h3, h4, h5, h6, form, p, input, table,
+dd, dt, dl, img, hr, fieldset, iframe {
+  margin: 0;
+  padding: 0 }
+
+iframe {
+  border-width: 1px;
+  border-style: solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)" }
+
+html,
+body {
+  font-family: "default (__FLAVOR__ font)";
+  font-size: 100%;
+  line-height: 1.125em;
+  color: "default (__FLAVOR__ color)" }
+
+ul {
+  list-style: none }
+
+img,
+a img,
+:link img,
+:visited img {
+  border: none }
+
+b,
+strong {
+  font-weight: bold }
+i,
+em,
+var,
+dfn,
+cide {
+  font-style: italic }
+
+/* =Links and Titles */
+a,
+a:link,
+a:visited {
+  color: "link (__FLAVOR__ color)";
+  text-decoration: none;
+  -moz-transition: all 0.1s ease 0.1s;
+  -webkit-transition: all 0.1s ease 0.1s;
+  transition: all 0.1s ease 0.1s }
+
+a:hover {
+  color: "link.hover (__FLAVOR__ color)";
+  text-decoration: none }
+
+a,
+img,
+a:focus,
+a:active,
+:link:focus,
+:link:active {
+  outline: medium none }
+
+h1, h2,
+h3, h4,
+h5, h6,
+.mainTitle {
+  color: "title.major (__FLAVOR__ color)";
+  font-weight: bold;
+  line-height: normal }
+
+h1,
+.mainTitle {
+  font-size: 1.6em;
+  padding: .5em 0 1.5em;
+  word-wrap: break-word }
+
+h2 {
+  font-size: 1.3em;
+  padding: .5em 1em .5em 0 }
+
+h3 {
+  font-size: 1.2em;
+  padding: .5em 0 2em }
+
+h4 {
+  font-size: 1.1em;
+  padding: .7em 0 1em }
+
+h5 {
+  font-size: 1.1em;
+  margin: .2em 0 .2em 0 }
+
+h6 {
+  color: "title.minor (__FLAVOR__ color)";
+  font-size: 1em;
+  margin: .2em 0 .2em 0 }
+
+.icon {
+  margin-right: .3em }
+
+input, select, textarea,
+button, keygen, isindex, legend, a {
+  font-size: inherit }

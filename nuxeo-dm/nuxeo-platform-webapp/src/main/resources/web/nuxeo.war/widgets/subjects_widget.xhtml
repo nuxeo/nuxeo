@@ -1,0 +1,77 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf"
+  id="#{widget.id}">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}"><nxu:inputList
+  value="#{field}" model="subjectsModel"><nxdir:directoryEntryOutput
+  directoryName="topic"
+  value="#{fn:split(subjectsModel.rowData, '/')[0]}"
+  localize="true" />/<nxdir:directoryEntryOutput
+  directoryName="subtopic"
+  value="#{subjectsModel.rowData}"
+  localize="true"
+  keySeparator="/" /><h:outputText
+  rendered="#{subjectsModel.rowIndex != subjectsModel.rowCount -1}" value=", " /></nxu:inputList></c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:html>
+    <nxdir:chainSelectOutput id="#{widget.id}_viewselect"
+      directoryNameList="topic,subtopic"
+      value="#{field}" localize="true" display="label"
+      keySeparator="/" entrySeparator="" handleMultipleValues="true" />
+  </nxp:html>
+</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+
+  <nxdir:chainSelectOutput id="#{widget.id}_viewselect"
+    directoryNameList="topic,subtopic"
+    value="#{field}" localize="true" display="label"
+    keySeparator="/" entrySeparator="" handleMultipleValues="true" />
+
+</c:if>
+<c:if test="#{widget.mode == 'edit'}">
+
+  <a4j:region id="#{widget.id}_region">
+    <nxdir:chainSelect size="2" value="#{field}"
+      id="#{widget.id}_editselect" multiSelect="true" multiParentSelect="true"
+      allowBranchSelection="false" onchange="#{widgetProperty_onchange}"
+      required="#{widgetProperty_required}"
+      resetCacheOnUpdate="true">
+      <nxdir:chainSelectListbox index="0" size="4" directoryName="topic"
+        localize="true" id="#{widget.id}_topic" ordering="ordering,label">
+        <a4j:ajax event="change" render="#{widget.id}_subtopic"
+          immediate="true" />
+      </nxdir:chainSelectListbox>
+
+      <nxdir:chainSelectListbox id="#{widget.id}_subtopic" size="4" index="1"
+        directoryName="subtopic" localize="true" ordering="ordering,label" />
+
+      <a4j:commandButton value="#{messages['command.add']}"
+        styleClass="button" immediate="true"
+        actionListener="#{chainSelectActions.add}"
+        render="#{widget.id}_status" id="#{widget.id}_add" />
+      <br />
+      <nxdir:chainSelectStatus display="value"
+        cssStyleClass="chainSelect"
+        id="#{widget.id}_status">
+        <f:facet name="removeButton">
+          <a4j:commandButton actionListener="#{chainSelectActions.delete}"
+            immediate="true" render="#{widget.id}_status"
+            image="/icons/delete.png" id="#{widget.id}_delete" />
+        </f:facet>
+      </nxdir:chainSelectStatus>
+    </nxdir:chainSelect>
+  </a4j:region>
+  <a4j:outputPanel ajaxRendered="true">
+    <h:message styleClass="errorMessage" for="#{widget.id}_editselect"
+      id="#{widget.id}_message" />
+  </a4j:outputPanel>
+
+</c:if>
+</f:subview>

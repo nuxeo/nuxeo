@@ -1,0 +1,363 @@
+/*
+For all status messages, tooltips and tips paragraphs.
+=Messages -> feedback, info, warning and error messages
+=Quote -> style for description, blockquote, comments
+=Small help messages -> for small help words, e.g. in forms
+=Tips -> tooltips on rollovers, and tips paragraphs
+author: lkemen@nuxeo.com
+*/
+
+/* =Messages */
+.ambiance {
+  font-size: .75em;
+  font-weight: normal;
+  padding: .7em 1em }
+
+.ambiance,
+.ambiance:hover {
+  border: none }
+
+.ambiance-title {
+  font-size: 1.1em;
+  font-weight: bold;
+  padding-bottom: .2em }
+
+a.ambiance-close {
+  color: inherit;
+  text-decoration: none;
+  padding-left: .5em }
+
+.ambiance .button {
+  float: none;
+  margin: 1em .5em .2em 0;
+  padding: 0 .4em }
+
+.ambiance-default,
+.ambiance-neutral,
+.ambiance-info,
+.ambiance-success,
+.ambiance-warn,
+.ambiance-error,
+.ambiance-fatal,
+.neutralFeedback,
+.infoFeedback,
+.errorFeedback,
+.warningFeedback,
+.successFeedback {
+  background-color: "neutral (__FLAVOR__ background)";
+  border-radius: 5px 0 0 5px;
+  color: "black (__FLAVOR__ color)";
+  margin: 0 0 .2em;
+  padding: .7em 1em }
+
+.neutralFeedback,
+.ambiance-neutral {
+  border: 1px solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  color: "default (__FLAVOR__ color)" }
+
+.infoFeedback,
+.ambiance-info {
+  background-color:"info (__FLAVOR__ background)";
+  color: "info.status (__FLAVOR__ color)" }
+
+.successFeedback,
+.ambiance-success {
+  background-color:"success (__FLAVOR__ background)";
+  color: "success.status (__FLAVOR__ color)" }
+
+.errorFeedback,
+.ambiance-error,
+.ambiance-fatal {
+  background-color:"error (__FLAVOR__ background)";
+  color: "error.status (__FLAVOR__ color)" }
+
+.warningFeedback,
+.ambiance-warn {
+  background-color: "warning (__FLAVOR__ background)";
+  color: "warning.status (__FLAVOR__ color)" }
+
+.facesStatusMessage {
+  top: 1em;
+  right: 1em;
+  position: fixed;
+  z-index: 10000 }
+
+.infoMessage,
+.errorMessage,
+.warningMessage,
+.successMessage {
+  display: block;
+  font-weight: bold;
+  padding: 0;
+  max-width: 25em }
+
+.info,
+.avert,
+.error,
+.success,
+.warning {
+  font-weight: bold }
+
+.info,
+.infoMessage {
+  color: "info.status (__FLAVOR__ color)" }
+
+.success,
+.successLink,
+.successMessage {
+  color: "success.status (__FLAVOR__ color)" }
+
+.avert {
+  color: "gray.dark (__FLAVOR__ color)" }
+
+.warning,
+.warningLink,
+.warningLabel,
+.warningMessage {
+  color: "warning.status (__FLAVOR__ color)" }
+
+.error,
+.errorLink,
+.errorMessage {
+  color: "error.status (__FLAVOR__ color)" }
+
+.processMessage {
+  background: url("${basePath}/icons/bullet.png") no-repeat scroll 0.7em 0.9em #f4f4f4;
+  border-radius: 3px;
+  display: inline-block;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin: .3em .5em .3em 0;
+  padding: .8em 1em 1em 2.2em }
+
+.processMessage .button {
+  font-size: .85em;
+  margin: 0 .2em 0 .5em;
+  padding: .2em .7em .3em }
+
+.completeInfo{
+  background-image: url("${basePath}/icons/info.png");
+  background-color:"info (__FLAVOR__ background)";
+  color: "info.status (__FLAVOR__ color)" }
+
+.completeSuccess {
+  background-image: url("${basePath}/icons/checked.gif");
+  background-color:"success (__FLAVOR__ background)";
+  color: "success.status (__FLAVOR__ color)" }
+
+.completeError {
+  background-image: url("${basePath}/icons/delete_red.png");
+  background-color:"error (__FLAVOR__ background)";
+  color: "error.status (__FLAVOR__ color)" }
+
+.completeWarning {
+  background-image: url("${basePath}/icons/warning.gif");
+  background-color: "warning (__FLAVOR__ background)";
+  color: "warning.status (__FLAVOR__ color)" }
+
+.running {
+  background-image: url("${basePath}/img/standart_waiter.gif") }
+
+.scheduled {
+  background-image: url("${basePath}/icons/clock.png") }
+
+.adminMessage {
+  background-color: #000;
+  background-color: rgba(20,30,40,0.92);
+  bottom: 0;
+  color: #ffd940;
+  font-size: 1.5em;
+  left: 0;
+  line-height: 160%;
+  padding: 2em 3em;
+  position: fixed;
+  right: 0;
+  text-align: center;
+  text-transform: none;
+  z-index: 10000 }
+
+.adminMessage .close {
+  color: #fff;
+  display: block;
+  float: right;
+  font-family: Arial,sans-serif;
+  font-size: 2em;
+  margin-left: 1.5em;
+  position: relative;
+  right: 0;
+  text-decoration: none;
+  top: -2px }
+
+.label,
+.chip {
+  background-color: "neutral.stronger (__FLAVOR__ background)";
+  border-radius: 2px;
+  color: #fff;
+  line-height: 130%;
+  font-size: .9em;
+  font-weight: bold;
+  margin: 0 .2em .2em 0;
+  padding: .06em .3em;
+  vertical-align: baseline;
+  text-transform: uppercase;
+  white-space: nowrap }
+
+.chip {
+  border-radius: 35px;
+  padding: .1em .4em }
+
+.label-light,
+.chip-light {
+  background-color: #fff;
+  border: 1px solid; border-color:"neutral.light (__FLAVOR__ border)";
+  color: "black (__FLAVOR__ color)" }
+
+.label-info,
+.chip-info {
+  background-color: #50c3f0 }
+
+.label-success,
+.chip-success {
+  background-color: #94d144 }
+
+.label-warning,
+.chip-warning {
+  background-color: #ffa939 }
+
+.label-error,
+.chip-error {
+  background-color: #f04e34 }
+
+/* =Quote */
+.quote {
+  display: block;
+  font-size: 1.12em;
+  margin: 0 0 1em  }
+
+/* Tipsy tooltips */
+.tispsyShow,
+.tipsyGravity {/* use this class to display a tipsy tooltip and its orientation */}
+.tipsy {
+  padding: 5px }
+
+.tipsy-inner {
+  font-size: 1.1em;
+  padding: 5px 8px 4px }
+
+/* Visible lists style, as lists are invisible in Nuxeo by default */
+ul.visibleList {
+   list-style: disc outside none;
+   margin: .5em 0 1em;
+   padding: 0 0 0 2em }
+
+.visibleList li {
+  list-style: disc outside none }
+
+/* =Small help messages */
+.specification {
+  clear: both;
+	margin: 0 0 1.5em }
+
+.widgetPanel .specification {
+  font-size: .95em }
+
+.help,
+.detail {
+  color: "gray.medium (__FLAVOR__ color)";
+  font-size: 10px;
+  font-weight: normal }
+
+p.detail,
+div.detail {
+  margin: .1em 0 .7em }
+
+/* Empty folder or result */
+.emptyResult {
+  color: "gray.light (__FLAVOR__ color)";
+  display: block;
+  font-style: italic;
+  font-weight: normal;
+  padding: 1em .7em 2em;
+  text-align: center }
+
+.emptyResult.emptyResultBig {
+  font-size: 1.3em;
+  padding: 3em 2em 6em }
+
+/* =Tips */
+ .widgetHelpLabel .widgetLabel {
+  background: url("${basePath}/icons/help.png") no-repeat scroll right top transparent;
+  cursor: help;
+  display: block;
+  padding: 0 1.2em 0.2em 0 }
+
+.tooltip {
+  background-color: #fff;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  box-shadow: 0 0 3px #aaa;
+  color: #000;
+  display: none;
+  font-weight: normal;
+  max-width: 14em;
+  padding: .6em .8em .8em;
+  white-space: normal;
+  z-index: 2000 }
+
+.dropArea {
+  border: 2px dashed; border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-radius: 3px;
+  box-shadow: none;
+  color: "gray.light (__FLAVOR__ color)";
+  font-size: 1.2em;
+  padding: 1.5em;
+  text-align: center }
+
+.tips {
+  border: 1px solid; border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-radius: 3px;
+  box-shadow: none;
+  color: "gray.medium (__FLAVOR__ color)";
+  display: block;
+  margin: .1em 0 .5em;
+  padding: .8em;
+  text-align: center }
+
+.tips.processMessage {
+  background-position: 5px 13px;
+  padding: .8em 1.8em }
+
+/* Layout Dev Mode */
+.nxlDevRegion .nxlDevContainer {
+  position: absolute }
+
+.nxlDevRegion.highlight {
+  border: 2px dashed #ff5b2b;
+  background-color: #ffefb6 }
+
+.nxlDevContainer {
+  display: none }
+
+#nxlMainDevContainer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #bbb;
+  color: #000;
+  font-weight: normal;
+  padding: 1em;
+  text-transform: initial;
+  white-space: normal;
+  z-index: 2000}
+
+#nxlMainDevContainerClose {
+  float: right;
+  padding-right: 2em}
+
+.nxHeader .nxlDevRegion {
+  display: inline }
+
+.nxFooter .nxlDevRegion {
+  display: inline }
