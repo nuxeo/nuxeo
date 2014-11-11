@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Actions Manager
+Bundle-SymbolicName: org.nuxeo.ecm.actions;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Eclipse-LazyStart: true
+Nuxeo-Component: OSGI-INF/actions-framework.xml
+Require-Bundle: org.nuxeo.ecm.core.api
+Export-Package: org.nuxeo.ecm.platform.actions,
+ org.nuxeo.ecm.platform.actions.ejb
