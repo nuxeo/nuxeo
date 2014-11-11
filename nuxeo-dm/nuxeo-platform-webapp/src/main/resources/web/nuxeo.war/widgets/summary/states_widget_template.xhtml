@@ -1,0 +1,13 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  <h3 class="summaryTitle">
+    <h:outputText
+      value="#{messages['label.content.header.currentLifecycleState']}" />
+  </h3>
+  <h:outputText
+    value="#{messages[currentDocument.currentLifeCycleState]}"
+    styleClass="sticker" />
+  <h:outputText value="#{messages['label.document.lock']}"
+    styleClass="sticker warningLabel" rendered="#{!empty currentDocumentLockDetails}" />
+</div>
