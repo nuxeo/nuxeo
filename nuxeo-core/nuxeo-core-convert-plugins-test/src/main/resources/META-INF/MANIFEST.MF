@@ -1,0 +1,11 @@
+Export-Package: org.nuxeo.ecm.core.convert.plugins.text.extractors
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Category: core
+Bundle-Name: org.nuxeo.ecm.core.convert.plugins.test
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.core.convert.plugins.test;singleton=true
