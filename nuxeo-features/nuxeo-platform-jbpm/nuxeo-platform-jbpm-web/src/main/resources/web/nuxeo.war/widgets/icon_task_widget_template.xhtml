@@ -1,0 +1,21 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core" id="#{widget.id}">
+
+  <c:if test="#{not widget.properties.isVirtual}">
+    <h:graphicImage
+            value="/icons/review_pending.gif"
+            rendered="#{empty field_0.create}" />
+    <h:graphicImage
+            value="/icons/review_current_level.gif"
+            rendered="#{!empty field_0.create and empty field_0.end}" />
+    <h:graphicImage
+            value="/icons/review_accepted.png"
+            rendered="#{!empty field_0.end and field_0.variablesLocally.validated}" />
+    <h:graphicImage value="/icons/review_refused.png"
+            rendered="#{!empty field_0.end and !field_0.variablesLocally.validated}" />
+  </c:if>
+  <c:if test="#{widget.properties.isVirtual}">
+    <h:graphicImage value="/icons/review_pending.gif" />
+  </c:if>
+</f:subview>
