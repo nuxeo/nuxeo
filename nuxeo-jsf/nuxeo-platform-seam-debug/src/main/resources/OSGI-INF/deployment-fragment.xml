@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <install>
+    <!--  create a temp dir -->
+    <!--  be sure no directory with that name exists -->
+    <delete path="nxwebplatform.tmp" />
+    <mkdir path="nxwebplatform.tmp" />
+
+    <unzip from="${bundle.fileName}" to="nxwebplatform.tmp">
+      <include>WEB/**</include>
+    </unzip>
+
+    <copy from="nxwebplatform.tmp/WEB/" to="nuxeo.war/WEB-INF/" />
+
+    <delete path="nxwebplatform.tmp" />
+
+    <mkdir path="nuxeo.war/WEB-INF" />
+    <mkdir path="nuxeo.war/WEB-INF/dev" />
+   
+  </install>
+
+</fragment>
+
