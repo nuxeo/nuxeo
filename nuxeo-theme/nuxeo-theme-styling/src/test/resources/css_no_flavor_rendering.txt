@@ -1,0 +1,49 @@
+<style type="text/css">
+/* CSS styles for theme 'testStyling' */
+
+
+/* CSS styles named 'testStyling/print Page Styles' */
+.${print_suid} {color:"black (* color)";font-family:"default (* font)";}
+.${print_suid} h1 {margin:0;padding:0;}
+.${print_suid} h2 {margin:0;padding:0;}
+.${print_suid} h3 {margin:0;padding:0;}
+.${print_suid} h4 {margin:0;padding:0;}
+.${print_suid} h5 {margin:0;padding:0;}
+.${print_suid} h6 {margin:0;padding:0;}
+.${print_suid} .myAddonClassWithFlavor {color:"black (* color)";font-family:"default (* font)";}
+.${print_suid} .myAddonClass {margin:0;padding:0;}
+
+
+/* CSS styles named 'testStyling/default Page Styles' */
+.${default_suid} {color:"default (* color)";font-family:"default (* font)";margin:0;line-height:1.125em;font-size:100%;padding:0;}
+.${default_suid} textarea {font-family:"default (* font)";font-size:.95em;padding:5px;}
+.${default_suid} form {margin:0;padding:0;}
+.${default_suid} div {margin:0;padding:0;}
+.${default_suid} p {margin:0;padding:0;}
+.${default_suid} ul {margin:0;padding:0;list-style:none;}
+.${default_suid} a {color:"link (* color)";outline:medium none;text-decoration:none;margin:0;padding:0;}
+.${default_suid} h1 {color:"title.major (* color)";font-weight:bold;margin:0;padding:.4em 0 .5em;font-size:1.4em;}
+.${default_suid} h2 {color:"title.major (* color)";font-weight:bold;margin:0;padding:.5em 1em .5em 0;font-size:1.2em;}
+.${default_suid} h3 {color:"title.major (* color)";font-weight:bold;margin:0;padding:.8em 0 .3em;font-size:1.2em;}
+.${default_suid} h4 {color:"title.minor (* color)";margin:.2em 0 .2em 0;padding:0;font-size:.8em;}
+.${default_suid} h5 {color:"title.minor (* color)";margin:.2em 0 .2em 0;padding:0;font-size:.8em;}
+.${default_suid} h6 {color:"title.minor (* color)";margin:.2em 0 .2em 0;padding:0;font-size:.8em;}
+.${default_suid} input {margin:0;padding:0;}
+.${default_suid} table {margin:0;padding:0;}
+.${default_suid} dd {margin:0;padding:0;}
+.${default_suid} dt {margin:0;padding:0;}
+.${default_suid} dl {margin:0;padding:0;}
+.${default_suid} img {border:0 none;outline:medium none;margin:0;padding:0;}
+.${default_suid} hr {margin:0;padding:0;}
+.${default_suid} fieldset {margin:0;padding:0;}
+.${default_suid} iframe {margin:0;padding:0;}
+.${default_suid} a:link {color:"link (* color)";text-decoration:none;}
+.${default_suid} a:visited {color:"link (* color)";text-decoration:none;}
+.${default_suid} a:hover {color:"link.hover (* color)";text-decoration:underline;}
+.${default_suid} .selectDocumentType {margin-top:10px;}
+.${default_suid} .checkBox {margin-right:3px;}
+.${default_suid} .required {background:transparent url(/nuxeo/myBasePath/icons/required.gif) top right no-repeat;padding:0 10px 0 0;}
+.${default_suid} .myAddonClassWithFlavor {color:"black (* color)";font-family:"default (* font)";}
+.${default_suid} .myAddonClass {margin:0;padding:0;}
+
+</style>
