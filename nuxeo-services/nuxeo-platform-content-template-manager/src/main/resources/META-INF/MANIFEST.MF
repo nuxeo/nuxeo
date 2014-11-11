@@ -1,0 +1,32 @@
+Export-Package: org.nuxeo.ecm.platform.content.template.factories,
+ org.nuxeo.ecm.platform.content.template.listener,
+ org.nuxeo.ecm.platform.content.template.service
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: Nuxeo Content Template Manager
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.core.api
+Bundle-Vendor: Nuxeo
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/content-template-framework.xml,
+ OSGI-INF/content-template-contrib.xml,
+ OSGI-INF/content-template-listener.xml
+Import-Package: com.google.inject;version="2.0.0",
+ javax.annotation;version="1.0",
+ org.apache.commons.logging,
+ org.jboss.util,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.security,
+ org.nuxeo.ecm.core.event,
+ org.nuxeo.ecm.core.event.impl,
+ org.nuxeo.ecm.core.repository,
+ org.nuxeo.ecm.directory;api=split,
+ org.nuxeo.osgi,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.model
+Bundle-SymbolicName: org.nuxeo.ecm.platform.content.template;singleton=true
