@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.automation.server.auth.config">
+<!--
+Setup a Basic Auth plugin for /automation paths that will always send 401 on authentication failures
+-->
+
+  <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="authenticators">
+    <authenticationPlugin name="AUTOMATION_BASIC_AUTH" enabled="true"
+        class="org.nuxeo.ecm.platform.ui.web.auth.plugins.BasicAuthenticator">
+      <parameters>
+        <parameter name="AutoPrompt">true</parameter>
+        <parameter name="RealmName">Nuxeo Automation</parameter>
+      </parameters>
+    </authenticationPlugin>
+  </extension>
+
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="specificChains">
+
+    <specificAuthenticationChain name="Automation">
+        <urlPatterns>
+            <url>(.*)/automation.*</url>
+        </urlPatterns>
+
+        <replacementChain>
+            <plugin>AUTOMATION_BASIC_AUTH</plugin>
+            <plugin>ANONYMOUS_AUTH</plugin>
+        </replacementChain>
+    </specificAuthenticationChain>
+
+  </extension>
+
+</component>

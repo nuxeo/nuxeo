@@ -1,0 +1,15 @@
+<div class="lastPublishedPagesBlock">
+  <#if (!nxthemesInfo.model.items.empty)>
+    <h4>${Context.getMessage("title.last.published.pages")}</h4>
+  </#if>    
+  <#list nxthemesInfo.model.items as item>
+    <div class="pagePublishedResume">
+      <div class="dayMonth"><span>${item.day}<br/></span>${item.month}</div>
+      <div class="documentInfo"> 
+        <a href="${item.path}"> ${item.name?xml}</a>
+          <p><span>${item.author}</span>&nbsp;|&nbsp;<span>${item.numberComments} ${Context.getMessage("last.published.pages.comments")}</span></p>
+      </div>        
+      <div style="clear:both;"></div>
+    </div>
+  </#list>
+</div>
