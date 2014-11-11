@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+ <!-- JBossWS Native EndPoint Declaration -->
+ <extension target="web#JBOSSWS">
+    <servlet>
+      <description>NuxeoAudit WS EndPoint</description>
+      <display-name>NuxeoAudit EndPoint</display-name>
+      <servlet-name>NuxeoAuditEndPoint</servlet-name>
+      <servlet-class>org.nuxeo.ecm.platform.audit.ws.WSAuditBean</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>NuxeoAuditEndPoint</servlet-name>
+      <url-pattern>/webservices/nuxeoaudit</url-pattern>
+    </servlet-mapping>
+  </extension>
+
+  <!-- SUN JAXWS / Metro EndPoint Declaration -->
+  <extension target="jaxws#ENDPOINT">
+    <endpoint name="nuxeoaudit"
+      implementation="org.nuxeo.ecm.platform.audit.ws.WSAuditBean"
+      url-pattern="/webservices/nuxeoaudit" />
+  </extension>
+
+</fragment>

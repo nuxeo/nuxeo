@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Audit Web Fragment
+Bundle-SymbolicName: org.nuxeo.ecm.platform.audit.web;singleton:=true
+Bundle-Category: web,stateless
+Require-Bundle: org.nuxeo.ecm.platform,
+ org.nuxeo.ecm.actions,
+ org.nuxeo.ecm.platform.audit.api,
+ org.nuxeo.ecm.webapp.core
+Provide-Package: org.nuxeo.ecm.platform.audit.web,
+ org.nuxeo.ecm.platform.audit.web.delegate,
+ org.nuxeo.ecm.platform.audit.web.listener,
+ org.nuxeo.ecm.platform.audit.web.listener.ejb,
+ org.nuxeo.ecm.platform.audit.web.listener.events
+Nuxeo-Component: OSGI-INF/actions-contrib.xml

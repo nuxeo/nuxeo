@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<component name="test.comment.contribs">
+
+  <extension target="org.nuxeo.ecm.platform.comment.service.CommentService"
+    point="config">
+    <config>
+      <converterClass>
+        org.nuxeo.ecm.platform.comment.impl.CommentConverterImpl
+      </converterClass>
+      <graphName>documentComments</graphName>
+      <commentNamespace>http://www.nuxeo.org/comments/uid/</commentNamespace>
+      <documentNamespace>http://www.nuxeo.org/document/uid/</documentNamespace>
+      <predicateNamespace>
+        http://www.nuxeo.org/predicates/isCommentFor
+      </predicateNamespace>
+    </config>
+  </extension>
+
+  <!-- relation adapters -->
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="resourceadapters">
+    <adapter namespace="http://www.nuxeo.org/comments/uid/"
+      class="org.nuxeo.ecm.platform.relations.adapters.DocumentModelResourceAdapter" />
+    <adapter namespace="http://www.nuxeo.org/document/uid/"
+      class="org.nuxeo.ecm.platform.relations.adapters.DocumentModelResourceAdapter" />
+  </extension>
+
+  <!-- relation graph -->
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="graphs">
+    <graph name="documentComments" type="jena">
+      <namespaces>
+        <namespace name="comment">http://www.nuxeo.org/comments/uid</namespace>
+        <namespace name="isCommentFor">
+          http://www.nuxeo.org/predicates/isCommentFor
+        </namespace>
+        <namespace name="document">
+          http://www.nuxeo.org/document/uid/
+        </namespace>
+      </namespaces>
+    </graph>
+
+    <graph name="default" type="jena">
+      <namespaces>
+        <namespace name="rdf">
+          http://www.w3.org/1999/02/22-rdf-syntax-ns#
+        </namespace>
+        <namespace name="dcterms">http://purl.org/dc/terms/</namespace>
+        <namespace name="nuxeo">http://www.nuxeo.org/document/uid/</namespace>
+      </namespaces>
+    </graph>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <!-- NXP-4951: enable listener here for tests -->
+    <listener name="publishRelationsListener" async="false" postCommit="false"
+      class="org.nuxeo.ecm.platform.relations.core.listener.PublishRelationsListener"
+      priority="-50">
+      <event>documentProxyPublished</event>
+    </listener>
+
+  </extension>
+
+</component>

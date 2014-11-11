@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <require>org.nuxeo.ecm.platform.lang</require>
+  <require>org.nuxeo.ecm.webapp.core</require>
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+
+    <delete path="${bundle.fileName}.tmp" />
+    <mkdir path="${bundle.fileName}.tmp" />
+    <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp" />
+
+    <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_en.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
+    <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_fr.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_fr.properties" addNewLine="true" />
+    <delete path="${bundle.fileName}.tmp" />
+
+  </install>
+
+  <extension target="pages#PAGES">
+    <!-- Bind url to start the download -->
+    <page view-id="/nxconnectDownload.xhtml"
+      action="#{externalLinkManager.startDownload()}" />
+  </extension>
+
+  <extension target="faces-config#NAVIGATION">
+    <navigation-case>
+      <from-outcome>view_admin</from-outcome>
+      <to-view-id>/view_admin.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>confirm_download</from-outcome>
+      <to-view-id>/connect_confirm_download.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>can_not_download</from-outcome>
+      <to-view-id>/connect_download_not_possible.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <!--  <navigation-case>
+      <from-outcome>view_connect</from-outcome>
+      <to-view-id>/view_connect.xhtml</to-view-id>
+      <redirect />
+      </navigation-case>
+      <navigation-case>
+      <from-outcome>view_appcenter</from-outcome>
+      <to-view-id>/view_appcenter.xhtml</to-view-id>
+      <redirect />
+      </navigation-case> -->
+  </extension>
+
+</fragment>
