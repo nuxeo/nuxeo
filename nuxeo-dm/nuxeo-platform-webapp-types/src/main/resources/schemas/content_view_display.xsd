@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<xs:schema
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/content_view_display/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/content_view_display/">
+
+  <xs:element name="contentViewName" type="xs:string" />
+  <xs:element name="resultLayoutName" type="xs:string" />
+
+  <xs:element name="pageSize" type="xs:int" default="20" />
+
+  <xs:element name="selectedLayoutColumns" type="nxs:selectedLayoutColumnsType" />
+  <xs:complexType name="selectedLayoutColumnsType">
+    <xs:sequence>
+      <xs:element name="item" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="sortInfos" type="nxs:sortInfosType" />
+  <xs:complexType name="sortInfosType">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:sortInfoType" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="sortInfoType">
+    <xs:sequence>
+      <xs:element name="sortColumn" type="xs:string" />
+      <xs:element name="sortAscending" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

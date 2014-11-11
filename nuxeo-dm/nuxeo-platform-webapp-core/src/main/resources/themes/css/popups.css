@@ -1,0 +1,150 @@
+/*
+Style javascript Popups
+=FancyBox -> override default FancyBox styles
+=Generic PopuP div -> style for the light pop up
+author: lkemen@nuxeo.com
+*/
+
+/* =FancyBox */
+#fancybox-overlay {
+  z-index: 10002 }
+
+#fancybox-wrap {
+  font-family: "default (__FLAVOR__ font)";
+  font-size: .75em;
+  z-index: 10005 }
+
+#fancybox-wrap a,
+#fancybox-wrap a:link,
+#fancybox-wrap a:visited {
+  text-decoration: none;
+  color: "link (__FLAVOR__ color)" }
+
+#fancybox-wrap a:hover,
+#fancybox-wrap a:active {
+  text-decoration: underline }
+
+#fancybox-content h3 {
+  background-color: "neutral.light (__FLAVOR__ background)";
+  border-bottom: 1px solid #e7e7e7;
+  padding: 1em 1.7em }
+
+#fancybox-content .content {
+  padding: 2em 2em 2.5em;
+  min-height: 15em;
+  overflow: auto }
+
+#fancybox-content .buttonsGadget {
+  background-color: "neutral.light (__FLAVOR__ background)";
+  border-top: 1px solid #e7e7e7;
+  font-size: 1.1em;
+  margin: 0;
+  padding: 1em 1.8em .5em }
+
+
+#fancybox-content .buttonsGadget button.disabled,
+#fancybox-content .buttonsGadget input.disabled,
+#fancybox-content .buttonsGadget button.disabled:hover,
+#fancybox-content .buttonsGadget input.disabled:hover,
+#fancybox-content .buttonsGadget .button[disabled],
+#fancybox-content .buttonsGadget .button[disabled]:hover,
+#fancybox-content .buttonsGadget .button[disabled=disabled],
+#fancybox-content .buttonsGadget .button[disabled=disabled]:hover,
+#fancybox-content .buttonsGadget button:disabled,
+#fancybox-content .buttonsGadget button:disabled:hover,
+#fancybox-content .buttonsGadget input[type="reset"]:disabled,
+#fancybox-content .buttonsGadget input[type="reset"]:disabled:hover,
+#fancybox-content .buttonsGadget input[type="submit"]:disabled,
+#fancybox-content .buttonsGadget input[type="submit"]:disabled:hover,
+#fancybox-content .buttonsGadget input[type="button"]:disabled,
+#fancybox-content .buttonsGadget input[type="button"]:disabled:hover {
+  background: none "button.disabled (__FLAVOR__ background)";
+  border: 1px solid;
+  box-shadow: none;
+  border-color: "button.disabled (__FLAVOR__ border)";
+  color: "link.disabled (__FLAVOR__ color)";
+  cursor: default;
+  display: initial }
+
+#fancybox-content .popUpDescription {
+  padding: 0 0 1em }
+
+#fancybox-content .dataInput {
+  max-width: none }
+
+/* Override default size from the page */
+#fancybox-frame body,
+.nxPopUp.nxMainContainer {
+  height: 100% }
+
+.nxPopUp.nxMainContainer {
+  height: auto;
+  margin: 0;
+  min-height: inherit }
+
+.nxPopUp.nxMainContainer .content {
+  background: none;
+  padding: 1em }
+
+#fancybox-content #permalinkAction_box input {
+  display: block;
+  width: 90% }
+
+/* =Generic PopuP div */
+.genericPopUp {
+  background-color: #fff;
+  border: 1px solid;
+  border-color: "neutral.light (__FLAVOR__ border)";
+  border-radius: 3px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  display: none;
+  left: 26%;
+  padding: 0 1em .5em;
+  position: absolute;
+  width: 670px;
+  z-index: 10000 }
+
+.genericPopUp .closePopUpHeader {
+  border-width: 2px;
+  border-style: none none dotted;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  color: "black (__FLAVOR__ color)";
+  font-size: 1.1em;
+  font-weight: bold;
+  padding: .5em 0;
+  text-align: right }
+
+.genericPopUp .closePopUpHeader .closePopUp {
+  color: "gray.medium (__FLAVOR__ color)";
+  cursor: pointer;
+  float: right;
+  font-size: .9em }
+
+.genericPopUp .closePopUpHeader .popUpTitle {
+  float: left;
+  font-size: 1.2em }
+
+.genericPopUp .popUpContent {
+  height: 390px;
+  overflow: auto;
+  padding: 1em }
+
+.genericPopUp .buttonsGadget {
+  border-width: 2px;
+  border-style: dotted none none;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  margin: .5em 0 0;
+  padding: .5em 0 0 }
+
+.genericPopUp .dr-tree td,
+.genericPopUp .rich-tree td {
+  padding: .1em }
+
+.bigPopUp {
+  height: 70%;
+  width: 80% }
+
+/* Popup view */
+.nxPopUp.nxMainContainer .infoViewInfoLayout {
+  padding-left: 1em;
+  padding-right: 1em }

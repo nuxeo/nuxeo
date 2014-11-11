@@ -1,0 +1,32 @@
+<ui:composition
+ xmlns="http://www.w3.org/1999/xhtml"
+ xmlns:h="http://java.sun.com/jsf/html"
+ xmlns:nxu="http://nuxeo.org/nxweb/util"
+ xmlns:ui="http://java.sun.com/jsf/facelets"
+ xmlns:c="http://java.sun.com/jstl/core"
+ xmlns:a4j="http://richfaces.org/a4j">
+
+  <script type="text/javascript">
+    var nuxeo = (function(nuxeo) {
+      nuxeo.doubleClickShield = {
+        message: "#{messages['doubleClick_shield.already.submitting']}"
+      };
+      return nuxeo;
+    })(nuxeo || {});
+
+    jQuery(document).ready(function() {
+      jQuery('form.doubleClickShielded').each(function() {
+        jQuery(this).preventDoubleSubmission();
+      });
+    });
+    jsf.ajax.addOnEvent(function(data) {
+      var ajaxstatus = data.status;
+      if (ajaxstatus == "success") {
+        jQuery('form.doubleClickShielded').each(function() {
+          jQuery(this).preventDoubleSubmission();
+        });
+      }
+    });
+  </script>
+
+</ui:composition>

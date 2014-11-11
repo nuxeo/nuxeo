@@ -1,0 +1,34 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core">
+<div>
+
+  <c:if test="false">
+    Parameters:
+    - safeEdit_message: warning message
+  </c:if>
+
+  <c:if test="#{safeEdit_message==null}">
+    <c:set var="safeEdit_message" value="safeedit.page.has.unsaved.changes" />
+  </c:if>
+
+  <script src="#{contextPath}/scripts/safeEdit.js"></script>
+  <script src="#{contextPath}/scripts/safeEditUI.js"></script>
+
+  <script type="text/javascript">
+    var nuxeo = (function(nuxeo) {
+      nuxeo.safeEdit = {
+        restorePrompt: {
+          message: "#{messages['safeedit.recovereddata.prompt']}",
+          confirmMessage: "#{messages['safeedit.recover.yes']}",
+          discardMessage: "#{messages['safeedit.recover.no']}"
+        },
+        feedbackMessage: "#{messages['safeedit.saved']}"
+      };
+      return nuxeo;
+    })(nuxeo || {});
+  </script>
+
+</div>
+</ui:composition>

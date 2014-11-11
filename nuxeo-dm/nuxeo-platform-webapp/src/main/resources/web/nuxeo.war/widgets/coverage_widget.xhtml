@@ -1,0 +1,60 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf"
+  id="#{widget.id}">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">
+<f:subview rendered="#{not empty field}"><nxdir:directoryEntryOutput
+    directoryName="continent"
+    value="#{fn:split(field_0, '/')[0]}"
+    localize="true" />/<nxdir:directoryEntryOutput
+    directoryName="country"
+    value="#{field_0}"
+    localize="true"
+    keySeparator="/" />
+</f:subview>
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:html>
+    <nxdir:chainSelectOutput id="#{widget.id}_viewselect"
+      directoryNameList="continent,country"
+      value="#{field}" localize="true" display="label"
+      keySeparator="/" entrySeparator="" />
+  </nxp:html>
+</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+
+  <nxdir:chainSelectOutput id="#{widget.id}_viewselect"
+    directoryNameList="continent,country"
+    value="#{field}" localize="true" display="label"
+    keySeparator="/" entrySeparator="" />
+
+</c:if>
+<c:if test="#{widget.mode == 'edit'}">
+
+  <a4j:region id="#{widget.id}_region">
+    <nxdir:chainSelect size="2" value="#{field}"
+      id="#{widget.id}_editselect" onchange="#{widgetProperty_onchange}"
+      required="#{widgetProperty_required}"
+      resetCacheOnUpdate="true">
+      <nxdir:chainSelectListbox index="0" size="0" directoryName="continent"
+        localize="true" id="#{widget.id}_continent" ordering="ordering,label">
+        <a4j:ajax event="change" render="#{widget.id}_country"
+          immediate="true" />
+      </nxdir:chainSelectListbox>
+
+      <nxdir:chainSelectListbox size="0" index="1" directoryName="country"
+        localize="true" id="#{widget.id}_country" ordering="ordering,label" />
+    </nxdir:chainSelect>
+  </a4j:region>
+  <h:message styleClass="errorMessage" for="#{widget.id}_editselect"
+    id="#{widget.id}_message" />
+
+</c:if>
+</f:subview>

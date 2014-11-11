@@ -1,0 +1,449 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webapp.info.view">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="infoViewPanelLeft" type="documentActions">
+      <properties widgetMode="view">
+        <property name="category">INFO_VIEW_PANEL_LEFT</property>
+      </properties>
+      <controls mode="any">
+        <control name="requireSurroundingForm">false</control>
+        <control name="gridStyleClass">
+          gridStyle8 infoViewLeft
+        </control>
+      </controls>
+    </widget>
+
+    <widget name="infoViewPanelRight" type="documentActions">
+      <properties widgetMode="view">
+        <property name="category">INFO_VIEW_PANEL_RIGHT</property>
+      </properties>
+      <controls mode="any">
+        <control name="requireSurroundingForm">false</control>
+        <control name="gridStyleClass">
+          gridStyle4 compactLayout infoViewRight
+        </control>
+      </controls>
+    </widget>
+
+    <widget name="infoViewPreview" type="container">
+      <handlingLabels>false</handlingLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="styleClass">infoViewDocContainer</property>
+        <property name="display">block_top</property>
+      </properties>
+      <subWidgets>
+        <widget name="preview" type="documentPreview">
+          <properties widgetMode="view">
+            <property name="width">100%</property>
+            <property name="height">600px</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="infoViewNote" type="container">
+      <handlingLabels>false</handlingLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="styleClass">infoViewDocContainer</property>
+        <property name="display">block_top</property>
+      </properties>
+      <subWidgetRefs>
+        <widget>summary_note_text</widget>
+      </subWidgetRefs>
+    </widget>
+
+    <widget name="infoViewNoPreview" type="container">
+      <handlingLabels>false</handlingLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="styleClass">infoViewDocContainer</property>
+        <property name="display">block_top</property>
+      </properties>
+      <subWidgets>
+        <widget name="noPreview" type="template">
+          <properties mode="any">
+            <property name="template">
+              /widgets/info_view_no_preview_widget.xhtml
+            </property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="infoViewTitleContainer" type="container">
+      <handlingLabels>false</handlingLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="styleClass">infoViewTitle</property>
+        <property name="display">block_top</property>
+      </properties>
+      <subWidgets>
+        <widget name="infoViewTitle" type="title_link">
+          <fields>
+            <field></field>
+            <field>ref</field>
+            <field>dc.description</field>
+          </fields>
+          <properties mode="any">
+            <property name="target">_top</property>
+            <property name="hideExternalLink">true</property>
+            <property name="hideDownloadLink">true</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="infoViewInfoLayoutContainer" type="container">
+      <handlingLabels>false</handlingLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="styleClass">infoViewInfoLayout</property>
+        <property name="display">block_top</property>
+      </properties>
+      <subWidgets>
+        <widget name="infoViewInfoLayout" type="documentLayout">
+          <properties widgetMode="view">
+            <property name="mode">view</property>
+            <property name="documentMode">info</property>
+            <property name="defaultLayout">defaultInfoLayout@tabLayout</property>
+            <property name="includeAnyMode">false</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="infoViewActions" type="documentActionsWithForms">
+      <properties widgetMode="view">
+        <property name="category">INFO_VIEW_ACTIONS</property>
+        <property name="styleClass">globalActionBar infoViewActions</property>
+        <property name="subStyleClass">contextActions</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="actionsDisplay">icons</property>
+        <property name="useAjaxForm">true</property>
+        <property name="ignoreTemplateProperty">true</property>
+        <property name="maxActionsNumber">5</property>
+      </properties>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="infoViewPreview" type="widget" order="100">
+      <category>INFO_VIEW_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">infoViewPreview</property>
+      </properties>
+      <filter-id>notHasNote</filter-id>
+      <filter-id>view_preview</filter-id>
+      <filter-id>denyInfoViewPreview</filter-id>
+    </action>
+
+    <action id="infoViewNote" type="widget" order="100">
+      <category>INFO_VIEW_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">infoViewNote</property>
+      </properties>
+      <filter-id>hasNote</filter-id>
+    </action>
+
+    <action id="infoViewNoPreview" type="widget" order="100">
+      <category>INFO_VIEW_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">infoViewNoPreview</property>
+      </properties>
+      <filter-id>notHasPreview</filter-id>
+    </action>
+
+    <action id="infoViewTitleContainer" type="widget" order="100">
+      <category>INFO_VIEW_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">infoViewTitleContainer</property>
+      </properties>
+    </action>
+
+    <action id="infoViewInfoLayoutContainer" type="widget" order="200">
+      <category>INFO_VIEW_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">infoViewInfoLayoutContainer</property>
+      </properties>
+    </action>
+
+    <action id="infoViewActions" type="widget" order="300">
+      <category>INFO_VIEW_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">infoViewActions</property>
+      </properties>
+    </action>
+
+    <action id="infoAddToFavoritesAction" order="0" label="label.addToFavorites"
+      link="#{favoritesActions.addCurrentDocumentToFavorites()}" icon="/icons/pin.png">
+      <category>INFO_VIEW_ACTIONS</category>
+      <filter-id>canAddToFavorites</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="infoRemoveFromFavoritesAction" order="0"
+      label="label.removeFromFavorites" link="#{favoritesActions.removeCurrentDocumentFromFavorites()}"
+      icon="/icons/pinned.png">
+      <category>INFO_VIEW_ACTIONS</category>
+      <filter-id>canRemoveFromFavorites</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="infoDocumentLock" link="#{lockActions.lockCurrentDocument}"
+      order="10" label="command.lock" type="link" icon="/icons/contextual_menu/unlocked.png">
+      <category>INFO_VIEW_ACTIONS</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>can_lock</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="infoDocumentUnlock" link="#{lockActions.unlockCurrentDocument}"
+      order="10" label="command.unlock" type="link" icon="/icons/contextual_menu/locked.png">
+      <category>INFO_VIEW_ACTIONS</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>can_unlock</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="infoPermalinkAction" order="20" label="label.permalink"
+      type="fancybox" icon="/icons/contextual_menu/share.png" accessKey="k">
+      <category>INFO_VIEW_ACTIONS</category>
+      <properties>
+        <property name="include">/incl/permalink_box.xhtml</property>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="infoDownloadAction" link="#{operationActionBean.doOperation('downloadFilesZip')}"
+      order="30" label="label.document.download" type="link"
+      icon="/icons/contextual_menu/download.png">
+      <category>INFO_VIEW_ACTIONS</category>
+      <filter-id>documentHasBlobs</filter-id>
+    </action>
+
+    <action id="infoSubscribesAllDocNotifications" link="#{subscriptionAction.updateAllSubscriptions}"
+      order="40" label="label.subscriptions.follow" type="link"
+      icon="/icons/contextual_menu/subscribe.png">
+      <category>INFO_VIEW_ACTIONS</category>
+      <filter-id>hasNoSubscriptions</filter-id>
+      <filter-id>canSubscribe</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="infoUnsubscribesAllDocNotifications" link="#{subscriptionAction.updateAllSubscriptions}"
+      order="40" label="label.subscriptions.unfollow" type="link"
+      icon="/icons/contextual_menu/unsubscribe.png">
+      <category>INFO_VIEW_ACTIONS</category>
+      <filter-id>hasSubscriptions</filter-id>
+      <filter-id>canSubscribe</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="gridInfoViewLayout">
+      <templates>
+        <template mode="any">
+          /layouts/layout_grid_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>infoViewPanelLeft</widget>
+          <widget>infoViewPanelRight</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="defaultInfoLayout@tabLayout">
+      <templates>
+        <template mode="any">
+          /layouts/layout_grid_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>infoViewInfoBox</widget>
+        </row>
+        <row>
+          <widget>infoViewMetadata</widget>
+        </row>
+        <row>
+          <widget>infoViewWorkflow</widget>
+        </row>
+        <row>
+          <widget>infoViewTags</widget>
+        </row>
+        <row>
+          <widget>infoViewCollections</widget>
+        </row>
+        <row>
+          <widget>infoViewComments</widget>
+        </row>
+      </rows>
+      <widget name="infoViewInfoBox" type="container">
+        <subWidgets>
+          <widget name="infoBox" type="info_box" />
+        </subWidgets>
+        <properties widgetMode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
+        <controls mode="any">
+          <control name="gridStyleClass">gridStyle12</control>
+        </controls>
+      </widget>
+      <widget name="infoViewMetadata" type="container">
+        <labels>
+          <label mode="any">action.view.metadata</label>
+        </labels>
+        <translated>true</translated>
+        <subWidgets>
+          <widget name="metadata" type="documentLayout">
+            <properties widgetMode="view">
+              <property name="mode">view</property>
+              <property name="documentMode">view</property>
+              <property name="includeAnyMode">false</property>
+            </properties>
+            <controls mode="any">
+              <control name="requireSurroundingForm">true</control>
+            </controls>
+          </widget>
+        </subWidgets>
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+          <control name="gridStyleClass">gridStyle12</control>
+        </controls>
+        <properties widgetMode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
+      </widget>
+      <widget name="infoViewWorkflow" type="container">
+        <labels>
+          <label mode="any">label.document.routing.workflow</label>
+        </labels>
+        <translated>true</translated>
+        <subWidgets>
+          <widget name="workflow" type="summary_document_route">
+            <controls mode="any">
+              <control name="requireSurroundingForm">true</control>
+            </controls>
+          </widget>
+        </subWidgets>
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+          <control name="gridStyleClass">gridStyle12</control>
+        </controls>
+        <properties widgetMode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
+        <widgetModes>
+          <mode value="view">#{routingActions.filteredRouteModels.size() > 0 ?
+            'view' : 'hidden'}</mode>
+        </widgetModes>
+      </widget>
+      <widget name="infoViewTags" type="container">
+        <labels>
+          <label mode="any">action.view.tagging</label>
+        </labels>
+        <translated>true</translated>
+        <subWidgets>
+          <widget name="tags" type="summary_current_document_tagging">
+            <controls mode="any">
+              <control name="requireSurroundingForm">true</control>
+            </controls>
+            <properties widgetMode="any">
+              <property name="placeholder">
+                #{messages['label.add.tag.placeholder']}
+              </property>
+            </properties>
+          </widget>
+        </subWidgets>
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+          <control name="gridStyleClass">gridStyle12</control>
+        </controls>
+        <properties widgetMode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
+      </widget>
+      <widget name="infoViewCollections" type="container">
+        <labels>
+          <label mode="any">label.collections</label>
+        </labels>
+        <translated>true</translated>
+        <subWidgets>
+          <widget name="collections" type="summary_current_document_collections" />
+        </subWidgets>
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+          <control name="gridStyleClass">gridStyle12</control>
+        </controls>
+        <properties widgetMode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
+        <widgetModes>
+          <mode value="view">#{collectionActions.hasCurrentDocumentVisibleCollection()
+            ? 'view' : 'hidden'}</mode>
+        </widgetModes>
+      </widget>
+      <widget name="infoViewComments" type="container">
+        <labels>
+          <label mode="any">#{nxu:translate('label.summary.comments',
+            documentThreadedComments.size)}</label>
+        </labels>
+        <translated>false</translated>
+        <subWidgets>
+          <widget name="comments" type="summary_current_document_comments">
+            <controls mode="any">
+              <control name="requireSurroundingForm">true</control>
+            </controls>
+          </widget>
+        </subWidgets>
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+          <control name="gridStyleClass">gridStyle12</control>
+        </controls>
+        <properties widgetMode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
+        <widgetModes>
+          <mode value="view">#{documentThreadedComments.size() > 0 ? 'view' :
+            'hidden'}</mode>
+        </widgetModes>
+      </widget>
+    </layout>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="denyInfoViewPreview" append="true">
+    </filter>
+
+  </extension>
+
+</component>
