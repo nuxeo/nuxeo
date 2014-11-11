@@ -1,0 +1,126 @@
+# Copyright (c) 2008-2013 Nuxeo SA (http://nuxeo.com/) and others.
+#
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License v1.0
+# which accompanies this distribution, and is available at
+# http://www.eclipse.org/legal/epl-v10.html
+#
+# Contributors:
+#     Florent Guillaume
+
+# Variables used:
+# ${idType} VARCHAR(36)
+# ${argIdType} VARCHAR(36)
+
+# Conditions used:
+
+
+############################################################
+
+
+#CATEGORY: beforeTableCreation
+
+
+
+############################################################
+
+
+#CATEGORY: afterTableCreation
+
+
+# ------------------------------------------------------------
+# -- Adding miscellaneous indexes
+
+
+#TEST:
+SELECT 1 FROM SYSIBM.SYSDUMMY1 WHERE EXISTS(SELECT * FROM USER_TABLES WHERE table_name = 'DC_CONTRIBUTORS')
+           AND NOT EXISTS(SELECT * FROM USER_INDEXES WHERE index_name = 'DC_CONTRIBUTORS_ITEM_IDX')
+
+#IF: ! emptyResult
+CREATE INDEX DC_CONTRIBUTORS_ITEM_IDX ON DC_CONTRIBUTORS(ITEM)
+
+
+#TEST:
+SELECT 1 FROM SYSIBM.SYSDUMMY1 WHERE EXISTS(SELECT * FROM USER_TABLES WHERE table_name = 'DUBLINCORE')
+           AND NOT EXISTS(SELECT * FROM USER_INDEXES WHERE index_name = 'DUBLINCORE_MODIFIED_IDX')
+
+#IF: ! emptyResult
+CREATE INDEX DUBLINCORE_MODIFIED_IDX ON DUBLINCORE(MODIFIED)
+
+
+# ------------------------------------------------------------
+# -- NX_IN_TREE
+
+
+CREATE OR REPLACE FUNCTION NX_IN_TREE(id ${argIdType}, baseid ${argIdType})
+RETURNS SMALLINT
+  READS SQL DATA
+  NO EXTERNAL ACTION
+  NOT DETERMINISTIC
+BEGIN
+  DECLARE curid ${idType};
+  SET curid = id;
+  IF baseid IS NULL OR id IS NULL OR baseid = id THEN
+    RETURN 0;
+  END IF;
+  LOOP
+    SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;
+    IF curid IS NULL THEN
+      RETURN 0;
+    ELSEIF curid = baseid THEN
+      RETURN 1;
+    END IF;
+  END LOOP;
+END
+
+
+# ------------------------------------------------------------
+# -- NX_ACCESS_ALLOWED
+
+
+CREATE OR REPLACE FUNCTION NX_ACCESS_ALLOWED(
+  id ${argIdType},
+  users VARCHAR(10000),
+  perms VARCHAR(10000))
+RETURNS SMALLINT
+  READS SQL DATA
+  NO EXTERNAL ACTION
+  NOT DETERMINISTIC
+BEGIN
+  DECLARE allusers VARCHAR(10000);
+  DECLARE allperms VARCHAR(10000);
+  DECLARE first BOOLEAN;
+  DECLARE curid ${idType};
+  DECLARE newid ${idType};
+  SET allusers = '|' || users || '|';
+  SET allperms = '|' || perms || '|';
+  SET curid = id;
+  SET first = TRUE;
+  WHILE curid IS NOT NULL DO
+    FOR r AS SELECT * FROM acls WHERE id = curid ORDER BY pos DO
+      IF LOCATE('|' || r.user || '|', allusers) <> 0 AND LOCATE('|' || r.permission || '|', allperms) <> 0 THEN
+        RETURN r.grant;
+      END IF;
+    END FOR;
+    SELECT parentid INTO newid FROM hierarchy WHERE id = curid;
+    IF first = TRUE AND newid IS NULL THEN
+      SELECT versionableid INTO newid FROM versions WHERE id = curid;
+    END IF;
+    SET first = FALSE;
+    SET curid = newid;
+  END WHILE;
+  RETURN 0;
+END
+
+
+# ------------------------------------------------------------
+# -- PATH OPTIMIZATIONS
+
+# -- without optimization path search are done using a proc stock and the hierarchy table
+# TODO #IF: ! pathOptimizationsEnabled
+LOG.INFO pathOptimizations is disabled
+
+
+
+
+
