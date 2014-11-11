@@ -1,0 +1,16 @@
+[
+    {
+        "fieldType":"string",
+        "description":"desc fieldA",
+        "name":"fieldA",
+        "columnName":"colA",
+        "sqlTypeHint":"whatever"
+    },
+    {
+        "fieldType":"string",
+        "description":"desc fieldB",
+        "name":"fieldB",
+        "columnName":"colB",
+        "sqlTypeHint":"whatever"
+    }
+]
