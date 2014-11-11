@@ -1,0 +1,12 @@
+#!/bin/sh
+#####
+#
+# Nuxeo backward compliance startup script
+#
+#####
+
+DIRNAME=`dirname "$0"`
+
+echo WARNING: jbossctl is DEPRECATED, please use nuxeoctl instead.
+
+"$DIRNAME"/nuxeoctl $*

@@ -1,0 +1,145 @@
+<assembly>
+
+  <!-- ARTIFACTS -->
+  <assemble>
+    <outputFile>/</outputFile>
+    <set>root-artifacts</set>
+  </assemble>
+  <artifactSet id="root-artifacts">
+    <import>**</import>
+    <includeDependencies>false</includeDependencies>
+    <includes>
+      <artifact name="nuxeo-platform-webapp" />
+      <artifact name="nuxeo-platform-webapp-core" />
+    </includes>
+  </artifactSet>
+
+  <assemble>
+    <outputFile>system</outputFile>
+    <set>system</set>
+  </assemble>
+  <artifactSet id="system">
+    <import>**</import>
+    <includeDependencies>true</includeDependencies>
+    <includes>
+      <artifact group="org.nuxeo*" category="runtime,jboss4"
+        includeDependsOnCategory="false" />
+      <artifact group="org.nuxeo*" category="stateless" />
+      <!-- add here web and stateless nuxeo-addons -->
+    </includes>
+    <excludes>
+      <artifact group="!org.nuxeo*" />
+      <artifact group="org.nuxeo.common" />
+      <artifact name="nuxeo-runtime-jboss-extensions" />
+      <artifact name="nuxeo-generic-wss-handler" />
+
+      <artifact name="nuxeo-platform-webapp" />
+      <artifact name="nuxeo-platform-webapp-core" />
+      <artifact name="nuxeo-apt-extensions" />
+      <artifact name="nuxeo-webengine-apt" />
+      <artifact name="nuxeo-platform-ear" />
+    </excludes>
+  </artifactSet>
+
+  <assemble>
+    <delete>true</delete>
+    <outputFile>system</outputFile>
+    <file>nuxeo-platform-ear-${project.version}.pom</file>
+  </assemble>
+
+  <!-- third party libraries embedded in the ear -->
+  <assemble>
+    <outputFile>lib</outputFile>
+    <set>nuxeo-fixed-libs</set>
+  </assemble>
+  <artifactSet id="nuxeo-fixed-libs">
+    <artifacts>
+      <artifact group="org.osgi" name="osgi-core" />
+      <artifact group="commons-collections" name="commons-collections" />
+      <artifact group="commons-io" name="commons-io" />
+      <artifact group="commons-fileupload" name="commons-fileupload" />
+      <artifact group="commons-beanutils" name="commons-beanutils" />
+      <artifact group="net.sourceforge.cssparser" name="cssparser" />
+      <artifact group="net.sourceforge.nekohtml" name="nekohtml" />
+      <artifact group="org.w3c" name="sac" />
+      <artifact group="net.sf.ehcache" name="ehcache" />
+      <artifact group="net.sf.ezmorph" name="ezmorph" />
+      <artifact group="jboss" name="jboss-cache-jdk50" />
+      <artifact group="org.jboss.seam" name="jboss-seam" />
+      <artifact group="org.jboss.seam" name="jboss-seam-remoting" />
+      <artifact group="org.jboss.seam" name="jboss-seam-ui" />
+      <artifact group="org.jboss.seam" name="jboss-seam-mail" />
+      <artifact group="org.jboss.seam" name="jboss-seam-debug" />
+      <artifact group="javax.el" name="el-ri" />
+      <artifact group="org.jboss.el" name="jboss-el" />
+      <artifact group="org.jbpm.jbpm3" name="jbpm-jpdl" />
+      <artifact group="jboss" name="jgroups" />
+      <artifact group="org.bouncycastle" name="bcmail-jdk15" />
+      <artifact group="org.bouncycastle" name="bcprov-jdk15" />
+      <!--
+        version required because maven-nuxeo-plugin don't manage classifier here
+      -->
+      <artifact group="net.sf.json-lib" name="json-lib" classifier="jdk15"
+        version="2.2.1" />
+      <artifact group="org.apache.lucene" name="lucene-core" />
+      <artifact group="net.sf.opencsv" name="opencsv" />
+      <artifact group="org.codehaus.plexus" name="plexus-utils" />
+      <artifact group="org.slf4j" name="slf4j-api" />
+      <artifact group="org.slf4j" name="slf4j-log4j12" />
+      <artifact group="org.richfaces.framework" name="richfaces-api" />
+      <artifact group="org.richfaces.framework" name="richfaces-impl" />
+      <artifact group="org.richfaces.ui" name="richfaces-ui" />
+      <artifact group="org.apache.directory.server" name="apacheds-protocol-shared" />
+      <artifact group="org.apache.directory.shared" name="shared-ldap" />
+      <artifact group="com.sun.facelets" name="jsf-facelets" />
+      <!-- Nuxeo-WebEngine fixed libs -->
+      <artifact group="org.codehaus.groovy" name="groovy-all" />
+      <artifact group="com.sun.jersey" name="jersey-core" version="1.1.5" />
+      <artifact group="com.sun.jersey" name="jersey-server" version="1.1.5" />
+      <artifact group="javax.ws.rs" name="jsr311-api" version="1.1.1" />
+      <artifact group="javax.script" name="script-api" />
+      <!-- JOD / OOo libs and other converters deps-->
+      <artifact group="com.artofsolving" name="jodconverter" />
+      <artifact group="org.openoffice" name="ridl" />
+      <artifact group="org.openoffice" name="juh" />
+      <artifact group="org.openoffice" name="unoil" />
+      <artifact group="org.openoffice" name="jurt" />
+      <artifact group="com.thoughtworks.xstream" name="xstream" />
+      <artifact group="pdfbox" name="pdfbox" />
+      <artifact group="org.fontbox" name="fontbox" />
+      <artifact group="org.jempbox" name="jempbox" />
+      <artifact group="org.restlet" name="org.restlet" />
+      <artifact group="org.wikimodel" name="wem" />
+      <artifact group="jmimemagic" name="jmimemagic" />
+      <artifact group="rome" name="rome" />
+      <artifact group="commons-jexl" name="commons-jexl" />
+      <artifact group="com.hp.hpl.jena" name="arq" />
+      <artifact group="com.noelios.restlet" name="com.noelios.restlet" />
+      <artifact group="com.noelios.restlet" name="com.noelios.restlet.ext.servlet" />
+      <artifact group="com.ibm.icu" name="icu4j" />
+      <artifact group="com.hp.hpl.jena" name="iri" />
+      <artifact group="cup" name="java-cup" />
+      <artifact group="jdom" name="jdom" />
+      <artifact group="com.hp.hpl.jena" name="jena" />
+      <artifact group="joda-time" name="joda-time" />
+      <artifact group="org.restlet" name="org.restlet.ext.fileupload" />
+      <artifact group="oro" name="oro" />
+      <artifact group="org.apache.poi" name="ooxml-schemas" />
+      <artifact group="org.apache.poi" name="poi" />
+      <artifact group="org.apache.poi" name="poi-ooxml" />
+      <artifact group="org.apache.poi" name="poi-scratchpad" />
+      <artifact group="org.apache" name="xmlbeans" />
+      <artifact group="com.sun.xml" name="relaxngDatatype" />
+      <artifact group="com.sun.xml" name="xsom" />
+    </artifacts>
+  </artifactSet>
+
+  <!-- CUSTOM ARTIFACTS -->
+  <!--
+    <assemble> <outputFile>plugins</outputFile>
+    <set>custom-plugins-stateless</set> </assemble> <artifactSet
+    id="custom-plugins-stateless"> <import>**</import>
+    <includeDependencies>false</includeDependencies> <includes> <artifact
+    group="com.custom.sample" category="stateless" /> </includes> </artifactSet>
+  -->
+</assembly>
