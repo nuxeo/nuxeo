@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXCoreConvertPlugins
+Bundle-SymbolicName: org.nuxeo.ecm.core.convert.plugins
+Bundle-Localization: plugin
+Require-Bundle: org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.convert,
+ org.nuxeo.ecm.core.convert.api
+Bundle-Vendor: Nuxeo
+Bundle-Category: runtime
+Nuxeo-Component: OSGI-INF/convert-service-contrib.xml
