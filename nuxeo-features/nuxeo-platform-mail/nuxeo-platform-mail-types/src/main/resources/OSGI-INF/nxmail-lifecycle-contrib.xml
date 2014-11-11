@@ -1,0 +1,13 @@
+<component name="org.nuxeo.ecm.platform.mail.core.lifecycle.contrib">
+
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+  <require>org.nuxeo.ecm.platform.mail.core.types.contrib</require>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService" point="types">
+    <types>
+      <type name="MailMessage">default</type>
+      <type name="MailFolder">default</type>
+    </types>
+  </extension>
+
+</component>
