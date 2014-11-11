@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.usermanager.test.override">
+
+  <require>org.nuxeo.ecm.platform.usermanager.test</require>
+
+  <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
+    point="userManager">
+    <userManager
+      class="org.nuxeo.ecm.platform.usermanager.FakeTestUserManagerImpl">
+      <defaultAdministratorId>bob</defaultAdministratorId>
+      <defaultAdministratorId>bobette</defaultAdministratorId>
+      <disableDefaultAdministratorsGroup>
+        true
+      </disableDefaultAdministratorsGroup>
+      <administratorsGroup>myAdministrators</administratorsGroup>
+      <userSortField>id</userSortField>
+      <userPasswordPattern>
+        ^\w*(?=.{8,})(?=.*\d)(?=(.*[a-z]){2,})(?=.*[A-Z])\w*$
+      </userPasswordPattern>
+      <!-- The password is valid if :
+        - it has only word characters : [a-zA-Z0-9_]
+        - it's at least 8 long
+        - it has at least one digit
+        - it has at least two lowercase letter
+        - it has at least one uppercase letter -->
+      <users>
+        <anonymousUser remove="true" />
+        <virtualUser id="MyCustomAdministrator" searchable="false">
+          <password>secret2</password>
+          <property name="first">My Custom 2</property>
+          <property name="last">Administrator 2</property>
+          <group>administrators2</group>
+        </virtualUser>
+        <virtualUser id="MyCustomMember" remove="true" />
+      </users>
+    </userManager>
+  </extension>
+
+</component>
