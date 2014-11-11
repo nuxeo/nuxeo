@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.versioning.test.rules">
+
+  <extension
+    target="org.nuxeo.ecm.platform.versioning.service.VersioningService"
+    point="rules">
+
+    <!-- from approved state: increment major version -->
+    <versioningRuleEdit name="test_edit_approved_major" lifecycleState="approved"
+      action="inc_major">
+      <option value="inc_minor" />
+      <option lifecycleTransition="backToProject" value="inc_major" />
+    </versioningRuleEdit>
+
+    <!-- Auto rules -->
+
+    <versioningRuleAuto name="test_auto_project"
+      lifecycleState="project" action="inc_minor">
+    </versioningRuleAuto>
+
+    <versioningRuleAuto name="test_auto_approved"
+      lifecycleState="approved" action="inc_major">
+    </versioningRuleAuto>
+
+    <!-- readd this rule last -->
+    <versioningRuleAuto name="auto_any" action="inc_minor"
+      lifecycleState="*">
+    </versioningRuleAuto>
+
+  </extension>
+
+</component>

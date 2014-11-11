@@ -1,0 +1,252 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.convert.plugins">
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
+    point="converter">
+
+    <converter name="zip2html" class="org.nuxeo.ecm.platform.convert.plugins.Zip2HtmlConverter">
+      <destinationMimeType>text/html</destinationMimeType>
+      <sourceMimeType>application/zip</sourceMimeType>
+    </converter>
+
+    <converter name="wpd2text" class="org.nuxeo.ecm.platform.convert.plugins.WordPerfect2TextConverter">
+      <sourceMimeType>application/wordperfect</sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+      <parameters>
+        <parameter name="CommandLineName">wpd2text</parameter>
+      </parameters>
+    </converter>
+
+    <converter name="wpd2html" class="org.nuxeo.ecm.platform.convert.plugins.JODBasedConverter">
+               <sourceMimeType>application/wordperfect</sourceMimeType>
+               <destinationMimeType>text/html</destinationMimeType>
+               <parameters>
+                       <parameter name="ooo_host_name">${org.nuxeo.ecm.platform.transform.ooo.host.name}</parameter>
+                       <parameter name="ooo_host_port">${org.nuxeo.ecm.platform.transform.ooo.host.port}</parameter>
+               </parameters>
+    </converter>
+
+    <converter name="pdf2html" class="org.nuxeo.ecm.platform.convert.plugins.PDF2HtmlConverter">
+      <sourceMimeType>application/pdf</sourceMimeType>
+      <destinationMimeType>text/html</destinationMimeType>
+      <parameters>
+        <parameter name="CommandLineName">pdftohtml</parameter>
+      </parameters>
+    </converter>
+
+    <converter name="pdf2image" class="org.nuxeo.ecm.platform.convert.plugins.PDF2ImageConverter">
+      <sourceMimeType>application/pdf</sourceMimeType>
+      <destinationMimeType>image/jpeg</destinationMimeType>
+      <destinationMimeType>image/png</destinationMimeType>
+      <destinationMimeType>image/gif</destinationMimeType>
+      <parameters>
+        <parameter name="CommandLineName">pdftoimage</parameter>
+      </parameters>
+    </converter>
+
+   <converter name="any2ods"
+      class="org.nuxeo.ecm.platform.convert.plugins.JODBasedConverter">
+      <destinationMimeType>application/vnd.oasis.opendocument.spreadsheet</destinationMimeType>
+
+      <!-- Microsoft office documents -->
+      <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
+      <!-- Microsoft office 2007 documents -->
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+      </sourceMimeType>
+      <!-- OpenOffice.org 1.x documents -->
+      <sourceMimeType>application/vnd.sun.xml.calc</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.calc.template</sourceMimeType>
+      <!-- OpenOffice.org 2.x documents -->
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.spreadsheet
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.spreadsheet-template
+      </sourceMimeType>
+
+    <parameters>
+        <parameter name="ooo_host_name">
+          ${org.nuxeo.ecm.platform.transform.ooo.host.name}
+        </parameter>
+        <parameter name="ooo_host_port">
+          ${org.nuxeo.ecm.platform.transform.ooo.host.port}
+        </parameter>
+    </parameters>
+
+    </converter>
+
+   <converter name="any2odp"
+      class="org.nuxeo.ecm.platform.convert.plugins.JODBasedConverter">
+      <destinationMimeType>application/vnd.oasis.opendocument.presentation</destinationMimeType>
+
+      <!-- Microsoft office documents -->
+      <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
+      <!-- Microsoft office 2007 documents -->
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.presentationml.presentation
+      </sourceMimeType>
+      <!-- OpenOffice.org 1.x documents -->
+      <sourceMimeType>application/vnd.sun.xml.impress</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.impress.template</sourceMimeType>
+      <!-- OpenOffice.org 2.x documents -->
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.presentation
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.presentation-template
+      </sourceMimeType>
+
+    <parameters>
+        <parameter name="ooo_host_name">
+          ${org.nuxeo.ecm.platform.transform.ooo.host.name}
+        </parameter>
+        <parameter name="ooo_host_port">
+          ${org.nuxeo.ecm.platform.transform.ooo.host.port}
+        </parameter>
+    </parameters>
+
+    </converter>
+
+   <converter name="any2pdf"
+      class="org.nuxeo.ecm.platform.convert.plugins.JODBasedConverter">
+      <destinationMimeType>application/pdf</destinationMimeType>
+
+      <sourceMimeType>text/xml</sourceMimeType>
+      <sourceMimeType>text/html</sourceMimeType>
+      <sourceMimeType>text/plain</sourceMimeType>
+      <sourceMimeType>text/rtf</sourceMimeType>
+
+      <!-- Microsoft office documents -->
+      <sourceMimeType>application/msword</sourceMimeType>
+      <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
+      <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
+
+      <!-- Microsoft office 2007 documents -->
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.presentationml.presentation
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+      </sourceMimeType>
+
+      <!-- OpenOffice.org 1.x documents -->
+      <sourceMimeType>application/vnd.sun.xml.writer</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.writer.template</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.impress</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.impress.template</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.calc</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.calc.template</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.draw</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.draw.template</sourceMimeType>
+
+      <!-- OpenOffice.org 2.x documents -->
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.spreadsheet
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.spreadsheet-template
+      </sourceMimeType>
+      <sourceMimeType>application/vnd.oasis.opendocument.text</sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.text-template
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.presentation
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.presentation-template
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.graphics
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.graphics-template
+      </sourceMimeType>
+
+      <!-- WordPerfect -->
+      <sourceMimeType>application/wordperfect</sourceMimeType>
+
+    <parameters>
+        <parameter name="ooo_host_name">
+          ${org.nuxeo.ecm.platform.transform.ooo.host.name}
+        </parameter>
+        <parameter name="ooo_host_port">
+          ${org.nuxeo.ecm.platform.transform.ooo.host.port}
+        </parameter>
+    </parameters>
+   </converter>
+
+
+ <converter name="office2html"
+      class="org.nuxeo.ecm.platform.convert.plugins.JODBasedConverter">
+      <destinationMimeType>text/html</destinationMimeType>
+
+      <sourceMimeType>text/plain</sourceMimeType>
+      <sourceMimeType>text/rtf</sourceMimeType>
+
+      <!-- Microsoft office documents -->
+      <sourceMimeType>application/msword</sourceMimeType>
+      <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
+      <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
+
+      <!-- Microsoft office 2007 documents -->
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.presentationml.presentation
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+      </sourceMimeType>
+
+      <!-- OpenOffice.org 1.x documents -->
+      <sourceMimeType>application/vnd.sun.xml.writer</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.writer.template</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.impress</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.impress.template</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.calc</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.calc.template</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.draw</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.draw.template</sourceMimeType>
+
+      <!-- OpenOffice.org 2.x documents -->
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.spreadsheet
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.spreadsheet-template
+      </sourceMimeType>
+      <sourceMimeType>application/vnd.oasis.opendocument.text</sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.text-template
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.presentation
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.presentation-template
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.graphics
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.graphics-template
+      </sourceMimeType>
+
+    <parameters>
+        <parameter name="ooo_host_name">
+          ${org.nuxeo.ecm.platform.transform.ooo.host.name}
+        </parameter>
+        <parameter name="ooo_host_port">
+          ${org.nuxeo.ecm.platform.transform.ooo.host.port}
+        </parameter>
+    </parameters>
+   </converter>
+  </extension>
+
+</component>
