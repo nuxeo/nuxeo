@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingContrib">
+
+  <extension
+    target="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService"
+    point="exceptionhandler">
+    <exceptionHandler
+      class="org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoSecurityExceptionHandler" />
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService"
+    point="errorhandlers">
+    <errorHandlers bundle="messages" loggerName="nuxeo-error-log"
+      defaultpage="/nuxeo_error.jsp">
+      <handlers>
+        <handler error=".*NoSuchDocumentException"
+          message="Error.Document.Not.Found" code="404" />
+        <handler error=".*NoSuchPropertyException"
+          message="Error.Document.NoSuchProperty" />
+        <handler error=".*SecurityException" message="Error.Insuffisant.Rights" />
+        <handler error=".*" message="Error.Unknown" />
+      </handlers>
+    </errorHandlers>
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService"
+    point="requestdump">
+    <requestdump
+      class="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.DefaultRequestDumper">
+      <!-- you can add names of attributes you don't want to see listed in the request dump.
+        <notListed>
+        <attribute>javax.servlet.forward.request_uri</attribute>
+        </notListed>
+      -->
+    </requestdump>
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService"
+    point="listener">
+    <listener
+      class="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.NullExceptionHandlingListener" />
+  </extension>
+
+</component>
