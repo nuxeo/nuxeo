@@ -1,0 +1,5 @@
+groupname, grouplabel, description
+"members","Members group","Group of users with read access rights"
+"administrators","Administrators group","Group of users with adminstrative rights"
+"powerusers","Power users group","Group of users with limited administrative rights"
+
