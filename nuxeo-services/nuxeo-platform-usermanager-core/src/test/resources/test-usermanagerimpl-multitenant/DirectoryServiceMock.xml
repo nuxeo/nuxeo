@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.DirectoryServiceImpl">
+
+  <implementation class="org.nuxeo.ecm.platform.usermanager.local.configuration.DirectoryServiceImplMock" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.directory.api.DirectoryService" />
+  </service>
+
+  <extension-point name="factoryDescriptor">
+    <object
+      class="org.nuxeo.ecm.directory.DirectoryFactoryDescriptor" />
+  </extension-point>
+
+</component>
