@@ -1,0 +1,132 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:s="http://jboss.com/products/seam/taglib">
+
+  <a4j:region rendered="#{documents != null}">
+  <h:form id="#{documents.name}">
+    <h:outputText value="#{messages['label.content.emptyFolder']}"
+      rendered="#{documents.rowCount == 0}" />
+
+    <ui:include src="/pagination/pageNavigationControls.xhtml" />
+    <ui:param name="providerName" value="CURRENT_DOC_CHILDREN" />
+
+    <nxu:dataTable id="dataTable" value="#{documents.rows}" var="row"
+      rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput"
+      rendered="#{documents.rowCount > 0}">
+      <!-- id and selection -->
+      <nxu:column styleClass="iconColumn" rendered="#{showCheckboxes or false}">
+        <!-- XXX AT: select all buggy right now -->
+        <f:facet name="header">
+          <h:selectBooleanCheckbox rendered="true"
+              onclick="selectDataTablePage('#{documents.name}', '#{providerName}', this.checked)">
+          </h:selectBooleanCheckbox>
+        </f:facet>
+        <h:selectBooleanCheckbox
+            value="#{row.selected}"
+            onclick="selectDataTableRow('#{row.data.ref}','#{providerName}', this)">
+        </h:selectBooleanCheckbox>
+      </nxu:column>
+      <!-- Icon + Type -->
+      <nxu:column styleClass="iconColumn">
+        <div id="docRefTarget:#{row.data.ref}">
+        <div id="docRef:#{row.data.ref}" class="cell">
+        <h:graphicImage value="/icons/lock.gif"
+           rendered="#{not empty row.data.lock}"/>
+        <nxu:graphicImage
+          value="#{nxd:iconPath(row.data)}" alt="#{row.data.type}">
+       </nxu:graphicImage></div></div>
+        <script type="text/javascript">
+          <h:outputText
+            value="new Draggable('docRef:#{row.data.ref}', {revert:true});"/>
+          <h:outputText rendered="#{row.data.folder}"
+            value="Droppables.add('docRefTarget:#{row.data.ref}', {accept:'cell', onDrop:function(element){moveElement(element,'docRef:#{row.data.ref}')}, hoverclass:'dropInto'});"/>
+        </script>
+      </nxu:column>
+      <!--  Title -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.forum.content.header.thread']}" />
+        </f:facet>
+
+        <nxd:documentLink title="#{nxd:titleOrId(row.data)}"
+          document="#{row.data}" rendered="false"/>
+
+      <nxd:restDocumentLink document="#{row.data}">
+       <nxh:outputText value="#{nxd:titleOrId(row.data)}"/>
+      </nxd:restDocumentLink>
+
+      <nxd:restDocumentLink document="#{row.data}" newConversation="true" target="_blank">
+        <nxu:graphicImage value="/icons/external.gif"
+          style="vertical-align:middle"
+          alt="#{messages['permalink.newTab']}"
+          title="#{messages['permalink.newTab']}" />
+      </nxd:restDocumentLink>
+      </nxu:column>
+
+      <nxu:methodResult name="threadAdapter" value="#{threadAction.getAdapter(row.data)}" >
+
+      <!--  Last post information -->
+      <nxu:methodResult name="lastPost" value="#{threadAdapter.getLastPublishedPost()}" >
+      <nxu:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.forum.content.header.last_added']}" />
+        </f:facet>
+        <h:outputText value="#{lastPost.post.creationDate}" rendered="#{lastPost != null}">
+          <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+            timeZone="#{timeZone}" />
+        </h:outputText>
+        <h:outputText value=" #{messages['label.forum.post.by']} " rendered="#{lastPost != null}"/>
+        <h:outputText value="#{lastPost.post.author}" rendered="#{lastPost != null}"/>
+      </nxu:column>
+      </nxu:methodResult>
+
+      <!--  Nb of published posts -->
+      <nxu:methodResult name="allPostsInThread" value="#{threadAdapter.getPublishedPosts()}" >
+      <h:column>
+        <f:facet name="header">
+          <h:outputText
+            value="#{messages['label.forum.content.header.nb_published_posts']}" />
+        </f:facet>
+        <h:outputText value="#{allPostsInThread.size}" rendered="#{allPostsInThread != null}" />
+      </h:column>
+      </nxu:methodResult>
+
+      <!--  Nb of pending posts -->
+      <nxu:methodResult name="pendingPostsInThread" value="#{threadAdapter.getPendingPosts()}" >
+      <h:column>
+        <f:facet name="header">
+          <h:outputText
+            value="#{messages['label.forum.content.header.nb_pending_posts']}" />
+        </f:facet>
+        <h:outputText value="#{pendingPostsInThread.size}" rendered="#{pendingPostsInThread != null}"/>
+      </h:column>
+      </nxu:methodResult>
+
+      </nxu:methodResult>
+
+     <!--  Is moderated -->
+      <h:column>
+        <f:facet name="header">
+          <h:outputText
+            value="#{messages['label.forum.content.header.moderated']}" />
+        </f:facet>
+        <nxu:methodResult name="moderationLabel"
+          value="#{threadAction.getModerationAsString(row.data)}">
+          <h:outputText value="#{moderationLabel}"/>
+        </nxu:methodResult>
+      </h:column>
+    </nxu:dataTable>
+
+    <ui:include src="/pagination/pageNavigationControls.xhtml" />
+
+    <ui:insert name="buttons" />
+
+  </h:form>
+
+</a4j:region>
+</div>
