@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+# SharpDevelop 3.2.0.5505
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuxeoCtl", "NuxeoCtl\NuxeoCtl.csproj", "{84955EBA-374A-4F32-977E-560CAD7ADBEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuxeoProcess", "NuxeoProcess\NuxeoProcess.csproj", "{93744AAE-A17B-4A52-864C-FEDA894E5CE8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuxeoService", "NuxeoService\NuxeoService.csproj", "{6E7A5E4E-3D30-468B-9AF1-9306FDE26BBB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AnyCPU = Debug|AnyCPU
+		Release|AnyCPU = Release|AnyCPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{84955EBA-374A-4F32-977E-560CAD7ADBEA}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{84955EBA-374A-4F32-977E-560CAD7ADBEA}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{84955EBA-374A-4F32-977E-560CAD7ADBEA}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{84955EBA-374A-4F32-977E-560CAD7ADBEA}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{93744AAE-A17B-4A52-864C-FEDA894E5CE8}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{93744AAE-A17B-4A52-864C-FEDA894E5CE8}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{93744AAE-A17B-4A52-864C-FEDA894E5CE8}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{93744AAE-A17B-4A52-864C-FEDA894E5CE8}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{6E7A5E4E-3D30-468B-9AF1-9306FDE26BBB}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{6E7A5E4E-3D30-468B-9AF1-9306FDE26BBB}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{6E7A5E4E-3D30-468B-9AF1-9306FDE26BBB}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{6E7A5E4E-3D30-468B-9AF1-9306FDE26BBB}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+	EndGlobalSection
+EndGlobal

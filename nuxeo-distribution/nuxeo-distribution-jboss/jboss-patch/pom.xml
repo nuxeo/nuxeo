@@ -1,0 +1,292 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.distribution</groupId>
+    <artifactId>nuxeo-distribution</artifactId>
+    <version>5.3.2-I20100705_0116</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
+
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>jboss-patch</artifactId>
+  <version>4.2.3.GA-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>Nuxeo Platform: JBoss patch</name>
+  <description>Nuxeo Platform: JBoss patch.</description>
+
+  <properties>
+    <security.dirname>security.sar/META-INF</security.dirname>
+    <tomcat.dirname>jboss-web.deployer</tomcat.dirname>
+    <jboss.server>${jboss.dir}/server/default</jboss.server>
+    <jboss.lib>${jboss.server}/lib</jboss.lib>
+    <jboss.conf>${jboss.server}/conf</jboss.conf>
+    <jboss.deploy>${jboss.server}/deploy</jboss.deploy>
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>jrmp</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
+    <profile>
+      <id>http</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>xml-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>patch-jboss-http-config</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>transform</goal>
+                </goals>
+                <configuration>
+                  <transformationSets>
+                    <transformationSet>
+                      <dir>${jboss.server}</dir>
+                      <includes>
+                        <include>conf/jboss-service.xml</include>
+                        <include>deploy/jmx-invoker-service.xml</include>
+                        <include>deploy/ear-deployer.xml</include>
+                        <include>
+                          deploy/http-invoker.sar/META-INF/jboss-service.xml
+                        </include>
+                        <include>
+                          deploy/management/console-mgr.sar/META-INF/jboss-service.xml
+                        </include>
+                        <include>
+                          deploy/ejb3.deployer/META-INF/jboss-service.xml
+                        </include>
+                        <include>deploy/jms/uil2-service.xml</include>
+                        <include>
+                          deploy/jms/jbossmq-httpil.sar/META-INF/jboss-service.xml
+                        </include>
+                      </includes>
+                      <stylesheet>src/main/xsl/jboss-service.xsl</stylesheet>
+                      <parameters>
+                        <parameter>
+                          <name>locator</name>
+                          <value>servlet</value>
+                        </parameter>
+                        <parameter>
+                          <name>protocol</name>
+                          <value>${nuxeo.jboss.jmx.protocol}</value>
+                        </parameter>
+                        <parameter>
+                          <name>hostname</name>
+                          <value>${nuxeo.jboss.jmx.http.hostname}</value>
+                        </parameter>
+                        <parameter>
+                          <name>port</name>
+                          <value>${nuxeo.jboss.jmx.http.port}</value>
+                        </parameter>
+                      </parameters>
+                    </transformationSet>
+                    <transformationSet>
+                      <dir>${jboss.server}</dir>
+                      <includes>
+                        <include>conf/standardjboss.xml</include>
+                      </includes>
+                      <stylesheet>src/main/xsl/standardjboss.xsl</stylesheet>
+                      <parameters>
+                        <parameter>
+                          <name>protocol</name>
+                          <value>${nuxeo.jboss.jmx.protocol}</value>
+                        </parameter>
+                      </parameters>
+                    </transformationSet>
+                    <transformationSet>
+                      <dir>${jboss.server}</dir>
+                      <includes>
+                        <include>
+                          deploy/http-invoker.sar/invoker.war/WEB-INF/web.xml
+                        </include>
+                      </includes>
+                      <stylesheet>src/main/xsl/web-app.xsl</stylesheet>
+                      <parameters>
+                        <parameter>
+                          <name>locator</name>
+                          <value>servlet</value>
+                        </parameter>
+                        <parameter>
+                          <name>protocol</name>
+                          <value>${nuxeo.jboss.jmx.protocol}</value>
+                        </parameter>
+                        <parameter>
+                          <name>hostname</name>
+                          <value>${nuxeo.jboss.jmx.http.hostname}</value>
+                        </parameter>
+                        <parameter>
+                          <name>port</name>
+                          <value>${nuxeo.jboss.jmx.http.port}</value>
+                        </parameter>
+                      </parameters>
+                    </transformationSet>
+                    <transformationSet>
+                      <dir>${jboss.server}</dir>
+                      <includes>
+                        <include>deploy/**/*-ds.xml</include>
+                      </includes>
+                      <stylesheet>src/main/xsl/ds.xsl</stylesheet>
+                      <parameters>
+                        <parameter>
+                          <name>protocol</name>
+                          <value>${nuxeo.jboss.jmx.protocol}</value>
+                        </parameter>
+                      </parameters>
+                    </transformationSet>
+                  </transformationSets>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>patch-properties</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <tasks>
+                    <echo message="Patching nuxeo.properties..." />
+                    <!--
+                      patch patchfile="src/main/nuxeo.properties.web-patch"
+                      originalfile="${jboss.deploy}/nuxeo.ear/config/nuxeo.properties"/
+                    -->
+                    <concat destfile="${jboss.deploy}/nuxeo.ear/config/nuxeo.properties"
+                      append="true">
+
+                      #################### HTTP Invoker Patch ########################
+                      # Uncomment these lines to activate nuxeo runtime remoting over HTTP
+                      # replace localhost with the name (or IP) of the http server you are using to expose services
+                      # also comment the nuxeo-client-jndi.* properties defined above
+                      nuxeo-client-jndi.java.naming.provider.url=http://${nuxeo.jboss.jmx.http.hostname}:${nuxeo.jboss.jmx.http.port}/invoker/JNDIFactory
+                      nuxeo-client-jndi.java.naming.factory.initial=org.jboss.naming.HttpNamingContextFactory
+                      org.nuxeo.runtime.server.locator=servlet://${nuxeo.jboss.jmx.http.hostname}:${nuxeo.jboss.jmx.http.port}/nuxeo/NuxeoRuntimeInvokerServlet/?datatype=nuxeo
+                      ################################################################
+
+                    </concat>
+                  </tasks>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>xml-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>patch-jboss-config</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>transform</goal>
+            </goals>
+            <configuration>
+              <transformationSets>
+                <transformationSet>
+                  <dir>${jboss.server}</dir>
+                  <includes>
+                    <include>conf/jbossjta-properties.xml</include>
+                  </includes>
+                  <stylesheet>src/main/xsl/jbossjta-properties.xsl</stylesheet>
+                </transformationSet>
+                <!-- warning : this requires web access to validate DTD ... -->
+                <transformationSet>
+                  <validating>false</validating>
+                  <dir>${jboss.server}</dir>
+                  <includes>
+                    <include>deploy/jboss-web.deployer/ROOT.war/WEB-INF/web.xml</include>
+                  </includes>
+                  <stylesheet>src/main/xsl/root-web.xsl</stylesheet>
+                </transformationSet>
+              </transformationSets>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>ant-tasks-on-generate-sources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <echo message="Add log4j DTD..." />
+                <copy file="src/main/dtd/log4j.dtd" todir="${jboss.conf}"
+                  overwrite="true" />
+                <echo message="Replace log4j configuration..." />
+                <copy file="src/main/xml/jboss-log4j.xml" todir="${jboss.conf}"
+                  overwrite="true" />
+
+                <echo message="Patching main deployer ..." />
+                <copy
+                  file="src/main/xml/org.jboss.deployment.MainDeployer-xmbean.xml"
+                  todir="${jboss.conf}/xmdesc" overwrite="true" />
+
+                <echo message="Deleting Jboss WS stack..." />
+                <delete dir="${jboss.deploy}/jbossws.sar" />
+                <delete file="${jboss.lib}/jboss-jaxws-ext.jar" />
+                <delete file="${jboss.lib}/jboss-jaxws.jar" />
+                <delete file="${jboss.lib}/jboss-saaj.jar" />
+                <delete file="${jboss.lib}/jbossws-framework.jar" />
+                <delete file="${jboss.lib}/jbossws-jboss42.jar" />
+
+                <echo message="Removing hibernate3 ..." />
+                <delete file="${jboss.lib}/hibernate3.jar" />
+                <delete file="${jboss.lib}/hibernate3-3.2.1.ga-NXP-3881.jar" />
+                <delete
+                  file="${jboss.lib}/hibernate3-3.2.4.SP1_CP01-brew_NXP-3881.jar" />
+              </tasks>
+            </configuration>
+          </execution>
+          <execution>
+            <id>ant-tasks-on-process-resources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <echo message="Patching XML resources..." />
+                <copy todir="${jboss.server}" overwrite="true" failonerror="false">
+                  <fileset
+                    dir="${project.build.directory}/generated-resources/xml/xslt" />
+                </copy>
+
+                <echo message="Patching EAR deployer..." />
+                <copy file="${basedir}/src/main/xml/ear-deployer.xml"
+                  todir="${jboss.deploy}" overwrite="true" />
+
+                <echo
+                  message="Patch ejb3-interceptors-aop.xml replacing SessionSynchronizationInterceptor with NXSessionSynchronizationInterceptor..." />
+                <replace file="${jboss.deploy}/ejb3-interceptors-aop.xml"
+                  token="org.jboss.ejb3.stateful.SessionSynchronizationInterceptor"
+                  value="org.nuxeo.jboss.interceptors.NXSessionSynchronizationInterceptor" />
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

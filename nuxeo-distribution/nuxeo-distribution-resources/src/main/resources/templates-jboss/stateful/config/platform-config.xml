@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.api.DefaultPlatform" version="1.0">
+  <documentation>
+    A default platform layout. All services are available remotely trough a JNDI
+    server on localhost Services not specified here will be retrieved using
+    NXRuntime on the current JVM.
+    <p />
+    Only one repository is defined: "default" which is managed by a remote
+    service on localhost.
+    <p />
+    This is the default layout that may be used for simple installations schemes
+    like:
+    <ul>
+      <li>A ECM Web Application deployed on a single JVM</li>
+      <li>
+        A client application like Apogee willing to connect to an ECM
+        Application (possibly without web layer) deployed on the same host
+        (localhost)
+      </li>
+    </ul>
+    @author
+    <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.api.PlatformService"
+    point="servers">
+    <documentation>The default platform layout</documentation>
+    <server name="default" host="${org.nuxeo.ecm.instance.host}" port="1099">
+      <service class="org.nuxeo.ecm.core.api.CoreSession"
+        jndiName="${org.nuxeo.ecm.platform.coresession.facade}" private="true" />
+      <repository name="default" class="org.nuxeo.ecm.core.api.CoreSession"
+        description="Default Repository" />
+    </server>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
+    point="repositories">
+    <documentation>The default repository</documentation>
+    <repository name="default" label="Default Repository" />
+  </extension>
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement" point="servers">
+    <server class="org.nuxeo.runtime.api.JBossServiceLocator">
+      <group>*</group>
+      <group>core</group>
+      <group>platform</group>
+      <property name="suffix">/remote</property>
+      <property name="java.naming.factory.initial">
+        org.jnp.interfaces.NamingContextFactory
+      </property>
+      <property name="java.naming.provider.url">
+        jnp://${org.nuxeo.ecm.instance.host}:1099
+      </property>
+      <property name="java.naming.factory.url.pkgs">
+        org.jboss.naming:org.jnp.interfaces
+      </property>
+    </server>
+    <server class="org.nuxeo.runtime.api.JBossServiceLocator">
+      <group>web</group>
+      <property name="suffix">/remote</property>
+      <property name="java.naming.factory.initial">
+        org.jnp.interfaces.NamingContextFactory
+      </property>
+      <property name="java.naming.provider.url">
+        jnp://${org.nuxeo.ecm.stateless.host}:1099
+      </property>
+      <property name="java.naming.factory.url.pkgs">
+        org.jboss.naming:org.jnp.interfaces
+      </property>
+    </server>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement"
+    point="services">
+    <service class="org.nuxeo.ecm.core.api.CoreSession" name="default"
+      group="core">
+      <locator>%DocumentManagerBean</locator>
+    </service>
+    <service class="org.nuxeo.ecm.platform.types.TypeManager" group="web">
+      <locator>%TypeManagerBean</locator>
+    </service>
+    <service class="org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager"
+      group="web">
+      <locator>%DocumentViewCodecManagerBean</locator>
+    </service>
+  </extension>
+
+</component>
