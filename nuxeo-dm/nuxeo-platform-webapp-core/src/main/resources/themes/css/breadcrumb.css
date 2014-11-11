@@ -1,0 +1,50 @@
+/*
+Breadcrumb style used in the Document Management view
+author: lkemen@nuxeo.com
+*/
+
+/* =Breadcrumb */
+.breadcrumb {
+  color: "gray.light (__FLAVOR__ color)";
+  font-size: .85em;
+  margin: 0 0 .5em }
+
+.breadcrumb .action_bar {
+  margin: 0 }
+
+.breadcrumb .action_bar a {
+  border: none;
+  padding: .3em 0 }
+
+.breadcrumbs {
+  float: left;
+  padding: .3em .4em 0 0 }
+
+.breadcrumbs a,
+.breadcrumbs a:link,
+.breadcrumbs a:visited {
+  color: "gray.dark (__FLAVOR__ color)" }
+
+.breadcrumbs a:hover,
+.breadcrumbs a:active {
+  color: "link (__FLAVOR__ color)";
+  font-weight: normal }
+
+.breadcrumbs a:last-of-type,
+.breadcrumbs a:last-of-type:hover,
+.breadcrumbs a:last-of-type:active {
+  color: "gray.light (__FLAVOR__ color)";
+  cursor: default }
+
+.breadcrumbs a img {
+  border: 1px solid transparent;
+  vertical-align: middle }
+
+.breadcrumbs a img:hover {
+  border-color: "neutral.lighter (__FLAVOR__ border)" }
+
+.printButton {
+  float: right }
+
+.breadcrumb .actionsWidgetPanel {
+  padding: 0 }

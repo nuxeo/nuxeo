@@ -1,0 +1,35 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<ui:include src="/incl/safeEdit.xhtml"/>
+
+<h:form enctype="multipart/form-data" id="document_edit" styleClass="safeEditEnabled" >
+
+  <script>
+    jQuery(document).ready(function() {
+      jQuery('#document_edit').focusFirst();
+    });
+  </script>
+
+  <nxl:documentLayout mode="edit" value="#{currentDocument}" />
+
+  <nxl:layout name="document_edit_form_options"
+    mode="edit" value="#{currentDocument}" />
+
+  <div class="buttonsGadget">
+   <nxl:widget name="documentEditButtons" mode="view" value="#{currentDocument}" />
+  </div>
+
+  <script>
+    jQuery(document).ready(function() {
+      jQuery('#document_edit').initSafeEditOnForm("#{currentDocument.id}", "#{messages['safeedit.page.has.unsaved.changes']}");
+    });
+</script>
+
+</h:form>
+
+</div>
