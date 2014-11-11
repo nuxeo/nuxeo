@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.work.service" version="1.0">
+
+  <documentation>
+    The WorkManager executes Work instances asynchronously.
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.work.api.WorkManager" />
+  </service>
+
+  <implementation class="org.nuxeo.ecm.core.work.WorkManagerImpl" />
+
+  <extension-point name="queues">
+    <documentation>
+      Defines the characteristics of work queues:
+      <code>
+        <queue id="myqueue">
+          <name>My Queue</name>
+          <maxThreads>4</maxThreads>
+          <clearCompletedAfterSeconds>300</clearCompletedAfterSeconds>
+          <category>somecategory1</category>
+          <category>somecategory2</category>
+        </queue>
+      </code>
+      - id is the queue id.
+
+      - name is the human-readable name.
+
+      - maxThreads maximum number of threads (default 4).
+
+      - clearCompletedAfterSeconds (default 3600) is the delay after which completed work
+       may be automatically cleared from its queue. 0 means never.
+
+      - category is a list of Work categories that this queue will receive.
+      For event listeners work, the category is the listener name (or its simple class name).
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.work.api.WorkQueueDescriptor" />
+  </extension-point>
+
+
+</component>
