@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.pictures.tiles.preview">
+  <require>org.nuxeo.ecm.platform.preview.adapter.contrib</require>
+  <extension
+          target="org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterManagerComponent"
+          point="MimeTypePreviewer">
+    <previewer
+            class="org.nuxeo.ecm.platform.pictures.tiles.service.TiledImagePreviewer">
+      <pattern>image.*</pattern>
+    </previewer>
+  </extension>
+</component>

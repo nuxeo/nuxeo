@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Tag Core Tests
+Bundle-SymbolicName: org.nuxeo.ecm.platform.tag.tests;singleton:=true
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.ecm.platform.tag
+Nuxeo-Component: OSGI-INF/nxtags-tests.xml
