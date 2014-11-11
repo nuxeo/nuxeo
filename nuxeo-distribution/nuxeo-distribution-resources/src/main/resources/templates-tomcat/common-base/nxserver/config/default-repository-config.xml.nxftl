@@ -1,0 +1,104 @@
+<#escape x as x?xml>
+<?xml version="1.0"?>
+<component name="default-repository-config">
+  <extension target="org.nuxeo.ecm.core.storage.sql.RepositoryService"
+    point="repository">
+    <repository name="default"
+      factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
+      <pool minPoolSize="${nuxeo.vcs["min-pool-size"]}" maxPoolSize="${nuxeo.vcs["max-pool-size"]}"
+        blockingTimeoutMillis="${nuxeo.vcs["blocking-timeout-millis"]}" idleTimeoutMinutes="${nuxeo.vcs["idle-timeout-minutes"]}" />
+<#if "${nuxeo.core.binarymanager}" != "" >
+      <binaryManager class="${nuxeo.core.binarymanager}" />
+</#if>
+      <clustering enabled="${repository.clustering.enabled}" delay="${repository.clustering.delay}" />
+      <binaryStore path="${repository.binary.store}" />
+      <noDDL>${nuxeo.vcs.noddl}</noDDL>
+      <idType>${nuxeo.vcs.idtype}</idType>
+      <indexing>
+<#if "${nuxeo.db.type}" == "postgresql">
+        <fulltext disabled="${nuxeo.vcs.fulltext.disabled}" analyzer="english">
+          <index name="default">
+            <!-- all props implied -->
+          </index>
+          <index name="title">
+            <field>dc:title</field>
+          </index>
+          <index name="description">
+            <field>dc:description</field>
+          </index>
+        </fulltext>
+<#elseif "${nuxeo.db.type}" == "oracle">
+        <fulltext disabled="${nuxeo.vcs.fulltext.disabled}">
+          <index name="default">
+            <!-- all props implied -->
+          </index>
+          <index name="title">
+            <field>dc:title</field>
+          </index>
+          <index name="description">
+            <field>dc:description</field>
+          </index>
+        </fulltext>
+        <!--
+          For Oracle (Oracle Text indexing parameters):
+          <fulltext analyzer="LEXER MY_LEXER"/>
+          See doc at:
+          http://jira.nuxeo.org/browse/NXP-4035
+          http://download.oracle.com/docs/cd/B19306_01/text.102/b14218/cdatadic.htm
+        -->
+<#elseif "${nuxeo.db.type}" == "mssql">
+        <fulltext disabled="${nuxeo.vcs.fulltext.disabled}" analyzer="english">
+          <index name="default">
+            <!-- all props implied -->
+          </index>
+          <!-- SQL Server does not support more than one fulltext index per
+          table: to add support for multiple fulltext index would required to
+          change the datamodel of VCS -->
+       </fulltext>
+<#elseif "${nuxeo.db.type}" == "mysql">
+        <!-- For MySQL -->
+        <fulltext disabled="${nuxeo.vcs.fulltext.disabled}">
+          <index name="default">
+            <!-- all props implied -->
+          </index>
+          <index name="title">
+            <field>dc:title</field>
+          </index>
+          <index name="description">
+            <field>dc:description</field>
+          </index>
+        </fulltext>
+<#else>
+        <!-- for H2 (Lucene Analyzer): -->
+        <fulltext disabled="${nuxeo.vcs.fulltext.disabled}" analyzer="org.apache.lucene.analysis.standard.StandardAnalyzer">
+          <index name="default">
+            <!-- all props implied -->
+          </index>
+          <index name="title">
+            <field>dc:title</field>
+          </index>
+          <index name="description">
+            <field>dc:description</field>
+          </index>
+        </fulltext>
+</#if>
+      </indexing>
+<#if "${nuxeo.db.type}" == "mssql">
+      <aclOptimizations enabled="true" concurrentUpdate="false"/>
+</#if>
+<#if "${nuxeo.db.type}" != "mysql">
+      <usersSeparator key="${nuxeo.db.user_separator_key}" />
+</#if>
+<#if "${nuxeo.db.singleDataSource}"=="">
+      <xa-datasource>${nuxeo.db.xadatasource}</xa-datasource>
+<#include "xadatasource-params.ftl" parse=true />
+</#if>
+<#if "${nuxeo.db.type}" == "mysql">
+      <schema>
+        <field type="largetext">var_ParallelDocumentReview:review_result</field>
+      </schema>
+</#if>
+    </repository>
+  </extension>
+</component>
+</#escape>
