@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<project name="Nuxeo Preview Client" default="copy-gwt" basedir=".">
+  <property file="build.properties" />
+  <property name="mvn.opts" value="" />
+  <property name="jboss.config" value="default" />
+  <property name="jboss.dir" value="/opt/jboss" />
+  <property name="version" value="5.5.4-SNAPSHOT" />
+	<property name="mvn.opts2" value=""/>
+  <property name="project.name" value="nuxeo-platform-imaging-tiling-preview" />
+  <target name="copy-gwt" depends="make-gwt" description="Copy gwt's javascript to the JBoss server.">
+    <copy todir="${jboss.dir}/server/default/deploy/nuxeo.ear/nuxeo.war">
+      <fileset dir="target/classes/nuxeo.war" />
+    </copy>
+    <copy todir="${jboss.dir}/server/default/deploy/nuxeo.ear/plugins">
+      <fileset file="target/${project.name}-${version}.jar"/>
+    </copy>
+  </target>
+  <target name="make-gwt" description="Build Gwt Module">
+    <exec executable="mvn" failonerror="true" >
+      <arg value="install" />
+      <arg value="${mvn.opts}" />
+      <arg value="${mvn.opts2}" />
+    </exec>
+  </target>
+</project>
