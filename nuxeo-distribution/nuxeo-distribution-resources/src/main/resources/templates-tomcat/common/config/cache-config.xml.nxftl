@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.cache.config">
+
+  <#if "${nuxeo.cache.type}" == "redis">
+    <#assign className = "org.nuxeo.ecm.core.redis.contribs.RedisCache" />
+  <#else>
+    <#assign className = "org.nuxeo.ecm.core.cache.InMemoryCacheImpl" />
+  </#if>
+
+  <extension target="org.nuxeo.ecm.core.cache.CacheService"
+    point="caches">
+    <cache name="default-cache" class="${className}">
+      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+      <option name="maxSize">${nuxeo.cache.maxsize}</option>
+      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+    </cache>
+
+    <cache name="sql-user-entry-cache" class="${className}">
+      <option name="maxSize">${nuxeo.cache.maxsize}</option>
+      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+    </cache>
+
+    <cache name="sql-user-entry-cache-without-references" class="${className}">
+      <option name="maxSize">${nuxeo.cache.maxsize}</option>
+      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+    </cache>
+
+    <cache name="sql-group-entry-cache" class="${className}">
+      <option name="maxSize">${nuxeo.cache.maxsize}</option>
+      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+    </cache>
+
+    <cache name="sql-group-entry-cache-without-references" class="${className}">
+      <option name="maxSize">${nuxeo.cache.maxsize}</option>
+      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+    </cache>
+
+    <cache name="ldap-user-entry-cache" class="${className}">
+      <option name="maxSize">${nuxeo.cache.maxsize}</option>
+      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+    </cache>
+
+    <cache name="ldap-user-entry-cache-without-references" class="${className}">
+      <option name="maxSize">${nuxeo.cache.maxsize}</option>
+      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+    </cache>
+
+    <cache name="ldap-group-entry-cache" class="${className}">
+      <option name="maxSize">${nuxeo.cache.maxsize}</option>
+      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+    </cache>
+
+    <cache name="ldap-group-entry-cache-without-references" class="${className}">
+      <option name="maxSize">${nuxeo.cache.maxsize}</option>
+      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+    </cache>
+
+  </extension>
+
+</component>

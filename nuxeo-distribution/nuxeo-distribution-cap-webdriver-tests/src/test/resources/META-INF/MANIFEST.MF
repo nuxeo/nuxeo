@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.distribution.cap.webdriver.tests.tests;singleton:=true
