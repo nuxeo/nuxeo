@@ -1,0 +1,20 @@
+<projectDescription>
+  <name>nuxeo-core-jca</name>
+  <comment>Nuxeo Core: JCA.</comment>
+  <projects>
+    <project>nuxeo-core-api</project>
+    <project>nuxeo-common</project>
+    <project>nuxeo-core</project>
+    <project>nuxeo-core-query</project>
+    <project>nuxeo-core-schema</project>
+    <project>nuxeo-runtime</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>

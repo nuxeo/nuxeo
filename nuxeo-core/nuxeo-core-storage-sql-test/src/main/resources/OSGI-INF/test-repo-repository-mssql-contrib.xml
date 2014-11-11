@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.test.repo.repository">
+  <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
+    point="repositories">
+    <repository name="test" />
+  </extension>
+  <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
+    point="repository">
+    <repository name="test"
+      factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
+      <repository>
+        <indexing>
+          <fulltext catalog="nuxeo" analyzer="french"/>
+        </indexing>
+        <xa-datasource>net.sourceforge.jtds.jdbcx.JtdsDataSource</xa-datasource>
+        <property name="ServerName">${nuxeo.test.mssql.host}</property>
+        <property name="DatabaseName">nuxeojunittests</property>
+        <property name="User">nuxeo</property>
+        <property name="Password">nuxeo</property>
+        <property name="UseCursors">true</property>
+      </repository>
+    </repository>
+  </extension>
+</component>
