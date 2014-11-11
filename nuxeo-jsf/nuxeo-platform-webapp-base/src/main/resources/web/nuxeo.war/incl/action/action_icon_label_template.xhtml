@@ -1,0 +1,33 @@
+<c:if test="true"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <c:if test="#{not hideIcon}">
+    <c:if test="#{empty action.icon and hideLabel}">
+      <c:if test="false">at least display a default image</c:if>
+      <h:graphicImage value="/icons/action_empty.png"
+        title="#{messages[action.label]}"
+        alt="#{messages[action.label]}"
+        styleClass="smallIcon #{action.properties.iconStyleClass}" />
+    </c:if>
+    <c:if test="#{not empty action.icon}">
+      <h:graphicImage value="#{action.icon}"
+        title="#{messages[action.label]}"
+        alt="#{messages[action.label]}"
+        styleClass="smallIcon #{action.properties.iconStyleClass}" />
+    </c:if>
+  </c:if>
+  <c:if test="#{not hideIcon and not hideLabel}">
+    <h:outputText value=" " />
+  </c:if>
+  <c:if test="#{not hideLabel}">
+    <h:outputText value="#{messages[action.label]}"
+      styleClass="actionLabel #{action.properties.labelStyleClass}" />
+  </c:if>
+
+</c:if>
