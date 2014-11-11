@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <ui:define name="page title">
+    <h:outputText value="#{nuxeoApplicationName} - #{messages['title.create.domain']}" />
+  </ui:define>
+
+  <ui:define name="body">
+    <div>
+    <h3><h:outputText value="#{messages['title.create.picture']}" />
+    </h3>
+    <ui:include src="/incl/message_banner.xhtml" /> <h:form
+      enctype="multipart/form-data">
+
+      <nxl:documentLayout mode="create" value="#{changeableDocument}" />
+
+      <table cellpadding="0" cellspacing="0" class="dataInput">
+         
+        <tr>
+             
+          <td class="labelColumn"><h:outputText value="#{messages['label.picture.upload']}" /></td>
+             
+
+          <td class="fieldColumn"><nxu:inputFile
+            id="t_inputFileUpload" value="#{pictureManager.fileContent}" required="true"
+            filename="#{pictureManager.filename}" editFilename="false">
+          </nxu:inputFile> <h:message styleClass="errorMessage" for="t_inputFileUpload" /></td>
+        </tr>
+
+
+         
+      </table>
+
+
+      <p class="buttonsGadget"><h:commandButton
+        class="button" value="#{messages['command.create']}"
+        action="#{pictureManager.addPicture}" /> <h:commandButton
+        class="button" value="#{messages['command.cancel']}"
+        action="#{navigationContext.goBack()}" immediate="true" /></p>
+    </h:form></div>
+  </ui:define>
+
+</nxthemes:composition>

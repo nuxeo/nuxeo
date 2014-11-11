@@ -1,0 +1,25 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <c:if test="#{widget.mode != 'edit'}">
+    <c:if test="#{field == 'Read'}">
+      <h:outputText value="#{messages['label.security.permission.read']}" />
+    </c:if>
+    <c:if test="#{field == 'ReadWrite'}">
+      <h:outputText value="#{messages['label.security.permission.readWrite']}" />
+    </c:if>
+
+  </c:if>
+
+  <c:if test="#{widget.mode == 'edit'}">
+    <h:selectOneMenu value="#{field}" id="#{widget.id}">
+      <f:selectItem itemValue="Read"
+        itemLabel="#{messages['label.security.permission.read']}" />
+      <f:selectItem itemValue="ReadWrite"
+        itemLabel="#{messages['label.security.permission.readWrite']}" />
+    </h:selectOneMenu>
+    <h:message for="#{widget.id}" class="errorMessage" />
+  </c:if>
+
+</div>

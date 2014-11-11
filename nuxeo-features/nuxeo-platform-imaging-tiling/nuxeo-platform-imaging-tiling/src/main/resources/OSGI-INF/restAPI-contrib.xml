@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.pictures.tiles.restAPI.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.restAPI.service.PluggableRestletService"
+      point="restlets">
+
+    <documentation>
+     <![CDATA[
+     GET /nuxeo/restAPI/getTiles/{repoId}/{docId}/{tileWidth}/{tileHeight}/{maxTiles}?fieldPath=(subPath)&x=(tileX)&y=(tileY)&format=(XML|JSON)
+     ]]>
+    </documentation>
+
+    <restletPlugin
+      name="getTiles"
+      class="org.nuxeo.ecm.platform.pictures.tiles.restlets.PictureTilesRestlets"
+      enabled="true"
+      useSeam="false">
+      <urlPatterns>
+        <urlPattern>/getTiles/{repoId}/{docId}/{tileWidth}/{tileHeight}/{maxTiles}</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+  </extension>
+
+</component>

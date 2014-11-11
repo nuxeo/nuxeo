@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.audit.service" version="1.0">
+
+  <documentation> Expose the Logs bean service as a Nuxeo Platform service
+
+    @version 1.0
+    @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+  </documentation>
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement"
+        point="services">
+
+      <documentation> Define the logs bean as a platform service. </documentation>
+
+      <service class="org.nuxeo.ecm.platform.audit.api.Logs" group="platform/audit">
+        <locator>%LogsBean</locator>
+      </service>
+      <service class="org.nuxeo.ecm.platform.audit.api.AuditReader" group="platform/audit">
+        <locator>%LogsBean</locator>
+      </service>
+      <service class="org.nuxeo.ecm.platform.audit.api.AuditLogger" group="platform/audit">
+        <locator>%LogsBean</locator>
+      </service>
+      <service class="org.nuxeo.ecm.platform.audit.api.AuditAdmin" group="platform/audit">
+        <locator>%LogsBean</locator>
+      </service>
+
+    </extension>
+</component>
