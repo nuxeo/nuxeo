@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.theme.editor.web.deployment">
+
+	<extension
+		target="org.nuxeo.ecm.webengine.WebEngineComponent"
+		point="install">
+
+	    <install>
+	      <copy path="web/nxthemes-editor" target="/" />
+	    </install>
+
+	</extension>
+
+</component>
