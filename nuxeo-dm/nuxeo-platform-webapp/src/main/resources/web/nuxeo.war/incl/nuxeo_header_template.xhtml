@@ -1,0 +1,255 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+  <ui:insert name="header_admin_message">
+    <div class="header_admin_messages">
+    <c:if test="#{adminMessageActivated}">
+      <div style="text-align: center; padding: 5px 5px 5px 25px; background-color:#fff9B4; font: normal 12px Arial,sans-serif;">
+        <h:outputText value="#{adminMessage}"/>
+      </div>
+    </c:if>
+<!--[if lt IE 9]>
+    <script type="text/javascript" 
+    src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+
+    <div id="gcfdiv" class="actionHide" style="display:none; text-align: center; padding: 5px 5px 5px 25px; background-color:#fff9B4; font: normal 12px Arial,sans-serif;">
+    </div>
+
+    <script type="text/javascript">
+    // The conditional ensures that this code will only execute in IE,
+    // Therefore we can use the IE-specific attachEvent without worry
+
+    function onMissing() {
+      var gcfdiv = jQuery('#gcfdiv')
+      var link = jQuery('<span>#{messages['chromeframe.message']}</span> <a>#{messages['chromeframe.link']}</a>').attr({href: 'http://www.google.com/chromeframe?hl=fr&amp;prefersystemlevel=true'})
+      gcfdiv.prepend(link);
+
+      gcfdiv.css('display', 'block')
+    }
+
+     jQuery(function() {
+       CFInstall.check({
+         onmissing: onMissing,
+         preventPrompt: true
+       });
+     });
+
+     </script>
+<![endif]-->
+    </div>
+  </ui:insert>
+
+  <ui:insert name="header_search">
+
+  <div class="userSearchBlock">
+    <h:form id="userServicesSearchForm">
+      <div class="searchService">
+        <c:if test="#{userServicesContext.searchEnabled}">
+          <c:forEach var="simpleSearchActions" items="#{webActions.getActionsList('SEARCH_BOX_TEMPLATE')}"
+            id="#{widget.id}_simpleSearchActions">
+            <ui:include src="#{simpleSearchActions.link}"/>
+          </c:forEach>
+          <c:if test="#{empty webActions.getActionsList('SEARCH_BOX_TEMPLATE')}">
+            <h:inputText value="#{documentSearchActions.simpleSearchKeywords}" size="15"
+              class="directoryFilter"
+              onkeydown="if (event.keyCode == 13) {Element.next(Element.next(this)).select();} else return true;"
+              id="simpleSearchKeywordsInput"
+              required="true" requiredMessage="#{messages['feedback.search.noKeywords']}"
+              validator="#{documentSearchActions.validateSimpleSearchKeywords}" />
+            <h:commandButton action="search_results_simple"
+              value="#{messages['command.search']}" styleClass="button"
+              id="simpleSearchSubmitButton" />
+          </c:if>
+          <nxu:set var="actions"
+            value="#{webActions.getActionsList('SEARCH_ACTIONS')}"
+            cache="true">
+            <nxu:dataList layout="simple"
+              var="action"
+              value="#{actions}"
+              id="searchActionsTable">
+              <span class="advancedSearchLink">
+                <nxh:commandLink action="#{action.getLink()}"
+                  onclick="#{action.confirm}"
+                  value="#{messages[action.label]}"
+                  immediate="true"
+                  id="searchActionsButton" />
+              </span>
+            </nxu:dataList>
+          </nxu:set>
+        </c:if>
+      </div>
+    </h:form>
+  </div>
+
+  </ui:insert>
+
+  <div class="userServicesBlock">
+    <h:form id="userServicesForm">
+
+      <ui:insert name="header_main_tabs">
+      <div class="mainTabs">
+        <ul>
+          <nxu:dataList var="mainTab" value="#{webActions.getActionsList('MAIN_TABS')}">
+            <li class="#{nxu:test(webActions.getCurrentTabId('MAIN_TABS') == mainTab.id, 'selected', '')}">
+              <nxd:restDocumentLink document="#{mainTabsActions.getDocumentFor(mainTab.id)}"
+                view="#{mainTabsActions.getViewFor(mainTab)}"
+                pattern="#{mainTabsActions.getPatternFor(mainTab)}"
+                addTabInfo="false"
+                tabs="MAIN_TABS:#{mainTab.id}">
+                <h:outputText value="#{messages[mainTab.label]}" />
+              </nxd:restDocumentLink>
+            </li>
+          </nxu:dataList>
+        </ul>
+      </div>
+      </ui:insert>
+
+      <c:if test="#{currentNuxeoPrincipal!=null and currentNuxeoPrincipal.isAdministrator()}">
+        <div style="float:left; color:white" class="studioButton">
+        <c:choose>
+          <c:when test="#{connectUpdateStatusInfo.registered}">
+            <a target="studio" href="https://connect.nuxeo.com/nuxeo/site/studio/ide">Studio</a>
+          </c:when>
+          <c:otherwise>
+            <a href="https://connect.nuxeo.com/nuxeo/site/connect/trial/form?source=studioButton&#38;product=#{connectUpdateStatusInfo.distributionLabel}" target="studio">Studio</a>
+          </c:otherwise>
+        </c:choose>
+        </div>
+      </c:if>
+
+      <ui:insert name="header_user_menu_actions">
+      <div class="userMenuActions">
+        <ul class="userMenuList">
+          <li>
+            <nxd:restDocumentLink styleClass="userButton" document="#{mainTabsActions.getDocumentFor('home')}"
+              view="#{mainTabsActions.getViewFor('home')}" addTabInfo="false"
+              tabs="MAIN_TABS:home">
+              <h:outputText value="#{messages['label.loggedAsUser']}" />
+            </nxd:restDocumentLink>
+            <nxu:set var="menuActions"
+              value="#{webActions.getActionsList('USER_MENU_ACTIONS')}"
+              cache="true">
+            <nxu:set var="oldActions"
+              value="#{webActions.getActionsList('USER_SERVICES')}"
+              cache="true">
+              <c:if test="#{not empty menuActions or not empty oldActions}">
+                <ul>
+                  <c:forEach var="action" items="#{menuActions}">
+                    <li>
+                      <c:choose>
+                        <c:when test="#{fn:startsWith(action.link, '#')}">
+                          <nxh:commandLink action="#{action.getLink()}"
+                            immediate="#{action.immediate}"
+                            onclick="#{action.confirm}"
+                            id="menuActionCommand_#{action.id}">
+                            <h:outputText value="#{messages[action.label]}" />
+                          </nxh:commandLink>
+                        </c:when>
+                        <c:otherwise>
+                          <h:outputLink value="#{baseURL}#{action.link}"
+                            onclick="#{action.confirm}"
+                            id="menuActionLink_#{action.id}">
+                            <h:outputText value="#{messages[action.label]}" />
+                          </h:outputLink>
+                        </c:otherwise>
+                      </c:choose>
+                    </li>
+                  </c:forEach>
+                  <c:forEach var="action" items="#{oldActions}">
+                    <li>
+                      <nxh:commandLink action="#{action.getLink()}"
+                        immediate="#{action.immediate}"
+                        onclick="#{action.confirm}"
+                        id="userServicesCommand_#{action.id}">
+                        <h:outputText value="#{messages[action.label]}" />
+                      </nxh:commandLink>
+                    </li>
+                  </c:forEach>
+                </ul>
+              </c:if>
+            </nxu:set>
+            </nxu:set>
+          </li>
+        </ul>
+      </div>
+      </ui:insert>
+
+      <ui:insert name="header_user_actions">
+      <div class="userActions">
+
+        <nxu:set var="actions"
+          value="#{webActions.getActionsList('USER_SERVICES_BOTTOM')}"
+          cache="true">
+          <nxu:dataList layout="simple"
+            var="action"
+            value="#{actions}"
+            rowIndexVar="row"
+            rowCountVar="rowCount"
+            id="userServicesBottomActionsTable">
+            <h:outputText value=" | " rendered="#{row!=0 and row!=rowCount}"/>
+
+            <nxh:commandLink action="#{action.getLink()}"
+              rendered="#{fn:startsWith(action.link,'#')}"
+              immediate="#{action.immediate}"
+              onclick="#{action.confirm}"
+              id="userServicesBottomActionCommandLink">
+              <h:outputText value="#{messages[action.label]}" />
+            </nxh:commandLink>
+
+            <h:outputLink value="#{baseURL}#{action.link}"
+              rendered="#{!(fn:startsWith(action.link,'#'))}"
+              id="userServicesBottomActionLink">
+              <h:outputText value="#{messages[action.label]}" />
+            </h:outputLink>
+
+          </nxu:dataList>
+        </nxu:set>
+      </div>
+      </ui:insert>
+
+      <div class="searchService">
+        <nxu:set var="actions"
+          value="#{webActions.getActionsList('SEARCH_LINKS')}"
+          cache="true">
+          <nxu:dataList layout="simple"
+            var="action"
+            value="#{actions}"
+            rowIndexVar="row"
+            rowCountVar="rowCount"
+            id="searchLinksActionsTable">
+            <h:outputText value=" | " rendered="#{row!=rowCount}"/>
+            <h:outputLink value="#{baseURL}#{action.getLink()}"
+              id="searchLinksActionLink">
+              <h:outputText value="#{messages[action.label]}" />
+            </h:outputLink>
+          </nxu:dataList>
+        </nxu:set>
+      </div>
+
+      <div class="clear"></div>
+    </h:form>
+  </div>
+
+
+  <c:if test="#{currentNuxeoPrincipal!=null and currentNuxeoPrincipal.isAdministrator()}">
+    <c:if test="#{connectUpdateStatusInfo.availableUpdateCount>0}">
+      <div class="updateNotificationArea" style="float:right;vertical-align:middle;padding:10px">
+        <nxd:restDocumentLink
+          view="#{mainTabsActions.getViewFor('admin')}" addTabInfo="false"
+          document="#{mainTabsActions.getDocumentFor('admin')}"
+          tabs="MAIN_TABS:admin,NUXEO_ADMIN:ConnectApps:ConnectAppsUpdates">
+          <img src="#{contextPath}/icons/update.png" title="#{connectUpdateStatusInfo.availableUpdateCount} update(s) available" alt="#{connectUpdateStatusInfo.availableUpdateCount} update(s) available"/>
+        </nxd:restDocumentLink>
+      </div>
+    </c:if>
+  </c:if>
+
+  <div class="clear"></div>
+
+</div>
