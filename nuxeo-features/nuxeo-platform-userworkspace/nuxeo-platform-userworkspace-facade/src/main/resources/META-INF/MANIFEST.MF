@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXUserWorkspace
+Bundle-SymbolicName: org.nuxeo.ecm.platform.userworkspace.facade
+Bundle-Version: 1.0.0
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Bundle-Category: web
+Nuxeo-Component: OSGI-INF/userworkspace-service-contrib.xml
+Export-Package: org.nuxeo.ecm.platform.userworkspace.ejb,
+  org.nuxeo.ecm.platform.userworkspace.ejb
+Require-Bundle: org.nuxeo.ecm.platform.userworkspace.api,
+  org.nuxeo.ecm.platform.userworkspace.core,
+  org.nuxeo.ecm.core.api,
+  org.nuxeo.runtime

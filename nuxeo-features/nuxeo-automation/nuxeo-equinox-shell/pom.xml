@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo.ecm.automation</groupId>
+    <artifactId>nuxeo-automation-parent</artifactId>
+    <version>5.4.1-I20101222_1318</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  <version>1.0-SNAPSHOT</version>
+  <artifactId>nuxeo-equinox-shell</artifactId>
+  <name>Nuxeo Equinox Shell</name>
+  <description>Equinox Shell provides remote shell to the Equinox console.</description>
+  <properties>
+    <nuxeo.server.version>5.4.1-I20101222_1318</nuxeo.server.version>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.automation</groupId>
+      <artifactId>nuxeo-automation-shell</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <!-- include resources in src directory -->
+    <resources>
+      <resource>
+        <directory>src/main/java</directory>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
+  </build>
+</project>

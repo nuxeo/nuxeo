@@ -1,0 +1,33 @@
+Export-Package: org.nuxeo.ecm.platform.tag;core=split
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Category: core,
+ stateful
+Bundle-Name: Nuxeo ECM Tag Core
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.platform.tag.api;visibility:=reexport
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: false
+Bundle-Version: 0.0.0.SNAPSHOT
+Nuxeo-Component: OSGI-INF/TagService.xml,
+  OSGI-INF/tag-service-core-types.xml,
+  OSGI-INF/tag-querymaker-contrib.xml,
+  OSGI-INF/tag-listener-contrib.xml
+Bundle-ManifestVersion: 2
+Import-Package: javax.resource,
+ org.apache.commons.logging,
+ org.nuxeo.common.utils,
+ org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.api.repository,
+ org.nuxeo.ecm.core.query,
+ org.nuxeo.ecm.core.query.sql,
+ org.nuxeo.ecm.core.storage,
+ org.nuxeo.ecm.core.storage.sql,
+ org.nuxeo.ecm.core.storage.sql.jdbc,
+ org.nuxeo.ecm.core.storage.sql.jdbc.db,
+ org.nuxeo.ecm.core.storage.sql.jdbc.dialect,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.model
+Bundle-SymbolicName: org.nuxeo.ecm.platform.tag;singleton:=true

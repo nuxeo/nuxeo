@@ -1,0 +1,10 @@
+<persistence>
+   <persistence-unit name="nxplacefulservice">
+    <jta-data-source>java:/placeful_service_ds</jta-data-source>
+    %{CLASS}%
+    <properties>
+      <property name="hibernate.hbm2ddl.auto" value="update"/>
+      <property name="jboss.entity.manager.jndi.name" value="java:/nxplacefulservice"/>
+    </properties>
+  </persistence-unit>
+</persistence>

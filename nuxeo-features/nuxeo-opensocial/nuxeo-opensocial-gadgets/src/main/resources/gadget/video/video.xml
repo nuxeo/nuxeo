@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="__UP_title__" category="tools"
+    render_inline="required" scrolling="false" directory_title="Video"
+    singleton="false" author="Guillaume Cusnieux" author_email="gcusnieux@leroymerlin.fr"
+    author_affiliation="Leroy Merlin" author_location="Lezennes, France">
+    <Require feature="opensocial-0.8" />
+    <Require feature="dynamic-height" />
+    <Require feature="setprefs" />
+    <Require feature="nuxeo" />
+    <Require feature="jquery" />
+     <Require feature="form" />
+  </ModulePrefs>
+  <UserPref name="vidTitle" datatype="hidden"/>
+   <UserPref name="tmp" datatype="hidden"/>
+  <Content type="html">
+    <![CDATA[
+      <style type='text/css'>
+        *{
+         font-family:Trebuchet, Arial,Verdana;
+         font-size:11px;
+        }
+
+        #cancelVideo img{
+         border:0;
+         padding:5px 5px 0 0;
+       }
+
+        #baliseVideo{
+         border:1px solid #ffffff;
+         width:98%;
+         height:70px;
+         display:block;
+        }
+
+        #title-field{
+         width:98%;
+         border:1px solid #ffffff;
+        }
+
+        #container{
+         padding:0 0 5px 0;
+        }
+
+        #hideContainer{
+           background:#666666;
+          text-align:right;
+        }
+
+        #addVideo,#showVideo{
+         display:none;
+        }
+
+        #title{
+          text-align:center;
+          font-size:14px;
+          color:#13506B;
+          font-weight:bold;
+        }
+
+        #formVideo{
+          background:#666666;
+          color:#ffffff;
+          font-family:Tahoma, Arial, Verdana;
+          font-weight:bold;
+        }
+
+        label{
+         padding-left:10px;
+        }
+
+        #hide img{
+         border:0;
+         padding:5px 5px 0 0;
+       }
+
+        #show a{
+      text-decoration:none;
+      padding-left:20px;
+      background:url(/nuxeo/img/edit.png) no-repeat 0 0;
+      color:#000000;
+      font-weight:bold;
+      display:inline-block;
+      height:16px;
+    }
+
+    #show a:hover{
+      text-decoration:underline;
+    }
+
+    #show{
+     text-align:right;
+    }
+
+        #valid{
+          padding-left:14px;
+          background:url(/nuxeo/img/accept.png) no-repeat 0 0;
+          color:#FFFFFF;
+          display:block;
+          float:right;
+          font-weight:bold;
+          padding-left:18px;
+          text-decoration:none;
+        }
+
+      </style>
+
+      <script type="text/javascript" language="javascript" src="video.js"></script>
+      <script type="text/javascript">
+        var prefs = new _IG_Prefs(__MODULE_ID__);
+        gadgets.util.registerOnLoadHandler( function() {
+           launchVideoWidget();
+        });
+      </script>
+
+
+
+      <div id="title"></div>
+      <div id="video"></div>
+
+      <div id="perm" style="display:none;">
+      <div id="show">
+        <a href="#">Modifier</a>
+      </div>
+
+      <div id="form" style="display:none;margin:auto">
+        <form style="text-align:center;" method="post" id="formUpload" enctype="application/x-www-form-urlencoded" action="#">
+        <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a></div>
+        <table style="width:100%" id="formVideo">
+          <tr>
+            <td style="width:30%">
+              <label>Titre</label>
+            </td>
+            <td style="width:70%">
+              <input type="text" name="title" id="title-field" value="">
+            </td>
+          </tr>
+          <tr>
+            <td style="width:30%">
+              <label>Balise Video</label>
+            </td>
+            <td style="width:70%">
+               <textarea id="baliseVideo" name="gadget:htmlContent"></textarea>
+            </td>
+          </tr>
+          <tr>
+          <td style="width:30%"></td>
+          <td style="width:70%">
+              <a href="#" id="valid" >Valider</a>
+          </td>
+        </tr>
+        </table>
+
+      </div>
+      </form>
+    </div>
+
+    ]]>
+  </Content>
+</Module>

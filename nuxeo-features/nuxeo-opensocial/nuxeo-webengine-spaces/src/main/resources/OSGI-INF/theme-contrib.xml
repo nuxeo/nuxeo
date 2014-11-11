@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webengine.spaces.theme">
+
+  <require>org.nuxeo.theme.webengine</require>
+
+  <!-- resources -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
+    <resource name="jquery-1.3.2.min.js">
+      <path>js/jquery/jquery-1.3.2.min.js</path>
+    </resource>
+    <resource name="thickbox.js">
+      <path>js/jquery/thickbox.js</path>
+    </resource>
+    <resource name="jquery.cookie.js">
+      <path>js/jquery/jquery.cookie.js</path>
+    </resource>
+     <resource name="jquery.menu.js">
+      <path>js/jquery/jquery.menu.js</path>
+    </resource>
+     <resource name="initmenu.js">
+      <path>js/initMenu.js</path>
+    </resource>
+    <resource name="layoutManager.js">
+      <path>js/layoutManager.js</path>
+    </resource>
+    <resource name="gadgetManager.js">
+      <path>js/gadgetManager.js</path>
+    </resource>
+  </extension>
+
+
+  <!-- Views -->
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="views">
+    <view name="portal includes" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <resource>jquery-1.3.2.min.js</resource>
+      <resource>jquery.menu.js</resource>
+      <resource>layoutManager.js</resource>
+      <resource>gadgetManager.js</resource>
+      <resource>initmenu.js</resource>
+      <resource>thickbox.js</resource>
+    </view>
+  </extension>
+
+
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="presets">
+    <palette name="intralm background" src="presets/background.properties" category="background" />
+  </extension>
+
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="applications">
+
+    <application root="${org.nuxeo.ecm.contextPath}/site/spaces" template-engine="freemarker">
+      <negotiation>
+        <strategy>web</strategy>
+        <default-engine>default</default-engine>
+        <default-theme>portal/default</default-theme>
+        <default-perspective>default</default-perspective>
+      </negotiation>
+    </application>
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="themes">
+    <theme>
+       <src>themes/theme-portal.xml</src>
+    </theme>
+  </extension>
+
+
+</component>

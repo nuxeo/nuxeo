@@ -1,0 +1,26 @@
+{header}USAGE{header}
+
+The -page parameter can be used in conjunction with -max parameter to paginate the query result.
+The specify the first page use 1 as value, for the second page use 2 and so on.
+
+When saving results in a file - they are in JSON format - and dates are specified using a long value timestamp. 
+Results printed on the screen are printed in tab separated columns:
+eventId category    eventDate   principal   docUUID docType docLifeCycle    comment 
+
+{header}EXAMPLES{header}
+
+Using date literals in your query:
+
+{code}audit "FROM LogEntry log WHERE log.eventDate > timestamp('2010-11-10 00:00:00')"{code}
+
+Using pagination:
+
+{code}audit "FROM LogEntry log WHERE log.category='studio' ORDER BY log.eventDate DESC" -max 20 -page 1{code}
+
+Using query variables:
+
+{code}audit "FROM LogEntry log WHERE log.category='studio' AND log.eventDate > :startDate" -ctx "startDate={d 2010-11-10}"{code}
+or 
+{code}audit "FROM LogEntry log WHERE log.category='studio' AND log.eventDate > :startDate" -ctx "startDate={d 2010-11-10 00:00:00}"{code}
+
+Note that query variable keys must be prefixed with "audit.query." to avoid name clash with other keys in the context.
