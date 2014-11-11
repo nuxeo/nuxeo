@@ -1,0 +1,315 @@
+<!DOCTYPE facelet-taglib PUBLIC
+  "-//Sun Microsystems, Inc.//DTD Facelet Taglib 1.0//EN"
+  "http://java.sun.com/dtd/facelet-taglib_1_0.dtd">
+
+<facelet-taglib>
+  <namespace>http://nuxeo.org/nxweb/document</namespace>
+  <function>
+    <function-name>typeInfo</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      org.nuxeo.ecm.platform.types.adapter.TypeInfo
+      typeInfo(org.nuxeo.ecm.core.api.DocumentModel)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>typeLabel</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String typeLabel(org.nuxeo.ecm.core.api.DocumentModel)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>typeView</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String typeView(org.nuxeo.ecm.core.api.DocumentModel,
+      java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>iconPath</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String iconPath(org.nuxeo.ecm.core.api.DocumentModel)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>iconExpandedPath</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String iconExpandedPath(org.nuxeo.ecm.core.api.DocumentModel)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>bigIconPath</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String bigIconPath(org.nuxeo.ecm.core.api.DocumentModel)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>fileIconPath</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String fileIconPath(org.nuxeo.ecm.core.api.Blob)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>propertyPath</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String getPropertyPath(java.lang.String, int, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>titleOrId</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String titleOrId(org.nuxeo.ecm.core.api.DocumentModel)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>hasPermission</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      boolean hasPermission(org.nuxeo.ecm.core.api.DocumentModel,
+      java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>canModify</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      boolean canModify(org.nuxeo.ecm.core.api.DocumentModel)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>defaultValue</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.Object defaultValue(java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>propertyDefaultValue</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.Object defaultValue(java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>fileUrl</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String fileUrl(java.lang.String,
+      org.nuxeo.ecm.core.api.DocumentModel, java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>bigFileUrl</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String bigFileUrl(org.nuxeo.ecm.core.api.DocumentModel,
+      java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>fileDescription</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String fileDescription( org.nuxeo.ecm.core.api.DocumentModel,
+      java.lang.String, java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>complexFileUrl</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String complexFileUrl(java.lang.String,
+      org.nuxeo.ecm.core.api.DocumentModel, int, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>complexFileUrl</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String complexFileUrl(java.lang.String,
+      org.nuxeo.ecm.core.api.DocumentModel, java.lang.String, int,
+      java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+
+  <function>
+    <function-name>documentUrl</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String documentUrl(org.nuxeo.ecm.core.api.DocumentModel)
+    </function-signature>
+  </function>
+
+  <function>
+    <function-name>complexDocumentUrl</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String documentUrl(java.lang.String,
+      org.nuxeo.ecm.core.api.DocumentModel, java.lang.String, java.util.Map,
+      boolean)
+    </function-signature>
+  </function>
+
+  <function>
+    <function-name>liveEditDefaultUrl</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String liveEditUrl(org.nuxeo.ecm.core.api.DocumentModel)
+    </function-signature>
+  </function>
+
+  <function>
+    <function-name>liveEditUrl</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String liveEditUrl(org.nuxeo.ecm.core.api.DocumentModel,
+      java.lang.String, java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+
+  <function>
+    <function-name>liveCreateDefaultUrl</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String liveCreateUrl(java.lang.String)
+    </function-signature>
+  </function>
+
+  <function>
+    <function-name>liveCreateUrl</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String liveCreateUrl(java.lang.String, java.lang.String,
+      java.lang.String, java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+
+  <function>
+    <function-name>liveCreateFromTemplateDefaultUrl</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String
+      liveCreateFromTemplateUrl(org.nuxeo.ecm.core.api.DocumentModel)
+    </function-signature>
+  </function>
+
+  <function>
+    <function-name>liveCreateFromTemplateUrl</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String
+      liveCreateFromTemplateUrl(org.nuxeo.ecm.core.api.DocumentModel,
+      java.lang.String, java.lang.String, java.lang.String, java.lang.String,
+      java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+
+  <function>
+    <function-name>complexLiveEditUrl</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String complexLiveEditUrl(org.nuxeo.ecm.core.api.DocumentModel,
+      java.lang.String, int, java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+
+  <function>
+    <function-name>availableLifeCycleTransitions</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.util.List getAvailableLifeCycleTransitions(java.lang.String,
+      java.lang.String)
+    </function-signature>
+  </function>
+
+  <tag>
+    <tag-name>documentLink</tag-name>
+    <component>
+      <component-type>javax.faces.HtmlCommandLink</component-type>
+      <renderer-type>javax.faces.Link</renderer-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.tag.handler.DocumentLinkTagHandler
+      </handler-class>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>restDocumentLink</tag-name>
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.document.RestDocumentLink
+      </component-type>
+      <renderer-type>
+        org.nuxeo.ecm.platform.ui.web.component.document.RestDocumentLink
+      </renderer-type>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>extendedRestDocumentLink</tag-name>
+    <source>util/extendedRestDocumentLink.xhtml</source>
+  </tag>
+
+</facelet-taglib>
