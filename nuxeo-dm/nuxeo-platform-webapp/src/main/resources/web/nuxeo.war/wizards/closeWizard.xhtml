@@ -1,0 +1,30 @@
+<div xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <div class="wizardFrame">
+
+    <div class="wizardFinish">
+      <h4>
+
+    <h:graphicImage url="/img/standart_waiter.gif" />
+    Wizard is closing
+  </h4>
+
+ <br/><br/><br/> <br/><br/><br/>
+
+  <script>
+    <h:outputText value="var URL='#{URLMaker.documentURLForParentConversation}'"/>
+    <!--
+    function CloseWizard()
+    {
+    window.location.href=URL;
+    }
+    window.setTimeout("CloseWizard()",20);
+    -->
+  </script>
+
+</div></div></div>
