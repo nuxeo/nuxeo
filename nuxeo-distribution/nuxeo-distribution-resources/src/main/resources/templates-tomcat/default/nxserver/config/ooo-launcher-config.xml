@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.convert.ooolauncher.config.default">
+
+  <extension target="org.nuxeo.ecm.platform.convert.ooolauncher.OOoLauncherComponent"
+    point="oooLauncherConfig">
+
+  <OOoLauncher>
+
+    <!-- enable Nuxeo Launcher to start OpenOffice server : default is true -->
+    <enable>true</enable>
+
+    <!-- define OOo server listen IP : default is 127.0.0.1 -->
+    <!--<oooListenIP>192.168.1.5</oooListenIP>-->
+
+    <!-- define OOo server listen port : defzault is 8100 -->
+    <!--<oooListenPort>8100</oooListenPort>-->
+
+    <!-- define maximum wait time in second before timeout : default is 60 -->
+    <!--<oooStartupTimeOut>60</oooStartupTimeOut>-->
+
+    <!-- define OOo installation path : used only if daemon is enabled -->
+    <!-- if not defined Nuxeo will try to find the path automatically -->
+    <!--<oooInstallationPath>/opt/openoffice/program</oooInstallationPath>-->
+
+
+    <!-- define is Nuxeo must start the OOo server when Nuxeo starts, otherwise Nuxeo will start OOo when needed : default is false-->
+    <!--<startOOoAtServiceStartup>true</startOOoAtServiceStartup>-->
+
+  </OOoLauncher>
+
+  </extension>
+
+</component>
+

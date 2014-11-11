@@ -1,0 +1,156 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>simpleSearch</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">simpleSearch</td></tr>
+</thead><tbody>
+<tr>
+        <td>open</td>
+        <td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium simpleSearch</td>
+        <td></td>
+</tr>
+<!--Identification-->
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>You are logged as jdoe</td>
+	<td></td>
+</tr>
+<!--Recherche rapide-->
+<tr>
+	<td>type</td>
+	<td>//input[@id="userServicesForm:simpleSearchKeywordsInput"]</td>
+	<td>testNote1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Search"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Search results for keywords:</td>
+	<td></td>
+</tr>
+<!--Vérification des résultats-->
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=testNote1</td>
+	<td></td>
+</tr>
+<!--Vérification de la validité des liens des résultats-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testNote1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Summary</td>
+	<td></td>
+</tr>
+<!-- can't be sure : doc may be in a section
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Modification</td>
+	<td></td>
+</tr>
+-->
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Edit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Files</td>
+	<td></td>
+</tr>
+<!-- can't be sure : doc may be in a section
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Publish</td>
+	<td></td>
+</tr>-->
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Relations</td>
+	<td></td>
+</tr>
+<!-- can't be sure : doc may be in a section
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Workflow</td>
+	<td></td>
+</tr>-->
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Alerts</td>
+	<td></td>
+</tr>
+<!-- can't be sure : doc may be in a section
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Comments</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=History</td>
+	<td></td>
+</tr-->
+<!--Test avec une recherche incorrecte-->
+<tr>
+	<td>type</td>
+	<td>//input[@id="userServicesForm:simpleSearchKeywordsInput"]</td>
+	<td>truc</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Search"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Search results for keywords:</td>
+	<td></td>
+</tr>
+<!--Vérification des résultats-->
+<tr>
+	<td>verifyTextPresent</td>
+	<td>No documents match your search criteria</td>
+	<td></td>
+</tr>
+<!--Déconnexion-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
