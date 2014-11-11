@@ -1,0 +1,27 @@
+<c:if test="true"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <nxu:set var="resolvedMode"
+    value="#{nxu:test(empty action.properties.widgetMode, empty widget.mode?'view':widget.mode, action.properties.widgetMode)}">
+    <c:if test="#{action.properties.displayActionLabel}">
+      <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+      <h:outputText value=" " />
+    </c:if>
+    <nxl:widget
+      name="#{action.properties.widgetName}"
+      mode="#{resolvedMode}"
+      category="#{empty action.properties.widgetCategory ? '': action.properties.widgetCategory}"
+      layoutName="#{idPrefix}#{action.id}"
+      value="#{fieldOrValue}">
+      <c:if test="#{action.properties.displayWidgetLabel}">
+        <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+        <h:outputText value=" " />
+      </c:if>
+    </nxl:widget>
+  </nxu:set>
+
+</c:if>

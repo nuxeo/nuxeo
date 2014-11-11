@@ -1,0 +1,111 @@
+<c:if test="true"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<c:if test="false">
+ Template rendering a layout listing with pagination control and selection
+ actions.
+
+  Parameters:
+  - documents: the page selections instance, mandatory
+  - layoutName: layout to use for listing rendering, mandatory
+  - selectedResultLayoutColumns: list of result column names to display,
+    optional, defaults to the layout default columns configuration.
+  - hideTopPaginationControls: only display the bottom page selectors
+    (available since 5.6).
+</c:if>
+
+  <ui:insert name="empty_folder_label">
+    <h:outputText value="#{messages['label.content.emptyFolder']}"
+      rendered="#{documents.rowCount == 0}" />
+  </ui:insert>
+
+  <ui:insert name="error_message" />
+
+  <c:if test="#{not hideTopPaginationControls}">
+    <ui:insert name="pageNavigationControls">
+      <c:if test="#{useAjaxPagination}">
+        <ui:include src="/pagination/a4jPageNavigationControls.xhtml" />
+      </c:if>
+      <c:if test="#{not useAjaxPagination}">
+        <ui:include src="/pagination/pageNavigationControls.xhtml" />
+      </c:if>
+    </ui:insert>
+  </c:if>
+
+  <c:choose>
+
+    <c:when test="#{!fn:endsWith(layoutName, '_2_columns')}">
+      <table class="dataOutput">
+        <c:forEach var="row" items="#{documents.rows}"
+          varStatus="layoutListingStatus">
+          <c:set var="showListingHeader"
+            value="#{layoutListingStatus.index == 0}" />
+          <nxl:layout name="#{layoutName}" value="#{row}" mode="view"
+            selectedColumns="#{selectedResultLayoutColumns}" />
+        </c:forEach>
+      </table>
+    </c:when>
+
+    <c:otherwise>
+      <table class="dataOutput2Columns">
+        <tr>
+          <td>
+            <table>
+              <c:forEach var="row" items="#{documents.rows}"
+                varStatus="layoutListingStatus"
+                end="#{(documents.size-1)/2}">
+                <c:set var="showListingHeader"
+                  value="#{layoutListingStatus.index == 0}" />
+                <nxl:layout name="#{layoutName}" value="#{row}" mode="view"
+                  selectedColumns="#{selectedResultLayoutColumns}" />
+              </c:forEach>
+            </table>
+          </td>
+          <td>
+            <table>
+              <c:forEach var="row" items="#{documents.rows}"
+                varStatus="layoutListingStatus"
+                begin="#{(documents.size-1)/2 + 1}">
+                <c:set var="showListingHeader"
+                  value="#{layoutListingStatus.index == documents.size/2+1}" />
+                <nxl:layout name="#{layoutName}" value="#{row}" mode="view"
+                  selectedColumns="#{selectedResultLayoutColumns}" />
+              </c:forEach>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </c:otherwise>
+
+  </c:choose>
+
+  <ui:insert name="pageNavigationControls">
+    <c:if test="#{useAjaxPagination}">
+      <ui:include src="/pagination/a4jPageNavigationControls.xhtml" />
+    </c:if>
+    <c:if test="#{not useAjaxPagination}">
+      <ui:include src="/pagination/pageNavigationControls.xhtml" />
+    </c:if>
+  </ui:insert>
+
+  <ui:insert name="buttons" />
+
+  <ui:insert name="syndication_buttons">
+    <div class="syndicationContainer">
+      <c:if test="#{currentDocument.folder}">
+        <ui:include src="/incl/syndication_buttons.xhtml">
+          <ui:param name="type" value="document" />
+        </ui:include>
+      </c:if>
+    </div>
+  </ui:insert>
+
+</c:if>

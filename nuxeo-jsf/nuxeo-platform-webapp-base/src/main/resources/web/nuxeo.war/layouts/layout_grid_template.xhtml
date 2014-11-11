@@ -1,0 +1,24 @@
+<f:subview
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  id="#{layout.id}">
+
+  <c:if test="false">
+    Handles grid layouts, using style classes defined by row properties.
+  </c:if>
+
+  <div class="gridContainer">
+    <nxl:layoutRow>
+      <div class="gridRow">
+        <nxl:layoutRowWidget>
+          <c:set var="gridStyleClassProp" value="nxl_gridStyleClass_#{widgetIndex}" />
+          <div class="gridBox #{layoutRow.properties[gridStyleClassProp]}">
+            <nxl:widget widget="#{widget}" value="#{value}" />
+          </div>
+        </nxl:layoutRowWidget>
+      </div>
+    </nxl:layoutRow>
+  </div>
+
+</f:subview>
