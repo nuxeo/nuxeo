@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.theme.styling.tests.themeStylingContrib3">
+
+  <!--
+    test conf for override:
+    - merge flavors
+    - override default flavor on page
+  -->
+
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+    <themePage name="testStyling/default">
+      <defaultFlavor>dark</defaultFlavor>
+      <flavors>
+        <flavor>dark</flavor>
+      </flavors>
+    </themePage>
+  </extension>
+
+  <extension target="org.nuxeo.theme.styling.service" point="flavors">
+
+    <flavor name="dark">
+      <presetsList append="true">
+        <presets category="color" src="themes/palettes/dark-colors2.properties" />
+      </presetsList>
+    </flavor>
+
+  </extension>
+
+</component>
