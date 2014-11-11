@@ -1,0 +1,151 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf"
+  id="#{widget.id}">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">
+  <nxu:set var="numberOfSubWidgets" value="#{widget.subWidgets.length}" cache="true">
+    <nxl:subWidget>
+      <nxl:widget widget="#{widget}" value="#{field}" />
+      <h:outputText value=", " rendered="#{widgetIndex != numberOfSubWidgets - 1}" />
+    </nxl:subWidget>
+  </nxu:set>
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:html>
+    <nxu:set var="numberOfSubWidgets" value="#{widget.subWidgets.length}" cache="true">
+      <nxl:subWidget>
+        <nxl:widget widget="#{widget}" value="#{field}" />
+        <h:outputText value=", " rendered="#{widgetIndex != numberOfSubWidgets - 1}" />
+      </nxl:subWidget>
+    </nxu:set>
+  </nxp:html>
+</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+
+  <c:set var="displaySubLabels" value="#{not widgetProperty_hideSubLabels}" />
+
+  <table>
+    <tbody>
+      <nxu:inputList value="#{field}" id="#{widget.id}_table" model="submodel"
+        rendered="#{not empty field}">
+        <c:choose>
+          <c:when test="#{widgetProperty_display == 'inline'}">
+            <tr>
+              <nxl:subWidget>
+                <td class="fieldColumn">
+                  <c:if test="#{displaySubLabels}">
+                    <h:outputText value="#{messages[widget.label]}"
+                      styleClass="labelColumn" />
+                  </c:if>
+                  <nxl:widget widget="#{widget}"
+                    value="#{submodel.rowData}" />
+                </td>
+              </nxl:subWidget>
+            </tr>
+          </c:when>
+          <c:otherwise>
+            <nxl:subWidget>
+              <tr>
+                <c:if test="#{displaySubLabels}">
+                  <td class="labelColumn">
+                    <h:outputText value="#{messages[widget.label]}" />
+                  </td>
+                </c:if>
+                <td class="fieldColumn">
+                  <nxl:widget widget="#{widget}"
+                    value="#{submodel.rowData}" />
+                </td>
+              </tr>
+            </nxl:subWidget>
+          </c:otherwise>
+        </c:choose>
+      </nxu:inputList>
+    </tbody>
+  </table>
+
+</c:if>
+<c:if test="#{widget.mode == 'edit'}">
+
+  <a4j:outputPanel ajaxRendered="true">
+  
+    <c:set var="displaySubLabels" value="#{not widgetProperty_hideSubLabels}" />
+    <c:set value="#{widget_0.fieldDefinitions[0].propertyName}/#{widget.fieldDefinitions[0].propertyName}"
+      var="propValueForTemplate"/>
+  
+    <nxu:inputList value="#{field}" id="#{widget.id}_input" model="submodel"
+      template="#{nxd:propertyDefaultValue(propValueForTemplate)}"
+      required="#{widget.required}" diff="#{widget.properties['diff']}">
+  
+      <h:panelGrid columns="2">
+
+        <a4j:commandLink immediate="true"
+          actionListener="#{editableListBean.performAction}"
+          id="#{widget.id}_delete" reRender="#{widget.id}_input"
+          bypassUpdates="true">
+          <h:graphicImage value="/icons/action_delete.gif" />
+          <f:param name="for" value="#{widget.id}_input" />
+          <f:param name="index" value="#{submodel.rowIndex}" />
+          <f:param name="type" value="remove" />
+        </a4j:commandLink>
+  
+        <h:panelGroup>
+          <table>
+            <tbody>
+              <c:choose>
+                <c:when test="#{widgetProperty_display == 'inline'}">
+                  <tr>
+                    <nxl:subWidget>
+                      <td class="fieldColumn">
+                        <c:if test="#{displaySubLabels}">
+                          <h:outputText value="#{messages[widget.label]}"
+                            styleClass="labelColumn #{nxu:test(widget.required, 'required', '')}" />
+                        </c:if>
+                        <nxl:widget widget="#{widget}"
+                          value="#{submodel.rowData}" />
+                      </td>
+                    </nxl:subWidget>
+                  </tr>
+                </c:when>
+                <c:otherwise>
+                  <nxl:subWidget>
+                    <tr>
+                      <c:if test="#{displaySubLabels}">
+                        <td class="labelColumn">
+                          <h:outputText value="#{messages[widget.label]}"
+                            styleClass="#{nxu:test(widget.required, 'required', '')}" />
+                        </td>
+                      </c:if>
+                      <td class="fieldColumn">
+                        <nxl:widget widget="#{widget}"
+                          value="#{submodel.rowData}" />
+                      </td>
+                    </tr>
+                  </nxl:subWidget>
+                </c:otherwise>
+              </c:choose>
+            </tbody>
+          </table>
+        </h:panelGroup>  
+
+      </h:panelGrid>
+  
+    </nxu:inputList>
+    <h:message styleClass="errorMessage" for="#{widget.id}_input"
+      id="#{widget.id}_message" />
+  </a4j:outputPanel>
+  
+  <a4j:commandLink immediate="true"
+    actionListener="#{editableListBean.performAction}" id="#{widget.id}_add">
+    <f:param name="for" value="#{widget.id}_input" />
+    <f:param name="type" value="add" />
+    <h:graphicImage value="/widgets/img/action_add.gif" />
+    <h:outputText value="#{messages['command.add']}" />
+  </a4j:commandLink>
+
+</c:if>
+</f:subview>
