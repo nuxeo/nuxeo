@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.cache.CacheServerBinding" version="1.0">
+  <documentation>
+    A cache manager binding.
+
+    @author
+    <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.api.PlatformService"
+    point="servers">
+
+    <server name="default">
+        <service class="org.nuxeo.ecm.core.api.CoreSession" jndiName="%DocumentManagerBean" private="true"/>
+        <!-- service class="org.nuxeo.ecm.platform.ec.notification.ejb.facade.NotificationServiceRemote" jndiName="%NotificationService" private="false"/-->
+
+    <repository name="demo" class="org.nuxeo.ecm.core.api.CoreSession" description="Demo Repository"/>
+    </server>
+
+  </extension>
+
+</component>

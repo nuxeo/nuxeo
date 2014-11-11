@@ -1,0 +1,59 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  class="popUpContent" id="popUpContent">
+
+    <script language="javascript" type="text/javascript">
+      function updateParent(documentUid, documentTitle) {
+        parentInput = document.getElementById('createForm:objectDocumentUid');
+        parentInput.value = documentUid;
+        parentTitle = document.getElementById('createForm:objectDocumentTitle');
+        parentTitle.innerHTML = documentTitle;
+        parentTitleSaved = document.getElementById('createForm:objectDocumentTitleSaved');
+        parentTitleSaved.value = documentTitle;
+        hidePopUp();
+      }
+    </script>
+
+    <nxu:set var="contentViewName" value="relation_search">
+    <nxu:set var="contentViewId" value="0">
+
+      <div>
+        <h3><h:outputText value="#{messages['label.search.form.simple']}" /></h3>
+        <h:form>
+          <nxu:set var="contentView"
+            value="#{contentViewActions.getContentViewWithProvider(contentViewName)}"
+            cache="true">
+            <c:if test="#{contentView != null}">
+              <nxl:layout name="#{contentView.searchLayout.name}" mode="search"
+                value="#{contentView.searchDocumentModel}" />
+            </c:if>
+
+            <a4j:commandButton value="#{messages['command.search']}"
+              action="#{contentViewActions.resetPageProvider(contentViewName)}" styleClass="button"
+              id="searchButton" reRender="content" />
+          </nxu:set>
+        </h:form>
+      </div>
+
+      <a4j:outputPanel id="content">
+        <ui:decorate template="/incl/content_view.xhtml">
+          <ui:define name="pageNavigationControls">
+            <ui:include src="/pagination/a4jPageNavigationControls.xhtml">
+              <ui:param name="contentIdToBeReRendered" value="content"/>
+            </ui:include>
+          </ui:define>
+          <ui:define name="content_view_syndication_buttons" />
+          <ui:define name="content_view_selector">
+            <div style="clear:both;" />
+          </ui:define>
+        </ui:decorate>
+      </a4j:outputPanel>
+    </nxu:set>
+    </nxu:set>
+</div>

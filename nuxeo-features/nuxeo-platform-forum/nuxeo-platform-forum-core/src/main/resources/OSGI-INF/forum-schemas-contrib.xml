@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.forum.coreTypes">
+
+  <require>org.nuxeo.ecm.core.schema.TypeService</require>
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="thread" src="schemas/thread.xsd"/>
+    <schema name="post" src="schemas/post.xsd"/>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+
+    <doctype name="Forum" extends="Folder">
+    </doctype>
+
+    <doctype name="Thread" extends="Document">
+      <schema name="common"/>
+      <schema name="dublincore"/>
+      <schema name="thread"/>
+      <facet name="Commentable"/>
+    </doctype>
+
+    <doctype name="Post" extends="Document">
+      <schema name="common"/>
+      <schema name="post"/>
+      <schema name="dublincore"/>
+      <facet name="HiddenInNavigation"/>
+      <facet name="Commentable"/>
+    </doctype>
+  </extension>
+
+</component>
