@@ -1,0 +1,32 @@
+Export-Package: org.nuxeo.ecm.directory;core=api,
+ org.nuxeo.ecm.directory.memory,
+ org.nuxeo.ecm.directory.constants
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Category: web,
+ stateful
+Bundle-Name: Nuxeo Directory
+Bundle-Localization: bundle
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.directory.api;visibility:=reexport,
+ org.nuxeo.ecm.core.schema
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: true
+Bundle-Version: 0.0.0.SNAPSHOT
+Nuxeo-Component: OSGI-INF/DirectoryService.xml
+Bundle-ManifestVersion: 2
+Import-Package: org.apache.commons.logging,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.impl,
+ org.nuxeo.ecm.core.api.model,
+ org.nuxeo.ecm.core.schema,
+ org.nuxeo.ecm.core.schema.types,
+ org.nuxeo.ecm.directory.api,
+ org.nuxeo.runtime,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.model
+Bundle-SymbolicName: org.nuxeo.ecm.directory;singleton:=true
