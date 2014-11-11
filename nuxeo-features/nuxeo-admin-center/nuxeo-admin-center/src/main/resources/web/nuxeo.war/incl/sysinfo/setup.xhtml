@@ -1,0 +1,337 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+    xmlns:nxu="http://nuxeo.org/nxweb/util"
+    xmlns:nxd="http://nuxeo.org/nxweb/document"
+    xmlns:c="http://java.sun.com/jstl/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    class="setupPanel">
+
+ <script>
+ function confirmRestart() {
+  return window.confirm("<h:outputText value="#{messages['label.restart.confirm']}" />");
+ }
+ </script>
+
+    <a4j:outputPanel
+         id="setupPanel" ajaxRendered="true">
+    <!--
+    <span><h:outputText value="DEBUG: Configurable: #{configurable}" /></span>
+    <br />
+    <span><h:outputText
+        value="DEBUG: nuxeo.dbtemplate #{setupParams['nuxeo.dbtemplate']}" /></span>
+    <br /> -->
+
+    <h:panelGroup rendered="#{setupRequiresRestart}">
+        <div class="warningFeedback"><h:outputText
+            value="#{messages['label.setup.restartNeeded']}" />
+        <h:form>
+          <h:commandButton onclick="return confirmRestart();" action="#{systemInfo.restartServer()}" value="#{messages['label.action.restart']}"/>
+        </h:form>
+        </div>
+        <br />
+    </h:panelGroup>
+    <h:panelGroup rendered="#{!configurable}">
+        <div class="warningFeedback"><h:outputText
+            value="#{messages['label.setup.notconfigurable']}" /></div>
+        <br />
+    </h:panelGroup>
+
+    <h2><h:outputText styleClass="label"
+        value="#{messages['adminsubtab.sysinfo.setup']}" /></h2>
+    <c:if test="#{configurable}">
+        <a4j:form>
+
+          <table class="dataOutput">
+            <tr>
+              <th colspan="2"><h:outputText value="#{messages['label.setup.table.title.mainSetup']}" /></th>
+            </tr>
+            <tr>
+              <td>
+                <table>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.nuxeo.url']}" /></td>
+                    <td><h:inputText class="dataInputText" size="50"
+                        value="#{setupParams['nuxeo.url']}" /></td>
+                  </tr>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.org.nuxeo.ecm.product.name']}" /></td>
+                    <td><h:inputText class="dataInputText" size="50"
+                        value="#{setupParams['org.nuxeo.ecm.product.name']}" /></td>
+                  </tr>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.org.nuxeo.ecm.product.version']}" /></td>
+                    <td><h:inputText class="dataInputText" size="50"
+                        value="#{setupParams['org.nuxeo.ecm.product.version']}" /></td>
+                  </tr>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.nuxeo.bind.address']}" /></td>
+                    <td><h:inputText class="dataInputText" size="15"
+                        value="#{setupParams['nuxeo.bind.address']}" /></td>
+                  </tr>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.nuxeo.conf']}" /></td>
+                    <td><h:outputText class=""
+                        value="#{setupParams['nuxeo.conf']}" /></td>
+                  </tr>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.nuxeo.data.dir']}" /></td>
+                    <td><h:inputText class="dataInputText" size="50"
+                        value="#{setupParams['nuxeo.data.dir']}" /></td>
+                  </tr>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.nuxeo.log.dir']}" /></td>
+                    <td><h:inputText class="dataInputText" size="50"
+                        value="#{setupParams['nuxeo.log.dir']}" /></td>
+                  </tr>
+                  <tr>
+                    <td class="wideLabel"><h:outputText	value="#{messages['label.setup.database.templates']}" /></td>
+                    <td><h:selectOneMenu class="dataInputText"
+                        immediate="true"
+                        value="#{setupParams['nuxeo.dbtemplate']}">
+                        <f:selectItem itemValue="default"
+                            itemLabel="#{messages['label.setup.nuxeo.template.default']}" />
+                        <f:selectItem itemValue="postgresql"
+                            itemLabel="#{messages['label.setup.nuxeo.template.postgresql']}" />
+                        <f:selectItem itemValue="oracle"
+                            itemLabel="#{messages['label.setup.nuxeo.template.oracle']}" />
+                        <f:selectItem itemValue="mysql"
+                            itemLabel="#{messages['label.setup.nuxeo.template.mysql']}" />
+                        <f:selectItem itemValue="mssql"
+                            itemLabel="#{messages['label.setup.nuxeo.template.mssql']}" />
+                        <a4j:support event="onchange" reRender="setupPanel"
+                            actionListener="#{setupWizardAction.templateChange}">
+                        </a4j:support>
+                    </h:selectOneMenu></td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+
+          <c:if test="#{setupParams['nuxeo.dbtemplate']!='default'}">
+            <table class="dataOutput">
+                <tr>
+                <th colspan="2"><h:outputText value="#{messages['label.setup.table.title.dataBase']}" /></th>
+                </tr>
+                <tr>
+                  <td>
+                   <table>
+                    <tr>
+                        <td class="wideLabel"><h:outputText value="#{messages['label.setup.nuxeo.db.name']}" /></td>
+                        <td><h:inputText class="dataInputText" size="50"
+                            value="#{setupParams['nuxeo.db.name']}" /></td>
+                    </tr>
+                    <tr>
+                        <td class="wideLabel"><h:outputText value="#{messages['label.setup.nuxeo.db.user']}" /></td>
+                        <td><h:inputText class="dataInputText" size="50"
+                            value="#{setupParams['nuxeo.db.user']}" /></td>
+                    </tr>
+                    <tr>
+                        <td class="wideLabel"><h:outputText value="#{messages['label.setup.nuxeo.db.password']}" /></td>
+                        <td><h:inputText class="dataInputText" size="50"
+                            value="#{setupParams['nuxeo.db.password']}" /></td>
+                    </tr>
+                    <tr>
+                        <td class="wideLabel"><h:outputText value="#{messages['label.setup.nuxeo.db.host']}" /></td>
+                        <td><h:inputText class="dataInputText" size="50"
+                            value="#{setupParams['nuxeo.db.host']}" /></td>
+                    </tr>
+                    <tr>
+                        <td class="wideLabel"><h:outputText value="#{messages['label.setup.nuxeo.db.port']}" /></td>
+                        <td><h:inputText class="dataInputText" size="50"
+                            value="#{setupParams['nuxeo.db.port']}" /></td>
+                    </tr>
+                    <tr>
+                        <td class="wideLabel"><h:outputText value="#{messages['label.setup.nuxeo.db.min-pool-size']}" /></td>
+                        <td><h:inputText class="dataInputText" size="50"
+                            value="#{setupParams['nuxeo.db.min-pool-size']}" /></td>
+                    </tr>
+                    <tr>
+                        <td class="wideLabel"><h:outputText value="#{messages['label.setup.nuxeo.db.max-pool-size']}" /></td>
+                        <td><h:inputText class="dataInputText" size="50"
+                            value="#{setupParams['nuxeo.db.max-pool-size']}" /></td>
+                    </tr>
+                    <tr>
+                        <td class="wideLabel"><h:outputText value="#{messages['label.setup.nuxeo.vcs.min-pool-size']}" /></td>
+                        <td><h:inputText class="dataInputText" size="50"
+                            value="#{setupParams['nuxeo.vcs.min-pool-size']}" /></td>
+                    </tr>
+                    <tr>
+                        <td class="wideLabel"><h:outputText value="#{messages['label.setup.nuxeo.vcs.max-pool-size']}" /></td>
+                        <td><h:inputText class="dataInputText" size="50"
+                            value="#{setupParams['nuxeo.vcs.max-pool-size']}" /></td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </c:if>
+
+          <table class="dataOutput">
+            <tr>
+              <th colspan="2"><h:outputText value="#{messages['label.setup.table.title.httpProxy']}" /></th>
+            </tr>
+            <tr>
+              <td>
+                <table>
+                <tr>
+                    <td class="wideLabel"><h:outputText	value="#{messages['label.setup.httpProxy.type']}" /></td>
+                    <td><h:selectOneMenu class="dataInputText"
+                        immediate="true"
+                        value="#{setupWizardAction.proxyType}">
+                        <f:selectItem itemValue="none"
+                            itemLabel="#{messages['label.setup.nuxeo.httpProxy.none']}" />
+                        <f:selectItem itemValue="anonymous"
+                            itemLabel="#{messages['label.setup.nuxeo.httpProxy.anonymous']}" />
+                        <f:selectItem itemValue="authenticated"
+                            itemLabel="#{messages['label.setup.nuxeo.httpProxy.authenticated']}" />
+                        <a4j:support event="onchange" reRender="setupPanel"
+                            actionListener="#{setupWizardAction.proxyChange}">
+                        </a4j:support>
+                    </h:selectOneMenu></td>
+                  </tr>
+                  <c:if test="#{setupWizardAction.proxyType!='none'}">
+                    <tr>
+                      <td class="wideLabel"><h:outputText value="#{messages['label.setup.nuxeo.http.proxy.host']}" /></td>
+                      <td><h:inputText class="dataInputText" size="30"
+                          value="#{setupParams['nuxeo.http.proxy.host']}" /></td>
+                    </tr>
+                    <tr>
+                      <td class="wideLabel"><h:outputText value="#{messages['label.setup.nuxeo.http.proxy.port']}" /></td>
+                      <td><h:inputText class="dataInputText" size="4"
+                          value="#{setupParams['nuxeo.http.proxy.port']}" /></td>
+                    </tr>
+                    <c:if test="#{setupWizardAction.proxyType=='authenticated'}">
+                      <tr>
+                        <td class="wideLabel"><h:outputText value="#{messages['label.setup.nuxeo.http.proxy.login']}" /></td>
+                        <td><h:inputText class="dataInputText" size="20"
+                            value="#{setupParams['nuxeo.http.proxy.login']}" /></td>
+                      </tr>
+                      <tr>
+                        <td class="wideLabel"><h:outputText value="#{messages['label.setup.nuxeo.http.proxy.password']}" /></td>
+                        <td><h:inputText class="dataInputText" size="20"
+                            value="#{setupParams['nuxeo.http.proxy.password']}" /></td>
+                      </tr>
+                    </c:if>
+                  </c:if>
+                 </table>
+               </td>
+               </tr>
+               </table>
+
+          <table class="dataOutput">
+            <tr>
+              <th colspan="2"><h:outputText value="#{messages['label.setup.table.title.email']}" /></th>
+            </tr>
+            <tr>
+              <td>
+                <table>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.nuxeo.notification.eMailSubjectPrefix']}" /></td>
+                    <td><h:inputText class="dataInputText" size="50"
+                        value="#{setupParams['nuxeo.notification.eMailSubjectPrefix']}" /></td>
+                  </tr>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.mailservice.user']}" /></td>
+                    <td><h:inputText class="dataInputText" size="50"
+                        value="#{setupParams['mailservice.user']}" /></td>
+                  </tr>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.mailservice.password']}" /></td>
+                    <td><h:inputText class="dataInputText" size="50"
+                        value="#{setupParams['mailservice.password']}" /></td>
+                  </tr>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.mail.store.protocol']}" /></td>
+                    <td><h:inputText class="dataInputText" size="50"
+                        value="#{setupParams['mail.store.protocol']}" /></td>
+                  </tr>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.mail.transport.protocol']}" /></td>
+                    <td><h:inputText class="dataInputText" size="50"
+                        value="#{setupParams['mail.transport.protocol']}" /></td>
+                  </tr>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.mail.pop3.host']}" /></td>
+                    <td><h:inputText class="dataInputText" size="50"
+                        value="#{setupParams['mail.pop3.host']}" /></td>
+                  </tr>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.mail.debug']}" /></td>
+                    <td><h:inputText class="dataInputText" size="50"
+                        value="#{setupParams['mail.debug']}" /></td>
+                  </tr>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.mail.smtp.host']}" /></td>
+                    <td><h:inputText class="dataInputText" size="50"
+                        value="#{setupParams['mail.smtp.host']}" /></td>
+                  </tr>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.mail.smtp.port']}" /></td>
+                    <td><h:inputText class="dataInputText" size="50"
+                        value="#{setupParams['mail.smtp.port']}" /></td>
+                  </tr>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.mail.smtp.auth']}" /></td>
+                    <td><h:inputText class="dataInputText" size="50"
+                        value="#{setupParams['mail.smtp.auth']}" /></td>
+                  </tr>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.mail.smtp.username']}" /></td>
+                    <td><h:inputText class="dataInputText" size="50"
+                        value="#{setupParams['mail.smtp.username']}" /></td>
+                  </tr>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.mail.smtp.password']}" /></td>
+                    <td><h:inputText class="dataInputText" size="50"
+                        value="#{setupParams['mail.smtp.password']}" /></td>
+                  </tr>
+                  <tr>
+                    <td class="wideLabel"><h:outputText value="#{messages['label.setup.mail.from']}" /></td>
+                    <td><h:inputText class="dataInputText" size="50"
+                        value="#{setupParams['mail.from']}" /></td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+
+          <div class="actionBar">
+            <a4j:commandButton value="#{messages['action.setup.save']}"
+                action="#{setupWizardAction.save()}" reRender="setupPanel"
+                styleClass="button" />
+            <a4j:commandButton value="#{messages['action.setup.cancel']}"
+                action="#{setupWizardAction.resetParameters()}"
+                reRender="setupPanel" styleClass="button" />
+          </div>
+      </a4j:form>
+
+          <h2><h:outputText value="#{messages['adminsubtab.sysinfo.advancedsetup']}" /></h2>
+      <a4j:form>
+          <p><h:outputText styleClass="warningLabel" value="#{messages['label.setup.advancedSearch.warning']}" /></p>
+
+            <table class="dataOutput">
+                <c:forEach var="advancedParamKey"
+                    items="#{advancedParams.keySet().toArray()}">
+                    <tr>
+                        <td class="wideLabel"><h:outputText value="#{advancedParamKey}" /></td>
+                        <td><h:inputText class="dataInputText" size="100"
+                            value="#{advancedParams[advancedParamKey]}" /></td>
+                    </tr>
+                </c:forEach>
+            </table>
+
+            <div class="actionBar">
+              <a4j:commandButton value="#{messages['action.setup.save']}"
+                  action="#{setupWizardAction.save()}" reRender="setupPanel"
+                  styleClass="button" />
+              <a4j:commandButton value="#{messages['action.setup.cancel']}"
+                  action="#{setupWizardAction.resetParameters()}"
+                  reRender="setupPanel" styleClass="button" />
+            </div>
+
+        </a4j:form>
+    </c:if>
+</a4j:outputPanel>
+</div>

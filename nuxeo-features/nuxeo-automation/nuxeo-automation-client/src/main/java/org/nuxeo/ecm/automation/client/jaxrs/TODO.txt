@@ -1,0 +1,26 @@
+REQUIRED:
+
+1. implement multipart-form-encoded
+2. Web Services
+3. authentication on demand?
+4. cleanup -> there are classes duplicated between server and client. (2-3 classes) create a commons module?
+  classes that are duplicated between server,core and client:
+  OperationDocumentation
+  JSONExporter - removed 2 methods that are dep. on automation-core
+  InputStreamDataSource - is used by the server
+  operation IDs are hardcoded
+5. improve java client API
+
+OPTIONAL:
+
+1. Implement GWT client
+2. expose doc types?
+3. shell
+
+
+=== TBD
+should we return all schemas when returning docs if the right header is specified?
+remove types in param fron extension ? we can use string adapters for this ..
+setInput for void operations is normal? (in fact setInput is for the context)
+canot change file name on a fileblob
+attach blob doesnt support multiple blobs - see blobs test in rest server
