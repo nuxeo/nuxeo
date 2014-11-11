@@ -1,0 +1,1037 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.actions.actionwidgettypes">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="widgets">
+
+    <widget name="label" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Label</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The action label.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>label</field>
+      </fields>
+    </widget>
+
+    <widget name="icon" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">icon</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The action icon path. Example:
+          "/icons/contextual_menu/share.png".
+        </label>
+      </helpLabels>
+      <fields>
+        <field>icon</field>
+      </fields>
+    </widget>
+
+    <!-- not used as of 5.7.3 -->
+    <widget name="help" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">help</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The action help, displayed in a tooltip.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>help</field>
+      </fields>
+    </widget>
+
+    <!-- not used as of 5.7.3 -->
+    <widget name="accessKey" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">accessKey</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The action access key.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>accessKey</field>
+      </fields>
+    </widget>
+
+    <widget name="immediate" type="checkbox">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Immediate</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Boolean stating if the action is immediate (called
+          during JSF "apply request value" phase instead of the "process
+          validations" phase), useful for "cancel" buttons that should not issue
+          a validation error for required fields.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>immediate</field>
+      </fields>
+    </widget>
+
+    <widget name="ajaxReRender" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Ajax reRender</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Ajax rerender ids, separated by commas, used in
+          combination with the "ajaxSupport" property.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>ajaxReRender</field>
+      </fields>
+    </widget>
+
+    <widget name="ajaxSupport" type="checkbox">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Ajax support</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Boolean stating if the action supports ajax. Mandatory
+          for this action to be ajaxified when caller asks for an ajax form to
+          be used.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>ajaxSupport</field>
+      </fields>
+    </widget>
+
+    <widget name="styleClass" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Style class</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The action style class.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>styleClass</field>
+      </fields>
+    </widget>
+
+    <widget name="target" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Target</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The action target, for instance "_blank".
+        </label>
+      </helpLabels>
+      <fields>
+        <field>target</field>
+      </fields>
+    </widget>
+
+    <widget name="onclick" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Onclick</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Javascript code to call when clicking on the action.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>onclick</field>
+      </fields>
+    </widget>
+
+    <widget name="confirm" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Confirm</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Javascript confirmation code, called when clicking on
+          the action.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>confirm</field>
+      </fields>
+    </widget>
+
+    <widget name="confirmMessage" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Confirm message</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Alternative to the "confirm" property, only stating
+          the confirmation message, that can be a message to translate.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>confirmMessage</field>
+      </fields>
+    </widget>
+
+    <widget name="confirmMessageArgs" type="list">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Confirm message arguments</label>
+      </labels>
+      <fields>
+        <field>confirmMessageArgs</field>
+      </fields>
+      <helpLabels>
+        <label mode="any">
+          Confirm message arguments, referenced by the confirm
+          message translation in messages.properties files.
+        </label>
+      </helpLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="messageArg" type="text">
+          <fields>
+            <field></field>
+          </fields>
+          <labels>
+            <label mode="any"></label>
+          </labels>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="fancybox_include" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Include</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The template path to show as the fancybox content
+          (ignored if property "iframe" is filled). If this template holds a
+          form, it should be using the variable "fancyboxFormId" as its form id
+          for the fancybox to be reopened on validation error. Example:
+          "/incl/bulk_edit_box.xhtml"
+        </label>
+      </helpLabels>
+      <fields>
+        <field>include</field>
+      </fields>
+    </widget>
+
+    <widget name="fancybox_iframe" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Iframe</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          URL to display as the fancybox content. Example:
+          "#{previewActions.getCurrentDocumentPreviewPopupURL()}"
+        </label>
+      </helpLabels>
+      <fields>
+        <field>iframe</field>
+      </fields>
+    </widget>
+
+    <widget name="fancybox_width" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Width</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The fancybox width, defaults to "90%".
+        </label>
+      </helpLabels>
+      <fields>
+        <field>width</field>
+      </fields>
+    </widget>
+
+    <widget name="fancybox_height" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Height</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The fancybox height, defaults to "90%".
+        </label>
+      </helpLabels>
+      <fields>
+        <field>height</field>
+      </fields>
+    </widget>
+
+    <widget name="fancybox_scrolling" type="selectOneListbox">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Scrolling</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The fancybox scrolling behaviour, used to create or
+          hide scrollbars. Defaults to "auto", also accepts 'yes' or 'no'.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>scrolling</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Auto (default)" itemValue="" />
+        <option itemLabel="Yes" itemValue="yes" />
+        <option itemLabel="No" itemValue="no" />
+      </selectOptions>
+    </widget>
+
+    <widget name="fancybox_autoScale" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Auto scale</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The boolean value stating if the fancybox is scaled to
+          fit in viewport. Defaults to "true".
+        </label>
+      </helpLabels>
+      <fields>
+        <field>autoScale</field>
+      </fields>
+    </widget>
+
+    <widget name="fancybox_autoDimensions" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Auto dimensions</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The boolean value stating if the fancybox is resized
+          when the view is changed by ajax actions for instance. Defaults to
+          "true". The fancybox should have dimensions for this to work properly.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>autoDimensions</field>
+      </fields>
+    </widget>
+
+    <widget name="fancybox_modal" type="checkbox">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Modal</label>
+      </labels>
+      <fields>
+        <field>modal</field>
+      </fields>
+      <helpLabels>
+        <label mode="any">
+          The boolean value stating if the fancybox is modal and
+          cannot be closed when using the escape button, for instance.
+          Defaults
+          to "false".
+        </label>
+      </helpLabels>
+    </widget>
+
+    <widget name="fancybox_centerOnScroll" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">centerOnScroll</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The boolean value stating if the fancybox is centered
+          while scrolling the page. Defaults to "true".
+        </label>
+      </helpLabels>
+      <fields>
+        <field>centerOnScroll</field>
+      </fields>
+    </widget>
+
+    <widget name="fancybox_enableEscapeButton" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">enableEscapeButton</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The boolean value stating if the fancybox is closed
+          when pressing the escape key. Defaults to "true".
+        </label>
+      </helpLabels>
+      <fields>
+        <field>enableEscapeButton</field>
+      </fields>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="widgettypes">
+
+    <widgetType name="link">
+      <categories>
+        <category>jsfAction</category>
+      </categories>
+      <configuration>
+        <sinceVersion>5.7.3</sinceVersion>
+        <title>Link</title>
+        <description>
+          Widget displaying a link for an action.
+        </description>
+        <categories>
+          <category>action</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="view">
+            <layout name="link_action_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>link</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">icon</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">label</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">immediate</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">ajaxSupport</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">onclick</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">target</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirm</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessage</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessageArgs</widget>
+                </row>
+              </rows>
+              <widget name="link" type="text">
+                <labels>
+                  <label mode="any">Link</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The action link, that can be a navigation
+                    view or a Seam action, for instance.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>link</field>
+                </fields>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /incl/action/link_action_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="bare_link">
+      <categories>
+        <category>jsfAction</category>
+      </categories>
+      <configuration>
+        <sinceVersion>5.7.3</sinceVersion>
+        <title>Bare link</title>
+        <description>
+          Widget displaying a bare/output link for an action.
+        </description>
+        <categories>
+          <category>action</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <defaultValues mode="any">
+            <property name="discardSurroundingForm">true</property>
+          </defaultValues>
+          <layouts mode="view">
+            <layout name="bare_link_action_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="actionWidgetTypeConf">label</widget>
+                </row>
+                <row>
+                  <widget>link</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">icon</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">immediate</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">ajaxSupport</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">onclick</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">target</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirm</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessage</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessageArgs</widget>
+                </row>
+              </rows>
+              <widget name="link" type="text">
+                <labels>
+                  <label mode="any">Link</label>
+                </labels>
+                <fields>
+                  <field>link</field>
+                </fields>
+                <helpLabels>
+                  <label mode="any">
+                    The action link URL.
+                  </label>
+                </helpLabels>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /incl/action/bare_link_action_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="fancybox">
+      <categories>
+        <category>jsfAction</category>
+      </categories>
+      <configuration>
+        <sinceVersion>5.7.3</sinceVersion>
+        <title>Fancybox</title>
+        <description>
+          Widget displaying a button that will open a fancybox.
+        </description>
+        <categories>
+          <category>action</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="view">
+            <layout name="fancybox_action_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="actionWidgetTypeConf">label</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">fancybox_include</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">fancybox_iframe</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">icon</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">onclick</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirm</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessage</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessageArgs</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">fancybox_width</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">fancybox_height</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">fancybox_scrolling</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">fancybox_autoScale</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">fancybox_autoDimensions</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">fancybox_modal</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">fancybox_centerOnScroll</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">fancybox_enableEscapeButton</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /incl/action/fancybox_action_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="rest_document_link">
+      <categories>
+        <category>jsfAction</category>
+      </categories>
+      <configuration>
+        <sinceVersion>5.7.3</sinceVersion>
+        <title>Document Rest Link</title>
+        <description>
+          Widget displaying a restful document link for an action
+          (typically a tab link).
+        </description>
+        <categories>
+          <category>action</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <defaultValues mode="any">
+            <property name="discardSurroundingForm">true</property>
+            <property name="supportAjax">#{canUseAjaxTabs}</property>
+          </defaultValues>
+          <layouts mode="view">
+            <layout name="rest_document_link_action_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="actionWidgetTypeConf">label</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">icon</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">ajaxSupport</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">onclick</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">target</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirm</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessage</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessageArgs</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /incl/action/rest_document_link_action_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="main_tab">
+      <categories>
+        <category>jsfAction</category>
+      </categories>
+      <configuration>
+        <sinceVersion>5.7.3</sinceVersion>
+        <title>Main tab</title>
+        <description>
+          Widget displaying a restful link for an action used to
+          switch between different views of the application (typically a link to
+          the Document Management view, to the Admin Center view, etc...).
+        </description>
+        <categories>
+          <category>action</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <defaultValues mode="any">
+            <property name="discardSurroundingForm">true</property>
+          </defaultValues>
+          <layouts mode="view">
+            <layout name="main_tab_action_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="actionWidgetTypeConf">label</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">icon</widget>
+                </row>
+                <row>
+                  <widget>requireDocument</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">ajaxSupport</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">onclick</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">target</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirm</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessage</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessageArgs</widget>
+                </row>
+              </rows>
+              <widget name="requireDocument" type="checkbox">
+                <labels>
+                  <label mode="any">Require document</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The boolean value stating if the rest
+                    document link needs a document to show a restful link.
+                    Defaults to "false".
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>requireDocument</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /incl/action/main_tab_action_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="widget">
+      <categories>
+        <category>jsfAction</category>
+      </categories>
+      <configuration>
+        <sinceVersion>5.7.3</sinceVersion>
+        <title>Widget</title>
+        <description>
+          Widget displaying a widget for this action, useful for
+          building incremental layouts using actions filtering and ordering
+          features (typically generic document summary views).
+        </description>
+        <categories>
+          <category>action</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="view">
+            <layout name="widget_action_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>widgetName</widget>
+                </row>
+                <row>
+                  <widget>widgetCategory</widget>
+                </row>
+                <row>
+                  <widget>widgetMode</widget>
+                </row>
+                <row>
+                  <widget>displayActionLabel</widget>
+                </row>
+                <row>
+                  <widget>displayWidgetLabel</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">onclick</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">target</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirm</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessage</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessageArgs</widget>
+                </row>
+              </rows>
+              <widget name="widgetName" type="text">
+                <labels>
+                  <label mode="any">Widget name</label>
+                </labels>
+                <fields>
+                  <field>widgetName</field>
+                </fields>
+                <helpLabels>
+                  <label mode="any">
+                    The widget name.
+                  </label>
+                </helpLabels>
+                <properties mode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="widgetCategory" type="text">
+                <labels>
+                  <label mode="any">Widget category</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The widget category.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>widgetCategory</field>
+                </fields>
+              </widget>
+              <widget name="widgetMode" type="text">
+                <labels>
+                  <label mode="any">Widget mode</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The widget mode, defaults to "view".
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>widgetMode</field>
+                </fields>
+              </widget>
+              <widget name="displayActionLabel" type="checkbox">
+                <labels>
+                  <label mode="any">Display action label</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The boolean value stating if the action
+                    label should be displayed. Defaults to "false".
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>displayActionLabel</field>
+                </fields>
+              </widget>
+              <widget name="displayWidgetLabel" type="checkbox">
+                <labels>
+                  <label mode="any">Display widget label</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The boolean value stating if the widget
+                    label should be displayed. Defaults to "false".
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>displayWidgetLabel</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /incl/action/widget_action_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="template">
+      <categories>
+        <category>jsfAction</category>
+      </categories>
+      <configuration>
+        <sinceVersion>5.7.3</sinceVersion>
+        <title>Template</title>
+        <description>
+          Widget displaying a template for an action, useful for
+          custom action rendering.
+        </description>
+        <categories>
+          <category>action</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="view">
+            <layout name="template_action_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>template</widget>
+                </row>
+              </rows>
+              <widget name="template" type="text">
+                <labels>
+                  <label mode="any">Template</label>
+                </labels>
+                <fields>
+                  <field>template</field>
+                </fields>
+                <helpLabels>
+                  <label mode="any">
+                    The template path.
+                  </label>
+                </helpLabels>
+                <properties mode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /incl/action/template_action_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+</component>
