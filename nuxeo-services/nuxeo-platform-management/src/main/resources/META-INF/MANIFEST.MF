@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo platform management
+Bundle-SymbolicName: org.nuxeo.ecm.platform.management;singleton=true
+Bundle-Vendor: Nuxeo
+Provide-Package: org.nuxeo.ecm.platform.management
+Require-Bundle: org.nuxeo.ecm.webengine.core,
+ org.nuxeo.runtime.management,
+ org.nuxeo.ecm.core,
+ org.nuxeo.ecm.core.event,
+ org.nuxeo.platform.web.common,
+ org.nuxeo.platform.scheduler.core
+Nuxeo-Require: org.nuxeo.ecm.core.api, 
+ org.nuxeo.ecm.core.event,
+ org.nuxeo.runtime.management,
+ org.nuxeo.ecm.platform.scheduler.core
+Nuxeo-Component: OSGI-INF/management-probe-scheduler-service.xml,
+ OSGI-INF/management-probe-scheduler-contrib.xml,
+ OSGI-INF/management-resource-publisher-contrib.xml,
+ OSGI-INF/management-status-persister-contrib.xml,
+ OSGI-INF/management-administrative-status-component.xml

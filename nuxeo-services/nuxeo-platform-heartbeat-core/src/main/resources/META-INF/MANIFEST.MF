@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo-platform-heartbeat-core project
+Bundle-SymbolicName: org.nuxeo.ecm.platform.heartbeat;singleton:=true
+Bundle-Vendor: Nuxeo
+Nuxeo-Require: org.nuxeo.runtime
+Nuxeo-Component: OSGI-INF/heartbeat-framework.xml
+
