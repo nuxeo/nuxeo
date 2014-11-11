@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <extension target="web#FILTER-MAPPING">
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/gwtcontainer</url-pattern>
+    </filter-mapping>
+  </extension>
+
+  <!-- gwt container -->
+  <extension target="web#SERVLET">
+    <servlet>
+      <servlet-name>gwtcontainer</servlet-name>
+      <servlet-class>
+        org.nuxeo.opensocial.container.service.ContainerServiceImpl
+      </servlet-class>
+    </servlet>
+  </extension>
+
+
+  <extension target="web#SERVLET-MAPPING">
+    <servlet-mapping>
+      <servlet-name>gwtcontainer</servlet-name>
+      <url-pattern>/gwtcontainer/*</url-pattern>
+    </servlet-mapping>
+  </extension>
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+  </install>
+
+</fragment>
+
+

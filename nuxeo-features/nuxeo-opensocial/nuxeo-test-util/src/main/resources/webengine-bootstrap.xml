@@ -1,0 +1,7 @@
+<component name="org.nuxeo.test.util.webengine.bootstrap">
+ <extension target="org.nuxeo.runtime.server" point="webapp">
+    <webapp name="nuxeo" path="/">
+      <root>web/root.war</root>
+    </webapp>
+  </extension>
+</component>

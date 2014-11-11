@@ -1,0 +1,8 @@
+  {"id": "theme switcher",
+   "type": "behaviour",
+   "rules": {
+      "form select": {
+        "change": "switch theme"
+      }
+   }
+  }
