@@ -1,0 +1,18 @@
+<div class="tagCloudBlock"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core">
+  
+  <h:form id="tagCloudForm">
+    <nxu:dataList id="tagCloudTable"
+      value="#{tagActions.popularCloud}" var="tag"
+      rendered="#{not empty tagActions.popularCloud}">
+      
+        <h:commandLink value="#{tag.tagLabel}"
+          action="#{tagActions.listDocumentsForTag(tag.tagId)}" style="font-size: #{tag.weight}%"/>
+      
+    </nxu:dataList>
+  </h:form>    
+
+</div>

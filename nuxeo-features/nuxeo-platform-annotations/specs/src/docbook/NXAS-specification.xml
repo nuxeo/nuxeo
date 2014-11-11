@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<book version="5.0" xml:id="nxas-specification"
+	xmlns="http://docbook.org/ns/docbook"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:xi="http://www.w3.org/2001/XInclude">
+	<info>
+		<title>Nuxeo EP 5 - Nuxeo Annotation Service</title>
+	</info>
+	<chapter> <title>Requirements overview</title>
+		<para>This chapter provides an overview of the requirements for the Nuxeo Annotation Service.</para>
+		<section><title>W3C Annotea</title>
+			<para>Nuxeo Annotation service will be based on Annotea W3C specification.
+				This basically means that Nuxeo Annotation Service (NXAS) will be compliant with the specification published at http://www.w3.org/2001/Annotea/User/Protocol.html .				
+			</para>
+		</section>
+		<section> <title>Extensions to Annotea</title>
+			<para>The annotea specification is quite old and does not handle all uses cases for annotating documents in the context of Nuxeo ECM. Therefore, we propose to provide some extensions to annotea</para>
+			<section><title>URLs vs Document Ids</title>
+				<para>The Annotea specification only deals with URLs. In the context of Nuxeo ECM it may be usefull to track the relationship between a URL and a Document Id. Keeping this relation will be usefull for :
+					<itemizedlist>
+						<listitem><para>Managing versioning</para>
+							<para>It may be usefull to copy the annotations on a given version to the new version</para>
+						</listitem>
+						<listitem><para>Managing Publication</para>
+							<para>Since Nuxeo ECM allow the usage of proxies the same document may be consulted via several URls. With plain Annotea, a document and all it's proxies will have different URLs and then different annotations. In most cases, this is not what we want.</para>
+						</listitem>
+						<listitem><para>Document Indexing</para>
+							<para>Some implementations of Nuxeo platform may want to index annotations as meta-data of the document. This will require to be able to extract the annotations from the document UUID.</para>
+						</listitem>						
+					</itemizedlist>
+				</para>
+				<para>For all these reasons, Nuxeo Annotation Service provides a plugable system to be able to keep track of the relationship between a annotated URL and the underlying nuxeo document.</para>
+			</section>
+			<section><title>Image annotation</title>
+				<para>Inside Nuxeo EP we want to be able to annotate the HTML preview of a document. This preview may include images. This images should be annotatble as the rest of the document, but it will require an extension to the Xpointer specification since user may want to annotate just a portion (zone) of the image.</para>
+			</section>
+			<section><title>Metadata management</title>
+				<para>Annotea specification includes very few meta-data. Inside Nuxeo we want the annotation to have a pluggable meta-data schema so that each project implementation may add it's own set of meta-data.</para>
+			</section>
+			<section><title>Permission management</title>
+				<para>Annotea specification includes no permission management. Inside Nuxeo we require the permission to be checked according to the global security policy.</para>
+			</section>	
+		</section>
+		<section><title>Additionnal requirements</title>
+			<section><title>Integration in Nuxeo preview system</title>
+				<para>The annotation service will provide an integration with the existing Nuxeo Html Preview system. The goal of to use the Nuxeo preview tab to access the annotation feature.</para>
+			</section>
+			<section><title>Stand alone html client</title>
+				<para>A Standalone html client will be provided.</para>
+			</section>
+		</section>
+	</chapter>
+	<chapter>
+		<title>Logical architecture overview</title>
+		<para>This chapter provides an overview of the logical architecture of the Nuxeo Annotation service.</para>
+		<itemizedlist>
+			<listitem><para>Annotation Service API <filename>nuxeo-platform-annotations-api</filename></para>
+			<para>Provides Java API and all the needed Java artifacts needed to call the Annotation service remotly.</para>
+			</listitem>
+			<listitem><para>Annotation Service Core <filename>nuxeo-platform-annotations-core</filename></para>
+				<para>Provides the Nuxeo Service that exposes the required annotation Java Interface.
+This service will be implemented as a Nuxeo Runtime component and will provide the needed extension points .</para>
+			</listitem>
+			<listitem><para>Annotation Service Facade <filename>nuxeo-platform-annotations-facade</filename></para>
+				<para>Provides the service EJB3 facade for remote (RMI) access. Also includes integration with JMS : sending JMS events and listen to events via MessageDrivenBeans.</para>
+			</listitem>
+			<listitem><para>Annotation Service Http gateway <filename>nuxeo-platform-annotations-restlets</filename></para>
+				<para>The HTTP Gateway will implement the Annotea HTTP protocol.
+It will implemented as a set of Restlets that will enable access to the annotation service via http GET/POST requests as defined in the W3C Annotea specification.</para>
+			</listitem>
+			<listitem><para>Annotation Service JavaScript Client <filename>nuxeo-platform-annotations-js-client</filename></para>
+				<para>The JS Library is the client part of the Annotea specification.
+					It will manage :
+					<itemizedlist>
+						<listitem><para>communication with the http gateway</para></listitem>
+						<listitem><para>extended XPointer resolution</para></listitem>
+						<listitem><para>annotation display and edit</para></listitem>
+						<listitem><para>...</para></listitem>
+					</itemizedlist></para>
+			</listitem>
+			<listitem><para>Annotation Service preview plugin <filename>nuxeo-platform-annotations-preview-plugin</filename></para>
+				<para>Access to annotations service will be available via the nuxeo preview service. This package will integrate the annotation JS client into the html preview tab.</para>
+			</listitem>
+			<listitem><para>Annotation Service standalone client <filename>nuxeo-platform-annotations-html-client</filename></para>
+				<para>This package will provide a simple stand-alone html client that embeds the JS client.</para>
+			</listitem>			
+		</itemizedlist>
+		
+		
+		
+   
+	
+	<para><figure ><title>NXAS Components JPG</title><mediaobject>
+				<imageobject>
+					<imagedata fileref="./images/nxas.jpg" format="JPG"></imagedata>
+				</imageobject>
+			</mediaobject></figure>
+	</para>
+
+
+	</chapter>
+	<chapter>
+		<title>NXAS HTML Client</title>
+		<section>
+			<title>Overview</title>
+
+		<para>
+			The NXAS HTML Client is the a web interface that can be used by the end user.
+			It is a very simple web application consisting of single
+			html page. The page looks like a browser. It allows to enter
+			URL and show its content. The User can annotate places in
+			the text or part of images, he can see/add/remove/change
+			annotations.
+		</para>
+		<para>This HTML client is very much like the annotation system integrated in the Nuxeo preview tab, but without the need of Nuxeo EP.
+		</para>
+		<para>This HTML client will be usable in standalone mode outside of Nuxeo. In this standalone mode, the user will have to enter : the url of the annotation service, and his login/password.</para>
+		</section>
+		<section><title>Implementation</title>
+			<para>Simple Html page with some JavaScript.</para>
+			<para>The Html page displays 3 zones :
+			<itemizedlist>
+				<listitem><para>Server settings</para>
+					<para> This zone let the user define his login/password and the Annotation server base URL.</para>
+				</listitem>
+				<listitem><para>Page settings</para>
+					<para> This zone let the user enter the URL of the document he wants to annotate. A simple validation button makes the third zone display the targeted page.</para>
+				</listitem>
+				<listitem><para>HTML Page display</para>
+					<para>Contains a IFRAME that displays the url selected by the user.</para>
+					<para>Annotations tools will be available here.</para>
+				</listitem>
+			</itemizedlist>
+			</para>
+			<para>The Html Client uses the NXAS JS library to handle communication with the server and to manage annotations on the targeted web page.</para>
+		</section>
+	
+	</chapter>
+	<chapter>
+		<title>Annotation Service Core</title>
+		<section>
+			<title>Overview</title>
+			<para>
+				This is the main component of NXAS, the one that contains all the logic for managing RDF based annotations.
+			</para>
+			<para>This component is also responsible for exposing all the needed extension points that will be used for configuration and integration.</para>
+		</section>
+		<section>
+			<title>Implementation</title>
+			<para>
+				The service is implemented as a Runtime service on top of a Nuxeo Runtime component.
+				The runtime component will provide the extension point mechanisms.
+				The API provided by the service will target managing annotations on both URLs and documents.
+			</para>
+			<para> As any Nuxeo Service, the Annotation Service is accessible via the Runtime lookup method :
+				<programlisting>Framework.getLocalService(AnnotationService.class)</programlisting>
+			</para>
+		</section>
+		<section><title>Storage</title>
+			<para> The Annotation service will store the annotations as a RDF graph.</para>
+			<para> The Annotation service will contribute a new RDF Graph, a new set of RDF predicate and a new set of resources adapters for the Nuxeo Relation Service. Nuxeo Relation Service is responsible for storing and managing the RDF data.
+			</para>
+			<para>According to Annotea specifications, the felowing graphs and namespaces will be supported:
+			<itemizedlist>
+				<listitem><para>http://www.w3.org/2000/10/annotation-ns</para></listitem>
+				<listitem><para>http://www.w3.org/2001/03/thread</para></listitem>
+				<listitem><para>http://www.w3.org/2001/12/replyType</para></listitem>
+			</itemizedlist>
+			These graphs will be extended and completed to support the extension to the specification :
+			<itemizedlist>
+				<listitem><para>XPointer extension to support Images</para></listitem>
+				<listitem><para>Pluggable meta-data management</para></listitem>
+				<listitem><para>Document vs URLs management</para></listitem>
+			</itemizedlist>
+			</para>
+		</section>		
+		<section>
+			<title>Query Support</title>
+			<para>Even if Algae won't be implemented, NXAS will provide a Query API to retrive Annotations based on criteria.
+			</para>
+			<para>Search criteria include :
+				<itemizedlist>
+					<listitem>target Document URL or DocumentLocation</listitem>
+					<listitem>attributes of the annotation</listitem>
+					<listitem>attributes of the author of the annotation</listitem>
+				</itemizedlist>
+			</para>
+		</section>
+		<section>
+			<title>Extension points</title>
+			<para> The runtime service will manage several exctension points in order to provide the needed flexibility.</para>
+			
+			<section><title>urlResolver</title>
+			<para>The urlResolver extension point allows to contribute a class that is responsible for resolving url to Document Location (repository name / document UUID).</para>
+			<para>This extension point is very important since it will provide the link between documents and URLs that will be used for the versionning and proxy resolution.</para>
+			<para>The default implementation will use the url codec service to try to do the translation. The preview URL system will also be supported.</para>
+			</section>
+			<section><title>urlPatternFilter</title>
+			<para>
+						The urlPatternFilter extension point allows to
+						contribute regular expression pattern to the
+						list of allowed URL pattern or disallowed URL
+						pattern. When a request is made to get/set
+						annotations on an URL, the server check the
+						list. If the URL match a pattern on the
+						disallowed list, then no action will be
+						possible. Then if the URL match a pattern on the
+						allowed list, then annotation will be processed.
+					</para>
+				</section>					
+				<section><title>metadata</title>
+					<para>
+					The metadata extension point allows to contribute class that provides metadata. The class implements a simple interface. Its duty is to return 
+						a Map of metadata when being passed the annotation and author name.
+						The default implementation is to provide author, timestamp, annotation type and author organizational unit.
+				</para>
+			</section>
+				<section><title>permissionManager</title>
+					
+					<para>The permissionManager extension point allows to contribute a class that will 
+						check viewAnnotation, updateAnnotation and deleteAnnotation on URL. The default  
+						behavior is to map to the view/update/delete permission on the corresponding document.
+					</para>
+				</section>
+                                <section><title>annotabilityManager</title>
+                                  <para>
+                                    The annotabilityManager extension point allows to contribute a class to fine grain which documents can be annotated. Default implementation will allow simple filtring on Document facet 'Annotable'.
+				    </para>
+		    		</section>
+				<section><title>eventManager</title>
+					<para>
+						The eventManager extension point allows to contribute a listener class handle annotation related events.
+					</para>
+				</section>
+
+			</section>
+			
+			<section><title>Event management</title>
+				<para>The Annotation service will trigger several events associated to annotations :
+				<itemizedlist>
+					<listitem><para>annotationCreated</para></listitem>
+					<listitem><para>annotationModified</para></listitem>
+					<listitem><para>annotationDeleted</para></listitem>
+				</itemizedlist>			
+				Each event will be trigger twice : once before the action and once after the action.
+				Event listeners are synchonous and have an interface that is very much like the core event listeners.				
+				</para>
+			</section>
+			
+			<section><title>URLs and Document</title>
+				<para>The resolution between URLs and Document will rely in the contributed urlResolver plugins.
+				A built-in event listener will use this plugin to propagate annotations to the target document if url can be resolved.
+				As a single Nuxeo Document can have several preview URLs, the relation can not be a bijection between a URL and a Document.
+				The Bijection is between a URL and a tuple (DocumentLocation, xpath of target field).
+				Basically there will be a relation between a (DocumentLocation, path) and the URL, the annotations will be linked to the URL and to the tuple (DocumentLocation, path) (if available).
+				This means than when retrieving annotation from an URL the service will :
+				<itemizedlist>
+					<listitem>resolve URL to (DocumentLocation, path) if possible</listitem>
+					<listitem>resolve proxy if DocumentLocation is a proxy</listitem>	
+					<listitem>get the annotations linked to this (DocumentLocation, path)</listitem>
+				</itemizedlist>
+				</para>
+				<para>In most cases, a Nuxeo Document has only one preview URL associated to the default preview xpath (see preview component doc).</para>
+			</section>
+			<section><title>XPointer extension</title>
+			<para>The XPointer W3C specification is based on XPath and is made to identify a fragment of an html document.</para>
+			<para>The XPointer synthax will be extended to include the possibility to identify a shape inside a image that is inside the HTML page.
+			The NXPointer will typically contain the XPath to locate the image within the HTML document and a shape descriptor with pixel based values.
+			</para>
+			</section>
+			
+	</chapter>
+	<chapter>
+		<title>Annotation Service Facade</title>
+		<para>As for any Nuxeo Service, the facade will provide the integration of the service into JEE infrastructure.</para>
+		<para>This includes :
+			<itemizedlist>
+				<listitem>Remoting</listitem>
+				<listitem>Transactions</listitem>
+				<listitem>JMS</listitem>
+			</itemizedlist>
+		</para>
+		<section>
+			<title>Implementation</title>
+			<para>EJB3 Stateless Session Bean facade on top of the runtime service.</para>
+			<para> This makes the Annotation Service remotable and accessible via the standard Nuxeo Lookup facility :
+				<programlisting>Framework.getService(AnnotationService.class)</programlisting>
+			</para>
+		</section>
+		<section>
+			<title>JMS</title>
+			<para>The facade package also includes Listeners contributions to the core service in order to forward core service events to the JMS topic.</para>
+			<para>By default, all annotation related events are sent on the JMS topic : this can be useful for external indexers, that may want to reindex the document when an annotation is createed or modified.</para>
+			<para>The Facade will also host a MessageDrivenBean that will react to core document events (creation, modification, delete). The behavior of this MDB will be configured via a dedicated Extension Point (see below).</para>
+		</section>
+		<section>
+			<title>Extension points</title>
+			<section><title>annotationsRules</title>
+				<para>This extension point takes configuration that will be used by the MDB to define what must be done depending on the event.</para>
+				<para>This configuration binds actions to events. Events are :
+				<itemizedlist>
+					<listitem>documentModified</listitem>
+					<listitem>documentVersionned</listitem>
+					<listitem>documentPublished</listitem>
+					<listitem>documentDeleted</listitem>
+					<listitem>documentCopied</listitem>
+					<listitem>documentLifeCycleChanged</listitem>
+				</itemizedlist>
+				Actions are :
+				<itemizedlist>
+					<listitem><para>duplicate</para>
+						<para>Duplicate annotation graph for the new document. Typically, this can be useful for document versionning or document copy.</para>
+					</listitem>
+					<listitem><para>relink</para>
+						<para>Link the annotatation to the new document reference. Typically this can be usefull for publishing.</para>
+					</listitem>
+					<listitem><para>delete</para>
+						<para> Remove the annotation graph. Typically, this can be usefull when document are deleted.</para>
+					</listitem>
+					<listitem><para>nop</para>
+						<para> Null operation</para>
+					</listitem>
+				</itemizedlist>
+				</para>
+				<para>This configuration will let the MDB define what action must be done when an event occurs. In most case, the same action could be done directly by the synchronous event listener in the NXAS Core service. But for performances reason, it is safer to let these actions handled asynchronously via JMS and MDB pooling.</para>
+			</section>
+		</section>
+	</chapter>		
+
+	<chapter>
+		<title>Annotation Service Javascript Library</title>
+		<section><title>overview</title>
+		<para>This library offers a simple interface to interact with the NXAS Server. It allows to 
+                      create/read/update/delete annotations related to a URI, and to the URIs of the different 
+		      version of the corresponding document.</para>
+                <para>This library also offers the UI functions to grab part of a document, including picture, and transform it into URI using XPointer.</para>
+		</section>
+		<section><title>Implementation</title>
+			<para>Implementation will be in pure JavaScript. JQuery library will be used for DOM manipulation and the JQuery Dialog toolkit will be used to managing UI.</para>
+		</section>
+		<section><title>RDF / JSON</title>
+			<para>The NXAS JS Library is dedciated to be used with Nuxeo Annotation service. Therefore, it does not have to use RDF encoding. For optimization reason, the JS lib may use a JSON marshing rather than plain RDF.</para>
+		</section>
+		<section><title>Annotating images</title>
+			<para>The Client JS library will handle image annotation and permit to define a shape (rectangle/elipse) in the image that should hold the annotation. 
+			The shape will be handled as respect to the image size in the HTML.
+			If the HTML conversion flattern all images in the documents as one background image in the HTML preview, then the annotation client will see only one image.
+			</para>			
+		</section>
+	</chapter>
+	
+	<chapter>
+		<title>Annotation Service HTTP Gateway</title>
+                <section><title>Overview</title>
+			<para>The Annotation Service HTTP gateway provides the http API on top of the java APi of the Annotation Service</para>
+		</section>
+		<section><title>Implementation</title>
+			<para>The http gateway will be implemented as a set of restlets.</para>
+			<para>The gateway package will also include serializer/deserializer for RDF and JSON. This allows the http service to respond in RDF or JSON according to client requirements. The format parameter is simply added to the standard Annota API, defaut format is RDF  (for compliancy reasons).</para>
+			<para>The URL filting will be delegated to the underlying Nuxeo Service, this HTTP layer is only a gateway and must handle as less logic as possible.</para>
+		</section>	
+		<section><title>Authentication</title>
+			<para>The Annotation Restlet interface is guarded by the <classname>NuxeoAuthenticationFilter</classname>. This means that the access via http to the annotation service requires a valid authentication.</para>
+			<para><classname>NuxeoAuthenticationFilter</classname> will be configured (via it's EP) to let annotation related URLs be starting URLs.</para>
+			<para> Annonymous access to the annotation service is possible, in the Anonymous Authentication Plugin is deployed.</para>
+		</section>
+		<section><title>State management</title>
+			<para>The restlets used to provide http access to the annotation service are stateless restlets.This means they don't depend on Seam or JSF. Nevertheless, because of the Authentication system, client will have to maintain a Session Cookie to avoid reauthenticating on each call.</para>
+		</section>
+	</chapter>
+	<chapter>
+		<title>Integrating the Annotation service</title>
+		<para>Integrating the Nuxeo Annotation Service to your project may require several steps.</para>
+		<section><title>Configure preview</title>
+			<para>You can use Nuxeo Preview adpaters extension points to configure how the html previews of your documents will be generated.</para>
+			<para>Default implementation includes preview via transformers and preview based on pre-stored data. Please refer to the according documentation.</para>
+		</section>
+		<section><title>Configure Annotation policy</title>
+			<para>The Annotation service exposes an Extension Point to define how annotations are managed during versionning / publishing events. You can define your own configuration for that.</para>			
+		</section>
+		<section><title>Configure Annotation Meta-data</title>
+			<para>You can change default meta-data associated to the annotations. For this you need to contribute a simple java class.</para>
+			<para>Default implementation includes : author, timestamp, annotation type and author company</para>
+		</section>
+		<section><title>Handle indexing</title>
+			<para>Nuxeo default indexing does not handle Annotation indexing.</para>
+			<para>Nevertheless, if you use an external indexer, you may use a MDB to listen to Annotation events and trigger a reinddexation of the target document. This means that your indexing wrapper will contact the Annotation service to fetch the annotations associated to the document.</para>
+		</section>
+		<section><title>Integrate HTML/JS Client</title>
+			<para>By default Nuxeo provides 2 clients : one integrated into the preview tab and one standalone.</para>
+			<para>You may need to integrate the Preview in dedicated screens or to adapter the default screens to you own graphic theme.</para>
+		</section>
+	</chapter>
+	<chapter>		
+		<title>Packaging and deployment</title>
+		<section><title>Target platform</title>
+			<para>The logical target plaform is Nuxeo EP 5.2.</para>
+			<para>The NXAS Addon will also be available on 5.1 branch (5.1.6).</para>
+		</section>
+		
+		<section><title>Packaging</title>
+		<para>NXAS will be packaged as a set of java artifacts that are plugins for Nuxeo EP.</para>
+		<para>Java artifacts includes :
+		<itemizedlist>
+			<listitem><classname>nuxeo-platform-annotations-api</classname></listitem>
+			<listitem><classname>nuxeo-platform-annotations-core</classname></listitem>
+			<listitem><classname>nuxeo-platform-annotations-facade</classname></listitem>
+			<listitem><classname>nuxeo-platform-annotations-restlets</classname></listitem>
+			<listitem><classname>nuxeo-platform-annotations-preview-plugin</classname></listitem>
+			<listitem><classname>nuxeo-platform-annotations-html-client</classname></listitem>
+			<listitem><classname>nuxeo-platform-annotations-js-client</classname></listitem>
+			<listitem><classname>nuxeo-platform-annotations-tests</classname></listitem>
+		</itemizedlist>
+		Some of these artifacts are resources only artifacts (for JS and HTML).
+		</para>	
+		<para>The support for NXAS inside the Nuxeo "light packaging" (Jetty bundle) is not directly targeted, but this should not be a problem ouside of the facade artifact.</para>
+		</section>		
+	</chapter>
+	<chapter>
+		<title>W3C Annotea compliance</title>
+		<para> As explained before, Annotea specification is not broad enought to include all Nuxeo EP requirements for managing Annotations.</para>
+		<section><title>Annotea clients.</title>		
+		<para>Nevertheless, NXAS will support Annotea basic clients like Mozilla Annozilla Annotea extension.</para>
+		<para>Using a standard Annotea Client may retrain features : for examples additionnal metadata  and Image annotations won't be availables.</para>
+	</section>
+	<section><title>Annotea Algae.</title>		
+		<para>The Algae specification describe a Query Language that may be implemented by Annotea clients and servers. NXAS won't implement Algae</para>
+	</section>
+	</chapter>
+	
+	
+	<chapter>
+		<title>References</title>
+		<itemizedlist>
+			<listitem><para>
+				<ulink
+					url="http://www.w3.org/2001/Annotea/User/Protocol.html">
+					<citetitle>W3C Annotea Protocols</citetitle>
+				</ulink>
+</para>
+			</listitem>
+			<listitem><para>
+					<ulink
+					      url="http://doc.nuxeo.org/5.1/books/nuxeo-book/html-single/#nuxeo-platform-preview">
+						<citetitle>Nuxeo preview addon</citetitle>
+					</ulink>
+				</para>
+			</listitem>
+			<listitem><para>
+					<ulink
+					      url="http://www.w3.org/TR/xptr-framework/">
+						<citetitle>XPointer</citetitle>
+					</ulink>
+				</para>
+			</listitem>
+			
+		</itemizedlist>
+	</chapter>
+</book>

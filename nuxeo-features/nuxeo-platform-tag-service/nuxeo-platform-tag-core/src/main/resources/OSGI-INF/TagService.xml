@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.tag.TagService">
+  <implementation
+    class="org.nuxeo.ecm.platform.tag.TagServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.tag.TagService" />
+    <provide interface="org.nuxeo.ecm.platform.tag.TagConfigurator"/>
+  </service>
+
+  <documentation>
+  To do
+  </documentation>
+
+ <extension-point name="configs">
+    <documentation>
+      Used for injecting configuration into service.
+      
+      <programlisting>
+  <extension target="org.nuxeo.ecm.platform.tag.TagService"
+      point="configs">
+    <config>
+      <queryProxy>false</queryProxy>
+    </config>
+    </extension>
+    </programlisting>
+    </documentation>
+
+    <object class="org.nuxeo.ecm.platform.tag.TagConfig" />
+
+  </extension-point>
+    
+   <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
+		point="hibernate">
+		<hibernateConfiguration name="nxtags">
+			<datasource>nxtags</datasource>
+			<properties>
+			   <property name="hibernate.hbm2ddl.auto">never</property>
+			</properties>
+		</hibernateConfiguration>
+  </extension>
+  
+</component>

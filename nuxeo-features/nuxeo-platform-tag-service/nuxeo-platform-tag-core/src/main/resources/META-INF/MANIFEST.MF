@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Tag Core
+Bundle-SymbolicName: org.nuxeo.ecm.platform.tag;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: core,stateful
+Require-Bundle: org.nuxeo.ecm.core, 
+  org.nuxeo.ecm.platform.types.core, 
+  org.nuxeo.ecm.platform.content.template
+Export-Package: org.nuxeo.ecm.platform.tag
+Eclipse-LazyStart: false
+Nuxeo-Component: OSGI-INF/TagService.xml,
+  OSGI-INF/tag-service-core-types.xml,
+  OSGI-INF/tag-service-contrib.xml

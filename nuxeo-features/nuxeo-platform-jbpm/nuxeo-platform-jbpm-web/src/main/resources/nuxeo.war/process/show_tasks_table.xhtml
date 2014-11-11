@@ -1,0 +1,20 @@
+<div xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+<h:dataTable var="task"
+  value="${process.getTaskMgmtInstance().getTaskInstances().toArray()}"
+  class="dataOutput" rowClasses="dataRowEven,dataRowOdd">
+  <h:column>
+    <f:facet name="header">#{messages['label.workflow.task.name']}</f:facet><c:set var="taskNameLabel" value="label.workflow.task.#{task.name}"/>#{messages[taskNameLabel]}</h:column>
+  <h:column>
+    <f:facet name="header">#{messages['label.workflow.task.actorId']}</f:facet>#{task.actorId}</h:column>
+  <h:column>
+    <f:facet name="header">#{messages['label.workflow.task.startDate']}</f:facet><h:outputText value="#{task.startDate}"/></h:column>
+  <h:column>
+    <f:facet name="header">#{messages['label.workflow.task.endDate']}</f:facet><h:outputText value="#{task.end}"/></h:column>
+</h:dataTable>
+</div>
