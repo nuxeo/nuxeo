@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXCoreFacade tests
+Bundle-SymbolicName: org.nuxeo.ecm.core.facade.tests;singleton=true
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.ecm.core
