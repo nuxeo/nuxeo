@@ -1,0 +1,128 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  class="reviewTable">
+
+  <c:set var="virtualTasks" value="#{jbpmActions.currentVirtualTasks}" />
+  <nxu:methodResult name="tasks" value="#{jbpmActions.getCurrentTasks('validate', 'validate-after-reject')}">
+
+  <c:if test="#{not empty virtualTasks or not empty tasks}">
+
+    <div class="closedContent">
+      <h:form id="reviewTasksTable">
+
+      <h3><h:outputText
+        value="#{messages['label.workflow.review.task.list']}" /></h3>
+
+      <c:set var="userSchema" value="#{userManager.userSchemaName}" />
+
+       <table class="dataInput">
+            <tr>
+              <td>
+                <h:inputText id="listName" value="#{jbpmTaskListActions.listName}" />
+              </td>
+              <td>
+                 <h:commandButton
+                      value="#{messages['label.review.list.save']}"
+                      action="#{jbpmTaskListActions.createTaskList()}"
+                      styleClass="button" />
+              </td>
+            </tr>
+        </table>
+
+      <table class="dataOutput">
+        <thead>
+          <tr>
+            <f:subview rendered="#{jbpmActions.canManageParticipants}">
+              <th class="iconColum"></th>
+            </f:subview>
+            <th><h:outputText
+              value="#{messages['label.workflow.task.validated']}" /></th>
+            <th><h:outputText
+              value="#{messages['label.workflow.task.principal']}" /></th>
+            <th><h:outputText
+              value="#{messages['label.workflow.task.right']}" /></th>
+            <th><h:outputText
+              value="#{messages['label.workflow.task.directive']}" /></th>
+            <th><h:outputText
+              value="#{messages['label.review.user.comment']}" /></th>
+            <th><h:outputText
+              value="#{messages['label.workflow.task.startdate']}" /></th>
+            <th><h:outputText
+              value="#{messages['label.workflow.task.enddate']}" /></th>
+            <th><h:outputText
+              value="#{messages['label.workflow.task.duedate']}" /></th>
+            <th></th>
+            <f:subview rendered="#{jbpmActions.canManageParticipants}">
+              <th class="iconColumn"></th>
+            </f:subview>
+          </tr>
+        </thead>
+        <tbody>
+          <nxu:repeat var="task" value="#{tasks}" index="index">
+            <nxl:layout name="tasks_listing" value="#{task}" mode="view" />
+          </nxu:repeat>
+          <nxu:repeat var="virtualTask" value="#{virtualTasks}" index="index">
+            <nxl:layout name="virtualTasks_listing" value="#{virtualTask}" mode="#{jbpmActions.formInEditMode ? 'edit' : 'view'}" />
+          </nxu:repeat>
+        </tbody>
+      </table>
+
+      <f:subview
+        rendered="#{jbpmActions.canManageProcess}">
+        <div>
+          <c:if test="#{!jbpmActions.formInEditMode}">
+            <c:if test="#{jbpmActions.canManageParticipants}">
+              <h:commandButton
+              value="#{messages['label.workflow.edit']}"
+              action="#{jbpmActions.changeVirtualTaskModification()}"
+              styleClass="button"
+              rendered="#{not empty virtualTasks}" />
+            </c:if>
+            <f:subview rendered="#{!jbpmActions.isProcessStarted('choose-participant')}">
+              <h:commandButton
+              value="#{messages['label.workflow.start']}"
+              action="#{jbpmActions.startProcess('choose-participant')}"
+              styleClass="button" />
+            </f:subview>
+          </c:if>
+          <c:if test="#{jbpmActions.canManageParticipants and jbpmActions.formInEditMode}">
+            <h:commandButton
+            value="#{messages['label.workflow.save']}"
+            action="#{jbpmActions.persistProcessInstance()}"
+            styleClass="button" />
+            <h:commandButton
+            value="#{messages['command.cancel']}"
+            action="#{jbpmActions.changeVirtualTaskModification()}"
+            styleClass="button" />
+          </c:if>
+        </div>
+      </f:subview>
+
+      <h:panelGroup class="dataInputGroup"
+        rendered="#{not empty tasks}">
+        <div><i> <h:outputText
+          value="#{messages['label.review.my.tasks.help']}" /> </i>
+
+        <table class="dataInput">
+          <tr>
+            <td class="labelColumn"><h:outputText class="required"
+              value="#{messages['label.review.user.comment']}" /></td>
+            <td><h:inputTextarea id="taskActionComment" rows="5"
+              cols="50" value="#{jbpmActions.userComment}" /></td>
+          </tr>
+          <tr>
+            <td colspan="6"><h:message styleClass="errorMessage"
+              for="taskActionComment" /></td>
+          </tr>
+        </table>
+        </div>
+      </h:panelGroup>
+    </h:form></div>
+
+  </c:if>
+
+  </nxu:methodResult>
+</div>
