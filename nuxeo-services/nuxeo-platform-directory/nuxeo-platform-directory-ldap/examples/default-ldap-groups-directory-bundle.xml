@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.directory.ldap.storage.groups">
+  <implementation class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor" />
+  <implementation class="org.nuxeo.ecm.directory.ldap.LDAPServerDescriptor" />
+  <require>org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory</require>
+
+  <!-- the groups LDAP directory for users is required to make this bundle work -->
+  <require>org.nuxeo.ecm.directory.ldap.storage.users</require>
+
+  <extension target="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"
+    point="directories">
+
+    <directory name="groupDirectory">
+
+      <!-- Reuse the default server configuration defined for userDirectory -->
+      <server>default</server>
+
+      <schema>group</schema>
+      <idField>groupname</idField>
+
+      <searchBaseDn>ou=groups,dc=example,dc=com</searchBaseDn>
+      <searchFilter>
+        (|(objectClass=groupOfUniqueNames)(objectClass=groupOfURLs))
+      </searchFilter>
+      <searchScope>subtree</searchScope>
+
+      <readOnly>false</readOnly>
+
+      <!-- comment <cache* /> tags to disable the cache -->
+      <!-- cache timeout in seconds -->
+      <cacheTimeout>3600</cacheTimeout>
+
+      <!-- maximum number of cached entries before global invalidation -->
+      <cacheMaxSize>1000</cacheMaxSize>
+
+      <creationBaseDn>ou=groups,dc=example,dc=com</creationBaseDn>
+      <creationClass>top</creationClass>
+      <creationClass>groupOfUniqueNames</creationClass>
+
+      <!-- Maximum number of entries returned by the search -->
+      <querySizeLimit>200</querySizeLimit>
+
+      <!-- Time to wait for a search to finish. 0 to wait indefinitely -->
+      <queryTimeLimit>0</queryTimeLimit>
+
+      <rdnAttribute>cn</rdnAttribute>
+      <fieldMapping name="groupname">cn</fieldMapping>
+
+      <references>
+
+
+        <!-- LDAP reference resolve DNs embedded in uniqueMember attributes
+          
+          If the target directory has no specific filtering policy, it is most
+          of the time not necessary to enable the 'forceDnConsistencyCheck' policy.
+          
+          Enabling this option will fetch each reference entry to ensure its
+          existence in the target directory.
+        -->
+
+        <ldapReference field="members" directory="userDirectory"
+          forceDnConsistencyCheck="false" staticAttributeId="uniqueMember"
+          dynamicAttributeId="memberURL" />
+
+        <ldapReference field="subGroups" directory="groupDirectory"
+          forceDnConsistencyCheck="false" staticAttributeId="uniqueMember"
+          dynamicAttributeId="memberURL" />
+
+        <inverseReference field="parentGroups" directory="groupDirectory"
+          dualReferenceField="subGroups" />
+
+        <!-- LDAP tree reference resolves children following the ldap tree
+          structure.
+          
+          Available scopes are "onelevel" (default), "subtree". Children with
+          same id than parent will be filtered.
+          
+          Enabling this option will fetch each reference entry to ensure its
+          existence in the target directory.
+          
+          WARNING: Edit is NOT IMPLEMENTED: modifications to this field will be
+          ignored when saving the entry.
+        -->
+        <ldapTreeReference field="directChildren" directory="unitDirectory"
+          scope="onelevel" />
+        <ldapTreeReference field="children" directory="unitDirectory"
+          scope="subtree" />
+
+      </references>
+
+    </directory>
+
+  </extension>
+
+</component>
