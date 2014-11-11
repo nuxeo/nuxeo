@@ -1,0 +1,80 @@
+<c:if xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:f="http://java.sun.com/jsf/core"
+  test="#{contentView != null}">
+
+<c:if test="false">
+Needed parameters:
+ - contentView: the content view instance, mandatory
+ - contentViewId: a marker to generate unique ids
+   when iterating over a list of content views, optional
+   when only one content view is displayed in the page.
+</c:if>
+
+<div class="listingLayoutSelector">
+  <h:form id="contentViewLayoutSelectForm_#{contentViewId}">
+
+    <c:if test="#{contentView.getResultLayouts().size() > 1}">
+      <ul class="layoutViewMode" style="display:inline;">
+        <c:forEach var="cvLayout" items="#{contentView.resultLayouts}">
+          <li class="#{nxu:test(cvLayout.name == contentView.currentResultLayout.name, 'selected', '')}">
+            <h:commandLink action="#{contentView.setCurrentResultLayout(cvLayout)}">
+              <c:set var="iconPath"
+                value="#{nxu:test(empty cvLayout.iconPath, '/icons/document_listing_icon.png', cvLayout.iconPath)}" />
+              <c:set var="title"
+                value="#{nxu:test(cvLayout.translateTitle, messages[cvLayout.title], cvLayout.title)}" />
+              <nxu:graphicImage value="#{iconPath}" title="#{title}" />
+            </h:commandLink>
+          </li>
+        </c:forEach>
+      </ul>
+    </c:if>
+    <ul class="layoutViewMode" style="display:inline;">
+      <li>
+        <h:commandLink action="#{contentView.refreshAndRewindPageProvider()}">
+          <h:graphicImage value="/img/refresh.png"
+            alt="#{messages['label.refresh']}"
+            title="#{messages['label.refresh']}" />
+        </h:commandLink>
+      </li>
+    </ul>
+
+  </h:form>
+</div>
+
+<div class="listingLayoutSelector">
+
+  <c:if test="#{contentView.useGlobalPageSize}">
+    <c:set var="pageSizeBinding" value="#{contentViewActions.currentGlobalPageSize}" />
+  </c:if>
+  <c:if test="#{not contentView.useGlobalPageSize}">
+    <c:set var="pageSizeBinding" value="#{contentView.currentPageSize}" />
+  </c:if>
+
+  <h:form id="contentViewGlobalPageSizeFrom_#{contentViewId}">
+
+    <p class="contentViewPageSelectorDesc">
+      <h:outputText value="#{messages['label.contentview.pageSize']}" />
+    </p>
+    <h:selectOneMenu value="#{pageSizeBinding}"
+      id="contentViewPageSizeSelector"
+      styleClass="langSelect"
+      onchange="Element.next(this).firstChild.click();">
+      <f:convertNumber />
+      <f:selectItem itemValue="5" itemLabel="5" />
+      <f:selectItem itemValue="10" itemLabel="10" />
+      <f:selectItem itemValue="20" itemLabel="20" />
+      <f:selectItem itemValue="30" itemLabel="30" />
+      <f:selectItem itemValue="40" itemLabel="40" />
+      <f:selectItem itemValue="50" itemLabel="50" />
+    </h:selectOneMenu>
+    <div style="display: none;">
+      <h:commandButton value="submit" />
+    </div>
+
+  </h:form>
+
+</div>
+
+</c:if>

@@ -1,0 +1,255 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layout.MainContribution">
+  <documentation>
+    Component that provides main contributions to the web layout manager widget
+    types.
+
+    @version 1.0 @author Anahide Tchertchian (at@nuxeo.com)
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="text">
+      <documentation>
+        The text widget displays an input text in create or edit mode, with
+        additional message tag for errors, and a regular text output in any
+        other mode.
+
+        Widgets using this type can provide properties accepted on a
+        &lt;h:inputText /&gt; tag in create or edit mode, and properties
+        accepted on a &lt;h:outputText /&gt; tag in other modes.
+      </documentation>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TextWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="int">
+      <documentation>
+        The int widget displays an input text in create or edit mode, with
+        additional message tag for errors, and a regular text output in any
+        other mode. It uses a number converter.
+
+        Widgets using this type can provide properties accepted on a
+        &lt;h:inputText /&gt; tag in create or edit mode, and properties
+        accepted on a &lt;h:outputText /&gt; tag in other modes.
+      </documentation>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.IntWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="secret">
+      <documentation>
+        The secret widget displays an input secret text in create or edit mode,
+        with additional message tag for errors, and nothing in any other mode.
+
+        Widgets using this type can provide properties accepted on a
+        &lt;h:inputSecret /&gt; tag in create or edit mode.
+      </documentation>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.SecretWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="textarea">
+      <documentation>
+        The textarea widget displays a textarea in create or edit mode, with
+        additional message tag for errors, and a regular text output in any
+        other mode.
+
+        Widgets using this type can provide properties accepted on a
+        &lt;h:inputTextarea /&gt; tag in create or edit mode, and properties
+        accepted on a &lt;h:outputText /&gt; tag in other modes.
+      </documentation>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TextareaWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="datetime">
+      <documentation>
+        The datetime widget displays a javascript calendar in create or edit
+        mode, with additional message tag for errors, and a regular text output
+        in any other mode. It uses a date time converter.
+
+        Widgets using this type can provide properties accepted on a
+        &lt;nxu:inputDatetime /&gt; tag in create or edit mode, and properties
+        accepted on a &lt;h:outputText /&gt; tag in other modes. The converter
+        will also be given these properties.
+      </documentation>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.DateTimeWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="template">
+      <documentation>
+        The template widget displays a template content whatever the mode.
+
+        Widgets using this type must provide the path to this template ; this
+        template can check the mode to adapt the rendering.
+
+        Note that the same handler class can be used to define a new widget type
+        using a designated template, by registering it as is:
+
+        &lt;widgetType name="template"&gt; &lt;handler-class&gt;
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+        &lt;/handler-class&gt; &lt;property name="template"&gt;
+        /widgets/my_custom_widget_template.xhtml &lt;/property&gt;
+        &lt;/widgetType&gt;
+
+      </documentation>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="file">
+      <documentation>
+        The file widget displays a file uploader/editor in create or edit mode,
+        with additional message tag for errors, and a link to the file in other
+        modes.
+
+        Widgets using this type can provide properties accepted on a
+        &lt;nxu:inputFile /&gt; tag in create or edit mode, and properties
+        accepted on a &lt;nxu:outputFile /&gt; tag in other modes.
+      </documentation>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.FileWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="htmltext">
+      <documentation>
+        The htmltext widget displays an html text editor in create or edit mode,
+        with additional message tag for errors, and a regular text output in
+        other modes (without escaping the text).
+
+        Widgets using this type can provide properties accepted on a
+        &lt;nxu:editor /&gt; tag in create or edit mode, and properties accepted
+        on a &lt;nxu:outputText /&gt; tag in other modes.
+      </documentation>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.HtmlTextWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectOneDirectory">
+      <documentation>
+        The selectOneDirectory widget displays a selection of directory entries
+        in create or edit mode, with additional message tag for errors, and the
+        directory entry label in other modes.
+
+        Widgets using this type can provide properties accepted on a
+        &lt;nxd:selectOneListbox /&gt; tag in create or edit mode, and
+        properties accepted on a &lt;nxd:directoryEntryOutput /&gt; tag in other
+        modes.
+      </documentation>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.DirectorySelectOneWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyDirectory">
+      <documentation>
+        The selectOneDirectory widget displays a multi selection of directory
+        entries in create or edit mode, with additional message tag for errors,
+        and the directory entries labels in other modes.
+
+        Widgets using this type can provide properties accepted on a c tag in
+        create or edit mode, and properties accepted on a
+        &lt;nxd:directoryEntryOutput /&gt; tag in other modes.
+      </documentation>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.DirectorySelectManyWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="list">
+      <documentation>
+        The list widget displays an editable list of items in create or edit
+        mode, with additional message tag for errors, and the same list of items
+        in other modes.
+
+        Items are defined using sub wigdets configuration.
+
+        This actually a template widget type whose template uses a
+        &lt;nxu:inputList /&gt; tag in edit or create mode, and a table
+        iterating over items in other modes.
+      </documentation>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">/widgets/list_widget_template.xhtml</property>
+    </widgetType>
+
+    <widgetType name="checkbox">
+      <documentation>
+        The checkbox widget displays a checkbox in create, edit and any other
+        mode, with additional message tag for errors.
+
+        Widgets using this type can provide properties accepted on a
+        &lt;h:selectBooleanCheckbox /&gt; tag in create, edit mode, and other
+        modes.
+      </documentation>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.CheckboxWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="hidden">
+      <documentation>
+        The hidden widget is for a hidden field in create, edit and any other
+        mode, with additional message tag for errors.
+
+        Widgets using this type can provide properties accepted on a
+        &lt;h:inputHidden /&gt; tag in create, edit mode, and other modes.
+      </documentation>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.HiddenWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="layout">
+      <documentation>TODO</documentation>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.LayoutWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="richtext_with_mimetype">
+      <documentation>
+        This widget displays an html text editor or a textarea in create or edit
+        mode, depending on the mimetype defined.
+
+        Widgets using this type can provide properties accepted on a
+        &lt;nxu:editor /&gt; tag in create or edit mode.
+      </documentation>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/richtext_with_mimetype_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="duration">
+      <documentation>
+        This widget displays a i18n formatted duration of a field holding a
+        value measured in seconds (can be Long, Double or String valued). NB:
+        only view mode is supported right now.
+      </documentation>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/duration_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+</component>
