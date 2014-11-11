@@ -1,0 +1,30 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <c:if test="false">
+    ben: Using a Checkbox and a Converter does not work due to jsf bug
+    http://forums.sun.com/thread.jspa?forumID=427&amp;threadID=500387
+  </c:if>
+  <c:if test="#{widget.mode == 'edit'}">
+    <h:selectOneRadio value="#{field}" id="#{widget.id}_checkbox">
+      <f:selectItem itemValue="#{0}" itemLabel="#{messages['label.no']}" />
+      <f:selectItem itemValue="#{1}"
+        itemLabel="#{messages['label.yes']}" />
+    </h:selectOneRadio>
+    <h:message styleClass="errorMessage" for="#{widget.id}_checkbox"
+      id="#{widget.id}_message" />
+  </c:if>
+
+  <c:if test="#{widget.mode == 'view' }">
+    <h:outputText rendered="#{field != '0'}"
+      value="#{messages['label.yes']}" id="#{widget.id}_yes" />
+    <h:outputText rendered="#{field == 0}"
+      value="#{messages['label.no']}" id="#{widget.id}_no" />
+  </c:if>
+  
+</div>
