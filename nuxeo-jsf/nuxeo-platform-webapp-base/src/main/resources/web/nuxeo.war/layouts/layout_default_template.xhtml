@@ -1,0 +1,89 @@
+<f:subview
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  id="#{layout.id}"
+  styleClass="#{layoutProperty_styleClass}">
+
+  <c:set var="isEditMode" value="#{nxl:isBoundToEditMode(layout.mode)}" />
+  <nxu:set var="layoutWidgetsDisplay"
+    value="#{layout.properties.widgetsDisplay}"
+    resolveTwice="true">
+
+    <table class="dataInput">
+      <tbody>
+
+        <nxl:layoutRow>
+          <nxu:set var="rowStyleClass"
+            value="#{layoutRow.properties.styleClass}"
+            resolveTwice="true">
+            <tr class="#{rowStyleClass}">
+              <nxl:layoutRowWidget>
+
+                <c:if test="#{layoutWidgetsDisplay == 'label_top'}">
+                  <nxu:set var="fieldColspan"
+                    value="#{layout.columns/layoutRow.size}">
+                    <td class="fieldColumn" colspan="#{fieldColspan}" dir="auto">
+                      <c:if test="#{not widget.handlingLabels}">
+                        <div>
+                          <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                            <ui:param name="labelStyleClass"
+                              value="boldLabel #{widgetProperty_subLabelStyleClass}" />
+                          </ui:include>
+                        </div>
+                      </c:if>
+                      <ui:decorate template="/widgets/incl/form_template.xhtml">
+                        <ui:param name="addForm" value="#{widgetControl_requireSurroundingForm}" />
+                        <ui:param name="formId" value="#{widget.id}_form" />
+                        <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
+                        <ui:define name="form_template_content">
+                          <nxl:widget widget="#{widget}" value="#{value}" />
+                        </ui:define>
+                      </ui:decorate>
+                    </td>
+                  </nxu:set>
+                </c:if>
+
+                <c:if test="#{layoutWidgetsDisplay != 'label_top'}">
+                  <c:if test="#{layoutWidgetsDisplay != 'no_label'}">
+                    <c:if test="#{not widget.handlingLabels}">
+                      <td class="labelColumn">
+                        <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+                      </td>
+                    </c:if>
+                  </c:if>
+                  <nxu:set var="fieldColspan"
+                    value="#{2*layout.columns/layoutRow.size -1 + nxu:test(widget.handlingLabels, 1, 0)}">
+                    <td class="fieldColumn" colspan="#{fieldColspan}" dir="auto">
+                      <ui:decorate template="/widgets/incl/form_template.xhtml">
+                        <ui:param name="addForm" value="#{widgetControl_requireSurroundingForm}" />
+                        <ui:param name="formId" value="#{widget.id}_form" />
+                        <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
+                        <ui:define name="form_template_content">
+                          <nxl:widget widget="#{widget}" value="#{value}" />
+                        </ui:define>
+                      </ui:decorate>
+                    </td>
+                  </nxu:set>
+                </c:if>
+
+              </nxl:layoutRowWidget>
+            </tr>
+          </nxu:set>
+        </nxl:layoutRow>
+
+      </tbody>
+    </table>
+
+  </nxu:set>
+
+<script>
+  jQuery(document).ready(function() {
+    jQuery(".widgetHelpLabel").tooltip({relative: true, position: 'bottom center'});
+  });
+</script>
+
+</f:subview>

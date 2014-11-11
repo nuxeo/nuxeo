@@ -1,0 +1,29 @@
+<c:if xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  test="#{contentView != null}">
+
+<c:if test="false">
+Needed parameters:
+ - contentView: the content view instance, mandatory
+ - contentViewRenderId the unique identifier used in main
+   content view template
+</c:if>
+
+  <c:if test="#{contentView.getResultLayouts().size() > 1}">
+    <c:forEach var="cvLayout" items="#{contentView.resultLayouts}">
+      <span class="resultLayoutSelection #{nxu:test(cvLayout.name == contentView.currentResultLayout.name, 'selected', '')}">
+        <a4j:commandLink action="#{contentView.setCurrentResultLayout(cvLayout)}"
+          reRender="#{contentIdToBeReRendered}, #{contentViewRenderId}_contentViewActionsPanel"
+          ajaxSingle="true">
+          <c:set var="iconPath"
+            value="#{nxu:test(empty cvLayout.iconPath, '/icons/document_listing_icon.png', cvLayout.iconPath)}" />
+          <c:set var="title"
+            value="#{nxu:test(cvLayout.translateTitle, messages[cvLayout.title], cvLayout.title)}" />
+          <nxu:graphicImage value="#{iconPath}" title="#{title}" />
+        </a4j:commandLink>
+      </span>
+    </c:forEach>
+  </c:if>
+
+</c:if>
