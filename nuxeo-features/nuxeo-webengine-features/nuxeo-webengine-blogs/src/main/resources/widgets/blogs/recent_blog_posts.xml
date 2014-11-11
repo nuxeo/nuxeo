@@ -1,0 +1,53 @@
+<#assign documentType = Document.type />
+<#if documentType == "BlogSite">
+<div style="padding: 10px">
+${Document.webcontainer.welcomeText}
+</div>
+</#if>      
+
+<div class="recentBlogPost">
+<div>
+  <#if (!nxthemesInfo.model.items.empty)>
+    <h4>${Context.getMessage("title.recent.blogpost.pages")}</h4>
+  </#if>
+  
+  <#if documentType == "BlogSite">
+    <#list nxthemesInfo.model.items as dayItem>
+      <#list dayItem.items as item>
+  <div class="postBloc">
+    <div class="postHeading">
+      <div class="postDate">${dayItem.day}   ${dayItem.fullDate}</div><div class="postAuthor">${item.author}</div>
+      <div style="clear:both;"></div>
+    </div>
+    <div class="postHeadtitle">
+      <div class="postTitle"><a href="${item.path}">${item.title?xml}</a></div>
+      <a href="${item.path}/@delete"> Remove</a></div>
+      <div style="clear:both;"></div>
+      
+      <div class="postSubtitle">${item.description?xml}</div>
+    </div>
+    <div class="postContent">${item.content}</div>               
+  </div> 
+  </#list>
+  </#list>  
+  </#if>        
+  <div style="clear:both;"></div>
+</div>
+
+      
+  
+  <#if documentType == "BlogPost">
+    <#list nxthemesInfo.model.items as dayItem>
+      <#list dayItem.items as item>
+        <div class="pagePublishedResume">        
+          <div class="documentInfo"> 
+            <span><a href="${item.path}">${item.title?xml}</a></span>
+            <p><span>${item.author}</span></p>                          
+          </div>        
+          <div style="clear:both;"></div>
+        </div>
+      </#list>  
+    </#list>
+  </#if>     
+    
+</div>

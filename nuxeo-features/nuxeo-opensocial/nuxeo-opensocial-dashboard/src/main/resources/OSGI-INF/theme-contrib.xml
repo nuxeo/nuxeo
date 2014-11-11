@@ -1,0 +1,203 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.opensocial.dashboard.themeContrib">
+
+  <require>org.nuxeo.theme.core</require>
+  <require>org.nuxeo.theme.fragments</require>
+  <require>org.nuxeo.theme.html</require>
+  <require>org.nuxeo.theme.jsf</require>
+
+  <!-- new page in xhtml -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+
+    <!-- was fragments -->
+    <view name="nuxeo5 opensocial_dashboard" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/opensocial-dashboard.xhtml</template>
+    </view>
+  </extension>
+
+  <!-- new Models -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="models">
+
+    <model name="dashboardMainContent">
+      <class>org.nuxeo.opensocial.dashboard.theme.MainContentModel</class>
+    </model>
+    <model name="dashboardLayoutManager">
+      <class>org.nuxeo.opensocial.dashboard.theme.LayoutManagerModel</class>
+    </model>
+    <model name="dashboardGadgetManager">
+      <class>org.nuxeo.opensocial.dashboard.theme.GadgetManagerModel</class>
+    </model>
+
+  </extension>
+
+
+  <!-- new Fragments -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="fragments">
+    <fragment name="dashboardMainContent">
+      <class>org.nuxeo.opensocial.dashboard.theme.MainContentFragment</class>
+      <model-type>dashboardMainContent</model-type>
+      <dynamic>true</dynamic>
+    </fragment>
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="fragments">
+    <fragment name="dashboardLayoutManager">
+      <class>org.nuxeo.opensocial.dashboard.theme.LayoutManagerFragment</class>
+      <model-type>dashboardLayoutManager</model-type>
+      <dynamic>true</dynamic>
+    </fragment>
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="fragments">
+    <fragment name="dashboardGadgetManager">
+      <class>org.nuxeo.opensocial.dashboard.theme.GadgetManagerFragment</class>
+      <model-type>dashboardGadgetManager</model-type>
+      <dynamic>true</dynamic>
+    </fragment>
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="presets">
+    <palette name="intralm background" src="presets/background.properties"
+      category="background" />
+  </extension>
+
+  <!-- NEW VIEWS -->
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+    <view name="contenu principal" template-engine="jsf-facelets">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <template>incl/dashboard-mainContent.xhtml</template>
+      <model-type>dashboardMainContent</model-type>
+    </view>
+  </extension>
+
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+    <view name="module layout manager" template-engine="jsf-facelets">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <template>incl/dashboard-layoutManager.xhtml</template>
+      <model-type>dashboardLayoutManager</model-type>
+    </view>
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+    <view name="module gadget manager" template-engine="jsf-facelets">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <template>incl/dashboard-gadgetManager.xhtml</template>
+      <model-type>dashboardGadgetManager</model-type>
+    </view>
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+    <view name="opensocial includes" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/opensocial-includes.xhtml</template>
+      <!-- what are these for?? -->
+      <resource>jquery-1.3.2.min.js</resource>
+      <resource>jquery.cookie.js</resource>
+      <resource>jquery.menu.js</resource>
+      <resource>thickbox.js</resource>
+      <resource>initmenu.js</resource>
+      <resource>container.css</resource>
+      <resource>gadgetManager.js</resource>
+      <resource>layoutManager.js</resource>
+    </view>
+    <view name="opensocialDashBoardNav" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/opensocial-dashboard-nav.xhtml</template>
+    </view>
+  </extension>
+
+  <!-- new resources -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
+    <resource name="jquery-1.3.2.min.js">
+      <path>opensocial/js/jquery/jquery-1.3.2.min.js</path>
+    </resource>
+    <resource name="thickbox.js">
+      <path>opensocial/js/jquery/thickbox.js</path>
+    </resource>
+    <resource name="jquery.cookie.js">
+      <path>opensocial/js/jquery/jquery.cookie.js</path>
+    </resource>
+    <resource name="jquery.menu.js">
+      <path>opensocial/js/jquery/jquery.menu.js</path>
+    </resource>
+    <resource name="initmenu.js">
+      <path>opensocial/js/initMenu.js</path>
+    </resource>
+    <resource name="layoutManager.js">
+      <path>opensocial/js/layoutManager.js</path>
+    </resource>
+    <resource name="gadgetManager.js">
+      <path>opensocial/js/gadgetManager.js</path>
+    </resource>
+    <resource name="container.css">
+      <path>opensocial/css/container.css</path>
+    </resource>
+  </extension>
+
+  <!-- application settings...slight mod from original -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="applications">
+
+    <application root="${org.nuxeo.ecm.contextPath}"
+      template-engine="jsf-facelets">
+
+      <negotiation>
+        <strategy>nuxeo5</strategy>
+        <default-engine>default</default-engine>
+        <default-theme>galaxy/default</default-theme>
+        <default-perspective>default</default-perspective>
+      </negotiation>
+
+      <!-- Cache control for theme resources (/nxthemes-lib/) -->
+      <resource-caching>
+        <lifetime>36000</lifetime>
+      </resource-caching>
+
+      <!-- Cache control for theme styles (/nxthemes-css/) -->
+      <style-caching>
+        <lifetime>900</lifetime>
+      </style-caching>
+
+      <view id="/create_relation_search_document_popup.xhtml">
+        <theme>galaxy/popup</theme>
+      </view>
+      <!-- bind open social dashboard to correct theme and page -->
+      <view id="/opensocial-dashboard.xhtml">
+        <theme>galaxy-opensocial/opensocial_dashboard</theme>
+      </view>
+      <view id="/view_calendar.xhtml">
+        <perspective>view_calendar</perspective>
+      </view>
+      <view id="/print.xhtml">
+        <perspective>print</perspective>
+      </view>
+      <view id="/editor_link_search_document.xhtml">
+        <theme>galaxy/popup</theme>
+      </view>
+      <view id="/editor_image_upload.xhtml">
+        <theme>galaxy/popup</theme>
+      </view>
+      <view id="/search/choose_searchscope_popup.xhtml">
+        <theme>galaxy/popup</theme>
+      </view>
+    </application>
+  </extension>
+
+
+  <!--  new theme -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
+
+    <theme>
+      <src>themes/theme-galaxy-opensocial.xml</src>
+    </theme>
+
+  </extension>
+
+</component>

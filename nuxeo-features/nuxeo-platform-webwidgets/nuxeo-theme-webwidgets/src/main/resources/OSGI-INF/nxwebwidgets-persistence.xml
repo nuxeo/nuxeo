@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.theme.webwidgets.providers.PersistenceConfigurator">
+  <documentation>
+    Simple component used to declare persistence Unit on component startup
+  </documentation>
+  
+  <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
+    point="hibernate">
+    <hibernateConfiguration name="nxwebwidgets">
+      <datasource>nxwebwidgets</datasource>
+      <properties>
+        <property name="hibernate.hbm2ddl.auto">update</property>
+      </properties>
+    </hibernateConfiguration>
+  </extension>
+</component>

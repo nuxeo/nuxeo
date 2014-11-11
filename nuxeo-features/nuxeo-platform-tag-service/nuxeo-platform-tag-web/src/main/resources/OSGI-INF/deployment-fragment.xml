@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<fragment version="1">
+  <require>org.nuxeo.ecm.platform.lang</require>
+
+  <extension target="application#MODULE">
+    <module>
+      <ejb>${bundle.fileName}</ejb>
+    </module>
+  </extension>
+
+  <extension target="faces-config#NAVIGATION">
+    <navigation-case>
+      <from-outcome>tag_search_results</from-outcome>
+      <to-view-id>/search/tag_search_results.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+  </extension>
+
+  <extension target="pages#PAGES">
+    <page view-id="/search/tag_search_results.xhtml">
+      breadcrumb=label.virtualnavigation.tag
+    </page>
+  </extension>
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+
+    <!--  create a temp dir -->
+    <!--  be sure no directory with that name exists -->
+    <delete path="nxtagweb.tmp"/>
+    <mkdir path="nxtagweb.tmp"/>
+
+    <unzip from="${bundle.fileName}" to="nxtagweb.tmp">
+      <include>OSGI-INF/l10n/**</include>
+    </unzip>
+
+    <append from="nxtagweb.tmp/OSGI-INF/l10n/messages.properties"
+        to="nuxeo.war/WEB-INF/classes/messages.properties"
+        addNewLine="true"/>
+    <append
+        from="nxtagweb.tmp/OSGI-INF/l10n/messages_en.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_en.properties"
+        addNewLine="true"/>
+    <append
+        from="nxtagweb.tmp/OSGI-INF/l10n/messages_fr.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_fr.properties"
+        addNewLine="true"/>
+
+    <delete path="nxtagweb.tmp"/>
+  </install>
+
+</fragment>
