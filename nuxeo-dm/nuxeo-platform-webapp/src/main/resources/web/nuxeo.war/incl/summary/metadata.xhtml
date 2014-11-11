@@ -1,0 +1,24 @@
+<div class="metadata_block"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <h3 class="summaryTitle">
+    <h:outputText value="#{messages['action.view.metadata']}" />
+  </h3>
+
+  <c:if test="#{currentDocument.hasSchema('dublincore')}">
+    <ui:include src="/incl/summary/dublincore.xhtml"/>
+    <ui:include src="/incl/summary/rank.xhtml"/>
+  </c:if>
+  
+  <div class="summaryLayout">
+    <nxl:documentLayout value="#{currentDocument}" mode="view" />
+  </div>
+
+</div>
