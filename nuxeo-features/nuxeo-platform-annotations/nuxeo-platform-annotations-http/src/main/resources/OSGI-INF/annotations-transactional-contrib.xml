@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.annotations.transactional.filter.config">
+
+  <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
+    point="filterConfig">
+    <filterConfig name="AnnotationsTransactional" transactional="true" synchonize="false">
+      <pattern>${org.nuxeo.ecm.contextPath}/Annotations.*</pattern>
+    </filterConfig>
+    <filterConfig name="GWTAnnotationsTransactional" transactional="true" synchonize="false">
+      <pattern>${org.nuxeo.ecm.contextPath}/org\.nuxeo\.ecm\.platform\.annotations\.gwt\.AnnotationModule/webConfiguration</pattern>
+    </filterConfig>
+    <filterConfig name="GWTAnnotationsFrameTransactional" transactional="true" synchonize="false">
+      <pattern>${org.nuxeo.ecm.contextPath}/org\.nuxeo\.ecm\.platform\.annotations\.gwt\.AnnotationFrameModule/webConfiguration</pattern>
+    </filterConfig>
+  </extension>
+
+</component>

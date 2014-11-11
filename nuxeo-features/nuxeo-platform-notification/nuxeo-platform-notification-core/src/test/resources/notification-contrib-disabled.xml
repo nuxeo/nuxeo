@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.notifiactions.contribution.test.disabled">
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="notifications">
+
+    <notification name="test" channel="email" enabled="false" availableIn="section"
+      autoSubscribed="false" template="test-template" subject="Test Notification Subject"
+      label="Test Notification Label" subjectTemplate="Test Notification Subject Template"
+      templateExpr="Test Notification Template Expr">
+      <event name="testEvent"/>
+    </notification>
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="templates">
+    <template name="test-template" src="templates/test-template.ftl" />
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="generalSettings">
+    <settings>
+      <serverPrefix>http://localhost:8080/nuxeo/</serverPrefix>
+      <eMailSubjectPrefix>[Nuxeo5] </eMailSubjectPrefix>
+      <mailSessionJndiName>java:/Mail</mailSessionJndiName>
+    </settings>
+  </extension>
+</component>
