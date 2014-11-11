@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources>
+  <!-- UNIFIED DATASOURCE CONFIGURATION -->
+  <!--
+    This is the unified datasource configuration for ORACLE. All datasources from
+    nuxeo points to this datasource so it will use only 1 database. If you wish
+    to use a different database for a service, comment out the link in the
+    relevant xxx-ds.xml file and add a datasource configuration.
+  -->
+  <!-- nuxeo datasource -->
+  <local-tx-datasource>
+    <jndi-name>NuxeoDS</jndi-name>
+    <driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+     <connection-url>jdbc:oracle:thin:@localhost:1521:NUXEO</connection-url>
+     <user-name>nuxeo</user-name>
+     <password>password</password>
+     <min-pool-size>5</min-pool-size>
+     <max-pool-size>20</max-pool-size>
+  </local-tx-datasource>
+</datasources>
