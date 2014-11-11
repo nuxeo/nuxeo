@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webengine.management.deployment">
+
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="install">
+
+    <install module="management">
+      <copy path="web/management" target="/" />
+      <copy path="web/resources" target="/" />
+    </install>
+
+  </extension>
+
+</component>

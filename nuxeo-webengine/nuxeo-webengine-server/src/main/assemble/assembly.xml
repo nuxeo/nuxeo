@@ -1,0 +1,93 @@
+<assembly>
+
+  <fileSet id="template">
+    <directory>src/main/resources/nxserver</directory>
+  </fileSet>
+
+  <artifactSet id="launcher-lib">
+    <import>*</import>
+    <includes>
+      <artifact name="nuxeo-runtime-launcher" />
+    </includes>
+  </artifactSet>
+
+  <artifactSet id="bundles">
+    <import>*</import>
+    <includes>
+      <artifact group="org.nuxeo.common" />
+      <artifact group="org.nuxeo.runtime*" />
+      <artifact group="org.nuxeo.ecm.*" />
+    </includes>
+    <excludes>
+      <artifact name="nuxeo-runtime-launcher"/>
+      <artifact name="nuxeo-webengine-apt"/>
+    </excludes>
+  </artifactSet>
+
+  <artifactSet id="third-party-libs">
+    <import>**</import>
+    <includes>
+      <artifact group="javax.el" name="el-ri"/>
+      <artifact group="javax.el" name="el-api"/>
+      <artifact group="javax.script" name="script-api" />
+      <artifact group="org.codehaus.groovy" name="groovy-all" />
+      <artifact name="osgi-core" />
+      <artifact name="commons-collections" />
+      <artifact name="commons-io" />
+      <artifact name="commons-logging" />      
+      <artifact name="commons-fileupload" />
+      <artifact name="commons-lang" />
+      <artifact name="commons-beanutils" />
+      <artifact group="log4j" name="log4j" version="1.2.13" />
+      <artifact group="jboss" />
+      <artifact group="concurrent" />
+      <artifact group="jline" />
+      <artifact name="freemarker" />
+      <artifact group="javax.servlet" name="servlet-api" version="2.4"/>
+      <artifact group="net.sf.opencsv" name="opencsv" version="1.7" /> 
+      <!--TODO: seems to be deployed by webengine artifact name="json-lib" /--> 
+      <artifact name="json-lib" />
+      <artifact name="ezmorph" /> <!-- needed by jsonlib -->
+      <artifact name="opencsv" />
+      <artifact name="derby" />
+      <artifact name="xercesImpl"/>
+      <artifact group="org.mortbay.jetty" />
+      <artifact group="dom4j" />      
+      <artifact group="org.slf4j" />
+      <artifact group="org.apache.lucene" />
+      <artifact name="hibernate" />
+      <artifact group="org.hibernate" />
+      <artifact name="hibernate-annotations" />
+      <artifact group="org.hibernate" name="hibernate"/>
+      <artifact group="org.resteasy" />
+      <artifact group="org.apache.commons" name="commons-jci-core" />
+      <artifact group="org.apache.commons" name="commons-jci-fam" />
+    </includes>
+    <excludes>
+      <artifact group="org.mortbay.jetty" name="servlet-api-2.5" />
+      <artifact name="jgroups"/>
+      <artifact name="jnp-client"/>
+    </excludes>
+  </artifactSet>
+
+  <assemble>
+    <set>template</set>
+    <outputFile>nxserver</outputFile>
+  </assemble>
+
+  <assemble>
+    <set>launcher-lib</set>
+    <outputFile>nxserver</outputFile>
+  </assemble>
+
+  <assemble>
+    <set>third-party-libs</set>
+    <outputFile>nxserver/lib</outputFile>
+  </assemble>
+
+  <assemble>
+    <set>bundles</set>
+    <outputFile>nxserver/bundles</outputFile>
+  </assemble>
+
+</assembly>

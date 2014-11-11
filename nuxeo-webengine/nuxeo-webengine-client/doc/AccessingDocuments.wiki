@@ -1,0 +1,4 @@
+Applications have to access documents using CMIS API
+
+* CMIS Part I domain Eclipse:nuxeo-webengine-client/doc/Content Management Interoperability Services -- specification v0.5/CMIS Part I -- Domain Model v0.5.pdf
+* CMIS Part II  atom mapping Eclipse:nuxeo-webengine-client/doc/Content Management Interoperability Services -- specification v0.5/CMIS Part II -- REST-Atom Binding v0.5.pdf
