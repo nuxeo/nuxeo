@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<connection-factories>
+  <tx-connection-factory>
+    <jndi-name>NXRepository/default</jndi-name>
+    <xa-transaction/>
+    <track-connection-by-tx/>
+    <adapter-display-name>Nuxeo SQL Repository DataSource</adapter-display-name>
+    <rar-name>nuxeo.ear#nuxeo-core-storage-sql-ra-1.6.2-SNAPSHOT.rar</rar-name>
+    <connection-definition>org.nuxeo.ecm.core.storage.sql.Repository</connection-definition>
+    <config-property name="name">default</config-property>
+    <config-property name="xaDataSource" type="java.lang.String">com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</config-property>
+    <config-property name="property" type="java.lang.String">ServerName=localhost</config-property>
+    <config-property name="property" type="java.lang.String">PortNumber/Integer=3306</config-property>
+    <config-property name="property" type="java.lang.String">DatabaseName=nuxeo</config-property>
+    <config-property name="property" type="java.lang.String">User=nuxeo</config-property>
+    <config-property name="property" type="java.lang.String">Password=password</config-property>
+    <max-pool-size>20</max-pool-size>
+  </tx-connection-factory>
+</connection-factories>

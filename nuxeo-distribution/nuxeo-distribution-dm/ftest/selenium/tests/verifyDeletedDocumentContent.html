@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>verifyDeletedDocumentContent</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">verifyDeletedDocumentContent</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium verifyDeletedDocumentContent</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>You are logged as Administrator</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Workspaces</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testWorkspace1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[2]/td[3]//a</td>
+	<td>testFolder1</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[2]/td[1]//input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyChecked</td>
+	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[2]/td[1]//input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>//span[@id=&quot;CURRENT_SELECTION_TRASH&quot;]/input</td>
+	<td>12000</td>
+</tr>
+<tr>
+	<td>verifyEditable</td>
+	<td>//span[@id=&quot;CURRENT_SELECTION_TRASH&quot;]/input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyEditable</td>
+	<td>//span[@id=&quot;CURRENT_SELECTION_ADDTOLIST&quot;]/input</td>
+	<td></td>
+</tr>
+<!--Validation de la suppression-->
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Delete&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Delete selected document(s)?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>testFolder1</td>
+	<td></td>
+</tr>
+<!-- logout/login for jetty to propagate invalidations from async threads -->
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/workspaces/testworkspace1@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+        <td>clickAndWait</td>
+        <td>Submit</td>
+        <td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Trash</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>testFolder1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testFolder1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Note to be modified</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>testNote1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>Import a file</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[1]/td[3]//a</td>
+	<td>Note to be modified</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[1]/td[1]//input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyChecked</td>
+	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[1]/td[1]//input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>//span[@id=&quot;CURRENT_SELECTION_DELETE&quot;]/input</td>
+	<td>12000</td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>//span[@id=&quot;CURRENT_SELECTION_UNDELETE&quot;]/input</td>
+	<td>12000</td>
+</tr>
+<!--check restore-->
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Restore&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Undelete selected document(s)?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>1 Document(s) restored</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testWorkspace1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testFolder1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Note to be modified</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>testNote1</td>
+	<td></td>
+</tr>
+
+<!--restore other note-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Trash</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>testNote1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[1]/td[3]//a</td>
+	<td>testNote1</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[1]/td[1]//input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyChecked</td>
+	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[1]/td[1]//input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>//span[@id=&quot;CURRENT_SELECTION_UNDELETE&quot;]/input</td>
+	<td>12000</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Restore&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Undelete selected document(s)?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>1 Document(s) restored</td>
+	<td></td>
+</tr>
+<!--check second restore-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testWorkspace1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testFolder1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Note to be modified</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>testNote1</td>
+	<td></td>
+</tr>
+
+<!--Déconnexion-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
