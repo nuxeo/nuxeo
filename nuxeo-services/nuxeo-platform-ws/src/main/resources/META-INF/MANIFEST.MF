@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECM Platform API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.ws
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.ecm.platform.api,
+ org.nuxeo.ecm.platform.usermanager.api,
+ org.nuxeo.ecm.platform.mimetype.api
+Nuxeo-Component: OSGI-INF/nxws_remoting_session_manager-framework.xml,
+ OSGI-INF/nxws_remoting_session_manager-platform-contrib.xml
