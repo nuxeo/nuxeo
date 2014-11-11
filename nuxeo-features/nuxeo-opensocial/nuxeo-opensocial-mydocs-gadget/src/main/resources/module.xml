@@ -1,0 +1,3 @@
+<?xml version="1.0"?>
+<module name="myDocsRestAPI" root-type="MyDocsRoot" path="/myDocsRestAPI" extends="base" headless="true">
+</module>
