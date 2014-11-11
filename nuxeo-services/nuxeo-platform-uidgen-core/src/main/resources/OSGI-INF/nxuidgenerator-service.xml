@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService">
+  <documentation>
+    Help to generate unique IDs needed in different situations. The principal
+    scope is to generate UIDs which are external references for Documents. The
+    UIDs formats are defined by extensions to this component and are based on a
+    unique number provided by this component on a specific key given by a
+    generator
+
+    @version 1.0
+    @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.uidgen.UIDSequencer"/>
+  </service>
+
+
+  <extension-point name="sequencerFactory">
+    <documentation>
+      This extension point is deprecated and will be removed.
+      <code>
+        <className>org.nuxeo.ecm.platform.uidgen.ejb.EjbSequencerFactory</className>
+      </code>
+    </documentation>
+    <!-- no XObject, className is parsed using DOM calls -->
+  </extension-point>
+
+  <extension-point name="generators">
+    <documentation>
+      The extension point provided by this component gives the possibility to
+      register generators. A generator should be an implementation of
+      <pre>org.nuxeo.ecm.platform.uidgen.UIDGenerator</pre>
+      or a subclass of
+      <pre>org.nuxeo.ecm.platform.uidgen.AbstractUIDGenerator</pre>.
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorDescriptor" />
+  </extension-point>
+
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <documentation>
+     </documentation>
+
+    <listener name="uidlistener" async="false" postCommit="false" class="org.nuxeo.ecm.platform.uidgen.corelistener.DocUIDGeneratorListener" priority="10">
+      <event>documentCreated</event>
+    </listener>
+  </extension>
+
+
+  <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
+        point="hibernate">
+        <hibernateConfiguration name="NXUIDSequencer">
+            <datasource>nxuidsequencer</datasource>
+            <properties>
+                      <property name="hibernate.hbm2ddl.auto">update</property>
+            </properties>
+        </hibernateConfiguration>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement"
+        point="services">
+
+      <documentation> Define the sequencer session bean binding. </documentation>
+
+      <service class="org.nuxeo.ecm.platform.uidgen.UIDSequencer" group="platform/services">
+        <locator>%UIDSequencerManagerBean</locator>
+      </service>
+
+  </extension>
+
+</component>
