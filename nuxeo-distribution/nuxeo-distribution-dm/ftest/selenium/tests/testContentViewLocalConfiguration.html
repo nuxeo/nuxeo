@@ -1,0 +1,354 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>testContentViewLocalConfiguration</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">testContentViewLocalConfiguration</td></tr>
+</thead><tbody>
+<!--@Test groups:TestContentViewLocalConfiguration,introduction-->
+<!--Identification-->
+<tr>
+	<td>setTimeout</td>
+	<td>30000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=WARN&amp;message=----- Selenium testContentViewLocalConfiguration</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Administrator</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Workspaces</td>
+	<td></td>
+</tr>
+<!--Création d'un espace de travail-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Create a new workspace</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//td[@class=&quot;fieldColumn&quot;]/input[@type=&quot;text&quot;]</td>
+	<td>localConfigWS</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<!--Création d'un dossier-->
+<tr>
+	<td>mouseDown</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Folder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//td[@class=&quot;fieldColumn&quot;]/input[@type=&quot;text&quot;]</td>
+	<td>localConfigFolder</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<!--Création d'une note-->
+<tr>
+	<td>mouseDown</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Note</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//td[@class=&quot;fieldColumn&quot;]/input[@type=&quot;text&quot;]</td>
+	<td>localConfigNote</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=localConfigFolder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>localConfigNote</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>document_content:nxl_document_listing_ajax:nxw_listing_ajax_selection_box_with_current_document</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>document_content:clipboardActionsTable_0_0:3:clipboardActionsButton</td>
+	<td>12000</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>document_content:clipboardActionsTable_0_0:3:clipboardActionsButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Delete selected document(s)?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>localConfigNote</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=localConfigWS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Local configuration</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>contentViewConfigurationView:local_configuration_nxl_content_view_configuration:local_configuration_nxl_content_view_configuration_form:nxl_content_view_configuration_enable</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>contentViewConfigurationView:local_configuration_nxl_content_view_configuration:local_configuration_nxl_content_view_configuration_form:nxl_content_view_configuration:nxw_content_view_selection:nxw_content_view_selection_add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>contentViewConfigurationView:local_configuration_nxl_content_view_configuration:local_configuration_nxl_content_view_configuration_form:nxl_content_view_configuration:nxw_content_view_selection:nxw_content_view_selection_input:0:nxw_complexListItem_1:nxw_docType_2</td>
+	<td>label=Folder</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>contentViewConfigurationView:local_configuration_nxl_content_view_configuration:local_configuration_nxl_content_view_configuration_form:nxl_content_view_configuration:nxw_content_view_selection:nxw_content_view_selection_input:0:nxw_complexListItem_1:nxw_contentView_2</td>
+	<td>label=Trash content</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>contentViewConfigurationView:local_configuration_nxl_content_view_configuration:local_configuration_nxl_content_view_configuration_form:nxl_content_view_configuration_save</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=localConfigFolder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>localConfigNote</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>document_trash_content:nxl_document_listing_ajax:nxw_listing_ajax_selection_box_with_current_document</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>document_trash_content:clipboardActionsTable_0_0:1:clipboardActionsButton</td>
+	<td>12000</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>document_trash_content:clipboardActionsTable_0_0:1:clipboardActionsButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Undelete selected document(s)?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>localConfigNote</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=localConfigWS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Local configuration</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>contentViewConfigurationView:local_configuration_nxl_content_view_configuration:local_configuration_nxl_content_view_configuration_form:nxl_content_view_configuration_disable</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=localConfigFolder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>localConfigNote</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Workspaces</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>document_content:nxl_document_listing_ajax:nxw_listing_ajax_selection_box_with_current_document</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>document_content:clipboardActionsTable_0_0:3:clipboardActionsButton</td>
+	<td>12000</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>document_content:clipboardActionsTable_0_0:3:clipboardActionsButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Delete selected document(s)?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Trash</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>document_trash_content:nxl_document_listing_ajax:nxw_listing_ajax_selection_box_with_current_document</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>document_trash_content:clipboardActionsTable_0_0:0:clipboardActionsButton</td>
+	<td>12000</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>document_trash_content:clipboardActionsTable_0_0:0:clipboardActionsButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Permanently delete selected document(s)?</td>
+	<td></td>
+</tr>
+<!--Déconnexion-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
