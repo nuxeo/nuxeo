@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/contentViewConfiguration/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/contentViewConfiguration/">
+
+  <xs:complexType name="typeToCv">
+    <xs:sequence>
+      <xs:element name="docType" type="xs:string" />
+      <xs:element name="contentView" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="typeToCvList">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:typeToCv" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="cvNamesByType" type="nxs:typeToCvList" />
+
+</xs:schema>
