@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE server PUBLIC "-//JBoss//DTD MBean Service 4.0//EN" "http://www.jboss.org/j2ee/dtd/jboss-service_4_0.dtd">
+<server>
+  <mbean code="org.jboss.services.loggingmonitor.LoggingMonitor"
+         name="jboss.monitor:type=LoggingMonitor,name=NuxeoDSMonitor">
+    <attribute name="Filename">${jboss.server.log.dir}/nuxeo-ds.log</attribute>
+    <attribute name="AppendToFile">false</attribute>
+    <attribute name="RolloverPeriod">DAY</attribute>
+    <attribute name="MonitorPeriod">5000</attribute>
+    <attribute name="MonitoredObjects">
+      <configuration>
+        <monitoredmbean name="jboss.jca:name=NuxeoDS,service=ManagedConnectionPool" logger="jca">
+          <attribute>InUseConnectionCount</attribute>
+          <attribute>AvailableConnectionCount</attribute>
+          <attribute>ConnectionCreatedCount</attribute>
+          <attribute>ConnectionDestroyedCount</attribute>
+          <attribute>MaxConnectionsInUseCount</attribute>
+        </monitoredmbean>
+      </configuration>
+    </attribute>
+    <depends>jboss.jca:name=DefaultDS,service=ManagedConnectionPool</depends>
+  </mbean>
+</server>
