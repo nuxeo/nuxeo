@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.opensocial.gadgets.meteo" version="1.0">
+
+  <extension target="org.nuxeo.opensocial.gadgets.service"
+    point="gadget">
+
+    <internalGadget name="meteo">
+      <mountPoint>/meteo/meteo</mountPoint>
+      <directory>meteo-gadget</directory>
+      <category>Information</category>
+      <icon>meteo_icon.png</icon>
+    </internalGadget>
+
+  </extension>
+</component>

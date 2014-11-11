@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.platform.notification.core.tests
+Nuxeo-Component: NotificationService.xml,
+ test-usermanagerimpl/schemas-config.xml

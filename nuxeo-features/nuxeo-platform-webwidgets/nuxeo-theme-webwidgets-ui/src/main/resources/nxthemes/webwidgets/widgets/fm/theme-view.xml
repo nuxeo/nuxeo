@@ -1,0 +1,14 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>
+      <@block name="title"></@block>
+    </title>
+
+    <@nxthemes_head />
+    <@nxthemes_resources />
+
+    <@nxthemes_themestyles cache="true" />
+
+  </head>
+  [nxthemes markup]
+</html>

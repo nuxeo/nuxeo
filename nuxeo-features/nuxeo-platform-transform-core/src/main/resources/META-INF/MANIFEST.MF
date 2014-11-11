@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Transform
+Bundle-SymbolicName: org.nuxeo.ecm.platform.transform;singleton:=true
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: false
+Export-Package: org.nuxeo.ecm.platform.transform,
+ org.nuxeo.ecm.platform.transform.document,
+ org.nuxeo.ecm.platform.transform.ejb,
+ org.nuxeo.ecm.platform.transform.exceptions,
+ org.nuxeo.ecm.platform.transform.interfaces,
+ org.nuxeo.ecm.platform.transform.interfaces.ejb.local,
+ org.nuxeo.ecm.platform.transform.interfaces.ejb.remote,
+ org.nuxeo.ecm.platform.transform.plugin,
+ org.nuxeo.ecm.platform.transform.service,
+ org.nuxeo.ecm.platform.transform.service.extensions,
+ org.nuxeo.ecm.platform.transform.transformer,
+ org.nuxeo.ecm.platform.transform.utils
+Nuxeo-Component: OSGI-INF/nxtransform-framework.xml
+Require-Bundle: org.nuxeo.ecm.platform.api,
+ org.nuxeo.ecm.platform.mimetype.core,
+ org.nuxeo.ecm.platform.transform.api
