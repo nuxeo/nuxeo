@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXMimeType Core
+Bundle-SymbolicName: org.nuxeo.ecm.platform.mimetype.core
+Bundle-Localization: plugin
+Bundle-Category: core,search,web,stateless
+Export-Package: org.nuxeo.ecm.platform.mimetype,
+ org.nuxeo.ecm.platform.mimetype.service
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/nxmimetype-service.xml
+Require-Bundle: org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.platform.api,
+ org.nuxeo.ecm.platform.mimetype.api
+Bundle-ClassPath: ., jmimemagic.jar
