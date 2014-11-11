@@ -1,0 +1,28 @@
+Start Toc Test
+------------------
+
+Here is the toc:
+
+{toc}My Table of Contents{/toc}
+
+And here is the content:
+
+= Level 1 Heading - Chapter 1
+This is chapter 1
+
+== Level 2 Heading - Section 1
+A subchapter
+
+=== Level 3 Heading - First para
+some text in first para
+=== Level 3 Heading - Second para
+some text in second para
+
+== Level 2 Heading - Section 2
+Another subchapter
+
+= Level 1 Heading - Chapter 2
+
+and this is chapter 2
+
+End Toc Test
