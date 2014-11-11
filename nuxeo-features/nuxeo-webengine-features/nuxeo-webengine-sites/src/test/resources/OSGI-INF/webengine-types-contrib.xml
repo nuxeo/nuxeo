@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.webengine.document.jsf.types">
+
+  <require>org.nuxeo.ecm.platform.types.TypeService</require>
+  <require>org.nuxeo.webengine.document.types</require>
+
+</component>

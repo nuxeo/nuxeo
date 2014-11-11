@@ -1,0 +1,21 @@
+<c:if test="true"
+ xmlns:c="http://java.sun.com/jstl/core"
+ xmlns:h="http://java.sun.com/jsf/html">
+
+  <script>
+    function confirmRestart() {
+      var testerName = '#{frameworkPropertyActions.getProperty("org.nuxeo.ecm.tester.name")}';
+      if (testerName == "Nuxeo-Selenium-Tester") {
+          // webdriver sometimes has problems giving focus to alerts
+          return true;
+        }
+      var nbActiveSessions = #{nbActiveUserHttpSessions};
+      var restartMessage = '<h:outputText value="#{messages['label.restart.confirm']}" />';
+      if (nbActiveSessions > 1) {
+        restartMessage = restartMessage + "\n( " + (nbActiveSessions-1) + " " + "<h:outputText value="#{messages['label.restart.connectedusers']}" />" + ' )';
+      }
+      return window.confirm(restartMessage);
+    }
+  </script>
+
+</c:if>
