@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.schema.TypeService"
+  version="1.0.0">
+  <documentation>
+    Manage document types and schemas.
+    Allows registrering new types defined using XSD schemas
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.core.schema.SchemaManager"/>
+  </service>
+
+  <implementation class="org.nuxeo.ecm.core.schema.TypeService" />
+
+  <extension-point name="configuration">
+
+    <documentation>
+      Type manager configuration.
+      <p/>
+      For now this contains default prefetch options. For example:
+      <code>
+        <configuration>
+          <prefetch>common.icon, dc:title, dc:modified, dc:contributors, dc:creator</prefetch>
+        </configuration>
+      </code>
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.core.schema.TypeConfiguration" />
+  </extension-point>
+
+  <extension-point name="doctype">
+
+    <documentation>
+      Extension Point to register new document types.
+      <p/>
+      Document types may implement several schemas and extends other
+      document types. You can compare document types with java
+      classes and schemas with java interfaces. Document types may
+      also contains several facets that define a behavior.
+      <p/>
+      The prefetch element defines what fields are synchronously
+      indexed, and are made available in search results listings.
+      <p/>
+      A doctype XML extension may contain several 'doctype' elements.
+      A doctype element may look like this:
+
+      <code>
+        <doctype name="File" extends="Document">
+          <schema name="common" />
+          <schema name="file" />
+          <schema name="dublincore" />
+          <schema name="uid" />
+          <facet name="Downloadable" />
+          <facet name="Versionable" />
+          <prefetch>dc:title, dc:modified, uid.uid</prefetch>
+        </doctype>
+      </code>
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.core.schema.DocumentTypeDescriptor" />
+    <object
+      class="org.nuxeo.ecm.core.schema.FacetDescriptor" />
+  </extension-point>
+
+  <extension-point name="schema">
+
+    <documentation>
+      Extension Point to register new schemas.
+      <p/>
+      Schemas are defined using XSD files.
+      The schema extension XML may containg  several 'schema' objects as
+      the following ones:
+      <code>
+        <schema name="common" src="schema/common.xsd" />
+        <schema name="dublincore" prefix="dc" src="schema/dublincore.xsd" />
+      </code>
+      The <i>name</i> attribute uniquely identify the schema, the <i>src</i> attribute specify
+      the path to that schema (relative to the bundle root) and the <i>prefix</i> is used as
+      a prefix (short name) of the schema namespace.
+      The schema namespace is the targetNamespace defined inside the XSD file
+      <p/>
+      Note that multiple schemas can share the same target namespace and prefix
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.core.schema.SchemaBindingDescriptor" />
+  </extension-point>
+
+  <extension-point name="provider">
+    <documentation>
+    Extension point to register type providers. Type providsers are usually used to import types
+    defined on remote servers
+    </documentation>
+    <object class="org.nuxeo.ecm.core.schema.TypeProviderDescriptor"/>
+  </extension-point>
+
+  <extension target="org.nuxeo.runtime.EventService" point="listeners">
+    <listener
+      class="org.nuxeo.ecm.core.schema.FlushPendingsRegistrationOnReloadListener">
+      <topic>org.nuxeo.runtime.reload</topic>
+    </listener>
+  </extension>
+</component>
