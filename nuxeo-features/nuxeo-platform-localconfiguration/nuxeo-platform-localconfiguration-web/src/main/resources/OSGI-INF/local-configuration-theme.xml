@@ -1,0 +1,135 @@
+<component name="org.nuxeo.ecm.platform.localconfiguration.theme">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="THEME_CONFIGURATION" link="/incl/tabs/theme_configuration.xhtml"
+      order="100" label="action.view.theme" icon="/icons/file.gif">
+      <category>LOCAL_CONFIGURATION</category>
+      <filter-id>manage</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <!-- deprecated since 5.5: use flavor selection instead -->
+    <widgetType name="theme_selection">
+      <configuration>
+        <categories>
+          <category>configuration_not_ready</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">/widgets/theme_selection_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <!-- deprecated since 5.5: use flavor selection instead -->
+    <widget name="theme_selection" type="theme_selection">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>themeconf:theme</field>
+        <field>themeconf:page</field>
+        <field>themeconf:perspective</field>
+      </fields>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="theme_configuration">
+      <templates>
+        <template mode="any">
+          /layouts/layout_local_configuration_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="layoutTemplateToInclude">
+          /layouts/layout_default_template.xhtml
+        </property>
+        <property name="foldableBoxLabel">
+          label.local.configuration.theme
+        </property>
+        <property name="localConfigurationFacet">
+          ThemeLocalConfiguration
+        </property>
+        <property name="helpLabel">
+          label.local.configuration.theme.info
+        </property>
+        <property name="elementsToReRender">
+          local_configuration_panel
+        </property>
+      </properties>
+      <rows>
+        <row>
+          <widget>flavor_selection</widget>
+        </row>
+      </rows>
+      <widget name="flavor_selection" type="template">
+        <labels>
+          <label mode="any">
+            label.local.configuration.theme.flavorSelection
+          </label>
+        </labels>
+        <helpLabels>
+          <label mode="any">
+            label.local.configuration.theme.flavorSelection.help
+          </label>
+        </helpLabels>
+        <translated>true</translated>
+        <fields>
+          <field>themeconf:flavor</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/select_flavor_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+    </layout>
+
+    <!-- deprecated since 5.5: use flavor selection instead -->
+    <layout name="old_theme_configuration">
+      <templates>
+        <template mode="any">
+          /layouts/layout_local_configuration_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="layoutTemplateToInclude">
+          /layouts/layout_default_template.xhtml
+        </property>
+        <property name="foldableBoxLabel">
+          label.local.configuration.theme
+        </property>
+        <property name="localConfigurationFacet">
+          ThemeLocalConfiguration
+        </property>
+        <property name="helpLabel">
+          label.local.configuration.theme.info
+        </property>
+      </properties>
+      <rows>
+        <row>
+          <widget>theme_selection</widget>
+        </row>
+      </rows>
+    </layout>
+
+  </extension>
+
+</component>

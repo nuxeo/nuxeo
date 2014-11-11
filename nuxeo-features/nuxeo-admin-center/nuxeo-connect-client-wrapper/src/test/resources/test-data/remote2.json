@@ -1,0 +1,2 @@
+{"id":"pkgA-1.0.1","name":"pkgA", "version":"1.0.1","title":"My Pkg A","description":"My Pkg A Description", "type":"addon", "state":0}
+{"id":"pkgC-1.0.1","name":"pkgC", "version":"1.0.0","title":"My Pkg C","description":"My Pkg C Description", "type":"addon", "state":0}

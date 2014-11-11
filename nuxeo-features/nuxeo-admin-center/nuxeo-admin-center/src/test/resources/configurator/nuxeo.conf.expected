@@ -1,0 +1,21 @@
+# Configuration file for Nuxeo
+
+JAVA_HOME="/usr/lib/jvm/java-6-sun"
+JAVA_OPTS="-Xmx768m -XX:MaxPermSize=256m"
+
+LOG_DIR="logs"
+PID_DIR="bin"
+
+# See templates/README.txt for customization parameters.
+nuxeo.templates=postgresql,oldchange
+#nuxeo.bind.address=0.0.0.0
+
+test.nuxeo.conf = true
+### BEGIN - DO NOT EDIT BETWEEN BEGIN AND END ### JJ/MM/AAAA hh:mm:ss
+#nuxeo.bind.address=0.0.0.0
+nuxeo.bind.address=127.0.0.1
+#server.status.key=
+server.status.key=rAnd0MKey
+#test.default.nuxeo.defaults=true
+test.default.nuxeo.defaults=false
+### END - DO NOT EDIT BETWEEN BEGIN AND END ###
