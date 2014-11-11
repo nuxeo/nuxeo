@@ -1,0 +1,50 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+ xmlns:c="http://java.sun.com/jstl/core">
+
+  <script type="text/javascript"
+    src="#{baseURL}js/?scripts=dnd/jquery.client.js|dnd/jquery.dnd-file-upload.js|automation.js|dnd/nxdropzone.js|dnd/nxdropout.js|dnd/nxinternaldnd.js">
+  </script>
+  
+  <ui:include src="/incl/dnd/dnd-ui.xhtml" />
+  
+  <script>
+    var baseURL='#{baseURL}';
+    function getBaseURL() {
+      return baseURL;
+    }
+    
+    var ctx = {
+      currentDocument : '#{currentDocument.id}',
+      <c:if test="#{currentDomain!=null}">
+       currentDomain : '#{currentDomain.id}',
+      </c:if>
+      <c:if test="#{currentWorkspace!=null}">
+        currentWorkspace : '#{currentWorkspace.id}',
+      </c:if>
+      conversationId : '#{org.jboss.seam.core.manager.currentConversationId}',
+      lang : '#{localeSelector.localeString}',
+      repository : '#{currentDocument.repositoryName}'
+    };
+    
+    function initNXDrapAndDropOnPage(scope) {
+      // init Browser Drag out support (Chrome only);
+      jQuery(".dropout",scope).dropout(baseURL,ctx.repository);
+      // initernal DnD
+      jQuery(".nxDraggable",scope).nxInitDraggables();
+      jQuery(".nxDropTarget",scope).nxInitDropTargets();
+    }
+    
+    jQuery(document).ready(function(){
+      // init Browser DnD import
+      jQuery(".dropzone").nxDropZone({
+        url : "#{contextPath}/site/automation/batch/",
+        uploadRateRefreshTime : 500,
+        numConcurrentUploads : 3,
+        dropContext : ctx
+      });
+      // init Dropout and Internal DnD
+      initNXDrapAndDropOnPage(null);
+    });
+  </script>
+  
+</div>
