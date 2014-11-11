@@ -1,0 +1,10 @@
+# Copy this file into build.properties and customize it
+
+# Uncomment this for Windows (notice the forward-slashes)
+jboss.dir=C:/Program Files/JBoss
+# Uncomment this for Unix
+#jboss.dir=/opt/jboss
+
+# Uncomment this for an offline maven build, which is faster
+# but assumes you have already donwloaded all dependencies
+#mvn.opts=-o

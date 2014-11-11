@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<fragment>
+
+  <extension target="application#MODULE">
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
+
+  <extension target="faces-config#NAVIGATION">
+    <navigation-case>
+      <from-outcome>thread_create</from-outcome>
+      <to-view-id>/thread_create.xhtml</to-view-id>
+    </navigation-case>
+  </extension>
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+  </install>
+
+</fragment>
+

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component
+    name="org.nuxeo.ecm.platform.tag.TagService.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.tag.TagService"
+      point="configs">
+    <config>
+      <queryProxy>false</queryProxy>
+    </config>
+  </extension>
+
+</component>
