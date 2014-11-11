@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.audit.PageProviderservice.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <genericPageProvider name="DOCUMENT_HISTORY_PROVIDER"
+      class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider">
+      <whereClause docType="BasicAuditSearch">
+        <fixedPart>
+          log.docUUID = ?
+        </fixedPart>
+        <predicate parameter="log.eventDate" operator="BETWEEN">
+          <field schema="basicauditsearch" name="startDate" />
+          <field schema="basicauditsearch" name="endDate" />
+        </predicate>
+        <predicate parameter="log.category" operator="IN">
+          <field schema="basicauditsearch" name="eventCategories" />
+        </predicate>
+        <predicate parameter="log.eventId" operator="=">
+          <field schema="basicauditsearch" name="eventId" />
+        </predicate>
+      </whereClause>
+      <sort column="log.eventDate" ascending="true" />
+      <pageSize>10</pageSize>
+    </genericPageProvider>
+
+  </extension>
+
+</component>
