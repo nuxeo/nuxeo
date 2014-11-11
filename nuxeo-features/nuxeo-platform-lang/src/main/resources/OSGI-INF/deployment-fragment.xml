@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<fragment>
+
+  <!-- 
+    These extension targets refer to xml files inside the server's 
+    nuxeo.ear/OSGI-INF/templates directory. If you open up the templates/application.xml
+    for example, you'll find a reference to %{MODULE}% which will be replaced with 
+    whatever <module> is defined here. If you look at the nuxeo.ear/META-INF/application.xml,
+    you'll see the end product of this substitution, as all the bundles and their order are laid out.
+    
+    Template:   nuxeo.ear/OSGI-INF/templates/application.xml
+    End Result: nuxeo.ear/META-INF/application.xml 
+   -->
+  <extension target="application#MODULE">
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
+  <!-- 
+    Template:   nuxeo.ear/OSGI-INF/templates/faces-config.xml
+    End Result: nuxeo.ear/META-INF/faces-config.xml 
+  -->
+  <extension target="faces-config#APPLICATION">
+    <locale-config>
+      <default-locale>en</default-locale>
+      <supported-locale>en_GB</supported-locale>
+      <supported-locale>en_US</supported-locale>
+      <supported-locale>fr</supported-locale>
+    </locale-config>
+    <message-bundle>messages</message-bundle>
+  </extension>
+
+  <install>
+    <!-- Unzip the contents of our nuxeo.war into the real nuxeo.war on the server -->
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+  </install>
+
+</fragment>

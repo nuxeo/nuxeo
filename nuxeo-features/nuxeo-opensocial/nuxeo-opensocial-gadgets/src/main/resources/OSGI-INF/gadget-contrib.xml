@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.opensocial.gadgets.coregadgets" version="1.0">
+
+  <extension target="org.nuxeo.opensocial.gadgets.service" point="gadget">
+    <internalGadget name="mappy">
+      <mountPoint>/mappy</mountPoint>
+      <entryPoint>mappy.xml</entryPoint>
+      <category>gadget.category.utilities</category>
+      <icon>mappy_icon.png</icon>
+    </internalGadget>
+
+     <internalGadget name="meteo">
+      <mountPoint>/meteo</mountPoint>
+      <entryPoint>meteo.xml</entryPoint>
+      <category>gadget.category.utilities</category>
+      <icon>meteo_icon.png</icon>
+    </internalGadget>
+
+    <internalGadget name="photo">
+      <mountPoint>/photo</mountPoint>
+      <entryPoint>photo.xml</entryPoint>
+      <category>gadget.category.media</category>
+      <icon>photo_icon.png</icon>
+    </internalGadget>
+
+   <internalGadget name="flash">
+      <mountPoint>/flash</mountPoint>
+      <entryPoint>flash.xml</entryPoint>
+      <category>gadget.category.media</category>
+      <icon>flash_icon.png</icon>
+    </internalGadget>
+
+    <internalGadget name="todolist">
+      <mountPoint>/todolist</mountPoint>
+      <entryPoint>toDoList.xml</entryPoint>
+      <category>gadget.category.collaborative</category>
+      <icon>todolist_icon.png</icon>
+    </internalGadget>
+
+    <internalGadget name="note">
+      <mountPoint>/note</mountPoint>
+      <entryPoint>note.xml</entryPoint>
+      <category>gadget.category.collaborative</category>
+      <icon>note_icon.png</icon>
+    </internalGadget>
+
+    <internalGadget name="video">
+      <mountPoint>/video</mountPoint>
+      <entryPoint>video.xml</entryPoint>
+      <category>gadget.category.media</category>
+      <icon>video_icon.png</icon>
+    </internalGadget>
+
+    <internalGadget name="bookmarks">
+      <mountPoint>/bookmarks</mountPoint>
+      <entryPoint>bookmarks.xml</entryPoint>
+      <category>gadget.category.utilities</category>
+      <icon>bookmarks_icon.png</icon>
+    </internalGadget>
+
+    <internalGadget name="richtext">
+      <mountPoint>/richtext</mountPoint>
+      <entryPoint>richtext.xml</entryPoint>
+      <category>gadget.category.utilities</category>
+      <icon>richtext_icon.png</icon>
+    </internalGadget>
+
+    <internalGadget name="confluencefeed" disabled="true">
+      <mountPoint>/confluencefeed</mountPoint>
+      <entryPoint>confluencefeed.xml</entryPoint>
+      <category>Atlassian</category>
+      <icon>confluencefeed_icon.png</icon>
+    </internalGadget>
+
+  </extension>
+</component>
