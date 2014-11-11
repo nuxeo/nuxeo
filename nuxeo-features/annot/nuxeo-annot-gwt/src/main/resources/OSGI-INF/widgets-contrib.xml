@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.annotations.widgets">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="document_annotations_count">
+      <configuration>
+        <sinceVersion>5.7.2</sinceVersion>
+        <title>Annotations Count</title>
+        <description>
+          <p>This widget displays how many annotations a document has.</p>
+          <p>
+            It requires the following fields configuration: first field maps
+            the document model.
+          </p>
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/annotations_count_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="document_annotations_count" type="document_annotations_count" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="summary_document_annotations_count" type="widget" order="20">
+      <category>SUMMARY_INDICATORS</category>
+      <filter-id>view_preview</filter-id>
+      <filter-id>not_folder</filter-id>
+      <filter-id>not_anonymous</filter-id>
+      <properties>
+        <property name="widgetName">document_annotations_count</property>
+      </properties>
+    </action>
+
+  </extension>
+
+</component>

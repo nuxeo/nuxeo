@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-Name: Nuxeo ECM Select2 Integration
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/widgettypes-contrib.xml,OSGI-INF/operations-
+ contrib.xml,OSGI-INF/theme-contrib.xml,OSGI-INF/actions-contrib.xml
+Bundle-SymbolicName: org.nuxeo.ecm.platform.ui.select2;singleton:=true
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+

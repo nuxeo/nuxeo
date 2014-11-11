@@ -1,0 +1,22 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+
+  <h3>
+    <h:outputText value="#{messages['label.oauth.provider.tokens']}"/>
+  </h3>
+  <ui:include src="directoryBasedEditor.xhtml">
+    <ui:param name="bean" value="#{oauthProvidersTokensActions}"/>
+    <ui:param name="entryLayoutName" value="oauthProviderTokenLayoutAdmin"/>
+    <ui:param name="detailMode" value="view"/>
+  </ui:include>
+
+  <h3>
+    <h:outputText value="#{messages['label.oauth2.provider.tokens']}"/>
+  </h3>
+  <ui:include src="directoryBasedEditor.xhtml">
+    <ui:param name="bean" value="#{oauth2ProvidersTokensActions}"/>
+    <ui:param name="entryLayoutName" value="oauth2ProviderTokenLayoutAdmin"/>
+    <ui:param name="detailMode" value="view"/>
+  </ui:include>
+
+</div>
