@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <ui:define name="page title">
+    <h:outputText value="#{nuxeoApplicationName} - #{messages['title.header.server']}" />
+  </ui:define>
+
+  <ui:define name="body">
+    <div>
+      <h1 rendered="#{currentServerLocation.name}">
+        <h:outputText value="#{messages['title.header.server']}" />
+      </h1>
+      <ui:include src="/incl/message_banner.xhtml"/>
+      <nxl:widget name="documentTabs" mode="view" value="#{currentDocument}" />
+    </div>
+  </ui:define>
+
+</nxthemes:composition>
