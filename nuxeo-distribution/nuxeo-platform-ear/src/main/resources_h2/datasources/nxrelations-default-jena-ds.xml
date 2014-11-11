@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<datasources>
+  <!-- 
+    Do not link datasource to point to unified NuxeoDS because there's no h2 compatibility in Jena
+    So use HSQL.
+  -->
+  <local-tx-datasource>
+    <jndi-name>nxrelations-default-jena</jndi-name>
+    <connection-url>
+      jdbc:hsqldb:${jboss.server.data.dir}${/}hypersonic${/}nxrelations-default-jena
+    </connection-url>
+    <connection-url>jdbc:hsqldb:.</connection-url>
+    <driver-class>org.hsqldb.jdbcDriver</driver-class>
+    <user-name>sa</user-name>
+    <password></password>
+  </local-tx-datasource>
+
+  <mbean code="org.jboss.jdbc.HypersonicDatabase"
+    name="jboss:service=Hypersonic,database=nxrelations-default-jena">
+    <attribute name="Database">nxrelations-default-jena</attribute>
+    <attribute name="InProcessMode">true</attribute>
+  </mbean>
+</datasources>
