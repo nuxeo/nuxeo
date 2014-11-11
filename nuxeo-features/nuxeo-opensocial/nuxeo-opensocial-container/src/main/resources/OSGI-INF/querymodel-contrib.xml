@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.opensocial.container.querymodel.OpensocialQueryModels">
+
+  <documentation>
+    Default QueryModel contributions used to fetch the documents list displayed
+    in the user dashboard page.
+
+    @author
+    <a href="mailto:guillaume.cusnieux@leroymerlin.fr">Guillaume Cusnieux</a>
+  </documentation>
+
+  <extension
+    target="org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService"
+    point="model">
+
+    <queryModel name="TYPE_SEARCH">
+      <pattern>
+        SELECT * FROM Document WHERE 
+        ecm:primaryType = ? AND 
+        ecm:isCheckedInVersion = 0 AND
+        ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <max>16</max>
+      <sortable value="true" />
+    </queryModel>
+    
+    </extension>
+
+</component>

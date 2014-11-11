@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Tag Facade
+Bundle-SymbolicName: org.nuxeo.ecm.platform.tag.ejb
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateful
+Require-Bundle: org.nuxeo.ecm.platform.tag.api,
+ org.nuxeo.ecm.platform.tag 
+Export-Package: org.nuxeo.ecm.platform.tag.ejb
+Nuxeo-Component: OSGI-INF/nxtag-platform-contrib.xml
+
