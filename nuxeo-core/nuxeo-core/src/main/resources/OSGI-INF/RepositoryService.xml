@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.repository.RepositoryService" version="1.0">
+    <documentation>
+        A service managing repositories. It provides a way of defining new reposiotries and retrieving existing ones.
+
+        @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+    </documentation>
+
+    <implementation class="org.nuxeo.ecm.core.repository.RepositoryService"/>
+
+    <service>
+      <provide interface="org.nuxeo.ecm.core.api.CoreSession"/>
+    </service>
+
+    <extension-point name="repository">
+        <documentation>
+        Extension point to register new repositories.
+        The extension should use the format:
+         <repository name="demo"
+                 factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
+           ... random XML content ...
+        </repository>
+        The repository tag may contains any valid XML content that can be used by to specify
+        repository implementation specific configuration data.
+        <p/>
+        The name of the repository must be unique in the application
+        </documentation>
+
+        <object class="org.nuxeo.ecm.core.repository.RepositoryDescriptor"/>
+    </extension-point>
+
+</component>
