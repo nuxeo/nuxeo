@@ -1,0 +1,11 @@
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: Nuxeo ECM Forms Layout IO Plugins Fragment
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.platform.forms.layout.io.plugins;singleton:=true
+Nuxeo-Component: OSGI-INF/layouts-io-plugins-contrib.xml

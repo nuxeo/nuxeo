@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <extension target="faces-config#NAVIGATION">
+    <navigation-case>
+      <from-outcome>thread_create</from-outcome>
+      <to-view-id>/thread_create.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+  </extension>
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+  </install>
+
+</fragment>
+

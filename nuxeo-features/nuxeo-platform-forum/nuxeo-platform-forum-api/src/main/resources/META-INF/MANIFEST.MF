@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Forum API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.forum.api;singleton=true
+Bundle-Vendor: Nuxeo
+Export-Package: org.nuxeo.ecm.platform.forum.web.api
+

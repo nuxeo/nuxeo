@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Platform IO Core Fragment
+Bundle-SymbolicName: org.nuxeo.ecm.platform.io.core;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateful
+Nuxeo-Component: OSGI-INF/io-framework.xml
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.apache.commons.logging,
+ org.nuxeo.common.utils,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.api.repository,
+ org.nuxeo.ecm.core.io,
+ org.nuxeo.ecm.core.io.exceptions,
+ org.nuxeo.ecm.core.io.impl,
+ org.nuxeo.ecm.platform.io.api,
+ org.nuxeo.runtime,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.model,
+ org.nuxeo.runtime.services.streaming
