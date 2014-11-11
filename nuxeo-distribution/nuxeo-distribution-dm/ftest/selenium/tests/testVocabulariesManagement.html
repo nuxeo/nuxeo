@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>testVocabulariesManagement</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">testVocabulariesManagement</td></tr>
+</thead><tbody>
+<tr>
+	<td>setTimeout</td>
+	<td>30000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=WARN&amp;message=----- Selenium testVocabulariesManagement</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=Admin Center</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Vocabularies</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>continent</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>country</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>topic</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>subtopic</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>subject</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>predicates</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>inverse_predicates</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>language</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>nature</td>
+	<td></td>
+</tr>
+<!-- make sure continent is not already selected -->
+<tr>
+	<td>verifyNotValue</td>
+	<td>id=selectDirectoryForm:directoriesList</td>
+	<td>continent</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>selectDirectoryForm:directoriesList</td>
+	<td>label=continent</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeEval</td>
+	<td>selenium.browserbot.getCurrentWindow().document.body.innerHTML</td>
+	<td>innerhtml</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${innerhtml}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>viewDirectoryEntries:nxl_vocabulary_1:nxw_vocabulary_id_2</td>
+	<td>africa</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>viewDirectoryEntries:nxl_vocabulary_1:nxw_vocabulary_label_2</td>
+	<td>label.directories.continent.africa</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>viewDirectoryEntries:nxl_vocabulary_1:nxw_vocabulary_obsolete_2_no</td>
+	<td>No</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>viewDirectoryEntries:nxl_vocabulary_1:nxw_vocabulary_order_2</td>
+	<td>10,000,000</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//input[@id=&quot;viewDirectoryEntries:nxl_vocabulary_1:nxl_vocabulary_1_editButton&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//input[@id=&quot;viewDirectoryEntries:nxl_vocabulary_1:nxl_vocabulary_1_deleteButton&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>viewDirectoryEntries:nxl_vocabulary_2:nxw_vocabulary_id_3</td>
+	<td>antarctica</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>viewDirectoryEntries:nxl_vocabulary_2:nxw_vocabulary_label_3</td>
+	<td>label.directories.continent.antarctica</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>viewDirectoryEntries:nxl_vocabulary_2:nxw_vocabulary_obsolete_3_no</td>
+	<td>No</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>viewDirectoryEntries:nxl_vocabulary_2:nxw_vocabulary_order_3</td>
+	<td>10,000,000</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//input[@id=&quot;viewDirectoryEntries:nxl_vocabulary_2:nxl_vocabulary_2_editButton&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//input[@id=&quot;viewDirectoryEntries:nxl_vocabulary_2:nxl_vocabulary_2_deleteButton&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@id=&quot;viewDirectoryEntries:nxl_vocabulary_2:nxl_vocabulary_2_editButton&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>editDirectoryEntry:nxl_vocabulary:nxw_vocabulary_id</td>
+	<td>antarctica</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>editDirectoryEntry:nxl_vocabulary:nxw_vocabulary_order</td>
+	<td>10,000,000</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>editDirectoryEntry:nxl_vocabulary:nxw_vocabulary_label</td>
+	<td>label.directories.continent.antarctica</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>editDirectoryEntry:nxl_vocabulary:nxw_vocabulary_label</td>
+	<td>label.directories.continent.antarctica.modified</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value=&quot;Save&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Vocabulary entry edited</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>viewDirectoryEntries:nxl_vocabulary_2:nxw_vocabulary_label_3</td>
+	<td>label.directories.continent.antarctica.modified</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@id=&quot;viewDirectoryEntries:nxl_vocabulary_2:nxl_vocabulary_2_editButton&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>editDirectoryEntry:nxl_vocabulary:nxw_vocabulary_label</td>
+	<td>label.directories.continent.antarctica</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value=&quot;Save&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>viewDirectoryEntries:nxl_vocabulary_2:nxw_vocabulary_label_3</td>
+	<td>label.directories.continent.antarctica</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Add a new vocabulary entry</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Add a new vocabulary entry</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>addEntryView:addEntryForm:nxl_vocabulary:nxw_vocabulary_id</td>
+	<td>africa</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value=&quot;Create&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>The identifier already exists</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>addEntryView:addEntryForm:nxl_vocabulary:nxw_vocabulary_id</td>
+	<td>aatlantide</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>addEntryView:addEntryForm:nxl_vocabulary:nxw_vocabulary_label</td>
+	<td>label.continent.atlantide</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>addEntryView:addEntryForm:nxl_vocabulary:nxw_vocabulary_obsolete_checkbox:1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value=&quot;Create&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Vocabulary entry added</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>viewDirectoryEntries:nxl_vocabulary_1:nxw_vocabulary_id_2</td>
+	<td>aatlantide</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>viewDirectoryEntries:nxl_vocabulary_1:nxw_vocabulary_label_2</td>
+	<td>label.continent.atlantide</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>viewDirectoryEntries:nxl_vocabulary_1:nxw_vocabulary_obsolete_2_yes</td>
+	<td>Yes</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>viewDirectoryEntries:nxl_vocabulary_1:nxw_vocabulary_order_2</td>
+	<td>10,000,000</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@id=&quot;viewDirectoryEntries:nxl_vocabulary_1:nxl_vocabulary_1_deleteButton&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Delete selected vocabulary entry?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Vocabulary entry deleted</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>viewDirectoryEntries:nxl_vocabulary_1:nxw_vocabulary_id_2</td>
+	<td>africa</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@id=&quot;viewDirectoryEntries:nxl_vocabulary_1:nxl_vocabulary_1_deleteButton&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Delete selected vocabulary entry?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>This entry is referenced in another vocabulary</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
