@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.automation.features.upload.jsf.contrib">
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="Chain.ImportClipboard"
+      link=""
+      order="10" label="label.import.and.add.to.clipboard"
+      help="desc.import.and.add.to.clipboard">
+      <category>Clipboard_CLIPBOARD</category>
+      <filter-id>not_anonymous</filter-id>
+      <properties>
+        <property name="chainId">ImportClipboard</property>
+      </properties>
+    </action>
+    <action id="Chain.ImportWorklist"
+      link=""
+      order="10" label="label.import.and.add.to.worklist"
+      help="desc.import.and.add.to.worklist">
+      <category>Clipboard_DEFAULT</category>
+      <filter-id>not_anonymous</filter-id>
+      <properties>
+        <property name="chainId">ImportWorklist</property>
+      </properties>
+    </action>
+
+    <action id="Chain.FileManager.ImportInSeam"
+      link=""
+      order="10" label="label.smart.import"
+      help="desc.smart.import.file">
+      <category>ContentView</category>
+      <filter-id>create</filter-id>
+      <properties>
+        <property name="chainId">FileManager.ImportInSeam</property>
+      </properties>
+    </action>
+    <action id="Chain.FileManager.ImportWithMetaDataInSeam"
+      link="${org.nuxeo.ecm.contextPath}/dndFormCollector.faces?schema=dc&#038;layout=dndEdit"
+      order="30" label="label.smart.import.with.md"
+      help="desc.smart.import.with.md">
+      <category>ContentView</category>
+      <filter-id>create</filter-id>
+      <properties>
+        <property name="chainId">FileManager.ImportWithMetaDataInSeam</property>
+        <property name="layout">dndEdit</property>
+      </properties>
+    </action>
+
+    <action id="BlobHolder.Attach"
+      link=""
+      order="10" label="label.dnd.attach"
+      help="desc.dnd.attach"
+      enabled="false">
+      <category>mainBlob</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>user_canedit</filter-id>
+      <properties>
+        <property name="operationId">BlobHolder.Attach</property>
+      </properties>
+    </action>
+    <action id="Chain.VersionAndAttachFile"
+      link=""
+      order="10" label="label.dnd.attach"
+      help="desc.dnd.attach">
+      <category>mainBlob</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>user_canedit</filter-id>
+      <properties>
+        <property name="chainId">VersionAndAttachFile</property>
+      </properties>
+    </action>
+    <action id="Chain.AttachFiles"
+      link=""
+      order="10" label="label.dnd.attachfiles"
+      help="desc.dnd.attachfiles">
+      <category>otherBlobs</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>user_canedit</filter-id>
+      <properties>
+        <property name="chainId">AttachFiles</property>
+      </properties>
+    </action>
+    <action id="Chain.VersionAndAttachFiles"
+      link=""
+      order="10" label="label.dnd.attachfiles"
+      help="desc.dnd.attachfiles"
+      enabled="false">
+      <category>otherBlobs</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>user_canedit</filter-id>
+      <properties>
+        <property name="chainId">VersionAndAttachFiles</property>
+      </properties>
+    </action>
+
+  </extension>
+
+</component>
