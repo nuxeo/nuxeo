@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.theme.styling.tests.themeStylingContrib.addon">
+
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+
+    <!-- extension with an addon that has to impact all pages -->
+    <themePage name="*">
+      <styles append="true">
+        <style>addon_style</style>
+      </styles>
+      <flavors append="true">
+        <flavor>addon_flavor</flavor>
+      </flavors>
+      <resources append="true">
+        <resource>jquery.addon.js</resource>
+      </resources>
+    </themePage>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.styling.service" point="flavors">
+    <flavor name="addon_flavor">
+      <!-- empty, need to add tests -->
+    </flavor>
+  </extension>
+
+  <extension target="org.nuxeo.theme.styling.service" point="styles">
+    <style name="addon_style">
+      <src>themes/css/addon_style.css</src>
+    </style>
+  </extension>
+
+  <extension target="org.nuxeo.theme.styling.service" point="resources">
+    <resource name="jquery.addon.js">
+      <path>scripts/jquery/jquery.addon.js</path>
+    </resource>
+  </extension>
+
+</component>
