@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo platform management web
+Bundle-SymbolicName: org.nuxeo.ecm.platform.management.web;singleton=true
+Bundle-Vendor: Nuxeo
+Provide-Package: org.nuxeo.ecm.platform.management.web
+Nuxeo-Require: org.nuxeo.ecm.platform.management,
+ org.nuxeo.ecm.webengine.core
