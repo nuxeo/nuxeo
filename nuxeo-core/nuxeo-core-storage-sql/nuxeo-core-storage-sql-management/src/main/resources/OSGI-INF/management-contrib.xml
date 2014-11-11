@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.management">
+
+  <extension target="org.nuxeo.runtime.management.ResourcePublisher"
+    point="factories">
+    <factory name="SQLRepositoryStatus"
+      class="org.nuxeo.ecm.core.storage.sql.management.SQLRepositoryStatusFactory" />
+  </extension>
+
+   <extension
+    target="org.nuxeo.ecm.core.management.CoreManagementComponent"
+    point="probes">
+         <probe name="remoteSQLStorageSessions"
+                  class="org.nuxeo.ecm.core.storage.sql.management.RemoteSessionsProbe">
+                  <label>Remote SQL sessions</label>
+                  </probe>
+         <probe name="activeRepositorySessions"
+                  class="org.nuxeo.ecm.core.storage.sql.management.ActiveSessionsProbe">
+                  <label>Active (local) SQL sessions</label>
+                  </probe>
+   </extension>
+
+</component>

@@ -1,0 +1,24 @@
+-- character uuid to bigint migration for Oracle
+-- v0.3 2013-03-04
+
+BEGIN
+  -- preparation phase
+  nx_execute('DROP TABLE ACLR_MODIFIED');
+  nx_execute('DROP TABLE ANCESTORS');
+  nx_execute('DROP TRIGGER NX_TRIG_HIERARCHY_UPDATE');
+  nx_execute('DROP TRIGGER NX_TRIG_HIERARCHY_INSERT');
+  nx_execute('DROP TRIGGER NX_TRIG_HIER_READ_ACL_MOD');
+  nx_execute('DROP TRIGGER NX_TRIG_ACLS_MODIFIED');
+  nx_execute('DROP TRIGGER NX_TRIG_ACLR_MODIFIED');
+  nx_execute('DROP TRIGGER NX_TRIG_ANCESTORS_INSERT');
+  nx_execute('DROP TRIGGER NX_TRIG_ANCESTORS_UPDATE');
+  nx_execute('DROP TRIGGER NX_TRIG_ANCESTORS_PROCESS');
+  nx_execute('DROP TRIGGER NX_TRIG_FT_UPDATE');
+  nx_execute('CREATE TABLE tmp_fk(table_name VARCHAR2(99), constraint_name VARCHAR(99))');
+  nx_execute('CREATE TABLE tmp_pk(table_name VARCHAR2(99), constraint_name VARCHAR(99))');
+  nx_execute('CREATE TABLE tmp_idx(table_name VARCHAR2(99), index_name VARCHAR(99))');
+  nx_execute('CREATE TABLE tmp_ftidx(index_name VARCHAR2(99), create_sql VARCHAR(999))');
+  nx_execute('CREATE SEQUENCE hierarchy_seq');
+  nx_execute('CREATE TABLE nx_idmap(id VARCHAR2(36), nid NUMBER(10,0))');
+  nx_execute('CREATE INDEX nx_idmap_idx ON nx_idmap(id)');
+END;

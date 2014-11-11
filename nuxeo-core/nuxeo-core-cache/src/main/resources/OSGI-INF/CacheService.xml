@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.cache.CacheService">
+
+  <documentation>
+    Service providing a unified cache management system.
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.cache.CacheServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.cache.CacheService" />
+  </service>
+
+  <extension-point name="caches">
+
+    <documentation>
+      Extension Point to define a new cache .
+      <cache name="newCache" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+        <ttl>20</ttl>
+        <option name="maxSize">10</option>
+        <option name="concurrencyLevel">10</option>
+      </cache>
+      The class attribute must link a class that implements the
+      CoreCache
+      interface. The default implementation 'org.nuxeo.ecm.core.cache.CacheImpl'
+      is based on
+      Google Guava
+      implementation that does not support distributed
+      cache
+      You can use the 'org.nuxeo.ecm.core.redis.contribs.RedisCache' for the
+      implementation on top of redis that allow distributed cache (make sure
+      that a contrib to RedisService define a redis server)
+      You can also create
+      your own implementation
+      by extending the AsbtractCache class and then use
+      it as an implementation class
+      <p />
+      The max size set the max number of elements contained in the cache
+      <p />
+      The Time To Live define in minutes the time before the cache will be
+      destroyed
+      <p />
+      The concurrency level, number of thread that can access at the same time
+      the cache
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.cache.CacheDescriptor" />
+
+  </extension-point>
+
+</component>

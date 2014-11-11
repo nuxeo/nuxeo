@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.schema.TypeService"
+  version="1.0.0">
+  <documentation>
+    Manage document types and schemas.
+    Allows registrering new types defined using XSD schemas
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.core.schema.SchemaManager"/>
+  </service>
+
+  <implementation class="org.nuxeo.ecm.core.schema.TypeService" />
+
+  <extension-point name="configuration">
+
+    <documentation>
+      Type manager configuration.
+      <p/>
+      For now this contains default prefetch options. For example:
+      <code>
+        <configuration>
+          <prefetch>common.icon, dc:title, dc:modified, dc:contributors, dc:creator</prefetch>
+        </configuration>
+      </code>
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.core.schema.TypeConfiguration" />
+  </extension-point>
+
+  <extension-point name="doctype">
+
+    <documentation>
+      Extension Point to register new document types and facets.
+      <p/>
+      Document types may implement several schemas and extends other
+      document types. You can compare document types with java
+      classes and schemas with java interfaces. Document types may
+      also contains several facets that define a behavior.
+      <p/>
+      The prefetch element defines what fields are synchronously
+      indexed, and are made available in search results listings.
+      <p/>
+      A doctype XML extension may contain several 'doctype' elements.
+      A doctype element may look like this:
+
+      <code>
+        <doctype name="File" extends="Document">
+          <schema name="common" />
+          <schema name="file" />
+          <schema name="dublincore" />
+          <schema name="uid" />
+          <facet name="Downloadable" />
+          <facet name="Versionable" />
+          <prefetch>dc:title, dc:modified, uid.uid</prefetch>
+        </doctype>
+      </code>
+
+      Facets are also defined by this extension point.
+      They can have zero or more schemas:
+
+      <code>
+        <facet name="MyFacet" perDocumentQuery="false"/>
+        <facet name="MyFacetWithData">
+          <schema name="myschema" />
+          <schema name="otherschema" />
+        </facet>
+      </code>
+
+      Queries using ecm:mixinType on facets marked with
+      perDocumentQuery="false" will not match any document where
+      this facet has been added using DocumentModel.addFacet() and does
+      not belong to the document type (this is done for performance reasons).
+
+      It's also possible to associate one or more schemas to all proxies:
+      <code>
+        <proxies>
+          <schema name="myschema" />
+        </proxies>
+      </code>
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.core.schema.DocumentTypeDescriptor" />
+    <object
+      class="org.nuxeo.ecm.core.schema.FacetDescriptor" />
+    <object
+      class="org.nuxeo.ecm.core.schema.ProxiesDescriptor" />
+  </extension-point>
+
+  <extension-point name="schema">
+
+    <documentation>
+      Extension Point to register new schemas.
+      <p/>
+      Schemas are defined using XSD files.
+      The schema extension XML may containg  several 'schema' objects as
+      the following ones:
+      <code>
+        <schema name="common" src="schema/common.xsd" />
+        <schema name="dublincore" prefix="dc" src="schema/dublincore.xsd" />
+      </code>
+      The <i>name</i> attribute uniquely identify the schema, the <i>src</i> attribute specify
+      the path to that schema (relative to the bundle root) and the <i>prefix</i> is used as
+      a prefix (short name) of the schema namespace.
+      The schema namespace is the targetNamespace defined inside the XSD file
+      <p/>
+      Note that multiple schemas can share the same target namespace and prefix
+      <p/>
+      You can also create a Nuxeo Schema from a sub part of the XSD schema.
+      For that you can use the xsdRootElement attribute to indicate the complex type to use.
+      <code>
+        <schema name="employeeSchema" src="schema/testExtension.xsd" xsdRootElement="employee"/>
+      </code>
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.core.schema.SchemaBindingDescriptor" />
+  </extension-point>
+
+  <extension target="org.nuxeo.runtime.EventService" point="listeners">
+    <listener
+      class="org.nuxeo.ecm.core.schema.FlushPendingsRegistrationOnReloadListener">
+      <topic>org.nuxeo.runtime.reload</topic>
+    </listener>
+  </extension>
+</component>

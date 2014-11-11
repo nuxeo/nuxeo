@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.convert.tests.5">
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
+    point="converter">
+
+    <converter name="chainAvailable">
+      <conversionSteps>
+        <subconverter>identity</subconverter>
+      </conversionSteps>
+    </converter>
+
+    <converter name="chainNotAvailable">
+      <conversionSteps>
+        <subconverter>identity</subconverter>
+        <subconverter>NotAvailableConverter</subconverter>
+      </conversionSteps>
+    </converter>
+
+  </extension>
+
+</component>

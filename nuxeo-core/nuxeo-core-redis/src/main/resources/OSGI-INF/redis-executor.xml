@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.redis">
+
+  <require>org.nuxeo.ecm.core.work.service</require>
+  <require>org.nuxeo.ecm.core.storage.lock.LockManagerService</require>
+  <require>org.nuxeo.ecm.core.cache.CacheService</require>
+
+
+  <documentation>
+    Redis executor service.
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.redis.RedisExecutor" />
+    <provide interface="org.nuxeo.ecm.core.redis.RedisAdmin" />
+  </service>
+
+  <implementation class="org.nuxeo.ecm.core.redis.RedisComponent" />
+
+  <extension-point name="configuration">
+
+        <documentation>
+      Extension allowing the configuration of a Redis pool.
+      <p />
+      Server configuration:
+      <code>
+        <server>
+          <host>localhost</host>
+          <port>6379</port>
+          <password>secret</password>
+          <database>0</database>
+          <timeout>2000</timeout>
+        </server>
+      </code>
+      Sentinel configuration:
+      <code>
+        <sentinel>
+          <master>master</master>
+          <host name="localhost" port="26379"/>
+          <host name="localhost" port="26380"/>
+          <password>secret</password>
+          <database>0</database>
+          <timeout>2000</timeout>
+        </sentinel>
+      </code>
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.redis.RedisServerDescriptor" />
+    <object class="org.nuxeo.ecm.core.redis.RedisSentinelDescriptor" />
+  </extension-point>
+ 
+
+</component>

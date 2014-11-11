@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.management.jtajca.component">
+
+  <require>org.nuxeo.runtime.metrics.MetricsService</require>
+  <require>org.nuxeo.runtime.management.ServerLocator</require>
+  
+  <documentation>
+    Component used to install/uninstall the monitors
+    (transaction and connections).
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.core.management.jtajca.internal.DefaultMonitorComponent" />
+
+</component>
