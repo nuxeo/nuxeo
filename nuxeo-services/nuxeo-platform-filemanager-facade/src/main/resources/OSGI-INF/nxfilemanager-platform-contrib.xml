@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.filemanager.service.binding.contrib">
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement"
+      point="services">
+    <documentation>
+      Define the filemanager bean as a platform service.
+    </documentation>
+
+    <service class="org.nuxeo.ecm.platform.filemanager.api.FileManager"
+        group="core">
+      <locator>%FileManagerBean</locator>
+    </service>
+  </extension>
+
+</component>
