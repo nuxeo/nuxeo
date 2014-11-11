@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.actions.test.overrideInnerFilter">
+
+  <documentation>
+    non regression test file for NXP-9677, to be installed after
+    uninstall of actions-contrib.
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="TAB_WITH_LOCAL_FILTER">
+      <category>OVERRIDE</category>
+      <filter id="local_filter">
+        <rule grant="false">
+          <type>filter re-defined in action</type>
+        </rule>
+      </filter>
+    </action>
+
+  </extension>
+
+</component>
