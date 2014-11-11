@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>manageRightsGroups</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">manageRightsGroups</td></tr>
+</thead><tbody>
+<!--@Test groups:ManageRightsGroups|depends:CreateGroup-->
+<tr>
+	<td>setTimeout</td>
+	<td>30000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=WARN&amp;message=----- Selenium manageRightsGroups</td>
+	<td></td>
+</tr>
+<!--Identification-->
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Administrator</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Workspaces</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testWorkspace2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Access rights</td>
+	<td></td>
+</tr>
+<!--Donner a Johns droits d'admin-->
+<!-- Since 5.7.3 rights is a select2 widget-->
+<!-- The 2 following instructions are a workaround to make select2 display suggestions. Only the second typeKeys call triggers the suggestion display!!! -->
+<tr>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_selection_select2'] input</td>
+    <td>Johns</td>
+</tr>
+<tr>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_selection_select2'] input</td>
+    <td>Johns</td>
+</tr>
+<tr>
+    <td>waitForJSQueries</td>
+    <td>10000</td>
+    <td></td>
+</tr>
+<tr>
+    <td>clickAt</td>
+    <td>css=.select2-result-label</td>
+    <td></td>
+</tr>
+<!--  -->
+<tr>
+	<td>select</td>
+	<td>//*[@id='add_rights_form']/table/tbody/tr/td[2]/div/table/tbody/tr[1]/td[2]/select</td>
+	<td>label=Grant</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//*[@id='add_rights_form']/table/tbody/tr/td[2]/div/table/tbody/tr[2]/td[2]/select</td>
+	<td>label=Manage everything</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Add permission']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//input[@value='Save local rights']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Save local rights']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//input[@value='Save local rights']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+<!--bree se connecte-->
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>bree</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>bree1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>bree</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Workspaces</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testWorkspace2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Access rights</td>
+	<td></td>
+</tr>
+<!--bree donne a Suppr droits d'ecriture-->
+<!-- Since 5.7.3 rights is a select2 widget-->
+<!-- The 2 following instructions are a workaround to make select2 display suggestions. Only the second typeKeys call triggers the suggestion display!!! -->
+<tr>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_selection_select2'] input</td>
+    <td>Suppr</td>
+</tr>
+<tr>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_selection_select2'] input</td>
+    <td>Suppr</td>
+</tr>
+<tr>
+    <td>waitForJSQueries</td>
+    <td>10000</td>
+    <td></td>
+</tr>
+<tr>
+    <td>clickAt</td>
+    <td>css=.select2-result-label</td>
+    <td></td>
+</tr>
+<!--  -->
+<tr>
+	<td>select</td>
+	<td>//*[@id='add_rights_form']/table/tbody/tr/td[2]/div/table/tbody/tr[1]/td[2]/select</td>
+	<td>label=Grant</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//*[@id='add_rights_form']/table/tbody/tr/td[2]/div/table/tbody/tr[2]/td[2]/select</td>
+	<td>label=Write</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Add permission']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Save local rights']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//input[@value='Save local rights']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+<!--verification des droits de lbramard (groupe Suppr)-->
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>lbramard</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>lbramard1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>lbramard</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Workspaces</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testWorkspace2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>link=Modification</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>link=Access rights</td>
+	<td></td>
+</tr>
+<!--Deconnexion-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
