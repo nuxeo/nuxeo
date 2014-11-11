@@ -1,0 +1,114 @@
+<project name="nuxeo-assembly" default="build" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+
+  <property name="outdir" value="${maven.project.build.directory}" />
+  <property name="stagedir" value="${outdir}/stage" />
+
+
+  <target name="build">
+    <echo>Entering tomcat build</echo>
+    <property name="tomcat" value="${stagedir}/nuxeo-distribution-tomcat" />
+    <property name="nxserver" value="${tomcat}/nxserver" />
+
+    <mkdir dir="${stagedir}" />
+    <!-- Extract Tomcat -->
+    <unzip dest="${stagedir}">
+      <artifact:resolveFile key="org.apache.tomcat:apache-tomcat:6.0.20:zip" />
+    </unzip>
+    <nx:rename from="${stagedir}/apache-tomcat*" to="${tomcat}" />
+    <!-- patch catalina.sh to add custom JAVA properties -->
+    <replace file="${tomcat}/bin/catalina.sh">
+      <replacetoken>#!/bin/sh</replacetoken>
+      <replacevalue><![CDATA[#!/bin/sh
+
+JAVA_OPTS="$JAVA_OPTS -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding=UTF-8"
+
+]]>
+      </replacevalue>
+    </replace>
+    <replace file="${tomcat}/bin/catalina.bat">
+      <replacetoken>@echo off</replacetoken>
+      <replacevalue><![CDATA[@echo off
+
+set JAVA_OPTS=%JAVA_OPTS% -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding=UTF-8
+
+]]>
+      </replacevalue>
+    </replace>
+    <chmod dir="${tomcat}/bin" perm="750" includes="*.sh" />
+
+    <!-- Extract Nuxeo webapp -->
+    <unzip dest="${tomcat}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-jetty:${nuxeo.dm.version}:zip" classifier="nuxeo-dm" />
+    </unzip>
+    <nx:rename from="${tomcat}/nuxeo-*" to="${nxserver}" />
+
+    <!-- Custom resources -->
+    <copy todir="${tomcat}" overwrite="true">
+      <fileset dir="src/main/resources" />
+    </copy>
+
+    <!-- Cleanup and reorganize libraries -->
+    <delete>
+      <fileset dir="${nxserver}" includes="nuxeo-runtime-launcher-*" />
+      <fileset dir="${nxserver}/bundles" includes="nuxeo-runtime-jetty-*" />
+      <!--fileset dir="${nxserver}/bundles" includes="nuxeo-platform-virtualnavigation-*" /-->
+      <fileset dir="${nxserver}/lib" includes="core-*" />
+      <!-- jetty-util is needed by jsp impl jar - whic is referring jetty log classes -->
+      <fileset dir="${nxserver}/lib" includes="jetty-*" excludes="jetty-util*" />
+      <fileset dir="${nxserver}/lib" includes="jsp-api*" />
+      <fileset dir="${nxserver}/lib" includes="servlet-api-*" />
+      <fileset dir="${nxserver}/lib" includes="el-api*" />
+      <fileset dir="${nxserver}/lib" includes="jsp-*" />
+    </delete>
+    <!-- we need el-ri impl in lib - why this is not part of jetty distrib? -->
+    <copy todir="${nxserver}/lib">
+      <artifact:resolveFile key="com.google.gwt:gwt-servlet:1.7.0:jar" />
+      <artifact:resolveFile key="jstl:jstl:1.1.2:jar" />
+      <artifact:resolveFile key="javax.el:el-ri:unknown:jar" />
+      <!--artifact:resolveFile key="javax.el:el-api:unknown:jar" /-->
+    </copy>
+    <!--move todir="${tomcat}/nxserver/nuxeo.war/WEB-INF/lib">
+      <fileset dir="${nxserver}/lib" includes="jsf-impl-*" />
+    </move-->
+
+    <!--echo>Running nuxeo build processor</echo>
+    <nx:preprocess src="${nxserver}" /-->
+
+    <!--echo>Copying war files</echo>
+    <move todir="${tomcat}/webapps/nuxeo">
+      <fileset dir="${nxserver}/nuxeo.war" includes="**/*" />
+    </move-->
+
+    <copy todir="${tomcat}/lib">
+      <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-runtime-tomcat-adapter:${nuxeo.runtime.version}:jar" />
+    </copy>
+    <!-- we need to move DS related jars into tomcat lib ... The move must be done after running the processing since it is depending on these jars -->
+    <move todir="${tomcat}/lib">
+      <fileset dir="${nxserver}/lib" includes="derby-*" />
+      <fileset dir="${nxserver}/lib" includes="h2-*" />
+      <fileset dir="${nxserver}/lib" includes="log4j-*" />
+      <fileset dir="${nxserver}/lib" includes="lucene-*" />
+      <fileset dir="${nxserver}/lib" includes="commons-logging-*" />
+      <fileset dir="${nxserver}/lib" includes="commons-lang-*" />
+      <fileset dir="${nxserver}/lib" includes="freemarker-*" />
+      <fileset dir="${nxserver}/bundles" includes="nuxeo-core-storage-sql-extensions-*" />
+      <fileset dir="${nxserver}/bundles" includes="nuxeo-generic-wss-handler-*" />
+    </move>
+
+    <!-- TODO do the same for windows cmd file -->
+
+    <!-- make the final zip -->
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip" basedir="${stagedir}" />
+  </target>
+
+  <target name="clean">
+    <delete dir="${stagedir}" />
+  </target>
+
+  <target name="cleanall">
+    <delete dir="${outdir}" />
+  </target>
+
+</project>

@@ -1,0 +1,195 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>createWSToDelete</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">createWSToDelete</td></tr>
+</thead><tbody>
+<!--Identification-->
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jsmith</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jsmith1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>You are logged as jsmith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Workspaces</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testWorskspace1</td>
+	<td></td>
+</tr>
+<!--création d'un WS à supprimer-->
+<tr>
+	<td>mouseDown</td>
+	<td>link=New document</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Workspace</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//td[@class="fieldColumn"]/input[@type="text"]</td>
+	<td>a WS to be deleted 1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//td[@class="fieldColumn"]/textarea</td>
+	<td>desc WS to be deleted</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<!--Création de contenu dans l'espace de travail à supprimer-->
+<tr>
+	<td>verifyTextPresent</td>
+	<td>a WS to be deleted 1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>This folder contains no document.</td>
+	<td></td>
+</tr>
+<tr>
+	<td>mouseDown</td>
+	<td>link=New document</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Note</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//table[@class="dataInput"]/tbody/tr//td[2]/input</td>
+	<td>Note to be deleted</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Project</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>1.0</td>
+	<td></td>
+</tr>
+<!--création d'un second WS à supprimer-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testWorskspace1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>mouseDown</td>
+	<td>link=New document</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Workspace</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//td[@class="fieldColumn"]/input[@type="text"]</td>
+	<td>a WS to be deleted 2</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//td[@class="fieldColumn"]/textarea</td>
+	<td>desc WS to be deleted 2</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<!--Création de contenu dans l'espace de travail à supprimer-->
+<tr>
+	<td>verifyTextPresent</td>
+	<td>a WS to be deleted 2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>This folder contains no document.</td>
+	<td></td>
+</tr>
+<tr>
+	<td>mouseDown</td>
+	<td>link=New document</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Note</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//table[@class="dataInput"]/tbody/tr//td[2]/input</td>
+	<td>Note2 to be deleted</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Project</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>1.0</td>
+	<td></td>
+</tr>
+<!--Déconnexion-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

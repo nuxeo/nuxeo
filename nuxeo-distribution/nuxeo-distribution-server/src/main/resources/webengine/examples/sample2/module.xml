@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+
+<module name="sample2" root-type="sample2" path="/sample2">
+  <nature>groovy</nature>
+</module>
