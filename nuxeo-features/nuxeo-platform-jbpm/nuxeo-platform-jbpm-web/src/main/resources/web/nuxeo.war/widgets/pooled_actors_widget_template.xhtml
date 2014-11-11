@@ -1,0 +1,34 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:rich="http://richfaces.org/rich">
+
+  <c:set var="userSchema" value="#{userManager.userSchemaName}" />
+  <c:set var="groupSchema" value="#{userManager.groupSchemaName}" />
+
+  <c:if test="#{widget.mode != 'edit'}">
+
+    <h:dataTable value="#{jbpmHelper.getPooledActorIds(field_0)}"
+      var="item" rendered="#{not empty field_0}">
+      <h:column>
+        <nxu:methodResult name="info" value="#{userSuggestionActions.getPrefixedUserInfo(item)}">
+          <f:subview rendered="#{info.type == 'USER_TYPE'}">
+            <h:graphicImage value="/icons/user.gif" alt="user.gif" />
+            <h:outputText value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" />
+          </f:subview>
+          <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
+            <h:graphicImage value="/icons/group.gif" alt="group.gif" />
+            <h:outputText value="#{nxu:groupDisplayName(info.id, info.entry[groupSchema].grouplabel)}" />
+          </f:subview>
+          <f:subview rendered="#{empty info.type}">
+            <h:outputText value="#{item}" />
+          </f:subview>
+        </nxu:methodResult>
+      </h:column>
+    </h:dataTable>
+
+  </c:if>
+</div>
