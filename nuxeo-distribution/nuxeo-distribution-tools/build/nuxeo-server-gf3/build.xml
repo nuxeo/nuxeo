@@ -1,0 +1,105 @@
+<project name="nuxeo-server-gf3" default="build"
+xmlns:artifact="urn:nuxeo-artifact" xmlns:nx="urn:nuxeo-build">
+  <nx:profile activate="h2" />
+  <property name="gf3.version" value="3.0-b38" />
+  <import file="../config.xml" />
+  <target name="build" depends="configure">
+    <ant dir="../nuxeo-server-base" />
+    <copy todir="${stagedir}" overwrite="true">
+      <fileset dir="resources/commons" />
+    </copy>
+    <!--graph resolve="org.nuxeo.runtime:nuxeo-runtime-gf3-adapter"/-->
+    <artifact:graph resolve="javax.xml.stream:stax-api:1.0-2" />
+    <artifact:graph resolve="org.codehaus.woodstox:wstx-asl:3.2.7" />
+    <artifact:graph resolve="org.glassfish.jdbc.jdbc-ra.jdbc-ra-distribution:jdbc-ra:${gf3.version}:zip" />
+    <artifact:graph resolve="org.nuxeo.runtime:nuxeo-runtime-gf3-adapter:${nuxeo.runtime.version}" />
+    <copy todir="${stagedir}/bundles">
+      <artifact:file key="org.nuxeo.runtime:nuxeo-runtime-gf3-adapter" />
+    </copy>
+    <copy todir="${stagedir}/lib">
+      <artifact:file key="javax.xml.stream:stax-api" />
+      <artifact:file key="org.codehaus.woodstox:wstx-asl" />
+    </copy>
+    <unzip dest="${stagedir}">
+      <artifact:file key="org.glassfish.jdbc.jdbc-ra.jdbc-ra-distribution:jdbc-ra:${gf3.version}:zip" />
+      <patternset>
+        <exclude name="META-INF/**" />
+      </patternset>
+    </unzip>
+    <nx:profile name="ra">
+      <echo>Entering Profile RA (commons)</echo>
+      <copy todir="${stagedir}" overwrite="true">
+        <fileset dir="resources/ra" />
+      </copy>
+    </nx:profile>
+    <nx:profile name="jcr">
+      <echo>Entering Profile JCR</echo>
+      <copy todir="${stagedir}/bundles">
+        <artifact:file key="nuxeo-core-jcr-connector" />
+      </copy>
+      <copy todir="${stagedir}" overwrite="true">
+        <fileset dir="resources/jcr">
+          <patternset>
+            <exclude name="ra/**" />
+          </patternset>
+        </fileset>
+      </copy>
+      <nx:profile name="ra">
+        <echo>Entering Profile JCR + RA</echo>
+        <copy todir="${stagedir}" overwrite="true">
+          <fileset dir="resources/jcr/ra" />
+        </copy>
+        <unzip dest="${stagedir}/bundles/nuxeo-repository.rar">
+          <artifact:file key="nuxeo-core-jca" />
+          <patternset>
+            <include name="org/**" />
+          </patternset>
+        </unzip>
+      </nx:profile>
+    </nx:profile>
+    <nx:profile name="vcs">
+      <echo>Entering Profile VCS</echo>
+      <!-- temporary hack: remove already deployed jcr connector - this should be modified in base distribution-->
+      <delete>
+        <fileset dir="${stagedir}/bundles"
+        includes="nuxeo-core-jcr-*.jar" />
+        <fileset file="${stagedir}/config/default-versioning-config.xml" />
+      </delete>
+      <!-- END temp hack -->
+      <copy todir="${stagedir}/bundles">
+        <artifact:file key="nuxeo-core-storage-sql" />
+        <artifact:file key="nuxeo-core-storage-sql-extensions" />
+      </copy>
+      <copy todir="${stagedir}" overwrite="true">
+        <fileset dir="resources/vcs">
+          <patternset>
+            <exclude name="ra/**" />
+          </patternset>
+        </fileset>
+      </copy>
+      <nx:profile name="ra">
+        <echo>Entering Profile VCS + RA</echo>
+        <copy todir="${stagedir}" overwrite="true">
+          <fileset dir="resources/vcs/ra" />
+        </copy>
+        <unzip dest="${stagedir}/bundles/nuxeo-repository.rar">
+          <artifact:file key="nuxeo-core-storage-sql-ra" />
+          <patternset>
+            <include name="org/**" />
+          </patternset>
+        </unzip>
+      </nx:profile>
+    </nx:profile>
+    <nx:profile name="h2">
+      <copy todir="${stagedir}/lib">
+        <artifact:file key="com.h2database:h2" />
+      </copy>
+    </nx:profile>
+    <zip destfile="${outdir}/nxserver.zip">
+      <zipfileset dir="${stagedir}" excludes="*.sh"
+      prefix="nxserver" />
+      <zipfileset dir="${stagedir}" includes="*.sh"
+      prefix="nxserver" filemode="777" />
+    </zip>
+  </target>
+</project>

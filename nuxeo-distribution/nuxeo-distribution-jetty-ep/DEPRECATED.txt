@@ -1,0 +1,1 @@
+See nuxeo-distribution-jetty with profiles nuxeo-ep-jetty or nuxeo-dm-jetty
