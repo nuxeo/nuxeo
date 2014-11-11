@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.comment.widgets">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="document_comments_count">
+      <configuration>
+        <sinceVersion>5.7.2</sinceVersion>
+        <title>Comments Count</title>
+        <description>
+          <p>This widget displays how many comments a document has.</p>
+          <p>
+            It requires the following fields configuration: first field maps
+            the document model.
+          </p>
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/comments_count_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="document_comments_count" type="document_comments_count" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="summary_document_comments_count" type="widget" order="30">
+      <category>SUMMARY_INDICATORS</category>
+      <filter-id>commentable</filter-id>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>not_anonymous</filter-id>
+      <properties>
+        <property name="widgetName">document_comments_count</property>
+      </properties>
+    </action>
+
+  </extension>
+
+</component>
