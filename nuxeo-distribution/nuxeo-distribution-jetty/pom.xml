@@ -1,0 +1,123 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.distribution</groupId>
+    <artifactId>nuxeo-distribution</artifactId>
+    <version>5.3.1-I20091221_0116</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>nuxeo-distribution-jetty</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo Jetty Distribution</name>
+  <description>Package Nuxeo EP or DM into Jetty</description>
+
+  <!-- This should be done on Nuxeo ECM Parent POM -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>jboss</groupId>
+        <artifactId>javassist</artifactId>
+        <version>4.2.3.GA</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>2.5</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <profiles>
+    <profile>
+      <id>nuxeo-dm-jetty</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <distribution>nuxeo-dm</distribution>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.nuxeo.ecm.distribution</groupId>
+          <artifactId>nuxeo-distribution-dm</artifactId>
+          <type>pom</type>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>nuxeo-ep-jetty</id>
+      <properties>
+        <distribution>nuxeo-ep</distribution>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.nuxeo.ecm.platform</groupId>
+          <artifactId>nuxeo-platform-ear</artifactId>
+          <type>pom</type>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-jetty-adapter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-deploy</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-nuxeo-plugin</artifactId>
+        <extensions>false</extensions>
+        <executions>
+          <execution>
+            <id>assemble-app</id>
+            <phase>package</phase>
+            <goals>
+              <goal>assembly</goal>
+            </goals>
+            <configuration>
+              <runPreprocessor>false</runPreprocessor>
+              <format>zip</format>
+              <zipRoot>${artifactId}-${version}</zipRoot>
+              <outputDirectory>target</outputDirectory>
+              <targetFile>${artifactId}-${version}</targetFile>
+              <descriptor>${basedir}/src/main/assemble/assembly.xml</descriptor>
+            </configuration>
+          </execution>
+          <execution>
+            <id>attach-app</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+            <configuration>
+              <file>${project.build.directory}/${artifactId}-${version}.zip</file>
+              <type>zip</type>
+              <classifier>${distribution}</classifier>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

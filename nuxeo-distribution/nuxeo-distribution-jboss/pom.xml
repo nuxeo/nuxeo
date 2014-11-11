@@ -1,0 +1,166 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.distribution</groupId>
+    <artifactId>nuxeo-distribution</artifactId>
+    <version>5.3.1-I20091221_0116</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>nuxeo-distribution-jboss</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo JBoss Distribution</name>
+  <description>Package Nuxeo EP or DM EAR with JBoss</description>
+
+  <profiles>
+    <profile>
+      <id>nuxeo-dm-jboss</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <distribution>nuxeo-dm</distribution>
+      </properties>
+    </profile>
+    <profile>
+      <id>nuxeo-ep-jboss</id>
+      <properties>
+        <distribution>nuxeo-ep</distribution>
+      </properties>
+    </profile>
+  </profiles>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.jboss</groupId>
+      <artifactId>jboss-as</artifactId>
+      <classifier>light</classifier>
+      <type>zip</type>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+        <artifactId>maven-antrun-extended-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <configuration>
+              <tasks>
+                <resolveArtifact groupId="org.jboss" artifactId="jboss-as" classifier="light"
+                  type="zip" property="jboss" />
+                <unzip src="${jboss}" dest="${project.build.directory}/jboss" />
+                <ant antfile="build.xml" target="patch">
+                  <property name="jboss.dir" value="${project.build.directory}/jboss" />
+                </ant>
+                <ant antfile="build.xml" target="copy-lib">
+                  <property name="jboss.dir" value="${project.build.directory}/jboss" />
+                </ant>
+                <copy todir="${project.build.directory}/jboss" >
+                  <fileset dir="${basedir}/src/main/resources/jboss/"/>
+                </copy>
+                <chmod dir="${project.build.directory}/jboss/bin" perm="750"
+                  includes="*.sh" />
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- deploy by default PostgreSQL 8.3 and MySQL JDBC drivers into JBoss -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-jdbc-drivers</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/jboss/server/default/lib/</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>postgresql</groupId>
+                  <artifactId>postgresql</artifactId>
+                  <version>8.3-604.jdbc3</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>mysql</groupId>
+                  <artifactId>mysql-connector-java</artifactId>
+                  <version>5.1.6</version>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- deploy logging-monitor into JBoss -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-logging-monitor</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/jboss/server/default/lib/</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.jboss.services</groupId>
+                  <artifactId>logging-monitor</artifactId>
+                  <version>4.2.3.GA</version>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-nuxeo-plugin</artifactId>
+        <extensions>false</extensions>
+        <executions>
+          <execution>
+            <id>assemble-app</id>
+            <phase>package</phase>
+            <goals>
+              <goal>assembly</goal>
+            </goals>
+            <configuration>
+              <runPreprocessor>false</runPreprocessor>
+              <format>zip</format>
+              <zipRoot>${artifactId}-${version}</zipRoot>
+              <outputDirectory>target</outputDirectory>
+              <targetFile>${artifactId}-${version}</targetFile>
+              <descriptor>${basedir}/src/main/assemble/assembly.xml</descriptor>
+            </configuration>
+          </execution>
+          <execution>
+            <id>attach-app</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+            <configuration>
+              <file>${project.build.directory}/${artifactId}-${version}.zip</file>
+              <type>zip</type>
+              <classifier>${distribution}</classifier>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
