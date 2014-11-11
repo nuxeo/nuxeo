@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.annotations.configuration.service.WebAnnotationConfigurationService">
+
+  <documentation>
+    @author Thomas Roger(troger@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide
+        interface="org.nuxeo.ecm.platform.annotations.configuration.service.WebAnnotationConfigurationService"/>
+  </service>
+
+  <implementation
+      class="org.nuxeo.ecm.platform.annotations.configuration.service.WebAnnotationConfigurationServiceImpl"/>
+
+  <extension-point name="types">
+    <documentation>
+      @author Thomas Roger(troger@nuxeo.com)
+      This extension point let you contribute new annotation types.
+
+      Sample contribution :
+      <webAnnotation
+          name="Comment"
+          uri="http://www.w3.org/2000/10/annotation-ns#Comment"
+          icon="icons/annotate.png"
+          type="local"
+          enabled="true"
+          listIcon="icons/annotate.png"
+          createIcon="icons/annotate.png"
+          inMenu="true">
+        <field name="cotation">
+          <choice>1</choice>
+          <choice>2</choice>
+          <choice>3</choice>
+          <choice>4</choice>
+          <choice>5</choice>
+          <choice>6</choice>
+        </field>
+      </webAnnotation>
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.platform.annotations.configuration.service.WebAnnotationDefinitionDescriptor"/>
+  </extension-point>
+
+  <extension-point name="userInfo">
+    <documentation>
+      <userInfoMapper class="org.nuxeo.ecm.platform.annotations.gwt.server.configuration.GenericUserInfoMapper"/>
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.platform.annotations.configuration.service.UserInfoMapperDescriptor"/>
+  </extension-point>
+
+  <extension-point name="filters">
+    <documentation>
+      <filter name="All Annotations" order="0" icon="icons/annotate.png"/>
+
+      <filter name="Our Annotations" order="1" icon="icons/annotate.png">
+        <field name="ou">${userOrgUnit}</field>
+      </filter>
+
+      <filter name="My Annotations" order="2" icon="icons/annotate.png">
+        <author>${userName}</author>
+      </filter>
+
+      <filter name="Comments Only" order="3" icon="icons/annotate.png">
+        <type>Comment</type>
+      </filter>
+
+      <filter name="Custom Filters" order="4" icon="icons/annotate.png">
+        <author/>
+        <type/>
+        <field name="ou"/>
+      </filter>
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.platform.annotations.configuration.service.FilterDescriptor"/>
+  </extension-point>
+
+  <extension-point name="displayedFields">
+    <documentation>
+      <field name="{http://purl.org/dc/elements/1.1/}creator" label="Auteur" displayed="true"/>
+      <field name="{http://www.w3.org/1999/02/22-rdf-syntax-ns#}type" label="Type"/>
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.platform.annotations.configuration.service.DisplayedFieldsDescriptor"/>
+  </extension-point>
+
+  <extension-point name="webPermission">
+    <documentation>
+      @author Thomas Roger(troger@nuxeo.com)
+      This extension point let you contribute a class that defines if a document can be annotated
+      or not via the GWT UI.
+      <webPermission
+        class="org.nuxeo.ecm.platform.annotations.gwt.server.configuration.DefaultWebPermission" />
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.annotations.configuration.service.WebPermissionDescriptor" />
+  </extension-point>
+
+</component>
