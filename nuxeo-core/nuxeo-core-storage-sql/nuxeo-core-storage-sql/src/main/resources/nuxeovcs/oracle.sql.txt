@@ -1,0 +1,980 @@
+# Copyright (c) 2008-2012 Nuxeo SA (http://nuxeo.com/) and others.
+#
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License v1.0
+# which accompanies this distribution, and is available at
+# http://www.eclipse.org/legal/epl-v10.html
+#
+# Contributors:
+#     Florent Guillaume
+#     Benoit Delbosc
+
+# Variables used:
+# ${idType} VARCHAR2(36)
+# ${argIdType} VARCHAR2
+# ${fulltextTriggerStatements} repeated for all suffixes SFX:
+#   :NEW.fulltextSFX := :NEW.simpletextSFX || :NEW.binarytextSFX;
+# ${readPermissions} is
+#   INTO READ_ACL_PERMISSIONS VALUES ('Browse')
+#   INTO READ_ACL_PERMISSIONS VALUES ('Read')
+#   INTO READ_ACL_PERMISSIONS VALUES ('ReadProperties')
+#   INTO READ_ACL_PERMISSIONS VALUES ('ReadRemove')
+#   INTO READ_ACL_PERMISSIONS VALUES ('ReadWrite')
+#   INTO READ_ACL_PERMISSIONS VALUES ('Everything')
+# ${usersSeparator} default to '|'
+
+# Conditions used:
+# fulltextEnabled
+# aclOptimizationsEnabled
+# pathOptimizationsEnabled
+
+# Note: CREATE TABLE, INSERT, DELETE must not have a final semicolon...
+# However CREATE TRIGGER for instance MUST have a final semicolon!
+
+############################################################
+
+
+#CATEGORY: beforeTableCreation
+
+
+CREATE OR REPLACE TYPE NX_STRING_ARRAY AS VARRAY(32767) OF VARCHAR2(32767);
+
+# -- CREATE OR REPLACE will not work if ACLR_USER_USERS nested table is not empty
+#TEST:
+SELECT 1 FROM USER_TYPES WHERE type_name = 'NX_STRING_TABLE'
+
+#IF: emptyResult
+CREATE TYPE NX_STRING_TABLE AS TABLE OF VARCHAR2(4000)
+
+
+# needs: GRANT EXECUTE ON DBMS_CRYPTO TO nuxeo;
+CREATE OR REPLACE FUNCTION nx_hash(string VARCHAR2)
+RETURN VARCHAR2
+IS
+BEGIN
+  -- hash function 1 is MD4 (faster than 2 = MD5)
+  RETURN DBMS_CRYPTO.HASH(UTL_I18N.STRING_TO_RAW(string, 'AL32UTF8'), 1);
+END;
+
+# needs: GRANT EXECUTE ON DBMS_CRYPTO TO nuxeo;
+CREATE OR REPLACE FUNCTION nx_hash_clob(c NCLOB)
+RETURN VARCHAR2
+IS
+BEGIN
+  -- hash function 1 is MD4 (faster than 2 = MD5)
+  RETURN DBMS_CRYPTO.HASH(COALESCE(c, '-'), 1);
+END;
+
+
+# needs: GRANT SELECT ON SYS.GV_$SESSION TO nuxeo;
+CREATE OR REPLACE FUNCTION NX_NODEID
+RETURN VARCHAR
+IS
+  cursid NUMBER := SYS_CONTEXT('USERENV', 'SID');
+  curser NUMBER;
+BEGIN
+  SELECT SERIAL# INTO curser FROM GV$SESSION WHERE SID = cursid;
+  RETURN cursid || ',' || curser;
+END;
+
+
+############################################################
+
+
+#CATEGORY: afterTableCreation
+
+
+CREATE OR REPLACE FUNCTION NX_IN_TREE(id ${argIdType}, baseid ${argIdType})
+RETURN NUMBER IS
+  curid hierarchy.id%TYPE := id;
+BEGIN
+  IF baseid IS NULL OR id IS NULL OR baseid = id THEN
+    RETURN 0;
+  END IF;
+  LOOP
+    SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;
+    IF curid IS NULL THEN
+      RETURN 0;
+    ELSIF curid = baseid THEN
+      RETURN 1;
+    END IF;
+  END LOOP;
+END;
+
+
+CREATE OR REPLACE FUNCTION NX_ACCESS_ALLOWED(id ${argIdType}, users NX_STRING_TABLE, permissions NX_STRING_TABLE)
+RETURN NUMBER IS
+  curid hierarchy.id%TYPE := id;
+  newid hierarchy.id%TYPE;
+  first BOOLEAN := TRUE;
+BEGIN
+  WHILE curid IS NOT NULL LOOP
+    FOR r IN (SELECT * FROM acls WHERE acls.id = curid ORDER BY acls.pos) LOOP
+      IF r.permission MEMBER OF permissions AND r.user MEMBER OF users THEN
+        RETURN r."GRANT";
+      END IF;
+    END LOOP;
+    SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;
+    IF first AND newid IS NULL THEN
+      SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;
+    END IF;
+    first := FALSE;
+    curid := newid;
+  END LOOP;
+  RETURN 0;
+END;
+
+
+#IF: fulltextEnabled
+CREATE OR REPLACE TRIGGER NX_TRIG_FT_UPDATE
+  BEFORE INSERT OR UPDATE ON "FULLTEXT"
+  FOR EACH ROW
+BEGIN
+  ${fulltextTriggerStatements}
+END;
+
+
+CREATE OR REPLACE PROCEDURE NX_CLUSTER_INVAL(i ${argIdType}, f VARCHAR2, k INTEGER)
+IS
+  nid VARCHAR(4000) := NX_NODEID();
+BEGIN
+  FOR c IN (SELECT nodeid FROM cluster_nodes WHERE nodeid <> nid) LOOP
+    INSERT INTO cluster_invals (nodeid, id, fragments, kind) VALUES (c.nodeid, i, f, k);
+  END LOOP;
+END;
+
+
+# ------------------------------------------------------------
+# -- PATH OPTIMIZATIONS
+
+# ------------------------------------------------------------
+# -- ancestors table
+# -- ancestors field contains the list of parents from root to parent
+#TEST:
+SELECT 1 FROM USER_TABLES WHERE table_name = 'ANCESTORS'
+
+#IF: emptyResult
+CREATE TABLE ANCESTORS (
+  hierarchy_id VARCHAR2(36) NOT NULL,
+  ancestors NX_STRING_TABLE,
+  need_update NUMBER(1),
+  CONSTRAINT ANCESTORS_HIERARCHY_ID_FK FOREIGN KEY (hierarchy_id) REFERENCES hierarchy (id) ON DELETE CASCADE
+) NESTED TABLE ancestors STORE AS ancestors_ancestors
+
+
+#TEST:
+SELECT 1 FROM user_tab_columns WHERE table_name = 'ANCESTORS' AND column_name = 'NEED_UPDATE'
+
+#IF: emptyResult
+ALTER TABLE ANCESTORS ADD NEED_UPDATE NUMBER (1)
+
+
+#TEST:
+SELECT 1 FROM USER_INDEXES WHERE index_name = 'ANCESTORS_NEED_UPDATE_IDX'
+
+#IF: emptyResult
+CREATE INDEX ANCESTORS_NEED_UPDATE_IDX ON ANCESTORS(need_update)
+
+
+#TEST:
+SELECT 1 FROM USER_INDEXES WHERE index_name = 'ANCESTORS_HIERARCHY_ID_IDX'
+
+#IF: emptyResult
+CREATE INDEX ANCESTORS_HIERARCHY_ID_IDX ON ANCESTORS(hierarchy_id)
+
+
+#TEST:
+SELECT 1 FROM USER_INDEXES WHERE index_name = 'ANCESTORS_ANCESTORS_IDX'
+
+#IF: emptyResult
+CREATE INDEX ANCESTORS_ANCESTORS_IDX ON ANCESTORS_ANCESTORS(NESTED_TABLE_ID, COLUMN_VALUE)
+
+
+CREATE OR REPLACE FUNCTION nx_get_ancestors(id VARCHAR2)
+RETURN NX_STRING_TABLE
+IS
+  curid hierarchy.id%TYPE := id;
+  newid hierarchy.id%TYPE;
+  ret NX_STRING_TABLE := NX_STRING_TABLE();
+  first BOOLEAN := TRUE;
+BEGIN
+  WHILE curid IS NOT NULL LOOP
+    BEGIN
+      SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;
+    EXCEPTION WHEN NO_DATA_FOUND THEN
+      -- curid not in hierarchy at all
+      newid := NULL;
+    END;
+    IF curid IS NOT NULL AND curid <> id THEN
+      ret.EXTEND;
+      ret(ret.COUNT) := curid;
+    END IF;
+    IF first AND newid IS NULL THEN
+      BEGIN
+        SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;
+      EXCEPTION
+        WHEN NO_DATA_FOUND THEN NULL;
+      END;
+    END IF;
+    first := FALSE;
+    curid := newid;
+  END LOOP;
+  RETURN ret;
+END;
+
+
+CREATE OR REPLACE TRIGGER nx_trig_ancestors_insert
+  AFTER INSERT ON hierarchy
+  FOR EACH ROW
+  WHEN (NEW.isproperty = 0 AND NEW.parentid IS NOT NULL)
+BEGIN
+  INSERT INTO ANCESTORS VALUES(:NEW.id, NULL, 1);
+END;
+
+
+#IF: ! pathOptimizationsEnabled
+ALTER TRIGGER nx_trig_ancestors_insert DISABLE
+
+
+CREATE OR REPLACE TRIGGER nx_trig_ancestors_update
+  AFTER UPDATE ON hierarchy
+  FOR EACH ROW  WHEN (NEW.isproperty = 0 AND NEW.parentid <> OLD.parentid)
+BEGIN
+  UPDATE ancestors SET ancestors = NULL, need_update = 1
+    WHERE hierarchy_id IN (SELECT hierarchy_id FROM ancestors a
+                           WHERE :NEW.id MEMBER OF a.ancestors OR  hierarchy_id = :NEW.id);
+END;
+
+
+#IF: ! pathOptimizationsEnabled
+ALTER TRIGGER nx_trig_ancestors_update DISABLE
+
+
+CREATE OR REPLACE TRIGGER nx_trig_ancestors_process
+  AFTER INSERT OR UPDATE ON hierarchy
+  -- statement level is required to be able to read hierarchy table with updated values
+BEGIN
+  UPDATE ancestors SET ancestors = nx_get_ancestors(hierarchy_id), need_update = NULL
+    WHERE need_update = 1;
+END;
+
+
+#IF: ! pathOptimizationsEnabled
+ALTER TRIGGER nx_trig_ancestors_process DISABLE
+
+
+CREATE OR REPLACE PROCEDURE nx_init_ancestors
+IS
+BEGIN
+  EXECUTE IMMEDIATE 'TRUNCATE TABLE ancestors';
+  INSERT INTO ancestors
+    SELECT id, nx_get_ancestors(id), 1
+    FROM (SELECT id FROM hierarchy WHERE isproperty=0);
+END;
+
+
+# Init the ancestors if empty
+#IF: pathOptimizationsEnabled
+#TEST:
+SELECT 1 FROM ancestors WHERE ROWNUM=1
+
+
+#IF: pathOptimizationsEnabled
+#IF: emptyResult
+LOG.INFO Initializing ancestors table for path optimization, please wait...
+
+
+#IF: pathOptimizationsEnabled
+#IF: emptyResult
+{CALL nx_init_ancestors}
+
+
+# ancestors ids (since Nuxeo 5.5)
+
+#IF: pathOptimizationsEnabled
+CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids NX_STRING_TABLE)
+RETURN NX_STRING_TABLE PIPELINED
+IS
+  id hierarchy.id%TYPE;
+  a ancestors.ancestors%TYPE;
+BEGIN
+  FOR i IN ids.FIRST .. ids.LAST LOOP
+    id := ids(i);
+    SELECT ancestors INTO a FROM ancestors WHERE hierarchy_id = id;
+    FOR j IN 1 .. a.count LOOP
+      PIPE ROW(a(j));
+    END LOOP;
+  END LOOP;
+END;
+
+#IF: !pathOptimizationsEnabled
+CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids NX_STRING_TABLE)
+RETURN NX_STRING_TABLE PIPELINED
+IS
+  id hierarchy.id%TYPE;
+  curid hierarchy.id%TYPE;
+BEGIN
+  FOR i IN ids.FIRST .. ids.LAST LOOP
+    curid := ids(i);
+    LOOP
+      SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;
+      EXIT WHEN curid IS NULL;
+      PIPE ROW(curid);
+    END LOOP;
+  END LOOP;
+END;
+
+
+# ------------------------------------------------------------
+# -- ACLR (aka READ ACL) OPTIMIZATIONS
+
+# -- migrate table from read_acls into aclr, since 5.4.1
+#TEST:
+SELECT 1 FROM USER_TABLES WHERE table_name = 'READ_ACLS'
+
+#IF: !emptyResult
+ALTER TABLE read_acls RENAME TO aclr
+
+#IF: !emptyResult
+ALTER TABLE aclr RENAME COLUMN id TO acl_id
+
+# -- TODO: Remove useless primary key since 5.4.1 read_acls_pkey
+# -- Check the principal contraint on ACLR.ACL_ID, then drop it like
+# -- DROP CONSTRAINT "SYS_C004XXX"
+
+# ------------------------------------------------------------
+# -- Read acls table
+# -- acl ex: jsmith,administrators,-Everyone
+# -- acl_id = md5(acl)
+#TEST:
+SELECT 1 FROM USER_TABLES WHERE table_name = 'ACLR'
+
+#IF: emptyResult
+CREATE TABLE ACLR (
+  acl_id VARCHAR2(34) NOT NULL,
+  acl NCLOB
+)
+
+#TEST:
+SELECT 1 FROM USER_INDEXES WHERE index_name = 'ACLR_ACL_ID_IDX'
+
+#IF: emptyResult
+CREATE INDEX ACLR_ACL_ID_IDX ON ACLR (acl_id)
+
+# -- Migration since 5.4.1
+#TEST:
+SELECT 1 FROM USER_TABLES WHERE table_name = 'READ_ACLS_CACHE'
+
+#IF: ! emptyResult
+DROP TABLE READ_ACLS_CACHE
+
+
+# -- Known users table
+# -- users ex: {members,jsmith,Everyone}
+# -- user_id = md5(users)
+#TEST:
+SELECT 1 FROM USER_TABLES WHERE table_name = 'ACLR_USER'
+
+#IF: emptyResult
+CREATE TABLE ACLR_USER (
+  user_id VARCHAR2(34) NOT NULL,
+  users NX_STRING_TABLE
+) NESTED TABLE users STORE AS ACLR_USER_USERS
+
+
+#TEST:
+SELECT 1 FROM USER_INDEXES WHERE index_name = 'ACLR_USER_USER_ID_IDX'
+
+#IF: emptyResult
+CREATE INDEX ACLR_USER_USER_ID_IDX ON ACLR_USER (user_id)
+
+
+# -- Jonction between aclr and aclr_user
+#TEST:
+SELECT 1 FROM USER_TABLES WHERE table_name = 'ACLR_USER_MAP'
+
+#IF: emptyResult
+CREATE TABLE ACLR_USER_MAP (
+  user_id VARCHAR2(34) NOT NULL,
+  acl_id VARCHAR2(34) NOT NULL
+)
+
+
+#TEST:
+SELECT 1 FROM USER_INDEXES WHERE index_name = 'ACLR_USER_MAP_USER_ID_IDX'
+
+#IF: emptyResult
+CREATE INDEX ACLR_USER_MAP_USER_ID_IDX ON ACLR_USER_MAP (user_id)
+
+
+#TEST:
+SELECT 1 FROM USER_INDEXES WHERE index_name = 'ACLR_USER_MAP_ACL_ID_IDX'
+
+#IF: emptyResult
+CREATE INDEX ACLR_USER_MAP_ACL_ID_IDX ON ACLR_USER_MAP (acl_id, user_id)
+
+
+# -- Associate a read acl for each hierarchy entry
+#TEST:
+SELECT 1 FROM USER_TABLES WHERE table_name = 'HIERARCHY_READ_ACL'
+
+#IF: emptyResult
+CREATE TABLE HIERARCHY_READ_ACL (
+  id ${idType} PRIMARY KEY, -- doc id
+  acl_id VARCHAR2(34),      -- acl id in ACLR
+  CONSTRAINT HIERARCHY_READ_ACL_ID_FK FOREIGN KEY (id) REFERENCES hierarchy (id) ON DELETE CASCADE
+)
+
+# add index
+#TEST:
+SELECT 1 FROM USER_INDEXES WHERE index_name = 'HIERARCHY_READ_ACL_ACL_ID_IDX'
+
+#IF: emptyResult
+CREATE INDEX HIERARCHY_READ_ACL_ACL_ID_IDX ON HIERARCHY_READ_ACL (acl_id)
+
+
+# -- Remove old table since 5.4.1
+#TEST:
+SELECT 1 FROM USER_TABLES WHERE table_name='HIERARCHY_MODIFIED_ACL'
+
+#IF: ! emptyResult
+DROP TABLE HIERARCHY_MODIFIED_ACL
+
+
+# -- Log modified document that require an aclr update
+#TEST:
+SELECT 1 FROM USER_TABLES WHERE table_name='ACLR_MODIFIED'
+
+#IF: emptyResult
+CREATE GLOBAL TEMPORARY TABLE ACLR_MODIFIED (
+  hierarchy_id VARCHAR2(36),
+  is_new NUMBER(1)
+) ON COMMIT PRESERVE ROWS
+
+
+# -- Remove old table since 5.4.1
+#TEST:
+SELECT 1 FROM USER_TABLES WHERE table_name='READ_ACL_PERMISSIONS'
+
+#IF: ! emptyResult
+DROP TABLE READ_ACL_PERMISSIONS
+
+
+#-- List of permission that grant the read access
+#TEST:
+SELECT 1 FROM USER_TABLES WHERE table_name = 'ACLR_PERMISSION'
+
+#IF: emptyResult
+CREATE TABLE ACLR_PERMISSION (
+  permission VARCHAR(250)
+)
+
+
+# dump browse permissions into table
+#TEST:
+SELECT 1 FROM ACLR_PERMISSION
+
+#IF: emptyResult
+INSERT ALL
+  ${readPermissions}
+SELECT * FROM DUAL
+
+
+CREATE OR REPLACE FUNCTION nx_get_read_acl(id VARCHAR2)
+RETURN NCLOB
+-- Compute the merged read acl for a doc id
+IS
+  curid acls.id%TYPE := id;
+  newid acls.id%TYPE;
+  acl VARCHAR2(32767) := NULL;
+  first BOOLEAN := TRUE;
+  sep VARCHAR2(1) := '${usersSeparator}';
+  read_permissions NX_STRING_TABLE;
+BEGIN
+  SELECT permission BULK COLLECT INTO read_permissions FROM aclr_permission;
+  WHILE curid IS NOT NULL LOOP
+    FOR r in (SELECT * FROM acls
+                WHERE permission MEMBER OF read_permissions
+                AND acls.id = curid
+                ORDER BY acls.pos) LOOP
+      IF acl IS NOT NULL THEN
+         acl := acl || sep;
+      END IF;
+      acl := acl || CASE WHEN r."GRANT" = 0 THEN '-' ELSE '' END || r."USER";
+    END LOOP;
+    -- recurse into parent
+    BEGIN
+      SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;
+    EXCEPTION WHEN NO_DATA_FOUND THEN
+      -- curid not in hierarchy at all
+      newid := NULL;
+    END;
+    IF first AND newid IS NULL THEN
+      BEGIN
+        SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;
+      EXCEPTION
+        WHEN NO_DATA_FOUND THEN NULL;
+      END;
+    END IF;
+    first := FALSE;
+    curid := newid;
+  END LOOP;
+  RETURN NVL(acl, '-');
+END;
+
+
+CREATE OR REPLACE FUNCTION nx_split(c NCLOB, sep VARCHAR2)
+RETURN NX_STRING_ARRAY
+-- splits a string, order matters
+IS
+  pos PLS_INTEGER := 1;
+  len PLS_INTEGER := NVL(DBMS_LOB.GETLENGTH(c), 0);
+  i PLS_INTEGER;
+  res NX_STRING_ARRAY := NX_STRING_ARRAY();
+BEGIN
+  -- dbms_output.put_line('NX_SPLIT');
+  -- dbms_output.put_line('  len: ' || len);
+  WHILE pos <= len LOOP
+    i := DBMS_LOB.INSTR(c, sep, pos);
+    IF i = 0 THEN i := len + 1; END IF;
+    -- dbms_output.put_line('  pos: ' || pos || ' i: ' || i);
+    res.EXTEND;
+    -- dbms_output.put_line('  extended to ' || res.COUNT);
+    res(res.COUNT) := DBMS_LOB.SUBSTR(c, i - pos, pos);
+    -- dbms_output.put_line('  chunk: ' || res(res.COUNT));
+    pos := i + 1;
+  END LOOP;
+  -- dbms_output.put_line('NX_SPLIT end');
+  RETURN res;
+END;
+
+
+CREATE OR REPLACE FUNCTION nx_list_read_acls_for(users NX_STRING_TABLE)
+RETURN NX_STRING_TABLE
+-- List matching read acl ids for a list of user/groups
+IS
+  negusers NX_STRING_TABLE := NX_STRING_TABLE();
+  aclusers NX_STRING_ARRAY;
+  acluser VARCHAR2(32767);
+  aclids NX_STRING_TABLE := NX_STRING_TABLE();
+  sep VARCHAR2(1) := '${usersSeparator}';
+BEGIN
+  -- Build a black list with negative users
+  FOR n IN users.FIRST .. users.LAST LOOP
+    negusers.EXTEND;
+    negusers(n) := '-' || users(n);
+  END LOOP;
+  -- find match
+  FOR r IN (SELECT acl_id, acl FROM aclr) LOOP
+    aclusers := nx_split(r.acl, sep);
+    -- dbms_output.put_line('---- acl_id ' || r.acl_id);
+    -- dbms_output.put_line('---- first ' || aclusers.FIRST || ' last ' || aclusers.LAST);
+    FOR i IN aclusers.FIRST .. aclusers.LAST LOOP
+      acluser := aclusers(i);
+      IF acluser MEMBER OF users THEN
+        -- grant
+        aclids.EXTEND;
+        aclids(aclids.COUNT) := r.acl_id;
+        GOTO next_acl;
+      END IF;
+      IF acluser MEMBER OF negusers THEN
+        -- deny
+        GOTO next_acl;
+      END IF;
+    END LOOP;
+    <<next_acl>> NULL;
+  END LOOP;
+  RETURN aclids;
+END;
+
+
+CREATE OR REPLACE FUNCTION nx_get_read_acl_id(id VARCHAR2)
+RETURN VARCHAR2
+IS
+BEGIN
+  RETURN nx_hash_clob(nx_get_read_acl(id));
+END;
+
+
+CREATE OR REPLACE FUNCTION nx_hash_users(users NX_STRING_TABLE)
+RETURN VARCHAR2
+IS
+  s VARCHAR2(32767) := NULL;
+  sep VARCHAR2(1) := '${usersSeparator}';
+BEGIN
+  -- TODO use canonical (sorted) order for users
+  FOR i IN users.FIRST .. users.LAST LOOP
+    IF s IS NOT NULL THEN
+      s := s || sep;
+    END IF;
+    s := s || users(i);
+  END LOOP;
+  RETURN nx_hash(s);
+END;
+
+
+CREATE OR REPLACE FUNCTION nx_get_read_acls_for(users NX_STRING_TABLE)
+RETURN NX_STRING_TABLE
+-- List read acl ids for a list of user/groups, using the cache
+IS
+  PRAGMA AUTONOMOUS_TRANSACTION; -- needed for insert, ok since what we fill is a cache
+  user_md5 VARCHAR2(34) := nx_hash_users(users);
+  in_cache NUMBER;
+  aclids NX_STRING_TABLE;
+BEGIN
+  SELECT acl_id BULK COLLECT INTO aclids FROM aclr_user_map WHERE user_id = user_md5;
+  SELECT COUNT(*) INTO in_cache FROM TABLE(aclids);
+  IF in_cache = 0 THEN
+    -- dbms_output.put_line('no cache');
+    aclids := nx_list_read_acls_for(users);
+    -- below INSERT needs the PRAGMA AUTONOMOUS_TRANSACTION
+    INSERT INTO aclr_user VALUES (user_md5, users);
+    COMMIT;
+    INSERT INTO aclr_user_map SELECT user_md5, COLUMN_VALUE FROM TABLE(aclids);
+    COMMIT;
+  END IF;
+  RETURN aclids;
+END;
+
+CREATE OR REPLACE TRIGGER nx_trig_acls_modified
+  AFTER INSERT OR UPDATE OR DELETE ON acls
+  FOR EACH ROW
+-- Trigger to log change in the acls table
+DECLARE
+  doc_id acls.id%TYPE := CASE WHEN DELETING THEN :OLD.id ELSE :NEW.id END;
+BEGIN
+  INSERT INTO aclr_modified (hierarchy_id, is_new) VALUES (doc_id, 0);
+END;
+
+#IF: ! aclOptimizationsEnabled
+ALTER TRIGGER nx_trig_acls_modified DISABLE
+
+
+CREATE OR REPLACE TRIGGER nx_trig_hierarchy_insert
+  AFTER INSERT ON hierarchy
+  FOR EACH ROW
+  WHEN (NEW.isproperty = 0)
+-- Trigger to log doc_id that need read acl update
+BEGIN
+  INSERT INTO aclr_modified (hierarchy_id, is_new) VALUES (:NEW.id, 1);
+END;
+
+#IF: ! aclOptimizationsEnabled
+ALTER TRIGGER nx_trig_hierarchy_insert DISABLE
+
+
+CREATE OR REPLACE TRIGGER nx_trig_hierarchy_update
+  AFTER UPDATE ON hierarchy
+  FOR EACH ROW
+  WHEN (NEW.isproperty = 0 AND NEW.parentid <> OLD.parentid)
+-- Trigger to log doc_id that need read acl update
+BEGIN
+  INSERT INTO aclr_modified (hierarchy_id, is_new) VALUES (:NEW.id, 0);
+END;
+
+#IF: ! aclOptimizationsEnabled
+ALTER TRIGGER nx_trig_hierarchy_update DISABLE
+
+# -- remove old trigger since 5.4.1
+#TEST:
+SELECT 1 FROM USER_TRIGGERS WHERE trigger_name = 'NX_TRIG_READ_ACLS_MOD'
+
+#IF: !emptyResult
+DROP TRIGGER NX_TRIG_READ_ACLS_MOD
+
+
+CREATE OR REPLACE TRIGGER nx_trig_aclr_modified
+  AFTER INSERT ON aclr
+  FOR EACH ROW
+  WHEN (NEW.acl_id IS NOT NULL)
+-- Trigger to update the user
+DECLARE
+  negusers NX_STRING_TABLE;
+  acl NX_STRING_ARRAY;
+  ace VARCHAR(4000);
+  sep VARCHAR2(1) := '${usersSeparator}';
+BEGIN
+  FOR r IN (SELECT * FROM ACLR_USER) LOOP
+    -- Build a black list with negative users
+    negusers := NX_STRING_TABLE();
+    FOR i IN r.users.FIRST .. r.users.LAST LOOP
+      negusers.EXTEND;
+      negusers(i) := '-' || r.users(i);
+    END LOOP;
+    acl := nx_split(:NEW.acl, sep);
+    FOR i IN acl.FIRST .. acl.LAST LOOP
+      ace := acl(i);
+      IF ace MEMBER OF r.users THEN
+         -- GRANTED
+         INSERT INTO ACLR_USER_MAP SELECT r.user_id, :NEW.acl_id FROM DUAL
+         WHERE NOT EXISTS (SELECT 1 FROM ACLR_USER_MAP WHERE user_id=r.user_id AND acl_id = :NEW.acl_id);
+         GOTO next_user;
+      END IF;
+      IF ace MEMBER OF negusers THEN
+         -- DENIED
+         GOTO next_user;
+      END IF;
+    END LOOP;
+    <<next_user>> NULL;
+  END LOOP;
+END;
+
+
+#IF: ! aclOptimizationsEnabled
+ALTER TRIGGER nx_trig_aclr_modified DISABLE
+
+
+CREATE OR REPLACE TRIGGER nx_trig_hier_read_acl_mod
+  AFTER INSERT OR UPDATE ON hierarchy_read_acl
+  FOR EACH ROW
+  WHEN (NEW.acl_id IS NOT NULL)
+-- Trigger to update the aclr tables when hierarchy_read_acl changes
+BEGIN
+  MERGE INTO aclr USING DUAL
+    ON (aclr.acl_id = :NEW.acl_id)
+    WHEN NOT MATCHED THEN
+    INSERT (acl_id, acl) VALUES (:NEW.acl_id, nx_get_read_acl(:NEW.id));
+END;
+
+#IF: ! aclOptimizationsEnabled
+ALTER TRIGGER nx_trig_hier_read_acl_mod DISABLE
+
+
+CREATE OR REPLACE PROCEDURE nx_rebuild_read_acls
+-- Rebuild the read acls tables
+IS
+BEGIN
+  EXECUTE IMMEDIATE 'TRUNCATE TABLE aclr';
+  EXECUTE IMMEDIATE 'TRUNCATE TABLE aclr_user';
+  EXECUTE IMMEDIATE 'TRUNCATE TABLE aclr_user_map';
+  EXECUTE IMMEDIATE 'TRUNCATE TABLE hierarchy_read_acl';
+  EXECUTE IMMEDIATE 'TRUNCATE TABLE aclr_modified';
+  INSERT INTO hierarchy_read_acl
+    SELECT id, nx_get_read_acl_id(id)
+      FROM (SELECT id FROM hierarchy WHERE isproperty = 0);
+END;
+
+
+CREATE OR REPLACE PROCEDURE nx_vacuum_read_acls
+-- Remove unused read acls entries
+IS
+BEGIN
+  -- nx_vacuum_read_acls vacuuming
+  DELETE FROM aclr WHERE acl_id IN (SELECT r.acl_id FROM aclr r
+    JOIN hierarchy_read_acl h ON r.acl_id=h.acl_id
+    WHERE h.acl_id IS NULL);
+  EXECUTE IMMEDIATE 'TRUNCATE TABLE aclr_user';
+  EXECUTE IMMEDIATE 'TRUNCATE TABLE aclr_user_map';
+  EXECUTE IMMEDIATE 'TRUNCATE TABLE aclr_modified';
+END;
+
+
+CREATE OR REPLACE PROCEDURE nx_update_read_acls
+-- Rebuild only necessary read acls
+IS
+  update_count PLS_INTEGER;
+BEGIN
+  --
+  -- 1/ New documents, no new ACL
+  MERGE INTO hierarchy_read_acl t
+    USING (SELECT DISTINCT(m.hierarchy_id) id
+            FROM aclr_modified m
+            JOIN hierarchy h ON m.hierarchy_id = h.id
+            WHERE m.is_new = 1) s
+    ON (t.id = s.id)
+    WHEN NOT MATCHED THEN
+      INSERT (id, acl_id) VALUES (s.id, nx_get_read_acl_id(s.id));
+  DELETE FROM aclr_modified WHERE is_new = 1;
+  --
+  -- 2/ Handles new ACLs, marking read acl with a marker
+  UPDATE hierarchy_read_acl SET acl_id = '-'
+    WHERE id IN (SELECT DISTINCT(hierarchy_id) FROM aclr_modified);
+  DELETE FROM aclr_modified;
+  --
+  -- 3/ Mark all children with a marker
+  -- TODO use CONNECT BY ?
+  LOOP
+    UPDATE hierarchy_read_acl SET acl_id = '-' WHERE id IN (
+      SELECT r.id
+        FROM hierarchy_read_acl r
+        JOIN hierarchy h ON h.id = r.id
+        JOIN hierarchy_read_acl rr ON rr.id = h.parentid
+        WHERE r.acl_id <> '-' AND rr.acl_id = '-');
+    EXIT WHEN SQL%ROWCOUNT = 0;
+  END LOOP;
+  --
+  -- 4/ Compute the new read ACLs for updated documents
+  UPDATE hierarchy_read_acl SET acl_id = nx_get_read_acl_id(id)
+    WHERE acl_id = '-';
+  --
+END;
+
+
+# build the read acls if empty, this takes care of the upgrade
+#IF: aclOptimizationsEnabled
+#TEST:
+SELECT 1 FROM aclr WHERE ROWNUM = 1
+
+#IF: aclOptimizationsEnabled
+#IF: emptyResult
+LOG.INFO Upgrading to optimized acls
+
+#IF: aclOptimizationsEnabled
+#IF: emptyResult
+{CALL nx_rebuild_read_acls}
+
+#IF: aclOptimizationsEnabled
+LOG.INFO Vacuuming tables used by optimized acls
+
+# Vacuum the read acls tables
+#IF: aclOptimizationsEnabled
+{CALL nx_vacuum_read_acls}
+
+
+# ##### upgrade tag / nxp_tagging (since Nuxeo 5.3.2) #####
+
+#TEST:
+SELECT 1 FROM USER_TABLES WHERE table_name = 'NXP_TAGGING'
+
+#IF: ! emptyResult
+LOG.INFO Upgrading tags
+
+#IF: ! emptyResult
+CREATE OR REPLACE PROCEDURE NX_UPGRADE_TAGS
+IS
+BEGIN
+  -- make tags placeless
+  UPDATE hierarchy SET parentid = NULL WHERE primarytype = 'Tag' AND isproperty = 0;
+  -- make tagging hierarchy
+  UPDATE nxp_tagging SET id = lower(SUBSTR(nx_hash(id),  1, 8) || '-' || SUBSTR(nx_hash(id),  9, 4) || '-' || SUBSTR(nx_hash(id), 13, 4) || '-' || SUBSTR(nx_hash(id), 17, 4) || '-' || SUBSTR(nx_hash(id), 21));
+  INSERT INTO hierarchy (id, name, isproperty, primarytype)
+    SELECT tg.id, t.label, 0, 'Tagging'
+      FROM nxp_tagging tg
+      JOIN tag t ON tg.tag_id = t.id;
+  -- make tagging relation
+  INSERT INTO relation (id, source, target)
+    SELECT id, document_id, tag_id FROM nxp_tagging;
+  -- make tagging dublincore (save is_private into coverage just in case)
+  INSERT INTO dublincore (id, title, creator, created, coverage)
+    SELECT tg.id, t.label, tg.author, tg.creation_date, tg.is_private
+      FROM nxp_tagging tg
+      JOIN tag t ON tg.tag_id = t.id;
+  -- drop now useless table
+  EXECUTE IMMEDIATE 'DROP TABLE nxp_tagging';
+  -- remove old tags root
+  DELETE FROM hierarchy
+    WHERE name = 'tags' AND primarytype = 'HiddenFolder' AND isproperty = 0
+      AND parentid IN (SELECT id FROM hierarchy WHERE primarytype = 'Root' AND isproperty = 0);
+END;
+
+#IF: ! emptyResult
+{CALL NX_UPGRADE_TAGS}
+
+
+############################################################
+
+
+#CATEGORY: upgradeVersions
+
+UPDATE (select isversion FROM hierarchy, versions
+  WHERE hierarchy.id = versions.id)
+  SET isversion = 1
+
+CREATE OR REPLACE PROCEDURE nx_upgrade_versions
+IS
+  series hierarchy.id%TYPE := '-';
+  latest NUMBER(1,0) := 0;
+  setlatestmajor NUMBER(1,0);
+  latestmajor BOOLEAN := FALSE;
+  major BOOLEAN;
+BEGIN
+-- Upgrade versions: label, islatest, islatestmajor
+  FOR r in
+    (SELECT v.id, v.versionableid, h.majorversion, h.minorversion
+      FROM versions v JOIN hierarchy h ON v.id = h.id
+      ORDER BY v.versionableid, v.created DESC)
+  LOOP
+    IF r.versionableid <> series THEN
+      -- restart
+      latest := 1;
+      latestmajor := TRUE;
+      series := r.versionableid;
+    END IF;
+    major := r.minorversion = 0;
+    IF major and latestmajor THEN setlatestmajor := 1; ELSE setlatestmajor := 0; END IF;
+    UPDATE versions SET
+        label = r.majorversion || '.' || r.minorversion,
+        islatest = latest,
+        islatestmajor = setlatestmajor
+      WHERE id = r.id;
+    -- next
+    latest := 0;
+    IF major THEN latestmajor := FALSE; END IF;
+  END LOOP;
+END;
+
+{CALL nx_upgrade_versions}
+
+DROP PROCEDURE nx_upgrade_versions
+
+
+############################################################
+
+
+#CATEGORY: addClusterNode
+
+# delete nodes for sessions that don't exist anymore
+# NOTE this needs permissions on SYS.GV_$SESSION
+# i.e. GRANT SELECT ON SYS.GV_$SESSION TO someuser;
+#      SELECT * FROM DBA_TAB_PRIVS WHERE TABLE_NAME = 'GV_$SESSION';
+DELETE FROM "CLUSTER_NODES" N WHERE
+  NOT EXISTS (SELECT S.SID FROM GV$SESSION S WHERE N.NODEID = S.SID || ',' || S.SERIAL#)
+
+# Remove orphan invalidations
+DELETE FROM CLUSTER_INVALS i WHERE i.NODEID NOT IN
+  (SELECT NODEID FROM CLUSTER_NODES n WHERE n.NODEID = i.NODEID)
+
+INSERT INTO "CLUSTER_NODES" (NODEID, CREATED) VALUES (NX_NODEID() , CURRENT_TIMESTAMP)
+
+
+#CATEGORY: removeClusterNode
+
+DELETE FROM "CLUSTER_NODES" WHERE NODEID = NX_NODEID()
+
+# Remove orphan invalidations
+DELETE FROM CLUSTER_INVALS i WHERE i.NODEID NOT IN
+  (SELECT NODEID FROM CLUSTER_NODES n WHERE n.NODEID = i.NODEID)
+
+
+############################################################
+
+
+#CATEGORY: upgradeLastContributor
+
+CREATE OR REPLACE PROCEDURE NX_UPGRADE_LASTCONTRIBUTOR
+IS
+  lastC NVARCHAR2(2000);
+BEGIN
+  FOR r in (SELECT id, max(pos) AS pos FROM dc_contributors GROUP BY id)
+  LOOP
+    SELECT item into lastC from dc_contributors  WHERE r.pos = pos AND r.id = id;
+    UPDATE dublincore SET lastContributor = lastC WHERE id = r.id;
+  END LOOP;
+END;
+
+{CALL nx_upgrade_lastContributor}
+
+
+############################################################
+
+
+#CATEGORY: upgradeLocks
+
+ALTER TABLE locks DROP CONSTRAINT locks_id_hierarchy_fk
+
+DELETE FROM locks WHERE "LOCK" IS NULL
+
+UPDATE locks SET
+  owner = SUBSTR("LOCK", 1, INSTR("LOCK", ':') - 1),
+  created = TO_TIMESTAMP(SUBSTR("LOCK", INSTR("LOCK", ':') + 1), 'MON DD, YYYY')
+  WHERE owner IS NULL

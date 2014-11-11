@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<xs:schema
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/adv/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/adv/"
+  >
+
+  <xs:complexType name = "UserObject" abstract = "true">
+        <xs:complexContent>
+            <xs:extension base = "xs:anyType"/>
+        </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="ext" type="nxs:UserObject"/>
+  <xs:element name="dur" type = "xs:duration"/>
+  <xs:element name="any" type = "xs:anyType"/>
+  <xs:element name="el" type = "xs:string"/>
+  <xs:attribute name="att" type = "xs:string"/>
+
+  <xs:simpleType name="BureauType">
+      <xs:restriction base = "xs:string">
+          <xs:enumeration value = "EFU"/>
+      </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="bureau" type = "nxs:BureauType"/>
+
+  <xs:element name = "inlineBureau">
+        <xs:simpleType>
+            <xs:restriction base = "xs:string">
+                <xs:enumeration value = "EFU"/>
+            </xs:restriction>
+        </xs:simpleType>
+  </xs:element>
+
+  <xs:complexType name = "TestChoicesType">
+    <xs:sequence>
+      <xs:element name = "field1" type = "xs:string"/>
+      <xs:choice>
+          <xs:element name = "field2A" type = "xs:string"/>
+          <xs:element name = "field2B" type = "xs:string"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name = "field3" type = "xs:string"/>
+  </xs:complexType>
+
+  <xs:element name="testChoice" type = "nxs:TestChoicesType"/>
+
+  <xs:complexType name = "TestNestedChoicesType">
+    <xs:sequence>
+      <xs:element name = "field1" type = "xs:string"/>
+      <xs:choice>
+          <xs:element name = "field2A" type = "xs:string"/>
+          <xs:element name = "field2B" type = "xs:string"/>
+          <xs:choice>
+              <xs:element name = "field3A" type = "xs:string"/>
+              <xs:element name = "field3B" type = "xs:string"/>
+          </xs:choice>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="testNestedChoices" type = "nxs:TestNestedChoicesType"/>
+
+
+  <xs:complexType name = "TestNestedChoicesWithListType">
+    <xs:sequence>
+      <xs:element name = "field1" type = "xs:string"/>
+      <xs:choice>
+          <xs:element name = "field2A" type = "xs:string"/>
+          <xs:element name = "field2B" type = "xs:string"/>
+          <xs:choice maxOccurs = "unbounded">
+              <xs:element name = "field3A" type = "xs:string"/>
+              <xs:element name = "field3B" type = "xs:string"/>
+          </xs:choice>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="testNestedChoicesWithList" type = "nxs:TestNestedChoicesWithListType"/>
+
+</xs:schema>
