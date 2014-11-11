@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.picture.theme">
+
+  <require>org.nuxeo.theme.jsf</require>
+
+  <!-- views -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+
+
+    <view name="nuxeo5 user services" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/user_services.xhtml</template>
+      <!-- TODO: remove later -->
+      <resource>screen.css</resource>
+      <resource>imaging.css</resource>
+    </view>
+
+    <view name="User services (Galaxy theme)" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/user_services_galaxy.xhtml</template>
+      <!-- TODO: remove later -->
+      <resource>screen.css</resource>
+      <resource>imaging.css</resource>
+    </view>
+    
+  </extension>
+
+  <!-- resources -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
+    <resource name="imaging.css">
+      <path>css/imaging.css</path>
+    </resource>
+  </extension>
+
+</component>

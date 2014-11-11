@@ -1,0 +1,20 @@
+<jbpm-configuration>
+  <string name='resource.hibernate.cfg.xml' value='config/jboss-jbpm-hibernate.cfg.xml' />
+  <jbpm-context>
+    <service name="persistence">
+      <factory>
+        <bean class="org.jbpm.persistence.db.DbPersistenceServiceFactory">
+          <field name="isTransactionEnabled">
+            <false />
+          </field>
+          <field name="isCurrentSessionEnabled">
+            <true />
+          </field>
+        </bean>
+      </factory>
+    </service>
+    <service name="tx" factory="org.jbpm.tx.TxServiceFactory" />
+    <service name="authentication"
+      factory="org.jbpm.security.authentication.DefaultAuthenticationServiceFactory" />
+  </jbpm-context>
+</jbpm-configuration>

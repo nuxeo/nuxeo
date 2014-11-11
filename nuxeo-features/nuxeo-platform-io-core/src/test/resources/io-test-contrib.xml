@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.io.test.IOManager.contribs">
+
+  <extension target="org.nuxeo.ecm.platform.io.test.IOManager"
+    point="adapters">
+
+    <adapter name="dummy"
+      class="org.nuxeo.ecm.platform.io.test.DummyIOResourceAdapter">
+      <property name="foo">bar</property>
+      <property name="blah">blaah</property>
+      <properties name="list">
+        <value>fooListItem</value>
+        <value>barListItem</value>
+      </properties>
+    </adapter>
+
+  </extension>
+
+</component>
