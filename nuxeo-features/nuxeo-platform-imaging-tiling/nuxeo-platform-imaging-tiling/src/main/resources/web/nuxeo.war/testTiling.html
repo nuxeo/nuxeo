@@ -1,0 +1,144 @@
+<html>
+<head>
+<script>
+var repoId='$repoId$';
+var docId='$docId$';
+</script>
+<script src="/nuxeo/scripts/simple-tiling-client.js"></script>
+<script>
+function refresh()
+{
+  var tileWidth = document.getElementById("tileWidth").value;
+  var tileHeight = document.getElementById("tileHeight").value;
+  var maxTiles = document.getElementById("maxTiles").value;
+
+  doResize();
+  getTilingInfo(tileWidth, tileHeight, maxTiles);
+}
+
+function zoomIn()
+{
+  var maxTiles = document.getElementById("maxTiles").value;
+  maxTiles=maxTiles*2;
+  document.getElementById("maxTiles").value = maxTiles;
+  refresh();
+}
+
+function zoomOut()
+{
+  var maxTiles = document.getElementById("maxTiles").value;
+  maxTiles=parseInt(maxTiles/2);
+  if (maxTiles==0)
+    maxTiles=1;
+  document.getElementById("maxTiles").value = maxTiles;
+  refresh();
+}
+
+
+
+function doScrollX(step)
+{
+  startX=parseInt(document.getElementById("startX").value);
+  startY=parseInt(document.getElementById("startY").value);
+  startX=startX+step;
+  if (startX<0)
+    startX=0;
+  document.getElementById("startX").value=startX;
+  scroll(startX,startY);
+}
+
+function doScrollY(step)
+{
+  startX=parseInt(document.getElementById("startX").value);
+  startY=parseInt(document.getElementById("startY").value);
+  startY=startY+step;
+  if (startY<0)
+    startY=0;
+  document.getElementById("startY").value=startY;
+  scroll(startX,startY);
+}
+
+function doResize()
+{
+  nbX=parseInt(document.getElementById("nbX").value);
+  nbY=parseInt(document.getElementById("nbY").value);
+
+  document.getElementById("nbX").value=nbX;
+  document.getElementById("nbY").value=nbY;
+  resize(nbX,nbY);
+}
+
+</script>
+<style>
+#dispDiv {border-style:solid;border-color:black;border-width:1px}
+.tilingControl {background-color:#CCCCCC}
+.tileHeader {background-color:#EEEEEE; text-align:center;}
+.controlerCell {background-color:#DDDDDD; text-align:center;border-style:outset; border-width:2px; border-color:#CCCCCC;font:Arial}
+</style>
+</head>
+<body>
+
+<table width=100%>
+<tr><td>
+<table class="tilingControl">
+  <tr><td colspan=4 class="tileHeader"> Tiles settings </td></tr>
+  <tr>
+    <td>tileWidth :</td>
+    <td><input size=2 type="text" name="tileWidth" id="tileWidth"
+      value="$tileWidth$" /></td>
+    <td>tileHeight :</td>
+    <td><input size=2 type="text" name="tileHeight" id="tileHeight"
+      value="$tileHeight$" /></td>
+  </tr><tr>
+    <td colspan=2>maxTiles :</td>
+    <td colspan=2><input size=4 type="text" name="maxTiles" id="maxTiles"
+      value="$maxTiles$" /></td>
+  </tr>
+  <tr><td colspan=4 class="tileHeader"> Display settings </td></tr>
+  <tr>
+    <td>x tiles nb :</td>
+    <td><input type="text" name="nbX" id="nbX" value="2" size=2 /></td>
+    <td>y tiles nb :</td>
+    <td><input type="text" name="nbY" id="nbY" value="2" size=2 /></td>
+  </tr>
+
+  <tr>
+    <td colspan=2><input type="button" onclick="refresh()"
+      value="display tiled picture" /></td>
+    <td><A
+      href="javascript:document.getElementById('displayTable').setAttribute('cellspacing','0')">hide
+    cells</A></td>
+    <td>
+    <A
+      href="javascript:document.getElementById('displayTable').setAttribute('cellspacing','1')">show
+    cells</A></td>
+
+  </tr>
+  <tr><td colspan=4 class="tileHeader"> computed info </td></tr>
+  <tr>
+  <td> zoom factor </td>
+  <td colspan=3><div id="zoom"></div>
+  </tr>
+  <tr>
+  <td> image format </td>
+  <td colspan=3><div id="imgFormat"></div></tr>
+</table>
+</td><td>
+
+<table width=100%>
+<tr><td></td><td class="controlerCell"> <A href="javascript:doScrollY(-1)">Up</A><input size=2
+      type="text" name="startY" id="startY" value="0" />
+&nbsp; <A href="javascript:zoomIn()">zoom in</A> /<A href="javascript:zoomOut()">zoom out</A>
+</td> <td></td> </tr>
+<tr><td class="controlerCell"><A href="javascript:doScrollX(-1)">Left</A><input size=2
+      type="text" name="startX" id="startX" value="0" /></td><td>
+<div id="dispDiv">Click display to load picture</div>
+</td>
+<td class="controlerCell"><A
+      href="javascript:doScrollX(1)">Right</A></td></tr>
+<tr><td></td><td class="controlerCell"><A
+      href="javascript:doScrollY(1)">Down</A></td></td></tr></table>
+
+</td></tr></table>
+</body>
+</html>

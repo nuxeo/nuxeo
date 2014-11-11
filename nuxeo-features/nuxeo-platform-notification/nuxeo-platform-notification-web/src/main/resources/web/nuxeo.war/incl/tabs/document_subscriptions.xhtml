@@ -1,0 +1,62 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"><h:form
+  id="notifications">
+
+  <h3><h:outputText
+    value="#{messages['label.inherited.subscriptions']}"
+    rendered="#{inheritedNotifications.size > 0}"/></h3>
+
+  <h:dataTable var="subscript" class="dataOutput"
+    rowClasses="dataRowEven,dataRowOdd"
+    columnClasses="iconColumn,"
+    value="#{inheritedNotifications}"
+    rendered="#{inheritedNotifications.size > 0}">
+
+    <h:column>
+      <h:graphicImage value="/icons/checked.gif" alt="" />
+    </h:column>
+
+    <h:column>
+      <h:outputText value="#{messages[subscript.label]}" />
+    </h:column>
+
+  </h:dataTable>
+
+  <h3><h:outputText
+    value="#{messages['label.available.subscriptions']}" /></h3>
+
+  <h:dataTable var="currentSubscription" class="dataOutput"
+    rowClasses="dataRowEven,dataRowOdd"
+    columnClasses="iconColumn,,buttonColumn" value="#{notificationList}"
+    rendered="#{notificationList.size > 0}">
+
+    <h:column>
+      <h:graphicImage value="/icons/checked.gif" alt=""
+        rendered="${currentSubscription.selected}" />
+      <h:graphicImage value="/icons/unchecked.gif" alt=""
+        rendered="${! currentSubscription.selected}" />
+    </h:column>
+
+    <h:column>
+      <h:outputText value="#{messages[currentSubscription.notification.label]}" />
+    </h:column>
+
+    <h:column>
+      <h:commandButton rendered="${currentSubscription.selected}"
+        value="${messages['action.user.unsubscribe']}"
+        styleClass="button"
+        action="${subscriptionAction.updateSubscriptions}" />
+      <h:commandButton value="${messages['action.user.subscribe']}"
+        styleClass="button" rendered="${!currentSubscription.selected}"
+        action="${subscriptionAction.updateSubscriptions}" />
+    </h:column>
+
+  </h:dataTable>
+
+</h:form></div>
