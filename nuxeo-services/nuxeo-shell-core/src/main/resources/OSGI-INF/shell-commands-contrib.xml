@@ -1,0 +1,455 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.shell.commands-base" version="1.0">
+
+  <documentation>
+    The basic command @author
+    <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.shell.CommandLineService" point="commands">
+
+    <command name="debug" class="org.nuxeo.ecm.shell.commands.DebugCommand"
+      requireConnection="false">
+      <description>
+        Print the result of the command line parser
+      </description>
+      <help>
+        This command is useful for debugging command line parser
+      </help>
+    </command>
+    
+    <command name="commands" class="org.nuxeo.ecm.shell.commands.CommandsCommand"
+      requireConnection="false" alias="cmds">
+      <description>
+        Print the list of available commands
+      </description>
+      <help>
+        Accepts a parameter to be used as a prefix to filter the
+        list of
+        commands
+      </help>
+    </command>
+
+    <command name="help" class="org.nuxeo.ecm.shell.commands.HelpCommand"
+      requireConnection="false" alias="h">
+      <description>The Help</description>
+      <help />
+      <params>
+        <param index="0" type="cmd" />
+      </params>
+    </command>
+
+    <command name="reload" class="org.nuxeo.ecm.shell.commands.ReloadCommand"
+      requireConnection="false" alias="r">
+      <description>Reload command scripts</description>
+      <help />
+    </command>
+
+    <command name="interactive" class="org.nuxeo.ecm.shell.commands.InteractiveCommand"
+      requireConnection="false" alias="i,int">
+      <description>Enter interactive mode</description>
+      <help>TODO</help>
+    </command>
+
+    <command name="script" class="org.nuxeo.ecm.shell.commands.ScriptCommand"
+      alias="s">
+      <options>
+        <option name="file" shortcut="f" var="true" type="file">
+          Path to a script file to execute
+        </option>
+      </options>
+      <description>Executes scripts</description>
+      <help>TODO</help>
+    </command>
+
+    <command name="ls" class="org.nuxeo.ecm.shell.commands.repository.ListCommand"
+      alias="list,l">
+      <description>
+        List directory content (on remote)
+      </description>
+      <params>
+        <param index="0" type="doc" />
+      </params>
+      <help>TODO</help>
+    </command>
+
+    <command name="tree" class="org.nuxeo.ecm.shell.commands.repository.TreeCommand"
+      alias="tree">
+      <description>
+        List directory content and subdirectory content (on remote),
+        represented by a tree
+      </description>
+      <params>
+        <param index="0" type="doc" />
+      </params>
+      <help>TODO</help>
+    </command>
+
+    <command name="cd"
+      class="org.nuxeo.ecm.shell.commands.repository.ChangeDirCommand">
+      <description>Change directory (on remote)</description>
+      <params>
+        <param index="0" type="doc" />
+      </params>
+      <help>TODO</help>
+    </command>
+
+    <command name="pwd" class="org.nuxeo.ecm.shell.commands.repository.PwdCommand">
+      <description>
+        Display the current path (on remote)
+      </description>
+      <help>TODO</help>
+    </command>
+
+    <command name="useradd" class="org.nuxeo.ecm.shell.commands.user.UserAddCommand">
+      <description>
+        Add a user, or a users list through a CSV file, in the members directory.
+      </description>
+      <options>
+        <option name="file" var="true" type="file">
+          A path to an optional CSV file into which there are the users definitions
+        </option>
+        <option name="firstname" var="true"/>
+        <option name="lastname" var="true"/>
+        <option name="email" var="true"/>
+        <option name="company" var="true"/>
+      </options>
+      <params>
+        <param index="0" type="username">
+        	The user name
+        </param>
+      </params>
+      <help>This is useful for populating the members directory</help>
+    </command>
+
+    <command name="groupmod" class="org.nuxeo.ecm.shell.commands.user.GroupModCommand">
+      <description>
+        Add or set a user, or a users list through a CSV file, to an existing group.
+      </description>
+      <options>
+        <option name="user" var="true">
+          The name of the user to add or to set for this group
+        </option>
+        <option name="file" var="true" type="file">
+          A path to an optional CSV file into which there are the users names
+        </option>
+        <option name="set" type="boolean">
+          Use this option to set the users of a group, instead of the default "append" behavior. 
+        </option>
+      </options>
+      <params>
+        <param index="0" type="groupname">
+        	The name of the group to modify 
+        </param>
+      </params>
+      <help>
+        The default behavior of this command is to add users to a group.
+      </help>
+    </command>
+
+    <command name="rm" class="org.nuxeo.ecm.shell.commands.repository.RmCommand">
+      <description>
+        Remove specified (or current) document
+      </description>
+      <params>
+        <param index="0" type="doc" />
+      </params>
+      <help>TODO</help>
+    </command>
+
+    <command name="mkdir" class="org.nuxeo.ecm.shell.commands.repository.MkDirCommand">
+      <description>
+        Create a document of the specified type (or Folder) at
+        the given path (or in the current path).
+      </description>
+      <params>
+        <param index="0" type="path" />
+        <param index="1" type="type" />
+      </params>
+      <help>TODO</help>
+    </command>
+
+    <command name="fsimport"
+      class="org.nuxeo.ecm.shell.commands.repository.FSImportCommand">
+      <description>
+        Create a new file document from a local file
+      </description>
+      <params>
+        <param index="0" type="file" />
+        <param index="1" type="doc" />
+      </params>
+      <help>
+        Import a FileSystem directory into Nuxeo repository.
+      </help>
+    </command>
+
+    <command name="mtfsimport"
+      class="org.nuxeo.ecm.shell.commands.repository.MTFSImportCommand">
+      <description>
+        Create a new file document from a local file
+      </description>
+      <params>
+        <param index="0" type="file" />
+        <param index="1" type="doc" />
+      </params>
+      <help>
+        Import a FileSystem directory into Nuxeo repository.
+      </help>
+    </command>
+
+    <command name="repostats"
+      class="org.nuxeo.ecm.shell.commands.repository.RepoStatsCommand">
+      <description>
+        Gather statistics on the repository
+      </description>
+      <params>
+        <param index="0" type="doc" />
+      </params>
+      <help>
+        Gather statistics on the repository
+      </help>
+    </command>
+
+    <command name="index" class="org.nuxeo.ecm.shell.commands.repository.IndexCommand">
+      <description>Re-index database</description>
+      <help>TODO</help>
+    </command>
+
+    <!--
+      <command name="indexOverload"
+      class="org.nuxeo.ecm.shell.commands.repository.IndexOverloadCommand">
+      <description> force multi-threaded indexing on the same doc </description>
+      <params> <param index="0" type="doc" /> <param index="1" type="int" />
+      </params> <help>TODO</help> </command>
+    -->
+
+    <!--
+      <command name="doubleIndex"
+      class="org.nuxeo.ecm.shell.commands.repository.DoubleIndex"> <description>
+      force multiple indexing of the same document inside the same transaction
+      </description> <params> <param index="0" type="doc" /> <param index="1"
+      type="int" /> </params> <help>TODO</help> </command>
+    -->
+
+    <command name="view" class="org.nuxeo.ecm.shell.commands.repository.ViewCommand">
+      <description>
+        View the info about a document (on remote)
+      </description>
+      <params>
+        <param index="0" type="doc" />
+      </params>
+      <help>TODO</help>
+    </command>
+    
+    <command name="addlocalace" class="org.nuxeo.ecm.shell.commands.repository.AddLocalAceCommand">
+      <description>
+        For the current document, add a local ACE.
+      </description>
+      <help>
+        For the current document, add a local ACE. Takes 3
+        parameters: the username, the permission and a boolean
+        (grant if true, deny if false)
+      </help>
+    </command>
+    
+    <command name="viewlocalacl" class="org.nuxeo.ecm.shell.commands.repository.ViewLocalAclCommand">
+      <description>
+        For the current document, view the local acl.
+      </description>
+      <help>
+        For the current document, view the local acl.
+      </help>
+    </command>
+    
+    <command name="rmlocalace" class="org.nuxeo.ecm.shell.commands.repository.RmLocalAceCommand">
+      <description>
+        For the current document, remove a local ACE.
+      </description>
+      <help>
+        For the current document, add a local ACE. Takes 1
+        parameter: the index of the ace to remove.
+      </help>
+    </command>
+
+    <command name="import" class="org.nuxeo.ecm.shell.commands.io.ImportCommand"
+      alias="imp">
+      <params>
+        <param index="0" type="file" />
+      </params>
+      <params>
+        <param index="1" type="doc" />
+      </params>
+      <options>
+        <option name="update" var="false">
+          Whether to update by ID existing documents. If this
+          flag is not used the document path will be used as
+          the document identifier and missing documents will
+          be created.
+        </option>
+      </options>
+      <description>Import data into the repository</description>
+      <help>
+        Imports data into the repository. The imported data
+        should be a directory tree. Zip archives are not yet
+        supported by this client.
+
+        The first parameter represents the filesystem path to
+        the archive to import.
+
+        The second parameter is the Nuxeo path to a document
+        that will be used as the root of the target subtree.
+        When using the update mode (--update option) the root
+        doesn't matter (you can use / as the root).
+
+        In default mode (non-update), documents are matched by
+        path. If a document already exists at the path specified
+        in the import file, it will be updated with the new
+        data. Otherwise a new document is created.
+
+        In update mode, documents are matched by ID, and their
+        path doesn't matter. Documents are only updated, never
+        created (an ID not present in the repository will be
+        ignored at import time).
+
+        The update mode is recommended if you want to update a
+        repository and not create new data, as it is faster and
+        doesn't have a problem with documents that have moved.
+      </help>
+    </command>
+
+    <command name="export" class="org.nuxeo.ecm.shell.commands.io.ExportCommand"
+      alias="exp">
+      <description>
+        Export data from a repository.
+      </description>
+      <params>
+        <param index="0" type="doc" />
+      </params>
+      <params>
+        <param index="1" type="file" />
+      </params>
+      <help>
+        Export data from a repository
+
+        The first parameter is the Nuxeo path of root of the tree to export.
+
+        The second parameter is the filesystem directory where the export archive will be written.
+
+        This client does not yet support zip archives as an export format. This will be added later.
+      </help>
+    </command>
+
+    <command name="services" class="org.nuxeo.ecm.shell.commands.system.ServicesCommand">
+      <description>
+        List services
+      </description>
+      <help>
+        TODO
+      </help>
+    </command>
+
+    <command name="serviceinfo"
+      class="org.nuxeo.ecm.shell.commands.system.ServiceInfoCommand">
+      <description>
+        List services
+      </description>
+      <help>
+        TODO
+      </help>
+    </command>
+
+    <command name="log" class="org.nuxeo.ecm.shell.commands.system.LogCommand">
+      <description>
+        Manage logs informations written to given file.
+        Usage: log filename [log level [package or class]]
+               log off [package or class]
+               log debug
+      </description>
+      <params>
+        <param index="0" type="file" />
+        <!--        <param index="1" type="loglevel" />-->
+        <!--        <param index="1" type="class" />-->
+      </params>
+      <help>Dynamically define a logger and its parameters (output local
+        file, log level, package or class filtered). Start or stop debug mode.</help>
+    </command>
+
+    <command name="connect" class="org.nuxeo.ecm.shell.commands.repository.ConnectCommand"
+      requireConnection="false">
+      <description>
+        (Re-)initialize connection.
+        Usage: connect [username [password]]
+      </description>
+      <help>Initialize a connection on a Nuxeo instance, closing or discarding any 
+      previous connection</help>
+    </command>
+
+    <command name="disconnect" class="org.nuxeo.ecm.shell.commands.repository.DisconnectCommand"
+      requireConnection="true">
+      <description>
+        Close connection.
+      </description>
+      <help>Close current connection if any.</help>
+    </command>
+
+    <command name="tx-init" class="org.nuxeo.ecm.shell.commands.jtajca.InitTXCommand"
+      requireConnection="true" alias="init">
+      <description>
+        Init transaction management.
+      </description>
+      <help>Initialize transaction management.</help>
+    </command>
+
+    <command name="tx-start" class="org.nuxeo.ecm.shell.commands.jtajca.StartTXCommand"
+      requireConnection="true" alias="start">
+      <description>
+        Start a transaction.
+      </description>
+      <help>Start a transaction.</help>
+    </command>
+
+    <command name="tx-commit" class="org.nuxeo.ecm.shell.commands.jtajca.CommitTXCommand"
+      requireConnection="true" alias="commit">
+      <description>
+        Commit current transaction.
+      </description>
+      <help>Commit current transaction.</help>
+    </command>
+
+    <command name="tx-rollback" class="org.nuxeo.ecm.shell.commands.jtajca.RollbackTXCommand"
+      requireConnection="true" alias="rollback">
+      <description>
+        Rollback current transaction.
+      </description>
+      <help>Rollback current transaction.</help>
+    </command>
+
+  </extension>
+
+  <!-- global options -->
+  <extension target="org.nuxeo.ecm.shell.CommandLineService" point="options">
+
+    <option name="username" shortcut="u" var="true" value="system">
+      The username to use when connecting. If not specified the 'system' user will be used.
+    </option>
+
+    <option name="password" shortcut="P" var="true">
+      The password to use when connecting.
+    </option>
+
+    <option name="host" shortcut="h" var="true">
+      The host where to connect to. 
+      By default no host is used - this will force a local connection (in VM repository)
+    </option>
+
+    <option name="port" shortcut="p" var="true" value="62474">
+      The port where to connect to. By default '62474' is used.
+    </option>
+
+    <option name="debug" shortcut="d" var="false">
+      Run in debug mode with full logs to console. By default 'INFO' is used.
+    </option>
+
+  </extension>
+
+</component>
