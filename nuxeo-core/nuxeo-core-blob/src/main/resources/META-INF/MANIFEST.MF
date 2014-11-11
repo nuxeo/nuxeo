@@ -1,0 +1,22 @@
+Export-Package: org.nuxeo.ecm.core.blob.storage,
+ org.nuxeo.ecm.core.blob.storage.impl
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Localization: bundle
+Bundle-Name: Nuxeo Core Resource
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: true
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Import-Package: javax.annotation;version="1.0",
+ javax.resource;version="2.0.0",
+ javax.resource.spi;version="2.0.0",
+ javax.transaction.xa;version="1.1",
+ org.apache.commons.logging,
+ org.nuxeo.common.utils,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split
+Bundle-SymbolicName: org.nuxeo.ecm.core.blob;singleton:=true
