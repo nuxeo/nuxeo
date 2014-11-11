@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: bstefanescu
+Build-Jdk: 1.5.0_09
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Runtime Scripting
+Bundle-SymbolicName: org.nuxeo.runtime.scripting;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Bundle-ClassPath: .,lib/commons-jexl-1.1.jar
+Require-Bundle: org.nuxeo.runtime
+Nuxeo-Component: OSGI-INF/ScriptingService.xml
+Export-Package: org.nuxeo.runtime.scripting
+

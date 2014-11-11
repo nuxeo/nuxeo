@@ -1,0 +1,157 @@
+/*
+ * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
+package org.nuxeo.runtime.model.impl;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
+import org.nuxeo.common.xmap.DOMSerializer;
+import org.nuxeo.common.xmap.annotation.XContent;
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentName;
+import org.nuxeo.runtime.model.Extension;
+import org.nuxeo.runtime.model.RuntimeContext;
+import org.w3c.dom.Element;
+
+/**
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
+ */
+@XObject("extension")
+public class ExtensionImpl implements Extension {
+
+    // used to generate the extension id if none was provided
+    private static int cnt = 0;
+
+    private static final long serialVersionUID = 8504100747683248986L;
+
+    private static final ExtensionDescriptorReader reader = new ExtensionDescriptorReader();
+
+    @XNode("@target")
+    ComponentName target;
+
+    @XNode("@point")
+    String extensionPoint;
+
+    @XNode("@id")
+    private String id;
+
+    @XContent("documentation")
+    String documentation;
+
+    @XNode("")
+    transient Element element;
+
+    transient Object[] contributions;
+
+    // declaring component
+    transient ComponentInstance component;
+
+    public void dispose() {
+        element = null;
+        contributions = null;
+    }
+
+    public Element getElement() {
+        return element;
+    }
+
+    public void setElement(Element element) {
+        this.element = element;
+    }
+
+    public String getExtensionPoint() {
+        return extensionPoint;
+    }
+
+    public ComponentName getTargetComponent() {
+        return target;
+    }
+
+    public Object[] getContributions() {
+        return contributions;
+    }
+
+    public void setContributions(Object[] contributions) {
+        this.contributions = contributions;
+    }
+
+    public void setComponent(ComponentInstance component) {
+        this.component = component;
+    }
+
+    public ComponentInstance getComponent() {
+        return component;
+    }
+
+    public RuntimeContext getContext() {
+        return component.getContext();
+    }
+
+    public String getId() {
+        if (id == null) {
+            if (component != null) {
+                id = component.getName().getName()
+                    + '#' + extensionPoint + '.' + (cnt++);
+            } else {
+                id = "null#" + extensionPoint + '.' + (cnt++);
+            }
+        }
+        return id;
+    }
+
+    public String getDocumentation() {
+        return documentation;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder buf = new StringBuilder();
+        buf.append(ExtensionImpl.class.getSimpleName());
+        buf.append(" {");
+        buf.append("target: ");
+        buf.append(target);
+        buf.append(", point:");
+        buf.append(extensionPoint);
+        buf.append('}');
+        return buf.toString();
+    }
+
+    /**
+     * Gets the XML string for this extension.
+     *
+     * @return
+     */
+    public String toXML() {
+        try {
+            return DOMSerializer.toString(element);
+        } catch (IOException e) {
+            System.err.println("Failed to serialize extension " + e);
+            return null;
+        }
+    }
+
+    public static ExtensionImpl fromXML(RuntimeContext context, String xml) throws Exception {
+        return reader.read(context, new ByteArrayInputStream(xml.getBytes()));
+    }
+
+}
