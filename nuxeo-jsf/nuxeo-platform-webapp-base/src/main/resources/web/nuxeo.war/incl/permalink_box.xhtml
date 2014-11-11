@@ -1,0 +1,25 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <h3><h:outputText value="#{messages['label.permalink.title']}" /></h3>
+
+  <div class="content">
+    <p class="popUpDescription">
+      <h:outputFormat value="#{messages['label.permalink.description']}">
+        <f:param value="#{currentDocument.title}" />
+      </h:outputFormat>
+    </p>
+
+    <h:inputText class="permalinkFocus"
+      value="#{nxd:complexDocumentUrl('id', currentDocument, null, null, true)}"
+      readonly="true" onclick="javascript:this.focus();this.select();" size="120"/>
+  </div>
+
+</div>
