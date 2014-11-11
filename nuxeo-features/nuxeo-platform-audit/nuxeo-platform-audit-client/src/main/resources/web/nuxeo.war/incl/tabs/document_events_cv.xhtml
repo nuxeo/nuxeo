@@ -1,0 +1,24 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <nxu:set var="contentViewName" value="DOCUMENT_HISTORY">
+      <ui:decorate template="/incl/content_view.xhtml">
+          <ui:define name="content_view_title">
+          </ui:define>
+          <ui:define name="content_view_syndication_buttons">
+          </ui:define>
+        </ui:decorate>
+  </nxu:set>
+
+
+<script>
+  jQuery(document).ready(function() {
+    jQuery(".auditLogUserTooltip").tooltip({delay:1000, predelay:250});
+  });
+</script>
+
+</div>
