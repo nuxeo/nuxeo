@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Imaging Tiling Preview
+Bundle-SymbolicName: org.nuxeo.ecm.platform.pictures.tiles.preview
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateless
+Require-Bundle: org.nuxeo.ecm.platform.pictures.tiles,
+  org.nuxeo.ecm.platform.preview,
+  org.nuxeo.ecm.platform.picture.api,
+  org.nuxeo.ecm.platform.picture.preview
+Nuxeo-Component: OSGI-INF/preview-contrib.xml

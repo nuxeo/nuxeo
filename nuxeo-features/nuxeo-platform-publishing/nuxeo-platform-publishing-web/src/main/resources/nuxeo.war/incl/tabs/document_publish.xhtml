@@ -1,0 +1,126 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:rich="http://richfaces.org/rich"
+  class="menu">
+
+  <a4j:region renderRegionOnly="true">
+  <a4j:outputPanel ajaxRendered="true">
+  <a4j:form ajaxSubmit="true" id="publishTreeForm">
+
+  <h:panelGroup rendered="#{!empty availablePublishingRoots}">
+    <h:panelGrid class="dataInput" columnClasses="labelColumn, fieldColumn" columns="2">
+      <h:panelGroup>
+        <h:outputText value="#{messages['label.publish.sections']}" />
+      </h:panelGroup>
+      <h:panelGroup>
+        <h:selectOneListbox class="dataInputText" size="1"
+          value="#{publishActions.currentSectionRootIdForPublishing}">
+          <nxu:selectItems value="#{availablePublishingRoots}"
+            var="root"
+            itemValue="#{root.id}"
+            itemLabel="#{root.title}" />
+            <a4j:support event="onchange" reRender="sectionTree" ignoreDupResponses="true" />
+        </h:selectOneListbox>
+      </h:panelGroup>
+    </h:panelGrid>
+
+    <dl>
+    <dd class="menuForm">
+      <h:panelGroup id="sectionTree">
+        <rich:tree
+          icon="#{nodeState.isExpanded(rowKey)?nxd:iconExpandedPath(node.document):nxd:iconPath(node.document)}"
+          iconLeaf="#{nxd:iconPath(node.document)}"
+          iconExpanded="/img/toggle_minus.png"
+          iconCollapsed="/img/toggle_plus.png"
+          rowKeyVar="rowKey"
+          stateVar="nodeState"
+          id="publishTree">
+          <rich:recursiveTreeNodesAdaptor
+            roots="#{publishActions.currentSectionsTreeForPublishing}"
+            nodes="#{node.children}"
+            var="node"
+            id="publishRecursiveAdaptor">
+            <rich:treeNode
+              highlightedClass="treeNodeHighlightedClass"
+              selectedClass="treeNodeSelectedClass"
+              id="publishTreeNode">
+              <h:outputText value="#{nxd:titleOrId(node.document)}" />
+              <nxu:methodResult name="canPublishToSection" value="#{publishActions.getCanPublishToSection(node.document)}">
+                <a4j:commandLink immediate="true"
+                  action="#{publishActions.doPublish(node.document)}"
+                  rendered="#{canPublishToSection}"
+                  reRender="publishingInfoList"
+                  id="publishCommandLink">
+                  <h:graphicImage value="/icons/back.png" />
+                  <h:outputText value="#{messages['label.publish.publish']}" />
+                </a4j:commandLink>
+              </nxu:methodResult>
+            </rich:treeNode>
+          </rich:recursiveTreeNodesAdaptor>
+        </rich:tree>
+      </h:panelGroup>
+    </dd>
+    </dl>
+  </h:panelGroup>
+
+  <h:panelGroup id="publishingInfoList">
+    <h:panelGroup rendered="#{!empty publishActions.publishingInfo}">
+
+      <nxu:dataTable value="#{publishActions.publishingInfo}" var="info"
+        preserveSort="true" preserveDataModel="false"
+        rowClasses="dataRowEven,dataRowOdd" sortable="false"
+        styleClass="dataList">
+
+        <!-- Name -->
+        <nxu:column>
+          <f:facet name="header">
+            <h:outputText value="#{messages['label.content.header.title']}" />
+          </f:facet>
+          <nxu:methodResult name="formattedPath" value="#{publishActions.getFormattedPath(info.section)}">
+            <nxd:restDocumentLink document="#{info.section}">
+              <h:outputText value="#{formattedPath}" />
+            </nxd:restDocumentLink>
+          </nxu:methodResult>
+        </nxu:column>
+
+        <!--  Version of the published document -->
+        <h:column>
+          <f:facet name="header">
+            <h:outputText
+              value="#{messages['label.publish.header.version']}" />
+          </f:facet>
+          <h:outputText value="#{info.proxyVersion}" />
+        </h:column>
+
+        <!--  Actions for the published document  -->
+        <h:column >
+          <f:facet name="header">
+            <h:outputText value="Action" />
+          </f:facet>
+
+          <nxu:methodResult name="canPublishToSection" value="#{publishActions.getCanPublishToSection(info.section)}">
+            <a4j:commandLink immediate="true"
+              value="#{messages['command.document.unpublish']}"
+              action="#{publishActions.unPublishFromSection(info.section)}"
+              rendered="#{nxd:hasPermission(info.section, 'Write') and section.ref != currentDocument.parentRef}"
+              reRender="publishingInfoList"
+              ignoreDupResponses="true">
+            </a4j:commandLink>
+          </nxu:methodResult>
+        </h:column>
+      </nxu:dataTable>
+
+
+    </h:panelGroup>
+
+  </h:panelGroup>
+
+  </a4j:form>
+  </a4j:outputPanel>
+  </a4j:region>
+</div>

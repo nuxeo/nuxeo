@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Annotations Service API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.annotations.api
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Provide-Package: org.nuxeo.ecm.platform.annotations.api
+Require-Bundle: org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.relations.api

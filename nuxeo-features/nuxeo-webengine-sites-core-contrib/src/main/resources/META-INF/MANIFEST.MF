@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: WebEngine Sites Module core contribution
+Bundle-SymbolicName: org.nuxeo.ecm.platform.webengine.sites.core.contrib
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
+ OSGI-INF/permissions-contrib.xml,
+ OSGI-INF/webengine-nxsearch-contrib.xml
+Require-Bundle: org.nuxeo.ecm.core
+Nuxeo-RequiredBy: org.nuxeo.ecm.platform.webengine.sites
+Bundle-Category: core
