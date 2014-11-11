@@ -1,0 +1,45 @@
+<div class="relation_block"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory">
+
+  <h3 class="summaryTitle">
+    <h:outputText value="#{messages['label.summary.relations.title']}" />
+  </h3>
+
+  <h:outputText value="#{messages['label.summary.relations.header']}" />
+
+  <nxu:dataTable value="#{relationActions.outgoingStatementsInfo}"
+    var="statement" styleClass="dataOutput">
+    <nxu:column>
+      <nxdir:directoryEntryOutput
+      value="#{statement.predicate.uri}"
+      directoryName="predicates"
+      localize="true" />
+    </nxu:column>
+    <nxu:column>
+    <ui:include src="/relation_node_template.xhtml">
+      <ui:param name="statement" value="#{statement}" />
+      <ui:param name="node" value="#{statement.objectInfo}" />
+    </ui:include>  
+    </nxu:column>
+  </nxu:dataTable>
+
+  <nxu:dataTable value="#{relationActions.incomingStatementsInfo}"
+    var="statement" styleClass="dataOutput">
+    <nxu:column>
+      <nxdir:directoryEntryOutput
+        value="#{statement.predicate.uri}"
+        directoryName="inverse_predicates"
+        localize="true" />
+    </nxu:column>
+    <nxu:column>
+    <ui:include src="/relation_node_template.xhtml">
+      <ui:param name="statement" value="#{statement}" />
+      <ui:param name="node" value="#{statement.subjectInfo}" />
+    </ui:include>  
+    </nxu:column>
+  </nxu:dataTable>
+
+</div>
