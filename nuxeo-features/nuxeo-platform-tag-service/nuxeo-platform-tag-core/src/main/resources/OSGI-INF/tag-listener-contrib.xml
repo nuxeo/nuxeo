@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.tag.service.listener" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <listener name="taggedDocumentRemovedListener" async="true"
+      postCommit="true"
+      class="org.nuxeo.ecm.platform.tag.TaggedDocumentRemovedListener">
+      <event>documentRemoved</event>
+      <event>lifecycle_transition_event</event>
+    </listener>
+
+  </extension>
+
+</component>

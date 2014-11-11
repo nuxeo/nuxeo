@@ -1,0 +1,23 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+  <c:if test="#{currentDocument.type == 'WebSite'}">
+    <iframe src="#{contextPath}/site/sites/#{currentDocument.webcontainer.url}"
+      width="100%"
+      height="400px"
+      name="#{currentDocument.webcontainer.name}">
+    </iframe>
+  </c:if>
+  <c:if test="#{currentDocument.type == 'BlogSite'}">
+    <iframe src="#{contextPath}/site/blogs/#{currentDocument.webcontainer.url}"
+      width="100%"
+      height="400px"
+      name="#{currentDocument.webcontainer.name}">
+    </iframe>
+  </c:if>
+
+</div>

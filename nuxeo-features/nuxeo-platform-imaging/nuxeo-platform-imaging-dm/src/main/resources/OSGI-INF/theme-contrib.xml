@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.picture.theme">
+
+  <!-- mapping between theme pages and resources -->
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+
+    <themePage name="*">
+      <styles append="true">
+        <style>picture_book</style>
+      </styles>
+    </themePage>
+
+  </extension>
+
+  <!-- CSS path declaration -->
+  <extension target="org.nuxeo.theme.styling.service" point="styles">
+
+    <style name="picture_book">
+      <src>themes/css/picture_book.css</src>
+    </style>
+
+  </extension>
+
+</component>
