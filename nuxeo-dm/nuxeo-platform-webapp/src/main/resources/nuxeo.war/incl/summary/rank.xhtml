@@ -1,0 +1,42 @@
+<div class="rank_block"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory">
+
+  <h:outputText class="boldLabel" value="#{messages['label.summary.rank.title']}"/>
+
+  <table id="rank_table" class="dataInput">
+    <tr>
+      <td class="labelColumnLeftAlign">
+        <h:outputText class="boldLabel" value="#{messages['label.dublincore.subject']}"/>
+      </td>
+      <td>
+        <nxdir:chainSelect size="2" value="#{currentDocument.dc.subjects}"
+          displayValueOnly="true" multiSelect="true">
+          <nxdir:chainSelectListbox index="0" size="4" directoryName="topic"
+            localize="true"/>
+          <nxdir:chainSelectListbox size="4" directoryName="subtopic" index="1"
+            localize="true"/>
+          <nxdir:chainSelectStatus display="value" />
+        </nxdir:chainSelect>
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumnLeftAlign">
+        <h:outputText class="boldLabel" value="#{messages['label.dublincore.coverage']}"/>
+      </td>
+      <td>
+        <nxdir:chainSelect size="2" value="#{currentDocument.dc.coverage}"
+          displayValueOnly="true">
+          <nxdir:chainSelectListbox index="0" size="0" directoryName="continent"
+            localize="true"/>
+          <nxdir:chainSelectListbox size="0" directoryName="country" index="1"
+            localize="true" />
+          <nxdir:chainSelectStatus display="value"  />
+        </nxdir:chainSelect>
+      </td>
+    </tr>
+  </table>
+
+</div>
