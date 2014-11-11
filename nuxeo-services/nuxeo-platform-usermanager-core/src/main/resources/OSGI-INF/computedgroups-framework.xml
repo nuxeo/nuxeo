@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl">
+
+    <implementation class="org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl" />
+
+    <service>
+        <provide interface="org.nuxeo.ecm.platform.computedgroups.ComputedGroupsService" />
+    </service>
+
+    <extension-point name="computer">
+        <documentation>
+    Extension point to contribute a new class to compute virtual groups.
+
+    The contribution should be as the following example :
+    <code>
+        <groupComputer name="MyGroupComputerName">
+            <computer>fullClassName</computer>
+        </groupComputer>
+    </code>
+
+    The contributed class must implement the org.nuxeo.ecm.platform.computedgroups.GroupComputer interface.
+
+    To simplify the Computer group generation you can also contribute a simple group computer without java
+    code contribution based on
+    <ul>
+      <li>user profile metadata (military grade given a abilitation level, for instance)</li>
+      <li>metadata given a list of documents (ex: local group)</li>
+    </ul>
+
+    For the first case, you just have to contribute:
+    <code>
+      <userMetadataGroupComputer enabled="false" xpath="company" groupPattern="grade_%s" name="grade_cg"/>
+    </code>
+
+    Here for each user, during the connection time, Nuxeo affect the group grade_xxx where xxx the value of
+    the company metadata stored into the user profile. If the company metadata is empty or contains only spaces
+    No group is affected to the user.
+
+    For the second possibility (metadata given a list of documents), you just have to contribute:
+    <code>
+      <documentMetadataGroupComputer xpath="dc:title" whereClause="dc:creator = '%s'" groupPattern="creator_%s" name="creator_cg"/>
+    </code>
+
+    Here, we select documents created by the user. For each document found, we affect the group creator_xxx where xxx
+    is the title of the document. But you can also try this:
+
+    <code>
+      <documentMetadataGroupComputer xpath="ecm:uuid" whereClause="dc:creator = '%s'" groupPattern="creator_%s" name="creator_cg"/>
+    </code>
+
+    Here, xxx is replaced by the id of the document. XPath value is based on NXQL query and fetch selector. See the NXQL documentation
+    to have more information.
+
+    @author Thierry Delprat (td@nuxeo.com)
+    @author Benjamin JALON (bjalon@nuxeo.com)
+        </documentation>
+        <object
+            class="org.nuxeo.ecm.platform.computedgroups.GroupComputerDescriptor" />
+        <object
+            class="org.nuxeo.ecm.platform.computedgroups.UserMetadataGroupComputerDescriptor" />
+        <object
+            class="org.nuxeo.ecm.platform.computedgroups.DocumentMetadataGroupComputerDescriptor" />
+
+    </extension-point>
+
+    <extension-point name="computerChain">
+        <documentation>
+    Extension point to set or update the chain of group computer.
+    The GroupComputers will be called sequentially according the chain definition.
+
+    The contribution should be of the form :
+    <code>
+      <groupComputerChain>
+         <computers>
+           <computer>companyGroupComputer</computer>
+           <computer>myOtherGroupComputer</computer>
+         </computers>
+      </groupComputerChain>
+    </code>
+
+    By default, each contribution will completly overwrite the chain.
+    If you just want to add a new computer to the existing chain, set the append attribute to true.
+
+    <code>
+          <groupComputerChain append="true">
+             <computers>
+               <computer>myAdditionnalGroupComputer</computer>
+             </computers>
+          </groupComputerChain>
+    </code>
+
+    @author Thierry Delprat (td@nuxeo.com)
+        </documentation>
+        <object
+            class="org.nuxeo.ecm.platform.computedgroups.GroupComputerChainDescriptor" />
+    </extension-point>
+
+</component>

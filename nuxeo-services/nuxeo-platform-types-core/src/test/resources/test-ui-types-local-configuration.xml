@@ -1,0 +1,199 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.types.local.configuration.test">
+
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+  
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+      point="doctype">
+    <doctype name="Domain" extends="Folder">
+      <schema name="domain"/>
+      <facet name="SuperSpace"/>
+      <facet name="UITypesLocalConfiguration"/>
+      <subtypes>
+        <type>WorkspaceRoot</type>
+        <type>SectionRoot</type>
+        <type>TemplateRoot</type>
+      </subtypes>
+    </doctype>
+
+    <doctype name="Workspace" extends="Folder">
+      <schema name="file"/>
+      <schema name="webcontainer"/>
+      <schema name="publishing"/>
+      <schema name="files" />
+      <facet name="SuperSpace"/>
+      <facet name="UITypesLocalConfiguration"/>
+      <subtypes>
+        <type>Workspace</type>
+        <type>Folder</type>
+        <type>File</type>
+        <type>Note</type>
+      </subtypes>
+    </doctype>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+    <type id="Root">
+      <label>Server Root</label>
+      <icon>/icons/folder.gif</icon>
+      <bigIcon>/icons/folder_100.png</bigIcon>
+      <description>serverRoot.description</description>
+      <category>SuperDocument</category>
+      <default-view>view_domains</default-view>
+      <subtypes>
+        <type hidden="create">Domain</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView>document_trash_content</contentView>
+      </contentViews>
+    </type>
+
+    <type id="Domain">
+      <label>Domain</label>
+      <icon>/icons/domain.gif</icon>
+      <bigIcon>/icons/domain.gif</bigIcon>
+      <category>SuperDocument</category>
+      <description>Domain.description</description>
+      <default-view>view_documents</default-view>
+      <create-view>create_domain</create-view>
+      <views>
+        <view id="user_dashboard" value="user_dashboard" />
+        <view id="opensocial_dashboard" value="opensocial_dashboard" />
+      </views>
+      <subtypes>
+        <type hidden="create">WorkspaceRoot</type>
+        <type hidden="create">SectionRoot</type>
+        <type hidden="create">TemplateRoot</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView>document_trash_content</contentView>
+      </contentViews>
+    </type>
+
+    <type id="Workspace">
+      <label>Workspace</label>
+      <icon>/icons/workspace.gif</icon>
+      <bigIcon>/icons/workspace_100.png</bigIcon>
+      <icon-expanded>/icons/workspace_open.gif</icon-expanded>
+      <category>Collaborative</category>
+      <description>Workspace.description</description>
+      <default-view>view_documents</default-view>
+      <create-view>create_workspace</create-view>
+      <subtypes>
+        <type>Workspace</type>
+        <type>Folder</type>
+        <type>OrderedFolder</type>
+        <type>File</type>
+        <type>Note</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <!--<layout>file</layout>-->
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <!--<layout>file</layout>-->
+        <layout>dublincore</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView>document_trash_content</contentView>
+      </contentViews>
+    </type>
+
+    <type id="Folder">
+      <label>Folder</label>
+      <icon>/icons/folder.gif</icon>
+      <bigIcon>/icons/folder_100.png</bigIcon>
+      <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <category>Collaborative</category>
+      <description>Folder.description</description>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>Folder</type>
+        <type>File</type>
+        <type>Note</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView>document_trash_content</contentView>
+      </contentViews>
+    </type>
+
+    <type id="File">
+      <label>File</label>
+      <icon>/icons/file.gif</icon>
+      <bigIcon>/icons/file_100.png</bigIcon>
+      <category>SimpleDocument</category>
+      <description>File.description</description>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>file</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>file</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <!-- all content already on summary page -->
+      <layouts mode="view" />
+    </type>
+
+    <type id="Note">
+      <label>Note</label>
+      <icon>/icons/note.gif</icon>
+      <bigIcon>/icons/note_100.png</bigIcon>
+      <category>SimpleDocument</category>
+      <description>Note.description</description>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>note</layout>
+      </layouts>
+      <layouts mode="summary">
+        <layout>note_summary_layout</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>note</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <layouts mode="view">
+        <layout>note</layout>
+      </layouts>
+    </type>
+  </extension>
+
+</component>
