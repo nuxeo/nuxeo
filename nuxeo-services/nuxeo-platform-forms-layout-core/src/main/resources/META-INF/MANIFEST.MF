@@ -1,0 +1,10 @@
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: Nuxeo ECM Forms Layout Core Fragment
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 1
+Bundle-SymbolicName: org.nuxeo.ecm.platform.forms.layout.core;singleton:=true
+Nuxeo-Component: OSGI-INF/layouts-core-framework.xml
