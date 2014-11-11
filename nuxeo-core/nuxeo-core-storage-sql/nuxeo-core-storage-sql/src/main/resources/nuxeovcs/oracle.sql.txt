@@ -1,0 +1,139 @@
+# (C) Copyright 2008-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+#
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the GNU Lesser General Public License
+# (LGPL) version 2.1 which accompanies this distribution, and is available at
+# http://www.gnu.org/licenses/lgpl.html
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# Lesser General Public License for more details.
+#
+# Contributors:
+#     Florent Guillaume
+
+# Variables used:
+# ${idType} VARCHAR2
+# ${declaredIdType} VARCHAR2(36)
+# ${fulltextTriggerStatements} repeated for all suffixes SFX:
+#   :NEW.fulltextSFX := :NEW.simpletextSFX || :NEW.binarytextSFX;
+
+# Conditions used:
+# fulltextEnabled
+
+# Note: CREATE TABLE, INSERT, DELETE must not have a final semicolon...
+# However CREATE TRIGGER for instance MUST have a final semicolon!
+
+############################################################
+
+
+#CATEGORY: beforeTableCreation
+
+
+CREATE OR REPLACE TYPE NX_ARRAY AS VARRAY(99) OF VARCHAR2(100);
+
+
+############################################################
+
+
+#CATEGORY: afterTableCreation
+
+
+CREATE OR REPLACE FUNCTION NX_IN_TREE(id ${idType}, baseid ${idType})
+RETURN NUMBER IS
+  curid ${declaredIdType} := id;
+BEGIN
+  IF baseid IS NULL OR id IS NULL OR baseid = id THEN
+    RETURN 0;
+  END IF;
+  LOOP
+    SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;
+    IF curid IS NULL THEN
+      RETURN 0;
+    ELSIF curid = baseid THEN
+      RETURN 1;
+    END IF;
+  END LOOP;
+END;
+
+
+CREATE OR REPLACE FUNCTION NX_ACCESS_ALLOWED(id ${idType}, users NX_ARRAY, permissions NX_ARRAY)
+RETURN NUMBER IS
+  curid ${declaredIdType} := id;
+  newid ${declaredIdType};
+  first BOOLEAN := TRUE;
+BEGIN
+  WHILE curid IS NOT NULL LOOP
+    FOR r IN (SELECT * FROM acls WHERE acls.id = curid ORDER BY acls.pos) LOOP
+      FOR i IN permissions.FIRST .. permissions.LAST LOOP
+        IF r.permission = permissions(i) THEN
+          FOR j IN users.FIRST .. users.LAST LOOP
+            IF r.user = users(j) THEN
+              RETURN r."GRANT";
+            END IF;
+          END LOOP;
+          EXIT;
+        END IF;
+      END LOOP;
+    END LOOP;
+    SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;
+    IF first AND newid IS NULL THEN
+      SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;
+    END IF;
+    first := FALSE;
+    curid := newid;
+  END LOOP;
+  RETURN 0;
+END;
+
+
+#IF: fulltextEnabled
+CREATE OR REPLACE TRIGGER NX_TRIG_FT_UPDATE
+BEFORE INSERT OR UPDATE ON "FULLTEXT" FOR EACH ROW
+BEGIN
+  ${fulltextTriggerStatements}
+END;
+
+
+CREATE OR REPLACE PROCEDURE NX_CLUSTER_INVAL(i ${idType}, f VARCHAR2, k INTEGER)
+IS
+  sid INTEGER := SYS_CONTEXT('USERENV', 'SID');
+BEGIN
+  FOR c IN (SELECT NODEID FROM "CLUSTER_NODES" WHERE NODEID <> sid) LOOP
+    INSERT INTO "CLUSTER_INVALS" (NODEID, ID, FRAGMENTS, KIND) VALUES (c.NODEID, i, f, k);
+  END LOOP;
+END;
+
+
+############################################################
+
+
+#CATEGORY: addClusterNode
+
+# delete nodes for sessions that don't exist anymore
+# NOTE this needs permissions on SYS.V_$SESSION
+# i.e. GRANT SELECT ON SYS.V_$SESSION TO someuser;
+#      SELECT * FROM DBA_TAB_PRIVS WHERE TABLE_NAME = 'V_$SESSION';
+DELETE FROM "CLUSTER_NODES" N WHERE
+  NOT EXISTS(SELECT S.SID FROM V$SESSION S WHERE N.NODEID = S.SID)
+
+INSERT INTO "CLUSTER_NODES" (NODEID, CREATED) VALUES (SYS_CONTEXT('USERENV', 'SID'), CURRENT_TIMESTAMP)
+
+
+#CATEGORY: removeClusterNode
+
+DELETE FROM "CLUSTER_NODES" WHERE NODEID = SYS_CONTEXT('USERENV', 'SID')
+
+
+############################################################
+
+
+#CATEGORY: testUpgrade
+
+# here use a NCLOB instead of a NVARCHAR2 to test compatibility
+CREATE TABLE TESTSCHEMA2 (
+  ID VARCHAR2(36) NOT NULL PRIMARY KEY,
+  TITLE NCLOB
+)
+
