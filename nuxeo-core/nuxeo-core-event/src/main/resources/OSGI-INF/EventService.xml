@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.event.EventServiceComponent" version="1.0">
+  <documentation>
+    Event service
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.event.EventServiceComponent"/>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.event.EventService"/>
+    <provide interface="org.nuxeo.ecm.core.event.EventProducer"/>
+    <provide interface="org.nuxeo.ecm.core.event.EventServiceAdmin"/>
+  </service>
+
+  <extension-point name="listener">
+    <documentation>
+      Extension point defining event listeners.
+
+      An event listener describes some Java code that can be executed
+      synchronously or asynchronously when an event is fired by Nuxeo code.
+
+      Example listener:
+      <code>
+        <listener name="mylistener" enabled="true"
+            postCommit="false" async="false"
+            class="org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener"
+            priority="50" retryCount="1">
+          <event>documentCreated</event>
+          <event>documentModified</event>
+        </listener>
+      </code>
+
+      The events listed are those for which the listener will be called.
+      If there are none, the listener is called for all events, but this is strongly
+      discouraged for performance reasons.
+
+      Listeners belong to one of three categories:
+
+      If postCommit=false then the listener is purely synchronous
+      (also called "inline") and executed in the same thread and transaction
+      as the code firing the event, as a regular method call.
+      The class must implement org.nuxeo.ecm.core.event.EventListener,
+      which receives events one at a time.
+
+      If postCommit=true and async=true then the listener is purely
+      asynchronous and executed at an arbitrary later point in time
+      (but after the original transaction is committed), in its own thread and transaction.
+      It may be retried if a ConcurrentUpdateException is detected.
+      The listener is executed asynchronously by the WorkManager via a Work instance
+      whose category (which determines the Work queue used) is the listener's name.
+      The class must implement org.nuxeo.ecm.core.event.PostCommitEventListener,
+      which receives a bundle of all the events raised by the original transaction.
+
+      If postCommit=true and async=false then the listener is executed synchronously
+      immediately after the original transaction is committed, but in a separate transaction.
+      It is not executed if the original transaction does a rollback.
+      All listeners in this category are executed one after the other (in priority order),
+      and only after they are all done does the main thread continue execution.
+      (However if one of the listeners takes too long it is left to run purely asynchronously
+      and the other listeners in this category are processed.)
+      The class must implement org.nuxeo.ecm.core.event.PostCommitEventListener,
+      which receives a bundle of all the events raised by the original transaction.
+
+      The priority gives a global ordering of all the listeners
+      in the same category executed for a given event.
+      The default is 0.
+
+      The retryCount specifies how many times a purely asynchronous listener
+      may retry execution if it resulted in a ConcurrentUpdateException.
+      The default is 1.
+    </documentation>
+    <object class="org.nuxeo.ecm.core.event.impl.EventListenerDescriptor"/>
+  </extension-point>
+
+</component>
