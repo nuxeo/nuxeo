@@ -1,0 +1,71 @@
+<c:if test="true"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+<c:if test="false">
+Reusable template to display a foldable box.
+
+Accepted parameters:
+- hideHeader: boolean stating if box header should be hidden
+- foldable: boolean stating if box is foldable (defaults to false)
+- foldedByDefault: boolean stating if box is folded by default (defaults to false)
+- foldableBoxStyleClass: additional style class to put on the box
+  before the potential 'foldableBox' style class (optional)
+- headerStyleClass: additional style class to put on the header/h3 tag
+  before the potential 'unfolded' style class (optional)
+- headerFormId: string id of the form around header. Optional, no form is added
+  if id is not filled.
+
+Templating zone to define:
+- foldable_box_header: header of the box
+- foldable_box_header_content: content of the header of the box, always visible
+- foldable_box_content: content of the foldable box, only visible when box is unfolded.
+
+</c:if>
+
+  <div class="#{foldableStyleClass} #{nxu:test(foldable and not hideHeader, 'foldableBox', '')}">
+
+    <c:if test="#{not hideHeader}">
+      <c:if test="#{empty headerFormId}">
+        <h3 class="#{headerStyleClass} #{nxu:test(foldable, nxu:test(foldedByDefault, 'folded', 'unfolded'), 'foldedDisabled')}">
+          <c:choose>
+            <c:when test="#{foldable}">
+              <a href="#nogo" onclick="return toggleBox(this)">
+                <ui:insert name="foldable_box_header_content" />
+              </a>
+            </c:when>
+            <c:otherwise>
+              <ui:insert name="foldable_box_header_content" />
+            </c:otherwise>
+          </c:choose>
+        </h3>
+      </c:if>
+      <c:if test="#{not empty headerFormId}">
+        <h:form id="#{headerFormId}">
+          <h3 class="#{headerStyleClass} #{nxu:test(foldable, nxu:test(foldedByDefault, 'folded', 'unfolded'), 'foldedDisabled')}">
+            <c:choose>
+              <c:when test="#{foldable}">
+                <a href="#nogo" onclick="return toggleBoxFor(this.parentNode, this.parentNode.parentNode.parentNode.children[1])">
+                  <ui:insert name="foldable_box_header_content" />
+                </a>
+              </c:when>
+              <c:otherwise>
+                <ui:insert name="foldable_box_header_content" />
+              </c:otherwise>
+            </c:choose>
+          </h3>
+        </h:form>
+      </c:if>
+    </c:if>
+
+    <div class="#{nxu:test(foldable and not hideHeader, 'boxBody', '')}"
+      style="#{nxu:test(foldable and foldedByDefault, 'display: none;', '')}">
+      <ui:insert name="foldable_box_content" />
+    </div>
+
+  </div>
+
+</c:if>

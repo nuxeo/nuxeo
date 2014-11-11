@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.ui.jsf.reload">
+
+  <extension target="org.nuxeo.runtime.EventService" point="listeners">
+    <listener class="org.nuxeo.ecm.platform.ui.web.reload.NuxeoJSFReloadHandler">
+      <topic>org.nuxeo.runtime.reload</topic>
+    </listener>
+  </extension>
+
+</component>
