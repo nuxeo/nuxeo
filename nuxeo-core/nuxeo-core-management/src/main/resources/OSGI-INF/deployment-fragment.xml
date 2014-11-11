@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <!-- StatusServlet mapping -->
+  <extension target="web#LAST-SERVLET">
+
+    <servlet>
+      <servlet-name>Nuxeo Status Servlet</servlet-name>
+      <servlet-class>org.nuxeo.ecm.core.management.statuses.StatusServlet
+      </servlet-class>
+      <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Nuxeo Status Servlet</servlet-name>
+      <url-pattern>/runningstatus</url-pattern>
+    </servlet-mapping>
+
+  </extension>
+
+</fragment>

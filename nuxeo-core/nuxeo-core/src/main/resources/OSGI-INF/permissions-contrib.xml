@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.security.defaultPermissions">
+  <documentation>
+    Default permissions (atomic and compound) used by the core. If you
+    edit this file, please update the specification file:
+    doc/NXCore-Security.txt in core module
+
+    @author <a href="mailto:og@nuxeo.com">Olivier Grisel</a>
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="permissions">
+
+    <permission name="Browse" />
+    <permission name="ReadProperties">
+      <include>Browse</include>
+    </permission>
+    <permission name="ReadChildren" />
+    <permission name="ReadLifeCycle" />
+    <permission name="ReviewParticipant" />
+    <permission name="ReadSecurity" />
+
+    <permission name="WriteProperties" />
+    <permission name="ReadVersion"/>
+ 
+    <permission name="WriteVersion" >
+       <include>WriteProperties</include>
+    </permission>
+    
+    <permission name="Version" >
+       <include>ReadVersion</include>
+       <include>WriteVersion</include>
+    </permission>
+
+    <permission name="Read">
+      <include>Browse</include>
+      <include>ReadVersion</include>
+      <include>ReadProperties</include>
+      <include>ReadChildren</include>
+      <include>ReadLifeCycle</include>
+      <include>ReadSecurity</include>
+      <include>ReviewParticipant</include>
+    </permission>
+
+    <permission name="AddChildren" />
+    <permission name="RemoveChildren" />
+    <permission name="Remove" />
+    <permission name="ManageWorkflows" />
+    <permission name="WriteLifeCycle" />
+    <permission name="Unlock" />
+
+    <permission name="Remove">
+      <include>RemoveChildren</include>
+      <!-- NXP-10929: necessary to follow the "delete" transition when Trash is enabled -->
+      <include>WriteLifeCycle</include>
+    </permission>
+
+    <permission name="ReadRemove">
+      <include>Read</include>
+      <include>Remove</include>
+    </permission>
+
+    <permission name="Write">
+      <include>AddChildren</include>
+      <include>WriteProperties</include>
+      <include>Remove</include>
+      <include>ManageWorkflows</include>
+      <include>WriteLifeCycle</include>
+      <include>WriteVersion</include>
+    </permission>
+
+    <permission name="ReadWrite">
+      <include>Read</include>
+      <include>Write</include>
+    </permission>
+
+    <permission name="WriteSecurity" />
+
+    <!-- special permission given to administrators: god-level access -->
+    <permission name="Everything" />
+
+    <!-- deprecated - was used only for a single customer
+      project before pluggable permission definitions -->
+    <permission name="RestrictedRead" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="permissionsVisibility">
+
+    <visibility>
+      <item show="true" order="10">Read</item>
+      <item show="true" order="50" denyPermission="Write">ReadWrite</item>
+      <item show="true" order="60" denyPermission="Remove">ReadRemove</item>
+      <item show="true" order="100">Everything</item>
+    </visibility>
+
+  </extension>
+</component>
