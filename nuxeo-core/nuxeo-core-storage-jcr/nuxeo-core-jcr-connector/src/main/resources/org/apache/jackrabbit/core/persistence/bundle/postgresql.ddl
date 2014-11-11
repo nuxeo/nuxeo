@@ -1,0 +1,5 @@
+create table ${schemaObjectPrefix}BUNDLE (NODE_ID_HI bigint not null, NODE_ID_LO bigint not null, BUNDLE_DATA bytea not null, PRIMARY KEY (NODE_ID_HI, NODE_ID_LO))
+create table ${schemaObjectPrefix}REFS (NODE_ID_HI bigint not null, NODE_ID_LO bigint not null, REFS_DATA bytea not null, PRIMARY KEY (NODE_ID_HI, NODE_ID_LO))
+create table ${schemaObjectPrefix}BINVAL (BINVAL_ID varchar(64) not null, BINVAL_DATA bytea not null)
+create unique index ${schemaObjectPrefix}BINVAL_IDX on ${schemaObjectPrefix}BINVAL (BINVAL_ID)
+create table ${schemaObjectPrefix}NAMES (ID SERIAL PRIMARY KEY, NAME varchar(255) not null)
