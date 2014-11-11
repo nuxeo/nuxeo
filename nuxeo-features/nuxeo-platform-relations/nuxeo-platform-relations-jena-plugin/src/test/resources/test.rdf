@@ -1,0 +1,11 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:dcterms="http://purl.org/dc/terms/" > 
+  <rdf:Description rdf:about="http://www.ecm.org/uid/DOC200600013_02.01">
+    <dcterms:References rdf:resource="http://www.wikipedia.com/Enterprise_Content_Management"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.ecm.org/uid/DOC200600015_01.00">
+    <dcterms:References>NXRuntime</dcterms:References>
+    <dcterms:IsBasedOn rdf:resource="http://www.ecm.org/uid/DOC200600013_02.01"/>
+  </rdf:Description>
+</rdf:RDF>
