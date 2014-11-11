@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.jcr.testing.CoreSessionFactory">
+ <extension target="org.nuxeo.ecm.core.CoreService"
+    point="sessionFactory">
+    <factory class="org.nuxeo.ecm.core.api.local.LocalSessionFactory" />
+  </extension>
+  <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
+    point="repositories">
+    <repository name="demo"/>
+  </extension>
+</component>
