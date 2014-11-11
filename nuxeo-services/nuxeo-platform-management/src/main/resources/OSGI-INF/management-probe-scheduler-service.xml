@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.management.probes.ProbeComponent">
+
+  <implementation
+    class="org.nuxeo.ecm.platform.management.probes.ProbeComponent" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.management.probes.ProbeScheduler" />
+    <provide interface="org.nuxeo.ecm.platform.management.probes.ProbeRunner" />
+  </service>
+
+  <require>org.nuxeo.runtime.management.ResourcePublisher</require>
+
+  <extension-point name="probes">
+    <object class="org.nuxeo.ecm.platform.management.probes.ProbeDescriptor" />
+  </extension-point>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="probeListener" async="false" postCommit="false" class="org.nuxeo.ecm.platform.management.probes.ProbeScheduleListener">
+		<event>probeSchedule</event>
+    </listener>
+  </extension>
+</component>

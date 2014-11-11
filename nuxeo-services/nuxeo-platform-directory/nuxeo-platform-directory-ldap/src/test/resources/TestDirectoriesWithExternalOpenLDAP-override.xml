@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+
+<!--
+  NXP-2461: Manage LDAP directories with missing entries for identifier field
+  
+  override default configuration, changing the userDirectory id field
+-->
+
+<component name="org.nuxeo.ecm.directory.ldap.storage.override">
+
+  <implementation class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor" />
+  <require>org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory</require>
+  <require>org.nuxeo.ecm.directory.ldap.storage</require>
+
+  <extension target="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"
+    point="directories">
+
+    <directory name="userDirectory">
+      <server>default</server>
+      <schema>user</schema>
+      <!-- change the id field mapping -->
+      <idField>email</idField>
+      <passwordField>userPassword</passwordField>
+
+      <!-- the following dn weird casing is intentional -->
+      <searchBaseDn>ou=people,dc=example, DC=COM</searchBaseDn>
+      <searchClass>person</searchClass>
+      <searchScope>onelevel</searchScope>
+
+      <readOnly>false</readOnly>
+      
+      <creationBaseDn>ou=people,dc=example,dc=com</creationBaseDn>
+      <creationClass>top</creationClass>
+      <creationClass>person</creationClass>
+      <creationClass>organizationalPerson</creationClass>
+      <creationClass>inetOrgPerson</creationClass>
+      <!-- <creationClass>testDatePerson</creationClass> -->
+      <rdnAttribute>uid</rdnAttribute>
+
+      <fieldMapping name="username">uid</fieldMapping>
+      <fieldMapping name="firstName">givenName</fieldMapping>
+      <fieldMapping name="lastName">sn</fieldMapping>
+      <fieldMapping name="password">userPassword</fieldMapping>
+      <fieldMapping name="email">mail</fieldMapping>
+      <fieldMapping name="intField">employeeNumber</fieldMapping>
+      <fieldMapping name="company">o</fieldMapping>
+
+      <references>
+
+        <inverseReference field="groups" directory="groupDirectory"
+          dualReferenceField="members" />
+
+      </references>
+
+    </directory>
+
+  </extension>
+
+</component>
