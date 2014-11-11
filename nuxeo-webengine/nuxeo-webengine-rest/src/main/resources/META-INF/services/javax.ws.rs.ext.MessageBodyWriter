@@ -1,0 +1,2 @@
+org.nuxeo.ecm.webengine.rest.template.TemplateProvider
+org.nuxeo.ecm.webengine.rest.providers.DocumentObjectProvider

@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.webengine.test">
+
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="form">
+      <form id="MyForm">
+        <!-- a simple regex constraint -->
+        <field id="dc:title" required="true" min-length="3">
+          <label>Title</label>
+          <constraints>
+            <like>My\s+\w+\s+title</like>
+          </constraints>
+        </field>
+        <!-- example of composite constraints -->
+        <field id="my:age" required="false" type="integer">
+          <label>Age</label>
+          <constraints>
+            <lt>70</lt>
+            <gteq>20</gteq>
+            <or>
+              <not><eq>50</eq></not>
+            </or>
+          </constraints>
+        </field>
+        <!-- example of enumerations-->
+        <field id="my:country" required="false" type="string">
+          <label>Country</label>
+          <constraints>
+            <enum>France Belgium USA Romania</enum>
+          </constraints>
+        </field>
+        <!-- example of references to other fields -->
+        <field id="confirm_email" required="false" type="string">
+          <label>Confirm E-Mail</label>
+          <constraints>
+            <!-- example on how to setup an error message: the variable %s
+            will be replaced with the actual value -->
+            <eq ref="my:email" error-message="Confirmation E-mail address doesn't match: %s" />
+          </constraints>
+        </field>
+        <field id="my:email" required="true"/>
+      </form>
+
+</extension>
+
+</component>

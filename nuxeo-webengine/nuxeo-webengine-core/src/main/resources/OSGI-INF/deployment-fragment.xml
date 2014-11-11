@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<fragment>
+  <extension target="application#MODULE">
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
+
+
+  <!-- Site Servlet mapping -->
+  <extension target="web#SERVLET">
+   <filter>
+      <display-name>WebEngineAuthenticationFilter</display-name>
+      <filter-name>WebEngineAuthenticationFilter</filter-name>
+      <filter-class>
+        org.nuxeo.ecm.webengine.login.WebEngineAuthenticationFilter
+      </filter-class>
+      <init-param>
+      	<param-name>propagator</param-name>
+      	<param-value>org.nuxeo.ecm.webengine.login.JBossAuthenticationPropagator</param-value>
+      </init-param>
+    <init-param>
+      <param-name>exclude</param-name>
+      <param-value>/site/files</param-value>
+    </init-param>
+   </filter>
+
+    <filter-mapping>
+      <filter-name>WebEngineAuthenticationFilter</filter-name>
+      <url-pattern>/site/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <servlet>
+      <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.webengine.servlet.WebServlet
+      </servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
+      <url-pattern>/site/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>Nuxeo Resource Servlet</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.webengine.servlet.ResourceServlet
+      </servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Nuxeo Resource Servlet</servlet-name>
+      <url-pattern>/site/files/*</url-pattern>
+    </servlet-mapping>
+  </extension>
+
+</fragment>
+

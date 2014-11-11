@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.webengine.test">
+
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="guard">
+
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="webObject">
+    <object id="siteFolder2">
+      <actions>
+        <action id="view" enabled="true">
+          <permission expression="type=Folder"/>
+        </action>
+        <action id="myAction1" enabled="true">
+          <permission expression="(type=Folder OR type=Workspace)"/>
+        </action>
+        <action id="myAction2" enabled="true">
+          <permission expression="MY_WRITE">
+            <guard type="user" id="MY_WRITE">bogdan</guard>
+          </permission>
+        </action>
+        <action id="myAction3" enabled="true">
+          <permission expression="MY_SCRIPT">
+            <guard type="script" id="MY_SCRIPT" engine="jexl">doc.title == "test"</guard>
+          </permission>
+        </action>
+        <action id="myAction4" enabled="true">
+          <permission expression="MY_PY_SCRIPT">
+            <guard type="script" id="MY_PY_SCRIPT" engine="python">__result__ = doc.getTitle() == 'test.py'</guard>
+          </permission>
+        </action>
+      </actions>
+    </object>
+  </extension>
+</component>
