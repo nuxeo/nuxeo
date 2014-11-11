@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources>
+<#if "${nuxeo.db.type}" == "postgresql">
+  <xa-datasource>
+    <jndi-name>NuxeoDS</jndi-name>
+    <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
+    <xa-datasource-property name="ServerName">${nuxeo.db.host}</xa-datasource-property>
+    <xa-datasource-property name="PortNumber">${nuxeo.db.port}</xa-datasource-property>
+    <xa-datasource-property name="DatabaseName">${nuxeo.db.name}</xa-datasource-property>
+    <xa-datasource-property name="User">${nuxeo.db.user}</xa-datasource-property>
+    <xa-datasource-property name="Password">${nuxeo.db.password}</xa-datasource-property>
+    <max-pool-size>${nuxeo.db["max-pool-size"]}</max-pool-size>
+    <min-pool-size>${nuxeo.db["min-pool-size"]}</min-pool-size>
+    <track-connection-by-tx />
+    <!--
+      <valid-connection-checker-class-name>org.jboss.resource.adapter.jdbc.vendor.PostgreSQLValidConnectionChecker</valid-connection-checker-class-name>
+      <exception-sorter-class-name>org.jboss.resource.adapter.jdbc.vendor.PostgreSQLExceptionSorter</execption-sort-class-name>
+    -->
+  </xa-datasource>
+<#elseif "${nuxeo.db.type}" == "oracle">
+  <local-tx-datasource>
+    <jndi-name>NuxeoDS</jndi-name>
+    <driver-class>oracle.jdbc.OracleDriver</driver-class>
+    <connection-url>jdbc:oracle:thin:@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}</connection-url>
+    <user-name>${nuxeo.db.user}</user-name>
+    <password>${nuxeo.db.password}</password>
+    <max-pool-size>${nuxeo.db["max-pool-size"]}</max-pool-size>
+    <min-pool-size>${nuxeo.db["min-pool-size"]}</min-pool-size>
+    <!--
+      <valid-connection-checker-class-name>org.jboss.resource.adapter.jdbc.vendor.OracleValidConnectionChecker</valid-connection-checker-class-name>
+      <exception-sorter-class-name>org.jboss.resource.adapter.jdbc.vendor.OracleExceptionSorter</exception-sorter-class-name>
+    -->
+  </local-tx-datasource>
+<#elseif "${nuxeo.db.type}" == "mssql">
+  <xa-datasource>
+    <jndi-name>NuxeoDS</jndi-name>
+    <xa-datasource-class>net.sourceforge.jtds.jdbcx.JtdsDataSource</xa-datasource-class>
+    <xa-datasource-property name="ServerName">${nuxeo.db.host}</xa-datasource-property>
+    <xa-datasource-property name="PortNumber">${nuxeo.db.port}</xa-datasource-property>
+    <xa-datasource-property name="DatabaseName">${nuxeo.db.name}</xa-datasource-property>
+    <xa-datasource-property name="User">${nuxeo.db.user}</xa-datasource-property>
+    <xa-datasource-property name="Password">${nuxeo.db.password}</xa-datasource-property>
+    <xa-datasource-property name="useCursors">true</xa-datasource-property>
+    <max-pool-size>${nuxeo.db["max-pool-size"]}</max-pool-size>
+    <min-pool-size>${nuxeo.db["min-pool-size"]}</min-pool-size>
+    <track-connection-by-tx/>
+  </xa-datasource>
+<#elseif "${nuxeo.db.type}" == "mysql">
+  <local-tx-datasource>
+    <jndi-name>NuxeoDS</jndi-name>
+    <connection-url>jdbc:mysql://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}?relaxAutoCommit=true</connection-url>
+    <driver-class>com.mysql.jdbc.Driver</driver-class>
+    <user-name>${nuxeo.db.user}</user-name>
+    <password>${nuxeo.db.password}</password>
+    <max-pool-size>${nuxeo.db["max-pool-size"]}</max-pool-size>
+    <min-pool-size>${nuxeo.db["min-pool-size"]}</min-pool-size>
+    <!--
+      <valid-connection-checker-class-name>org.jboss.resource.adapter.jdbc.vendor.MySQLValidConnectionChecker</valid-connection-checker-class-name>
+      <exception-sorter-class-name>org.jboss.resource.adapter.jdbc.vendor.MySQLExceptionSorter</execption-sort-class-name>
+    -->
+  </local-tx-datasource>
+<#else>
+  <local-tx-datasource>
+    <jndi-name>NuxeoDS</jndi-name>
+    <connection-url>
+      jdbc:h2:${nuxeo.db.name}
+    </connection-url>
+    <driver-class>org.h2.Driver</driver-class>
+    <max-pool-size>${nuxeo.db["max-pool-size"]}</max-pool-size>
+    <min-pool-size>${nuxeo.db["min-pool-size"]}</min-pool-size>
+    <user-name>${nuxeo.db.user}</user-name>
+    <password>${nuxeo.db.password}</password>
+  </local-tx-datasource>
+</#if>
+
+  <mbean code="org.jboss.naming.NamingAlias" name="jboss.jca:name=nxsqldirectory,service=DataSourceBinding">
+    <attribute name="ToName">${jndi.base}/NuxeoDS</attribute>
+    <attribute name="FromName">${jndi.base}/nxsqldirectory</attribute>
+  </mbean>
+
+  <mbean code="org.jboss.naming.NamingAlias" name="jboss.jca:name=nxaudit-logs,service=DataSourceBinding">
+    <attribute name="ToName">${jndi.base}/NuxeoDS</attribute>
+    <attribute name="FromName">${jndi.base}/nxaudit-logs</attribute>
+  </mbean>
+  <mbean code="org.jboss.naming.NamingAlias" name="jboss.jca:name=nxaudits,service=DataSourceBinding">
+    <attribute name="ToName">${jndi.base}/NuxeoDS</attribute>
+    <attribute name="FromName">jdbc/nxaudits</attribute>
+  </mbean>
+
+  <mbean code="org.jboss.naming.NamingAlias" name="jboss.jca:name=nxcomment-jena,service=DataSourceBinding">
+    <attribute name="ToName">${jndi.base}/NuxeoDS</attribute>
+    <attribute name="FromName">${jndi.base}/comment-relations</attribute>
+  </mbean>
+
+  <mbean code="org.jboss.naming.NamingAlias"
+    name="jboss.jca:name=placeful_service_ds,service=DataSourceBinding">
+    <attribute name="ToName">${jndi.base}/NuxeoDS</attribute>
+    <attribute name="FromName">${jndi.base}/placeful_service_ds</attribute>
+  </mbean>
+
+  <mbean code="org.jboss.naming.NamingAlias"
+    name="jboss.jca:name=nxrelations-default-jena,service=DataSourceBinding">
+    <attribute name="ToName">${jndi.base}/NuxeoDS</attribute>
+    <attribute name="FromName">${jndi.base}/nxrelations-default-jena</attribute>
+  </mbean>
+
+  <mbean code="org.jboss.naming.NamingAlias" name="jboss.jca:name=nxuidsequencer,service=DataSourceBinding">
+    <attribute name="ToName">${jndi.base}/NuxeoDS</attribute>
+    <attribute name="FromName">${jndi.base}/nxuidsequencer</attribute>
+  </mbean>
+
+  <mbean code="org.jboss.naming.NamingAlias" name="jboss.jca:name=nxworkflowjbpm,service=DataSourceBinding">
+    <attribute name="ToName">${jndi.base}/NuxeoDS</attribute>
+    <attribute name="FromName">${jndi.base}/nxjbpm</attribute>
+  </mbean>
+
+  <mbean code="org.jboss.naming.NamingAlias" name="jboss.jca:name=nxactivities,service=DataSourceBinding">
+    <attribute name="ToName">${jndi.base}/NuxeoDS</attribute>
+    <attribute name="FromName">${jndi.base}/nxactivities</attribute>
+  </mbean>
+
+</datasources>
