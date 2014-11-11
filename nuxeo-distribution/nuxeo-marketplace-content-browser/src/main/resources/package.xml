@@ -1,0 +1,17 @@
+<package type="addon" name="@NAME@" version="@VERSION@">
+  <title>@TITLE@</title>
+  <description>Virtual package to manage compatibility between applications on
+    top of CAP.
+  </description>
+  <home-page>http://doc.nuxeo.com/x/bIEk</home-page>
+  <vendor>Nuxeo</vendor>
+  <installer restart="true" />
+  <uninstaller restart="true" />
+  <NuxeoValidationState>nuxeo_certified</NuxeoValidationState>
+  <ProductionState>production_ready</ProductionState>
+  <platforms>
+    <platform>cap-@VERSION@</platform>
+  </platforms>
+  <license>LGPL</license>
+  <license-url>http://www.gnu.org/licenses/lgpl.html</license-url>
+</package>

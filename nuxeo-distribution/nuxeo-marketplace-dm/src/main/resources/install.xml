@@ -1,0 +1,16 @@
+<install>
+  <copy dir="${package.root}/install/bundles" todir="${env.bundles}"
+    overwriteIfNewerVersion="true" />
+  <copy dir="${package.root}/install/lib" todir="${env.lib}"
+    overwriteIfNewerVersion="true" />
+  <copy dir="${package.root}/install/syslib" todir="${env.syslib}"
+    overwriteIfNewerVersion="true" />
+  <copy dir="${package.root}/install/templates" todir="${env.templates}"
+    overwrite="true" />
+  <append file="${package.root}/install/distribution.properties" todir="${env.templates}/common/config" />
+  <config set="org.nuxeo.ecm.product.name=Nuxeo DM" />
+  <copy file="${package.root}/install/artifacts-dm.properties" todir="${env.server.home}/sdk"
+    overwrite="true" />
+  <copy file="${package.root}/install/test-artifacts-dm.properties" todir="${env.server.home}/sdk"
+    overwrite="true" />
+</install>
