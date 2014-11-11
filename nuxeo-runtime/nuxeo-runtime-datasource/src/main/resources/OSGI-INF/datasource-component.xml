@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.datasource">
+  <documentation>
+    Component use to register datasources.
+
+    Example contribution:
+
+    <code>
+      <datasource name="jdbc/foo" driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+          maxActive="20" maxIdle="5" maxWait="10000">
+        <property name="url">jdbc:derby:/home/db;create=true</property>
+        <property name="username">nuxeo</property>
+        <property name="password">nuxeo</property>
+      </datasource>
+    </code>
+
+    Or, for a XA datasource:
+
+    <code>
+      <datasource name="jdbc/foo" xaDataSource="org.apache.derby.jdbc.EmbeddedXADataSource"
+          maxActive="20" maxIdle="5" maxWait="10000">
+        <property name="databaseName">/home/db</property>
+        <property name="createDatabase">create</property>
+        <property name="user">nuxeo</property>
+        <property name="password">nuxeo</property>
+      </datasource>
+    </code>
+
+    The allowed attributes of a <b>datasource</b> element are:
+    <ul>
+      <li>
+        <b>name</b>
+        the JNDI name (for instance <tt>jdbc/foo</tt>)
+      </li>
+      <li>
+        <b>driverClassName</b>
+        the JDBC driver class name (only for a non-XA datasource)
+      </li>
+      <li>
+        <b>xaDataSource</b>
+        the XA datasource class name (only for a XA datasource)
+      </li>
+    </ul>
+    <p />
+    To configure the characteristics of the pool:
+    <ul>
+      <li>
+        <b>maxActive</b>
+        the maximum number of active connections
+      </li>
+      <li>
+        <b>minIdle</b>
+        the minimum number of idle connections
+      </li>
+      <li>
+        <b>maxIdle</b>
+        the maximum number of idle connections
+      </li>
+      <li>
+        <b>maxWait</b>
+        the maximum number of milliseconds to wait for a connection to
+        be available, or -1 (the default) to wait indefinitely
+      </li>
+      <li>
+        ... see org.apache.commons.dbcp.BasicDataSource setters for more.
+      </li>
+    </ul>
+    <p />
+    To configure the datasource, individual property sub-elements must be used.
+    For a non-XA datasource, <b>url</b>, <b>username</b> and <b>password</b>
+    are commonly used. For a XA datasource, the properties are done according
+    to the JavaBean setters of the datasource, see the documentation for your
+    JDBC driver for more.
+  </documentation>
+
+  <implementation class="org.nuxeo.runtime.datasource.DataSourceComponent" />
+
+  <extension-point name="datasources">
+    <object class="org.nuxeo.runtime.datasource.DataSourceDescriptor" />
+  </extension-point>
+
+</component>
