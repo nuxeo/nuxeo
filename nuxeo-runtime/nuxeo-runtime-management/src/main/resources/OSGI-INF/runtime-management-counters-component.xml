@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.management.counters">
+
+  <implementation class="org.nuxeo.runtime.management.counters.CounterManagerImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.runtime.management.counters.CounterManager" />
+  </service>
+
+</component>
