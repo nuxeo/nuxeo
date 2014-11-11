@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Core SQL Storage
+Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Require-Bundle: org.nuxeo.runtime;visibility:=reexport,
+ org.nuxeo.runtime.management,
+ org.nuxeo.ecm.core.schema,
+ org.nuxeo.ecm.core,
+ org.nuxeo.ecm.core.convert,
+ org.nuxeo.ecm.core.convert.api,
+ org.nuxeo.ecm.core.convert.plugins
+Bundle-Category: core
+Export-Package: org.nuxeo.ecm.core.storage,
+ org.nuxeo.ecm.core.storage.sql,
+ org.nuxeo.ecm.core.storage.sql.coremodel,
+ org.nuxeo.ecm.core.storage.sql.jdbc,
+ org.nuxeo.ecm.core.storage.sql.jdbc.db,
+ org.nuxeo.ecm.core.storage.sql.jdbc.dialect,
+ org.nuxeo.ecm.core.storage.sql.management
+Eclipse-LazyStart: true
+Nuxeo-Component: OSGI-INF/management-contrib.xml,
+ OSGI-INF/listener-contrib.xml,
+ OSGI-INF/querymaker-service.xml,
+ OSGI-INF/querymaker-contrib.xml
