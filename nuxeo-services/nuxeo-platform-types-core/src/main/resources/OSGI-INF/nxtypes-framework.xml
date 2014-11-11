@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.types.TypeService">
+  <documentation>
+    The type service provides extension points for pluggable document types.
+
+    Document types here can be seen as entities defining the behavior of a
+    document within the ECM: they hold information about the way they will be
+    managed and rendered.
+
+    @version 1.0
+    @author Anahide Tchertchian (at@nuxeo.com)
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.types.TypeService" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.types.TypeManager" />
+  </service>
+
+  <extension-point name="types">
+    <documentation>
+      A document type has the following properties:
+
+      - id: its string identifier
+
+      - coretype: its core type identifier. The core type holds information
+      about the document schemas {@see org.nuxeo.ecm.core.schema.types.Type}.
+      WARNING: id and coretype currently need to be identical in the definition.
+
+      - icon: icon path used to represent the document type.
+
+      - icon-expanded: icon used for instance in tree view
+
+      - bigIcon: icon path aimed at rich application
+      
+      - bigIcon-expanded: same as icon-expanded for rich application
+      
+      - category: Category of the document type.
+      
+      - description: Description of the document type.
+
+      - label: string title.
+
+      - subtypes: list of the allowed sub document types for a given container.
+      This can be used to filter some document types creation and copy to
+      specific kinds of container documents.
+
+      - deniedSubtypes: list of forbidden sub document types for a given
+      container. Useful when you inherit from another container type and
+      want to restrict its subtypes.
+
+      - default-view: this view will be returned when accessing the document.
+
+      - create-view: this view will be returned when creating the document.
+
+      - edit-view: this view can be used to display the document default edit
+      page.
+
+      - views: other views can be defined, so that they can be customized easily
+      and trigger specific behaviour. For instance, defining a view named
+      'after-edit' on the document will allow to parameter which view should be
+      displayed after the document edition.
+
+      WARNING: the views definitions and associated behaviours may change in the
+      future. You should avoid customizing more than default-view and
+      create-view for now.
+
+      - layouts: the list of layouts to use in a given mode. Usual modes are
+      "view", "create" and "edit". When no layouts are defined for a specific
+      mode, layouts for the mode "any" are taken.
+
+      - layout: deprecated layout configuration.
+
+      Example:
+
+      <code>
+        <type id="Domain" coretype="Domain">
+          <label>Domain</label>
+          <icon>/icons/folder.gif</icon>
+          <default-view>view_documents</default-view>
+          <subtypes>
+            <type>WorkspaceRoot</type>
+            <type>SectionRoot</type>
+          </subtypes>
+          <deniedSubtypes>
+            <type>File</type>
+          </deniedSubtypes>
+          <layouts mode="any">
+            <layout>heading</layout>
+          </layouts>
+        </type>
+      </code>
+
+      Types extension point provides merging features: you can change an
+      existing type definition in your custom extension point provided you use
+      the same identifier.
+
+    </documentation>
+
+    <object class="org.nuxeo.ecm.platform.types.Type" />
+  </extension-point>
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement"
+    point="services">
+
+  </extension>
+
+</component>
+
