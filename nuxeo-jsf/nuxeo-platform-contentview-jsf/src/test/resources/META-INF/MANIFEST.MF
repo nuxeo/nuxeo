@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM ContentView JSF Test
+Bundle-SymbolicName: org.nuxeo.ecm.platform.contentview.jsf.test

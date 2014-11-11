@@ -1,0 +1,112 @@
+<c:if xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:f="http://java.sun.com/jsf/core"
+  test="#{contentView != null}">
+
+<c:if test="false">
+Needed parameters:
+ - contentView: the content view instance
+ - contentViewRenderId: unique identifier for this content view in the page
+
+Optional parameters used to override the content view definition when not
+empty:
+ - showFilterForm
+</c:if>
+
+<nxu:set var="finalShowFilterForm"
+  value="#{nxu:test(empty showFilterForm, contentView.showFilterForm, showFilterForm)}">
+<c:if test="#{finalShowFilterForm and contentView.searchDocumentModel != null}">
+
+  <nxu:set var="cvid" value="#{contentViewRenderId}"
+    cache="true">
+  <nxu:set var="filterFormId" value="#{cvid}_filterForm"
+    cache="true">
+  <nxu:set var="resetFilterFormId" value="#{cvid}_resetFilterForm"
+    cache="true">
+  <nxu:set var="openBox" value="#{nxu:hasMessages(filterFormId) or contentView.searchLayout.filterUnfolded}"
+    cache="true">
+  <nxu:set var="elementsToReRender"
+    value="#{cvid}_resultsPanel, #{resetFilterFormId}, #{filterFormId}, #{cvid}_contentViewActionsPanel"
+    cache="true">
+
+  <div class="foldableLightBox">
+
+    <div class="foldableLightBoxHeader #{nxu:test(openBox, 'unfolded', 'folded')}">
+      <a class="foldableHeaderLink" href="#nologo" onclick="return toggleBox(this)">
+        <h:outputText value="#{messages['label.contentview.filter.title']}"/>
+      </a>
+
+      <div class="action_bar_message">
+        <a4j:form id="#{cvid}_resetFilterForm"
+          ajaxSubmit="true">
+          <a4j:commandLink
+            value="#{messages['label.contentview.filter.clearFilter']}"
+            id="resetFilter"
+            ajaxSingle="true"
+            rendered="#{nxd:isDirty(contentView.searchDocumentModel)}"
+            reRender="#{elementsToReRender}"
+            ignoreDupResponses="true"
+            requestDelay="100"
+            styleClass="button warningLink">
+            <nxu:actionListenerMethod
+              value="#{jsfResetActions.resetComponents}" />
+            <nxu:actionListenerMethod
+              value="#{contentView.resetSearchDocumentModel()}" />
+          </a4j:commandLink>
+        </a4j:form>
+      </div>
+    </div>
+
+    <div class="boxBody"
+      style="#{nxu:test(openBox, '', 'overflow: visible; display: none;')}">
+      <a4j:form id="#{filterFormId}" ajaxSubmit="true"
+        reRender="#{elementsToReRender}"
+        oncomplete="jQuery.fancybox.close();"
+        ignoreDupResponses="true"
+        requestDelay="100">
+        <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
+          value="#{contentView.searchDocumentModel}" />
+        <p class="buttonsGadget">
+          <h:commandButton
+            value="#{messages['label.contentview.filter.filterAction']}"
+            id="submitFilter"
+            action="#{contentView.resetPageProvider()}"
+            styleClass="button">
+            <nxu:actionListenerMethod
+              value="#{jsfResetActions.resetComponents}" />
+          </h:commandButton>
+          <a4j:commandButton
+            value="#{messages['label.contentview.filter.clearFilterButton']}"
+            id="resetFilter"
+            ajaxSingle="true"
+            disabled="#{not nxd:isDirty(contentView.searchDocumentModel)}"
+            reRender="#{elementsToReRender}"
+            ignoreDupResponses="true"
+            requestDelay="100"
+            styleClass="button">
+            <nxu:actionListenerMethod
+              value="#{jsfResetActions.resetComponents}" />
+            <nxu:actionListenerMethod
+              value="#{contentView.resetSearchDocumentModel()}" />
+          </a4j:commandButton>
+        </p>
+      </a4j:form>
+    </div>
+
+  </div>
+  
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+
+</c:if>
+</nxu:set>
+
+</c:if>
