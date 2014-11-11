@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/schema12" xmlns:nxs="http://www.nuxeo.org/ecm/schemas/schema12"
+  version="1.0">
+
+  <xs:complexType name="sampleType">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="label" type="xs:string" />
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="roles"
+        nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="field1" type="nxs:sampleType" />
+  <xs:element name="self" type="xs:anyURI"/>
+
+</xs:schema>
