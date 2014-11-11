@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.webengine.gwt.InstallGwtAppComponent" version="1.0">
+  <documentation>
+  Install a GWT application to the given target directory
+  @author Bogdan Stefanescu (bs@nuxeo.com)
+  </documentation>
+
+  <require>org.nuxeo.ecm.webengine.WebEngineComponent</require>
+
+  <implementation class="org.nuxeo.ecm.webengine.gwt.InstallGwtAppComponent"/>
+
+  <extension-point name="install">
+    <object class="org.nuxeo.ecm.webengine.gwt.InstallGwtAppDescriptor"/>
+  </extension-point>
+
+</component>
+
