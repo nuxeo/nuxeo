@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.picture.coreTypes">
+
+  <require>org.nuxeo.ecm.core.schema.TypeService</require>
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+             point="schema">
+    <schema name="picture" src="schema/picture.xsd"/>
+    <schema name="image_metadata" src="schema/image_metadata.xsd" prefix="imd"/>
+    <schema name="iptc" src="schema/iptc.xsd" prefix="iptc"/>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+             point="doctype">
+
+    <facet name="Picture">
+      <schema name="file"/>
+      <schema name="picture"/>
+      <schema name="image_metadata"/>
+      <schema name="iptc"/>
+    </facet>
+
+    <facet name="MultiviewPicture"/>
+
+    <doctype name="Picture" extends="Document">
+      <schema name="common"/>
+      <schema name="uid"/>
+      <schema name="dublincore"/>
+      <facet name="MultiviewPicture"/>
+      <facet name="Picture"/>
+      <facet name="Versionable"/>
+      <facet name="Publishable"/>
+      <facet name="Commentable"/>
+      <facet name="HasRelatedText"/>
+    </doctype>
+
+  </extension>
+
+</component>

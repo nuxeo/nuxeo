@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.work.config" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="elasticSearchIndexing">
+      <name>ElasticSearch Indexing</name>
+      <maxThreads>4</maxThreads>
+      <!-- <usePriority>true</usePriority> -->
+      <category>elasticSearchIndexing</category>
+      <clearCompletedAfterSeconds>90</clearCompletedAfterSeconds>
+    </queue>
+  </extension>
+
+</component>
