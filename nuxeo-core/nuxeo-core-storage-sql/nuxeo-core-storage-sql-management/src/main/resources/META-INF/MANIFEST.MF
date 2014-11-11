@@ -1,0 +1,23 @@
+Export-Package: org.nuxeo.ecm.core.storage.sql.management
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Category: core
+Bundle-Name: org.nuxeo.ecm.core.storage.sql.management
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 5.4.2.qualifier
+Nuxeo-Component: OSGI-INF/management-contrib.xml
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql.management;singleton:=true
+Import-Package: javax.resource,
+ org.apache.commons.logging,
+ org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.management.api,
+ org.nuxeo.ecm.core.storage,
+ org.nuxeo.ecm.core.storage.sql,
+ org.nuxeo.ecm.core.storage.sql.jdbc,
+ org.nuxeo.ecm.core.storage.sql.net,
+ org.nuxeo.runtime.management,
+ org.nuxeo.runtime.management.metrics,
+ org.nuxeo.runtime.model

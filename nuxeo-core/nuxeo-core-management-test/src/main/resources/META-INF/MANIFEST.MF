@@ -1,0 +1,10 @@
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-SymbolicName: org.nuxeo.ecm.core.management.test
+Bundle-Name: nuxeo core management tests
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Nuxeo-Component: core-management-tests-component.xml
