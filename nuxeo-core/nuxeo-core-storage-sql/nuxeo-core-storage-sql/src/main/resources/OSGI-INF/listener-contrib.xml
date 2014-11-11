@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.listener">
+
+  <require>org.nuxeo.ecm.core.convert.service.ConversionServiceImpl</require>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <listener name="sql-storage-binary-text" async="true"
+      postCommit="true" priority="500"
+      class="org.nuxeo.ecm.core.storage.sql.coremodel.BinaryTextListener">
+      <event>event_storage_binaries_doc</event>
+    </listener>
+  </extension>
+
+</component>
