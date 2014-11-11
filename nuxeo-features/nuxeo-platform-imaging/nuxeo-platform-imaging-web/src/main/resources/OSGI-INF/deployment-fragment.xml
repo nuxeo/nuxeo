@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<fragment>
+
+  <!-- comment that to disable filter based auth -->
+  <extension target="web#STD-AUTH-FILTER">
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/nxpicsfile/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+  </extension>
+
+  <extension target="faces-config#NAVIGATION">
+    <!-- generic pages -->
+
+    <navigation-case>
+      <from-outcome>create_picture</from-outcome>
+      <to-view-id>/create_picture.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>create_picturebook</from-outcome>
+      <to-view-id>/create_picturebook.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_picture</from-outcome>
+      <to-view-id>/view_picture.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_book</from-outcome>
+      <to-view-id>/view_book.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+  </extension>
+
+  <extension target="application#MODULE">
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+
+    <!--  create a temp dir -->
+    <!--  be sure no directory with that name exists -->
+    <delete path="NXRelationsWeb.tmp"/>
+    <mkdir path="NXRelationsWeb.tmp"/>
+
+    <unzip from="${bundle.fileName}" to="NXRelationsWeb.tmp">
+      <include>OSGI-INF/**</include>
+    </unzip>
+
+    <append
+        from="NXRelationsWeb.tmp/OSGI-INF/l10n/messages_en.properties"
+        to="nuxeo.war/WEB-INF/classes/messages.properties"
+        addNewLine="true"/>
+    <append
+        from="NXRelationsWeb.tmp/OSGI-INF/l10n/messages_en.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_en.properties"
+        addNewLine="true"/>
+    <append
+        from="NXRelationsWeb.tmp/OSGI-INF/l10n/messages_fr.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_fr.properties"
+        addNewLine="true"/>
+    <append
+        from="NXRelationsWeb.tmp/OSGI-INF/l10n/messages_de.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_de.properties"
+        addNewLine="true"/>
+    <append
+        from="NXRelationsWeb.tmp/OSGI-INF/l10n/messages_it.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_it.properties"
+        addNewLine="true"/>
+
+    <delete path="NXRelationsWeb.tmp"/>
+
+  </install>
+
+</fragment>
