@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.lifecycle.LifeCycleService">
+
+	<implementation class="org.nuxeo.ecm.core.lifecycle.impl.LifeCycleServiceImpl"/>
+
+	<extension-point name="lifecycle">
+		<object class="org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleDescriptor"/>
+	</extension-point>
+
+	<extension-point name="lifecyclemanager">
+		<object class="org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleManagerDescriptor"/>
+	</extension-point>
+
+	<extension-point name="types">
+		<object class="org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleTypesDescriptor"/>
+	</extension-point>
+
+</component>

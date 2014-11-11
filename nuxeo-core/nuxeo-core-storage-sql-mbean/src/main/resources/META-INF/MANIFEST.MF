@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM SQL Storage MBean
+Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql.mbean;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Bundle-ClassPath: .
+Export-Package: org.nuxeo.ecm.core.storage.sql.mbean
+Require-Bundle: org.nuxeo.ecm.core.storage.sql

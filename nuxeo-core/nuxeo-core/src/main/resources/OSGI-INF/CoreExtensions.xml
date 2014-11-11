@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.CoreExtensions" version="1.0">
+
+  <documentation>
+    This component is contributing the core types and schemas and other
+    core extensions
+
+    @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.core.CoreService"
+    point="sessionFactory">
+    <documentation>
+      The default session factory contribution (a local session factory)
+    </documentation>
+    <factory class="org.nuxeo.ecm.core.api.local.LocalSessionFactory" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="schema">
+    <documentation>The core schemas</documentation>
+    <!-- XXX AT: prefixes should be set, see NXP-1152 -->
+    <schema name="core-types" src="schema/core-types.xsd" />
+    <schema name="base" src="schema/base.xsd" />
+    <schema name="common" src="schema/common.xsd" />
+    <schema name="dublincore" prefix="dc" src="schema/dublincore.xsd"/>
+    <schema name="uid" src="schema/uid.xsd" />
+    <schema name="file" src="schema/file.xsd" />
+    <schema name="files" src="schema/files.xsd" />
+    <schema name="note" src="schema/note.xsd" />
+    <schema name="domain" src="schema/domain.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+        point="configuration">
+    <documentation>The default type manager configuration</documentation>
+    <configuration>
+    <!--prefetch>common, dublincore</prefetch-->
+      <prefetch>common.icon, dc:title, dc:modified, dc:contributors, dc:creator</prefetch>
+    </configuration>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="doctype">
+    <documentation>The core document types</documentation>
+    <doctype name="Folder" extends="Document">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <facet name="Folderish" />
+    </doctype>
+
+    <doctype name="OrderedFolder" extends="Document">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <facet name="Folderish" />
+      <facet name="Orderable" />
+    </doctype>
+
+    <doctype name="Root" extends="Folder">
+    </doctype>
+
+    <doctype name="Domain" extends="Folder">
+      <schema name="domain" />
+      <facet name="SuperSpace"/>
+    </doctype>
+
+    <doctype name="WorkspaceRoot" extends="Folder">
+          <facet name="SuperSpace"/>
+    </doctype>
+
+    <doctype name="Workspace" extends="Folder">
+      <!-- for logo -->
+      <schema name="file" />
+      <facet name="SuperSpace"/>
+    </doctype>
+
+    <doctype name="TemplateRoot" extends="Folder" >
+          <facet name="SuperSpace"/>
+    </doctype>
+
+    <doctype name="SectionRoot" extends="Folder">
+          <facet name="SuperSpace"/>
+    </doctype>
+
+    <doctype name="Section" extends="Folder">
+      <!-- for logo -->
+      <schema name="file" />
+      <facet name="SuperSpace"/>
+    </doctype>
+
+    <doctype name="File" extends="Document">
+      <schema name="common" />
+      <schema name="file" />
+      <schema name="dublincore" />
+      <schema name="uid" />
+      <schema name="files" />
+      <facet name="Downloadable" />
+      <facet name="Versionable" />
+      <facet name="Publishable" />
+      <facet name="Indexable" />
+    <facet name="Commentable" />
+    </doctype>
+
+    <doctype name="Note" extends="Document">
+      <schema name="common" />
+      <schema name="note" />
+      <schema name="uid" />
+      <schema name="files" />
+      <schema name="dublincore" />
+      <facet name="Versionable" />
+      <facet name="Publishable" />
+    <facet name="Commentable" />
+    </doctype>
+
+  </extension>
+
+</component>
