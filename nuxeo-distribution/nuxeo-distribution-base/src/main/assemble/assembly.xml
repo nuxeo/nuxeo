@@ -1,0 +1,61 @@
+<assembly>
+
+  <fileSet id="template">
+    <directory>src/main/resources</directory>
+    <fileMode>550</fileMode>
+  </fileSet>
+
+  <artifactSet id="launcher-lib">
+    <artifacts>
+      <artifact group="org.nuxeo.runtime" name="nuxeo-runtime-launcher" version="${nuxeo.runtime.version}" />
+    </artifacts>
+  </artifactSet>
+
+  <artifactSet id="bundles">
+    <import>*</import>
+    <includes>
+      <artifact group="org.nuxeo*" />
+    </includes>
+    <excludes>
+      <artifact name="nuxeo-apt-extensions" />
+      <artifact name="nuxeo-runtime-test" />
+    </excludes>
+  </artifactSet>
+
+  <artifactSet id="third-party-libs">
+    <import>*</import>
+    <includes>
+      <artifact group="javax.script" name="script-api" />
+      <artifact group="org.codehaus.groovy" name="groovy-all" />
+      <artifact group="jline" />
+      <artifact group="dom4j" />
+      <artifact group="org.osgi" />
+      <artifact name="commons-logging" />
+      <artifact name="jbossall-client" />
+      <artifact group="log4j" name="log4j" />
+    </includes>
+  </artifactSet>
+
+
+  <assemble>
+    <set>template</set>
+    <outputFile>/</outputFile>
+  </assemble>
+
+  <assemble>
+    <set>launcher-lib</set>
+    <outputFile>/</outputFile>
+  </assemble>
+
+  <assemble>
+    <set>third-party-libs</set>
+    <outputFile>lib</outputFile>
+  </assemble>
+
+  <assemble>
+    <set>bundles</set>
+    <outputFile>bundles</outputFile>
+  </assemble>
+
+</assembly>
+
