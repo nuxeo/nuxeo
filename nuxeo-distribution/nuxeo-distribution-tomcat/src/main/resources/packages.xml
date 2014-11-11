@@ -1,0 +1,25 @@
+<packages>
+  <packageDefinitions baseUrl="http://cdn.nuxeo.com/nuxeo-@VERSION@/mp/">
+    <package id="nuxeo-cap" label="Content Application Platform (CAP)" md5="" color="#635959" textcolor="#FFF" shortlabel="CAP"/>
+    <package id="nuxeo-dm" label="Advanced Document Management (DM)" filename="nuxeo-dm-@VERSION@.zip" md5="@DMMPMD5@" color="#5e9adf" textcolor="#FFF" shortlabel="DM"/>
+    <package id="nuxeo-dam" label="Digital Asset Management (DAM)" filename="nuxeo-dam-@VERSION@.zip" md5="@DAMMPMD5@" color="#ffeb6d" textcolor="#333" shortlabel="DAM"/>
+    <package id="nuxeo-social-collaboration" label="Social Collaboration (SC)" filename="nuxeo-social-collaboration-@VERSION@.zip" md5="@SCMPMD5@" color="#ff736e" textcolor="#FFF" shortlabel="SC"/>
+    <package id="nuxeo-rest-api" label="REST API (beta)" filename="nuxeo-marketplace-rest-api-@VERSION@.zip" md5="@RESTMD5@" color="#ff736e" textcolor="#FFF" shortlabel="REST"/>
+  </packageDefinitions>
+  <install>
+    <packageOptions>
+      <package ref="nuxeo-cap" exclusive="false">
+        <package ref="nuxeo-dm" exclusive="false">
+          <package ref="nuxeo-dam" exclusive="false" />
+          <package ref="nuxeo-social-collaboration" exclusive="false" />          
+        </package>
+        <package ref="nuxeo-rest-api" exclusive="false" />
+      </package>
+    </packageOptions>
+  </install>
+  <presets>
+    <preset id="nuxeo-dm" label="Nuxeo DM">nuxeo-cap,nuxeo-dm,nuxeo-rest-api</preset>
+    <preset id="nuxeo-dam" label="Nuxeo DAM">nuxeo-cap,nuxeo-dm,nuxeo-dam,nuxeo-rest-api</preset>
+    <preset id="nuxeo-social-collaboration" label="Nuxeo Social Collaboration">nuxeo-cap,nuxeo-dm,nuxeo-social-collaboration,nuxeo-rest-api</preset>
+  </presets>
+</packages>
