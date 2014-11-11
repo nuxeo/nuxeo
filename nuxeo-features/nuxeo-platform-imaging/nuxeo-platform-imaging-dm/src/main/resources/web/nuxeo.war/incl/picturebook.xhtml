@@ -1,0 +1,110 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:c="http://java.sun.com/jstl/core" onLoad="loadCSs()">
+
+  <a4j:region rendered="#{documents != null}">
+
+  <ui:include src="/incl/picture_download_form.xhtml"/>
+
+    <h:form id="#{documents.name}">
+      <div class="foldableBox">
+        <h3 class="nofold">
+          <h:outputText value="#{messages['title.picturebook']}" />
+          <h:graphicImage value="icons/icone_download.gif" style="horizontal-align: right;cursor:pointer;" id="dlIcon"
+                    title="#{messages['label.outputFile.download']}" >
+            <rich:componentControl for="imagingPanel" attachTo="dlIcon" operation="show" event="onclick"/>
+          </h:graphicImage>
+        </h3>
+        <div id="popupReceiver" />
+        <div id="pictureBookDropZone" class="dropzone" context="ContentView">
+        <div class="boxBody pictureBook">
+          <ui:include src="/pagination/pageNavigationControls.xhtml" />
+          <c:forEach varStatus="status" items="#{documents.rows}" var="row">
+
+            <div id="#{row.data.ref}"
+              class="#{nxu:test(row.selected,'pictureBookItem itemSelected','pictureBookItem')}">
+                <script type="text/javascript">
+                    var dblclick;
+                    function link<h:outputText value="#{status.index}" />(){
+                        if(!dblclick){
+                           if (document.getElementById('<h:outputText value="#{row.data.ref}" />').getAttribute('class')==('pictureBookItem itemSelected')){
+                             document.getElementById('docRefDiv:<h:outputText value="#{row.data.ref}" />').childNodes[0].checked=false;
+                             document.getElementById('<h:outputText value="#{row.data.ref}" />').className='pictureBookItem';
+                           }else{
+                            document.getElementById('docRefDiv:<h:outputText value="#{row.data.ref}" />').childNodes[0].checked=true;
+                            document.getElementById('<h:outputText value="#{row.data.ref}" />').className='pictureBookItem itemSelected';
+                           }
+                           selectDataTableRow('<h:outputText value="#{row.data.ref}" />' ,
+                             '<h:outputText value="#{providerName}" />',
+                             document.getElementById('docRefDiv:<h:outputText value="#{row.data.ref}" />').childNodes[0],
+                             '<h:outputText value="#{listName}" />');
+                        }
+                    }
+              </script>
+              <div id="docRefDiv:#{row.data.ref}" style="display: none;" >
+                <h:selectBooleanCheckbox value="#{row.selected}"  />
+              </div>
+              <!--  Drag'n drop -->
+              <div id="docRefTarget:#{row.data.ref}"
+                ondblclick="dblclick = true; window.location.href = '#{nxd:documentUrl(row.data)}'"
+                onclick="setTimeout(link#{status.index}, 300)">
+                <script type="text/javascript">
+                  <h:outputText value="new Draggable('docRef:#{row.data.ref}', {revert:true});"/>
+                  <h:outputText rendered="#{row.data.folder}"
+                    value="Droppables.add('docRefTarget:#{row.data.ref}', {accept:'cell', onDrop:function(element){moveElement(element,'docRef:#{row.data.ref}')}, hoverclass:'itemSelected'});"/>
+                </script>
+                <!--  Image -->
+                <div id="docRef:#{row.data.ref}" class="cell">
+                  <h:graphicImage rendered="#{row.data.type eq 'PictureBook'}"
+                    value="/icons/big_picturebook.png" height="100" width="100" />
+                  <h:graphicImage rendered="#{row.data.type eq 'Picture'}"
+                    value="#{nxd:fileUrl('downloadPicture', row.data , 'Thumbnail:content', currentDocument.dublincore.modified)}" />
+                </div>
+              </div>
+              <div class="pictureBookItemTitle">
+                <!--  Title  -->
+                <nxd:restDocumentLink
+                  document="#{row.data}">
+                  <nxh:outputText rendered="#{15 > fn:length(nxd:titleOrId(row.data))}" value="#{nxd:titleOrId(row.data)}" />
+                  <f:subview rendered="#{fn:length(nxd:titleOrId(row.data)) > 14}" >
+                    <span title="#{nxd:titleOrId(row.data)}">
+                      <nxh:outputText value="#{fn:substring(nxd:titleOrId(row.data),0,7)}...#{fn:substring(nxd:titleOrId(row.data),fn:length(nxd:titleOrId(row.data)) - 7,fn:length(nxd:titleOrId(row.data)))}" />
+                    </span>
+                  </f:subview>
+                </nxd:restDocumentLink>
+                <!-- external link-->
+                <nxd:restDocumentLink document="#{row.data}" newConversation="true"
+                  target="_blank">
+                  <nxu:graphicImage value="/icons/external.gif"
+                    style="vertical-align:middle"
+                    alt="#{messages['permalink.newTab']}"
+                    title="#{messages['permalink.newTab']}" />
+                </nxd:restDocumentLink>
+                <!-- download-->
+                <f:subview rendered="#{row.data.type eq 'Picture'}">
+                  <img id="#{row.data.ref}_imgref" class="#{row.data.ref}_popupTarget" src="icons/icone_download.gif" style="vertical-align: middle; cursor:pointer;"
+                    alt="#{messages['label.outputFile.download']} #{row.data.dublincore.title}"
+                    title="#{messages['label.outputFile.download']} #{row.data.dublincore.title}"  />
+                  <ui:include  src="/incl/picturebookPopupMenu.xhtml"/>
+                </f:subview>
+              </div>
+            </div>
+          </c:forEach>
+          <div style="clear: both" />
+
+          <ui:include src="/pagination/pageNavigationControls.xhtml" />
+        </div>
+        </div>
+      </div>
+      <ui:insert name="buttons" />
+    </h:form>
+  </a4j:region>
+</div>
