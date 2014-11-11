@@ -1,0 +1,56 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:s="http://jboss.com/products/seam/taglib" >
+
+<c:if test="false">
+ Template rendering a paginationControls using a4j to be refreshed
+
+ Parameters :
+  - contentIdToBeReRendered : id to be refreshed
+</c:if>
+
+  <c:if test="#{contentIdToBeReRendered != null}">
+  <h:panelGroup
+    layout="block" styleClass="pageNavigationControls"
+    rendered="#{provider.nextPageAvailable or provider.previousPageAvailable}">
+
+    <a4j:commandButton action="#{provider.rewind}"
+                     alt="#{messages['command.navigation.rewind']}"
+                     image="/icons/action_page_rewind.gif"
+                     reRender="#{contentIdToBeReRendered}" >
+      <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
+    </a4j:commandButton>
+    <a4j:commandButton action="#{provider.previous}"
+                     alt="#{messages['command.navigation.previous']}"
+                     image="/icons/action_page_previous.gif"
+                     reRender="#{contentIdToBeReRendered}" >
+      <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
+    </a4j:commandButton>
+
+    <h:panelGroup styleClass="currentPageStatus">
+      <h:outputText value="#{provider.currentPageStatus}"/>
+    </h:panelGroup>
+
+    <a4j:commandButton action="#{provider.next}"
+                     alt="#{messages['command.navigation.next']}"
+                     image="/icons/action_page_next.gif"
+                     reRender="#{contentIdToBeReRendered}" >
+      <f:attribute name="disabled" value="#{not provider.nextPageAvailable}"/>
+    </a4j:commandButton>
+
+    <a4j:commandButton action="#{provider.last}"
+                     alt="#{messages['command.navigation.fastforward']}"
+                     image="/icons/action_page_fastforward.gif"
+                     reRender="#{contentIdToBeReRendered}" >
+      <f:attribute name="disabled" value="#{not provider.nextPageAvailable}"/>
+    </a4j:commandButton>
+  </h:panelGroup>
+  </c:if>
+</div>

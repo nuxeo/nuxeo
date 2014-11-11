@@ -1,0 +1,950 @@
+/*====== Default DM CSS in one file - lkemen@nuxeo.com - Sept 2011 ======*/
+
+/*-------- CSS Structure
+=Generics
+   =Resets
+   =Common
+     =Links and Titles
+     =Forms elements
+     =Buttons
+     =Global helpers
+=Common Parts
+   =Header
+     =Search
+     =UserServices
+     =MainTabs
+   =Tabs
+   =Main Area
+     =Tabs Content
+     =Action Bar
+     =Layout View & Resume Tab
+     =Manage tab
+     =Tables
+     =Foldable Boxes
+     =Tips and Messages
+     =Syndication Button
+     =Comments
+     =Advanced Search
+     =PopUps
+   =Footer
+=Common details
+=Specific for DM
+  =Main Frame
+    =Breadcrumb
+    =Document View
+  =Left Column
+    =Tree Link
+    =Clipboard & Worklist
++ unused ?
+To move to addons:
+- Poll
+- Faceted Search
+- PictureBook
+----------------------*/
+
+/*///////////// =Generics /////////////*/
+/*---- =Resets ----*/
+/** remove body and html elements? **/
+html, body { font-size: 100%;	line-height: 1.125em;	color: "default (__FLAVOR__ color)"; }
+
+html, body, textarea { font-family: "default (__FLAVOR__ font)" }
+
+html, body, form, div, p, ul, a, h1, h2, h3, h4, h5, h6, form, p, input, table,
+dd, dt, dl, img, hr, fieldset, iframe { margin: 0; padding: 0 }
+
+ul { list-style: none }
+img { border: 0 none }
+img, a { outline: medium none }
+
+/*---- =Common ----*/
+/*-- =Links and Titles */
+a, a:link, a:visited { color: "link (__FLAVOR__ color)"; text-decoration: none }
+a:hover { color: "link.hover (__FLAVOR__ color)"; text-decoration: underline }
+
+h1, h2, h3 { color: "title.major (__FLAVOR__ color)"; font-weight: bold }
+h1 { font-size: 1.4em; padding: .4em 0 .5em }
+h2 { font-size: 1.2em; padding: .5em 1em .5em 0 }
+h3 { font-size: 1.2em; padding: .8em 0 .3em }
+h4, h5, h6 { color: "title.minor (__FLAVOR__ color)";font-size: .8em; margin: .2em 0 .2em 0 }
+
+/*-- =Forms elements */
+textarea { padding: 5px; font-size: .95em; }
+.selectDocumentType { margin-top: 10px }
+.checkBox { margin-right: 3px }
+.required { background: transparent url("${basePath}/icons/required.gif") top right no-repeat; padding: 0 10px 0 0 }
+
+/*-- =Buttons */
+.button, input.button {
+	box-shadow:inset 0px 1px 0px 0px #fff;
+	background-color: "button (__FLAVOR__ background)";
+	border-radius:3px;
+	border:1px solid;  border-color: "button (__FLAVOR__ border)";
+	color:"link.action (__FLAVOR__ color)";
+	cursor: pointer;
+	font-size: .9em;
+	font-weight:bold;
+	margin: 5px 10px 10px 0;
+	padding:4px 10px;
+	text-decoration:none;
+	text-shadow:1px 1px 0px #fff }
+
+.button:hover, input.button:hover {
+  background: none "neutral.lighter (__FLAVOR__ background)";
+	border: 1px solid; border-color: "button.hover (__FLAVOR__ border)"; }
+
+input.button[disabled=disabled], input.button[disabled=disabled]:hover {
+	background: none "neutral.lighter (__FLAVOR__ background)";
+	border: 1px solid; border-color: "button.disabled (__FLAVOR__ border)";
+	color: "link.disabled (__FLAVOR__ color)";
+	cursor: default;
+	visibility: hidden; }
+
+.majorButton, input.majorButton {
+	background: none repeat scroll 0 0 #0080B0;
+	border: 1px solid #014C68;
+	color: #fff }
+
+.smallButton, input.smallButton { font-size: 0.85em; padding: 3px }
+
+/*-- =Global helpers */
+.boldLabel, .bold { font-weight: bold }
+
+.textAlignR { text-align: right }
+.textAlignC { text-align: center }
+.textAlignL { text-align: left }
+.floatR { float: right }
+.floatL { float: left }
+.clear { clear:both }
+
+.fullWidth { width:100% }
+
+/*///////////// =Common Parts /////////////*/
+/*---- =Header----*/
+.header {
+  background-color: "header (__FLAVOR__ background)";
+  border-bottom: 2px solid; border-color: "noborder (__FLAVOR__ border)";
+	height:36px;
+	overflow: auto;
+	width:100% }
+.header .logo {text-align: center; vertical-align:bottom; width: 18% }
+.header .content { padding: 0 10px 0 0; vertical-align: bottom;	width: 82%; font-size: .75em }
+.header .includes { width: 0 }
+.header a, .header a:link, .header a:visited, .header a:hover, .header a:active { color: "link.header (__FLAVOR__ color)"}
+
+/*-- =Search */
+.userSearchBlock { float: right }
+.searchService { padding-top: 5px }
+.searchService input.button { margin: 3px 5px 0 3px; padding: 2px }
+.advancedSearchLink a { font-size: .8em }
+
+/*-- =UserServices */
+.userServicesBlock { float: left; padding-top: 10px }
+.userServicesBlock a:hover { text-decoration: none }
+
+/*-- =MainTabs */
+.mainTabs { float: left }
+.mainTabs li {
+    background-color: #207594;
+    display: inline;
+    float: left;
+    margin: 0 5px }
+.mainTabs a, .mainTabs a:visited {
+    color: #d7e3f1;
+    display: inline-block;
+    padding: 5px 11px 7px }
+.mainTabs li.selected { background-color: #fff }
+.mainTabs li.selected a, .mainTabs li.selected a:hover, .mainTabs li.selected a:visited { color: "black (__FLAVOR__ color)"; font-weight: bold }
+
+.userMenuActions {
+    color: "gray.light (__FLAVOR__ color)";
+    float: left;
+    font-size: .9em;
+    margin: 0 0 0 15px;
+    text-align: left }
+.userMenuActions ul { height: 28px }
+.userMenuActions ul li { float: left; text-align: left }
+
+.header .userMenuActions a {
+    background-color: #fff;
+    color: #7693a3;
+    display: block }
+
+.userMenuActions a.userButton {
+    background: url("${basePath}/icons/user.png") no-repeat scroll 3px center transparent;
+    padding: 3px 8px 5px 23px }
+.userMenuActions ul li a:hover, .userMenuActions ul li:hover { background-color:#fff; color:"black (__FLAVOR__ color)" }
+.userMenuActions li ul {
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
+    display: none;
+    height: auto;
+    position: absolute;
+    width: 180px;
+    z-index: 1000 }
+.userMenuActions li:hover ul { display:block }
+.userMenuActions ul li li { width: 180px }
+.userMenuActions li ul a { padding: 4px 4px 4px 22px }
+.userMenuActions ul ul a:hover { background-color: "color.major.medium (__FLAVOR__ background)"; }
+
+/*---- =Tabs ----*/
+.tabsBar {
+  border-bottom:1px solid;
+  border-color: "light (__FLAVOR__ border)";
+  float:left;
+  margin-top:5px;
+  width:100% }
+.tabsBar ul {
+  list-style:none outside none;
+  margin:0;
+  padding:0 10px 0 0 }
+.tabsBar li {
+  float:left;
+  margin:0 2px -1px 4px;
+  padding:0 }
+.tabsBar a,.tabsBar a:visited {
+  background:none "neutral.lighter (__FLAVOR__ background)";
+  border:1px solid #f6f6f6;
+  color:"gray.dark (__FLAVOR__ color)";
+  display:block;
+  float:left;
+  padding:3px 7px;
+  text-decoration:none }
+.tabsBar li.selected a,.tabsBar li a:hover,.tabsBar li.selected a:visited {
+  background:none repeat scroll 0 0 #fff;
+  border-top-color: "light (__FLAVOR__ border)";
+  border-right-color: "light (__FLAVOR__ border)";
+  border-bottom-color: "noborder (__FLAVOR__ border)";
+  border-style:solid;
+  border-width:1px;
+  color:"black (__FLAVOR__ color)";
+  padding:3px 7px 4px }
+
+.subtabsBar {border-bottom:1px solid #f6f6f6; font-size: .9em}
+.subtabsBar a,.subtabsBar a:visited { color:"gray.dark (__FLAVOR__ color)"; }
+.subtabsBar li.selected a,.subtabsBar li a:hover,.subtabsBar li.selected a:visited {
+   border-color: "light (__FLAVOR__ border)"; border-bottom-color:"noborder (__FLAVOR__ border)"; border-style:solid; border-width:1px; color:"default (__FLAVOR__ color)"; }
+
+/*---- =Main Area ----*/
+.mainContainer { height: 600px; width: 100%; font-size: .8em }
+.mainContainer .column { border-right: 1px solid; border-color: "lighter (__FLAVOR__ border)"; font-size: .85em; padding: 5px; width: 18% }
+.mainContainer .content {
+  background: url("${basePath}/img/theme_galaxy/galaxy_logo.png") no-repeat scroll right bottom #fff;
+  padding: 0;
+  width: 82%; }
+.mainFragment { padding: 7px }
+
+/*-- =TabsContent */
+.tabsContent { font-size: .95em; margin: 0; padding: 5px 10px 10px 10px }
+
+/*-- =Action Bar */
+.action_bar { float: left; line-height: normal; margin: 10px 10px 10px 0 }
+.action_bar_message { float: right; font-size: .8em; margin: 0 }
+.action_bar_message form { display: inline; text-align: right }
+.action_bar ul { list-style: none; margin: 0; padding: 0 10px 0 0 }
+.action_bar li { float: left; margin: 0; padding: 0 }
+.action_bar a {
+  box-shadow:0px 1px 0px 0px #fff inset;
+  background-color:"neutral.medium (__FLAVOR__ background)";
+  border-radius:3px;
+  border:1px solid; border-color: "light (__FLAVOR__ border)";
+  color:"black (__FLAVOR__ color)";
+  cursor: pointer;
+  float: left;
+  font-size: .9em;
+  font-weight:bold;
+  margin-right: 10px;
+  padding:4px 8px;
+  text-decoration:none;
+  text-shadow:1px 1px 0px #fff }
+.action_bar a:hover { background: none "neutral.lighter (__FLAVOR__ background)"; border: 1px solid; border-color: "light (__FLAVOR__ border)"; }
+.action_bar a img { margin: 0 3px -2px -4px }
+
+.listingLayoutSelector { float: right; margin: 11px 0 10px 7px; text-align: right }
+.listingLayoutSelector .contentViewPageSelectorDesc { float: left; padding: 0 4px 0 0 }
+.listingLayoutSelector .langSelect { float: left; font-size: 0.8em; padding: 1px }
+
+/*-- =Layout View and Resume Tab Styles */
+.layoutViewMode { margin: 0; padding: 0 }
+.layoutViewMode li { display: inline }
+.layoutViewMode a img { border: 1px solid; border-color: "noborder (__FLAVOR__ border)"; }
+.layoutViewMode a:hover img, .layoutViewMode li.selected img { border: 1px solid; border-color: "medium (__FLAVOR__ border)"; }
+
+.summary_div_0 { float: left; padding: 10px 0; width: 62% }
+.summary_div_1 { float: right; font-size: .9em; padding: 10px 0; width: 33% }
+.summary_div_2 { clear: both }
+
+.summary_div_1 h3.summaryTitle { color: "gray.medium (__FLAVOR__ color)"; font-size: 1.1em }
+
+.contentViewTitle { float: left; line-height: normal; margin: 10px 10px 10px 0 }
+
+h3.summaryTitle {
+  border-bottom: 1px solid; border-color: "medium (__FLAVOR__ border)";
+  color: "gray.medium (__FLAVOR__ color)";
+  font-size: 1.2em;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+  padding: 17px 0 3px 0 }
+
+.description_block span { display: block; font-size: .8em; padding-bottom: 10px }
+.dublincore_block table.floatingLeftTable { float: left; margin-right: 100px }
+.labelColumnLeftAlign { font-weight: bold; padding-right: 30px }
+.rank_block, .publication_block, .attachments { margin-top: 15px }
+
+.content_block table { margin-bottom: 10px; width: 100% }
+.content_block td { padding: 0; vertical-align: top }
+.content_block .labelColumn { width: 100px }
+.content_block .actionsColumn { vertical-align: top; width: 20% }
+.content_block img { padding: 0 5px }
+
+.note_content_block { border: 1px solid; border-color: "light (__FLAVOR__ border)"; margin: 0 0 15px; padding: 15px }
+.note_content_block span, .note_content_block p { font-size: 1.05em; line-height: 1.8em }
+
+.lockFile_block, .restoreFile_block { padding: 0 0 10px }
+.lockDetail, .DetailList { padding-top: 5px }
+.summary_locked { color: "warning.status (__FLAVOR__ color)"; font-weight: bold }
+.summary_unlocked { color: "normal.status (__FLAVOR__ color)"; font-weight: bold }
+
+.lcAndVersion { border: 1px solid; border-color: "light (__FLAVOR__ border)"; padding: 3px }
+
+.actions_block { border: 1px solid; border-color: "light (__FLAVOR__ border)"; margin: 10px 0; padding: 10px 7px 3px }
+
+.comments_block .commentBlock { border: none }
+.comments_block .commentQuote { margin: 5px 0 5px 24px }
+
+.metadata_block .dataInput td { padding: 3px }
+
+/*--  =Manage tab */
+.rightsAdd { margin: 10px 0 10px 0 }
+.rightsAddTitle { background-color: "neutral.lighter (__FLAVOR__ background)"; border: 1px solid; border-color: "light (__FLAVOR__ border)"; padding: 5px; text-align: center }
+.rightsAddLabel { font-weight: bold; padding: 0 5px 0 0 }
+.rightsAddSelect { margin-top: 0}
+.rightsAddManager {
+  background: transparent url("${basePath}/img/rightsadd_bar.gif") no-repeat center;
+  margin: 3px 0 0 0;
+  width: 100% }
+.rightsAddManager td {
+  background-color: #fff;
+  border: 1px solid; border-color: "light (__FLAVOR__ border)";
+  margin: 0 10px 0 10px;
+  padding: 10px }
+.rightsAddManager .labelColumn { width: 80px }
+
+.userAndGroupSearch { margin: 0 }
+.userAndGroupFilter { margin: 15px 0 0 0 }
+
+.buttonsGadgetNoForm { margin: 0 5px }
+
+.directoryFilter, .searchField {
+  border: 1px solid; border-color: "light (__FLAVOR__ border)";
+  font-size: 11px;
+  margin: 0 5px 10px 0;
+  padding: 3px }
+
+.relationPredicateColumn { vertical-align: top; width: 100px }
+.relationCommentList { background: transparent }
+.relationCreateLabelColumn { width: 100px }
+
+.archiveTabContent { margin-left: 18px }
+.archiveTabContent .notEditable { background-color: #fff; border: none }
+.archiveTabContent .currentDocumentInformation { background-color: "neutral.medium (__FLAVOR__ background)"; }
+
+.taskAssign {
+  background: "neutral.medium (__FLAVOR__ background)";
+  border: 1px solid; border-color: "light (__FLAVOR__ border)";
+  display: block;
+  margin: 5px 0 10px 0;
+  padding: 5px;
+  text-align: center }
+
+/*-- =Tables */
+table thead th { padding: 3px; text-align: left }
+
+.dataList { background: white; border-collapse: collapse; margin: 0 }
+.dataList td {
+  border-bottom: 1px solid; border-bottom-color: "light (__FLAVOR__ border)";
+  border-top: 1px solid; border-top-color: "light (__FLAVOR__ border)";
+  padding: 5px 3px }
+.dataList thead th {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
+  border-bottom: 1px solid; border-color: "light (__FLAVOR__ border)";
+  color: "gray.dark (__FLAVOR__ color)";
+  padding: 5px 3px;
+  text-align: left }
+.dataList thead th a, .dataList thead th a:link, .dataList thead th a:visited { color: "gray.dark (__FLAVOR__ color)"; text-decoration: none }
+.dataList thead th a:hover { text-decoration: underline }
+
+.dataInput { margin-top: 5px }
+.dataInput td, .rightsAddManager .dataInput td { border: 0 solid; padding: 7px 4px }
+.dataInput td td, .dataInput td td td { padding: 3px 4px }
+.dataInput .button { margin: 0 10px 0 0 }
+.dataInput textarea, .dataInput .dataInputText { width: 500px }
+.dataInput textarea, .dataInput .dataInputText, .dataInput .dataInputTextNoSize { border: 1px solid; border-color: "medium (__FLAVOR__ border)"; padding: 4px; vertical-align: top }
+.dataInput select { padding: 2px 1px 2px 1px; vertical-align: top }
+.archiveTabContent .dataInput { border: none; margin-bottom: 15px }
+.dataInputGroup { margin: 0; padding: 0; vertical-align: top }
+
+.dataOutput, .dataOutput2Columns {
+  border-collapse: collapse;
+  margin-top: 7px;
+  margin-bottom: 5px }
+table.dataOutput thead th {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
+  border-bottom: 1px solid; border-color: "light (__FLAVOR__ border)";
+  color: "gray.dark (__FLAVOR__ color)";
+  padding: 5px 3px;
+  text-align: left }
+.dataOutput td {
+  border-bottom: 1px solid; border-bottom-color: "light (__FLAVOR__ border)";
+  border-top: 1px solid; border-top-color: "light (__FLAVOR__ border)";
+  padding: 5px 3px }
+.dataOutput td table td { border: 0 none transparent }
+.dataOutput, .dataOutput2Columns, .dataList { width: 100% }
+.dataOutput2Columns td { padding: 5px 3px; vertical-align: top }
+table.dataOutput thead th a, table.dataOutput thead th a:hover, table.dataOutput thead th a:active, table.dataOutput thead th a:visited { color: "gray.dark (__FLAVOR__ color)"; }
+.dataOutput .button { margin: 2px 10px 2px 0 !important }
+table.dataOutput th a img { margin: 0 0 0 2px; padding: 0; vertical-align: bottom }
+
+.boldColumn { font-weight: bold !important }
+.buttonColumn { text-align: center; width: 280px }
+.focusColumn { background-color: "neutral.lighter (__FLAVOR__ background)"; }
+.radioColumn {
+  padding: 0 0 0 5px;
+  vertical-align: top;
+  width: 8px }
+.iconColumn { text-align: center; width: 20px }
+.iconColumn .cell { background: none; width: 40px }
+.iconColumn .dropInto { background-color: "neutral.lighter (__FLAVOR__ background)"; }
+.iconColumn img { background: none; position: relative; z-index: 25 }
+.twoColumns { width: 50% }
+.fieldColumn img { margin: 0 4px; vertical-align: top }
+
+.buttonsGadgetNoForm .button { margin-right: 10px }
+.buttonsGadget { margin: 5px 0 5px 40px }
+.smallButtonsGadget { margin: 0 0 5px 100px }
+
+.labelColumn { font-weight: bold; vertical-align: top; width: 120px }
+.labelColumn span { display: block; padding-right: 8px }
+.workflowLabelColumn { width: 120px }
+
+.relationCommentList td { border: 0 none }
+.relationObjectColumn { vertical-align: top; width: 100px }
+.relationCommentColumn { vertical-align: top }
+.relationActionsColumn { text-align: center; vertical-align: top; width: 60px }
+.relationCreateFieldColumn, .fieldColumn, .workflowFieldColumn { vertical-align: top }
+.relationCreateFieldColumn table, .fieldColumn table, .workflowFieldColumn table { border: 0 none; margin: 0; vertical-align: top }
+
+.selectDocumentType td { padding: 3px }
+.selectDocumentType td a img { margin-right: 4px; vertical-align: top }
+
+.vocabularyEntryContent { margin-left: 18px }
+.vocabularyEntryContent .notEditable { background-color: #fff }
+.vocabularyEntryContent .dataInput { border: none; margin-bottom: 15px }
+
+.taskPrincipalSelect select { margin: 5px 0 10px 15px; padding: 2px 1px 2px 1px }
+
+table.trashTable tbody tr:hover { background-color: "info (__FLAVOR__ background)" }
+
+.dataRowOdd:hover, .dataRowEven:hover {	background-color: "color.major.light (__FLAVOR__ background)"; }
+
+/*-- =Foldable Boxes */
+.foldableBox { border-bottom: 1px solid; border-color:"lighter (__FLAVOR__ border)"; font-size: .9em; margin-bottom: 20px }
+
+.foldableBox h3 {
+  background-color: #fff;
+  border: 1px solid; border-color: "light (__FLAVOR__ border)";
+  font-size: 1.1em;
+  height: 20px;
+  padding: 3px 3px 3px 18px }
+.foldableBox h3.folded {
+  background:url("${basePath}/icons/arrow_folded.gif") top left no-repeat; background-color: "neutral.medium (__FLAVOR__ background)"; }
+.foldableBox h3.unfolded {
+  background:url("${basePath}/icons/arrow_unfolded.gif") top left no-repeat; background-color: "neutral.medium (__FLAVOR__ background)";
+  clear: both }
+.foldableBox h3.foldedDisabled {
+  background:"neutral.medium (__FLAVOR__ background)" none;
+  border-bottom: 1px solid;  border-color: "light (__FLAVOR__ border)";
+  color: #555 }
+.foldableBox h3 span, .foldableBox h3 a:link, .foldableBox h3 a:visited, .foldableBox h3 a:hover, .foldableBox h3 a:visited:hover {
+  color: "black (__FLAVOR__ color)";
+  display: block;
+  float: left;
+  padding-right: 10px }
+.foldableBox h3 a.warningLink { color: "warning.status (__FLAVOR__ color)"; }
+.foldableBox h3 a.action, .foldableBox h3 a.action:visited {
+  box-shadow:inset 0px 1px 0px 0px #fff;
+  background-color:"neutral.medium (__FLAVOR__ background)";
+  border-radius:3px;
+  border:1px solid;  border-color: "light (__FLAVOR__ border)";
+  color:"black (__FLAVOR__ color)";
+  float: right;
+  font-size: 0.8em;
+  font-weight: bold;
+  margin: 0 5px;
+  padding: 0 6px;
+  text-decoration:none;
+  text-shadow:1px 1px 0px #fff }
+.foldableBox h3 a.action:hover, .foldableBox h3 a.action:visited:hover { background: none "neutral.lighter (__FLAVOR__ background)"; border: 1px solid; border-color: "medium (__FLAVOR__ border)"; }
+
+.foldableBox .boxBody { clear: both; padding: 10px }
+
+.foldableLightBox { margin-bottom: 20px }
+.foldableLightBox div.folded {background: #fff url("${basePath}/icons/arrow_folded.gif") top left no-repeat }
+.foldableLightBox div.unfolded { background: #fff url("${basePath}/icons/arrow_unfolded.gif") top left no-repeat }
+.foldableLightBox div.folded a, .foldableLightBox div.unfolded a { color: "gray.dark (__FLAVOR__ color)"; float: left }
+.foldableLightBox div.folded, .foldableLightBox div.unfolded {
+  border-bottom: 1px solid;
+  border-color: "lighter (__FLAVOR__ border)";
+  color: "gray.dark (__FLAVOR__ color)";
+  font-size: .8em;
+  height: 18px;
+  padding: 3px 3px 3px 18px }
+.foldableLightBox .boxBody {
+  border: 1px solid;
+  border-color: "lighter (__FLAVOR__ border)";
+  border-top: none;
+  clear: both;
+  font-size: .8em;
+  padding: 10px }
+
+.massEditForm foldableBox { margin-right: 15px }
+
+/*-- =Tips and Messages */
+.facesStatusMessage { bottom: 0; left: 0; position: fixed; z-index: 1000 }
+.facesStatusMessage ul, .infoFeedback ul, .warningFeedback ul, .errorFeedback ul { list-style-type: none; width: 500px }
+
+.errorMessage, .infoMessage, .warningMessage, .infoFeedback  {
+  background-color: #fff;
+  border-color: "light (__FLAVOR__ border)";
+  border-width: 1px;
+  border-style: solid solid none none;
+  border-radius: 0 10px 0 0;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  color: "black (__FLAVOR__ color)";
+  display: block;
+  list-style: none;
+  margin: 0;
+  padding: 10px 15px }
+
+.errorMessage, .errorFeedback { background-color:"warning (__FLAVOR__ background)"; border-color:"error (__FLAVOR__ border)"; }
+.warningMessage, .warningFeedback { background-color: "info (__FLAVOR__ background)"; border-color:"warning (__FLAVOR__ border)"; }
+.error { color: "warning.status (__FLAVOR__ color)"; font-weight: bold }
+
+.tooltip {
+  background-color: "color.major.light (__FLAVOR__ background)";
+  border: 1px solid;  border-color: "light (__FLAVOR__ border)";
+  border-radius: 3px;
+  display: none;
+  font-weight: normal;
+  max-width: 20%;
+  padding: 5px;
+  z-index: 1000 }
+
+.tips {
+	border: 1px dashed;  border-color: "light (__FLAVOR__ border)";
+	color: "gray.medium (__FLAVOR__ color)";
+	padding: 10px;
+	text-align: center }
+
+/*-- =Syndication Button */
+div.syndicationButton { background-color: #ff9d5c; float: right; font-size: .7em; margin-bottom: 5px }
+.syndicationContainer { height: 30px }
+div.syndicationButton div.syndicationLinks {color: #fff; padding: 2px 4px }
+div.syndicationButton div.syndicationLinks a { color: #fff }
+
+/*-- =Comments */
+.commentBlock { margin: 7px 0 8px; padding: 2px 10px 2px 0 }
+.commentActions { float: right; font-size: .8em; margin-right: 4px; padding: 3px }
+.commentCreationDate { font-weight: normal }
+.commentQuote { margin: 5px 0 5px 0 }
+.commentAuthor {
+  background: transparent url("${basePath}/icons/comment.gif") no-repeat 4px 4px;
+  color: "gray.dark (__FLAVOR__ color)";
+  font-weight: bold;
+  padding: 5px 3px 3px 24px }
+
+/*-- =Advanced Search */
+.listShuttleTable .listShuttleSelectionActions a { display: block }
+
+/*-- =PopUps */
+/* Generic PopuP div used in Faceted Search */
+.genericPopUp {
+  background-color: #fff;
+  border: 1px solid;  border-color: "light (__FLAVOR__ border)";
+  display: none;
+  position: absolute;
+  width: 400px;
+  z-index: 10000 }
+
+.genericPopUp .closePopUpHeader {
+  background-color: "color.major.light (__FLAVOR__ background)";
+  border-bottom: 1px solid;  border-color: "light (__FLAVOR__ border)";
+  padding: 3px;
+  text-align: right }
+
+.genericPopUp .closePopUpHeader .closePopUp { cursor: pointer; float: right }
+.genericPopUp .closePopUpHeader .popUpTitle { float: left; font-size: 1.2em }
+.genericPopUp .popUpContent { height: 390px; overflow: auto; padding: 10px }
+.genericPopUp .dr-tree td, .genericPopUp .rich-tree td { padding: 1px }
+
+.bigPopUp { height: 70%; width: 80% }
+
+/*---- =Footer ----*/
+.footer {
+  background: none "footer (__FLAVOR__ background)";
+  font-size: .7em;
+	width:100% }
+.footerDefaultLinks { padding: 15px }
+
+.footer .content { text-align: right; width: 100% }
+.footer a {	color: "link.footer (__FLAVOR__ color)"; }
+
+.copyrights { color: "gray.medium (__FLAVOR__ color)"; float: right; padding: 2px 20px 0 0 }
+.nuxLinks { float: right; padding-left: 20px }
+.nuxLinks a { vertical-align: middle }
+
+a.twitt, a.linkedin { display:inline-block; height:16px; margin:0 5px; width:16px }
+a.twitt{ background:transparent url("${basePath}/icons/icones-metanav.png") no-repeat left top }
+a.linkedin {background:transparent url("${basePath}/icons/icones-metanav.png") no-repeat -16px top }
+a.twitt:hover { background-position:left bottom }
+a.linkedin:hover { background-position:-16px bottom }
+
+/*///////////// =Common details /////////////*/
+/*---- =Rich faces  ----*/
+/*-- =Tree */
+.dr-tree-h-ic-div { margin-left: 8px; padding-left: 10px }
+.treeNodeHighlightedClass { text-decoration: none }
+.treeNodeSelectedClass { border: none }
+
+/*-- =For RFaces Navigation Tree in the main area */
+.dataInput .dr-tree td, .dataInput .dr-tree td td {padding: 1px }
+.fieldColumn .dr-tree img { margin: 0 }
+
+/*-- =FileUpload */
+.rich-fileupload-list-decor { margin: 10px 0 }
+.rich-fileupload-button, .rich-fileupload-button-border { padding: 2px }
+.rich-fileupload-button-light, .rich-fileupload-button-press { padding: 1px }
+.rich-fileupload-button-content { padding: 2px 6px 2px 19px }
+
+/*---- =Calendar ----*/
+.calendarTrigger { cursor: pointer; margin: 0 0 5px; vertical-align: bottom }
+
+/*---- =Arrow ----*/
+.directoryBack { background: url("${basePath}/icons/arrow_left.gif") no-repeat scroll 3px 1px transparent; padding: 2px 2px 2px 20px }
+
+/*----  =Navigation controls ----*/
+#pageNavigationControls { border-bottom: 1px solid; border-color: "lighter (__FLAVOR__ border)"; margin: 0 0 5px; padding: 2px 0 0; text-align: center }
+#pageNavigationControls span { color: "gray.dark (__FLAVOR__ color)"; font-weight: bold; margin: 10px 5px; vertical-align: top }
+#pageNavigationControls input { margin-left: 5px }
+
+/*---- Fix icon size to allow icon upload in Nuxeo Studio ----*/
+.bigIcon { width: 50px }
+.smallIcon { height: 16px; width: 16px }
+
+/*//////////// =Specific for DM /////////////*/
+/*---- Main Frame----*/
+.documentManagement {}
+
+/*-- =Breadcrumb */
+.breadcrumb { background-color: "neutral.lighter (__FLAVOR__ background)"; border-bottom: 1px solid; border-color: "lighter (__FLAVOR__ border)"; font-size: .7em; padding: 3px 7px }
+.breadcrumb .action_bar { margin: 0 }
+.breadcrumb .action_bar a { border: none; padding: 3px 0 }
+
+.breadcrumbs { float: left; padding: 3px 4px 0 0 }
+.breadcrumbs a, .breadcrumbs a:link, .breadcrumbs a:visited { color: "gray.dark (__FLAVOR__ color)"; }
+.breadcrumbs a:hover, .breadcrumbs a:active { font-weight: normal; text-decoration: underline }
+
+.printButton { float: right; padding-right: 1px }
+.printButton .liveEditCreateButtons { border-right: 1px solid;  border-color: "light (__FLAVOR__ border)"; margin-right: 5px; padding-right: 8px }
+
+/*--  =Document view */
+.currentDocumentDescription { font-size: .8em; padding: 4px 0 }
+.currentItemDescription { display: block; font-size: 13px }
+
+/*---- =Left Column----*/
+/*-- =Tree links */
+.treeLink a, .treeLink a:link, .treeLink a:visited { font-weight: normal }
+.treeLink a:hover, .treeLink a:active { font-weight: normal; text-decoration: underline }
+.treeLink img {margin: 3px 4px 4px 0; vertical-align: top }
+
+.cell { margin-bottom: 2px; padding: 2px }
+.cell img, .clipboardFunction img { vertical-align: middle }
+.cell .iconImage { margin-right: 4px }
+
+.menu dl, .menu dd { margin: 0 }
+.menu dd { padding: 10px 0 }
+
+td.dr-tree-h-text, td.dr-tree-h-text span, td.dr-tree-h-text a.treeLink { white-space: normal }
+
+/*-- =Clipboard & Worklist */
+.userClipboard { background-color: #fff; height: 1%; margin: 10px 0 10px 0 }
+.userClipboardContent { margin: 0; padding: 10px 0 10px 3px }
+.userClipboard h4 {
+  border-bottom: 1px dotted; border-color: "medium (__FLAVOR__ border)";
+  color: "gray.medium (__FLAVOR__ color)";
+  font-size: 1.2em;
+  height: 16px;
+  margin: 0 0 2px;
+  padding: 8px 2px 2px }
+
+.dropInto { background-color: "neutral.lighter (__FLAVOR__ background)"; }
+.dropIntoClipboardCopy { background: transparent url("${basePath}/icons/action_clipboard_copy.gif") no-repeat 98% 3%; background-color: "color.major.dark (__FLAVOR__ background)"; }
+
+#clipboardCopy { padding: 3px }
+
+.clipboardFunctions { border-top: 2px solid; border-color: "lighter (__FLAVOR__ border)"; padding-top: 10px }
+.clipboardFunction { padding: 2px }
+.clipboardRemoveItem { float: right }
+
+.clipboardEmptyMessage { color: "gray.dark (__FLAVOR__ color)"; font-style: italic; padding: 0 2px 2px 2px; text-align: center }
+
+/*----  to check if it's still used ----*/
+.wizardFrame { border: 1px solid; border-color: "lighter (__FLAVOR__ border)"; padding: 0 5px; width: 800px }
+.wizardFrame .wizardFinish h4 img { float: left; margin-right: 10px }
+.wizardFrame .templatePreview { border: 1px solid; border-color: "lighter (__FLAVOR__ border)"; padding: 10px !important }
+.wizardFrame .templatePreview img { border: 1px solid #333; float: left }
+.wizardFrame .templatePreview .templatePreviewDescription { font-style: italic }
+.wizardFrame .wizardButtonBar { text-align: right }
+
+.closedContent {
+  background: #fff;
+  border: 1px solid; border-color: "light (__FLAVOR__ border)";
+  margin: 15px 0 0;
+  padding: 0 10px 10px 10px }
+
+.serverChoice {
+  float: left;
+  margin-top: 20px;
+  margin-right: 30px;
+  text-align: center;
+  width: 200px }
+
+.taskActions { width: 470px }
+
+/*/////////////  For addons //////////////*/
+/*----  =Nuxeo POLL ----*/
+.pollStatusLabel, .pollStatus { float:left }
+.pollStatusLabel { padding: 0 10px 5px 0 }
+.pollStatus span, .pollStatus a { padding: 1px 5px }
+.pollStatus .status {	font-weight: bold; background-color: "neutral.lighter (__FLAVOR__ background)"; }
+.pollStatus .project { color: #0088c0 }
+.pollStatus .open { color: "normal.status  (__FLAVOR__ color)" }
+.pollStatus .closed {	color: "default (__FLAVOR__ color)"; }
+
+/*---- =Faceted Search ----*/
+.facetedSearchActionBar { border-bottom: 1px solid;  border-color: "light (__FLAVOR__ border)"; padding: 2px; color: "default (__FLAVOR__ color)"; }
+.facetedSearchActionBar a { float: left; padding-top: 3px }
+
+.facetedSearchActionBar input.button {
+  float: right;
+  font-weight: bold;
+  margin: 0 0 0 5px;
+  padding: 0 5px 0 7px;
+  width: auto }
+
+#facetedSearchSelectorDiv, #savedFacetedSearchSelectorDiv {
+  border-bottom: 1px solid;
+  border-color: "lighter (__FLAVOR__ border)";
+  margin: 0;
+  padding: 0 0 5px }
+#facetedSearchSelectorDiv p, #savedFacetedSearchSelectorDiv p {
+  background-color:"color.major.light (__FLAVOR__ background)";
+  border-bottom: 1px solid;  border-bottom-color: "light (__FLAVOR__ border)";
+  border-top: 1px solid; border-top-color: "noborder (__FLAVOR__ border)";
+  font-weight: bold;
+  padding: 3px }
+
+.facetedSearchBlock .labelColumn { font-weight: normal; width: 70px }
+.facetedSearchBlock .tinyLabel { display: inline-block; text-align: right; width: 24px }
+.facetedSearchBlock .dataInput { width: 100% }
+.facetedSearchBlock .dataInput td { padding: 3px 4px 5px 0 }
+.facetedSearchBlock input, .facetedSearchBlock select { width: 100% }
+.facetedSearchBlock input.rich-calendar-input { margin: 1px 3px 1px 5px; width: 68% }
+.facetedSearchBlock .dataInputTextDate { font-size: .9em; margin: 0 5px 3px 3px; width: 45px }
+.facetedSearchBlock .widgetContent { border-bottom: 1px solid #dcdcdc; color: "gray.dark (__FLAVOR__ color)"; }
+
+.facetedSearchBlock h5 {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
+  border-bottom: 1px solid;  border-bottom-color: "light (__FLAVOR__ border)";
+  border-top: 1px solid; border-top-color: "noborder (__FLAVOR__ border)";
+  color: "default (__FLAVOR__ color)";
+  font-size: 1em;
+  margin: 0;
+  padding: 3px }
+
+.facetedSearchBlock .widgetContent .labelOpenPopUp {
+  border-bottom: 1px solid;  border-color: "light (__FLAVOR__ border)";
+  color: "default (__FLAVOR__ color)";
+  display: block;
+  margin: 0 0 5px;
+  padding: 0 0 1px }
+
+.facetedSearchPopUp {
+  background-color: #fff;
+  border: 1px solid;  border-color: "light (__FLAVOR__ border)";
+  display: none;
+  left: 25%;
+  position: absolute;
+  top: 15%;
+  width: 400px;
+  z-index: 10000 }
+
+.facetedSearchPopUp .closePopUpHeader {
+  background-color: "color.major.light (__FLAVOR__ background)";
+  border-bottom: 1px dotted;  border-color: "light (__FLAVOR__ border)";
+  padding: 3px;
+  text-align: right }
+
+.facetedSearchPopUp .closePopUpHeader .closePopUp { cursor: pointer; float: right }
+.facetedSearchPopUp .closePopUpHeader .popUpTitle { float: left; font-size: 1.1em }
+.facetedSearchPopUp .popUpContent { height: 390px; overflow: auto; padding: 10px }
+
+.facetedSearchBlock .dataInput .facetedSearchPopUp td, .facetedSearchBlock .thin td { padding: 1px }
+.facetedSearchBlock .widgetContent .labelOpenPopUp .labelTool { cursor: pointer; float: right }
+.facetedSearchBlock table.thin { margin: 0 0 7px 0 }
+
+.UserSuggestionInput table { width: 100% }
+#saveFacetedSearchForm input { margin-left: 3px }
+
+/*---- PictureBook Styles ----*/
+.pictureBookItem {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
+  border: 1px solid;  border-color: "light (__FLAVOR__ border)";
+  float: left;
+  height: 100%;
+  margin: 10px 20px 10px 0;
+  text-align: center;
+  width: 140px }
+
+.itemSelected { background-color: #ECF6FF; border: 1px solid; border-color: "color.major.strong (__FLAVOR__ border)" }
+
+.pictureBookItem .cell { height: 110px; padding-top: 15px; text-align: center }
+.pictureBookItem .cell a { display: block; height: 100px; padding: 20px; width: 100px }
+.pictureBookItemTitle { background-color: #fff; font-size:.8em; padding: 5px 0 }
+
+.slideshowContent { padding: 10px 0 5px 0 }
+.slideshowContent h3 { padding: 8px 0 5px 70px }
+
+.slideShowControl { margin: 0 0 10px }
+.slideShowControl input { margin: 0 3px; padding: 0 }
+.slideShowControl .indexPicture { margin: 0 3px 4px 0 }
+.slideShowControl span { padding-right: 10px }
+
+/* Righ click context menu classes */
+#contextMenu {
+  position: absolute;
+  visibility: hidden;
+  background-color: #DDDDDD;
+  background-style: solid;
+  border-style: solid;
+  border-width: 2px;
+  border-color: black;
+  color: green;
+  top: 0;
+  left: 0 }
+.ctxMenuStyle { list-style: none; padding: 1px; margin: 0px; background-color: #232323; width: 100px; font-size: 9px }
+.ctxMenuItemStyle { margin: 0px; color: #e7e7e7; display: block; cursor: default; padding: 3px; border-bottom: 1px solid #232323; background-color:#3a3d40 }
+.ctxMenuItemHoverStyle { margin: 0px; color: #fff; display: block; cursor: default; padding: 3px; border-bottom: 1px solid #4e9ae1; background-color: #4e9ae1 }
+.ctxMenuItemStyle a { text-decoration:none; color: #e7e7e7 }
+.ctxMenuItemHoverStyle a { text-decoration:none; color: #fff }
+.ctxMenuImg { vertical-align:middle; padding:1px; padding-right:4px }
+.ctxMenuShadow { background-color:#000; position:absolute; opacity:0.2; z-index:499 }
+
+/* modal Panel from RichFaces*/
+.rich-mpnl-mask-div { opacity:0.1 }
+h3.documentTypes { padding:0; margin:15px 0px 5px 0px; color:#333; border-bottom:1px solid #C2C2C2 }
+
+.documentType { margin:10px 0px; width:200px }
+.documentType img { float:left; margin-right:5px }
+.documentType a, a:link, .documentType a:visted, .documentType a:hover { font-weight:bold; color:#0066CC; text-decoration:none }
+.documentType span { color:#454545 }
+a.documentTypeLink { color:#063C9F; font-weight:bold; text-decoration:none }
+.imagingPanelDownloadLink { color:#0066CC; display:block; font-weight:bold; padding:5px 0px 2px 0px }
+
+#tooltip { position:absolute; display:block }
+#tooltipContent { display:block; padding:2px 12px 3px 7px; margin-left:5px; background:#FFFFAA; color:#000; border: 1px solid #333 }
+
+/* HTML5 Drag and Drop styles */
+#dropzone-info-panel { display:none }
+#dropzone-info-panel td { vertical-align: top }
+
+.dndControlMessage { display: none }
+.loadingComplete { background: transparent url(/nuxeo/icons/checked.gif) no-repeat left center; padding: 2px 0 0 18px }
+
+.dropPanel { padding: 10px; background: #BBBBCC; border-radius: 5px; height: 250px }
+
+.dropzone { display: block; margin : 4px }
+.dropzoneHL { border: 2px dashed #ccc; background-color: #F0F0F0 }
+
+.dropzoneTarget { border:2px solid #92cdff }
+.dropzoneTargetExtended { border: 2px solid #54d920 }
+.dropzoneTargetOverlay { position : absolute; background-color : rgba(200,220,250,0.3) }
+
+.dropzone-info-block { display: block; margin: 5px 0 0 0; text-align: center }
+.dropzone-info-summary { display: block; margin : 7px 10px 20px 50px }
+.dropzone-info-summary-item {}
+.dropzone-info-progress { background-color: #7ebbff; height: 3px; width: 0% }
+.dropzone-info-item { border : 1px solid #999; margin : 0 2px 10px 0 }
+.dropzone-info-name { text-align: center }
+
+.dropzone-bar { height: 20px }
+.dropzone-bar-btn { visibility:hidden; float:right }
+.dropzone-bar-msg { display: block; padding-top: 2px }
+
+.dndFormPanel{
+    display:none;
+    position:absolute;
+    border:solid 1px #adadad;
+    background-color:white;
+    padding : 25px;
+    margin: 4px;
+    z-index: 5000;
+    max-height: 350px;
+    overflow: auto }
+.dndProgressPanel{
+    display:none;
+    border:solid 1px #adadad;
+    background-color:white;
+    padding : 5px 25px 5px 25px;
+    margin: 0px }
+.dndFormPanel th { text-align: left; padding-bottom: 10px; font-size: 1.1em }
+.dndFormPanel td { vertical-align: top; padding: 0 35px 10px 0 }
+.dndFormPanel input { margin: 10px 0px }
+.dndFormPanel .alignRight { text-align: right }
+.dndFormPanel body { margin: 0 }
+
+.uploadedFileList { font-size : 1.1em }
+
+.importOperationForm iframe { margin: 25px 0 0 }
+.importOperationForm .dataInput { margin: 0 0 15px }
+.importOperationForm .dataInput input { margin: 20px 0 0 0 }
+
+#dndContinueButton {
+  display:none;
+  cursor:hand;
+  padding:5px  }
+#operationForm {
+   border-style:solid;
+   border-color:#444444;
+   border-width: 0px 0px 0px 2px }
+
+ /* Footer Banner */
+.bannerBottom { font-size: 1.2em; text-align:left; padding:3px 15px 1px; }
+.bannerBottom .links a, .links a:link, .links a:visited { background-color: #108EBD; border: 1px solid #1191C1; color: #EFEFEF; cursor: pointer; display: block; margin: 3px; padding: 1px 30px 1px 50px; text-decoration: none; }
+.bannerBottom .links a:hover { background-color: #1aabe0; border: 1px solid #3ab6e3; color:#fff; text-decoration: none }
+
+.bannerMessage { padding:1px }
+.bannerMessage p { margin: 0 0 3px }
+
+.unregistered { background-color: #0e88b5; color:#fff; }
+.unregistered .bannerMessage { float: left }
+.unregistered .links { float: right }
+
+/* Studio header link */
+.studioButton a { background-color: #00a5b8; display: block; padding: 2px 10px; color: #f1f5f7; text-decoration: none; border-radius: 4px; margin:0 0 0 10px;}
+.studioButton a:hover { background-color: #00b6cb; color: #fff; text-decoration:none !important }
+
+/* FancyBox styles */
+#fancybox-wrap { font: normal 12px/19px "Lucida Grande", Helvetica, Verdana, sans-serif }
+#fancybox-wrap a, #fancybox-wrap a:link, #fancybox-wrap a:visited { text-decoration: none; color: #0066cc }
+#fancybox-wrap a:hover, #fancybox-wrap a:active { text-decoration: underline }
+
+/* End */
