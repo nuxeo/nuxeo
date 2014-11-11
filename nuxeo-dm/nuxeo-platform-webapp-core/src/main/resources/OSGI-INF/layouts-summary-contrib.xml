@@ -1,0 +1,419 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layouts.webapp.summary">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <documentation>
+      The widget types from this contribution are intended to be used in the
+      summary view. All these widgets are bound to the currentDocument in the
+      Seam context.
+    </documentation>
+
+    <widgetType name="summary_current_document_actions">
+      <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
+        <title>Actions (lock, restore version)</title>
+        <description>
+          <p>
+            This widgets displays the actions on the current document
+            (lock/unlock and undelete by default).
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+            </ul>
+          </p>
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/actions_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_description">
+      <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
+        <title>Description</title>
+        <description>
+          <p>This widgets displays the description of the currentDocument.</p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+            </ul>
+          </p>
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/description_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_files">
+      <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
+        <title>Files</title>
+        <description>
+          <p>This widgets displays the files held by the currentDocument</p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+              <li>
+                currentDocumentAsBlobHolder : the BlobHolder on the
+                currentDocument
+              </li>
+              <li>
+                conversionActions : the Seam Bean wrapping the conversionService
+              </li>
+              <li>liveEditHelper : the Seam Bean encapsulating LiveEdit</li>
+            </ul>
+          </p>
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/content_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_view">
+      <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
+        <title>View layout</title>
+        <description>
+          <p>This widgets displays the view layouts of the currentDocument</p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+              <li>currentDocumentType : the Type of the current document</li>
+            </ul>
+          </p>
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/metadata_custom_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_dublincore">
+      <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
+        <title>Dublincore</title>
+        <description>
+          <p>
+            This widgets displays the dublincore layout of the currentDocument
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+            </ul>
+          </p>
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/metadata_dc_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_tagging">
+      <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
+        <title>Tagging</title>
+        <description>
+          This widgets displays the tags for the currentDocument and allow to
+          add new ones. This widgets requires the tag service to be deployed.
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/tagging_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_relations">
+      <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
+        <title>Relations</title>
+        <description>
+          This widgets displays the in/out relations for the currentDocument.
+          This widgets requires the Relation service to be deployed.
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/relations_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_comments">
+      <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
+        <title>Comments</title>
+        <description>
+          This widgets displays the comments for the currentDocument. This
+          widgets requires the Comment service to be deployed.
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/comments_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_publications">
+      <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
+        <title>Publications</title>
+        <description>
+          This widgets displays the publications of the currentDocument. This
+          widgets requires the Publisher service to be deployed.
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/publication_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_lc_and_version">
+      <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
+        <title>Life cycle state and version</title>
+        <description>
+          <p>
+            This widgets displays the life-cycle state and version of the
+            currentDocument.
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+              <li>
+                currentDocumentVersionInfo: the current document versionning
+                information
+              </li>
+            </ul>
+          </p>
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/lc_and_version_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_single_tasks">
+      <configuration>
+        <sinceVersion>5.3.2</sinceVersion>
+        <title>Tasks</title>
+        <description>
+          <p>
+            This widgets displays the single tasks (out of a process instance)
+            attached to current document model.
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>
+                currentSingleTasks: the single tasks attached to current
+                document
+              </li>
+            </ul>
+          </p>
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/single_tasks_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="summary_current_document_description"
+      type="summary_current_document_description" />
+
+    <widget name="summary_current_document_actions"
+      type="summary_current_document_actions" />
+
+    <widget name="summary_current_document_files"
+      type="summary_current_document_files" />
+
+    <widget name="summary_current_document_view"
+      type="summary_current_document_view" />
+
+    <widget name="summary_current_document_tagging"
+      type="summary_current_document_tagging" />
+
+    <widget name="summary_current_document_dublincore"
+      type="summary_current_document_dublincore" />
+
+    <widget name="summary_current_document_relations"
+      type="summary_current_document_relations" />
+
+    <widget name="summary_current_document_comments"
+      type="summary_current_document_comments" />
+
+    <widget name="summary_current_document_publications"
+      type="summary_current_document_publications" />
+
+    <widget name="summary_current_document_lc_and_version"
+      type="summary_current_document_lc_and_version" />
+
+    <widget name="summary_current_document_single_tasks"
+      type="summary_current_document_single_tasks" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="default_summary_layout">
+      <templates>
+        <template mode="any">/layouts/layout_summary_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>summary_current_document_files</widget>
+          <widget>summary_current_document_description</widget>
+          <widget>summary_current_document_view</widget>
+          <widget>summary_current_document_dublincore</widget>
+          <widget>summary_current_document_comments</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_lc_and_version</widget>
+          <widget>summary_current_document_actions</widget>
+          <widget>summary_current_document_tagging</widget>
+          <widget>summary_current_document_relations</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_publications</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_single_tasks</widget>
+        </row>
+      </rows>
+    </layout>
+
+
+    <layout name="note_summary_layout">
+      <templates>
+        <template mode="any">/layouts/layout_summary_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>summary_current_document_description</widget>
+          <widget>note_text</widget>
+          <widget>summary_current_document_files</widget>
+          <widget>summary_current_document_dublincore</widget>
+          <widget>summary_current_document_comments</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_lc_and_version</widget>
+          <widget>summary_current_document_actions</widget>
+          <widget>summary_current_document_tagging</widget>
+          <widget>summary_current_document_relations</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_publications</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_single_tasks</widget>
+        </row>
+      </rows>
+      <widget name="note_text" type="richtext_with_mimetype">
+        <fields>
+          <field>note:note</field>
+          <field>note:mime_type</field>
+        </fields>
+        <properties mode="view">
+          <property name="translatedHtml">
+            #{noteActions.translateImageLinks(field_0)}
+          </property>
+          <property name="cssClass">note_content_block</property>
+        </properties>
+      </widget>
+    </layout>
+
+  </extension>
+
+</component>

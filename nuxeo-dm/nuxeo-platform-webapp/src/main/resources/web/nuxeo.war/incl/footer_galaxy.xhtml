@@ -1,0 +1,34 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:insert name="footer">
+ <h:outputText value="#{messages['label.login.copyright']}" />  
+  <h:outputLink onclick="window.open(this.href); return false;" value="http://nuxeo.com/subscription/connect?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products">
+  <h:outputText value="#{messages['label.login.getSupport']}" />
+    </h:outputLink> | <!-- &nbsp; -->
+  <h:outputLink onclick="window.open(this.href); return false;" value="http://www.nuxeo.org/discussions/index.jspa?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products">
+    <h:outputText value="#{messages['label.login.forums']}" />
+  </h:outputLink>
+  | <!-- &nbsp; -->
+  <h:outputLink onclick="window.open(this.href); return false;" value="http://doc.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products">
+    <h:outputText value="#{messages['label.login.documentation']}" />
+  </h:outputLink>
+  
+<c:if test="false">
+  NXP-3151: move language selector to login page
+  <h:form id="langSelectForm">
+    <h:outputText value="#{messages['label.selectLocale']}" />
+    <h:selectOneMenu value="#{localeSelector.localeString}" styleClass="langSelect"
+      id="langSelectMenu">
+      <f:selectItems value="#{localeSelector.supportedLocales}"/>
+    </h:selectOneMenu>
+    <h:commandButton action="#{localeSelector.select}"
+                     value="#{messages['command.changeLocale']}"
+                     class="langSubmit"
+                     id="langSelectSubmitButton" />
+  </h:form>
+</c:if>
+</ui:insert>
+</div>
