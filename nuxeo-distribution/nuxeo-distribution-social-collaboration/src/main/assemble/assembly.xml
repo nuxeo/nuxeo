@@ -1,0 +1,90 @@
+<project name="nuxeo-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+
+
+  <target name="init" unless="init.done">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <property name="nuxeo.ear" value="${outdir}/nuxeo.ear" />
+
+    <antcall target="expand" />
+    <property name="init.done" value="true" />
+  </target>
+
+  <target name="expand">
+    <artifact:nuxeo-expand includeTestScope="true" />
+    <artifact:print output="${outdir}/artifacts.properties" mode="sdk" />
+    <artifact:print output="${outdir}/test-artifacts.properties"
+                    mode="sdk"
+                    scopes="test" />
+    <artifact:print output="${outdir}/dependency-tree.log" />
+  </target>
+
+  <target name="build" depends="init" description="Build Nuxeo Social Collaboration">
+    <echo>Building default Nuxeo Social Collaboration EAR</echo>
+    <delete failonerror="false" dir="${nuxeo.ear}" />
+    <mkdir dir="${nuxeo.ear}" />
+    <antcall target="build-standard" />
+    <antcall target="build-resources" />
+  </target>
+
+  <target name="build-standard"
+          description="Build default distribution"
+          depends="init">
+    <copy todir="${nuxeo.ear}/bundles" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="org.nuxeo*" scope="!test" type="!pom" />
+        </includes>
+      </artifact:set>
+    </copy>
+
+    <antcall target="third-party-libraries" />
+
+    <copy file="${outdir}/artifacts.properties" todir="${nuxeo.ear}" />
+    <copy file="${outdir}/test-artifacts.properties" todir="${nuxeo.ear}" />
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+         basedir="${nuxeo.ear}" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="zip" />
+  </target>
+
+  <target name="third-party-libraries">
+    <copy todir="${nuxeo.ear}/lib" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="!org.nuxeo*" scope="!test" />
+        </includes>
+      </artifact:set>
+    </copy>
+    <move todir="${nuxeo.ear}/lib">
+      <fileset dir="${nuxeo.ear}/bundles">
+        <include name="nuxeo-generic-wss-front*" />
+        <include name="nuxeo-generic-wss-handler*" />
+      </fileset>
+    </move>
+    <nx:rmdups dir="${nuxeo.ear}/lib" />
+  </target>
+
+  <target name="build-resources">
+    <delete dir="${outdir}/template-collaboration" failonerror="false" />
+    <copy todir="${outdir}/template-collaboration" overwrite="true">
+      <fileset dir="src/main/resources" />
+    </copy>
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-resources.zip"
+         basedir="${outdir}/template-collaboration" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-resources.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="zip"
+                     classifier="resources" />
+  </target>
+
+</project>
+
