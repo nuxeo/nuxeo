@@ -1,0 +1,24 @@
+Export-Package: org.nuxeo.ecm.directory;mandatory:=api;api=split,
+ org.nuxeo.ecm.directory.impl;mandatory:=api;api=split,
+ org.nuxeo.ecm.directory.api;mandatory=api;api=split
+Ignore-Package: org.nuxeo.ecm.core.api
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Localization: bundle
+Bundle-Name: Nuxeo Directory API
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.core
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: true
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Import-Package: org.apache.commons.logging,
+ org.nuxeo.common.collections,
+ org.nuxeo.common.utils,
+ org.nuxeo.ecm.core.api.impl,
+ org.nuxeo.ecm.core.api.model,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.model
+Bundle-SymbolicName: org.nuxeo.ecm.directory.api;singleton:=true
