@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+  <ModulePrefs title="__MSG_myDocuments__" height="95" scrolling="true"
+    scaling="true" directory_title="__MSG_myDocuments__"
+    description="__MSG_description__" author="Damien METZLER"
+    author_email="damien.metzler@leroymerlin.fr" author_affiliation="Leroy Merlin"
+    author_location="Lezennes, France">
+
+    <Locale messages="ALL_ALL.xml"/>
+    <Locale lang="fr" messages="fr_ALL.xml"/>
+
+    <Require feature="dynamic-height" />
+    <Require feature="settitle" />
+    <Require feature="opensocial-0.8" />
+    <Require feature="nuxeo" />
+    <Require feature="jquery" />
+    <Require feature="form" />
+  </ModulePrefs>
+
+  <Content type="html" view="default">
+<![CDATA[
+    <script type="text/javascript" language="javascript" src="documentlists.js"></script>
+    <script type="text/javascript">
+      var prefs = new _IG_Prefs(__MODULE_ID__);
+      gadgets.util.registerOnLoadHandler(function() {
+        gadgetId = gadgets.nuxeo.getGadgetId();
+        getDocumentLists();
+        if(perm){
+          jQuery("#uploadBtn").attr("value",prefs.getMsg("add"));
+        } else {
+        	jQuery(".perm").remove();
+        }
+      });
+
+    </script>
+
+    <link rel="stylesheet" type="text/css" href="documentlists.css"/>
+    <div id="nxDocumentList">
+        <div id="nxDocumentListData">
+          <img src="${org.nuxeo.ecm.contextPath}/img/standart_waiter.gif">
+        </div>
+        <div align="center" id="pager">
+            <img type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_rewind.gif" onclick="firstPage()"/>
+            <img type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_previous.gif" onclick="prevPage()"/>
+            <span class="currentPageStatus" id="nxDocumentListPage"></span>
+            <img src="${org.nuxeo.ecm.contextPath}/icons/action_page_next.gif" onclick="nextPage()"/>
+            <img src="${org.nuxeo.ecm.contextPath}/icons/action_page_fastforward.gif"onclick="lastPage()"/>
+         </div>
+         <div id="addfile" class="perm">
+         <form style="text-align:center;" method="post" id="formUpload" enctype="multipart/form-data" action="">
+            <input type="file" name="file" id="uploadFile" size="20" />
+            <input  id="uploadBtn" type="submit" value="" />
+        </form>
+
+
+         </div>
+    </div>
+
+  ]]>
+  </Content>
+
+  <!--Content type="html" view="canvas"-->
+<!--[CDATA[ -->
+   <!-- <script type="text/javascript" language="javascript" src="documentlists.js"></script>-->
+ <!--   <script type="text/javascript">-->
+
+  <!--  gadgets.util.registerOnLoadHandler( function() {-->
+   <!--   var gadgetId = gadgets.nuxeo.getGadgetId();-->
+   <!--   var url = "http://localhost:8080${org.nuxeo.ecm.contextPath}/site/myDocsRestAPI/";-->
+   <!--   url += gadgetId + "/";-->
+
+   <!--   makeRequest(url, function(obj) {-->
+   <!--     var jsonObject = obj.data;-->
+   <!--     spaceId = jsonObject.summary.id;-->
+   <!--     var html="";-->
+    <!--    //FIXME: repo id is hard coded-->
+     <!--   var iframesrc= top.nxBaseUrl + "nxdoc/default/" + jsonObject.summary.id + "/view_documents?org.nuxeo.theme.conversation.theme=galaxy/popup";-->
+     <!--   html += "<div style=\"min-height:700px;\"><iframe src=\""+ iframesrc + "\" width=\"100%\" height=\"100%\" frameborder=\"0\" border=\"0\"></div>";-->
+     <!--   _gel("ifplace").innerHTML = html;-->
+
+    <!--      gadgets.window.adjustHeight();-->
+   <!--   });-->
+
+  <!--    });-->
+
+  <!--  </script>-->
+  <!--  <div style="height:700px" id="ifplace">-->
+
+  <!--  </div>-->
+
+ <!-- ]]>-->
+ <!-- </Content>-->
+</Module>
