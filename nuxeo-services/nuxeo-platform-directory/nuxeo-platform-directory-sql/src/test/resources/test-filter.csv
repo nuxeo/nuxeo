@@ -1,0 +1,6 @@
+id,label,lang,type
+"1","Label1","fr","nuxeo"
+"2","Label2","en","not-nuxeo"
+"3","Label3","en","nuxeo"
+"4","Label4","fr","not-nuxeo"
+"5","Label5","fr","something"
