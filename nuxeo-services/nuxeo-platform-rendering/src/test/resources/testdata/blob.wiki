@@ -1,0 +1,23 @@
+
+= Heading 1
+Here is some wiki in the *document* content.\
+See NXP-1256
+
+== Heading 1.1
+This is an inline macro {freemarker}doc title: ${doc.dublincore.title}{/freemarker}
+
+= Heading 2
+TODO: make a JEXL wiki extension
+
+%block:dynamic (((
+*Dynamic Block*
+This is a dynamic *block* contributed from a wiki
+
+{toc}The Wiki Toc{/toc}
+
+)))
+
+NXP-1234
+Hello, Bogdan!
+
+End Wiki.

@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Login Module
+Bundle-SymbolicName: org.nuxeo.ecm.platform.login
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Bundle-Category: runtime
+Export-Package: org.nuxeo.ecm.platform.login
+Require-Bundle: org.nuxeo.ecm.platform.api,
+ org.nuxeo.ecm.platform.usermanager.api
+Nuxeo-Component: OSGI-INF/NXLoginModule-framework.xml,
+ OSGI-INF/loginModulePlugin-contrib.xml,
+ OSGI-INF/JBossLoginConfig.xml
