@@ -1,0 +1,70 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+ xmlns:nxu="http://nuxeo.org/nxweb/util"
+ xmlns:ui="http://java.sun.com/jsf/facelets"
+ xmlns:c="http://java.sun.com/jstl/core">
+
+<script type="text/javascript" src="#{baseURL}seam/resource/remoting/interface.js?#{SeamRemotingBeanNames}"></script>
+<script type="text/javascript">
+<h:outputText
+   value="var currentConversationId='#{nxu:htmlEscape(org.jboss.seam.core.manager.currentConversationId)}';"/>
+  <h:outputText
+    value="var currentDocURL='#{currentServerLocation.name}/#{currentDocument.id}';"/>
+    // set the conversation id before doing any call
+    Seam.Remoting.getContext().setConversationId(currentConversationId);
+    Seam.Remoting.contextPath = '#{contextPath}';
+    Seam.Remoting.resourcePath='#{contextPath}/seam/resource/remoting';
+</script>
+
+<div style="display:none">
+ <span id="js-label.documents.confirmDeleteDocuments"> <h:outputText value="#{messages['label.documents.confirmDeleteDocuments']}" /></span>
+ <span id="js-label.documents.confirmUndeleteDocuments"> <h:outputText value="#{messages['label.documents.confirmUndeleteDocuments']}" /></span>
+ <span id="js-label.documents.confirmDeleteDocumentsForever"> <h:outputText value="#{messages['label.documents.confirmDeleteDocumentsForever']}" /></span>
+ <span id="js-label.review.confirmDeleteTask"> <h:outputText value="#{messages['label.review.confirmDeleteTask']}" /></span>
+</div>
+<script type="text/javascript" src="#{baseURL}js/?scripts=confirmAlerts.js|DragAndDrop.js|tableSelections.js|customSeamRemotingWaiter.js|custom-javascript.js|default-contextmenu-actions.js|custom-contextmenu-actions.js|tooltip.js"></script>
+
+<c:if test="#{useHtml5DragAndDrop}">
+
+<script type="text/javascript" src="#{baseURL}js/?scripts=dnd/jquery.client.js|dnd/jquery.dnd-file-upload.js|automation.js|dnd/nxdropzone.js|dnd/nxdropout.js|dnd/nxinternaldnd.js"></script>
+
+<ui:include src="/incl/dnd/dnd-ui.xhtml" />
+
+<script>
+var baseURL='#{baseURL}';
+var ctx = { currentDocument : '#{currentDocument.id}',
+        <c:if test="#{currentDomain!=null}">
+        currentDomain : '#{currentDomain.id}',
+        </c:if>
+        <c:if test="#{currentWorkspace!=null}">
+        currentWorkspace : '#{currentWorkspace.id}',
+        </c:if>
+        conversationId : '#{org.jboss.seam.core.manager.currentConversationId}',
+        lang : '#{localeSelector.localeString}',
+        repository : '#{currentDocument.repositoryName}'};
+
+    function initNXDrapAndDropOnPage(scope) {
+      // init Browser Drag out support (Chrome only);
+        jQuery(".dropout",scope).dropout(baseURL,ctx.repository);
+        // initernal DnD
+        jQuery(".nxDraggable",scope).nxInitDraggables();
+        jQuery(".nxDropTarget",scope).nxInitDropTargets();
+    }
+
+    jQuery(document).ready(function(){
+      // init Browser DnD import
+      jQuery(".dropzone").nxDropZone({
+              url : "/nuxeo/site/automation/batch/",
+              uploadRateRefreshTime : 500,
+              numConcurrentUploads : 3,
+              dropContext : ctx
+            });
+      // init Dropout and Internal DnD
+      initNXDrapAndDropOnPage(null);
+      });
+</script>
+</c:if>
+
+<c:if test="#{!useHtml5DragAndDrop}">
+  <ui:include src="/incl/dnd/legacyDnd.xhtml" />
+</c:if>
+</div>
