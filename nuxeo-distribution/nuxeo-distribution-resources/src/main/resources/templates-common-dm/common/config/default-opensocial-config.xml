@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component
+  name="xml.opensocialConfig">
+
+    <extension target="org.nuxeo.opensocial.service.impl.OpenSocialServiceImpl"
+    point="openSocialConfig">
+
+    <!--overall configuration of opensocial that is sufficient for most people -->
+    <opensocial>
+        <!--most users don't need to create this key but it can be
+        created with this command line on unix
+        dd if=/dev/random bs=32 count=1  | openssl base64 > /tmp/key.txt
+        then just paste the contents of key.txt into this tag-->
+      <signingKey></signingKey>
+
+      <!--this is the URL that you want shindig to expose to other service providers
+          where it can call us back.  if you have nuxeo running somewhere other than
+          /nuxeo, you should set this to something like /<myPrefix>/opensocial/gadgets/oauthcallback -->
+      <!--most people can just put the hostname+port that is visible to outside providers in the right
+          place below and then keep the same path part ... some providers (like Atlassian)
+          allow you to supply this on their config panel as well but it appears that
+          the value here overrides the value there... this value must NOT end in slash!-->
+      <oauthCallbackUrl>${nuxeo.url}/opensocial/gadgets/oauthcallback</oauthCallbackUrl>
+
+      <!--very few folks need to use this, it's only needed if you want to use
+          different servers than the "all in one shindig + nuxeo" configuration -->
+
+      <!--
+      <portals>
+        <portalConfig>
+          <domain>localhost</domain>
+          <containerName>default</containerName>
+          <key></key>
+        </portalConfig>
+      </portals>
+      -->
+
+  <!--list of outside oauth providers that you have told about
+   nuxeo being a consumer... and thus nuxeo can run their
+   gadgets that need oauth -->
+  <oauthservices>
+    <!--
+    <oauthservice>
+      these are gadgets that are displayed on the nuxeo dashboard that need oauth
+      <gadgetUrl>http://hostname:port/nuxeo/site/gadgets/confluencefeed/confluencefeed.xml</gadgetUrl>
+
+      this must match the service name in the gadget's oauth service section.. if you don't see
+          such a service name, leave this blank and the service name will default to ""
+      <serviceName></serviceName>
+
+      this is something you supply to the service provider... it's just a string
+      <consumerKey>nuxeo-opensocial</consumerKey>
+
+      if you leave this blank, we will use the RSA key defined above as the externalPrivateKey... this
+      is only needed if you want to use a special, different key for this service provider
+      <consumerSecret></consumerSecret>
+    </oauthservice>
+     -->
+  </oauthservices>
+
+
+    <!--
+      This a list of nuxeo trusted hosts. Such a host will be passed the
+      browsers jsession id to avoid the need to constantly re-authenticate to
+      retrieve nuxeo data when the user is already logged into a nuxeo server
+      to access the dashboard. List should be coma separated.
+     -->
+     <trustedHosts>
+      ${opensocial.trusted.hosts}
+     </trustedHosts>
+
+  </opensocial>
+  </extension>
+</component>
+

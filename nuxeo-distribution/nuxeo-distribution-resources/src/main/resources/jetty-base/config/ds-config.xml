@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="config:datasources">
+  <extension target="org.nuxeo.runtime.datasource" point="datasources">
+    <datasource name="jdbc/nxsqldirectory" driverClassName="org.apache.derby.jdbc.EmbeddedDataSource"
+      url = "jdbc:derby:nxsqldirectory;create=true"
+      maxActive="20" maxIdle="5">
+        <property name="databaseName">nxsqldirectory</property>
+        <property name="user">nuxeo</property>
+        <property name="password">nuxeo</property>
+    </datasource>
+    <datasource name="jdbc/nxaudit-logs" driverClassName="org.apache.derby.jdbc.EmbeddedDataSource"
+      url = "jdbc:derby:nxaudit-logs;create=true"
+      maxActive="20" maxIdle="5">
+        <property name="databaseName">nxaudit-logs</property>
+        <property name="user">nuxeo</property>
+        <property name="password">nuxeo</property>
+    </datasource>
+
+  </extension>
+</component>
