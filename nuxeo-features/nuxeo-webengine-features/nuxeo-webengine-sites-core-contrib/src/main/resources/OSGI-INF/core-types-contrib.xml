@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.webengine.sites.core.types"
+  version="1.0">
+  <require>org.nuxeo.ecm.core.schema.TypeService</require>
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="schema">
+    <schema name="webpage" prefix="webp" src="schemas/webpage.xsd" />
+    <schema name="contextualLink" prefix="clink" src="schemas/contextual-link.xsd" />    
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="doctype">
+    
+    <doctype name="WebSite" extends="Folder">
+      <schema name="webcontainer"/>
+      <!-- the content of webcontainer -->
+      <schema name="files" />
+      <facet name="WebView"/>
+    </doctype>
+    
+    <doctype name="WebPage" extends="Folder">
+      <schema name="dublincore" />
+      <schema name="webpage" />
+      <schema name="files" />
+       <facet name="Commentable"/>
+    </doctype>
+    
+    <!-- ContextualLink doc type definition  -->
+    <doctype name="ContextualLink" extends="Document">
+      <schema name="common"/>
+      <schema name="dublincore" />
+      <schema name="contextualLink" />
+    </doctype>        
+  
+  </extension>
+  
+
+</component>

@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.notification.service.NotificationContrib-test">
+
+  <documentation>
+    Inside the template files are supported by default these expressions :
+
+    ${docId} - displays the UID of the document that produced the notification
+    ${author} - displays the user that produced the event
+    ${dateTime) - date and time when it happened - must be formatted according
+                to the freemaker rules
+    ${docUrl} - For now it displays the path to follow to get to the document
+                that was the source of the event
+
+    If you need to add some more variables into your templates,
+    just put the data you need to display in the notification in
+    the eventInfo map of the JMS message that is sent to queue
+    topic/NXPMessages.
+
+    The same goes for subject but in this case there is no need to define a template.
+    Just put the string that you need to have as subject and if it contains dynamic
+    elements ${XXX}, they will be rendered just like it happens in the body.
+
+    For example :
+
+    When creating the message :
+    mesage.getEventInfo().put("docSize", sizeOfDocument);
+
+    In your template file :
+    The document has ${docSize}KB.
+
+    @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
+  </documentation>
+
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="notifications">
+
+    <notification name="Modification" channel="email" enabled="true" availableIn="workspace"
+      autoSubscribed="false" template="modif" subject="Document modified" label="label.nuxeo.notifications.modif">
+      <event name="documentModified"/>
+      <event name="contentSubdocumentModified"/>
+    </notification>
+
+    <notification name="Publication" channel="email" enabled="true" availableIn="section"
+      autoSubscribed="false" template="publish" subject="Document published" label="label.nuxeo.notifications.publication">
+      <event name="documentPublished"/>
+    </notification>
+
+    <notification name="Workflow Change" channel="email" enabled="true" availableIn="all"
+      autoSubscribed="false" template="workflow" subject="Workflow event" label="label.nuxeo.notifications.workflow">
+      <event name="workflowStarted"/>
+      <event name="workflowEnded"/>
+      <event name="workflowAbandoned"/>
+      <event name="workflowTaskAssigned"/>
+      <event name="workflowTaskUnassigned"/>
+      <event name="workflowTaskEnded"/>
+      <event name="workflowTaskRemoved"/>
+      <event name="workflowTaskSuspended"/>
+      <event name="workflowTaskRejected"/>
+    </notification>
+
+    <notification name="Approbation review started" channel="email" enabled="true" availableIn="workspace"
+      autoSubscribed="false" template="aprobationWorkflowStarted" subject="Approbation review started for ${docTitle}"
+      label="label.nuxeo.notifications.appReviewStarted">
+      <event name="approbationWorkflowStarted"/>
+    </notification>
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="templates">
+
+    <template name="modif" src="templates/modif.ftl" />
+    <template name="publish" src="templates/publish.ftl" />
+    <template name="auto" src="templates/auto.ftl" />
+    <template name="workflow" src="templates/workflow.ftl" />
+    <template name="aprobationWorkflowStarted" src="templates/appReviewStarted.ftl" />
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="generalSettings">
+
+    <settings>
+      <serverPrefix>http://localhost:8080/nuxeo/</serverPrefix>
+      <eMailSubjectPrefix>[Nuxeo5]</eMailSubjectPrefix>
+      <mailSessionJndiName>java:/Mail</mailSessionJndiName>
+    </settings>
+
+  </extension>
+</component>
