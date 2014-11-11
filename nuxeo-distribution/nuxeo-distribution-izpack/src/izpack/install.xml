@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<!-- $Id: install.xml,v 1.1.2.70 2006/04/01 01:39:05 starksm Exp $ -->
+<installation version="1.0">
+
+  <info>
+    <appname>@{project.name}</appname>
+    <appversion>@{project.version}</appversion>
+    <appsubpath>nuxeo-ep-@{project.version}</appsubpath>
+    <authors>
+      <author name="Nuxeo SAS" email="contact@nuxeo.com"/>
+    </authors>
+    <url>http://www.nuxeo.com/</url>
+    <javaversion>1.5</javaversion>
+    <summarylogfilepath>$INSTALL_PATH/InstallSummary.html</summarylogfilepath>
+  </info>
+
+  <variables>
+    <variable name="project.name" value="@{project.name}"/>
+    <variable name="project.version" value="@{project.version}"/>
+  </variables>
+
+  <guiprefs width="640" height="480" resizable="yes"/>
+
+  <!-- We include every langpack -->
+  <locale>
+    <langpack iso3="eng"/>
+    <langpack iso3="fra"/>
+    <langpack iso3="deu"/>
+    <langpack iso3="ita"/>
+    <langpack iso3="jpn"/>
+    <langpack iso3="spa"/>
+    <langpack iso3="dan"/>
+    <langpack iso3="cat"/>
+    <langpack iso3="ned"/>
+    <langpack iso3="fin"/>
+    <langpack iso3="swe"/>
+    <langpack iso3="por"/>
+    <langpack iso3="pol"/>
+    <langpack iso3="rus"/>
+    <langpack iso3="ukr"/>
+    <langpack iso3="hun"/>
+    <langpack iso3="svk"/>
+    <langpack iso3="rom"/>
+    <langpack iso3="mys"/>
+    <langpack iso3="nor"/>
+    <langpack iso3="chn"/>
+    <langpack iso3="scg"/>
+    <langpack iso3="cze"/>
+  </locale>
+
+  <!--
+      The resources section.
+      The ids must be these ones if you want to use the LicencePanel and/or the InfoPanel.
+  -->
+  <resources>
+    <res id="HTMLLicencePanel.licence" src="LICENSE.html" parse="yes"/>
+    <res id="HTMLInfoPanel.info" src="README.html" parse="yes"/>
+    <res id="Installer.image.0" src="images/nuxeo-banner.gif"/>
+    <res id="Installer.image.1" src="images/nuxeo-banner.gif"/>
+    <res id="Installer.image.2" src="images/nuxeo-banner.gif"/>
+    <res id="Installer.image.3" src="images/nuxeo-banner.gif"/>
+    <res id="Installer.image.4" src="images/nuxeo-banner.gif"/>
+    <res id="Installer.image.5" src="images/nuxeo-banner.gif"/>
+    <res id="Installer.image.6" src="images/nuxeo-banner.gif"/>
+    <res id="Installer.image.7" src="images/nuxeo-banner.gif"/>
+    <res id="Installer.image.8" src="images/nuxeo-banner.gif"/>
+    <res id="Installer.image.9" src="images/nuxeo-banner.gif"/>
+    <res id="installer.langsel.img" src="images/logo.gif"/>
+  </resources>
+
+  <!--
+      The panels section.
+      We indicate here which panels we want to use. The order will be respected.
+  -->
+  <panels>
+    <panel classname="HelloPanel"/>
+    <!-- Display the release readme panel -->
+    <panel classname="HTMLInfoPanel"/>
+    <!-- Display the LGPL panel -->
+    <panel classname="HTMLLicencePanel"/>
+    <!-- Display an installation location panel -->
+    <panel classname="TargetPanel"/>
+    <!-- Display a summary of the packs to install -->
+    <panel classname="SummaryPanel"/>
+    <!-- Do the install -->
+    <panel classname="InstallPanel"/>
+    <!-- The normal simple finish panel -->
+    <!-- <panel classname="SimpleFinishPanel"/> -->
+    <!-- An alternate finish panel that allows an auto-installer.xml to be saved -->
+    <panel classname="FinishPanel"/>
+  </panels>
+
+  <listeners>
+    <listener installer="SummaryLoggerInstallerListener"/>
+    <!--listener
+        compiler="org.jboss.install.CompileListener"
+        installer="org.jboss.install.PackageListener"
+        jar="@{jboss.thirdparty}/jboss/izpack-listeners/lib/jboss-listeners.jar"
+        /-->
+    <!-- listener installer="AntActionInstallerListener"
+         uninstaller="AntActionUninstallerListener"/-->
+  </listeners>
+
+  <!--
+      The packs section.
+      We specify here our packs.
+  -->
+  <packs>
+    <pack name="nuxeo-full" required="yes">
+      <description>This package contains everything</description>
+      <fileset dir="${staging.dir}/nuxeo-ep" targetdir="$INSTALL_PATH"/>
+      <singlefile src="README.html" target="$INSTALL_PATH/README_NUXEO.html"/>
+      <singlefile src="LICENSE.html" target="$INSTALL_PATH/LICENSE.html"/>
+      <parsable targetfile="$INSTALL_PATH/README_NUXEO.html" />
+      <executable targetfile="$INSTALL_PATH/bin/run.sh" stage="never"/>
+      <executable targetfile="$INSTALL_PATH/bin/jbossctl" stage="never"/>
+      <executable targetfile="$INSTALL_PATH/bin/nxshell" stage="never"/>
+      <executable targetfile="$INSTALL_PATH/nuxeo-shell/nxshell.sh" stage="never"/>
+      <executable targetfile="$INSTALL_PATH/nuxeo-shell/nxclient.sh" stage="never"/>
+    </pack>
+  </packs>
+
+</installation>
