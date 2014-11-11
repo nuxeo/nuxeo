@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.nuxeo.org/ecm/project/schemas/withlongfield">
+
+  <!-- these names (among others) are reserved for PostgreSQL -->
+  <xs:element name="xmin" type="xs:string" />
+  <xs:element name="oid" type="xs:string" />
+  <!-- this is what the above column is turned into, must not clash -->
+  <xs:element name="oid_" type="xs:string" />
+
+</xs:schema>
