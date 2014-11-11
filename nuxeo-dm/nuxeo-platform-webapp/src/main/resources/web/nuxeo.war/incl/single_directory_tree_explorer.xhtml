@@ -1,0 +1,45 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:rich="http://richfaces.org/rich"
+  class="menu">
+
+<a4j:region renderRegionOnly="true">
+  <h:form id="directoryTreeForm" rendered="#{directoryTreeManager.initialized}">
+    <h:panelGroup id="directoryTreeNav">
+      <rich:tree
+        adviseNodeOpened="#{directoryTreeManager.adviseNodeOpened}"
+        changeExpandListener="#{directoryTreeManager.changeExpandListener}"
+        icon="#{nodeState.isExpanded(rowKey)?'/icons/folder_open.gif':'/icons/folder.gif'}"
+        iconExpanded="/icons/toggle_minus.png"
+        iconCollapsed="/icons/toggle_plus.png"
+        rowKeyVar="rowKey"
+        id="directoryNavTree"
+        stateVar="nodeState">
+        <rich:recursiveTreeNodesAdaptor
+          roots="#{treeModel}"
+          nodes="#{node.children}"
+          id="directoryNavRecursiveAdaptor"
+          var="node">
+          <rich:treeNode
+            highlightedClass="treeNodeHighlightedClass"
+            id="directoryNavTreeNode"
+            selectedClass="treeNodeSelectedClass">
+            <div class="#{nxu:test(node.selected, 'dropInto', '')}">
+              <a4j:commandLink immediate="true"
+               id="directoryNavCommandLink"
+                action="#{node.selectNode}" styleClass="treeLink">
+                <h:outputText value="#{messages[node.description]}" />
+              </a4j:commandLink>
+            </div>
+          </rich:treeNode>
+        </rich:recursiveTreeNodesAdaptor>
+      </rich:tree>
+    </h:panelGroup>
+  </h:form>
+</a4j:region>
+
+</div>
