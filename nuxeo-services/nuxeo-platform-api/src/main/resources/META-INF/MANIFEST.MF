@@ -1,0 +1,27 @@
+Export-Package: org.nuxeo.ecm.platform.api,
+ org.nuxeo.ecm.platform.api.login,
+ org.nuxeo.ecm.platform.util;api=split;mandatory:=split
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Localization: plugin
+Bundle-Name: ECM Platform API
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.platform.api
+Import-Package: javax.annotation;version="1.0",
+ javax.naming,
+ javax.security.auth.callback,
+ javax.security.auth.login,
+ org.apache.commons.logging,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.repository,
+ org.nuxeo.ecm.directory;api=split,
+ org.nuxeo.runtime,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.model
