@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.platform.types">
+
+  <require>org.nuxeo.ecm.platform.types.TypeService</require>
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+
+    <type id="Root">
+      <label>Server Root</label>
+      <icon>/icons/folder.gif</icon>
+      <default-view>view_domains</default-view>
+      <subtypes>
+        <type>Domain</type>
+        <type>File</type>
+      </subtypes>
+      <!-- new layout config -->
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <!-- old layout config, to remove so that new layout is used -->
+      <layout>
+        <widget jsfcomponent="h:inputText" schemaname="dublincore"
+          fieldname="title" required="true" />
+        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
+          fieldname="description" />
+      </layout>
+    </type>
+
+    <type id="Domain">
+      <label>Domain</label>
+      <icon>/icons/domain.gif</icon>
+      <default-view>view_documents</default-view>
+      <create-view>create_domain</create-view>
+      <views>
+        <view id="user_dashboard" value="user_dashboard" />
+      </views>
+      <subtypes>
+        <type>WorkspaceRoot</type>
+        <type>SectionRoot</type>
+        <type>TemplateRoot</type>
+      </subtypes>
+      <!-- new layout config -->
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <!-- old layout config, to remove so that new layout is used -->
+      <layout>
+        <widget jsfcomponent="h:inputText" schemaname="dublincore"
+          fieldname="title" required="true" />
+        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
+          fieldname="description" />
+      </layout>
+    </type>
+
+    <type id="WorkspaceRoot">
+      <label>WorkspaceRoot</label>
+      <icon>/icons/workspace.gif</icon>
+      <icon-expanded>/icons/workspace_open.gif</icon-expanded>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>Workspace</type>
+      </subtypes>
+      <!-- new layout config -->
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <!-- old layout config, to remove so that new layout is used -->
+      <layout>
+        <widget jsfcomponent="h:inputText" schemaname="dublincore"
+          fieldname="title" required="true" />
+        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
+          fieldname="description" />
+      </layout>
+    </type>
+
+    <type id="TemplateRoot">
+      <label>TemplateRoot</label>
+      <icon>/icons/folder_template.gif</icon>
+      <icon-expanded>/icons/folder_template_open.gif</icon-expanded>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>Workspace</type>
+      </subtypes>
+      <!-- new layout config -->
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <!-- old layout config, to remove so that new layout is used -->
+      <layout>
+        <widget jsfcomponent="h:inputText" schemaname="dublincore"
+          fieldname="title" required="true" />
+        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
+          fieldname="description" />
+      </layout>
+    </type>
+
+    <type id="Workspace">
+      <label>Workspace</label>
+      <icon>/icons/workspace.gif</icon>
+      <icon-expanded>/icons/workspace_open.gif</icon-expanded>
+      <default-view>view_documents</default-view>
+      <create-view>create_workspace</create-view>
+      <subtypes>
+        <type>Workspace</type>
+        <type>Folder</type>
+        <type>File</type>
+        <type>Note</type>
+      </subtypes>
+      <!-- new layout config -->
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>file</layout>
+      </layouts>
+      <!-- old layout config, to remove so that new layout is used -->
+      <layout>
+        <widget jsfcomponent="h:inputText" schemaname="dublincore"
+          fieldname="title" required="true" />
+        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
+          fieldname="description" />
+        <widget jsfcomponent="t:inputFileUpload" schemaname="file"
+          fieldname="content" />
+      </layout>
+    </type>
+
+    <type id="SectionRoot">
+      <label>SectionRoot</label>
+      <icon>/icons/folder.gif</icon>
+      <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>Section</type>
+      </subtypes>
+      <!-- new layout config -->
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <!-- old layout config, to remove so that new layout is used -->
+      <layout>
+        <widget jsfcomponent="h:inputText" schemaname="dublincore"
+          fieldname="title" required="true" />
+        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
+          fieldname="description" />
+      </layout>
+    </type>
+
+    <type id="Section">
+      <label>Section</label>
+      <icon>/icons/folder.gif</icon>
+      <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>Section</type>
+      </subtypes>
+      <!-- new layout config -->
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <!-- old layout config, to remove so that new layout is used -->
+      <layout>
+        <widget jsfcomponent="h:inputText" schemaname="dublincore"
+          fieldname="title" required="true" />
+        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
+          fieldname="description" />
+      </layout>
+    </type>
+
+    <type id="Folder">
+      <label>Folder</label>
+      <icon>/icons/folder.gif</icon>
+      <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>Folder</type>
+        <type>File</type>
+        <type>Note</type>
+      </subtypes>
+      <!-- new layout config -->
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <!-- old layout config, to remove so that new layout is used -->
+      <layout>
+        <widget jsfcomponent="h:inputText" schemaname="dublincore"
+          fieldname="title" required="true" />
+        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
+          fieldname="description" />
+      </layout>
+    </type>
+
+    <type id="File">
+      <label>File</label>
+      <icon>/icons/file.gif</icon>
+      <!-- dummy default infos as an example -->
+      <default-view>view_documents</default-view>
+      <!-- new layout config -->
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>file</layout>
+      </layouts>
+      <!-- old layout config, to remove so that new layout is used -->
+      <layout>
+        <widget jsfcomponent="h:inputText" schemaname="dublincore"
+          fieldname="title" required="true" />
+        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
+          fieldname="description" />
+        <widget jsfcomponent="t:inputFileUpload" schemaname="file"
+          fieldname="content" />
+      </layout>
+    </type>
+
+    <type id="Note">
+      <label>Note</label>
+      <icon>/icons/note.gif</icon>
+      <default-view>view_documents</default-view>
+      <!-- new layout config -->
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>note</layout>
+      </layouts>
+      <!-- old layout config, to remove so that new layout is used -->
+      <layout>
+        <widget jsfcomponent="h:inputText" schemaname="dublincore"
+          fieldname="title" required="true" />
+        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
+          fieldname="description" />
+        <widget jsfcomponent="nxu:editor" schemaname="note" fieldname="note" />
+      </layout>
+    </type>
+
+    <type id="User">
+      <label>User</label>
+      <icon>/icons/user.gif</icon>
+      <default-view>view_user</default-view>
+      <!-- new layout config -->
+      <layouts mode="any">
+        <layout>user</layout>
+      </layouts>
+      <!-- old layout config, to remove so that layout "user" is used -->
+      <layout>
+        <widget schemaname="user" fieldname="username"
+          jsfcomponent="h:inputTextReadOnly" required="true" />
+        <widget schemaname="user" fieldname="firstName"
+          jsfcomponent="h:inputText" required="false" />
+        <widget schemaname="user" fieldname="lastName"
+          jsfcomponent="h:inputText" required="false" />
+        <widget schemaname="user" fieldname="company" jsfcomponent="h:inputText"
+          required="false" />
+        <widget schemaname="user" fieldname="email" jsfcomponent="h:inputText"
+          required="true" />
+      </layout>
+    </type>
+
+    <type id="UserCreate">
+      <label>UserCreate</label>
+      <icon>/icons/user.gif</icon>
+      <default-view>create_user</default-view>
+      <!-- old layout config, to remove so that layout "user" is used -->
+      <layout>
+        <widget schemaname="user" fieldname="username"
+          jsfcomponent="h:inputText" required="true" />
+        <widget schemaname="user" fieldname="firstName"
+          jsfcomponent="h:inputText" required="false" />
+        <widget schemaname="user" fieldname="lastName"
+          jsfcomponent="h:inputText" required="false" />
+        <widget schemaname="user" fieldname="company" jsfcomponent="h:inputText"
+          required="false" />
+        <widget schemaname="user" fieldname="email" jsfcomponent="h:inputText"
+          required="true" />
+        <widget schemaname="user" fieldname="password"
+          jsfcomponent="h:inputSecret" required="true" />
+      </layout>
+    </type>
+
+    <type id="AdvancedSearch">
+      <label>Advanced Search</label>
+      <icon>/icons/advanced_search.gif</icon>
+      <default-view>view_user</default-view>
+    </type>
+
+  </extension>
+</component>
