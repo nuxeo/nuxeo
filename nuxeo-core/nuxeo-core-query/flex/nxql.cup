@@ -1,0 +1,355 @@
+
+/* ----------------------Preliminary Declarations Section--------------------*/
+package org.nuxeo.ecm.core.query.sql.parser;
+
+/* Import the class java_cup.runtime.*  */
+
+import java_cup.runtime.*;
+import org.nuxeo.ecm.core.query.sql.model.*;
+import org.nuxeo.ecm.core.query.sql.*;
+import org.nuxeo.ecm.core.query.*;
+
+/* Parser code to change the way the parser reports errors (include
+   line and column number of the error). */
+parser code {:
+
+ public void report_error(String message, Object info) {
+     // do nothing
+ }
+
+ public void report_fatal_error(String message, Object info) throws QueryParseException {
+     if (info instanceof Symbol) parseFailed(message, (Symbol)info);
+     else parseFailed(message, null);
+ }
+
+ public void syntax_error(Symbol cur_token) {
+     // do nothing
+ }
+
+ public void unrecovered_syntax_error(Symbol cur_token) throws QueryParseException {
+     parseFailed("Syntax error", cur_token);
+ }
+
+ public void parseFailed(String message, Symbol token) throws QueryParseException {
+     done_parsing();
+     if (token != null) {
+         StringBuffer buf = new StringBuffer(message);
+         message = buf.append(": Invalid token <").append(token.value).append("> at offset ").append(token.right).toString();
+     }
+     throw new QueryParseException(message);
+ }
+
+:};
+
+
+
+/* ------------Declaration of Terminals and Non Terminals Section----------- */
+
+terminal SELECT, FROM, WHERE, AS,
+         IN, LIKE, ILIKE, BETWEEN, NOTBETWEEN, NOTIN, NOTLIKE, NOTILIKE,
+         ORDERBY, GROUPBY, HAVING, LIMIT, DISTINCT, ALL,
+         ASC, DESC, AND, OR, NOT, SUM, SUB, DIV, MUL, EQ, NOTEQ, LT, GT, LTEQ, GTEQ,
+         COMMA, LPARA, RPARA, LOCATION, STARTSWITH, TYPE,
+         DATE, TIMESTAMP, OFFSET, IS, NULL, ISNULL, ISNOTNULL;
+
+terminal String IDENTIFIER, FROM_IDENTIFIER, PATH_IDENTIFIER, STRING, INTEGER, DOUBLE;
+
+
+non terminal SQLQuery      query;
+non terminal Operand       operand;
+non terminal Operand       predicate_operand;
+non terminal Literal       literal;
+non terminal Reference     simple_reference;
+non terminal Reference     reference;
+non terminal Expression    expression;
+non terminal Predicate     predicate;
+non terminal Function      function;
+non terminal OperandList   function_args;
+non terminal SelectClause  select_clause;
+non terminal FromClause    from_clause;
+non terminal WhereClause   where_clause;
+non terminal OrderByClause order_by_clause;
+non terminal GroupByClause group_by_clause;
+non terminal HavingClause  having_clause;
+non terminal SelectList    select_list;
+non terminal FromList      from_list;
+non terminal LiteralList   literal_list;
+non terminal OrderByList   order_by_list;
+non terminal OrderByExpr   order_by_expr;
+non terminal String        from_key;
+
+
+/* -------------Precedence and Associatively of Terminals Section----------- */
+
+/*
+  The precedence defined here would look something like this where the
+  lower line always will have higher precedence than the line before it.
+*/
+precedence left OR;
+precedence left AND;
+precedence left NOT;
+precedence nonassoc GT, LT, EQ, NOTEQ, LTEQ, GTEQ, LIKE, ILIKE, AS, IN, BETWEEN, STARTSWITH;
+precedence left SUM, SUB;
+precedence left MUL, DIV;
+
+
+
+
+/* ----------------------------Grammar Section-------------------- */
+start with query;
+
+query ::= select_clause:select from_clause:from
+                {: RESULT = new SQLQuery(select, from); :}
+        | select_clause:select from_clause:from where_clause:where
+                {: RESULT = new SQLQuery(select, from, where); :}
+        | select_clause:select from_clause:from where_clause:where order_by_clause:order
+                {: RESULT = new SQLQuery(select, from, where, order); :}
+        | select_clause:select from_clause:from order_by_clause:order
+                {: RESULT = new SQLQuery(select, from, null, order); :}
+        | query:q LIMIT INTEGER:l
+                {: q.limit = Long.parseLong(l); RESULT = q; :}
+        | query:q LIMIT INTEGER:l OFFSET INTEGER:o
+                {: q.limit = Long.parseLong(l); q.offset = Long.parseLong(o); RESULT = q; :}
+        ;
+
+
+select_clause ::= SELECT select_list:list
+                    {: RESULT = new SelectClause(list); :}
+                | SELECT DISTINCT select_list:list
+                    {: RESULT = new SelectClause(list, true); :}
+                | SELECT ALL select_list:list
+                    {: RESULT = new SelectClause(list, false); :}
+                ;
+
+select_list ::= select_list:list COMMA operand:o
+                  {:
+                  list.add(o.toString(), o);
+                  RESULT = list;
+                  :}
+              | select_list:list COMMA operand:o AS IDENTIFIER:alias
+                  {:
+                  list.add(alias, o);
+                  RESULT = list;
+                  :}
+              | operand:o
+                  {:
+                  RESULT = new SelectList();
+                  RESULT.add(o.toString(), o);
+                  :}
+              | operand:o AS IDENTIFIER:alias
+                  {:
+                  RESULT = new SelectList();
+                  RESULT.add(alias, o);
+                  :}
+              | MUL
+                  {: RESULT = new SelectList(); :}
+              ;
+
+from_clause ::= FROM from_list:list
+                  {: RESULT = new FromClause(list); :}
+              | FROM TYPE from_list:list
+                  {: RESULT = new FromClause(FromClause.DOCTYPE, list); :}
+              | FROM LOCATION from_list:list
+                  {: RESULT = new FromClause(FromClause.LOCATION, list); :}
+              ;
+
+from_key ::= IDENTIFIER:id
+               {: RESULT = id; :}
+           | FROM_IDENTIFIER:id
+               {: RESULT = id; :}
+           ;
+
+from_list ::= from_list:list COMMA from_key:name
+                {:
+                list.add(name, name);
+                RESULT = list;
+                :}
+            | from_list:list COMMA from_key:name AS IDENTIFIER:alias
+                {:
+                list.add(alias, name);
+                RESULT = list;
+                :}
+            | from_key:name
+                {:
+                RESULT = new FromList();
+                RESULT.add(name, name);
+                :}
+            | from_key:name AS IDENTIFIER:alias
+                {:
+                RESULT = new FromList();
+                RESULT.add(alias, name);
+                :}
+            ;
+
+where_clause ::= WHERE predicate:e
+                   {: RESULT = new WhereClause(e); :}
+               ;
+
+order_by_clause ::= ORDERBY order_by_list:l
+                      {: RESULT = new OrderByClause(l); :}
+                  ;
+
+order_by_list ::= order_by_expr:e
+                     {: RESULT = new OrderByList(e); :}
+                | order_by_list:l COMMA order_by_expr:e
+                     {: l.add(e); RESULT = l; :}
+                ;
+
+order_by_expr ::= reference:ref
+                     {: RESULT = new OrderByExpr(ref, false); :}
+                | reference:ref ASC
+                     {: RESULT = new OrderByExpr(ref, false); :}
+                | reference:ref DESC
+                     {: RESULT = new OrderByExpr(ref, true); :}
+                ;
+
+
+predicate ::= predicate:l AND predicate:r
+                {: RESULT = new Predicate(l, Operator.AND, r); :}
+            | predicate:l OR predicate:r
+                {: RESULT = new Predicate(l, Operator.OR, r); :}
+            | predicate:l EQ predicate:r
+                {: RESULT = new Predicate(l, Operator.EQ, r); :}
+            | predicate:l NOTEQ predicate:r
+                {: RESULT = new Predicate(l, Operator.NOTEQ, r); :}
+
+            | predicate_operand:l AND predicate_operand:r
+                {: RESULT = new Predicate(l, Operator.AND, r); :}
+            | predicate_operand:l OR predicate_operand:r
+                {: RESULT = new Predicate(l, Operator.OR, r); :}
+            | predicate_operand:l EQ predicate_operand:r
+                {: RESULT = new Predicate(l, Operator.EQ, r); :}
+            | predicate_operand:l NOTEQ predicate_operand:r
+                {: RESULT = new Predicate(l, Operator.NOTEQ, r); :}
+            | predicate_operand:l LT predicate_operand:r
+                {: RESULT = new Predicate(l, Operator.LT, r); :}
+            | predicate_operand:l GT predicate_operand:r
+                {: RESULT = new Predicate(l, Operator.GT, r); :}
+            | predicate_operand:l LTEQ predicate_operand:r
+                {: RESULT = new Predicate(l, Operator.LTEQ, r); :}
+            | predicate_operand:l GTEQ predicate_operand:r
+                {: RESULT = new Predicate(l, Operator.GTEQ, r); :}
+
+            | LPARA predicate:p RPARA
+                {: RESULT = p; :}
+            | NOT predicate:p
+                {: RESULT = new Predicate(p, Operator.NOT, null); :}
+
+            | reference:ref IN LPARA literal_list:list RPARA
+                {: RESULT = new Predicate(ref, Operator.IN, list); :}
+            | reference:ref NOT IN LPARA literal_list:list RPARA
+                {: RESULT = new Predicate(ref, Operator.NOTIN, list); :}
+            | reference:ref BETWEEN literal:min AND literal:max
+                {:
+                LiteralList range = new LiteralList();
+                range.add(min); range.add(max);
+                RESULT = new Predicate(ref, Operator.BETWEEN, range);
+                :}
+            | reference:ref NOT BETWEEN literal:min AND literal:max
+                {:
+                LiteralList range = new LiteralList();
+                range.add(min); range.add(max);
+                RESULT = new Predicate(ref, Operator.NOTBETWEEN, range);
+                :}
+            | reference:ref LIKE STRING:s
+                {: RESULT = new Predicate(ref, Operator.LIKE, new StringLiteral(s)); :}
+            | reference:ref ILIKE STRING:s
+                {: RESULT = new Predicate(ref, Operator.ILIKE, new StringLiteral(s)); :}
+            | reference:ref NOT LIKE STRING:s
+                {: RESULT = new Predicate(ref, Operator.NOTLIKE, new StringLiteral(s)); :}
+            | reference:ref NOT ILIKE STRING:s
+                {: RESULT = new Predicate(ref, Operator.NOTILIKE, new StringLiteral(s)); :}
+            | reference:ref IS NULL
+                {: RESULT = new Predicate(ref, Operator.ISNULL, null); :}
+            | reference:ref IS NOT NULL
+                {: RESULT = new Predicate(ref, Operator.ISNOTNULL, null); :}
+            | reference:ref STARTSWITH STRING:s
+                {: RESULT = new Predicate(ref, Operator.STARTSWITH, new StringLiteral(s)); :}
+            ;
+
+predicate_operand ::= operand:o
+                        {: RESULT = o; :}
+                    | expression:e
+                        {: RESULT = e; :}
+                    ;
+
+expression ::= expression:l SUM operand:r
+                 {: RESULT = new Expression(l, Operator.SUM, r); :}
+             | expression:l SUB operand:r
+                 {: RESULT = new Expression(l, Operator.SUB, r); :}
+             | expression:l MUL operand:r
+                 {: RESULT = new Expression(l, Operator.MUL, r); :}
+             | expression:l DIV operand:r
+                 {: RESULT = new Expression(l, Operator.DIV, r); :}
+
+             | operand:l SUM operand:r
+                 {: RESULT = new Expression(l, Operator.SUM, r); :}
+             | operand:l SUB operand:r
+                 {: RESULT = new Expression(l, Operator.SUB, r); :}
+             | operand:l MUL operand:r
+                 {: RESULT = new Expression(l, Operator.MUL, r); :}
+             | operand:l DIV operand:r
+                 {: RESULT = new Expression(l, Operator.DIV, r); :}
+
+             | LPARA expression:e RPARA
+                 {: RESULT = e; :}
+             ;
+
+
+reference ::= simple_reference:ref
+                {: RESULT = ref; :}
+            /* cast */
+            | DATE LPARA simple_reference:ref RPARA
+                {: RESULT = new Reference(ref, "DATE"); :}
+            ;
+
+simple_reference ::= IDENTIFIER:v
+                       {: RESULT = new Reference(v); :}
+                   | PATH_IDENTIFIER:v
+                       {: RESULT = new Reference(v); :}
+                   ;
+
+operand ::= literal:v
+              {: RESULT = v; :}
+          | reference:r
+              {: RESULT = r; :}
+          | function:f
+              {: RESULT = f; :}
+          ;
+
+literal ::= STRING:v
+              {: RESULT = new StringLiteral(v); :}
+          | INTEGER:v
+              {: RESULT = new IntegerLiteral(v); :}
+          | SUB INTEGER:v
+              {: RESULT = new IntegerLiteral('-'+v); :}
+          | DOUBLE:v
+              {: RESULT = new DoubleLiteral(v); :}
+          | SUB DOUBLE:v
+              {: RESULT = new DoubleLiteral('-'+v); :}
+          | DATE STRING:v
+              {: RESULT = new DateLiteral(v, true); :}
+          | TIMESTAMP STRING:v
+              {: RESULT = new DateLiteral(v, false); :}
+          ;
+
+
+literal_list ::= literal:v
+                   {: RESULT = new LiteralList(); RESULT.add(v); :}
+               | literal_list:l COMMA literal:v
+                   {: l.add(v); RESULT = l; :}
+               ;
+
+
+function ::= IDENTIFIER:name LPARA RPARA
+               {: RESULT = new Function(name);:}
+           | IDENTIFIER:name LPARA function_args:args RPARA
+               {: RESULT = new Function(name, args); :}
+           ;
+
+function_args ::= predicate_operand:v
+                    {: RESULT = new OperandList(); RESULT.add(v); :}
+                | function_args:l COMMA predicate_operand:v
+                    {: l.add(v); RESULT = l; :}
+                ;
+
