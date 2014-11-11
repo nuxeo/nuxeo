@@ -1,0 +1,283 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.theme.html">
+  <documentation>
+    Contributions to the HTML implementation of NXThemes.
+    Web-related features and resources are registered here.
+    @author Jean-Marc Orliaguet (jmo@chalmers.se)
+  </documentation>
+
+  <require>org.nuxeo.theme.core</require>
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="template-engines">
+
+    <template-engine name="html" title="Plain HTML"
+      template-view="org.nuxeo.theme.html.HTMLView" />
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="resources">
+
+    <!-- Prototype 1.6.1 -->
+    <!-- when changing prototype version, please make
+      sure fix for NXP-2586, NXP-3782 and for NXP-3600 are applied -->
+    <resource name="prototype.js">
+      <path>nxthemes/html/scripts/prototype.js</path>
+    </resource>
+
+    <!-- JQuery 1.2.3 -->
+    <resource name="jquery.js">
+      <path>nxthemes/html/scripts/jquery.js</path>
+    </resource>
+
+
+    <!-- Keyboard shortcuts http://www.openjs.com/scripts/events/keyboard_shortcuts/shortcut.js -->
+    <resource name="shortcut.js">
+      <path>nxthemes/html/scripts/shortcut.js</path>
+    </resource>
+
+    <!-- ObjTree 0.24 (http://www.kawa.net/works/js/xml/objtree-e.html)  -->
+    <resource name="objtree.js">
+      <path>nxthemes/html/scripts/objtree.js</path>
+    </resource>
+
+    <!-- Scriptaculous v1.8.1 -->
+    <resource name="builder.js">
+      <path>nxthemes/html/scripts/scriptaculous/builder.js</path>
+      <require>prototype.js</require>
+    </resource>
+
+    <resource name="effects.js">
+      <path>nxthemes/html/scripts/scriptaculous/effects.js</path>
+      <require>prototype.js</require>
+    </resource>
+
+    <resource name="controls.js">
+      <path>nxthemes/html/scripts/scriptaculous/controls.js</path>
+      <require>effects.js</require>
+      <require>prototype.js</require>
+    </resource>
+
+    <resource name="dragdrop.js">
+      <path>nxthemes/html/scripts/scriptaculous/dragdrop.js</path>
+      <require>effects.js</require>
+      <require>prototype.js</require>
+    </resource>
+
+    <resource name="slider.js">
+      <path>nxthemes/html/scripts/scriptaculous/slider.js</path>
+      <require>prototype.js</require>
+    </resource>
+
+    <resource name="sound.js">
+      <path>nxthemes/html/scripts/scriptaculous/sound.js</path>
+      <require>prototype.js</require>
+    </resource>
+
+    <!-- Seam 1.0.1.GA -->
+    <resource name="seam-remote.js">
+      <path>nxthemes/html/scripts/seam-remote.js</path>
+    </resource>
+
+    <resource name="nxthemes.css">
+      <path>nxthemes/html/styles/nxthemes.css</path>
+    </resource>
+
+    <resource name="nxthemes-widgets.css">
+      <path>nxthemes/html/styles/nxthemes-widgets.css</path>
+    </resource>
+
+    <resource name="nxthemes-jsf.css">
+      <path>nxthemes/html/styles/nxthemes-jsf.css</path>
+    </resource>
+
+    <!-- WYSIWYG JavaScript framework 0.1 http://github.com/37signals/wysihat/tree/master -->
+    <resource name="wysihat.js">
+      <path>nxthemes/html/scripts/wysihat.js</path>
+      <require>prototype.js</require>
+    </resource>
+
+    <!--  nxthemes lib -->
+    <resource name="nxthemes.js">
+      <path>nxthemes/html/scripts/nxthemes/nxthemes.js</path>
+      <require>prototype.js</require>
+      <require>nxthemes.css</require>
+    </resource>
+
+    <resource name="nxthemes-widgets.js">
+      <path>
+        nxthemes/html/scripts/nxthemes/nxthemes-widgets.js
+      </path>
+      <require>nxthemes.js</require>
+      <require>nxthemes-widgets.css</require>
+    </resource>
+
+    <resource name="nxthemes-effects.js">
+      <path>
+        nxthemes/html/scripts/nxthemes/nxthemes-effects.js
+      </path>
+      <require>nxthemes.js</require>
+    </resource>
+
+    <resource name="nxthemes-controllers.js">
+      <path>
+        nxthemes/html/scripts/nxthemes/nxthemes-controllers.js
+      </path>
+      <require>nxthemes-effects.js</require>
+    </resource>
+
+    <resource name="nxthemes-storages.js">
+      <path>
+        nxthemes/html/scripts/nxthemes/nxthemes-storages.js
+      </path>
+      <require>nxthemes.js</require>
+    </resource>
+
+ <!--  AutoSuggest lib -->
+    <resource name="autosuggest.css">
+      <path>nxthemes/html/styles/autosuggest.css</path>
+    </resource>
+    <resource name="bsn.AutoSuggest_2.1.3.js">
+      <path>nxthemes/html/scripts/bsn.AutoSuggest_2.1.3.js</path>
+    </resource>
+
+  </extension>
+
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="standalone-filters">
+
+    <standalone-filter name="collect xmlns">
+      <class>
+        org.nuxeo.theme.html.filters.standalone.XmlNamespaces
+      </class>
+    </standalone-filter>
+
+    <standalone-filter name="control fragment visibility">
+      <class>
+        org.nuxeo.theme.html.filters.standalone.FragmentVisibility
+      </class>
+    </standalone-filter>
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="engines">
+
+    <engine name="default">
+
+      <renderer element="theme">
+        <filter>add widget</filter>
+        <filter>collect xmlns</filter>
+      </renderer>
+
+      <renderer element="page">
+        <filter>add widget</filter>
+        <filter>set layout</filter>
+        <filter>set style</filter>
+      </renderer>
+
+      <renderer element="section">
+        <filter>add widget</filter>
+        <filter>set element name</filter>
+        <filter>set layout</filter>
+        <filter>set style</filter>
+      </renderer>
+
+      <renderer element="cell">
+        <filter>add widget</filter>
+        <filter>set element name</filter>
+        <filter>set layout</filter>
+        <filter>set style</filter>
+      </renderer>
+
+      <renderer element="fragment">
+        <filter>control fragment visibility</filter>
+        <filter>add widget</filter>
+        <filter>set element name</filter>
+        <filter>set style</filter>
+        <filter>write fragment tag</filter>
+      </renderer>
+
+    </engine>
+
+  </extension>
+
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+
+    <view template-engine="html">
+      <format-type>layout</format-type>
+      <class>
+        org.nuxeo.theme.html.filters.layout.DefaultLayoutView
+      </class>
+    </view>
+
+    <view template-engine="html">
+      <format-type>style</format-type>
+      <class>
+        org.nuxeo.theme.html.filters.style.DefaultStyleView
+      </class>
+    </view>
+
+    <view name="theme view" template-engine="html">
+      <element-type>theme</element-type>
+      <format-type>widget</format-type>
+      <template>nxthemes/html/widgets/theme-view.xml</template>
+      <resource>nxthemes.css</resource>
+      <resource>autosuggest.css</resource>
+    </view>
+
+    <view name="page frame" template-engine="html">
+      <element-type>page</element-type>
+      <format-type>widget</format-type>
+      <template>nxthemes/html/widgets/page-frame.xml</template>
+    </view>
+
+    <view name="section frame" template-engine="html">
+      <element-type>section</element-type>
+      <format-type>widget</format-type>
+      <template>nxthemes/html/widgets/section-frame.xml</template>
+    </view>
+
+    <view name="cell frame" template-engine="html">
+      <element-type>cell</element-type>
+      <format-type>widget</format-type>
+      <template>nxthemes/html/widgets/cell-frame.xml</template>
+    </view>
+
+    <view name="vertical menu" template-engine="html">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <model-type>menu item</model-type>
+      <template>nxthemes/html/widgets/vertical-menu.xml</template>
+    </view>
+
+    <view name="horizontal tabs" template-engine="html">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <model-type>menu item</model-type>
+      <template>
+        nxthemes/html/widgets/horizontal-tabs.xml
+      </template>
+    </view>
+
+    <view name="plain text" template-engine="html">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <model-type>text</model-type>
+      <template>nxthemes/html/widgets/plain-text.xml</template>
+    </view>
+
+    <view name="plain html" template-engine="html">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <model-type>html</model-type>
+      <template>nxthemes/html/widgets/plain-html.xml</template>
+    </view>
+
+  </extension>
+
+</component>
+
