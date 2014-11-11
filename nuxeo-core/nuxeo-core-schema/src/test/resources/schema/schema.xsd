@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<xs:schema
+	targetNamespace="http://www.nuxeo.org/ecm/schemas/MySchema"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:nxs="http://www.nuxeo.org/ecm/schemas/MySchema"
+	>
+<!--  xmlns="http://www.nuxeo.org/ecm/schema/MySchema" -->
+
+	<xs:include schemaLocation="schema-lib.xsd"/>
+
+	<xs:simpleType name="myString">
+	  <xs:restriction base="xs:string">
+	    <xs:pattern value="[a-z]"/>
+	  </xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="personInfo">
+	  <xs:sequence>
+	    <xs:element name="firstname" type="xs:string"/>
+	    <xs:element name="lastname" type="xs:string"/>
+	  </xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="newsml">
+	  <xs:sequence>
+	    <xs:element name="slug" type="xs:string"/>
+	    <xs:element name="headline" type="xs:string"/>
+	  </xs:sequence>
+	</xs:complexType>
+
+
+	<xs:element name="title" type="nxs:myString"/>
+	<xs:element name="description" type="xs:string"/>
+	<xs:element name="numericId" type="xs:long"/>
+	<xs:element name="person" type="nxs:personInfo"/>
+	<xs:element name="data" type="nxs:newsml"/>
+
+</xs:schema>
+
+
