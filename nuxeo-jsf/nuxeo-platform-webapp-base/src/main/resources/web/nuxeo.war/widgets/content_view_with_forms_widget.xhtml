@@ -1,0 +1,47 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  id="#{widget.id}"
+  class="#{widgetProperty_styleClass}">
+
+  <nxu:set var="contentViewId" value="#{widget.id}">
+  <nxu:set var="contentViewName" value="#{widgetProperty_contentViewName}">
+
+    <ui:decorate template="/incl/content_view.xhtml">
+      <ui:param name="foldable"
+                value="#{widgetProperty_foldable}" />
+      <ui:param name="foldableBoxStyleClass"
+                value="#{widgetProperty_foldableBoxStyleClass}" />
+      <ui:param name="removeForm"
+                value="#{widgetProperty_removeForm}" />
+      <ui:param name="useAjaxForm"
+                value="#{widgetProperty_useAjaxForm}" />
+      <ui:param name="useAjaxPagination"
+                value="#{widgetProperty_useAjaxPagination}" />
+      <ui:param name="contentViewTitle"
+                value="#{widgetProperty_contentViewTitle}" />
+      <ui:param name="translateContentViewTitle"
+                value="#{widget.translated}" />
+      <ui:param name="contentViewIconPath"
+                value="#{widgetProperty_contentViewIconPath}" />
+      <ui:param name="showTitle"
+                value="#{widgetProperty_showTitle}" />
+      <ui:param name="showPageSizeSelector"
+                value="#{widgetProperty_showPageSizeSelector}" />
+      <ui:param name="showRefreshCommand"
+                value="#{widgetProperty_showRefreshCommand}" />
+      <ui:param name="showFilterForm"
+                value="#{widgetProperty_showFilterForm}" />
+      <ui:param name="defaultPageSize"
+                value="#{widgetProperty_defaultPageSize}" />
+      <ui:param name="showCSVExport"
+                value="#{widgetProperty_showCSVExport}" />
+      <ui:param name="showPDFExport"
+                value="#{widgetProperty_showPDFExport}" />
+      <ui:param name="hideTopPaginationControls"
+                value="#{widgetProperty_hideTopPaginationControls}" />
+    </ui:decorate>
+
+  </nxu:set>
+  </nxu:set>
+
+</div>
