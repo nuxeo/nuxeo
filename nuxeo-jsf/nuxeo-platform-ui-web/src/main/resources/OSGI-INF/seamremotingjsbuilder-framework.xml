@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.SeamRemotingJSBuilderComponent">
+
+  <implementation
+      class="org.nuxeo.ecm.platform.ui.web.seamremoting.SeamRemotingJSBuilderComponent"/>
+
+  <documentation>
+      Manages Seam components that have a JS remoting interface that must be automatically included in default Nuxeo Pages.
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide
+        interface="org.nuxeo.ecm.platform.ui.web.seamremoting.SeamRemotingJSBuilderService"/>
+  </service>
+
+  <extension-point name="remotableSeamBeans">
+    <documentation>
+      @author Thierry Delprat (td@nuxeo.com)
+      Registers JS Remotable Seam Beans by their names
+    </documentation>
+    <object
+        class="org.nuxeo.ecm.platform.ui.web.seamremoting.RemotableSeamBeansDescriptor"/>
+  </extension-point>
+
+</component>
