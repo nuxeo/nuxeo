@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://nuxeo.com/schemas/jbpm/list"
+  xmlns:nxtl="http://nuxeo.com/schemas/jbpm/list"
+  xmlns:nxs="http://nuxeo.com/schemas/base/">
+
+  <xs:include schemaLocation="base.xsd" />
+
+  <xs:complexType name="type_task">
+    <xs:sequence>
+      <xs:element name="taskUsers" type="nxtl:stringList" />
+      <xs:element name="directive" type="xs:string" />
+      <xs:element name="comment" type="xs:string" />
+      <xs:element name="dueDate" type="xs:date" />
+      <xs:element name="right" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="type_tasks">
+    <xs:sequence>
+      <xs:element name="recipient" type="nxtl:type_task"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="tasks" type="nxtl:type_tasks" />
+
+</xs:schema>
+
