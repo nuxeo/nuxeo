@@ -1,0 +1,25 @@
+version: 1
+
+dn: ou=dyngroups,ou=editable,ou=groups,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: dyngroups
+
+dn: cn=dyngroup1,ou=dyngroups,ou=editable,ou=groups,dc=example,dc=com
+memberURL: ldap:///ou=people,dc=example,dc=com??sub?(&(cn=User*)(!(employeeType=Slave)))
+memberURL: ldap:///ou=editable,ou=groups,dc=example,dc=com??sub?(cn=sub*)
+objectClass: top
+objectClass: groupOfURLs
+cn: dyngroup1
+
+dn: cn=dyngroup2,ou=dyngroups,ou=editable,ou=groups,dc=example,dc=com
+memberURL: ldap:///ou=people,dc=example,dc=com??one?(&(cn=User*)(!(employeeType=Slave)))
+objectClass: top
+objectClass: groupOfURLs
+cn: dyngroup2
+
+dn: cn=dyngroup3,ou=dyngroups,ou=editable,ou=groups,dc=example,dc=com
+memberURL: ldap:///ou=people,dc=example,dc=com??one?(&(cn=User*)(preferredLanguage=*dollars$*))
+objectClass: top
+objectClass: groupOfURLs
+cn: dyngroup3
