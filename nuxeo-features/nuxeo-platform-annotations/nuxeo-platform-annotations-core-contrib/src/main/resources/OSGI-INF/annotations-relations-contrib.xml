@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.annotations.graph">
+  <require>org.nuxeo.ecm.platform.relations.jena</require>
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="graphs">
+    <graph name="annotations" type="jena">
+      <option name="backend">sql</option>
+      <option name="databaseType">
+        ${org.nuxeo.ecm.sql.jena.databaseType}
+      </option>
+      <option name="datasource">java:/nxrelations-default-jena</option>
+      <namespaces>
+        <namespace name="rdf">
+          http://www.w3.org/1999/02/22-rdf-syntax-ns#
+        </namespace>
+        <namespace name="dcterms">http://purl.org/dc/terms/1.1/</namespace>
+        <namespace name="nuxeo">http://www.nuxeo.org/document/uid/</namespace>
+      </namespaces>
+    </graph>
+  </extension>
+</component>
