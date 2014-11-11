@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.event.orphanVersionRemoval.listener"
+  version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <documentation>
+      Listener used by DefaultVersionRemovalPolicy to remove the Orphan versions from repository in an async manner.
+    </documentation>
+    <listener name="orphanVersionRemoverListener" async="true" postCommit="true"
+      class="org.nuxeo.ecm.core.versioning.OrphanVersionRemoverListener">
+      <event>orphan_versions_to_remove</event>
+    </listener>
+
+  </extension>
+
+</component>
