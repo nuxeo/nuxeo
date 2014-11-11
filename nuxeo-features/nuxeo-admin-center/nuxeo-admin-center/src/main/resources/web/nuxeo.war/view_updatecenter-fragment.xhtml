@@ -1,0 +1,19 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <c:choose>
+    <c:when test="#{adminViews.updateCenterDisabled}">
+      <div class="processMessage completeWarning">
+       <h:outputText value="#{messages['label.updatecenter.disabled']}" />
+      </div>
+    </c:when>
+    <c:otherwise>
+      <ui:include src="/view_admin-fragment.xhtml" />
+    </c:otherwise>
+  </c:choose>
+
+</ui:composition>

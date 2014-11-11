@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Platform Audit Logs IO Fragment
+Bundle-SymbolicName: org.nuxeo.ecm.audit.io;singleton:=true
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.io,
+ org.nuxeo.ecm.platform.io.api,
+ org.nuxeo.ecm.platform.audit.api,
+ org.nuxeo.ecm.platform.audit
+Nuxeo-Component: OSGI-INF/io-audit-contrib.xml

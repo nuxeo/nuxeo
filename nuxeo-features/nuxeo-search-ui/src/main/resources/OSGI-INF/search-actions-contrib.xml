@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.search.ui.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <!-- Main tab actions -->
+
+    <action id="search" link="search" label="label.main.tab.search" order="50"
+      type="template">
+      <category>MAIN_TABS</category>
+      <properties>
+        <property name="template">/search/incl/action/search_main_tab_action_template.xhtml</property>
+      </properties>
+    </action>
+
+    <!-- End of Main tab actions -->
+
+    <!-- Search actions -->
+
+    <action id="saveSearch" type="fancybox" label="command.search.save"
+      icon="" order="0">
+      <category>SEARCH_RESULTS_ACTIONS</category>
+      <properties>
+        <property name="include">/search/incl/save_search_box.xhtml</property>
+        <property name="autoDimensions">true</property>
+        <property name="modal">true</property>
+        <property name="scrolling">auto</property>
+        <property name="ajaxSupport">true</property>
+      </properties>
+      <filter-id>notNxqlSearchSelected</filter-id>
+    </action>
+
+    <action id="submitSearch" link="#{searchUIActions.refreshAndRewind()}"
+      label="label.search.filter" order="10">
+      <category>SEARCH_FILTER_ACTIONS</category>
+      <properties>
+        <property name="ajaxSupport">true</property>
+        <property name="ajaxReRender">
+          searchPanelLeft searchPanelRight
+        </property>
+        <property name="styleClass">primary</property>
+      </properties>
+    </action>
+
+    <action id="clearSearch" link="#{searchUIActions.clearSearch()}"
+      label="label.search.clear" order="20" immediate="true">
+      <category>SEARCH_FILTER_ACTIONS</category>
+      <properties>
+        <property name="ajaxSupport">true</property>
+        <property name="ajaxReRender">
+          searchPanelLeft searchPanelRight
+        </property>
+      </properties>
+    </action>
+
+    <!-- End of Search actions -->
+
+    <!-- Home Searches tab actions -->
+
+    <action id="AllSavedSearches" link="/search/incl/all_saved_searches.xhtml"
+      type="home_rest_document_link" label="label.home.all.searches" order="-10">
+      <category>SavedSearches_sub_tab</category>
+      <filter-id>not_anonymous</filter-id>
+    </action>
+
+    <action id="savedSearchesCurrentSelectionDelete"
+      link="#{deleteActions.purgeSelection('SAVED_SEARCHES_CURRENT_SELECTION')}"
+      label="command.trashDocs" icon="" help="command.deleteDocs.help"
+      confirm="if( !confirmDeleteDocumentsForever() ) return false;">
+      <category>SAVED_SEARCHES_CURRENT_SELECTION_LIST</category>
+      <filter id="canDeleteSavedSearches">
+        <rule grant="true">
+          <condition>#{deleteActions.getCanDelete('SAVED_SEARCHES_CURRENT_SELECTION')}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="TAB_MY_SUBSCRIPTIONS">
+      <filter-id>denyForDefaultSearch</filter-id>
+    </action>
+
+    <action id="TAB_MANAGE_SUBSCRIPTIONS">
+      <filter-id>denyForDefaultSearch</filter-id>
+    </action>
+
+    <action id="TAB_RELATIONS">
+      <filter-id>denyForDefaultSearch</filter-id>
+    </action>
+
+    <!-- End of Home Searches tab actions -->
+
+    <!-- Search content views -->
+
+    <action id="defaultSearchContentView" order="0">
+      <category>SEARCH_CONTENT_VIEWS</category>
+      <properties>
+        <property name="contentViewName">default_search</property>
+      </properties>
+    </action>
+
+    <action id="simpleSearchContentView" order="100">
+      <category>SEARCH_CONTENT_VIEWS</category>
+      <properties>
+        <property name="contentViewName">simple_search</property>
+      </properties>
+    </action>
+
+    <action id="nxqlSearchContentView" order="200">
+      <category>SEARCH_CONTENT_VIEWS</category>
+      <properties>
+        <property name="contentViewName">nxql_search</property>
+      </properties>
+    </action>
+
+    <!-- End of Search content views -->
+
+    <!-- header actions -->
+
+    <action id="simple_search_box" order="1" type="template">
+      <category>SEARCH_ACTIONS</category>
+      <filter-id>isSearchEnabled</filter-id>
+      <properties>
+        <property name="template">/search/incl/search_box.xhtml</property>
+      </properties>
+    </action>
+
+    <!-- End of header actions -->
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="rights" append="true">
+      <rule grant="true">
+        <facet>DefaultSearch</facet>
+      </rule>
+    </filter>
+
+    <filter id="denyForDefaultSearch">
+      <rule grant="false">
+        <facet>DefaultSearch</facet>
+      </rule>
+    </filter>
+
+    <filter id="isSearchEnabled">
+      <rule grant="true">
+        <condition>#{userServicesContext.searchEnabled}</condition>
+      </rule>
+    </filter>
+
+    <filter id="nxqlSearchSelected">
+      <rule grant="true">
+        <condition>#{searchUIActions.isNxqlSearchSelected()}</condition>
+      </rule>
+    </filter>
+
+    <filter id="notNxqlSearchSelected">
+      <rule grant="false">
+        <condition>#{searchUIActions.isNxqlSearchSelected()}</condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

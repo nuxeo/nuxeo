@@ -1,0 +1,138 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <h3>
+    <c:if test="#{selection}">
+      <nxu:set var="nbItems"
+        value="#{collectionActions.getMultipleDocumentToBeAdded().size()}">
+        <h:outputText
+          value="#{nxu:translate(nbItems gt 1 ? 'label.addSelectionsToCollection.title' : 'label.addSelectionToCollection.title', nbItems)}" />
+      </nxu:set>
+    </c:if>
+    <c:if test="#{!selection}">
+      <h:outputText
+        value="#{nxu:translate('label.addDocToCollection.title', currentDocument.title)}" />
+    </c:if>
+  </h3>
+
+  <h:form id="#{fancyboxFormId}">
+
+    <div class="content positionR">
+
+      <table class="dataInput fullWidth">
+        <tbody>
+          <tr>
+            <td class="labelColumn required">
+              #{messages['label.addToCollection.collection']}</td>
+            <td class="fieldColumn"><nxl:widgetType
+                name="singleDocumentSuggestion" mode="edit"
+                value="#{collectionActions}" restoreSeamCtx="false"
+                field="selectedCollectionUid" required="true"
+                width="100%" translated="true" minChars="0"
+                placeholder="label.addToCollection.collection.placeHolder"
+                ajaxReRender="#{fancyboxFormId}_collectionDescriptionsPanel,#{fancyboxFormId}_buttons"
+                operationId="Collection.Suggestion"
+                selectionFormatter="formatSelectedCollection"
+                suggestionFormatter="formatSuggestedCollection"
+                documentSchemas="dublincore,common">
+              </nxl:widgetType></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <a4j:outputPanel
+        id="#{fancyboxFormId}_collectionDescriptionsPanel">
+        <c:if
+          test="#{collectionActions.getSelectedCollectionUid() != null}">
+          <table class="dataInput fullWidth">
+            <tbody>
+              <tr>
+                <td class="labelColumn">
+                  #{messages['label.addToCollection.collection.description']}</td>
+                <td class="fieldColumn"><c:choose>
+                    <c:when
+                      test="#{collectionActions.isCreateNewCollection()}">
+                      <h:inputTextarea class="dataInputText"
+                        id="description"
+                        value="#{collectionActions.newDescription}"
+                        rows="3" cols="40" />
+                    </c:when>
+                    <c:otherwise>
+                      <h:outputText id="scd"
+                        value="#{collectionActions.getSelectedCollectionDescription()}" />
+                    </c:otherwise>
+                  </c:choose></td>
+              </tr>
+            </tbody>
+          </table>
+        </c:if>
+      </a4j:outputPanel>
+
+      <a4j:outputPanel id="tbas">
+        <c:if test="#{selection}">
+          <table class="dataInput fullWidth">
+            <tbody>
+              <tr>
+                <td class="labelColumn">
+                  #{messages['label.addToCollection.multiple.summary']}</td>
+                <td class="fieldColumn"><c:forEach
+                    items="#{collectionActions.getMultipleDocumentToBeAdded()}"
+                    id="dtba" var="doc" varStatus="status">
+
+                    <div class="simpleBox" style="width:210px;">
+                      <a4j:commandLink immediate="true"
+                        actionListener="#{collectionActions.removeFromMultipleDocumentToBeAdded}"
+                        render="tbas" bypassUpdates="true"
+                        execute="@this">
+                        <h:graphicImage value="/icons/delete.png"
+                          alt="#{messages['label.addToCollection.multiple.remove']}"
+                          title="#{messages['label.addToCollection.multiple.remove']}" />
+                        <f:param name="index" value="#{status.index}" />
+                      </a4j:commandLink>
+
+                      <h:graphicImage value="#{doc.getProperty('common:icon').getValue()}" />
+
+                      <nxh:outputText value="#{doc.getTitle()}" />
+                    </div>
+                  </c:forEach></td>
+              </tr>
+            </tbody>
+          </table>
+        </c:if>
+      </a4j:outputPanel>
+    </div>
+
+    <a4j:outputPanel id="#{fancyboxFormId}_buttons" layout="block">
+      <nxu:set var="canNotAddToSelectedCollection"
+        value="#{!collectionActions.canAddToSelectedCollection()}">
+        <div class="buttonsGadget">
+          <c:if test="#{selection}">
+            <nxh:commandButton id="addAll"
+              value="#{messages['label.addToCollection']}"
+              action="#{collectionActions.addCurrentSelectionToSelectedCollection()}"
+              disabled="#{canNotAddToSelectedCollection}"
+              styleClass="button" />
+          </c:if>
+          <c:if test="#{!selection}">
+            <nxh:commandButton id="add"
+              value="#{messages['label.addToCollection']}"
+              action="#{collectionActions.addCurrentDocumentToSelectedCollection()}"
+              disabled="#{canNotAddToSelectedCollection}"
+              styleClass="button" />
+          </c:if>
+          <nxh:commandButton id="cancel" value="#{messages['command.cancel']}"
+            immediate="true" action="#{collectionActions.cancel()}"
+            styleClass="button" />
+        </div>
+      </nxu:set>
+    </a4j:outputPanel>
+  </h:form>
+
+</div>

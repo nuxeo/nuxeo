@@ -1,0 +1,26 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h3><h:outputText value="#{messages['label.oauth1.providers']}"/></h3>
+<ui:include src="directoryBasedEditor.xhtml">
+  <ui:param name="bean" value="#{oauthServiceProvidersActions}" />
+  <ui:param name="entryLayoutName" value="oauthServiceProviderLayoutAdmin" />
+  <ui:param name="showAddControl" value="true" />
+  <ui:param name="detailMode" value="edit"/>
+</ui:include>
+
+<h3><h:outputText value="#{messages['label.oauth2.providers']}"/></h3>
+<ui:include src="directoryBasedEditor.xhtml">
+  <ui:param name="bean" value="#{oauth2ServiceProvidersActions}" />
+  <ui:param name="entryLayoutName" value="oauth2ServiceProviderLayoutAdmin" />
+  <ui:param name="showAddControl" value="true" />
+  <ui:param name="detailMode" value="edit"/>
+</ui:include>
+
+</div>

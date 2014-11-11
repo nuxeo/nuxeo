@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.comment.workflow.pageprovider">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <coreQueryPageProvider name="GET_COMMENT_MODERATION_TASKS">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:mixinType = 'Task' AND
+        ecm:currentLifeCycleState
+        NOT IN ('ended', 'cancelled') AND ecm:isProxy =
+        0 AND nt:targetDocumentId = ? AND nt:actors IN (?) AND
+        nt:task_variables/*/key = 'commentId' AND nt:task_variables/*/value = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </coreQueryPageProvider>
+
+  </extension>
+
+</component>

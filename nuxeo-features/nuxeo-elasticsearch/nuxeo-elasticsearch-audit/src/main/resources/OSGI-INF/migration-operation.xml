@@ -1,0 +1,8 @@
+<component name="org.nuxeo.ecm.platform.audit.es.op.contrib">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+    <operation class="org.nuxeo.elasticsearch.audit.operation.AuditMigrationStart" />
+  </extension>
+
+</component>

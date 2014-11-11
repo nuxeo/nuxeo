@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.collections.summary">
+
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.summary</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+    <widgetType name="summary_current_document_collections">
+      <configuration>
+        <sinceVersion>5.9.3</sinceVersion>
+        <title>Collections</title>
+        <description>
+          <p>
+            This widget displays the collections the document is in.
+          </p>
+        </description>
+        <handlingLabels>true</handlingLabels>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/collections_widget_template.xhtml
+      </property>
+    </widgetType>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+    <widget name="summary_current_document_collections" type="summary_current_document_collections">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+        <control name="requireSurroundingForm">true</control>
+      </controls>
+    </widget>
+  </extension>
+
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="summary_current_document_collections" type="widget"
+      order="350">
+      <category>SUMMARY_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_collections</property>
+      </properties>
+      <filter-id>hasCollection</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="hasCollection">
+      <rule grant="true">
+        <condition>
+          #{collectionActions.hasCurrentDocumentVisibleCollection()}
+        </condition>
+      </rule>
+    </filter>
+  </extension>
+
+</component>

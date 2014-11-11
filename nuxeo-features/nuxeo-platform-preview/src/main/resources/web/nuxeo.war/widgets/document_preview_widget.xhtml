@@ -1,0 +1,18 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <nxu:set var="width"
+    value="#{nxu:test(empty widgetProperty_width, '100%', widgetProperty_width)}"
+    cache="true">
+  <nxu:set var="height"
+    value="#{nxu:test(empty widgetProperty_width, '600px', widgetProperty_height)}"
+    cache="true">
+
+    <iframe src="#{previewActions.getPreviewURL(fieldOrValue)}" frameborder="1"
+      height="600px" width="100%" scrolling="auto">
+    </iframe>
+
+  </nxu:set>
+  </nxu:set>
+
+</div>

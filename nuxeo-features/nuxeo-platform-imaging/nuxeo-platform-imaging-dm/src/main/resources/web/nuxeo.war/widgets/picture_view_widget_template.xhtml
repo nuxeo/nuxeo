@@ -1,0 +1,33 @@
+<div xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <c:if test="#{fieldOrValue.hasFacet('Picture')}">
+
+    <c:set var="pictureView" value="#{nxu:test(!empty widgetProperty_pictureView, widgetProperty_pictureView, 'Medium')}" />
+    <c:set var="blobPropertyName" value="#{pictureView}:content" />
+
+    <c:if test="#{!empty widget.label and widget.handlingLabels}">
+      <ui:include src="/widgets/incl/widget_label_template.xhtml">
+        <ui:param name="labelStyleClass" value="summaryTitle" />
+      </ui:include>
+    </c:if>
+
+    <nxu:set var="image_url"
+     value="#{nxd:fileUrl('downloadPicture', fieldOrValue, blobPropertyName, fieldOrValue.dublincore.modified)}"
+     cache="true">
+      <c:if test="#{not empty image_url}">
+        <div class="pictureContainer">
+          <nxu:graphicImage styleClass="fullMaxWidth" value="#{image_url}"
+            title="#{fieldOrValue.title}" alt="#{fieldOrValue.title}"
+            width="#{widgetProperty_width}" height="#{widgetProperty_height}" />
+        </div>
+      </c:if>
+    </nxu:set>
+  </c:if>
+
+</div>

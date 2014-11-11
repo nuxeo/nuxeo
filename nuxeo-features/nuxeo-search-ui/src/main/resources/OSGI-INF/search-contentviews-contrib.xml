@@ -1,0 +1,829 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.search.ui.contentviews">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="default_search">
+      <title>label.search.default</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>false</showTitle>
+      <emptySentence>label.content.empty.search</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
+
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
+        <whereClause docType="DefaultSearch">
+          <fixedPart>
+            ecm:primaryType NOT IN ('Domain', 'SectionRoot', 'TemplateRoot', 'WorkspaceRoot', 'Favorites')
+            AND ecm:mixinType != 'HiddenInNavigation'
+            AND NOT (ecm:mixinType = 'Collection' AND ecm:name = 'Locally Edited')
+            AND ecm:isCheckedInVersion = 0
+            AND ecm:currentLifeCycleState != 'deleted'
+            AND SORTED_COLUMN IS NOT NULL
+          </fixedPart>
+          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+            <field schema="default_search" name="ecm_fulltext" />
+          </predicate>
+          <predicate parameter="dc:creator" operator="IN">
+            <field schema="default_search" name="dc_creator" />
+          </predicate>
+          <predicate parameter="dc:created" operator="BETWEEN">
+            <field schema="default_search" name="dc_created_min" />
+            <field schema="default_search" name="dc_created_max" />
+          </predicate>
+          <predicate parameter="dc:modified" operator="BETWEEN">
+            <field schema="default_search" name="dc_modified_min" />
+            <field schema="default_search" name="dc_modified_max" />
+          </predicate>
+          <predicate parameter="dc:nature" operator="IN">
+            <field schema="default_search" name="dc_nature" />
+          </predicate>
+          <predicate parameter="dc:subjects" operator="STARTSWITH">
+            <field schema="default_search" name="dc_subjects" />
+          </predicate>
+          <predicate parameter="dc:coverage" operator="STARTSWITH">
+            <field schema="default_search" name="dc_coverage" />
+          </predicate>
+          <predicate parameter="ecm:path" operator="STARTSWITH">
+            <field schema="default_search" name="ecm_path" />
+          </predicate>
+          <predicate parameter="ecm:tag" operator="IN">
+            <field schema="default_search" name="ecm_tags" />
+          </predicate>
+          <predicate parameter="collectionMember:collectionIds"
+            operator="IN">
+            <field schema="default_search" name="ecm_collections" />
+          </predicate>
+        </whereClause>
+        <aggregates>
+          <aggregate id="dc_nature_agg" type="terms" parameter="dc:nature">
+            <field schema="default_search" name="dc_nature_agg" />
+            <properties>
+              <property name="size">10</property>
+            </properties>
+          </aggregate>
+          <aggregate id="dc_subjects_agg" type="terms" parameter="dc:subjects">
+            <field schema="default_search" name="dc_subjects_agg" />
+            <properties>
+              <property name="size">10</property>
+            </properties>
+          </aggregate>
+          <aggregate id="dc_coverage_agg" type="terms" parameter="dc:coverage">
+            <field schema="default_search" name="dc_coverage_agg" />
+            <properties>
+              <property name="size">10</property>
+            </properties>
+          </aggregate>
+          <aggregate id="dc_creator_agg" type="terms" parameter="dc:creator">
+            <field schema="default_search" name="dc_creator_agg" />
+            <properties>
+              <property name="size">10</property>
+            </properties>
+          </aggregate>
+          <aggregate id="common_size_agg" type="range" parameter="common:size">
+            <field schema="default_search" name="common_size_agg" />
+            <ranges>
+              <range key="tiny" to="102400"/>
+              <range key="small" from="102401" to="1048576"/>
+              <range key="medium" from="1048577" to="10485760"/>
+              <range key="big" from="10485761" to="104857600" />
+              <range key="huge" from="104857601" />
+            </ranges>
+          </aggregate>
+          <aggregate id="dc_created_agg" type="date_histogram" parameter="dc:created">
+            <field schema="default_search" name="dc_created_agg" />
+            <properties>
+              <property name="interval">year</property>
+              <property name="format">yyyy</property>
+              <property name="order">key desc</property>
+            </properties>
+          </aggregate>
+          <aggregate id="dc_modified_agg" type="date_range" parameter="dc:modified">
+            <field schema="default_search" name="dc_modified_agg" />
+            <properties>
+              <property name="format">"dd-MM-yyyy"</property>
+            </properties>
+            <dateRanges>
+              <dateRange key="last24h" fromDate="now-24H" toDate="now"/>
+              <dateRange key="lastWeek" fromDate="now-7d" toDate="now-24H"/>
+              <dateRange key="lastMonth" fromDate="now-1M" toDate="now-7d"/>
+              <dateRange key="lastYear" fromDate="now-1y" toDate="now-1M"/>
+              <dateRange key="priorToLastYear" toDate="now-1y"/>
+            </dateRanges>
+          </aggregate>
+        </aggregates>
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
+
+      <searchLayout name="default_search_layout" />
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>false</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+
+      <resultLayouts>
+        <layout name="document_listing_thumbnail" title="document_thumbnail_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
+          showSlideshow="true" showEditRows="true" />
+        <layout name="document_listing_table" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" showSpreadsheet="true" showEditColumns="true" />
+      </resultLayouts>
+
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <actions category="CURRENT_SELECTION_LIST" />
+
+      <resultColumns>
+        #{searchDocument.cvd.selectedLayoutColumns}
+      </resultColumns>
+
+      <resultLayout>
+        #{searchDocument.cvd.resultLayoutName}
+      </resultLayout>
+
+      <flags>
+        <flag>SEARCH</flag>
+      </flags>
+    </contentView>
+
+    <contentView name="simple_search">
+
+      <title>label.search.form.simple</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>false</showTitle>
+      <iconPath>/icons/document_listing_icon.png</iconPath>
+
+      <emptySentence>label.content.empty.search</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
+
+      <coreQueryPageProvider>
+        <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
+        <property name="coreSession">#{documentManager}</property>
+        <whereClause docType="DefaultSearch">
+          <fixedPart>
+            ecm:mixinType != 'HiddenInNavigation' AND
+            ecm:isCheckedInVersion = 0
+            AND ecm:currentLifeCycleState != 'deleted'
+            AND SORTED_COLUMN IS NOT NULL
+          </fixedPart>
+          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+            <field schema="default_search" name="ecm_fulltext" />
+          </predicate>
+        </whereClause>
+        <!-- sort column="dc:title" ascending="true" / sort by fulltext relevance -->
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
+
+      <searchLayout name="simple_search_layout" />
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+
+      <resultLayouts>
+        <layout name="document_listing_thumbnail" title="document_thumbnail_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
+          showSlideshow="true" showEditRows="true" />
+        <layout name="document_listing_table" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" showSpreadsheet="true" showEditColumns="true" />
+      </resultLayouts>
+
+      <resultColumns>
+        #{searchDocument.cvd.selectedLayoutColumns}
+      </resultColumns>
+
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <actions category="CURRENT_SELECTION_LIST" />
+
+    </contentView>
+
+    <contentView name="nxql_search">
+
+      <title>label.search.nxql</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>false</showTitle>
+      <emptySentence>label.content.empty.search</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
+
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
+        <searchDocumentType>DefaultSearch</searchDocumentType>
+        <pattern quoteParameters="false" escapeParameters="false">?</pattern>
+        <parameter>#{searchUIActions.nxqlQuery}</parameter>
+        <!-- sort column="dc:title" ascending="true" / sort by fulltext relevance -->
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+
+      <resultLayouts>
+        <layout name="document_listing_thumbnail" title="document_thumbnail_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
+          showSlideshow="true" showEditRows="true" />
+        <layout name="document_listing_table" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" showSpreadsheet="true" showEditColumns="true" />
+      </resultLayouts>
+
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <actions category="CURRENT_SELECTION_LIST" />
+
+    </contentView>
+
+    <contentView name="all_saved_searches">
+
+      <showTitle>false</showTitle>
+
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <whereClause docType="AdvancedSearch">
+          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+            <field schema="advanced_search" name="fulltext_all" />
+          </predicate>
+          <predicate parameter="dc:title" operator="FULLTEXT">
+            <field schema="advanced_search" name="title" />
+          </predicate>
+          <predicate parameter="dc:modified" operator="BETWEEN">
+            <field schema="advanced_search" name="modified_min" />
+            <field schema="advanced_search" name="modified_max" />
+          </predicate>
+          <fixedPart>
+            ecm:mixinType = 'SavedSearch'
+            AND ecm:isProxy = 0 AND
+            ecm:isCheckedInVersion = 0
+            AND ecm:currentLifeCycleState != 'deleted'
+            AND ecm:parentId = ?
+            AND SORTED_COLUMN IS NOT NULL
+          </fixedPart>
+        </whereClause>
+        <parameter>#{userWorkspaceManagerActions.currentUserPersonalWorkspace.id}</parameter>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
+
+      <searchLayout name="document_content_filter"
+        filterDisplayType="quick" />
+      <showFilterForm>true</showFilterForm>
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>false</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+
+      <resultLayouts>
+        <layout name="document_listing_table" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" showSpreadsheet="true" showEditColumns="true" />
+      </resultLayouts>
+
+      <selectionList>SAVED_SEARCHES_CURRENT_SELECTION</selectionList>
+      <actions category="SAVED_SEARCHES_CURRENT_SELECTION_LIST" />
+    </contentView>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <!-- widgets for default_search -->
+
+    <widget name="default_text_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.search.textSearch</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="ecm_fulltext" type="text">
+          <fields>
+            <field>defaults:ecm_fulltext</field>
+          </fields>
+          <properties widgetMode="edit">
+            <property name="placeholder">
+              #{messages['label.search.text.placeholder']}
+            </property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="default_created_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.dublincore.creationDate</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="dc_creationDate" type="datetimeRange">
+          <fields>
+            <field>defaults:dc_created_min</field>
+            <field>defaults:dc_created_max</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'hidden' : 'edit'}</mode>
+          </widgetModes>
+          <properties widgetMode="edit">
+            <property name="styleClass">dataInputTextDate</property>
+            <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
+          </properties>
+        </widget>
+        <widget name="dc_created_agg" type="selectManyCheckboxDateHistogramAggregate">
+          <fields>
+            <field>defaults:dc_created_agg</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'edit' : 'hidden'}</mode>
+          </widgetModes>
+          <properties widgetMode="any">
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_created_agg'].extendedBuckets}</property>
+          </properties>
+          <controls mode="any">
+            <control name="supportInsideInputWidgetEffects">true</control>
+          </controls>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="default_modified_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.dublincore.modificationDate</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="dc_modificationDate" type="datetimeRange">
+          <fields>
+            <field>defaults:dc_modified_min</field>
+            <field>defaults:dc_modified_max</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'hidden' : 'edit'}</mode>
+          </widgetModes>
+          <properties widgetMode="edit">
+            <property name="styleClass">dataInputTextDate</property>
+            <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
+          </properties>
+        </widget>
+        <widget name="dc_modified_agg" type="selectManyCheckboxDateRangeAggregate">
+          <fields>
+            <field>defaults:dc_modified_agg</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'edit' : 'hidden'}</mode>
+          </widgetModes>
+          <properties widgetMode="any">
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_modified_agg'].extendedBuckets}</property>
+            <property name="localize">true</property>
+          </properties>
+          <selectOptions>
+            <option itemLabel="label.aggregate.modified.last24h"
+              itemValue="last24h" />
+            <option itemLabel="label.aggregate.modified.lastWeek"
+              itemValue="lastWeek" />
+            <option itemLabel="label.aggregate.modified.lastMonth"
+              itemValue="lastMonth" />
+            <option itemLabel="label.aggregate.modified.lastYear"
+              itemValue="lastYear" />
+            <option itemLabel="label.aggregate.modified.priorToLastYear"
+              itemValue="priorToLastYear" />
+          </selectOptions>
+          <controls mode="any">
+            <control name="supportInsideInputWidgetEffects">true</control>
+          </controls>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="default_creator_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.dublincore.creator</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="dc_creator" type="multipleUsersSuggestion">
+          <fields>
+            <field>defaults:dc_creator</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'hidden' : 'edit'}</mode>
+          </widgetModes>
+          <properties widgetMode="edit">
+            <property name="searchType">USER_TYPE</property>
+            <property name="minChars">3</property>
+            <property name="hideHelpLabel">true</property>
+          </properties>
+        </widget>
+        <widget name="dc_creator_agg" type="selectManyListboxUserAggregate">
+          <fields>
+            <field>defaults:dc_creator_agg</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'edit' : 'hidden'}</mode>
+          </widgetModes>
+          <properties widgetMode="edit">
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_creator_agg'].extendedBuckets}</property>
+          </properties>
+          <controls mode="any">
+            <control name="supportInsideInputWidgetEffects">true</control>
+          </controls>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="default_collection_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.collections</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="visible_collection" type="multipleDocumentsSuggestion">
+          <fields>
+            <field>defaults:ecm_collections</field>
+          </fields>
+          <properties widgetMode="any">
+            <property name="minChars">0</property>
+            <property name="hideHelpLabel">true</property>
+            <property name="pageProviderName">default_collection</property>
+            <property name="suggestionFormatter">docSelectionDefaultFormatter</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="default_nature_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.dublincore.nature</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="dc_nature" type="suggestManyDirectory">
+          <fields>
+            <field>defaults:dc_nature</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'hidden' : 'edit'}</mode>
+          </widgetModes>
+          <properties widgetMode="any">
+            <property name="width">100%</property>
+            <property name="minChars">0</property>
+            <property name="hideHelpLabel">true</property>
+            <property name="directoryName">nature</property>
+            <property name="localize">true</property>
+          </properties>
+        </widget>
+        <widget name="dc_nature_agg" type="selectManyCheckboxDirectoryAggregate">
+          <fields>
+            <field>defaults:dc_nature_agg</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'edit' : 'hidden'}</mode>
+          </widgetModes>
+          <properties widgetMode="any">
+            <property name="directoryName">nature</property>
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_nature_agg'].extendedBuckets}</property>
+            <property name="localize">true</property>
+          </properties>
+          <controls mode="any">
+            <control name="supportInsideInputWidgetEffects">true</control>
+          </controls>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="default_subjects_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.dublincore.subject</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="dc_subjects" type="suggestManyDirectory">
+          <fields>
+            <field>defaults:dc_subjects</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'hidden' : 'edit'}</mode>
+          </widgetModes>
+          <properties widgetMode="any">
+            <property name="directoryName">l10nsubjects</property>
+            <property name="dbl10n">true</property>
+            <property name="minChars">0</property>
+            <property name="hideHelpLabel">true</property>
+            <property name="filterParent">true</property>
+            <property name="canSelectParent">true</property>
+          </properties>
+        </widget>
+        <widget name="dc_subjects_agg" type="selectManyCheckboxDirectoryAggregate">
+          <fields>
+            <field>defaults:dc_subjects_agg</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'edit' : 'hidden'}</mode>
+          </widgetModes>
+          <properties widgetMode="any">
+            <property name="directoryName">l10nsubjects</property>
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_subjects_agg'].extendedBuckets}</property>
+            <property name="dbl10n">true</property>
+            <property name="localize">true</property>
+          </properties>
+          <controls mode="any">
+            <control name="supportInsideInputWidgetEffects">true</control>
+          </controls>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="default_coverage_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.dublincore.coverage</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="dc_coverage" type="suggestManyDirectory">
+          <fields>
+            <field>defaults:dc_coverage</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'hidden' : 'edit'}</mode>
+          </widgetModes>
+          <properties widgetMode="any">
+            <property name="directoryName">l10ncoverage</property>
+            <property name="dbl10n">true</property>
+            <property name="minChars">0</property>
+            <property name="hideHelpLabel">true</property>
+            <property name="filterParent">true</property>
+            <property name="canSelectParent">true</property>
+          </properties>
+        </widget>
+        <widget name="dc_coverage_agg" type="selectManyCheckboxDirectoryAggregate">
+          <fields>
+            <field>defaults:dc_coverage_agg</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'edit' : 'hidden'}</mode>
+          </widgetModes>
+          <properties widgetMode="any">
+            <property name="directoryName">l10ncoverage</property>
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_coverage_agg'].extendedBuckets}</property>
+            <property name="dbl10n">true</property>
+            <property name="localize">true</property>
+          </properties>
+          <controls mode="any">
+            <control name="supportInsideInputWidgetEffects">true</control>
+          </controls>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="default_size_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.common.size</label>
+      </labels>
+      <translated>true</translated>
+      <widgetModes>
+        <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+          'edit' : 'hidden'}</mode>
+      </widgetModes>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="common_size_agg" type="selectManyCheckboxRangeAggregate">
+          <fields>
+            <field>defaults:common_size_agg</field>
+          </fields>
+          <widgetModes>
+            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
+              'edit' : 'hidden'}</mode>
+          </widgetModes>
+          <properties widgetMode="any">
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['common_size_agg'].extendedBuckets}</property>
+            <property name="localize">true</property>
+          </properties>
+          <selectOptions>
+            <option itemLabel="label.aggregate.size.tiny" itemValue="tiny" />
+            <option itemLabel="label.aggregate.size.small" itemValue="small" />
+            <option itemLabel="label.aggregate.size.medium" itemValue="medium" />
+            <option itemLabel="label.aggregate.size.big" itemValue="big" />
+            <option itemLabel="label.aggregate.size.huge" itemValue="huge" />
+          </selectOptions>
+          <controls mode="any">
+            <control name="supportInsideInputWidgetEffects">true</control>
+          </controls>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="default_location_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.search.locationSearch</label>
+      </labels>
+      <translated>true</translated>
+      <subWidgets>
+        <widget name="ecm_path" type="select_path_tree">
+          <labels>
+            <label mode="any">label.search.path</label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>defaults:ecm_path</field>
+          </fields>
+          <properties widgetMode="any">
+            <property name="showAllDomains">true</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="default_tags_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.search.tagSearch</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="tags" type="select_tags">
+          <labels>
+            <label mode="any"></label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>defaults:ecm_tags</field>
+          </fields>
+          <properties widgetMode="edit">
+            <property name="placeholder">
+              #{messages['label.search.tags.placeholder']}
+            </property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="listing_size_and_format" type="container">
+      <labels>
+        <label mode="any">label.search.size_and_format</label>
+      </labels>
+      <properties widgetMode="view">
+        <property name="display">inline</property>
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgetRefs>
+        <widget>listing_size</widget>
+        <widget>listing_main_file_format</widget>
+      </subWidgetRefs>
+    </widget>
+
+    <widget name="listing_size" type="listing_main_file_size">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>false</translated>
+      <fields>
+        <field>data</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_main_file_format" type="listing_main_file_format">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>false</translated>
+      <fields>
+        <field>data</field>
+      </fields>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="default_search_layout">
+      <templates>
+        <template mode="any">
+          /layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>default_text_search</widget>
+        </row>
+        <row>
+          <widget>default_tags_search</widget>
+        </row>
+        <row>
+          <widget>default_created_search</widget>
+        </row>
+        <row>
+          <widget>default_modified_search</widget>
+        </row>
+        <row>
+          <widget>default_creator_search</widget>
+        </row>
+        <row>
+          <widget>default_collection_search</widget>
+        </row>
+        <row>
+          <widget>default_nature_search</widget>
+        </row>
+        <row>
+          <widget>default_subjects_search</widget>
+        </row>
+        <row>
+          <widget>default_coverage_search</widget>
+        </row>
+        <row>
+          <widget>default_size_search</widget>
+        </row>
+        <row>
+          <widget>default_location_search</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="simple_search_layout">
+      <templates>
+        <template mode="any">
+          /layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>default_text_search</widget>
+        </row>
+      </rows>
+    </layout>
+
+  </extension>
+
+</component>

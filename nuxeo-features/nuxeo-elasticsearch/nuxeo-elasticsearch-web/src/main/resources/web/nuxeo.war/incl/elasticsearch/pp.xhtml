@@ -1,0 +1,28 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  class="hostInfos">
+
+
+  <h3> PageProviders </h3>
+  <table class="dataOutput">
+        <thead>
+             <tr>
+               <th>PageProvider</th>
+               <th>Type</th>
+             </tr>
+        </thead>
+        <tbody>
+        <c:forEach var="cvs" items="#{esAdmin.contentViewStatus}">
+             <tr style="color:#{cvs.color}">
+               <td>#{cvs.ppName}</td>
+               <td>#{cvs.type}</td>
+             </tr>
+        </c:forEach>
+        </tbody>
+  </table>
+
+</div>

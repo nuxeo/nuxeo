@@ -1,0 +1,131 @@
+/*
+Specific styles for the Administrator View
+=Document list -> specifics to document browsing
+=Advanced Search -> for advanced search view
+=Clipboard & Worklist -> styles in the left column
+author: lkemen@nuxeo.com
+*/
+
+.nxMainContainer {
+  background: none "color.major.stronger (__FLAVOR__ background)"; }
+
+/* ActionBar*/
+.actionBar { background-color: #efefef; border-bottom: 1px solid #bde7F3; padding: .9em }
+.actionBar span { margin: 0 .9em 0 0 }
+.actionBar form { display: inline }
+.actionBar form select, .actionBar form input { margin: 0 .4em }
+.actionBar h3 { padding: .3em 0 }
+.actionBar a {
+  vertical-align: top }
+
+/* =Marketplace, Nuxeo Connect & Updates */
+.marketplace { background-color: #fbfbfb }
+.marketplace .marketplaceLogo {}
+
+.downloadConfirmation { border: 1px solid #dedede; margin: 5em auto 8em; padding: 1.5em 2.5em; width: 500px }
+.downloadConfirmation h1 { border-bottom: 1px solid #dedede; margin-bottom: 1.5em; padding: 0 0 1em }
+.downloadConfirmation table { margin: 1.2em 0 }
+
+.studioUpdateActions { margin: .4em 0 }
+.studioUpdateActions span { color: #000; font-weight: bold; margin: 0 }
+
+.hostInfos pre { font-size: 135%; padding: 1em }
+
+/* Connect registration boxes */
+.nxconnectBox {
+  font-size: 105%;
+  margin-bottom: 2em;
+  padding: 1em 2em 2em;}
+
+.nxconnectBox h2 {
+  border-bottom: 1px solid #eee;
+  color: #000;
+  font-weight: bold;
+  margin-bottom: 1em;}
+
+.nxconnectBox .gridStyle7 {
+  font-size: 14px;
+  min-height: 160px;
+  margin-top: 1.5em;}
+
+.nxconnectBox .gridStyle7 img {
+  float: left;
+  margin: 0 1em 0 2em;
+  width: 25px;}
+
+.nxconnectBox .nxconnectStudio,
+.nxconnectBox .nxconnectMaintenance,
+.nxconnectBox .nxconnectInstance {
+  color: #666;
+  display: block;
+  font-weight: bold;
+  padding: .3em 0 .9em;}
+
+.nxconnectBox .buttonsGadget {
+  margin: 0;
+  padding: 0 0 2em;}
+
+.nxconnectBox .button {
+  background-color: #00adff;
+  border: medium none;
+  border-radius: 0;
+  box-shadow: none;
+  color: #fff;
+  font-size: 1.2em;
+  padding: 1em;}
+
+.nxconnectBox .button:hover {
+  background-color: #0079b3;
+  border: medium none;
+  border-radius: 0;
+  box-shadow: none;}
+
+.nxconnectBox .gridRow.separate {
+  border-top: 1px solid #eee;}
+
+.nxconnectBox .gridStyle6 {
+  padding-top: 0.5em;}
+
+.nxofflineBox {
+  padding: 0 2em 2em;}
+
+.nxofflineBox .title {
+  margin-bottom: 2em;}
+
+.nxofflineBox .gridStyle1 {
+  text-align: center;
+  padding-top: 0.15em;}
+
+.nxofflineBox .importantLabel {
+  display: block;}
+
+.nxofflineBox .gridStyle11 {
+  padding-bottom: 1.5em;}
+
+.nxofflineBox .required {
+  display: block;
+  padding: 0.3em 0;}
+
+.nxofflineBox .required > input {
+  width: 97%;}
+
+/* =Setup Panel */
+.setupPanel .dataOutput th { border-bottom: 1px solid #C7C7C7; font-size: 1.05em; padding: 0 0 .4em }
+.setupPanel .dataOutput td { border: none; padding: 0 0 .4em .6em }
+.setupPanel .dataOutput td.wideLabel { width: 340px }
+.setupPanel .dataOutput td table { margin-top: 1em }
+
+.setupPanel .actionBar { background-color: transparent }
+.packageUploadBlock { padding: 0 0 1em }
+
+/* =Packages */
+.packageUploadBlock { padding: 0 0 1em }
+h5 { color: #848484; font-weight: bold; font-size: 1.1em; margin: 1em 0 .4em }
+
+/* Fix style inheritance for gadgets */
+body, table td, select { font-family: "default (__FLAVOR__ font)" }
+p.directoryBack {  padding: .2em .2em .2em 2em }
+
+/* Remove padding space from tabContent when the actionBar div or the
+   marketplace message are displayed in the Update Center main tab */
+#connectAppListing { display: block; margin: -1.5em 0 }

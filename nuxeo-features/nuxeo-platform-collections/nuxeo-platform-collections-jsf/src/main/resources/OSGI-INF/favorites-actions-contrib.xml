@@ -1,0 +1,52 @@
+<component name="org.nuxeo.ecm.favorites.actions">
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <!-- action id="Favorites" link="/user_center_fragment.xhtml" label="user.center.favorites"
+      order="80" icon="/icons/favorite_tab.png"> <category>USER_CENTER</category> <properties>
+      <property name="alwaysDisplaySubTabs">true</property> </properties> <filter-id>not_anonymous</filter-id>
+      </action> <action id="favoritesContent" link="/incl/favorites_content_listing.xhtml"
+      label="user.center.favorites" order="0"> <category>Favorites_sub_tab</category> <filter-id>not_readonly</filter-id>
+      </action -->
+
+    <action id="addToFavoritesAction" order="0" label="label.addToFavorites"
+      link="#{favoritesActions.addCurrentDocumentToFavorites()}" icon="/icons/pin.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>canAddToFavorites</filter-id>
+    </action>
+
+    <action id="removeFromFavoritesAction" order="0"
+      label="label.removeFromFavorites" link="#{favoritesActions.removeCurrentDocumentFromFavorites()}"
+      icon="/icons/pinned.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>canRemoveFromFavorites</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="canAddToFavorites">
+      <rule grant="true">
+        <condition>
+          #{favoritesActions.canCurrentDocumentBeAddedToFavorites()}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="canRemoveFromFavorites">
+      <rule grant="true">
+        <condition>
+          #{favoritesActions.canCurrentDocumentBeRemovedFromFavorites()}
+        </condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

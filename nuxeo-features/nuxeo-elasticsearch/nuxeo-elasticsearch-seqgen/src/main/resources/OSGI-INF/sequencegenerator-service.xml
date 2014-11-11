@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.SequenceGeneratorComponent" version="1.0">
+
+  <require>org.nuxeo.elasticsearch.ElasticSearchComponent</require>
+  
+  <implementation class="org.nuxeo.elasticsearch.seqgen.ESSequenceGeneratorComponent" />
+
+  <documentation>
+  Implements the SequenceGeneratorservice on top of Elasticsearch. <br/>
+  
+  Since elasticsearch does not seem to support a notion of native sequence, the
+  implementation uses the auto-increment of the version attribute as described
+  in 
+  http://blogs.perl.org/users/clinton_gormley/2011/10/elasticsearchsequence--
+  -a-blazing-fast-ticket-server.html
+  
+  </documentation>
+
+  <service>
+      <provide interface="org.nuxeo.elasticsearch.seqgen.SequenceGenerator" />
+  </service>
+
+</component>

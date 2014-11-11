@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <ui:define name="header_scripts">
+    <ui:include src="/incl/sysinfo/confirmRestartScript.xhtml" />
+  </ui:define>
+
+  <ui:define name="page title">
+    <h:outputText value="#{nuxeoApplicationName} - #{messages['label.main.tab.admin.center']}"/>
+  </ui:define>
+
+  <ui:define name="body">
+
+    <nxl:widget name="adminCenterTabs" mode="view" value="#{currentDocument}" />
+
+  </ui:define>
+
+</nxthemes:composition>

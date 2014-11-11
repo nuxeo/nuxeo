@@ -1,0 +1,13 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout" id="#{widget.id}">
+
+  <c:if test="#{widget.mode == 'view'}">
+    <iframe width="100%" height="400px" src="restAPI/preview/default/#{field_0}/default/?blobPostProcessing=true"/>
+  </c:if>
+
+</f:subview>

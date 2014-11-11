@@ -1,0 +1,35 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+<c:if test="#{widget.mode != 'edit'}">
+
+  <c:choose>
+    <c:when test="#{field == true or field == 'true'}">
+      <h:outputText id="#{widget.id}"
+        value="#{messages['label.setup.nuxeo.org.nuxeo.dev.modeOn.option']}" />
+    </c:when>
+    <c:otherwise>
+      <h:outputText id="#{widget.id}"
+        value="#{messages['label.setup.nuxeo.org.nuxeo.dev.modeOff.option']}" />
+    </c:otherwise>
+  </c:choose>
+
+</c:if>
+<c:if test="#{widget.mode == 'edit'}">
+
+  <h:selectOneMenu id="#{widget.id}" value="#{field}"
+    styleClass="#{widgetProperty_styleClass}"
+    required="#{widgetProperty_required}">
+    <f:selectItem itemValue="false"
+      itemLabel="#{messages['label.setup.nuxeo.org.nuxeo.dev.modeOff.option']}" />
+    <f:selectItem itemValue="true"
+      itemLabel="#{messages['label.setup.nuxeo.org.nuxeo.dev.modeOn.option']}" />
+  </h:selectOneMenu>
+  <h:message styleClass="errorMessage" for="#{widget.id}"
+    id="#{widget.id}_message" />
+
+</c:if>
+
+</div>
