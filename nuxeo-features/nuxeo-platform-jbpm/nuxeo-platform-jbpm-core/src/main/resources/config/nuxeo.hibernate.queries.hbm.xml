@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+      "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+      "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <query name="NuxeoHibernateQueries_getProcessInstancesForDoc">
+    <![CDATA[
+      select si1.token.processInstance
+      from org.jbpm.context.exe.variableinstance.StringInstance si1,
+           org.jbpm.context.exe.variableinstance.StringInstance si2
+      where si1.token = si2.token
+      and si1.value = :docId
+      and si2.value = :repoId
+      and si1.name = 'documentId'
+      and si2.name = 'documentRepositoryName'
+      and si1.token.processInstance.end is null
+      and si1.token.processInstance.isSuspended != true
+    ]]>
+  </query>
+
+  <query name="NuxeoHibernateQueries_getProcessInstancesForInitiator">
+    <![CDATA[
+      select si.token.processInstance
+      from org.jbpm.context.exe.variableinstance.StringInstance si
+      where si.value in (:initiators)
+      and si.name = 'initiator'
+      and si.token.processInstance.isSuspended != true
+    ]]>
+  </query>
+  
+  <query name="NuxeoHibernateQueries_getTaskInstancesForDoc_byTaskMgmt">
+      <![CDATA[
+      select task
+      from            
+           org.jbpm.taskmgmt.exe.TaskInstance as task
+             inner join task.taskMgmtInstance as taskMgmt
+             inner join taskMgmt.processInstance,
+           org.jbpm.context.exe.variableinstance.StringInstance as vdoc
+             inner join vdoc.processInstance,
+           org.jbpm.context.exe.variableinstance.StringInstance as vrepo
+             inner join vrepo.processInstance
+     where  
+            task.end is null and task.isSuspended != true and
+            vdoc.name = 'documentId' and vdoc.value = :docId and vdoc.processInstance = taskMgmt.processInstance and
+            vrepo.name = 'documentRepositoryName' and vrepo.value = :repoId and vrepo.processInstance = taskMgmt.processInstance
+    ]]>
+  </query>
+  
+  <query name="NuxeoHibernateQueries_getTaskInstancesForDoc_byTask">
+      <![CDATA[
+      select task
+      from 
+           org.jbpm.taskmgmt.exe.TaskInstance as task,
+           org.jbpm.context.exe.variableinstance.StringInstance as vdoc,
+           org.jbpm.context.exe.variableinstance.StringInstance as vrepo
+      where 
+            task.end is null and task.isSuspended != true and
+            vdoc.name = 'documentId' and vdoc.value = :docId and vdoc member of task.variableInstances and
+            vrepo.name = 'documentRepositoryName' and vrepo.value = :repoId and vrepo member of task.variableInstances
+    ]]>
+  </query>
+  
+</hibernate-mapping>
