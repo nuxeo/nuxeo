@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.platform.userworkspace.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+    <action id="SHOW_REPOSITORY"
+      link="#{userWorkspaceManagerActions.navigateToOverallWorkspace}"
+      enabled="true" label="command.user.return.to.repository"
+      icon="/icons/go_to_repository.gif" order="10">
+      <category>USER_SERVICES</category>
+      <filter-id>isInsidePersonalWorkspace</filter-id>
+    </action>
+
+    <action id="SHOW_PERSONAL_WORKSPACE"
+      link="#{userWorkspaceManagerActions.navigateToCurrentUserPersonalWorkspace}"
+      enabled="true" label="command.user.personal.workspace"
+      icon="/icons/show_personal_workspace.gif" order="11">
+      <category>USER_SERVICES</category>
+      <filter-id>not_anonymous</filter-id>
+      <filter-id>canAccessPersonalWorkspace</filter-id>
+    </action>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="isInsidePersonalWorkspace">
+      <rule grant="true">
+        <condition>#{isInsidePersonalWorkspace}</condition>
+      </rule>
+    </filter>
+
+    <filter id="canAccessPersonalWorkspace">
+      <rule grant="false">
+        <condition>#{isInsidePersonalWorkspace}</condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

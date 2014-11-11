@@ -1,0 +1,70 @@
+<component name="org.nuxeo.ecm.platform.publisher.web.actions">
+
+  <!-- make sure action buttons are always in the same order -->
+  <require>org.nuxeo.ecm.platform.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+             point="actions">
+
+    <action id="CURRENT_SELECTION_UNPUBLISH"
+            link="#{publishActions.unpublishDocumentsFromCurrentSelection}"
+            label="command.document.unpublish" icon="">
+      <category>CURRENT_SELECTION_SECTIONS_LIST</category>
+      <filter id="can_unpublish">
+        <rule grant="true">
+          <permission>AddChildren</permission>
+          <type>SectionRoot</type>
+          <type>Section</type>
+          <condition>#{documentActions.canUnpublish}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="WORKLIST_PUBLISH" link="#{publishActions.publishWorkList()}"
+            label="command.clipboard.publish" icon="/icons/action_publish.gif">
+      <category>DEFAULT_LIST</category>
+      <filter id="canPublishWorkList">
+        <rule grant="false">
+          <condition>#{clipboardActions.workListEmpty}</condition>
+        </rule>
+        <rule grant="true">
+          <type>Section</type>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="TAB_PUBLISH" link="/incl/tabs/document_publish.xhtml" order="53"
+            label="action.publish.content" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>publish_document</filter-id>
+      <filter-id>mutable_document</filter-id>
+    </action>
+
+    <action id="TAB_ADMIN_PUBLICATION_TREES"
+      link="/incl/tabs/admin_publication_trees.xhtml" order="110"
+      label="action.admin.publication.tree" icon="/icons/file.gif">
+      <category>TAB_MANAGE_sub_tab</category>
+      <filter-id>admin_publication_trees_filter</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+             point="filters">
+
+    <filter id="publish_document">
+      <rule grant="true">
+        <facet>Publishable</facet>
+      </rule>
+    </filter>
+
+    <filter id="admin_publication_trees_filter">
+      <rule grant="true">
+        <permission>Write</permission>
+        <schema>publishing</schema>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

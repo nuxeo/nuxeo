@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.mail.service.OverridePipeTest">
+  <require>org.nuxeo.ecm.platform.mail.service.MailServiceContrib</require>
+  <require>org.nuxeo.ecm.platform.mail.service.PropertiesFetcherTest</require>
+
+  <extension target="org.nuxeo.ecm.platform.MailService" point="actionPipes">
+    <pipe name="nxmail" override="true">
+      <action id="StartAction" to="otherAction">
+        org.nuxeo.ecm.platform.mail.listener.action.ExtractMessageInformationAction
+      </action>
+      <action id="otherAction" to="CreateDocumentsAction">
+        org.nuxeo.ecm.platform.mail.listener.action.CreateDocumentsAction
+      </action>
+    </pipe>
+  </extension>
+</component>

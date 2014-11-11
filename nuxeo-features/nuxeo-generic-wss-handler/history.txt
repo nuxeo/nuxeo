@@ -1,0 +1,2 @@
+Source code history can be found in another hg repo : 
+https://hg.nuxeo.org/addons/nuxeo-generic-wss-handler/
