@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.ui.web.ContentViewService.testOverrideContrib">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="CURRENT_DOCUMENT_CHILDREN">
+      <title>current document children overriden</title>
+      <selectionList>CURRENT_SELECTION_2</selectionList>
+      <pagination>simple_2</pagination>
+      <actions category="CURRENT_SELECTION_LIST_2" />
+      <actions category="CURRENT_SELECTION_LIST_3" />
+      <resultLayouts append="true">
+        <layout name="document_listing_2"
+          title="label.document_listing.layout_2" translateTitle="true" />
+      </resultLayouts>
+      <searchLayout name="search_layout_2" />
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <flags>
+        <flag>foo2</flag>
+      </flags>
+    </contentView>
+
+    <contentView name="CURRENT_DOCUMENT_CHILDREN_FETCH" enabled="false" />
+
+  </extension>
+
+</component>
