@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.publisher.treeManager.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.treeManager" point="plugin">
+
+    <documentation>
+      Configuration for the Nuxeo EP tree used in Manage publication tab.
+
+      Displays only Folderish objects, not marked as hidden in navigation
+    </documentation>
+
+    <treeManagerPlugin name="publication">
+      <excludedFacets>
+        <facet name="HiddenInNavigation" />
+      </excludedFacets>
+      <includedFacets>
+        <facet name="Folderish" />
+      </includedFacets>
+    </treeManagerPlugin>
+
+  </extension>
+
+</component>
