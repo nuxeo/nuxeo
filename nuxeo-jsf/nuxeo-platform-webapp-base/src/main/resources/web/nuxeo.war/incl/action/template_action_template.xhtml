@@ -1,0 +1,19 @@
+<ui:composition
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+<ui:insert name="action_template_content">
+  <nxu:set var="actionTemplate" value="#{action.properties.template}"
+    resolveTwice="true">
+    <c:if test="#{not empty actionTemplate}">
+      <ui:include src="#{actionTemplate}">
+        <ui:insert name="inside_action" />
+      </ui:include>
+    </c:if>
+  </nxu:set>
+</ui:insert>
+</ui:composition>

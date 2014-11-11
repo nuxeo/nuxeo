@@ -1,0 +1,60 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <c:if test="#{not empty widgetProperty_action}">
+
+    <a4j:outputPanel id="#{widget.id}_panel">
+      <a4j:region id="#{widget.id}_region">
+        <nxu:set var="action" value="#{widgetProperty_action}"
+          cache="true">
+        <nxu:set var="idPrefix" value="#{widget.id}_"
+          cache="true">
+        <nxu:set var="eventsQueueId" value="#{layout.id}_queue"
+          cache="true">
+          <nxu:valueHolder id="#{idPrefix}clickedActionIdHolder"
+            var="clickedActionId">
+
+            <ui:decorate template="/widgets/incl/form_template.xhtml">
+              <ui:param name="addForm" value="#{widgetProperty_addForm}" />
+              <ui:param name="formId" value="#{widget.id}_form" />
+              <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
+              <ui:param name="formStyleClass" value="subWidgetForm" />
+              <ui:define name="form_template_content">
+
+                <div>
+                  <a4j:status>
+                    <f:facet name="start">
+                      <h:graphicImage value="/img/standart_waiter.gif" />
+                    </f:facet>
+                  </a4j:status>
+                </div>
+
+                <div class="widgetPanel actionsWidgetPanel #{widgetProperty_styleClass}">
+                  <ui:decorate template="/incl/action/action_template.xhtml">
+                    <ui:define name="after_action_template_content" />
+                    <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+                  </ui:decorate>
+                </div>
+
+              </ui:define>
+            </ui:decorate>
+
+            <ui:decorate template="/incl/action/action_template.xhtml">
+              <ui:define name="action_template_content" />
+              <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+            </ui:decorate>
+
+          </nxu:valueHolder>
+        </nxu:set>
+        </nxu:set>
+
+      </a4j:region>
+    </a4j:outputPanel>
+
+  </c:if>
+
+</div>
