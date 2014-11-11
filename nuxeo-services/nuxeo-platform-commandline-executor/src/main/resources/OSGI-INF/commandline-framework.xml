@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent">
+  <implementation
+    class="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent" />
+
+  <documentation>
+    The CommandLineExecutor component let you define command line call using the command extension point.
+    You can call those commands with your own arguments like blobs or properties. The result is available
+    in the ExecResult object.
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService" />
+  </service>
+
+  <extension-point name="environment">
+    <documentation>
+    Extension point to contribute environment configuration.
+    Currently not used by commandLine service. Living example can be found in tilling services.
+    
+    Available options are:
+    - workingDirectory: the Folder when command should be executed. Default is the system
+    temporary folder.
+
+    - parameters/parameter
+    
+    @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.commandline.executor.service.EnvironementDescriptor" />
+  </extension-point>
+
+  <extension-point name="command">
+    <documentation>
+    Extension point to contribute new commands.
+    
+    Available options are:
+    - name: string attribute used as the command identifier.
+
+    - enabled: boolean attribute, command is unavailable if false. 
+
+    - commandLine: the command to execute.
+
+    - parameterString: the parameters to pass to the command. Parameters like #{parameter}
+    represents a file. So you can use either a path to a file or a blob. Parameters like %parameters
+    are literals.
+
+    - winParameterString: Same as above but used in windows environments. For instance you have to use
+    double quotes in windows instead of simple quote.
+
+    - winCommand: command to execute specifically for windows. Use commandLine is WinCommand is null;
+
+    - tester: name of the CommandTester. The CommandTester defined in commandTester extension point.
+    Default is SystemPathExistTester, which look if the command is available in system Path.
+
+    - readOutput: Boolean, default is true. If false, command output is never read.
+    
+    - installationDirective: a String that is returned instead of the usual output when
+    the command isn't available.
+    
+    CommandLine contribution example:
+    <code>
+	    <command name="myCommand" enabled="true">
+	      <commandLine>commandName</commandLine>
+	      <parameterString> -any -parameters '%specific' %parameters #{blobOrPath}</parameterString>
+	      <winParameterString> -any -parameters "%specific" %parameters " #{blobOrPath}</winParameterString>
+	      <installationDirective>You need to install commandName.</installationDirective>
+	    </command>
+    </code>
+    
+    @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor" />
+  </extension-point>
+
+  <extension-point name="commandTester">
+    <documentation>
+    Extension point to contribute new command testers.
+    It's a class that provides a way to test if a command is installed on the target server OS.
+    
+    Available options are:
+    -name: the name of the commandTester.
+    
+    -class: the class implementing CommandTester interface.
+    
+    Command tester contribution example:
+    <code>
+      <commandTester name="SystemPathTester"
+        class="org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters.SystemPathExistTester">
+      </commandTester>
+    </code>
+    
+    @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.commandline.executor.service.CommandTesterDescriptor" />
+  </extension-point>
+
+</component>
