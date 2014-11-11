@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.oauth.test.directoryConfig">
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+      point="directories">
+
+    <directory name="oauthConsumers" remove="true">
+    </directory>
+
+    <directory name="oauthConsumers">
+      <schema>oauthConsumer</schema>
+      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
+      <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
+      <dbUser>sa</dbUser>
+      <dbPassword></dbPassword>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>oauthConsumers</table>
+      <idField>consumerKey</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+    <directory name="oauthTokens" remove="true">
+    </directory>
+
+   <directory name="oauthTokens">
+      <schema>oauthToken</schema>
+      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
+      <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
+      <dbUser>sa</dbUser>
+      <dbPassword></dbPassword>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>oauthTokens</table>
+      <idField>token</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+
+    <directory name="oauthServiceProviders" remove="true">
+    </directory>
+
+    <directory name="oauthServiceProviders">
+      <schema>oauthServiceProvider</schema>
+      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
+      <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
+      <dbUser>sa</dbUser>
+      <dbPassword></dbPassword>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>oauthServiceProviders</table>
+      <idField>id</idField>
+      <autoincrementIdField>true</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <substringMatchType>subfinal</substringMatchType>
+    </directory>
+  </extension>
+</component>
