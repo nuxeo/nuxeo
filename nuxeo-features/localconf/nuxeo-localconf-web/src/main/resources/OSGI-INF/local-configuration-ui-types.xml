@@ -1,0 +1,109 @@
+<component name="org.nuxeo.ecm.localconf.ui">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="UI_TYPES_CONFIGURATION" link="/incl/tabs/ui_types_configuration.xhtml"
+      order="100" label="action.view.types.configuration" icon="/icons/file.gif">
+      <category>LOCAL_CONFIGURATION</category>
+      <filter-id>manage</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="ui_types_selection" type="shuttle">
+      <labels>
+        <label mode="any">label.local.configuration.ui.types.allowedTypesSelection</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>uitypesconf:allowedTypes</field>
+      </fields>
+      <properties mode="any">
+        <property name="availableElementsLabel">
+          label.local.configuration.selection.availableUITypes
+        </property>
+        <property name="selectedElementsLabel">
+          label.local.configuration.selection.selectedUITypes
+        </property>
+        <property name="sourceItems">
+          #{typesConfigurationActions.getNotSelectedTypes(layoutValue)}
+        </property>
+        <property name="sourceItemVar">type</property>
+        <property name="sourceItemValue">#{type.id}</property>
+        <property name="sourceItemLabel">#{messages[type.label]}</property>
+        <property name="sourceItemOrdering">label</property>
+        <property name="sourceItemCaseSensitive">true</property>
+        <property name="targetItems">
+          #{typesConfigurationActions.getSelectedTypes(layoutValue)}
+        </property>
+        <property name="targetItemVar">type</property>
+        <property name="targetItemValue">#{type.id}</property>
+        <property name="targetItemLabel">#{messages[type.label]}</property>
+      </properties>
+    </widget>
+
+    <widget name="deny_all_types" type="checkbox">
+      <labels>
+        <label mode="any">label.local.configuration.ui.types.denyAllTypes</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>uitypesconf:denyAllTypes</field>
+      </fields>
+    </widget>
+
+    <widget name="default_type" type="selectOneMenu">
+      <labels>
+        <label mode="any">label.local.configuration.ui.automaticType</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>uitypesconf:defaultType</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="#{messages['label.local.configuration.ui.defaultType']}"
+          itemValue="" />
+        <options
+          value="#{typesConfigurationActions.getTypesWithSchemaFile(layoutValue)}"
+          var="type" itemValue="#{type.id}" itemLabel="#{messages[type.label]}" />
+      </selectOptions>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="ui_types_configuration">
+      <templates>
+        <template mode="any">
+          /layouts/layout_local_configuration_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="layoutTemplateToInclude">/layouts/layout_default_template.xhtml</property>
+        <property name="foldableBoxLabel">label.local.configuration.uiTypes</property>
+        <property name="localConfigurationFacet">UITypesLocalConfiguration</property>
+        <property name="helpLabel">label.local.configuration.uiTypes.info</property>
+        <property name="elementsToReRender">local_configuration_panel</property>
+      </properties>
+      <rows>
+        <row>
+          <widget>ui_types_selection</widget>
+        </row>
+        <row>
+          <widget>deny_all_types</widget>
+        </row>
+        <row>
+          <widget>default_type</widget>
+        </row>
+      </rows>
+    </layout>
+
+  </extension>
+
+</component>

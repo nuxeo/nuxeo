@@ -1,0 +1,43 @@
+<span xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  id="#{widget.id}">
+<c:if test="#{widget.mode != 'edit'}">#{field}</c:if>
+<c:if test="#{widget.mode == 'edit'}">
+
+  <a4j:region id="#{widget.id}_region">
+
+    <h:selectOneMenu id="#{widget.id}" value="#{field}"
+      styleClass="#{widgetProperty_styleClass}"
+      required="#{widgetProperty_required}">
+
+      <!-- TODO migrate listener according to JSF2 -->
+      <a4j:ajax event="change"
+        render="#{widgetProperty_reRender}"
+        immediate="#{widgetProperty_immediate}"
+        execute="#{widgetProperty_ajaxSingle ? '@this' : '@form'}"
+        listener="#{setupWizardAction.proxyChange}" />
+
+      <f:selectItem itemValue="none"
+        itemLabel="#{messages['label.setup.nuxeo.httpProxy.none']}" />
+      <f:selectItem itemValue="anonymous"
+        itemLabel="#{messages['label.setup.nuxeo.httpProxy.anonymous']}" />
+      <f:selectItem itemValue="authenticated"
+        itemLabel="#{messages['label.setup.nuxeo.httpProxy.authenticated']}" />
+
+    </h:selectOneMenu>
+
+    <a4j:status>
+      <f:facet name="start">
+        <h:graphicImage value="/img/standart_waiter.gif" />
+      </f:facet>
+    </a4j:status>
+
+    <h:message styleClass="errorMessage" for="#{widget.id}"
+      id="#{widget.id}_message" />
+
+  </a4j:region>
+
+</c:if>
+</span>

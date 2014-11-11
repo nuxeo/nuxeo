@@ -1,0 +1,1946 @@
+{
+  "name": "dublincore",
+  "templates": {"any": "/layouts/layout_default_template.xhtml"},
+  "rows":   [
+        {
+      "name": "layout_row_0",
+      "widgets": [{"name": "nature"}]
+    },
+        {
+      "name": "layout_row_1",
+      "widgets": [{"name": "subjects"}]
+    },
+        {
+      "name": "layout_row_2",
+      "widgets": [{"name": "rights"}]
+    },
+        {
+      "name": "layout_row_3",
+      "widgets": [{"name": "source"}]
+    },
+        {
+      "name": "layout_row_4",
+      "widgets": [{"name": "coverage"}]
+    },
+        {
+      "name": "layout_row_5",
+      "widgets": [{"name": "created"}]
+    },
+        {
+      "name": "layout_row_6",
+      "widgets": [{"name": "modified"}]
+    },
+        {
+      "name": "layout_row_7",
+      "widgets": [{"name": "format"}]
+    },
+        {
+      "name": "layout_row_8",
+      "widgets": [{"name": "language"}]
+    },
+        {
+      "name": "layout_row_9",
+      "widgets": [{"name": "expired"}]
+    },
+        {
+      "name": "layout_row_10",
+      "widgets": [{"name": "author"}]
+    },
+        {
+      "name": "layout_row_11",
+      "widgets": [{"name": "contributors"}]
+    },
+        {
+      "name": "layout_row_12",
+      "widgets": [{"name": "lastContributor"}]
+    }
+  ],
+  "widgets":   [
+        {
+      "name": "nature",
+      "type": "selectOneDirectory",
+      "labels": {"any": "label.dublincore.nature"},
+      "translated": true,
+      "handlingLabels": false,
+      "fields": [      {
+        "fieldName": "dc:nature",
+        "propertyName": "dc:nature"
+      }],
+      "properties": {"any":       {
+        "directoryName": "nature",
+        "localize": "true",
+        "ordering": "ordering,label"
+      }},
+      "selectOptions":       [
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.article",
+          "itemValue": "article"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.acknowledgement",
+          "itemValue": "acknowledgement"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.certificate",
+          "itemValue": "certificate"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.endorsement",
+          "itemValue": "endorsement"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.notice",
+          "itemValue": "notice"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.credit",
+          "itemValue": "credit"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.invoice",
+          "itemValue": "invoice"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.assessment",
+          "itemValue": "assessment"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.purchaseOrder",
+          "itemValue": "purchaseOrder"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.deliveryNote",
+          "itemValue": "deliveryNote"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.booklet",
+          "itemValue": "booklet"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.application",
+          "itemValue": "application"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.CDRom",
+          "itemValue": "CDRom"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.medicalCertificate",
+          "itemValue": "medicalCertificate"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.serviceCertificate",
+          "itemValue": "serviceCertificate"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.order",
+          "itemValue": "order"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.contract",
+          "itemValue": "contract"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.email",
+          "itemValue": "email"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.convocation",
+          "itemValue": "convocation"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.decree",
+          "itemValue": "decree"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.leaveApplication",
+          "itemValue": "leaveApplication"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.trainingApplication",
+          "itemValue": "trainingApplication"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.accomodationApplicationForm",
+          "itemValue": "accomodationApplicationForm"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.loanApplication",
+          "itemValue": "loanApplication"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.quotation",
+          "itemValue": "quotation"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.fax",
+          "itemValue": "fax"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.card",
+          "itemValue": "card"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.worksheet",
+          "itemValue": "worksheet"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.letter",
+          "itemValue": "letter"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.memo",
+          "itemValue": "memo"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.note",
+          "itemValue": "note"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.notification",
+          "itemValue": "notification"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.procedure",
+          "itemValue": "procedure"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.report",
+          "itemValue": "report"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.internshipReport",
+          "itemValue": "internshipReport"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.bankAccountDetails",
+          "itemValue": "bankAccountDetails"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.nature.pressReview",
+          "itemValue": "pressReview"
+        }
+      ],
+      "renderingInfos": {"any": [      {
+        "level": "error",
+        "message": "This is my widget rendering message",
+        "translated": false
+      }]}
+    },
+        {
+      "name": "subjects",
+      "type": "template",
+      "labels": {"any": "label.dublincore.subject"},
+      "helpLabels": {"edit": "label.dublincore.subjects.info"},
+      "translated": true,
+      "handlingLabels": false,
+      "fields": [      {
+        "fieldName": "dc:subjects",
+        "propertyName": "dc:subjects"
+      }],
+      "properties": {"any": {"template": "/widgets/subjects_widget.xhtml"}},
+      "selectOptions":       [
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.art",
+          "itemValue": "art"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.art/label.directories.subtopic.architecture",
+          "itemValue": "art/architecture"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.art/label.directories.subtopic.comics",
+          "itemValue": "art/comics"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.art/label.directories.subtopic.cinema",
+          "itemValue": "art/cinema"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.art/label.directories.subtopic.culture",
+          "itemValue": "art/culture"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.art/label.directories.subtopic.danse",
+          "itemValue": "art/danse"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.art/label.directories.subtopic.arthistory",
+          "itemValue": "art/art history"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.art/label.directories.subtopic.literature",
+          "itemValue": "art/literature"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.art/label.directories.subtopic.music",
+          "itemValue": "art/music"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.art/label.directories.subtopic.paint",
+          "itemValue": "art/paint"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.art/label.directories.subtopic.photography",
+          "itemValue": "art/photography"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.art/label.directories.subtopic.show",
+          "itemValue": "art/show"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.humanscience",
+          "itemValue": "human sciences"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.humanscience/label.directories.subtopic.rights",
+          "itemValue": "human sciences/rights"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.humanscience/label.directories.subtopic.economy",
+          "itemValue": "human sciences/economy"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.humanscience/label.directories.subtopic.geography",
+          "itemValue": "human sciences/geography"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.humanscience/label.directories.subtopic.history",
+          "itemValue": "human sciences/history"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.humanscience/label.directories.subtopic.information",
+          "itemValue": "human sciences/information"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.humanscience/label.directories.subtopic.languages",
+          "itemValue": "human sciences/languages"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.humanscience/label.directories.subtopic.phylosophy",
+          "itemValue": "human sciences/phylosophy"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.humanscience/label.directories.subtopic.psychology",
+          "itemValue": "human sciences/psychology"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.humanscience/label.directories.subtopic.sociology",
+          "itemValue": "human sciences/sociology"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.society",
+          "itemValue": "society"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.society/label.directories.subtopic.education",
+          "itemValue": "society/education"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.society/label.directories.subtopic.company",
+          "itemValue": "society/company"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.society/label.directories.subtopic.ecology",
+          "itemValue": "society/ecology"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.society/label.directories.subtopic.women",
+          "itemValue": "society/women"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.society/label.directories.subtopic.humanitarian",
+          "itemValue": "society/humanitarian"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.society/label.directories.subtopic.minority",
+          "itemValue": "society/politic"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.society/label.directories.subtopic.religion",
+          "itemValue": "society/religion"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.dailylife",
+          "itemValue": "daily life"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.dailylife/label.directories.subtopic.collection",
+          "itemValue": "daily life/collection"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.dailylife/label.directories.subtopic.gastronomy",
+          "itemValue": "daily life/gastronomy"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.dailylife/label.directories.subtopic.gardening",
+          "itemValue": "daily life/gardening"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.dailylife/label.directories.subtopic.games",
+          "itemValue": "daily life/games"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.dailylife/label.directories.subtopic.videogames",
+          "itemValue": "daily life/video games"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.dailylife/label.directories.subtopic.fashion",
+          "itemValue": "daily life/fashion"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.dailylife/label.directories.subtopic.sexuality",
+          "itemValue": "daily life/sexuality"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.dailylife/label.directories.subtopic.sport",
+          "itemValue": "daily life/sport"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.dailylife/label.directories.subtopic.television",
+          "itemValue": "daily life/television"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.dailylife/label.directories.subtopic.tourism",
+          "itemValue": "daily life/tourism"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.technology",
+          "itemValue": "technology"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.technology/label.directories.subtopic.astronautic",
+          "itemValue": "technology/astronautic"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.technology/label.directories.subtopic.electronic",
+          "itemValue": "technology/electronic"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.technology/label.directories.subtopic.energy",
+          "itemValue": "technology/energy"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.technology/label.directories.subtopic.industry",
+          "itemValue": "technology/industry"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.technology/label.directories.subtopic.it",
+          "itemValue": "technology/it"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.technology/label.directories.subtopic.robotic",
+          "itemValue": "technology/robotic"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.topic.technology/label.directories.subtopic.transport",
+          "itemValue": "technology/transport"
+        }
+      ]
+    },
+        {
+      "name": "rights",
+      "type": "text",
+      "labels": {"any": "label.dublincore.rights"},
+      "translated": true,
+      "handlingLabels": false,
+      "fields": [      {
+        "fieldName": "dc:rights",
+        "propertyName": "dc:rights"
+      }],
+      "propertiesByWidgetMode": {"edit": {"styleClass": "dataInputText"}}
+    },
+        {
+      "name": "source",
+      "type": "text",
+      "labels": {"any": "label.dublincore.source"},
+      "translated": true,
+      "handlingLabels": false,
+      "fields": [      {
+        "fieldName": "dc:source",
+        "propertyName": "dc:source"
+      }],
+      "propertiesByWidgetMode": {"edit": {"styleClass": "dataInputText"}}
+    },
+        {
+      "name": "coverage",
+      "type": "template",
+      "labels": {"any": "label.dublincore.coverage"},
+      "helpLabels": {"edit": "label.dublincore.coverage.info"},
+      "translated": true,
+      "handlingLabels": false,
+      "fields": [      {
+        "fieldName": "dc:coverage",
+        "propertyName": "dc:coverage"
+      }],
+      "properties": {"any": {"template": "/widgets/coverage_widget.xhtml"}},
+      "selectOptions":       [
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe",
+          "itemValue": "europe"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Aland_Islands",
+          "itemValue": "europe/Aland_Islands"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Albania",
+          "itemValue": "europe/Albania"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Andorra",
+          "itemValue": "europe/Andorra"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Austria",
+          "itemValue": "europe/Austria"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Belarus",
+          "itemValue": "europe/Belarus"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Belgium",
+          "itemValue": "europe/Belgium"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Bosnia_and_Herzegovina",
+          "itemValue": "europe/Bosnia_and_Herzegovina"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Bulgaria",
+          "itemValue": "europe/Bulgaria"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Croatia",
+          "itemValue": "europe/Croatia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Czech_Republic",
+          "itemValue": "europe/Czech_Republic"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Denmark",
+          "itemValue": "europe/Denmark"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Estonia",
+          "itemValue": "europe/Estonia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Faroe_Islands",
+          "itemValue": "europe/Faroe_Islands"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Finland",
+          "itemValue": "europe/Finland"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.France",
+          "itemValue": "europe/France"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Germany",
+          "itemValue": "europe/Germany"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Gibraltar",
+          "itemValue": "europe/Gibraltar"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Greece",
+          "itemValue": "europe/Greece"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Guernsey",
+          "itemValue": "europe/Guernsey"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Holy_See_Vatican_City_State",
+          "itemValue": "europe/Holy_See_Vatican_City_State"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Hungary",
+          "itemValue": "europe/Hungary"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Iceland",
+          "itemValue": "europe/Iceland"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Ireland",
+          "itemValue": "europe/Ireland"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Isle_of_Man",
+          "itemValue": "europe/Isle_of_Man"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Italy",
+          "itemValue": "europe/Italy"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Jersey",
+          "itemValue": "europe/Jersey"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Latvia",
+          "itemValue": "europe/Latvia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Liechtenstein",
+          "itemValue": "europe/Liechtenstein"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Lithuania",
+          "itemValue": "europe/Lithuania"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Luxembourg",
+          "itemValue": "europe/Luxembourg"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Macedonia",
+          "itemValue": "europe/Macedonia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Malta",
+          "itemValue": "europe/Malta"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Moldova",
+          "itemValue": "europe/Moldova"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Monaco",
+          "itemValue": "europe/Monaco"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Montenegro",
+          "itemValue": "europe/Montenegro"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Netherlands",
+          "itemValue": "europe/Netherlands"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Norway",
+          "itemValue": "europe/Norway"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Poland",
+          "itemValue": "europe/Poland"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Portugal",
+          "itemValue": "europe/Portugal"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Romania",
+          "itemValue": "europe/Romania"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Russian_Federation",
+          "itemValue": "europe/Russian_Federation"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.San_Marino",
+          "itemValue": "europe/San_Marino"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Serbia",
+          "itemValue": "europe/Serbia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Slovakia_Slovak_Republic",
+          "itemValue": "europe/Slovakia_Slovak_Republic"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Slovenia",
+          "itemValue": "europe/Slovenia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Spain",
+          "itemValue": "europe/Spain"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Svalbard_Jan_Mayen_Islands",
+          "itemValue": "europe/Svalbard_Jan_Mayen_Islands"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Sweden",
+          "itemValue": "europe/Sweden"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Switzerland",
+          "itemValue": "europe/Switzerland"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.Ukraine",
+          "itemValue": "europe/Ukraine"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.europe/label.directories.country.United_Kingdom_of_Great_Britain_N_Ireland",
+          "itemValue": "europe/United_Kingdom_of_Great_Britain_N_Ireland"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa",
+          "itemValue": "africa"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Algeria",
+          "itemValue": "africa/Algeria"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Angola",
+          "itemValue": "africa/Angola"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Benin",
+          "itemValue": "africa/Benin"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Botswana",
+          "itemValue": "africa/Botswana"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Burkina_Faso",
+          "itemValue": "africa/Burkina_Faso"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Burundi",
+          "itemValue": "africa/Burundi"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Cameroon",
+          "itemValue": "africa/Cameroon"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Cape_Verde",
+          "itemValue": "africa/Cape_Verde"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Central_African_Republic",
+          "itemValue": "africa/Central_African_Republic"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Chad",
+          "itemValue": "africa/Chad"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Comoros",
+          "itemValue": "africa/Comoros"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Congo_Republic",
+          "itemValue": "africa/Congo_Republic"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Congo_Democratic_Republic",
+          "itemValue": "africa/Congo_Democratic_Republic"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Cote_D_Ivoire",
+          "itemValue": "africa/Cote_D_Ivoire"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Djibouti",
+          "itemValue": "africa/Djibouti"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Egypt",
+          "itemValue": "africa/Egypt"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Equatorial_Guinea",
+          "itemValue": "africa/Equatorial_Guinea"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Eritrea",
+          "itemValue": "africa/Eritrea"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Ethiopia",
+          "itemValue": "africa/Ethiopia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Gabon",
+          "itemValue": "africa/Gabon"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Gambia",
+          "itemValue": "africa/Gambia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Ghana",
+          "itemValue": "africa/Ghana"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Guinea",
+          "itemValue": "africa/Guinea"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Guinea_Bissau",
+          "itemValue": "africa/Guinea_Bissau"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Kenya",
+          "itemValue": "africa/Kenya"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Lesotho",
+          "itemValue": "africa/Lesotho"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Liberia",
+          "itemValue": "africa/Liberia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Libyan_Arab_Jamahiriya",
+          "itemValue": "africa/Libyan_Arab_Jamahiriya"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Madagascar",
+          "itemValue": "africa/Madagascar"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Malawi",
+          "itemValue": "africa/Malawi"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Mali",
+          "itemValue": "africa/Mali"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Mauritania",
+          "itemValue": "africa/Mauritania"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Mauritius",
+          "itemValue": "africa/Mauritius"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Mayotte",
+          "itemValue": "africa/Mayotte"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Morocco",
+          "itemValue": "africa/Morocco"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Mozambique",
+          "itemValue": "africa/Mozambique"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Namibia",
+          "itemValue": "africa/Namibia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Niger",
+          "itemValue": "africa/Niger"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Nigeria",
+          "itemValue": "africa/Nigeria"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Reunion",
+          "itemValue": "africa/Reunion"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Rwanda",
+          "itemValue": "africa/Rwanda"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.St_Helena",
+          "itemValue": "africa/St_Helena"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Sao_Tome_and_Principe",
+          "itemValue": "africa/Sao_Tome_and_Principe"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Senegal",
+          "itemValue": "africa/Senegal"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Seychelles",
+          "itemValue": "africa/Seychelles"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Sierra_Leone",
+          "itemValue": "africa/Sierra_Leone"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Somalia",
+          "itemValue": "africa/Somalia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.South_Africa",
+          "itemValue": "africa/South_Africa"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Sudan",
+          "itemValue": "africa/Sudan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Swaziland",
+          "itemValue": "africa/Swaziland"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Tanzania",
+          "itemValue": "africa/Tanzania"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Togo",
+          "itemValue": "africa/Togo"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Tunisia",
+          "itemValue": "africa/Tunisia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Uganda",
+          "itemValue": "africa/Uganda"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Western_Sahara",
+          "itemValue": "africa/Western_Sahara"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Zambia",
+          "itemValue": "africa/Zambia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.africa/label.directories.country.Zimbabwe",
+          "itemValue": "africa/Zimbabwe"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america",
+          "itemValue": "north-america"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Anguilla",
+          "itemValue": "north-america/Anguilla"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Antigua_and_Barbuda",
+          "itemValue": "north-america/Antigua_and_Barbuda"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Aruba",
+          "itemValue": "north-america/Aruba"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Bahamas",
+          "itemValue": "north-america/Bahamas"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Barbados",
+          "itemValue": "north-america/Barbados"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Belize",
+          "itemValue": "north-america/Belize"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Bermuda",
+          "itemValue": "north-america/Bermuda"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.British_Virgin_Islands",
+          "itemValue": "north-america/British_Virgin_Islands"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Canada",
+          "itemValue": "north-america/Canada"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Cayman_Islands",
+          "itemValue": "north-america/Cayman_Islands"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Costa_Rica",
+          "itemValue": "north-america/Costa_Rica"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Cuba",
+          "itemValue": "north-america/Cuba"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Dominica",
+          "itemValue": "north-america/Dominica"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Dominican_Republic",
+          "itemValue": "north-america/Dominican_Republic"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.El_Salvador",
+          "itemValue": "north-america/El_Salvador"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Greenland",
+          "itemValue": "north-america/Greenland"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Grenada",
+          "itemValue": "north-america/Grenada"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Guadaloupe",
+          "itemValue": "north-america/Guadaloupe"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Guatemala",
+          "itemValue": "north-america/Guatemala"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Haiti",
+          "itemValue": "north-america/Haiti"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Honduras",
+          "itemValue": "north-america/Honduras"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Jamaica",
+          "itemValue": "north-america/Jamaica"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Martinique",
+          "itemValue": "north-america/Martinique"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Mexico",
+          "itemValue": "north-america/Mexico"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Montserrat",
+          "itemValue": "north-america/Montserrat"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Netherlands_Antilles",
+          "itemValue": "north-america/Netherlands_Antilles"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Nicaragua",
+          "itemValue": "north-america/Nicaragua"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Panama",
+          "itemValue": "north-america/Panama"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Puerto_Rico",
+          "itemValue": "north-america/Puerto_Rico"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.St_Kitts_and_Nevis",
+          "itemValue": "north-america/St_Kitts_and_Nevis"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.St_Lucia",
+          "itemValue": "north-america/St_Lucia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.St_Pierre_and_Miquelon",
+          "itemValue": "north-america/St_Pierre_and_Miquelon"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.St_Vincent_and_the_Grenadines",
+          "itemValue": "north-america/St_Vincent_and_the_Grenadines"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Trinidad_and_Tobago",
+          "itemValue": "north-america/Trinidad_and_Tobago"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.Turks_and_Caicos_Islands",
+          "itemValue": "north-america/Turks_and_Caicos_Islands"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.US_Virgin_Islands",
+          "itemValue": "north-america/US_Virgin_Islands"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.north-america/label.directories.country.United_States_of_America",
+          "itemValue": "north-america/United_States_of_America"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.south-america",
+          "itemValue": "south-america"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.south-america/label.directories.country.Argentina",
+          "itemValue": "south-america/Argentina"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.south-america/label.directories.country.Bolivia",
+          "itemValue": "south-america/Bolivia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.south-america/label.directories.country.Brazil",
+          "itemValue": "south-america/Brazil"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.south-america/label.directories.country.Chile",
+          "itemValue": "south-america/Chile"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.south-america/label.directories.country.Colombia",
+          "itemValue": "south-america/Colombia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.south-america/label.directories.country.Ecuador",
+          "itemValue": "south-america/Ecuador"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.south-america/label.directories.country.Falkland_Islands_Malvinas",
+          "itemValue": "south-america/Falkland_Islands_Malvinas"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.south-america/label.directories.country.French_Guiana",
+          "itemValue": "south-america/French_Guiana"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.south-america/label.directories.country.Guyana",
+          "itemValue": "south-america/Guyana"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.south-america/label.directories.country.Paraguay",
+          "itemValue": "south-america/Paraguay"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.south-america/label.directories.country.Peru",
+          "itemValue": "south-america/Peru"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.south-america/label.directories.country.Suriname",
+          "itemValue": "south-america/Suriname"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.south-america/label.directories.country.Uruguay",
+          "itemValue": "south-america/Uruguay"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.south-america/label.directories.country.Venezuela",
+          "itemValue": "south-america/Venezuela"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia",
+          "itemValue": "asia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Afghanistan",
+          "itemValue": "asia/Afghanistan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Armenia",
+          "itemValue": "asia/Armenia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Azerbaijan",
+          "itemValue": "asia/Azerbaijan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Bahrain",
+          "itemValue": "asia/Bahrain"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Bangladesh",
+          "itemValue": "asia/Bangladesh"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Bhutan",
+          "itemValue": "asia/Bhutan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.British_Indian_Ocean_Territory_Chagos_Archipelago",
+          "itemValue": "asia/British_Indian_Ocean_Territory_Chagos_Archipelago"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Brunei_Darussalam",
+          "itemValue": "asia/Brunei_Darussalam"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Cambodia",
+          "itemValue": "asia/Cambodia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.China",
+          "itemValue": "asia/China"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Christmas_Island",
+          "itemValue": "asia/Christmas_Island"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Cocos_Keeling_Islands",
+          "itemValue": "asia/Cocos_Keeling_Islands"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Cyprus",
+          "itemValue": "asia/Cyprus"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Georgia",
+          "itemValue": "asia/Georgia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Hong_Kong",
+          "itemValue": "asia/Hong_Kong"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.India",
+          "itemValue": "asia/India"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Indonesia",
+          "itemValue": "asia/Indonesia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Iran",
+          "itemValue": "asia/Iran"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Iraq",
+          "itemValue": "asia/Iraq"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Israel",
+          "itemValue": "asia/Israel"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Japan",
+          "itemValue": "asia/Japan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Jordan",
+          "itemValue": "asia/Jordan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Kazakhstan",
+          "itemValue": "asia/Kazakhstan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.North_Korea",
+          "itemValue": "asia/North_Korea"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.South_Korea",
+          "itemValue": "asia/South_Korea"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Kuwait",
+          "itemValue": "asia/Kuwait"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Kyrgyz_Republic",
+          "itemValue": "asia/Kyrgyz_Republic"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Lao_People_s_Democratic_Republic",
+          "itemValue": "asia/Lao_People_s_Democratic_Republic"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Lebanon",
+          "itemValue": "asia/Lebanon"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Macao",
+          "itemValue": "asia/Macao"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Malaysia",
+          "itemValue": "asia/Malaysia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Maldives",
+          "itemValue": "asia/Maldives"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Mongolia",
+          "itemValue": "asia/Mongolia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Myanmar",
+          "itemValue": "asia/Myanmar"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Nepal",
+          "itemValue": "asia/Nepal"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Oman",
+          "itemValue": "asia/Oman"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Pakistan",
+          "itemValue": "asia/Pakistan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Palestinian_Territory",
+          "itemValue": "asia/Palestinian_Territory"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Philippines",
+          "itemValue": "asia/Philippines"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Qatar",
+          "itemValue": "asia/Qatar"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Saudi_Arabia",
+          "itemValue": "asia/Saudi_Arabia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Singapore",
+          "itemValue": "asia/Singapore"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Sri_Lanka",
+          "itemValue": "asia/Sri_Lanka"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Syrian_Arab_Republic",
+          "itemValue": "asia/Syrian_Arab_Republic"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Taiwan",
+          "itemValue": "asia/Taiwan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Tajikistan",
+          "itemValue": "asia/Tajikistan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Thailand",
+          "itemValue": "asia/Thailand"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Timor_Leste",
+          "itemValue": "asia/Timor_Leste"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Turkey",
+          "itemValue": "asia/Turkey"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Turkmenistan",
+          "itemValue": "asia/Turkmenistan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.United_Arab_Emirates",
+          "itemValue": "asia/United_Arab_Emirates"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Uzbekistan",
+          "itemValue": "asia/Uzbekistan"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Viet_Nam",
+          "itemValue": "asia/Viet_Nam"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.asia/label.directories.country.Yemen",
+          "itemValue": "asia/Yemen"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania",
+          "itemValue": "oceania"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.American_Samoa",
+          "itemValue": "oceania/American_Samoa"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.Australia",
+          "itemValue": "oceania/Australia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.Cook_Islands",
+          "itemValue": "oceania/Cook_Islands"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.Fiji",
+          "itemValue": "oceania/Fiji"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.French_Polynesia",
+          "itemValue": "oceania/French_Polynesia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.Guam",
+          "itemValue": "oceania/Guam"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.Kiribati",
+          "itemValue": "oceania/Kiribati"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.Marshall_Islands",
+          "itemValue": "oceania/Marshall_Islands"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.Micronesia",
+          "itemValue": "oceania/Micronesia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.Nauru",
+          "itemValue": "oceania/Nauru"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.New_Caledonia",
+          "itemValue": "oceania/New_Caledonia"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.New_Zealand",
+          "itemValue": "oceania/New_Zealand"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.Niue",
+          "itemValue": "oceania/Niue"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.Norfolk_Island",
+          "itemValue": "oceania/Norfolk_Island"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.Northern_Mariana_Islands",
+          "itemValue": "oceania/Northern_Mariana_Islands"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.Palau",
+          "itemValue": "oceania/Palau"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.Papua_New_Guinea",
+          "itemValue": "oceania/Papua_New_Guinea"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.Pitcairn_Island",
+          "itemValue": "oceania/Pitcairn_Island"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.Samoa",
+          "itemValue": "oceania/Samoa"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.Solomon_Islands",
+          "itemValue": "oceania/Solomon_Islands"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.Tokelau_Tokelau_Islands",
+          "itemValue": "oceania/Tokelau_Tokelau_Islands"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.Tonga",
+          "itemValue": "oceania/Tonga"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.Tuvalu",
+          "itemValue": "oceania/Tuvalu"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.United_States_Minor_Outlying_Islands",
+          "itemValue": "oceania/United_States_Minor_Outlying_Islands"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.Vanuatu",
+          "itemValue": "oceania/Vanuatu"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.oceania/label.directories.country.Wallis_and_Futuna_Islands",
+          "itemValue": "oceania/Wallis_and_Futuna_Islands"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.antarctica",
+          "itemValue": "antarctica"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.antarctica/label.directories.country.Antarctica_the_territory_South_of_60_deg_S",
+          "itemValue": "antarctica/Antarctica_the_territory_South_of_60_deg_S"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.antarctica/label.directories.country.Bouvet_Island_Bouvetoya",
+          "itemValue": "antarctica/Bouvet_Island_Bouvetoya"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.antarctica/label.directories.country.French_Southern_Territories",
+          "itemValue": "antarctica/French_Southern_Territories"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.antarctica/label.directories.country.Heard_and_McDonald_Islands",
+          "itemValue": "antarctica/Heard_and_McDonald_Islands"
+        },
+                {
+          "multiple": false,
+          "itemLabel": "label.directories.continent.antarctica/label.directories.country.South_Georgia_and_the_South_Sandwich_Islands",
+          "itemValue": "antarctica/South_Georgia_and_the_South_Sandwich_Islands"
+        }
+      ]
+    },
+        {
+      "name": "created",
+      "type": "datetime",
+      "labels": {"any": "label.dublincore.created"},
+      "translated": true,
+      "handlingLabels": false,
+      "widgetModes":       {
+        "any": "view",
+        "pdf": "pdf"
+      },
+      "fields": [      {
+        "fieldName": "dc:created",
+        "propertyName": "dc:created"
+      }],
+      "propertiesByWidgetMode": {"any": {"pattern": "#{nxu:basicDateAndTimeFormatter()}"}}
+    },
+        {
+      "name": "modified",
+      "type": "datetime",
+      "labels": {"any": "label.dublincore.modified"},
+      "translated": true,
+      "handlingLabels": false,
+      "widgetModes":       {
+        "any": "view",
+        "pdf": "pdf"
+      },
+      "fields": [      {
+        "fieldName": "dc:modified",
+        "propertyName": "dc:modified"
+      }],
+      "propertiesByWidgetMode": {"any": {"pattern": "#{nxu:basicDateAndTimeFormatter()}"}}
+    },
+        {
+      "name": "format",
+      "type": "text",
+      "labels": {"any": "label.dublincore.format"},
+      "translated": true,
+      "handlingLabels": false,
+      "fields": [      {
+        "fieldName": "dc:format",
+        "propertyName": "dc:format"
+      }],
+      "propertiesByWidgetMode": {"edit": {"styleClass": "dataInputText"}}
+    },
+        {
+      "name": "language",
+      "type": "text",
+      "labels": {"any": "label.dublincore.language"},
+      "translated": true,
+      "handlingLabels": false,
+      "fields": [      {
+        "fieldName": "dc:language",
+        "propertyName": "dc:language"
+      }],
+      "propertiesByWidgetMode": {"edit": {"styleClass": "dataInputText"}}
+    },
+        {
+      "name": "expired",
+      "type": "datetime",
+      "labels": {"any": "label.dublincore.expired"},
+      "translated": true,
+      "handlingLabels": false,
+      "fields": [      {
+        "fieldName": "dc:expired",
+        "propertyName": "dc:expired"
+      }],
+      "propertiesByWidgetMode":       {
+        "any": {"pattern": "#{nxu:basicDateFormatter()}"},
+        "edit": {"format": "#{nxu:basicDateFormatter()}"}
+      }
+    },
+        {
+      "name": "author",
+      "type": "template",
+      "labels": {"any": "label.dublincore.creator"},
+      "helpLabels": {"edit": "label.dublincore.author.info"},
+      "translated": true,
+      "handlingLabels": false,
+      "widgetModes":       {
+        "any": "view",
+        "pdf": "pdf"
+      },
+      "fields": [      {
+        "fieldName": "dc:contributors/0",
+        "propertyName": "dc:contributors/0"
+      }],
+      "properties": {"any": {"template": "/widgets/single_user_widget_template.xhtml"}}
+    },
+        {
+      "name": "contributors",
+      "type": "template",
+      "labels": {"any": "label.dublincore.contributors"},
+      "helpLabels": {"edit": "label.dublincore.contributors.info"},
+      "translated": true,
+      "handlingLabels": false,
+      "fields": [      {
+        "fieldName": "dc:contributors",
+        "propertyName": "dc:contributors"
+      }],
+      "properties": {"any": {"template": "/widgets/contributors_widget.xhtml"}},
+      "propertiesByWidgetMode": {"edit": {"styleClass": "dataInputText"}}
+    },
+        {
+      "name": "lastContributor",
+      "type": "template",
+      "labels": {"any": "label.dublincore.lastContributor"},
+      "helpLabels": {"edit": "label.dublincore.lastContributor.info"},
+      "translated": true,
+      "handlingLabels": false,
+      "widgetModes":       {
+        "any": "view",
+        "pdf": "pdf"
+      },
+      "fields": [      {
+        "fieldName": "dc:lastContributor",
+        "propertyName": "dc:lastContributor"
+      }],
+      "properties": {"any": {"template": "/widgets/single_user_widget_template.xhtml"}}
+    }
+  ],
+  "renderingInfos": {"any": [  {
+    "level": "error",
+    "message": "This is my layout rendering message",
+    "translated": false
+  }]}
+}

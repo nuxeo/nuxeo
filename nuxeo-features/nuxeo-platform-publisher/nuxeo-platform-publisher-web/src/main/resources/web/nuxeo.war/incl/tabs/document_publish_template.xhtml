@@ -1,0 +1,160 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:rich="http://richfaces.org/rich" class="menu">
+
+  <a4j:outputPanel ajaxRendered="false" layout="block">
+    <h:form ajaxSubmit="true" id="publishTreeForm">
+
+      <h:outputText value="#{messages['label.sections.not.defined']}"
+        rendered="#{empty availablePublicationTrees}" />
+
+      <h:panelGroup rendered="#{!empty availablePublicationTrees}">
+
+        <h:panelGrid styleClass="dataInput"
+          columnClasses="labelColumn, fieldColumn" columns="2">
+          <h:panelGroup>
+            <h:outputText value="#{messages['label.publish.sections']}" />
+          </h:panelGroup>
+          <h:panelGroup>
+            <h:selectOneListbox id="publishSelectTreeName"
+              styleClass="dataInputText" size="1"
+              value="#{publishActions.currentPublicationTreeNameForPublishing}">
+              <nxu:selectItems value="#{availablePublicationTrees}"
+                var="tree" itemValue="#{tree.name}"
+                itemLabel="#{messages[tree.title]}#{publishActions.getDomainName(tree.name)}" />
+              <a4j:ajax event="change"
+                render=":publishTreeForm:sectionTree :publishTreeForm:publishingInfoList">
+                <a4j:attachQueue ignoreDupResponses="true" />
+              </a4j:ajax>
+            </h:selectOneListbox>
+          </h:panelGroup>
+        </h:panelGrid>
+
+        <ui:insert name="document_publish_before_tree" />
+
+        <dl>
+          <dd class="menuForm">
+
+            <a4j:outputPanel id="sectionTree" layout="block"
+              rendered="#{publishActions.currentPublicationTreeForPublishing != null}">
+              <rich:tree
+                iconLeaf="#{publishActions.currentPublicationTreeIconCollapsed}"
+                iconExpanded="#{publishActions.currentPublicationTreeIconCollapsed}"
+                iconCollapsed="#{publishActions.currentPublicationTreeIconCollapsed}"
+                rowKeyVar="rowKey"
+                stateVar="nodeState"
+                id="publishTree"
+                var="node">
+                <rich:treeModelRecursiveAdaptor
+                  roots="#{publishActions.currentPublicationTreesForPublishing}"
+                  nodes="#{node.childrenNodes}"
+                  leaf="#{node.childrenNodes == null or node.childrenNodes.size == 0}"
+                  id="publishRecursiveAdaptor">
+                  <rich:treeNode
+                    highlightedClass="treeNodeHighlightedClass"
+                    selectedClass="treeNodeSelectedClass"
+                    id="publishTreeNode">
+                    <h:outputText value="#{node.title}" />
+                    <h:commandLink immediate="true"
+                      action="#{publishActions.doPublish(node)}"
+                      rendered="#{publishActions.canPublishTo(node)}"
+                      id="publishCommandLink">
+                      <f:ajax execute="@this" render=":publishTreeForm:publishingInfoList facesStatusMessagePanel" />
+                      <h:graphicImage value="/icons/back.png" />
+                      <h:outputText
+                        value="#{messages['label.publish.publish']}" />
+                    </h:commandLink>
+                  </rich:treeNode>
+                </rich:treeModelRecursiveAdaptor>
+              </rich:tree>
+
+            </a4j:outputPanel>
+
+          </dd>
+        </dl>
+
+        <ui:insert name="document_publish_after_tree" />
+
+        <h:outputText
+          value="#{messages['label.publication.tree.not.available']}"
+          rendered="#{publishActions.currentPublicationTreeForPublishing == null}" />
+
+      </h:panelGroup>
+
+
+      <a4j:outputPanel id="publishingInfoList" layout="block">
+
+        <nxu:dataTable value="#{publishedDocuments}"
+          rendered="#{publishActions.currentPublicationTreeForPublishing != null and !empty publishedDocuments}"
+          var="publishedDocument" preserveSort="true"
+          preserveDataModel="false" rowClasses="dataRowEven,dataRowOdd"
+          sortable="false" styleClass="dataList">
+
+          <!-- Name -->
+          <nxu:column>
+            <f:facet name="header">
+              <h:outputText
+                value="#{messages['label.content.header.title']}" />
+            </f:facet>
+
+            <h:panelGroup
+              rendered="#{publishActions.isRemotePublishedDocument(publishedDocument)}">
+              <h:outputText
+                value="Remote: #{publishedDocument.parentPath}" />
+            </h:panelGroup>
+
+            <h:panelGroup
+              rendered="#{publishActions.isLocalPublishedDocument(publishedDocument)
+                      and publishActions.hasReadRight(publishedDocument.parentPath)}">
+              <nxd:restDocumentLink
+                document="#{publishActions.getDocumentModelFor(publishedDocument.parentPath)}">
+                <h:outputText
+                  value="#{publishActions.getFormattedPath(publishedDocument.parentPath)}" />
+              </nxd:restDocumentLink>
+            </h:panelGroup>
+
+            <h:panelGroup
+              rendered="#{publishActions.isFileSystemPublishedDocument(publishedDocument)}">
+              <h:outputText value="#{publishedDocument.parentPath}" />
+            </h:panelGroup>
+          </nxu:column>
+
+          <!--  Version of the published document -->
+          <h:column>
+            <f:facet name="header">
+              <h:outputText
+                value="#{messages['label.publish.header.version']}" />
+            </f:facet>
+            <h:outputText
+              value="#{publishedDocument.sourceVersionLabel}" />
+          </h:column>
+
+          <!--  Actions for the published document  -->
+          <h:column>
+            <f:facet name="header">
+              <h:outputText value="Action" />
+            </f:facet>
+            <h:commandLink immediate="true" styleClass="button"
+              value="#{messages['command.document.unpublish']}"
+              action="#{publishActions.unPublish(publishedDocument)}"
+              rendered="#{publishActions.canUnpublish(publishedDocument)}">
+              <f:ajax execute="@this" render=":publishTreeForm:publishingInfoList facesStatusMessagePanel" />
+            </h:commandLink>
+            <h:commandLink immediate="true" styleClass="button"
+              value="#{messages['command.document.republish']}"
+              action="#{publishActions.rePublish(publishedDocument)}"
+              rendered="#{publishActions.canRepublish(publishedDocument)}">
+              <f:ajax execute="@this" render=":publishTreeForm:publishingInfoList facesStatusMessagePanel" />
+            </h:commandLink>
+          </h:column>
+        </nxu:dataTable>
+      </a4j:outputPanel>
+    </h:form>
+  </a4j:outputPanel>
+</div>

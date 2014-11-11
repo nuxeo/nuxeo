@@ -1,0 +1,59 @@
+<div class="comments_block"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <c:if
+    test="#{currentDocument.hasFacet('Commentable') and (documentThreadedComments.size > 0)}">
+
+    <c:if test="#{widget.handlingLabels}">
+      <c:if test="#{!empty widget.label}">
+        <ui:include src="/widgets/incl/widget_label_template.xhtml">
+          <ui:param name="labelStyleClass" value="summaryTitle #{widgetProperty_headerStyleClass}" />
+        </ui:include>
+      </c:if>
+      <c:if test="#{empty widget.label}">
+        <ui:include src="/widgets/incl/label_template.xhtml">
+          <ui:param name="label" value="#{nxu:translate('label.summary.comments', documentThreadedComments.size)}" />
+          <ui:param name="helpLabel" value="#{widget.helpLabel}" />
+          <ui:param name="translated" value="false" />
+          <ui:param name="required" value="#{widget.required}" />
+          <ui:param name="labelStyleClass" value="summaryTitle #{widgetProperty_headerStyleClass}" />
+        </ui:include>
+      </c:if>
+    </c:if>
+
+    <h:outputText class="boldLabel"
+      value="#{messages['label.summary.lastComments']}" />
+    <c:forEach var="threadEntry" items="#{documentThreadedComments}"
+      styleClass="commentsOutput" rowIndexVar="rowIndex" rows="5"
+      first="0">
+
+      <h:panelGroup layout="block"
+        style="margin-left:#{threadEntry.depth*25}px;"
+        styleClass="commentBlock">
+
+        <div class="commentAuthor">
+          <h:outputText
+            value="#{nxu:userFullName(threadEntry.comment.comment.author)}" />
+          <h:outputText value=" " />
+          <span class="commentCreationDate"> <h:outputText
+              value="#{threadEntry.comment.comment.creationDate}">
+              <f:convertDateTime
+                pattern="#{nxu:basicDateAndTimeFormatter()}"
+                timeZone="#{timeZone}" />
+            </h:outputText>
+          </span>
+        </div>
+        <div class="commentQuote">
+          <h:outputText value="#{threadEntry.comment.comment.text}"
+            escape="false" />
+        </div>
+      </h:panelGroup>
+    </c:forEach>
+
+  </c:if>
+
+</div>

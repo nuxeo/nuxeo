@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="ds:annotations-test">
+  <extension target="org.nuxeo.runtime.datasource" point="datasources">
+    <datasource name="jdbc/nxrelations-default-jena" driverClassName="org.h2.Driver"
+      maxActive="20" maxIdle="5">
+      <property name="url">jdbc:h2:mem:test;DB_CLOSE_DELAY=-1</property>
+    </datasource>
+  </extension>
+</component>

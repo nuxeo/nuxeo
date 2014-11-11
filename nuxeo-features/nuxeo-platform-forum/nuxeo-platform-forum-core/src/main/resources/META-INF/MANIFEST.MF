@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Forum implementation
+Bundle-SymbolicName: org.nuxeo.ecm.platform.forum.core;singleton=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: core
+Nuxeo-Component: OSGI-INF/forum-schemas-contrib.xml,
+ OSGI-INF/forum-life-cycle-contrib.xml
+Require-Bundle: org.nuxeo.ecm.core.schema,
+ org.nuxeo.ecm.core

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.collections.pageprovider">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <coreQueryPageProvider name="default_collection">
+      <property name="maxResults">PAGE_SIZE</property>
+      <pattern>
+        SELECT * FROM Document WHERE dc:title ILIKE ? AND ecm:mixinType = 'Collection' AND
+        (ecm:primaryType != 'Favorites' OR (ecm:primaryType = 'Favorites' AND dc:creator = ?)) AND
+        ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <parameter>#{currentUser.name}</parameter>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>50</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="default_collection_candidate">
+      <property name="maxResults">PAGE_SIZE</property>
+      <pattern>
+        SELECT * FROM Document where dc:title ILIKE ? AND ecm:isProxy = 0
+        AND ecm:mixinType != 'SystemDocument' AND ecm:mixinType !=
+        'NotCollectionMember' AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>50</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="default_content_collection">
+      <property name="maxResults">PAGE_SIZE</property>
+      <pattern>
+        SELECT * FROM Document where ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
+        'deleted' AND collectionMember:collectionIds/* = ?
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>50</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="all_collections">
+      <property name="maxResults">PAGE_SIZE</property>
+      <pattern>
+        SELECT * FROM Document WHERE ecm:mixinType = 'Collection' AND
+        ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <pageSize>1000</pageSize>
+    </coreQueryPageProvider>
+
+  </extension>
+
+</component>

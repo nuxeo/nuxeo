@@ -1,0 +1,23 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout" id="#{widget.id}">
+
+  <c:if test="#{widget.mode == 'view'}">
+    <h:outputText value="#{field}" />
+  </c:if>
+
+  <c:if test="#{widget.mode == 'edit'}">
+    <h:selectOneRadio id="#{widget.id}_field" value="#{field}" required="#{widget.properties['required']}">
+      <f:selectItem itemValue="imap" itemLabel="IMAP" />
+      <f:selectItem itemValue="pop3" itemLabel="POP3" />
+      <f:selectItem itemValue="imaps" itemLabel="IMAPS" />
+      <f:selectItem itemValue="pop3s" itemLabel="POP3S" />
+    </h:selectOneRadio>
+    <h:message for="#{widget.id}_field"/>
+  </c:if>
+  
+</f:subview>

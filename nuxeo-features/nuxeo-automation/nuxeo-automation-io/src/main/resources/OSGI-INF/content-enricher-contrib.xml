@@ -1,0 +1,27 @@
+<component name="org.nuxeo.ecm.automation.io.rest.contributor.contrib">
+
+  <extension
+          target="org.nuxeo.ecm.automation.io.services.enricher.ContentEnricherService"
+          point="enricher">
+
+    <enricher name="acls"
+                 class="org.nuxeo.ecm.automation.io.services.enricher.ACLContentEnricher">
+      <category>acls</category>
+    </enricher>
+    <enricher name="permissions"
+            class="org.nuxeo.ecm.automation.io.services.enricher.UserPermissionsContentEnricher">
+      <category>permissions</category>
+      <parameter name="permissions">Read,Write,Everything</parameter>
+    </enricher>
+    <enricher name="thumbnail"
+                 class="org.nuxeo.ecm.automation.io.services.enricher.ThumbnailContentEnricher">
+      <category>thumbnail</category>
+    </enricher>
+    <enricher name="preview"
+              class="org.nuxeo.ecm.automation.io.services.enricher.PreviewContentEnricher">
+      <category>preview</category>
+    </enricher>
+
+  </extension>
+
+</component>

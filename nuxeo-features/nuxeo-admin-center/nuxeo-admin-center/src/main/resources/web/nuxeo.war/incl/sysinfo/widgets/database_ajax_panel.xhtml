@@ -1,0 +1,22 @@
+<a4j:outputPanel
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  layout="block"
+  id="#{nxu:test(empty widgetProperty_ajaxPanelId, widget.id, widgetProperty_ajaxPanelId)}">
+
+  <a4j:outputPanel id="#{widget.id}_subPanel" layout="block"
+    rendered="#{widgetProperty_rendered}">
+    <a4j:region id="#{widget.id}_subRegion"
+      rendered="#{widgetProperty_rendered}">
+
+      <nxl:subWidget>
+        <nxl:widget widget="#{widget}" value="#{value}" />
+      </nxl:subWidget>
+
+    </a4j:region>
+  </a4j:outputPanel>
+
+</a4j:outputPanel>

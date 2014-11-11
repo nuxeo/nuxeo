@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:nxs="http://www.nuxeo.org/ecm/schemas/iptc" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.nuxeo.org/ecm/schemas/iptc">
+
+  <xs:simpleType name="longString">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="2000" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="clob">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="999999999" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- IPTC info -->
+  <xs:element name="by_line" type="xs:string" />
+  <xs:element name="by_line_title" type="xs:string" />
+  <xs:element name="caption" type="nxs:clob" />
+  <xs:element name="category" type="xs:string" />
+  <xs:element name="city" type="xs:string" />
+  <xs:element name="copyright_notice" type="xs:string" />
+  <xs:element name="country_or_primary_location" type="xs:string" />
+  <xs:element name="credit" type="xs:string" />
+  <xs:element name="date_created" type="xs:date" />
+  <xs:element name="headline" type="nxs:longString" />
+  <xs:element name="keywords" type="xs:string" />
+  <xs:element name="language" type="xs:string" />
+  <xs:element name="object_name" type="xs:string" />
+  <xs:element name="original_transmission_ref" type="xs:string" />
+  <xs:element name="originating_program" type="xs:string" />
+  <xs:element name="province_or_state" type="xs:string" />
+  <xs:element name="record_version" type="xs:string" />
+  <xs:element name="release_date" type="xs:date" />
+  <xs:element name="release_time" type="xs:string" />
+  <xs:element name="source" type="xs:string" />
+  <xs:element name="special_instructions" type="xs:string" />
+  <xs:element name="supplemental_categories" type="xs:string" />
+  <xs:element name="time_created" type="xs:string" />
+  <xs:element name="urgency" type="xs:string" />
+  <xs:element name="writer" type="xs:string" />
+  <!-- End IPTC info -->
+
+</xs:schema>
