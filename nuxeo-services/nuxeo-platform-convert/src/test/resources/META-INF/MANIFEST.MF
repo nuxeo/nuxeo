@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXPlatformConvertPlugins
+Bundle-SymbolicName: org.nuxeo.ecm.platform.convert.test;singleton:=true
+Bundle-Localization: plugin
+Nuxeo-Component: test-ooo-manager-contrib.xml

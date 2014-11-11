@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component
+    name="org.nuxeo.ecm.platform.service.binding.contrib">
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement"
+      point="services">
+    <service class="org.nuxeo.ecm.platform.interfaces.ejb.ECContentRoot" group="platform">
+      <locator>%ECContentRootBean</locator>
+    </service>
+
+    <service class="org.nuxeo.ecm.platform.interfaces.ejb.ECDomain" group="platform">
+      <locator>%ECDomainBean</locator>
+    </service>
+  </extension>
+
+</component>
