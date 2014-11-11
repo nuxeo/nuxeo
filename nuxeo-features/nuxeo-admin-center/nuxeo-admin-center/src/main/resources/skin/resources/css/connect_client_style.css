@@ -1,0 +1,244 @@
+/* Global style */
+
+html, body {
+height:100%;
+}
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+border:0 none;
+font:normal 12px "Lucida Grande", Verdana, sans-serif;
+margin:0;
+padding:0;
+color:#333;
+}
+
+p {
+margin:3px 0px 10px;
+}
+
+a, a:link, a:active, a:visited {
+color:#0066CC;
+text-decoration:none;
+}
+
+a:hover {
+color:#014A93;
+text-decoration:underline;
+}
+
+blockquote:before, blockquote:after, q:before, q:after {
+content:"";
+}
+
+blockquote, q {
+quotes:"" "";
+}
+
+table {
+  border-collapse:collapse;
+  width:100%;
+  }
+
+h3 {
+ font-size:1.17em;
+ font-weight:bold;
+ margin:1em 0;
+}
+
+/* Messages */
+
+.infoMessage {
+ background:url("../images/lightbulb.png") no-repeat scroll 5px 8px #F8FCFF;
+ border:1px solid #445B71;
+ margin:15px 70px;
+ padding:10px 15px 10px 25px;
+}
+
+/* Listing style */
+
+.packageListing {
+  border-bottom:1px solid #cdcdcd;
+  /*cursor: hand;
+  cursor: pointer;*/
+}
+
+.packageListing td {
+  padding: 5px;
+  border-top:1px solid #cdcdcd;
+}
+
+.packageListing .detailRow td {
+  border-top:none;
+  }
+
+.packagePic {
+  border:1px solid #DEDEDE;
+  display:block;
+  height:97px;
+  margin:5px 15px 10px 0;
+  padding:3px;
+  width:97px;
+  }
+
+.packagePic img{
+  width:90px;
+  max-height:90px;
+  }
+
+.packageInfo {
+  padding:5px 0;
+  }
+
+.packageInfo p {
+  margin:4px 0px;
+  }
+
+
+.packageLabel {
+  width:160px;
+  display:inline-block;
+  }
+
+.button  {
+  -moz-border-radius:3px 3px 3px 3px;
+  -webkit-border-radius:3px 3px 3px 3px;
+  border-radius:3px 3px 3px 3px;
+  background-color:#fff;
+  border:1px solid #a3a3a3;
+  color:#333;
+  font-weight:bold;
+  padding:0 10px;
+}
+
+.packageListing .download {
+  color:;
+}
+
+.packageListing .restartNeeded {
+  color:red;
+}
+
+.packageListing .install {
+  color:#00bc66;
+}
+
+.packageListing .uninstall {
+  color:#000;
+}
+
+.row_odd {
+ background-color:#f6f6f6;
+}
+
+.row_even {
+  background-color:#eeeeff;
+}
+
+.opentd {
+  background: transparent url("../images/plus.gif") center no-repeat;
+  cursor: pointer;
+}
+
+.closetd {
+  background: transparent url("../images/minus.gif") center no-repeat;
+  cursor: pointer;
+}
+
+/* Download screen */
+
+.genericBox {
+  width:500px;
+  margin:30px auto;
+  padding:20px 30px;
+  text-align:center;
+  border:1px solid #dedede;
+  }
+
+.genericBox table {
+  margin:15px 0;
+  }
+
+.inProgressDownloadBox {
+  width:400px;
+  margin:30px auto;
+  padding:20px 30px;
+  text-align:center;
+  border:1px solid #dedede;
+  }
+
+.successfulDownloadBox {
+  font-size:14px;
+  padding:20px 30px 20px 50px;
+  margin: 50px;
+  border:1px solid #dedede;
+  background:url("../images/ok-green.png")  no-repeat scroll 20px 18px #fff;
+  }
+
+.errorDownloadBox {
+  font-size:14px;
+  padding:20px 30px 20px 50px;
+  margin: 50px;
+  border:1px solid #dedede;
+  background: #fff3f3 url("../images/ko-red.png") no-repeat  20px 18px;
+  }
+
+.installWarningsTitle {
+  padding:20px 30px 20px 50px;
+  margin: 20px 0px;
+  border:1px solid #dedede;
+  background-color:#fffcf5;
+}
+
+ul.installInfo {
+  padding:5px 0;
+}
+
+ul.installInfo li{
+  padding: 1px 0;
+}
+
+.termsAndConditionsBlock {
+  margin:10px 0;
+}
+
+.downloadDiv {
+  text-align:center;
+}
+
+.downloadTitle, .successfulDownloadBox p, .errorDownloadBox p {
+  font-weight:bold;
+}
+
+.downloadProgressContainer {;
+  border:1px solid #939ba4;
+  padding:2px;
+  margin:20px auto;
+  height:20px;
+  width:110px;
+}
+
+.downloadProgressBar {
+  background-color:#7f9ef7;
+  height:20px;
+}
+
+.downloadSize {
+  color:#666666;
+}
+
+.installButton {
+  background-color:#fff;
+  border:1px solid #f1f1f1;
+  margin:0 10px;
+  padding:5px 5px 5px 9px;
+}
+
+.installButton:hover {
+  border:1px solid #b5cfff;
+}
+
+/* Generic*/
+
+.alignCenter {
+  text-align:center;
+  }

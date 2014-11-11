@@ -1,0 +1,39 @@
+<module>
+  <!-- Inherit the core Web Toolkit stuff.                        -->
+  <inherits name='com.google.gwt.user.User' />
+  <inherits name="com.google.gwt.i18n.I18N"/>
+
+  <!--inherits name='com.extjs.gxt.ui.GXT'/-->
+  <inherits name='com.gwtext.GwtExt' />
+  <inherits name="com.google.gwt.http.HTTP" />
+  <inherits name="com.google.gwt.json.JSON" />
+
+  <!-- Specify the app entry point class.                         -->
+  <entry-point class='org.nuxeo.opensocial.container.client.ContainerEntryPoint' />
+
+  <extend-property name='locale' values='en' />
+  <extend-property name='locale' values='fr' />
+
+  <extend-property name='locale' values='ar' />
+  <extend-property name='locale' values='ca' />
+  <extend-property name='locale' values='cn' />
+  <extend-property name='locale' values='de' />
+  <extend-property name='locale' values='es' />
+  <extend-property name='locale' values='eu' />
+  <extend-property name='locale' values='gl' />
+  <extend-property name='locale' values='it' />
+  <extend-property name='locale' values='ja' />
+  <extend-property name='locale' values='pl' />
+  <extend-property name='locale' values='pt' />
+  <extend-property name='locale' values='pt_BR' />
+  <extend-property name='locale' values='ru' />
+  <extend-property name='locale' values='vn' />
+
+  <!-- apport ext js -->
+  <stylesheet src="js/ext/resources/css/ext-all.css" />
+  <script src="js/ext/adapter/ext/ext-base.js" />
+  <script src="js/ext/ext-all.js" />
+
+  <!-- Specify the application specific style sheet.              -->
+  <stylesheet src='container.css' />
+</module>
