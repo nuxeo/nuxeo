@@ -1,0 +1,10 @@
+-- character uuid to bigint migration for Oracle
+-- v0.3 2013-03-04
+
+BEGIN
+  -- cleanup phase
+  nx_execute('DROP TABLE tmp_fk');
+  nx_execute('DROP TABLE tmp_pk');
+  nx_execute('DROP TABLE tmp_idx');
+  nx_execute('DROP TABLE tmp_ftidx');
+END;
