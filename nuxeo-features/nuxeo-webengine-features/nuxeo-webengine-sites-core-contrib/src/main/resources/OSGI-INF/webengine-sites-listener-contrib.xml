@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.webengine.listeners">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="siteCreationListener" async="false" postCommit="false"
+      class="org.nuxeo.webengine.sites.listeners.SiteActionListener" priority="140">
+      <event>aboutToCreate</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+    <documentation>
+      site creation listener: set URL with name value
+      @author Rux
+    </documentation>
+
+    <listener name="sitesWikiListener" async="false"
+      postCommit="false" class="org.nuxeo.webengine.sites.listeners.SitesWikiListener" />
+    <documentation>
+      Sites wiki listener
+      @author Catalin Baican (cbaican@nuxeo.com)
+    </documentation>
+  </extension>
+
+</component>
+

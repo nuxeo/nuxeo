@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: WebEngine Blogs Module
+Bundle-SymbolicName: org.nuxeo.ecm.platform.webengine.blogs.core;singleton=true
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/webengine-blogs-core-types-contrib.xml,
+ OSGI-INF/webengine-blogs-listener-contrib.xml
+Require-Bundle: org.nuxeo.ecm.core
+Bundle-Category: stateful

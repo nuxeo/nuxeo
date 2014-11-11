@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.audit.PageProviderservice.testContrib">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+<!--
+    <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:isCheckedInVersion
+        = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider
+      name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT">
+      <whereClause docType="File">
+        <fixedPart>
+          ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
+          'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'
+        </fixedPart>
+        <predicate parameter="dc:title" operator="FULLTEXT">
+          <field schema="dublincore" name="title" />
+        </predicate>
+      </whereClause>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+    </coreQueryPageProvider>
+-->
+
+   <genericPageProvider name="GetAllEntries"
+      class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider">
+      <pattern>
+        from LogEntry log
+      </pattern>
+      <pageSize>2</pageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="GetAllEntriesInCategory"
+      class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider">
+      <pattern>
+        from LogEntry log  where log.category = ?
+      </pattern>
+      <sort column="log.eventDate" ascending="true" />
+      <pageSize>2</pageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="GetAllEntriesForDocumentInCategory"
+      class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider">
+      <whereClause docType="File">
+        <fixedPart>
+          log.docUUID = ?
+        </fixedPart>
+        <predicate parameter="log.category" operator="=">
+          <field schema="dublincore" name="title" />
+        </predicate>
+      </whereClause>
+      <sort column="log.eventDate" ascending="true" />
+      <pageSize>2</pageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="GetAllEntriesForDocumentInCategories"
+      class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider">
+      <whereClause docType="File">
+        <fixedPart>
+          log.docUUID = ?
+        </fixedPart>
+        <predicate parameter="log.category" operator="IN">
+          <field schema="dublincore" name="subjects" />
+        </predicate>
+      </whereClause>
+      <sort column="log.eventDate" ascending="true" />
+      <pageSize>2</pageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="GetAllEntriesBetween2Dates"
+      class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider">
+      <whereClause docType="File">
+        <fixedPart>
+          log.docUUID = ?
+        </fixedPart>
+        <predicate parameter="log.eventDate" operator="BETWEEN">
+          <field schema="dublincore" name="issued" />
+          <field schema="dublincore" name="valid" />
+        </predicate>
+      </whereClause>
+      <sort column="log.eventDate" ascending="true" />
+      <pageSize>10</pageSize>
+    </genericPageProvider>
+
+
+  </extension>
+
+</component>
