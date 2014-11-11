@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE server PUBLIC "-//JBoss//DTD MBean Service 4.0//EN" "http://www.jboss.org/j2ee/dtd/jboss-service_4_0.dtd">
+<server>
+  <mbean code="org.jboss.services.loggingmonitor.LoggingMonitor"
+         name="jboss.monitor:type=LoggingMonitor,name=RequestMonitor">
+    <attribute name="Filename">${jboss.server.log.dir}/webrequests.log</attribute>
+    <attribute name="AppendToFile">false</attribute>
+    <attribute name="RolloverPeriod">DAY</attribute>
+    <attribute name="MonitorPeriod">5000</attribute>
+    <attribute name="MonitoredObjects">
+      <configuration>
+        <monitoredmbean name="jboss.web:name=http-${nuxeo.bind.address}-8080,type=GlobalRequestProcessor" logger="jboss.requests">
+          <attribute>bytesSent</attribute>
+          <attribute>bytesReceived</attribute>
+          <attribute>processingTime</attribute>
+          <attribute>errorCount</attribute>
+          <attribute>maxTime</attribute>
+          <attribute>requestCount</attribute>
+        </monitoredmbean>
+      </configuration>
+    </attribute>
+    <depends>jboss.web:service=WebServer</depends>
+  </mbean>
+</server>
