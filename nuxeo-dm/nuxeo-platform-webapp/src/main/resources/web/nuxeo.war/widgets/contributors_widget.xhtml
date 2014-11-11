@@ -1,0 +1,33 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf"
+  id="#{widget.id}">
+<c:set var="andLabel" value=" #{messages['label.and']} " scope="page" />
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}"><nxu:inputList
+  value="#{field}" model="contributorsModel"><h:outputText
+  value="#{nxu:userFullName(contributorsModel.rowData)}" /><h:outputText
+  rendered="#{contributorsModel.rowIndex != contributorsModel.rowCount -1}"
+  value="#{nxu:test(contributorsModel.rowIndex == contributorsModel.rowCount -2, andLabel, ', ')}" /></nxu:inputList></c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:html>
+    <c:forEach var="username" items="#{field}" varStatus="status">
+      <c:if test="#{!status.first}">#{status.last ? andLabel : ', '}</c:if>
+      <h:outputText value="#{nxu:userFullName(username)}" />
+    </c:forEach>
+  </nxp:html>
+</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+  <div>
+    <c:forEach var="username" items="#{field}" varStatus="status">
+      <c:if test="#{!status.first}">#{status.last ? andLabel : ', '}</c:if>
+      <h:outputText value="#{nxu:userFullName(username)}" 
+        title="#{username}" onmouseover="tooltip.show(username, 500);"
+        onmouseout="tooltip.hide();"/>
+    </c:forEach>
+  </div>
+</c:if>
+</f:subview>
