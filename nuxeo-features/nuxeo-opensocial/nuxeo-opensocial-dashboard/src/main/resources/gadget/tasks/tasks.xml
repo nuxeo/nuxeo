@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="My Tasks" category="business" render_inline="required" scrolling="false" author="Ian Smith" directory_title="My Tasks" author_aboutme="nuxeo" singleton="false">
+      <Require feature="opensocial-0.8" />
+      <Require feature="dynamic-height" />
+      <Require feature="setprefs" />
+      <Require feature="settitle" />
+  </ModulePrefs>
+  <UserPref name="title" display_name="Title" required="false" default_value="My Tasks"/>
+
+  <Content type="html">
+    <![CDATA[
+    <script>
+      var requestBaseUrl='${serverSideBaseUrl}';
+    </script>
+
+    <script type="text/javascript" language="javascript" src="tasks.js"></script>
+    <link rel="stylesheet" type="text/css" href="tasks.css"/>
+      <div id="nxDocumentList">
+        <div id="nxDocumentListData">
+          <img src="${clientSideBaseUrl}img/standart_waiter.gif">
+        </div>
+    </div>
+
+     ]]>
+  </Content>
+</Module>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="Simple2LeggedTest"
+    description="Simple gadget to test 2 legged OAuth "
+    author="tdeprat" author_email="tdelprat@nuxeo.com"
+    height="420">
+    <Locale lang="fr" country="fr" />
+    <Require feature="dynamic-height" />
+    <Require feature="oauthpopup" />
+     <OAuth>
+      <Service name="nuxeo">
+        <Access url="http://127.0.0.1:8080/nuxeo/oauth/access-token"
+          method="POST" />
+        <Request url="http://127.0.0.1:8080/nuxeo/oauth/request-token"
+          method="POST" />
+        <Authorization
+          url="http://127.0.0.1:8080/nuxeo/oauth/authorize" />
+      </Service>
+    </OAuth>
+  </ModulePrefs>
+  <Content type="html">
+
+<![CDATA[
+<html>
+  <head>
+  </head>
+  <script>
+    var prefs = new _IG_Prefs(__MODULE_ID__);
+
+    function requestCompleted(response) {
+      if (response.data) {
+        var htmlContent = response.data;
+        alert("received : " + htmlContent);
+        var targetDiv = _gel("targetDiv");
+        targetDiv.innerHTML=htmlContent;
+
+      } else if (response.oauthApprovalUrl) {
+
+            alert("creating popup for " + response.oauthApprovalUrl);
+
+            var onOpen = function() {
+              _gel("waiting").style.display='block';
+            };
+
+            var onClose = function() {
+              doRequest();
+            };
+
+            var popup = new gadgets.oauth.Popup(response.oauthApprovalUrl,
+                'height=600,width=800', onOpen, onClose);
+
+            $('nxauth').onclick = popup.createOpenerOnClick();
+            $('approvaldone').onclick = popup.createApprovedOnClick();
+
+           _gel("approval").style.display='block';
+
+      }
+      else {
+        _gel("error").innerHTML="No data received from server";
+      }
+    }
+
+    function $(x) {
+        return document.getElementById(x);
+    }
+
+    function showPopup() {
+      alert("starting popup oauth");
+      oauthPopupVar.createOpenerOnClick();
+    }
+
+    function hidePopup() {
+      oauthPopupVar.createApprovedOnClick();
+    }
+
+    function doRequest() {
+        var url="http://127.0.0.1:8080/nuxeo/site/admin/repository/default-domain/workspaces/@views/content_page";
+        var params = {};
+        //params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.FEED;
+        params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.SIGNED;
+        //params[gadgets.io.RequestParameters.METHOD] = gadgets.io.MethodType.GET;
+        params[gadgets.io.RequestParameters.OAUTH_SERVICE_NAME] = "nuxeo";
+        params[gadgets.io.RequestParameters.OAUTH_USE_TOKEN]="always";
+
+        gadgets.io.makeRequest(url, requestCompleted, params);
+    }
+
+    gadgets.util.registerOnLoadHandler(doRequest);
+  </script>
+   <body>
+      <div id="targetDiv"> Contacting Nuxeo Server ...</div>
+      <div id="approval" style="display: none">
+        <a href="#" id="nxauth">Click here to authenticate against Nuxeo Server</a>
+      </div>
+
+    <div id="waiting" style="display: none">
+      Please click
+      <a href="#" id="approvaldone">I've approved access</a>
+      once you've approved access to your data.
+    </div>
+
+    <div id="error">
+    </div>
+  </body>
+</html>
+]]>
+  </Content>
+</Module>
