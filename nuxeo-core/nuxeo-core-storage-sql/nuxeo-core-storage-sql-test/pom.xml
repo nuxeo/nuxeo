@@ -1,0 +1,295 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.core</groupId>
+    <artifactId>nuxeo-core-storage-sql-parent</artifactId>
+    <version>5.4.2-HF26</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>nuxeo-core-storage-sql-test</artifactId>
+  <name>Nuxeo Core SQL Storage Tests</name>
+  <description>Nuxeo Core: SQL Storage Tests.</description>
+
+  <properties>
+    <server.shutdown.port>4432</server.shutdown.port>
+    <!-- You can run just the integration tests by passing -DskipUnitTests=true on
+      the command line -->
+    <skipUnitTests>false</skipUnitTests>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>compile</scope> <!-- override -->
+    </dependency>
+    <dependency>
+      <groupId>jmock</groupId>
+      <artifactId>jmock</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-jtajca</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>runtime</scope> <!-- for geronimo-connector in RA -->
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>compile</scope> <!-- override -->
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-schema</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-management</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-event</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-ra</artifactId>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.resource</groupId>
+      <artifactId>connector-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.components</groupId>
+      <artifactId>geronimo-connector</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.components</groupId>
+      <artifactId>geronimo-transaction</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+
+
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <!-- Needed by H2 fulltext -->
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-analyzers</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert-plugins</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- needed for convert plugins -->
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- needed at runtime for database-specific tests -->
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.6</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.sourceforge.jtds</groupId>
+      <artifactId>jtds</artifactId>
+      <version>1.2.2</version>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- <dependency> <groupId>com.oracle</groupId> <artifactId>ojdbc14</artifactId>
+      <version>10.2.0.3.0</version> <scope>runtime</scope> </dependency> -->
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/TestSQLBackendNet.java</exclude>
+            <exclude>**/*$*.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>itest</id>
+      <build>
+        <plugins>
+          <!-- Make sure Surefire does NOT run -->
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <excludes>
+                <exclude>**/*.java</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+          <!-- Spawn a Nuxeo in server mode -->
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>start-nuxeo-server</id>
+                <phase>pre-integration-test</phase>
+                <configuration>
+                  <tasks>
+                    <echo message="Starting Nuxeo Server"></echo>
+                    <!-- Set server log4j.properties -->
+                    <move file="${project.build.testOutputDirectory}/log4j.properties" overwrite="true" tofile="${project.build.testOutputDirectory}/log4j.properties.bak"></move>
+                    <copy file="${project.build.testOutputDirectory}/server.log4j.properties" tofile="${project.build.testOutputDirectory}/log4j.properties"></copy>
+                    <java classname="org.nuxeo.ecm.core.storage.sql.NuxeoServerRunner" classpathref="maven.test.classpath" fork="true" spawn="true">
+                      <arg value="-p"></arg>
+                      <arg value="${server.shutdown.port}"></arg>
+                      <jvmarg value="-Xdebug"></jvmarg>
+                      <jvmarg value="-Xrunjdwp:transport=dt_socket,address=8788,server=y,suspend=n"></jvmarg>
+                    </java>
+                    <!-- Wait for log4j init -->
+                    <sleep seconds="1"></sleep>
+                    <!-- Restore normal log4j.properties for the integration tests -->
+                    <move file="${project.build.testOutputDirectory}/log4j.properties.bak" overwrite="true" tofile="${project.build.testOutputDirectory}/log4j.properties"></move>
+                    <!-- Wait for server to start -->
+                    <waitfor maxwait="30" maxwaitunit="second">
+                      <socket port="8181" server="localhost"></socket>
+                    </waitfor>
+                  </tasks>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Run integration tests -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Stop server -->
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>stop-nuxeo-server</id>
+                <phase>post-integration-test</phase>
+                <configuration>
+                  <tasks>
+                    <echo message="Stopping Nuxeo Server"></echo>
+                    <java classname="org.nuxeo.ecm.core.storage.sql.NuxeoServerRunner$Stopper" classpathref="maven.test.classpath">
+                      <arg value="-p"></arg>
+                      <arg value="${server.shutdown.port}"></arg>
+                    </java>
+                  </tasks>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+
+</project>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.nuxeo.org/ecm/project/schemas/withlongfield">
+
+  <xs:element name="field_just_30_chars_for_oracle" type="xs:string" />
+  <xs:element name="field_with_too_many_chars_for_oracle" type="xs:string" />
+
+</xs:schema>
