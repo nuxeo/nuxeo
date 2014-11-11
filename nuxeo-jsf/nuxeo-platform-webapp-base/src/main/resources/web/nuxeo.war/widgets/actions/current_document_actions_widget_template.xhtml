@@ -1,0 +1,29 @@
+<c:if test="#{not empty widgetProperty_category}"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+<nxu:set var="ajaxReRender"
+  value="#{widget.id}_panel"
+  cache="true">
+  <a4j:outputPanel id="#{ajaxReRender}" layout="block">
+    <nxu:set var="actions"
+      value="#{webActions.getActionsList(widgetProperty_category, not widgetProperty_disableFiltered)}"
+      cache="true">
+      <nxl:widgetType name="actions"
+        mode="#{widget.mode}"
+        widgetName="#{widget.name}"
+        label="#{widget.label}"
+        value="#{fieldOrValue}"
+        properties="#{widget.properties}"
+        ajaxReRender="#{nxl:joinReRender(ajaxReRender, widgetProperty_ajaxReRender)}"
+        actions="#{actions}"
+        ignoreTemplateProperty="true"
+        subWidgets="#{widget.subWidgets}"
+        addForm="false" />
+    </nxu:set>
+  </a4j:outputPanel>
+</nxu:set>
+
+</c:if>

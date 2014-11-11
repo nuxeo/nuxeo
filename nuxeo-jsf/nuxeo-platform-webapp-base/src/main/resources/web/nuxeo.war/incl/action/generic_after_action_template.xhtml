@@ -1,0 +1,28 @@
+<c:if test="true"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<c:if test="false">
+Template displaying additional content for an action, typically a fancy box
+content.
+
+Since 5.7, also generates a javascript function to handle confimation message.
+
+Parameters:
+- action: the action instance (mandatory)
+- idPrefix: a String prefix to put before the action id (optional but
+  recommanded)
+- actionType (optional): type to use if not set on action or needs to be
+  used by default if not set on action
+
+</c:if>
+
+  <c:choose>
+
+    <c:when test="#{action.type == 'fancybox' or (empty action.type and actionType == 'fancybox')}">
+      <ui:include src="fancybox_after_action_template.xhtml" />
+    </c:when>
+
+  </c:choose>
+
+</c:if>

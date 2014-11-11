@@ -1,0 +1,54 @@
+<c:if test="true"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+<c:if test="false">
+Reusable template to display a foldable box.
+
+Accepted parameters:
+- hideHeader: boolean stating if box header should be hidden
+- foldable: boolean stating if box is foldable (defaults to false)
+- foldedByDefault: boolean stating if box is folded by default (defaults to false)
+- foldableBoxStyleClass: additional style class to put on the box
+  before the potential 'foldableBox' style class (optional)
+- headerStyleClass: additional style class to put on the header/h3 tag
+  before the potential 'unfolded' style class (optional)
+- headerFormId: string id of the form around header. Optional, no form is added
+  if id is not filled.
+
+Templating zone to define:
+- foldable_box_header: header of the box
+- foldable_box_header_content: content of the header of the box, always visible
+- foldable_box_content: content of the foldable box, only visible when box is unfolded.
+
+</c:if>
+
+<c:choose>
+
+  <c:when test="#{foldable and not hideHeader}">
+
+    <div class="#{foldableStyleClass} foldableBox">
+      <ui:include src="./foldable_box_header_template.xhtml" />
+      <div class="boxBody"
+        style="#{nxu:test(foldedByDefault, 'display: none;', '')}">
+        <ui:insert name="foldable_box_content" />
+      </div>
+    </div>
+
+  </c:when>
+
+  <c:otherwise>
+
+    <span class="#{foldableStyleClass}">
+      <ui:include src="./foldable_box_header_template.xhtml" />
+      <ui:insert name="foldable_box_content" />
+    </span>
+
+  </c:otherwise>
+
+</c:choose>
+
+</c:if>

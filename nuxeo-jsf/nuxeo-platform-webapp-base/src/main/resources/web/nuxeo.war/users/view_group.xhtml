@@ -1,0 +1,105 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <h1>
+    <h:outputText styleClass="label"
+      value="#{groupManagementActions.selectedGroup.id}" />
+  </h1>
+
+  <a4j:outputPanel id="groupDetailsPanel" layout="block">
+
+  <h:form>
+    <p class="action_bar directoryBack">
+      <a4j:commandLink immediate="true"
+        action="#{groupManagementActions.toggleShowUserOrGroup}"
+        actionListener="#{jsfResetActions.resetComponents}"
+        reRender="groupsPanel">
+        <h:graphicImage value="/icons/arrow_left.gif" />
+        <h:outputText value="#{messages['command.directoryBack']}" />
+      </a4j:commandLink>
+    </p>
+  </h:form>
+
+  <a4j:form id="deleteGroupForm" rendered="#{groupManagementActions.allowDeleteGroup and notReadOnly}">
+    <script type="text/javascript">
+    function confirmDeleteGroup() {
+      return confirm("#{messages['label.userManager.confirmDeleteGroup']}");
+    }
+    </script>
+    <div class="action_bar">
+      <ul>
+        <li class="selected">
+          <a4j:commandLink
+            action="#{groupManagementActions.deleteGroup}"
+            onclick="if (!confirmDeleteGroup()) { return false; }"
+            reRender="groupsPanel">
+            <h:graphicImage value="/icons/action_delete.gif" />
+            <h:outputText value="#{messages['command.delete']}" />
+          </a4j:commandLink>
+        </li>
+      </ul>
+    </div>
+    <div style="clear: both" />
+  </a4j:form>
+
+  <div class="tabsBar subtabsBar">
+    <a4j:form>
+      <ul>
+        <li class="#{nxu:test(groupManagementActions.detailsMode == 'view', 'selected', '')}">
+          <a4j:commandLink action="#{groupManagementActions.setDetailsMode('view')}"
+            immediate="true" reRender="groupDetailsPanel">
+            <h:outputText value="#{messages['label.groupManager.viewGroup']}" />
+          </a4j:commandLink>
+        </li>
+
+        <f:subview rendered="#{groupManagementActions.allowEditGroup and notReadOnly}">
+          <li class="#{nxu:test(groupManagementActions.detailsMode == 'edit', 'selected', '')}">
+            <a4j:commandLink
+              action="#{groupManagementActions.setDetailsMode('edit')}" immediate="true"
+              reRender="groupDetailsPanel">
+              <h:outputText value="#{messages['label.groupManager.editGroup']}" />
+            </a4j:commandLink>
+          </li>
+        </f:subview>
+      </ul>
+    </a4j:form>
+  </div>
+  <div style="clear: both" />
+
+  <div class="tabsContent">
+
+    <a4j:form id="viewGroup" rendered="#{groupManagementActions.detailsMode == 'view'}">
+      <nxl:layout name="group" mode="view" value="#{groupManagementActions.selectedGroup}" />
+    </a4j:form>
+
+    <a4j:form id="editGroup" rendered="#{groupManagementActions.detailsMode == 'edit' and groupManagementActions.allowEditGroup and notReadOnly}">
+      <script>
+         jQuery(document).ready(function() {
+           jQuery('#viewGroupView\\:editGroup').focusFirst();
+         });
+      </script>
+      <nxl:layout name="group" mode="edit" value="#{groupManagementActions.selectedGroup}" />
+      <table class="dataInput">
+        <tbody>
+          <tr>
+            <td class="iconColumn"></td>
+            <td class="labelColumn">
+              <a4j:commandButton
+                value="#{messages['command.save']}"
+                action="#{groupManagementActions.updateGroup}"
+                styleClass="button"
+                reRender="groupDetailsPanel,facesStatusMessagePanel" />
+            </td>
+            <td class="fieldColumn"></td>
+          </tr>
+        </tbody>
+      </table>
+    </a4j:form>
+
+  </div>
+  </a4j:outputPanel>
+
+</div>
