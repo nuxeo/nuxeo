@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.versioning.ejb.VersioningManagerBean">
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement"
+    point="services">
+
+    <documentation>
+      Define the VersioningManager Bean as a platform
+      service.
+    </documentation>
+
+    <service class="org.nuxeo.ecm.platform.versioning.api.VersioningManager"
+      group="platform/versioning">
+      <locator>%VersioningManagerBean</locator>
+    </service>
+
+  </extension>
+
+</component>
