@@ -1,0 +1,151 @@
+<c:if test="true" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+<c:set var="firstLabelField"
+  value="#{nxu:test(!empty widgetProperty_firstLabelField, widgetProperty_firstLabelField, 'firstName')}" />
+<c:set var="secondLabelField"
+  value="#{nxu:test(!empty widgetProperty_secondLabelField, widgetProperty_secondLabelField, 'lastName')}" />
+<c:set var="thirdLabelField"
+  value="#{nxu:test(!empty widgetProperty_thirdLabelField, widgetProperty_thirdLabelField, 'email')}" />
+<c:set var="hideFirstLabel"
+  value="#{nxu:test(!empty widgetProperty_hideFirstLabel, widgetProperty_hideFirstLabel, false)}" />
+<c:set var="hideSecondLabel"
+  value="#{nxu:test(!empty widgetProperty_hideSecondLabel, widgetProperty_hideSecondLabel, false)}" />
+<c:set var="hideThirdLabel"
+  value="#{nxu:test(!empty widgetProperty_hideThirdLabel, widgetProperty_hideThirdLabel, false)}" />
+<c:set var="showEmail"
+  value="#{nxu:test(!empty widgetProperty_displayEmailInSuggestion, widgetProperty_displayEmailInSuggestion, false)}" />
+<c:set var="firstNameField" value="#{nxu:test(hideFirstLabel, null, firstLabelField)}" />
+<c:set var="lastNameField" value="#{nxu:test(hideSecondLabel, null, secondLabelField)}" />
+<c:set var="emailField" value="#{nxu:test(hideThirdLabel, null, thirdLabelField)}" />
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}"><nxu:set var="info"
+  value="#{userSuggestionActions.getUserInfo(field)}"><nxu:set var="hideIcon"
+  value="true"><ui:include src="user_group_display_template.xhtml" /></nxu:set></nxu:set>
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:html>
+    <nxu:set var="info" value="#{userSuggestionActions.getUserInfo(field)}"
+      cache="true">
+      <ui:include src="user_group_display_template.xhtml" />
+    </nxu:set>
+  </nxp:html>
+</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+
+  <c:set var="displayAction"
+    value="#{nxu:test(!empty widgetProperty_displayAction, widgetProperty_displayAction, 'view')}" />
+  <c:set var="hideIcon"
+    value="#{widgetProperty_hideIcon}" />
+
+  <nxu:set var="info" value="#{userSuggestionActions.getUserInfo(field)}"
+    cache="true">
+    <ui:include src="user_group_display_template.xhtml" />
+  </nxu:set>
+
+</c:if>
+<c:if test="#{widget.mode == 'edit'}">
+
+  <c:set var="minChars"
+    value="#{nxu:test(!empty widgetProperty_minChars, widgetProperty_minChars, '3')}" />
+  <c:set var="frequency"
+    value="#{nxu:test(!empty widgetProperty_frequency, widgetProperty_frequency, '0')}" />
+  <c:set var="requestDelay"
+    value="#{nxu:test(!empty widgetProperty_requestDelay, widgetProperty_requestDelay, '100')}" />
+  <c:set var="searchType"
+    value="#{nxu:test(!empty widgetProperty_userSuggestionSearchType, widgetProperty_userSuggestionSearchType, '')}" />
+  <c:set var="maxSearchResults"
+    value="#{nxu:test(!empty widgetProperty_userSuggestionMaxSearchResults, widgetProperty_userSuggestionMaxSearchResults, 0)}" />
+  <c:set var="suggestionWidth" value="#{nxu:test(!empty widgetProperty_width, widgetProperty_width, '400')}" />
+  <c:set var="hideIcon"
+    value="#{widgetProperty_hideIcon}" />
+
+  <a4j:region renderRegionOnly="true" id="#{widget.id}_ajax_region">
+    <h:panelGrid id="#{widget.id}_panel" columns="2">
+
+      <h:panelGroup id="#{widget.id}_suggestionGroup">
+        <span id="#{widget.id}_suggestDiv">
+          <h:inputText id="#{widget.id}_suggest"
+            onkeydown="if (event.keyCode == 13) {return false;}" />
+        </span>
+        <a4j:status>
+          <f:facet name="start">
+            <h:graphicImage value="/img/standart_waiter.gif" />
+          </f:facet>
+        </a4j:status>
+        <rich:suggestionbox id="#{widget.id}_suggestionBox"
+          for="#{widget.id}_suggest" tokens=""
+          suggestionAction="#{userSuggestionActions.getSuggestions}"
+          var="info" fetchValue=""
+          nothingLabel="#{messages['label.suggestion.noSearchResultsOrSearchOverflow']}"
+          minChars="#{minChars}" frequency="#{frequency}"
+          width="#{suggestionWidth}"
+          requestDelay="#{requestDelay}">
+          <f:param name="userSuggestionSearchType" value="#{searchType}" />
+          <f:param name="userSuggestionMaxSearchResults"
+            value="#{maxSearchResults}" />
+          <a4j:support event="onselect"
+            focus="#{widget.id}_suggest" bypassUpdates="true"
+            reRender="#{widget.id}_selectionGroup"
+            id="#{widget.id}_listRegion_select">
+            <f:setPropertyActionListener value="#{info.id}"
+              target="#{suggestionActions.selectedValue}" />
+            <nxu:actionListenerMethod value="#{suggestionActions.addSingleBoundSelection}" />
+            <f:param name="suggestionSelectionOutputId"
+              value="#{widget.id}_selectionOutput" />
+            <f:param name="suggestionSelectionHiddenId"
+              value="#{widget.id}" />
+            <f:param name="suggestionSelectionDeleteId"
+              value="#{widget.id}_selectionReset" />
+            <f:param name="userSuggestionSearchType" value="#{searchType}" />
+            <f:param name="userSuggestionMaxSearchResults"
+              value="#{maxSearchResults}" />
+          </a4j:support>
+          <h:column>
+            <ui:include src="user_group_display_template.xhtml" />
+          </h:column>
+        </rich:suggestionbox>
+        <br />
+        <h:outputFormat value="#{messages['label.suggestion.help.minChars']}">
+          <f:param value="#{minChars}" />
+        </h:outputFormat>
+      </h:panelGroup>
+
+      <h:panelGroup id="#{widget.id}_selectionGroup">
+        <a4j:commandLink id="#{widget.id}_selectionReset"
+          actionListener="#{suggestionActions.clearSingleSelection}"
+          ignoreDupResponses="true" ajaxSingle="true" bypassUpdates="true"
+          reRender="#{widget.id}_selectionGroup"
+          rendered="#{!empty field}">
+          <h:graphicImage value="/icons/action_delete.gif" />
+          <f:param name="suggestionSelectionOutputId"
+            value="#{widget.id}_selectionOutput" />
+          <f:param name="suggestionSelectionHiddenId"
+            value="#{widget.id}" />
+          <f:param name="suggestionSelectionDeleteId"
+            value="#{widget.id}_selectionReset" />
+        </a4j:commandLink>
+
+        <nxu:valueHolder id="#{widget.id}_selectionOutput" var="selectedValue"
+          value="#{field}">
+          <nxu:set var="info" value="#{userSuggestionActions.getUserInfo(selectedValue)}"
+            cache="true">
+            <ui:include src="user_group_display_template.xhtml" />
+          </nxu:set>
+        </nxu:valueHolder>
+        <h:inputHidden id="#{widget.id}" value="#{field}"
+          required="#{widget.required}" />
+
+      </h:panelGroup>
+      <h:message for="#{widget.id}" styleClass="errorMessage" />
+
+    </h:panelGrid>
+
+  </a4j:region>
+
+</c:if>
+</c:if>
