@@ -1,0 +1,65 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf"
+  id="#{widget.id}">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">
+<f:subview rendered="#{not empty field}"><nxdir:directoryEntryOutput
+    directoryName="continent"
+    value="#{fn:split(field_0, '/')[0]}"
+    localize="true" />/<nxdir:directoryEntryOutput
+    directoryName="country"
+    value="#{field_0}"
+    localize="true"
+    keySeparator="/" />
+</f:subview>
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:html>
+    <nxdir:chainSelect id="#{widget.id}_viewselect" size="2" value="#{field}"
+      displayValueOnly="true">
+      <nxdir:chainSelectListbox index="0" size="0" directoryName="continent"
+        localize="true" id="#{widget.id}_continent" displayObsoleteEntries="true" />
+      <nxdir:chainSelectListbox size="0" directoryName="country" index="1"
+        localize="true" id="#{widget.id}_country" displayObsoleteEntries="true" />
+      <nxdir:chainSelectStatus display="value" id="#{widget.id}_status" />
+    </nxdir:chainSelect>
+  </nxp:html>
+</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+
+  <nxdir:chainSelect id="#{widget.id}_viewselect" size="2" value="#{field}"
+    displayValueOnly="true">
+    <nxdir:chainSelectListbox index="0" size="0" directoryName="continent"
+      localize="true" id="#{widget.id}_continent" displayObsoleteEntries="true" />
+    <nxdir:chainSelectListbox size="0" directoryName="country" index="1"
+      localize="true" id="#{widget.id}_country" displayObsoleteEntries="true" />
+    <nxdir:chainSelectStatus display="value" id="#{widget.id}_status" />
+  </nxdir:chainSelect>
+
+</c:if>
+<c:if test="#{widget.mode == 'edit'}">
+
+  <a4j:region id="#{widget.id}_region">
+    <nxdir:chainSelect size="2" value="#{field}"
+      id="#{widget.id}_editselect" onchange="#{widgetProperty_onchange}"
+      required="#{widget.required}">
+      <nxdir:chainSelectListbox index="0" size="0" directoryName="continent"
+        localize="true" id="#{widget.id}_continent" ordering="label">
+        <a4j:support event="onchange" reRender="#{widget.id}_country" />
+      </nxdir:chainSelectListbox>
+
+      <nxdir:chainSelectListbox size="0" index="1" directoryName="country"
+        localize="true" id="#{widget.id}_country" ordering="label" />
+    </nxdir:chainSelect>
+  </a4j:region>
+  <h:message styleClass="errorMessage" for="#{widget.id}_editselect"
+    id="#{widget.id}_message" />
+
+</c:if>
+</f:subview>
