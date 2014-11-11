@@ -1,0 +1,15 @@
+<div xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:h="http://java.sun.com/jsf/html"
+  class="thumbnailContainer">
+  <nxu:set var="thumbnailUrl"
+    value="#{nxd:fileUrl('downloadThumbnail', field_0, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}">
+    <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+      <nxh:graphicImage value="#{thumbnailUrl}"
+        rendered="#{not empty thumbnailUrl}" />
+    </c:if>
+  </nxu:set>
+</div>
