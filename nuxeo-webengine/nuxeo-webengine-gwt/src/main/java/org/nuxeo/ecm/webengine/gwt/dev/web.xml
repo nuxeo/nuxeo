@@ -1,0 +1,40 @@
+<web-app>
+
+  <!-- 
+  
+  Example on how to configure the Nuxeo Launcher filter. 
+  You should do this in the web.xml used by GWT in dev. mode. 
+  (usually in {project_root}/war/WEB-INF/web.xml
+  You must not deploy it in production mode.
+  
+  You can add more init-param tags to correctly configure the nuxeo launcher.
+  These are the optional init-param tags:
+  - home    : the home directory for nuxeo server ( defaults to {user.home}/.nxserver-gwt )
+              You can use system properties variable in path expression like: "${user.dir}/.nxserver"
+  - host    : the HTTP server address (defaults to localhost:8081)
+  - profile : the server profile to build. Default: "core".
+  - config  : a custom profile configuration file to use. It's specified either as a file path, as an URL or as a Java resource by prepending the resource name using the prefix java:
+              Example: java:/my/config_file   
+  -->
+
+	<filter>
+		<display-name>WebEngine Authentication Filter</display-name>
+		<filter-name>NuxeoAuthenticationFilter</filter-name>
+		<filter-class>
+			org.nuxeo.ecm.webengine.gwt.dev.NuxeoLauncher
+    </filter-class>
+		<init-param>
+			<param-name>byPassAuthenticationLog</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>securityDomain</param-name>
+			<param-value>nuxeo-webengine</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>NuxeoAuthenticationFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+  
+</web-app>
