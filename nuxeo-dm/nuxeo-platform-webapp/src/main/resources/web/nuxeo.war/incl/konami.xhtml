@@ -1,0 +1,11 @@
+<c:if xmlns:c="http://java.sun.com/jstl/core"
+  test="#{frameworkPropertyActions.getProperty('disableKonamiCode') != 'true'}">
+  <script type="text/javascript"
+    src="#{baseURL}js/?scripts=jquery/jquery.konami.js">
+  </script>
+  <script type="text/javascript">
+    jQuery(document).ready(function() {
+      jQuery(window).konami('#{contextPath}/img/konamikat.gif');
+    });
+  </script>
+</c:if>
