@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="DomainManagerService">
+
+  <documentation>Handles domain creation.</documentation>
+
+  <extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
+    point="listener">
+    <documentation>
+      The DomainManagerService listen to core events to automatically create the
+      content-roots (ie: Workspaces and Sections) when a new Domain is created.
+
+      XXX AT: useless now, handled at the core level.
+    </documentation>
+    <!--
+      <listener name="domainlistener"
+      class="org.nuxeo.ecm.platform.domain.DomainCoreListener" order="200" />
+    -->
+  </extension>
+
+</component>

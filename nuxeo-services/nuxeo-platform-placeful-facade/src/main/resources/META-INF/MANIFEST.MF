@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM PlacefulService Facade
+Bundle-SymbolicName: org.nuxeo.ecm.platform.placeful.facade;singleton:=true
+Bundle-Vendor: Nuxeo
+Export-Package: org.nuxeo.ecm.platform.ec.placeful.ejb, org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces
+Require-Bundle: org.nuxeo.ecm.platform.placeful.api,
+  org.nuxeo.ecm.platform.placeful.core,
+  org.nuxeo.ecm.platform.notification.core
+Nuxeo-Component: OSGI-INF/PlatformBindings.xml
+  
