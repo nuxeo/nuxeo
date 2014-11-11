@@ -1,0 +1,6 @@
+<module>
+      <servlet path="/Annotations" class="org.nuxeo.ecm.platform.annotations.gwt.mock.MockAnnoteaServer"/>
+      <servlet path="/Annotations/body/1" class="org.nuxeo.ecm.platform.annotations.gwt.mock.MockAnnoteaBodyServer"/>
+      <servlet path="/Annotations/body/2" class="org.nuxeo.ecm.platform.annotations.gwt.mock.MockAnnoteaBodyServer"/>
+      <servlet path="/Annotations/body/3" class="org.nuxeo.ecm.platform.annotations.gwt.mock.MockAnnoteaBodyServer"/>
+</module>
