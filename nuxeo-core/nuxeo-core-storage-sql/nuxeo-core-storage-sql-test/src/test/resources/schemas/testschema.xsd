@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<xs:schema
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/test/testschema"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/test/testschema"
+  >
+
+  <xs:simpleType name="stringArray">
+    <xs:list itemType="xs:string" />
+  </xs:simpleType>
+
+  <xs:complexType name="person">
+    <xs:sequence>
+      <xs:element name="firstname" type="xs:string"/>
+      <xs:element name="lastname" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="personList">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:person" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="duo">
+    <xs:sequence>
+      <xs:element name="first" type="nxs:person"/>
+      <xs:element name="second" type="nxs:person"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="title" type="xs:string"/>
+  <xs:element name="created" type="xs:date"/>
+  <xs:element name="rate" type="xs:double"/>
+  <xs:element name="bin" type="xs:base64Binary"/>
+  <xs:element name="subjects" type="nxs:stringArray"/>
+  <xs:element name="tags" type="nxs:stringArray"/>
+  <xs:element name="owner" type="nxs:person"/>
+  <xs:element name="friends" type="nxs:personList"/>
+  <xs:element name="couple" type="nxs:duo"/>
+
+</xs:schema>

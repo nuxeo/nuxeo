@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterComponent">
+
+  <implementation
+    class="org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterComponent" />
+  <documentation>@author Thierry Delprat (td@nuxeo.com)</documentation>
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService" />
+  </service>
+
+  <extension-point name="BlobHolderFactory">
+    <documentation>
+      @author Thierry Delprat (td@nuxeo.com)
+
+      This extension point let you contribute custom factories for BlobHolder
+      according to DocumentType
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.core.api.blobholder.BlobHolderFactoryDescriptor" />
+  </extension-point>
+
+  <extension-point name="ExternalBlobAdapter">
+    <documentation>
+      @author Anahide Tchertchian (at@nuxeo.com)
+
+      Contribute external blob adapters. Contributed classes have to follow the
+      ExternalBlobAdapter interface.
+
+      Example of contribution using the default file system adapter:
+
+      <code>
+        <adapter prefix="fs"
+          class="org.nuxeo.ecm.core.api.externalblob.FileSystemExternalBlobAdapter">
+          <property name="container">/tmp/</property>
+        </adapter>
+      </code>
+
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapterDescriptor" />
+  </extension-point>
+
+</component>
