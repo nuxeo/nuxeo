@@ -1,0 +1,18 @@
+<f:subview
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  id="#{layout.id}">
+
+      <nxl:layoutRow>
+        <div class="summary_div_#{layoutRowIndex}">
+          <nxl:layoutRowWidget>
+              <nxl:widget widget="#{widget}" value="#{value}" />
+          </nxl:layoutRowWidget>
+        </div>
+      </nxl:layoutRow>
+
+</f:subview>
