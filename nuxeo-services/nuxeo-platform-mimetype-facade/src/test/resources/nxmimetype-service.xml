@@ -1,0 +1,744 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService">
+
+  <documentation>
+    Core mimetype registry service.
+
+    <p>
+      Deals with mimetypes registration and mimetype detection (BETA).
+    </p>
+
+    @version 2.0 @author
+    <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+    @author
+    <a href="mailto:lgodard@nuxeo.com">Laurent Godard</a>
+    @author
+    <a href="mailto:og@nuxeo.com">Olivier Grisel</a>
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry" />
+  </service>
+
+  <extension-point name="mimetype">
+
+    <documentation>
+
+      Extension allowing one to register mimetypes.
+
+      <p />
+
+      A mimetype holds meta information about a given mimetype.
+
+      <ul>
+        <li>RFC-2046 major</li>
+        <li>RFC-2046 minor</li>
+        <li>Icon</li>
+        <li>
+          List of extensions (the first one will be used as default)
+        </li>
+        <li>List of mimetype names</li>
+        <li>Boolean flag if a file of this mimetype is binary</li>
+        <li>
+          Boolean flag onlineEditable if a file of this mimetype is
+          supported by online Edit - default is false
+        </li>
+        <li>
+          Boolean flag oleSupported if a file of this mimetype is
+          supported by the oleExtract plugin - default is false
+        </li>
+      </ul>
+
+      For instance :
+
+      <code>
+
+        <mimetype normalized="application/pdf" binary="true"
+          iconPath="pdf.png">
+          <mimetypes>
+            <mimetype>application/pdf</mimetype>
+          </mimetypes>
+          <extensions>
+            <extension>pdf</extension>
+          </extensions>
+        </mimetype>
+
+      </code>
+
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.mimetype.service.MimetypeDescriptor" />
+
+  </extension-point>
+
+  <extension-point name="extension">
+
+    <documentation>
+
+      Extension to register filename extension to mimetype association
+      rules.
+
+      <p />
+
+      Specify how a given extension should be used to detect a mimetype.
+      If the extension is marked 'ambiguous', a sniffing of the content
+      of the file is advised.
+
+      For instance :
+
+      <code>
+
+        <fileExtension name="xml" mimetype="text/xml" ambiguous="true" />
+
+      </code>
+
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.mimetype.service.ExtensionDescriptor" />
+
+  </extension-point>
+
+
+  <extension
+    target="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService"
+    point="mimetype">
+
+    <documentation>
+
+      Default mimetype contributions.
+
+    </documentation>
+
+
+    <!--  test based document types -->
+
+    <mimetype normalized="text/plain" binary="false"
+      iconPath="text.png">
+      <mimetypes>
+        <mimetype>text/plain</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>txt</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="text/structured" binary="false"
+      iconPath="text.png">
+      <mimetypes>
+        <mimetype>text/structured</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>stx</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="text/x-rst" binary="false"
+      iconPath="text.png">
+      <mimetypes>
+        <mimetype>text/x-rst</mimetype>
+        <mimetype>text/restructured</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>rst</extension>
+        <extension>rest</extension>
+        <extension>restx</extension>
+        <extension>rest</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="text/python-source" binary="false"
+      iconPath="py.png">
+      <mimetypes>
+        <mimetype>text/python-source</mimetype>
+        <mimetype>text/x-python</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>py</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="text/java-source" binary="false"
+      iconPath="java.png">
+      <mimetypes>
+        <mimetype>text/java-source</mimetype>
+        <mimetype>text/x-java</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>java</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="text/rtf" binary="true" iconPath="text.png">
+      <mimetypes>
+        <mimetype>text/rtf</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>rtf</extension>
+      </extensions>
+    </mimetype>
+
+    <!--  Microsoft Office document -->
+
+    <mimetype normalized="application/msword" binary="true"
+      iconPath="word.png" onlineEditable="true" oleSupported="true">
+      <mimetypes>
+        <mimetype>application/msword</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>doc</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/vnd.ms-excel" binary="true"
+      iconPath="xls.png" onlineEditable="true" oleSupported="true">
+      <mimetypes>
+        <mimetype>application/vnd.ms-excel</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>xls</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/vnd.ms-powerpoint" binary="true"
+      iconPath="ppt.png" onlineEditable="true" oleSupported="true">
+      <mimetypes>
+        <mimetype>application/vnd.ms-powerpoint</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>ppt</extension>
+        <extension>pps</extension>        
+      </extensions>
+    </mimetype>
+
+    <!--  XML based document types -->
+
+    <mimetype normalized="application/docbook+xml" binary="true"
+      iconPath="xml.png">
+      <mimetypes>
+        <mimetype>application/docbook+xml</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>doc.xml</extension>
+        <extension>docb.xml</extension>
+        <extension>docb</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="text/xml" binary="false" iconPath="xml.png">
+      <mimetypes>
+        <mimetype>text/xml</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>xml</extension>
+      </extensions>
+    </mimetype>
+
+    <!-- OpenOffice.org 1.x document types -->
+
+    <mimetype normalized="application/vnd.sun.xml.writer" binary="true"
+      iconPath="sxw.png" oleSupported="true">
+      <mimetypes>
+        <mimetype>application/vnd.sun.xml.writer</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>sxw</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/vnd.sun.xml.writer.template"
+      binary="true" iconPath="stw.png" oleSupported="true">
+      <mimetypes>
+        <mimetype>application/vnd.sun.xml.writer.template</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>stw</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/vnd.sun.xml.impress" binary="true"
+      iconPath="sxi.png" oleSupported="true">
+      <mimetypes>
+        <mimetype>application/vnd.sun.xml.impress</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>sxi</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/vnd.sun.xml.impress.template"
+      binary="true" iconPath="sti.png" oleSupported="true">
+      <mimetypes>
+        <mimetype>application/vnd.sun.xml.impress.template</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>sti</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/vnd.sun.xml.calc" binary="true"
+      iconPath="sxc.png" oleSupported="true">
+      <mimetypes>
+        <mimetype>application/vnd.sun.xml.calc</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>sxc</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/vnd.sun.xml.calc.template"
+      binary="true" iconPath="stc.png" oleSupported="true">
+      <mimetypes>
+        <mimetype>application/vnd.sun.xml.calc.template</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>stc</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/vnd.sun.xml.draw" binary="true"
+      iconPath="sxd.png" oleSupported="true">
+      <mimetypes>
+        <mimetype>application/vnd.sun.xml.draw</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>sxd</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/vnd.sun.xml.draw.template"
+      binary="true" iconPath="std.png" oleSupported="true">
+      <mimetypes>
+        <mimetype>application/vnd.sun.xml.draw.template</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>std</extension>
+      </extensions>
+    </mimetype>
+
+    <!--  OpenOffice.org 2.x document types -->
+
+    <mimetype
+      normalized="application/vnd.oasis.opendocument.spreadsheet"
+      binary="true" iconPath="ods.png" oleSupported="true">
+      <mimetypes>
+        <mimetype>
+          application/vnd.oasis.opendocument.spreadsheet
+        </mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>ods</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype
+      normalized="application/vnd.oasis.opendocument.spreadsheet-template"
+      binary="true" iconPath="ots.png" oleSupported="true">
+      <mimetypes>
+        <mimetype>
+          application/vnd.oasis.opendocument.spreadsheet-template
+        </mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>ots</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/vnd.oasis.opendocument.text"
+      binary="true" iconPath="odt.png" oleSupported="true">
+      <mimetypes>
+        <mimetype>application/vnd.oasis.opendocument.text</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>odt</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype
+      normalized="application/vnd.oasis.opendocument.text-template"
+      binary="true" iconPath="ott.png" oleSupported="true">
+      <mimetypes>
+        <mimetype>
+          application/vnd.oasis.opendocument.text-template
+        </mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>ott</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype
+      normalized="application/vnd.oasis.opendocument.presentation"
+      binary="true" iconPath="odp.png" oleSupported="true">
+      <mimetypes>
+        <mimetype>
+          application/vnd.oasis.opendocument.presentation
+        </mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>odp</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype
+      normalized="application/vnd.oasis.opendocument.presentation-template"
+      binary="true" iconPath="otp.png" oleSupported="true">
+      <mimetypes>
+        <mimetype>
+          application/vnd.oasis.opendocument.presentation-template
+        </mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>otp</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/vnd.oasis.opendocument.graphics"
+      binary="true" iconPath="odg.png" oleSupported="true">
+      <mimetypes>
+        <mimetype>application/vnd.oasis.opendocument.graphics</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>odg</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype
+      normalized="application/vnd.oasis.opendocument.graphics-template"
+      binary="true" iconPath="otg.png" oleSupported="true">
+      <mimetypes>
+        <mimetype>
+          application/vnd.oasis.opendocument.graphics-template
+        </mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>otg</extension>
+      </extensions>
+    </mimetype>
+
+    <!--  Adobe PDF -->
+    <mimetype normalized="application/pdf" binary="true"
+      iconPath="pdf.png">
+      <mimetypes>
+        <mimetype>application/pdf</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>pdf</extension>
+      </extensions>
+    </mimetype>
+
+    <!--  binaries -->
+
+    <mimetype normalized="application/octet-stream" binary="true"
+      iconPath="application.png">
+      <mimetypes>
+        <mimetype>application/octet-stream</mimetype>
+      </mimetypes>
+      <extensions />
+    </mimetype>
+
+    <!--  Archives -->
+    <mimetype normalized="application/x-gtar" binary="true"
+      iconPath="tar.png">
+      <mimetypes>
+        <mimetype>application/x-gtar</mimetype>
+      </mimetypes>
+      <extensions />
+    </mimetype>
+
+
+    <!-- Ms Office 2007 -->
+
+    <mimetype
+      normalized="application/vnd.ms-word.document.macroEnabled.12"
+      binary="true" iconPath="docx.png" onlineEditable="true">
+      <mimetypes>
+        <mimetype>
+          application/vnd.ms-word.document.macroEnabled.12
+        </mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>docm</extension>
+      </extensions>
+    </mimetype>
+
+
+    <mimetype
+      normalized="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      binary="true" iconPath="docx.png" onlineEditable="true">
+      <mimetypes>
+        <mimetype>
+          application/vnd.openxmlformats-officedocument.wordprocessingml.document
+        </mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>docx</extension>
+      </extensions>
+    </mimetype>
+
+
+    <mimetype
+      normalized="application/vnd.ms-word.template.macroEnabled.12"
+      binary="true" iconPath="docx.png" onlineEditable="true">
+      <mimetypes>
+        <mimetype>
+          application/vnd.ms-word.template.macroEnabled.12
+        </mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>dotm</extension>
+      </extensions>
+    </mimetype>
+
+
+    <mimetype
+      normalized="application/vnd.openxmlformats-officedocument.wordprocessingml.template"
+      binary="true" iconPath="docx.png" onlineEditable="true">
+      <mimetypes>
+        <mimetype>
+          application/vnd.openxmlformats-officedocument.wordprocessingml.template
+        </mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>dotx</extension>
+      </extensions>
+    </mimetype>
+
+
+    <mimetype
+      normalized="application/vnd.ms-powerpoint.slideshow.macroEnabled.12"
+      binary="true" iconPath="pptx.png" onlineEditable="true">
+      <mimetypes>
+        <mimetype>
+          application/vnd.ms-powerpoint.slideshow.macroEnabled.12
+        </mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>ppsm</extension>
+      </extensions>
+    </mimetype>
+
+
+    <mimetype
+      normalized="application/vnd.openxmlformats-officedocument.presentationml.slideshow"
+      binary="true" iconPath="pptx.png" onlineEditable="true">
+      <mimetypes>
+        <mimetype>
+          application/vnd.openxmlformats-officedocument.presentationml.slideshow
+        </mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>ppsx</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype
+      normalized="application/vnd.ms-powerpoint.presentation.macroEnabled.12"
+      binary="true" iconPath="pptx.png" onlineEditable="true">
+      <mimetypes>
+        <mimetype>
+          application/vnd.ms-powerpoint.presentation.macroEnabled.12
+        </mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>pptm</extension>
+      </extensions>
+    </mimetype>
+
+
+    <mimetype
+      normalized="application/vnd.openxmlformats-officedocument.presentationml.presentation"
+      binary="true" iconPath="pptx.png" onlineEditable="true">
+      <mimetypes>
+        <mimetype>
+          application/vnd.openxmlformats-officedocument.presentationml.presentation
+        </mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>pptx</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype
+      normalized="application/vnd.ms-excel.sheet.binary.macroEnabled.12"
+      binary="true" iconPath="xlsx.png" onlineEditable="true">
+      <mimetypes>
+        <mimetype>
+          application/vnd.ms-excel.sheet.binary.macroEnabled.12
+        </mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>xlsb</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype
+      normalized="application/vnd.ms-excel.sheet.macroEnabled.12"
+      binary="true" iconPath="xlsx.png" onlineEditable="true">
+      <mimetypes>
+        <mimetype>
+          application/vnd.ms-excel.sheet.macroEnabled.12
+        </mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>xlsm</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype
+      normalized="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      binary="true" iconPath="xlsx.png" onlineEditable="true">
+      <mimetypes>
+        <mimetype>
+          application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+        </mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>xlsx</extension>
+      </extensions>
+    </mimetype>
+
+    <!--  element of office 2007, but which one ??? -->
+    <mimetype normalized="application/vnd.ms-xpsdocument" binary="true"
+      iconPath="xlsx.png" onlineEditable="true">
+      <mimetypes>
+        <mimetype>application/vnd.ms-xpsdocument</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>xps</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/zip" binary="true"
+      iconPath="zip.png">
+      <mimetypes>
+        <mimetype>application/zip</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>zip</extension>
+      </extensions>
+    </mimetype>
+
+    <!-- images -->
+    <mimetype normalized="image/gif" binary="true"
+      iconPath="image.gif">
+      <mimetypes>
+        <mimetype>image/gif</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>gif</extension>
+      </extensions>
+    </mimetype>
+    <mimetype normalized="image/png" binary="true"
+      iconPath="image.gif">
+      <mimetypes>
+        <mimetype>image/png</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>png</extension>
+      </extensions>
+    </mimetype>
+    <mimetype normalized="image/jpeg" binary="true"
+      iconPath="image.gif">
+      <mimetypes>
+        <mimetype>image/jpeg</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>jpg</extension>
+        <extension>jpeg</extension>
+      </extensions>
+    </mimetype>
+    <mimetype normalized="image/x-portable-bitmap" binary="true"
+      iconPath="image.gif">
+      <mimetypes>
+        <mimetype>image/x-portable-bitmap</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>pbm</extension>
+      </extensions>
+    </mimetype>
+    <mimetype normalized="image/bmp" binary="true"
+      iconPath="image.gif">
+      <mimetypes>
+        <mimetype>image/x-bitmap</mimetype>
+        <mimetype>image/bmp</mimetype>
+
+      </mimetypes>
+      <extensions>
+        <extension>bmp</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="image/x-portable-graymap" binary="true"
+      iconPath="image.gif">
+      <mimetypes>
+        <mimetype>image/x-portable-graymap</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>ppm</extension>
+      </extensions>
+    </mimetype>
+    <mimetype normalized="image/g3fax" binary="true"
+      iconPath="image.gif">
+      <mimetypes>
+        <mimetype>image/g3fax</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>fax</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="image/tiff" binary="true"
+      iconPath="image.gif">
+      <mimetypes>
+        <mimetype>image/tiff</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>tiff</extension>
+        <extension>tif</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/x-emf" binary="true"
+      iconPath="image.gif">
+      <mimetypes>
+        <mimetype>application/x-emf</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>emf</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/x-vclmtf" binary="true"
+      iconPath="image.gif">
+      <mimetypes>
+        <mimetype>application/x-vclmtf</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>vclmtf</extension>
+      </extensions>
+    </mimetype>
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService"
+    point="extension">
+
+    <documentation>
+
+      Default filename extension to mimetype rules.
+
+    </documentation>
+
+    <fileExtension name="xml" mimetype="text/xml" ambiguous="true" />
+
+  </extension>
+
+</component>
