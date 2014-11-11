@@ -1,0 +1,26 @@
+<component name="org.nuxeo.ecm.core.test.merge-doctype">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="newschema" src="schema/schema.xsd"/>
+    <schema name="newschema2" src="schema/schema2.xsd"/>
+  </extension>
+
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <facet name="NewFacet" />
+    <facet name="NewFacet2">
+      <schema name="newschema2"/>
+    </facet>
+    <doctype name="myDoc" append="true">
+      <facet name="NewFacet"/>
+    </doctype>
+    <doctype name="myDoc2" append="true">
+      <schema name="newschema"/>
+      <facet name="NewFacet2"/>
+    </doctype>
+    <proxies>
+      <schema name="newschema"/>
+    </proxies>
+  </extension>
+
+</component>
