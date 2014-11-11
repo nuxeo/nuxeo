@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXMimeType Facade
+Bundle-SymbolicName: org.nuxeo.ecm.platform.mimetype.facade
+Bundle-Localization: plugin
+Export-Package: org.nuxeo.ecm.platform.mimetype,
+ org.nuxeo.ecm.platform.mimetype.ejb,
+ org.nuxeo.ecm.platform.mimetype.ejb.interfaces,
+ org.nuxeo.ecm.platform.mimetype.ejb.interfaces.local
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/mimetype-platform-contrib.xml
+Require-Bundle: org.nuxeo.ecm.platform.mimetype.core
