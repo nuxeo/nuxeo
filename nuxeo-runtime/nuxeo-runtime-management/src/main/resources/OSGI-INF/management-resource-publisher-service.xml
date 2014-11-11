@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.management.ResourcePublisher">
+
+  <implementation class="org.nuxeo.runtime.management.ResourcePublisherService" />
+
+  <service>
+    <provide interface="org.nuxeo.runtime.management.ResourcePublisher" />
+  </service>
+
+  <require>org.nuxeo.runtime.management.ServerLocator</require>
+  
+  <extension-point name="services">
+    <object class="org.nuxeo.runtime.management.ServiceDescriptor" />
+  </extension-point>
+
+  <extension-point name="factories">
+    <object class="org.nuxeo.runtime.management.ResourceFactoryDescriptor" />
+  </extension-point>
+
+  <extension-point name="shortcuts">
+    <object class="org.nuxeo.runtime.management.ShortcutDescriptor" />
+  </extension-point>
+
+  <extension target="org.nuxeo.runtime.management.ResourcePublisher"
+    point="services">
+    <service name="managementResourcePublisher" class="org.nuxeo.runtime.management.ResourcePublisher" ifaceClass="prg.nuxeo.runtime.management.ResourcePublisherService"/>
+  </extension>
+
+</component>

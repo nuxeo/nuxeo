@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.management.ServerLocatorContrib">
+
+  <extension target="org.nuxeo.runtime.management.ServerLocator"
+    point="locators">
+    <locator domain="org.nueo" default="true" exist="${org.nuxeo.runtime.management.serverExist}" rmiPort="${org.nuxeo.runtime.management.serverRmiPort}"/>
+  </extension>
+  
+</component>
