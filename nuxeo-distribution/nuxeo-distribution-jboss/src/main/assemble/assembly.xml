@@ -1,0 +1,350 @@
+<project name="nuxeo-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+
+  <target name="init" unless="init.done">
+    <tstamp />
+    <condition property="build.ep">
+      <or>
+        <isset property="maven.profile.nuxeo-cap" />
+        <isset property="maven.profile.all" />
+        <isset property="maven.profile.all-distributions" />
+      </or>
+    </condition>
+    <condition property="build.dm">
+      <or>
+        <isset property="maven.profile.nuxeo-dm" />
+        <isset property="maven.profile.all" />
+        <isset property="maven.profile.all-distributions" />
+      </or>
+    </condition>
+
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <antcall target="expand" />
+    <property name="init.done" value="true" />
+  </target>
+
+  <target name="expand" unless="no.build">
+    <artifact:nuxeo-expand />
+  </target>
+
+  <target name="build" depends="init" unless="no.build">
+    <echo>Building JBoss distributions...</echo>
+    <property name="jboss" value="${outdir}/jboss.tmp" />
+    <antcall target="prepare-jboss" />
+    <artifact:attach file="pom.xml"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="pom" />
+    <antcall target="build-nuxeo-cap" />
+    <antcall target="build-nuxeo-dm" />
+    <delete dir="${jboss}" failonerror="false" />
+  </target>
+
+  <target name="prepare-jboss">
+    <unzip dest="${outdir}">
+      <artifact:resolveFile key="org.jboss:jboss-as:5.1.0.GA:zip" />
+      <!--
+      <artifact:resolveFile key="org.jboss:jboss-as:5.1.0.GA:zip"
+                            classifier="light" />
+      -->
+      <patternset>
+        <exclude name="**/server/all/**" />
+        <exclude name="**/server/standard/**" />
+        <exclude name="**/server/minimal/**" />
+        <exclude name="**/server/web/**" />
+        <exclude name="**/bindings-jboss-beans.xml" />
+      </patternset>
+    </unzip>
+    <!-- will use a skeleton instead
+    <move todir="${jboss}">
+      <fileset dir="${outdir}/jboss-5.1.0.GA" />
+    </move>
+    -->
+    <mkdir dir="${jboss}" />
+    <unzip dest="${jboss}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="doc" />
+    </unzip>
+    <copy todir="${jboss}">
+      <fileset dir="src/main/resources" />
+    </copy>
+    <unzip dest="${jboss}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="root" />
+    </unzip>
+    <chmod dir="${jboss}" perm="ug+x" includes="*.command" />
+    <unzip dest="${jboss}/bin">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="bin" />
+    </unzip>
+    <chmod dir="${jboss}/bin" perm="ug+x" includes="*.sh,*ctl,*.command" />
+
+    <!-- Remove non-nuxeo information files from root
+    <mkdir dir="${jboss}/doc-jboss" />
+    <move todir="${jboss}/doc-jboss">
+      <fileset dir="${jboss}">
+        <include name="lgpl.html" />
+        <include name="JBossORG-EULA.txt" />
+        <include name="jar-versions.xml" />
+        <include name="derby.log" />
+        <include name="copyright.txt" />
+      </fileset>
+    </move>
+    -->
+
+    <unzip dest="${jboss}/templates" overwrite="true">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
+                            classifier="templates-common" />
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
+                            classifier="templates-jboss" />
+    </unzip>
+
+    <copy todir="${jboss}/server/default/deployers">
+      <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-jboss-deployer:${nuxeo.runtime.version}" />
+    </copy>
+    <copy todir="${jboss}/server/default/lib">
+      <artifact:resolveFile key="org.jboss.services:logging-monitor:5.1.0.GA" />
+    </copy>
+    <copy tofile="${jboss}/common/lib/hibernate-core.jar">
+      <artifact:resolveFile key="org.hibernate:hibernate-core:3.3.2.GA" />
+    </copy>
+    <mkdir dir="${jboss}/client" />
+    <copy todir="${jboss}/client">
+      <artifact:resolveFile key="org.nuxeo.shell:nuxeo-shell" />
+    </copy>
+  </target>
+
+  <target name="build-nuxeo-cap"
+          if="build.ep"
+          description="Build JBoss distribution with Nuxeo CAP">
+    <property name="distribution.dir"
+              value="${outdir}/nuxeo-cap-${maven.project.version}-jboss" />
+    <delete failonerror="false" dir="${distribution.dir}" />
+    <copy todir="${distribution.dir}">
+      <fileset dir="${jboss}" />
+    </copy>
+    <chmod dir="${distribution.dir}/bin"
+           perm="ug+x"
+           includes="*.sh,*ctl,*.command" />
+
+    <!-- Nuxeo CAP -->
+    <unzip dest="${distribution.dir}/server/default/deploy/nuxeo.ear">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-cap:${nuxeo.features.version}:zip" />
+    </unzip>
+
+    <antcall target="add-jbossws-bundle">
+      <param name="distribution.dir" value="${distribution.dir}" />
+    </antcall>
+    <antcall target="reorganize-libs">
+      <param name="distribution.dir" value="${distribution.dir}" />
+    </antcall>
+
+    <antcall target="set-distribution-properties">
+      <param name="distribution.properties.file"
+             value="${distribution.dir}/templates/common/config/distribution.properties" />
+      <param name="org.nuxeo.distribution.name" value="cap" />
+      <param name="org.nuxeo.distribution.server" value="jboss" />
+      <param name="org.nuxeo.distribution.version"
+             value="${maven.project.version}" />
+      <param name="org.nuxeo.distribution.date" value="${DSTAMP}${TSTAMP}" />
+    </antcall>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-cap-ear.zip"
+         basedir="${outdir}"
+         includes="nuxeo-cap-${maven.project.version}-jboss/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-cap-ear.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="nuxeo-cap-ear"
+                     type="zip" />
+    <antcall target="apply-ear">
+      <param name="distribution.dir" value="${distribution.dir}" />
+    </antcall>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-cap.zip"
+         basedir="${outdir}"
+         includes="nuxeo-cap-${maven.project.version}-jboss/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-cap.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="nuxeo-cap"
+                     type="zip" />
+  </target>
+
+  <target name="build-nuxeo-dm"
+          if="build.dm"
+          description="Build JBoss distribution with Nuxeo DM">
+    <property name="distribution.dir"
+              value="${outdir}/nuxeo-dm-${maven.project.version}-jboss" />
+    <delete failonerror="false" dir="${distribution.dir}" />
+    <copy todir="${distribution.dir}">
+      <fileset dir="${jboss}" />
+    </copy>
+    <chmod dir="${distribution.dir}/bin"
+           perm="ug+x"
+           includes="*.sh,*ctl,*.command" />
+
+    <!-- Nuxeo DM Doc -->
+    <unzip dest="${distribution.dir}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="doc-dm" />
+    </unzip>
+
+    <!-- Nuxeo DM -->
+    <unzip dest="${distribution.dir}/server/default/deploy/nuxeo.ear">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
+    </unzip>
+
+    <antcall target="add-jbossws-bundle">
+      <param name="distribution.dir" value="${distribution.dir}" />
+    </antcall>
+
+    <!-- WSS specific BEGIN -->
+    <!-- move WSS front filter as external lib  since it must be referenced from root Web context-->
+    <move todir="${distribution.dir}/server/default/lib">
+      <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
+        <include name="nuxeo-generic-wss-front*" />
+      </fileset>
+    </move>
+    <!-- add WSS filter binding in ROOT.WAR -->
+    <copy tofile="${distribution.dir}/server/default/deploy/ROOT.war/WEB-INF/web.xml"
+          file="${maven.basedir}/src/main/resources/wss-rootweb.xml"
+          overwrite="true" />
+    <!-- WSS specific END -->
+
+    <antcall target="reorganize-libs">
+      <param name="distribution.dir" value="${distribution.dir}" />
+    </antcall>
+
+    <!-- Complementary templates for DM -->
+    <unzip dest="${distribution.dir}/templates" overwrite="true">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
+                            classifier="templates-common-dm" />
+    </unzip>
+    <antcall target="set-distribution-properties">
+      <param name="distribution.properties.file"
+             value="${distribution.dir}/templates/common/config/distribution.properties" />
+      <param name="org.nuxeo.distribution.name" value="dm" />
+      <param name="org.nuxeo.distribution.server" value="jboss" />
+      <param name="org.nuxeo.distribution.version"
+             value="${maven.project.version}" />
+      <param name="org.nuxeo.distribution.date" value="${DSTAMP}${TSTAMP}" />
+    </antcall>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm-ear.zip"
+         basedir="${outdir}"
+         includes="nuxeo-dm-${maven.project.version}-jboss/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm-ear.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="nuxeo-dm-ear"
+                     type="zip" />
+    <antcall target="apply-ear">
+      <param name="distribution.dir" value="${distribution.dir}" />
+    </antcall>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
+         basedir="${outdir}"
+         includes="nuxeo-dm-${maven.project.version}-jboss/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="nuxeo-dm"
+                     type="zip" />
+  </target>
+
+  <target name="add-jbossws-bundle">
+    <!-- add JBossWS specific bundle -->
+    <copy todir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ws-jbossws:${nuxeo.features.version}" />
+    </copy>
+  </target>
+
+  <target name="reorganize-libs">
+    <!-- Add JBoss specific requirements -->
+    <copy todir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles"
+          overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="org.nuxeo*" />
+        </includes>
+      </artifact:set>
+    </copy>
+    <copy todir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib"
+          overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="!org.nuxeo*" />
+        </includes>
+      </artifact:set>
+    </copy>
+
+    <!-- Remove duplicates -->
+    <nx:rmdups dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib" />
+
+    <!-- remove libraries already provided by JBoss or unneeded -->
+    <delete>
+      <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles">
+        <include name="nuxeo-core-storage-sql-ra-*.jar" />
+        <include name="nuxeo-runtime-jetty-*" />
+        <include name="nuxeo-runtime-jtajca*" />
+        <include name="nuxeo-platform-login-default*" />
+      </fileset>
+      <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
+        <include name="jboss-cache*" />
+        <include name="jboss-common*" />
+        <include name="jboss-remoting*" />
+        <!-- keep seam debug ?
+        <include name="jboss-seam-debug*" />
+        -->
+        <include name="hibernate*" />
+        <include name="javaassist*" />
+        <include name="commons-collections*" />
+        <include name="commons-logging*" />
+        <include name="geronimo-*" />
+        <include name="jta-*" />
+        <include name="log4j-*" />
+        <include name="persistence-*" />
+        <include name="servlet-api-*" />
+        <include name="script-api-*" />
+        <include name="jca-api-*" />
+        <include name="connector-api-*" />
+        <include name="el-*" />
+        <include name="catalina-*" />
+        <!-- should remove the following?
+        <include name="javacc-*" />
+        <include name="jaxb-api-*" />
+        <include name="jaxen-*" />
+        <include name="osgi-core-*" />
+        <include name="webservices-api-*" />
+        -->
+      </fileset>
+    </delete>
+
+    <move todir="${distribution.dir}/server/default/lib">
+      <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
+        <include name="commons-lang*" />
+        <include name="freemarker*" />
+        <include name="lucene-core*" />
+        <include name="lucene-analyzers*" />
+      </fileset>
+    </move>
+  </target>
+
+  <target name="set-distribution-properties">
+    <echo append="false" file="${distribution.properties.file}">
+## DO NOT MANUALLY EDIT THIS FILE
+org.nuxeo.distribution.name=${org.nuxeo.distribution.name}
+org.nuxeo.distribution.server=${org.nuxeo.distribution.server}
+org.nuxeo.distribution.version=${org.nuxeo.distribution.version}
+org.nuxeo.distribution.date=${org.nuxeo.distribution.date}
+    </echo>
+  </target>
+
+  <target name="apply-ear">
+    <delete failonerror="true">
+      <fileset dir="${distribution.dir}">
+        <include name="INSTALL.TXT" />
+      </fileset>
+    </delete>
+    <copy todir="${distribution.dir}" overwrite="false">
+      <fileset dir="${outdir}/jboss-5.1.0.GA" />
+    </copy>
+  </target>
+</project>
