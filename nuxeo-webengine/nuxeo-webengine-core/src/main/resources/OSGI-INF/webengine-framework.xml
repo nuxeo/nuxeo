@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webengine.WebEngineComponent">
+  <require>org.nuxeo.ecm.webengine.server</require>
+  <require>org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService</require>
+  
+  <implementation
+          class="org.nuxeo.ecm.webengine.WebEngineComponent" />
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Manage templates
+  </documentation>
+
+  <!-- you can change the default rendering engine by setting this property to the engine class name
+  <property name="engine" value="org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine"/>
+  -->
+
+  <service>
+    <provide interface="org.nuxeo.ecm.webengine.WebEngine" />
+  </service>
+
+  <extension-point name="rendering-extension">
+    <documentation>
+      @author Bogdan Stefanescu (bs@nuxeo.com)
+      Expose the registration of freemarker templates (directives, methods or global shared variables)
+      This way custom templates can be registered into the freemarker engine from outside
+      <code>
+        <rendering-extension name="myExtension" class="org.nuxeo.ecm.platform.my.MyExtension"/>
+      </code>
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.rendering.RenderingExtensionDescriptor" />
+  </extension-point>
+
+  <extension-point name="guard">
+    <documentation>
+      @author Bogdan Stefanescu (bs@nuxeo.com)
+      Register global guards. Guards are used to define permissions
+      <code>
+        <guard id="MyGuard" expression="(GUARD1 OR GUARD2) AND user=bogdan">
+        </guard>
+      </code>
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.security.GuardDescriptor" />
+  </extension-point>
+
+  <extension-point name="resource">
+    <documentation>
+      @author Bogdan Stefanescu (bs@nuxeo.com)
+      Register a JAX-RS root resource
+      <code>
+        <resource path="{lang:[a-z]}" singleton="false" class="org.nuxeo.Resource" />
+      </code>
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.ResourceBinding" />
+  </extension-point>
+
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent" point="rendering-extension">
+    <rendering-extension name="script" class="org.nuxeo.ecm.webengine.rendering.ScriptMethod"/>
+    <rendering-extension name="render" class="org.nuxeo.ecm.webengine.rendering.RenderDirective"/>
+    <rendering-extension name="wiki" class="org.nuxeo.ecm.platform.rendering.wiki.WikiTransformer"/>
+    <rendering-extension name="API" class="org.nuxeo.ecm.webengine.rendering.APIHelper"/>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.server" point="webapp">
+    <webapp name="nuxeo" path="/">
+      <root>web</root>
+    </webapp>
+  </extension> 
+   
+</component>
