@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.picture.actions">
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+             point="actions">
+
+    <action id="tab_bookview" link="/incl/tabs/book_view.xhtml"
+            enabled="true" label="action.view.book" order="1">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>grantpicturebook</filter-id>
+    </action>
+
+    <action id="tab_slideshow" link="/incl/tabs/slide_view.xhtml"
+            enabled="true" label="action.view.slideshow" order="2">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>grantpicturebook</filter-id>
+    </action>
+
+    <action id="tab_imageview" link="/incl/tabs/picture_view.xhtml"
+            enabled="true" label="action.view.picture" order="22">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>hasPictureFacet</filter-id>
+    </action>
+
+    <action id="tab_metadata_picture"
+            link="/incl/tabs/metadata_picture.xhtml" enabled="true"
+            label="action.view.metadata_picture" order="24">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>hasPictureFacet</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="grantpicturebook">
+      <rule grant="true">
+        <type>PictureBook</type>
+      </rule>
+    </filter>
+
+    <!-- not used since 5.5, keep it for compatibility -->
+    <filter id="grantpicture">
+      <rule grant="true">
+        <type>Picture</type>
+      </rule>
+    </filter>
+
+    <filter id="hasPictureFacet">
+      <rule grant="true">
+        <facet>Picture</facet>
+      </rule>
+    </filter>
+
+    <filter id="create" append="true">
+      <rule grant="true">
+        <permission>AddChildren</permission>
+        <type>PictureBook</type>
+      </rule>
+    </filter>
+
+    <filter id="importFile" append="true">
+      <rule grant="true">
+        <permission>AddChildren</permission>
+        <type>PictureBook</type>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

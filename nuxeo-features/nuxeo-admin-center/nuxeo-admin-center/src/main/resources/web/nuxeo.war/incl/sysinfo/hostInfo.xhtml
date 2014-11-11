@@ -1,0 +1,22 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  class="hostInfos">
+
+  <pre>
+    <h:outputText value="#{systemInfo.hostInfo}" />
+  </pre>
+
+  <h:form id="restartForm">
+    <h:outputText value="#{systemInfo.uptime}" />
+    <h:commandButton
+      onclick="return confirmRestart();"
+      action="#{systemInfo.restartServer()}"
+      value="#{messages['label.action.restart']}"
+      styleClass="button" />
+  </h:form>
+
+</div>
