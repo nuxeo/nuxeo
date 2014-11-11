@@ -1,0 +1,67 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  id="#{widget.id}">
+
+  <c:if test="#{widget.mode != 'create' and widget.mode != 'edit' and field_0 != null}">
+
+    <nxh:outputLink
+      value="#{nxd:fileUrl('downloadFile', value, widget.fieldDefinitions[0].propertyName, field_1)}">
+      <nxh:graphicImage value="#{nxd:fileIconPath(field_0)}"
+        rendered="#{! empty nxd:fileIconPath(field_0)}" />
+      <nxh:outputText value="#{field_1}" />
+    </nxh:outputLink>
+
+    <nxu:methodResult name="hasPDFCapabilities"
+      value="#{conversionActions.isExportableToPDF(field_0)}">
+      <h:panelGroup rendered="#{hasPDFCapabilities}">
+        <h:outputText value=" | " />
+        <h:commandLink action="#{conversionActions.generatePdfFile}">
+          <f:param name="fileFieldFullName"
+            value="#{widget.fieldDefinitions[0].propertyName}" />
+          <f:param name="docRef" value="#{layoutValue.id}" />
+          <f:param name="filename" value="#{field_1}" />
+          <h:outputText value="#{messages['label.document.generatePdf']}" />
+        </h:commandLink>
+      </h:panelGroup>
+    </nxu:methodResult>
+
+    <nxu:methodResult name="isLiveEditable"
+      value="#{liveEditHelper.isLiveEditable(document, field_0)}">
+      <h:panelGroup
+        rendered="#{isLiveEditable}">
+        <h:outputText value=" | " />
+        <h:outputLink
+          value="#{nxd:liveEditUrl(layoutValue, widget.fieldDefinitions[0].schemaName, widget.fieldDefinitions[0].fieldName, widget.fieldDefinitions[1].fieldName)}">
+          <h:outputText value="#{messages['label.document.directEdit']}" />
+        </h:outputLink> 
+      </h:panelGroup>
+    </nxu:methodResult>
+    
+    <c:if test="#{widget.mode == 'view'}">
+      <h:commandLink action="#{previewActions.doSetFieldXPath}">
+        <f:param name="fieldXPath"
+          value="#{widget.fieldDefinitions[0].propertyName}" />
+        <f:param name="previewTabId"
+          value="#{nxu:test(!empty widget.properties.previewTabId, widget.properties.previewTabId, 'TAB_PREVIEW')}" />
+        <h:outputText value=" | #{messages['command.preview.file']}" />
+      </h:commandLink>
+    </c:if>
+
+  </c:if>
+
+  <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
+
+    <nxu:inputFile id="#{widget.id}_file" value="#{field_0}"
+      filename="#{field_1}" required="#{widget.required}" editFilename="false"
+      onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}" />
+    <h:message styleClass="errorMessage" for="#{widget.id}_file"
+      id="#{widget.id}_message" />
+
+  </c:if>
+
+</f:subview>
