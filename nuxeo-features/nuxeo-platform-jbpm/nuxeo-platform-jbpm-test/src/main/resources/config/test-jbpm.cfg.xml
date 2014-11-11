@@ -1,0 +1,10 @@
+<jbpm-configuration>
+  <string name='resource.hibernate.cfg.xml' value='config/test-jbpm-hibernate.cfg.xml' />
+  <jbpm-context>
+    <service name="tx" factory="org.jbpm.tx.TxServiceFactory" />
+    <service name="persistence" factory="org.jbpm.persistence.db.DbPersistenceServiceFactory" />
+    <service name="authentication"
+      factory="org.jbpm.security.authentication.DefaultAuthenticationServiceFactory" />
+    <service name="scheduler" factory="org.jbpm.scheduler.db.DbSchedulerServiceFactory" />
+  </jbpm-context>
+</jbpm-configuration>
