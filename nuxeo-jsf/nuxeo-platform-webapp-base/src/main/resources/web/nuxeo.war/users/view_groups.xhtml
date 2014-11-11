@@ -1,0 +1,33 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:nxu="http://nuxeo.org/nxweb/util"
+     xmlns:nxl="http://nuxeo.org/nxforms/layout"
+     xmlns:a4j="http://richfaces.org/a4j">
+
+  <a4j:outputPanel id="groupsPanel">
+    <div class="tabsContent">
+
+      <!-- create form -->
+      <f:subview rendered="#{groupManagementActions.showCreateForm}"
+        id="createGroupView">
+        <ui:include src="create_group.xhtml"/>
+      </f:subview>
+
+      <!-- view form -->
+      <f:subview rendered="#{not empty groupManagementActions.selectedGroup and groupManagementActions.showUserOrGroup}"
+        id="viewGroupView">
+        <ui:include src="view_group.xhtml"/>
+      </f:subview>
+
+      <!-- listing -->
+      <f:subview rendered="#{!groupManagementActions.showUserOrGroup and !groupManagementActions.showCreateForm}"
+        id="groupsListingView">
+        <ui:include src="view_groups_listing.xhtml"/>
+      </f:subview>
+
+    </div>
+  </a4j:outputPanel>
+
+</div>
