@@ -1,0 +1,35 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  class="userAndGroupSearch">
+
+    <h:outputText value="#{messages['label.security.searchUsers']}"
+      rendered="#{searchType =='USER_TYPE'}"
+      class="rightsAddLabel" />
+    <h:outputText value="#{messages['label.security.searchGroups']}"
+      rendered="#{searchType =='GROUP_TYPE'}"
+      class="rightsAddLabel" />
+    <h:outputText value="#{messages['label.security.search']}"
+      rendered="#{searchType =='USER_GROUP_TYPE' or empty searchType}"
+      class="rightsAddLabel" />
+
+    <h:inputText value="#{principalListManager.searchFilter}" class="directoryFilter"
+      onkeydown="if (event.keyCode == 13) {Element.next(this).click(); return false;} else return true;" />
+    <a4j:commandButton value="#{messages['command.search']}" styleClass="button"
+      reRender="suggestedEntries" ignoreDupResponses="true"/>
+    <h:inputHidden value="#{principalListManager.searchType}">
+      <c:if test="#{searchType == 'USER_TYPE'}" >
+        <f:attribute name="value" value="USER_TYPE" />
+      </c:if>
+      <c:if test="#{searchType == 'GROUP_TYPE'}" >
+        <f:attribute name="value" value="GROUP_TYPE" />
+      </c:if>
+      <c:if test="#{searchType == 'USER_GROUP_TYPE' or empty searchType}" >
+        <f:attribute name="value" value="USER_GROUP_TYPE" />
+      </c:if>
+    </h:inputHidden>
+</div>
