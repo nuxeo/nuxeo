@@ -1,0 +1,151 @@
+<span xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+<c:if test="false">
+Template displaying an action button (@since 5.6).
+
+Parameters:
+- action: the action instance (mandatory)
+- idPrefix: a String prefix to put before the action id (optional but
+  recommanded)
+- useAjaxForm: boolean expression whether the action is done in an ajax form:
+  the action will be executed via an action listener to prevent any
+  navigation that would remove the ajax behaviour, defaults to false.
+- display: if set to 'buttons', action will be displayed as a command button.
+  If set to 'links', action will be displayed as a command link. If set to
+  'icons', action will be displayed as an icon. Else (default behaviour),
+  action will be displayed as command link and display its icon when defined.
+
+Templating zone that can be filled when useAjaxForm is set to false (default):
+- inside_action
+
+Templating zones that can be filled when useAjaxForm is set to true:
+- before_action_trigger
+- after_action_trigger
+</c:if>
+
+<c:choose>
+
+  <c:when test="#{display == 'buttons'}">
+    <c:if test="#{useAjaxForm}">
+      <h:commandButton
+        id="#{idPrefix}#{action.id}"
+        onclick="#{action.confirm}"
+        immediate="#{action.immediate}"
+        value="#{messages[action.label]}">
+        <ui:insert name="before_action_trigger" />
+        <nxu:actionListenerMethod
+          value="#{action.getLink()}" />
+        <ui:insert name="after_action_trigger" />
+      </h:commandButton>
+    </c:if>
+    <c:if test="#{not useAjaxForm}">
+      <nxh:commandButton action="#{action.getLink()}"
+        immediate="#{action.immediate}"
+        onclick="#{action.confirm}"
+        id="#{idPrefix}#{action.id}"
+        value="#{messages[action.label]}"
+        styleClass="button">
+        <ui:insert name="inside_action" />
+      </nxh:commandButton>
+    </c:if>
+  </c:when>
+
+  <c:when test="#{display == 'links'}">
+    <c:if test="#{useAjaxForm}">
+      <a4j:commandLink
+        id="#{idPrefix}#{action.id}"
+        onclick="#{action.confirm}"
+        immediate="#{action.immediate}"
+        value="#{messages[action.label]}">
+        <ui:insert name="before_action_trigger" />
+        <nxu:actionListenerMethod
+          value="#{action.getLink()}" />
+        <ui:insert name="after_action_trigger" />
+      </a4j:commandLink>
+    </c:if>
+    <c:if test="#{not useAjaxForm}">
+      <nxh:commandLink action="#{action.getLink()}"
+        immediate="#{action.immediate}"
+        onclick="#{action.confirm}"
+        id="#{idPrefix}#{action.id}"
+        value="#{messages[action.label]}">
+        <ui:insert name="inside_action" />
+      </nxh:commandLink>
+    </c:if>
+  </c:when>
+
+  <c:when test="#{display == 'icons'}">
+    <c:if test="#{useAjaxForm}">
+      <a4j:commandLink
+        id="#{idPrefix}#{action.id}"
+        onclick="#{action.confirm}"
+        immediate="#{action.immediate}">
+        <h:graphicImage value="#{action.icon}"
+          rendered="#{not empty action.icon}"
+          title="#{messages[action.label]}"
+          alt="#{messages[action.label]}"
+          styleClass="smallIcon" />
+        <ui:insert name="before_action_trigger" />
+        <nxu:actionListenerMethod
+          value="#{action.getLink()}" />
+        <ui:insert name="after_action_trigger" />
+      </a4j:commandLink>
+    </c:if>
+    <c:if test="#{not useAjaxForm}">
+      <nxh:commandLink action="#{action.getLink()}"
+        id="#{idPrefix}#{action.id}"
+        onclick="#{action.confirm}"
+        immediate="#{action.immediate}">
+        <h:graphicImage value="#{action.icon}"
+          rendered="#{not empty action.icon}"
+          title="#{messages[action.label]}"
+          alt="#{messages[action.label]}"
+          styleClass="smallIcon" />
+        <ui:insert name="inside_action" />
+      </nxh:commandLink>
+    </c:if>
+  </c:when>
+
+  <c:otherwise>
+    <c:if test="#{useAjaxForm}">
+      <a4j:commandLink
+        id="#{idPrefix}#{action.id}"
+        onclick="#{action.confirm}"
+        immediate="#{action.immediate}">
+        <h:graphicImage value="#{action.icon}"
+          rendered="#{not empty action.icon}"
+          title="#{messages[action.label]}"
+          alt="#{messages[action.label]}"
+          styleClass="smallIcon" />
+        <h:outputText value=" #{messages[action.label]}" />
+        <ui:insert name="before_action_trigger" />
+        <nxu:actionListenerMethod
+          value="#{action.getLink()}" />
+        <ui:insert name="after_action_trigger" />
+      </a4j:commandLink>
+    </c:if>
+    <c:if test="#{not useAjaxForm}">
+      <nxh:commandLink action="#{action.getLink()}"
+        id="#{idPrefix}#{action.id}"
+        onclick="#{action.confirm}"
+        immediate="#{action.immediate}">
+        <h:graphicImage value="#{action.icon}"
+          rendered="#{not empty action.icon}"
+          title="#{messages[action.label]}"
+          alt="#{messages[action.label]}"
+          styleClass="smallIcon" />
+        <h:outputText value=" #{messages[action.label]}" />
+        <ui:insert name="inside_action" />
+      </nxh:commandLink>
+    </c:if>
+  </c:otherwise>
+
+</c:choose>
+
+</span>
