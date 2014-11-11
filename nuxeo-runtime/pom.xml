@@ -2,56 +2,162 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.nuxeo.runtime</groupId>
-    <artifactId>nuxeo-runtime-parent</artifactId>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-ecm</artifactId>
     <version>5.9.5-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.runtime</groupId>
-  <artifactId>nuxeo-runtime</artifactId>
-  <name>Nuxeo Runtime</name>
+  <artifactId>nuxeo-runtime-parent</artifactId>
+  <name>Nuxeo Runtime Parent</name>
+  <version>5.9.5-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <description>Nuxeo Runtime: Parent.</description>
 
-  <description>Nuxeo Runtime: The Nuxeo Runtime.</description>
+  <modules>
+    <module>nuxeo-runtime</module>
+    <module>nuxeo-runtime-deploy</module>
+    <module>nuxeo-runtime-reload</module>
+    <module>nuxeo-runtime-osgi</module>
+    <module>nuxeo-runtime-launcher</module>
+    <module>nuxeo-runtime-jetty-adapter</module>
+    <module>nuxeo-runtime-tomcat-adapter</module>
+    <module>nuxeo-runtime-scripting</module>
+    <module>nuxeo-runtime-management</module>
+    <module>nuxeo-runtime-metrics</module>
+    <module>nuxeo-runtime-jtajca</module>
+    <module>nuxeo-runtime-datasource</module>
+    <module>nuxeo-runtime-test</module>
+    <module>nuxeo-launcher-commons</module>
+    <module>nuxeo-connect-standalone</module>
+  </modules>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.nuxeo.common</groupId>
-      <artifactId>nuxeo-common</artifactId>
-    </dependency>
+  <scm>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-runtime.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-runtime.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-runtime</url>
+  </scm>
 
-    <dependency>
-      <groupId>javax.transaction</groupId>
-      <artifactId>jta</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.codahale.metrics</groupId>
-      <artifactId>metrics-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.compendium</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-    </dependency>
-  </dependencies>
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
-  <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-      </resource>
-    </resources>
-  </build>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <name>Nuxeo virtual release repository</name>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <name>Nuxeo virtual snapshot repository</name>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <profiles>
+    <!-- For use by Nuxeo internal QA -->
+    <profile>
+      <id>qa</id>
+      <repositories>
+        <repository>
+          <id>internal-releases</id>
+          <url>
+            http://maven.in.nuxeo.com/nexus/content/groups/internal-releases
+          </url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>internal-snapshots</id>
+          <url>
+            http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots
+          </url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </snapshots>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>internal-releases</id>
+          <url>
+            http://maven.in.nuxeo.com/nexus/content/groups/internal-releases
+          </url>
+          <name>Nuxeo virtual release repository</name>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+          <id>internal-snapshots</id>
+          <url>
+            http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots
+          </url>
+          <name>Nuxeo virtual snapshot repository</name>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <updatePolicy>always</updatePolicy>
+            <enabled>true</enabled>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+      <distributionManagement>
+        <snapshotRepository>
+          <id>daily-snapshots</id>
+          <url>
+            http://maven.in.nuxeo.com/nexus/content/repositories/daily-snapshots
+          </url>
+          <uniqueVersion>true</uniqueVersion>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+  </profiles>
 
 </project>
