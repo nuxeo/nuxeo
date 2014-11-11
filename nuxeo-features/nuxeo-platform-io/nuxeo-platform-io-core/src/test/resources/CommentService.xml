@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.comment.service.CommentService">
+  <documentation>
+    This component gives the user the possibility to add comments to documents.
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.comment.service.CommentService" />
+
+  <extension-point name="config">
+    <documentation>
+      This extension can be used to configure the Comment Service
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.comment.service.CommentServiceConfig" />
+  </extension-point>
+
+
+</component>

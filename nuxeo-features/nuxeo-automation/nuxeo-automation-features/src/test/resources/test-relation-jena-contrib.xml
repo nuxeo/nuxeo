@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="test.jena.contribs">
+
+  <!-- memory graph -->
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="graphs">
+    <graph name="default" type="jena">
+      <namespaces>
+        <namespace name="rdf">
+          http://www.w3.org/1999/02/22-rdf-syntax-ns#
+        </namespace>
+        <namespace name="dcterms">http://purl.org/dc/terms/</namespace>
+        <namespace name="nuxeo">http://www.nuxeo.org/document/uid/</namespace>
+      </namespaces>
+    </graph>
+  </extension>
+
+</component>

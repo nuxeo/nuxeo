@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.publishing.permissions.contrib">
+
+  <require>org.nuxeo.ecm.core.security.defaultPermissions</require>
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="permissions">
+
+    <permission name="CanAskForPublishing" />
+
+    <permission name="Read">
+      <include>CanAskForPublishing</include>
+    </permission>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="permissionsVisibility">
+
+    <visibility type="Section">
+      <item show="true" order="150">CanAskForPublishing</item>
+    </visibility>
+
+    <visibility type="SectionRoot">
+      <item show="true" order="150">CanAskForPublishing</item>
+    </visibility>
+
+  </extension>
+
+</component>

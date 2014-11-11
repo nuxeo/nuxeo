@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.thumbnail.convert">
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
+    point="converter">
+
+    <converter name="thumbnailDocumentConverter"
+      class="org.nuxeo.ecm.platform.thumbnail.converter.ThumbnailDocumentConverter">
+    </converter>
+
+  </extension>
+
+</component>
