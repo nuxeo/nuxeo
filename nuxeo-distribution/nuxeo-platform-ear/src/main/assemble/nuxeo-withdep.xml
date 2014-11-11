@@ -1,0 +1,236 @@
+<assembly>
+
+  <!-- RESOURCES -->
+  <assemble>
+    <set>resources</set>
+    <outputFile>/</outputFile>
+  </assemble>
+  <zipEntrySet id="resources">
+    <artifact>
+      org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-mono
+    </artifact>
+  </zipEntrySet>
+  <assemble>
+    <set>resources-derby</set>
+    <outputFile>/</outputFile>
+  </assemble>
+  <zipEntrySet id="resources-derby" profile="derby">
+    <artifact>
+      org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-derby
+    </artifact>
+  </zipEntrySet>
+  <assemble>
+    <set>resources-mysql</set>
+    <outputFile>/</outputFile>
+  </assemble>
+  <zipEntrySet id="resources-mysql" profile="mysql">
+    <artifact>
+      org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-mysql
+    </artifact>
+  </zipEntrySet>
+  <assemble>
+    <set>resources-postgresql</set>
+    <outputFile>/</outputFile>
+  </assemble>
+  <zipEntrySet id="resources-postgresql" profile="postgresql">
+    <artifact>
+      org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-postgresql
+    </artifact>
+  </zipEntrySet>
+  <assemble>
+    <set>resources-oracle</set>
+    <outputFile>/</outputFile>
+  </assemble>
+  <zipEntrySet id="resources-oracle" profile="oracle">
+    <artifact>
+      org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-oracle
+    </artifact>
+  </zipEntrySet>
+  <assemble>
+    <set>resources-h2</set>
+    <outputFile>/</outputFile>
+  </assemble>
+  <zipEntrySet id="resources-h2" profile="h2">
+    <artifact>
+      org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-h2
+    </artifact>
+  </zipEntrySet>
+  <assemble>
+    <set>resources-jcr</set>
+    <outputFile>/</outputFile>
+  </assemble>
+  <zipEntrySet id="resources-jcr" profile="jcr-profile">
+    <artifact>
+      org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-jcr
+    </artifact>
+  </zipEntrySet>
+  <assemble>
+    <set>resources-jcr-postgresql</set>
+    <outputFile>/</outputFile>
+  </assemble>
+  <zipEntrySet id="resources-jcr-postgresql" profile="jcr-postgresql">
+    <artifact>
+      org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-jcr-postgresql
+    </artifact>
+  </zipEntrySet>
+
+  <!-- ARTIFACTS -->
+  <assemble>
+    <outputFile>/</outputFile>
+    <set>root-artifacts</set>
+  </assemble>
+  <artifactSet id="root-artifacts">
+    <import>**</import>
+    <includeDependencies>false</includeDependencies>
+    <includes>
+      <artifact name="nuxeo-platform-webapp" />
+      <artifact name="nuxeo-platform-webapp-core" />
+    </includes>
+  </artifactSet>
+
+  <assemble>
+    <outputFile>system</outputFile>
+    <set>system</set>
+  </assemble>
+  <artifactSet id="system">
+    <import>**</import>
+    <includeDependencies>true</includeDependencies>
+    <includes>
+      <artifact group="org.nuxeo.*" category="runtime,jboss4"
+        includeDependsOnCategory="false" />
+      <artifact group="org.nuxeo.*" category="core,search,web,stateful,stateless" />
+      <!-- add here nuxeo-addons -->
+    </includes>
+    <excludes>
+      <artifact group="!org.nuxeo*" />
+      <artifact group="org.nuxeo.common" />
+      <artifact name="nuxeo-runtime-jboss-extensions" />
+
+      <artifact name="nuxeo-platform-webapp" />
+      <artifact name="nuxeo-platform-webapp-core" />
+
+      <artifact name="nuxeo-platform-audit-facade" />
+      <artifact name="nuxeo-platform-placeful-facade" />
+      <artifact name="nuxeo-platform-ear" />
+      <artifact name="nuxeo-apt-extensions" />
+    </excludes>
+  </artifactSet>
+
+  <assemble>
+    <outputFile>system</outputFile>
+    <unpack>true</unpack>
+    <unpackInNewDirectory>true</unpackInNewDirectory>
+    <set>nuxeo-platform-unpacked</set>
+  </assemble>
+  <artifactSet id="nuxeo-platform-unpacked">
+    <import>**</import>
+    <includes>
+      <artifact name="nuxeo-platform-audit-facade" />
+      <artifact name="nuxeo-platform-placeful-facade" />
+    </includes>
+  </artifactSet>
+
+  <!--   third party libraries embedded in the ear -->
+  <assemble>
+    <outputFile>lib</outputFile>
+    <set>nuxeo-fixed-libs</set>
+  </assemble>
+  <artifactSet id="nuxeo-fixed-libs">
+    <artifacts>
+      <artifact group="org.freemarker" name="freemarker" />
+      <artifact group="org.osgi" name="osgi-core" />
+      <artifact group="commons-lang" name="commons-lang" />
+      <artifact group="commons-beanutils" name="commons-beanutils" />
+      <artifact group="cssparser" name="cssparser" />
+      <artifact group="net.sf.ezmorph" name="ezmorph" />
+      <artifact group="jboss" name="jboss-cache-jdk50" />
+      <artifact group="org.jboss.seam" name="jboss-seam" />
+      <artifact group="org.jboss.seam" name="jboss-seam-remoting" />
+      <artifact group="org.jboss.seam" name="jboss-seam-ui" />
+      <artifact group="org.jboss.seam" name="jboss-seam-mail" />
+      <artifact group="org.jboss.seam" name="jboss-seam-debug" />
+      <artifact group="javax.el" name="el-ri" />
+      <artifact group="org.jboss.el" name="jboss-el" />
+      <artifact group="jboss" name="jgroups" />
+      <artifact group="bouncycastle" name="bcmail-jdk14" />
+      <artifact group="bouncycastle" name="bcprov-jdk14" />
+      <!--
+        version required because maven-nuxeo-plugin don't manage classifier here
+      -->
+      <artifact group="net.sf.json-lib" name="json-lib" classifier="jdk15"
+        version="2.2.1" />
+      <artifact group="net.sf.opencsv" name="opencsv" />
+      <artifact group="org.slf4j" name="slf4j-api" />
+      <artifact group="org.slf4j" name="slf4j-log4j12" />
+      <artifact group="org.richfaces.framework" name="richfaces-api" />
+      <artifact group="org.richfaces.framework" name="richfaces-impl" />
+      <artifact group="org.richfaces.ui" name="richfaces-ui" />
+      <artifact group="org.apache.directory.server" name="apacheds-protocol-shared" />
+      <artifact group="org.apache.directory.shared" name="shared-ldap" />
+      <artifact group="com.sun.facelets" name="jsf-facelets" />
+
+      <!-- required by Nuxeo-WebEngine -->
+      <artifact group="org.codehaus.groovy" name="groovy-all" />
+      <artifact group="org.jboss.resteasy" name="resteasy-jaxrs" />
+      <artifact group="org.jboss.resteasy" name="jaxrs-api" />
+
+      <!-- JOD / OOo libs and other converters deps-->
+      <artifact group="com.artofsolving" name="jodconverter" />
+      <artifact group="org.openoffice" name="ridl" />
+      <artifact group="org.openoffice" name="juh" />
+      <artifact group="org.openoffice" name="unoil" />
+      <artifact group="org.openoffice" name="jurt" />
+      <artifact group="com.thoughtworks.xstream" name="xstream" />
+
+      <artifact group="org.restlet" name="org.restlet" />
+      <artifact group="org.wikimodel" name="wem" />
+      <artifact group="jmimemagic" name="jmimemagic" />
+      <artifact group="rome" name="rome" />
+      <artifact group="commons-jexl" name="commons-jexl" />
+    </artifacts>
+  </artifactSet>
+
+  <!-- third party libraries based on dependencies -->
+  <assemble>
+    <outputFile>lib</outputFile>
+    <set>nuxeo-libs-via-dependency-tree</set>
+  </assemble>
+  <artifactSet id="nuxeo-libs-via-dependency-tree">
+    <import>**</import>
+    <includeDependencies>true</includeDependencies>
+    <includes>
+      <artifact scope="compile" />
+    </includes>
+    <excludes>
+      <artifact group="org.nuxeo.*" />
+      <artifact name="jackrabbit-jcr-commons" />
+      <artifact name="stax-api" />
+      <artifact name="xercesImpl" />
+      <artifact name="xmlParserAPIs" />
+      <artifact name="hibernate" />
+      <artifact name="log4j" />
+      <artifact name="servlet-api" />
+      <artifact name="xml-apis" />
+      <artifact name="jta" />
+      <artifact name="derby" />
+      <artifact name="jackrabbit-core" />
+      <artifact name="persistence-api" />
+      <artifact name="dom4j" />
+    </excludes>
+  </artifactSet>
+
+  <!-- CUSTOM RESOURCES -->
+  <!--
+    <assemble> <outputFile>/</outputFile> <set>custom-resources</set>
+    </assemble> <fileSet id="custom-resources">
+    <directory>src/main/resources_custom</directory> </fileSet>
+  -->
+
+  <!-- CUSTOM ARTIFACTS -->
+  <!--
+    <assemble> <outputFile>plugins</outputFile> <set>custom-plugins</set>
+    </assemble> <artifactSet id="custom-plugins"> <import>**</import>
+    <includeDependencies>false</includeDependencies> <includes> <artifact
+    group="com.custom.sample" /> </includes> </artifactSet>
+  -->
+</assembly>

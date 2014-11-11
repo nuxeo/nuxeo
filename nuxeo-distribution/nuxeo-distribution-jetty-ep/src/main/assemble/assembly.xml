@@ -1,0 +1,180 @@
+<assembly>
+
+  <zipEntrySet id="base-template">
+    <artifact>org.nuxeo.ecm.distribution:nuxeo-distribution-server:${project.version}:zip</artifact>
+  </zipEntrySet>
+
+  <fileSet id="template">
+    <directory>src/main/resources</directory>
+  </fileSet>
+
+  <artifactSet id="bundles">
+    <artifacts>
+
+      <artifact group="org.nuxeo.runtime" name="nuxeo-runtime-deploy" version="${nuxeo.runtime.version}"/>
+      <artifact group="org.nuxeo.runtime" name="nuxeo-runtime-jetty-adapter" version="${nuxeo.runtime.version}"/>
+
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-storage-sql" version="${nuxeo.core.version}"/>
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-storage-sql-extensions" version="${nuxeo.core.version}"/>
+
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-actions-core"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-audit-client"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-commandline-executor"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-convert"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-default-config"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-filemanager-api"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-filemanager-core"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-filemanager-core-listener"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-forms-layout-api"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-forms-layout-client"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-jbpm-api"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-lang"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-mimetype-api"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-mimetype-core"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-placeful-api"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-placeful-core"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-placeful-theme"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-relations-io"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-relations-web"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-search-api"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-search-backend-core"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-search-core"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-syndication"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-ui-api"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-ui-web"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-ui-web-compat"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-url-api"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-url-core"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-webapp" version="${project.version}"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-webapp-base" version="${project.version}"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-webapp-core" version="${project.version}"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-webapp-types" version="${project.version}"/>
+
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-theme-jsf" version="${nuxeo.theme.version}"/>
+
+    </artifacts>
+  </artifactSet>
+
+  <artifactSet id="third-party-libs">
+    <artifacts>
+      <!-- Synchro Added packages -->
+      <artifact group="javax.activation" name="activation" version="1.1"/>
+      <artifact group="apache-httpclient" name="commons-httpclient" version="3.1"/>
+      <artifact group="commons-codec" name="commons-codec" version="1.3"/>
+      <artifact group="metro.webservices" name="webservices-api" version="1.4"/>
+      <artifact group="metro.webservices" name="webservices-rt" version="1.4"/>
+      <artifact group="metro.webservices" name="webservices-tools" version="1.4"/>
+      <!-- End Synchro Added packages -->
+      
+      <artifact group="javax.servlet" name="servlet-api" version="2.5"/>
+      <artifact group="org.mortbay.jetty" name="jetty" version="6.1H.7"/>
+      <artifact group="org.mortbay.jetty" name="jetty-plus" version="6.1H.7"/>
+      <artifact group="org.mortbay.jetty" name="jetty-naming" version="6.1H.7"/>
+      <artifact group="org.mortbay.jetty" name="jetty-annotations" version="6.1H.7"/>
+      <artifact group="org.mortbay.jetty" name="jetty-util" version="6.1H.7"/>
+      <artifact group="jotm" name="jotm" version="2.0.10"/>
+      <artifact group="javax.ejb" name="ejb-api" version="3.0" />
+      <artifact group="javax.transaction" name="jta" version="1.0.1B" />  
+
+      <artifact group="ant" name="ant" version="1.6.5" />  
+      <artifact group="bsh" name="bsh" version="1.3.0" />  
+      <artifact group="commons-el" name="commons-el" version="1.0" />  
+      <artifact group="commons-digester" name="commons-digester" version="1.8" />  
+      <artifact group="org.jboss.el" name="jboss-el" version="2.0.1.GA" />  
+
+      <artifact group="org.jboss.seam" name="jboss-seam" version="2.0.3.CR1-NX2" />  
+      <artifact group="org.jboss.seam" name="jboss-seam-debug" version="2.0.3.CR1" />  
+      <artifact group="org.jboss.seam" name="jboss-seam-mail" version="2.0.3.CR1" />  
+      <artifact group="org.jboss.seam" name="jboss-seam-ui" version="2.0.3.CR1" />  
+      <artifact group="org.jboss.seam" name="jboss-seam-remoting" version="2.0.3.CR1" />  
+
+      <artifact group="org.jbpm.jbpm3" name="jbpm-jpdl" version="3.3.0.GA" />  
+
+      <artifact group="org.openoffice" name="ridl" version="2.2.0" />  
+      <artifact group="org.openoffice" name="juh" version="2.2.0" />  
+      <artifact group="org.openoffice" name="unoil" version="2.2.0" />  
+      <artifact group="org.openoffice" name="jurt" version="2.2.0" />  
+      <artifact group="com.artofsolving" name="jodconverter" version="2.2.1" />  
+      <artifact group="com.thoughtworks.xstream" name="xstream" version="1.2" />  
+      <artifact group="pdfbox" name="pdfbox" version="0.7.3" />  
+
+      <artifact group="org.richfaces.framework" name="richfaces-api" version="3.2.1.GA" />  
+      <artifact group="org.richfaces.framework" name="richfaces-impl" version="3.2.1.GA-NX2" />  
+      <artifact group="org.richfaces.ui" name="richfaces-ui" version="3.2.1.GA" />  
+      <artifact group="org.richfaces.framework" name="richfaces-api" version="3.2.1.GA" />  
+      <artifact group="javax.script" name="script-api" version="1.0" />  
+      <artifact group="org.apache.lucene" name="lucene-analyzers" version="2.3.2" />  
+
+
+      <artifact group="com.sun.facelets" name="jsf-facelets" version="1.1.11" />  
+      <artifact group="javax.faces" name="jsf-api" version="1.2_09_jboss" />
+      <artifact group="javax.faces" name="jsf-impl" version="1.2_09_jboss" />
+
+      <artifact group="org.mortbay.jetty" name="jsp-api-2.1" version="6.1.6" />  
+      <artifact group="org.mortbay.jetty" name="jsp-2.1" version="6.1.6" />  
+
+      <!--<artifact group="javax.servlet.jsp" name="jsp-api" version="2.1" />  
+      <artifact group="org.glassfish.web" name="jsp-impl" version="2.1" />  -->
+
+      <artifact group="jboss" name="javassist" version="4.2.3.GA" />  
+
+      <artifact group="com.h2database" name="h2" version="1.1.114" />  
+
+      <artifact group="org.eclipse.jdt" name="core" version="3.1.1" />  
+      
+      <artifact group="com.sun.xml" name="relaxngDatatype" />
+      <artifact group="com.sun.xml" name="xsom" />
+      <artifact group="cup" name="java-cup" />
+      <artifact group="joda-time" name="joda-time" />
+      <artifact group="org.wikimodel" name="wem" />
+      
+      <artifact group="com.hp.hpl.jena" name="jena" />
+      <artifact group="com.hp.hpl.jena" name="arq" />
+      <artifact group="com.hp.hpl.jena" name="iri" />
+      <artifact group="com.ibm.icu" name="icu4j" />
+      
+      <artifact group="rome" name="rome" />
+      <artifact group="jdom" name="jdom" />
+      
+      <artifact group="jmimemagic" name="jmimemagic" />
+      <artifact group="org.apache.poi" name="ooxml-schemas" />
+      <artifact group="org.apache.poi" name="poi" />
+      <artifact group="org.apache.poi" name="poi-ooxml" />
+      <artifact group="org.apache.poi" name="poi-scratchpad" />
+      <artifact group="org.apache" name="xmlbeans" />
+      <artifact group="oro" name="oro" />
+      
+    </artifacts>
+  </artifactSet>
+
+  <assemble>
+    <set>base-template</set>
+    <set>template</set>
+    <outputFile>/</outputFile>
+  </assemble>
+
+  <assemble>
+    <set>third-party-libs</set>
+    <outputFile>lib</outputFile>
+  </assemble>
+
+  <assemble>
+    <set>bundles</set>
+    <outputFile>bundles</outputFile>
+  </assemble>
+
+  <assemble>  
+    <delete>true</delete>
+    <outputFile>config</outputFile>
+    <file>login-anonymous-config.xml</file>
+  </assemble>
+
+  <assemble>  
+    <delete>true</delete>
+    <outputFile>lib</outputFile>  
+    <file>el-api-unknown.jar</file>
+    <file>el-ri-unknown.jar</file>        
+  </assemble>
+
+</assembly>
