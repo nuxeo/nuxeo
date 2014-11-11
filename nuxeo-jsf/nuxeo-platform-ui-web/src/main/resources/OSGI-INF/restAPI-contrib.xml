@@ -1,0 +1,243 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.restAPI.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.restAPI.service.PluggableRestletService"
+      point="restlets">
+
+    <documentation>
+      Create a File document via upload
+      POST /nuxeo/restAPI/{repoId}/{docId}/{filename}/upload
+    </documentation>
+    <restletPlugin
+        name="upload"
+        class="org.nuxeo.ecm.platform.ui.web.restAPI.UploadRestlet"
+        enabled="true"
+        useSeam="true">
+      <urlPatterns>
+        <urlPattern>/{repo}/{docid}/{filename}/upload</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+
+    <documentation>
+      Restlet for uploading a file via the Plugin (linked to FileManager)
+      (ie create a document from a file)
+      POST /nuxeo/restAPI/{repoId}/{docId}/pluginUpload/{path}
+      POST /nuxeo/restAPI/{repoId}/{docId}/createFromFile/{path}
+    </documentation>
+    <restletPlugin
+        name="pluginUpload"
+        class="org.nuxeo.ecm.platform.ui.web.restAPI.PluginUploadRestlet"
+        enabled="true"
+        useSeam="true"
+        useConversation="true">
+      <urlPatterns>
+        <urlPattern>/{repo}/{docid}/pluginUpload</urlPattern>
+        <urlPattern>/{repo}/{docid}/createFromFile</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+
+    <documentation>
+      Simple restlet to browse content
+      GET /nuxeo/restAPI/browse
+      GET /nuxeo/restAPI/{repoId}/browse
+      GET /nuxeo/restAPI/{repoId}/{docId}/browse
+    </documentation>
+    <restletPlugin
+        name="browse"
+        class="org.nuxeo.ecm.platform.ui.web.restAPI.BrowseRestlet"
+        enabled="true"
+        useSeam="false">
+      <urlPatterns>
+        <urlPattern>/browse</urlPattern>
+        <urlPattern>/{repo}/browse</urlPattern>
+        <urlPattern>/{repo}/{docid}/browse</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+
+    <documentation>
+      GET /nuxeo/restAPI/{repoId}/{docId}/export
+      => export a document and possibly associated tree
+
+      GET /nuxeo/restAPI/{repoId}/{docId}/exportSingle
+      => export a single document
+
+      GET /nuxeo/restAPI/{repoId}/{docId}/exportTree
+      => export a document tree
+
+      Associated GET parameters are :
+      - format : xml/zip
+    </documentation>
+    <restletPlugin
+        name="export"
+        class="org.nuxeo.ecm.platform.ui.web.restAPI.ExportRestlet"
+        enabled="true"
+        useSeam="false">
+      <urlPatterns>
+        <urlPattern>/{repo}/{docid}/export</urlPattern>
+        <urlPattern>/{repo}/{docid}/exportSingle</urlPattern>
+        <urlPattern>/{repo}/{docid}/exportTree</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+
+    <documentation>
+      Allows lock manipulation via Restlet API:
+      GET /nuxeo/restAPI/{repoId}/{docId}/Locking/lock
+      GET /nuxeo/restAPI/{repoId}/{docId}/Locking/unlock
+      GET /nuxeo/restAPI/{repoId}/{docId}/Locking/status
+      GET /nuxeo/restAPI/{repoId}/{docId}/Locking/state
+      LOCK /nuxeo/restAPI/{repoId}/{docId}/Locking
+      UNLOCK /nuxeo/restAPI/{repoId}/{docId}/Locking
+    </documentation>
+    <restletPlugin
+        name="locking"
+        class="org.nuxeo.ecm.platform.ui.web.restAPI.LockingRestlet"
+        enabled="true"
+        useSeam="false"
+        useConversation="false">
+      <urlPatterns>
+        <urlPattern>/{repo}/{docid}/Locking</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+
+    <documentation>
+      GET /nuxeo/restAPI/{repoId}/{docId}/downloadFile
+      or equivalently with optional query parameters:
+      GET /nuxeo/restAPI/{repoId}/{docId}/downloadFile?schema=file&amp;blobField=content&amp;filenameField=filename
+    </documentation>
+    <restletPlugin
+        name="downloadFileRestlet"
+        class="org.nuxeo.ecm.platform.ui.web.restAPI.DownloadFileRestlet"
+        enabled="true"
+        useSeam="true">
+      <urlPatterns>
+        <urlPattern>/{repo}/{docid}/downloadFile</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+
+    <documentation>
+      Upload a file in an existing document
+      POST /nuxeo/restAPI/{repo}/{docid}/{filename}/uploadFile
+    </documentation>
+    <restletPlugin
+        name="uploadFileRestlet"
+        class="org.nuxeo.ecm.platform.ui.web.restAPI.UploadFileRestlet"
+        enabled="true"
+        useSeam="true">
+      <urlPatterns>
+        <urlPattern>/{repo}/{docid}/{filename}/uploadFile</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+
+    <documentation>
+      GET /nuxeo/restAPI/{repo}/{parentdocid}/createDocument
+      or equivalently with optional query paramaters:
+      GET /nuxeo/restAPI/{repo}/{parentdocid}/createDocument?docType=File
+      or
+      POST /nuxeo/restAPI/{repo}/{parentdocid}/createDocument
+      with arguments with initial values of the documents fields as string valued properties
+    </documentation>
+    <restletPlugin
+        name="createDocumentRestlet"
+        class="org.nuxeo.ecm.platform.ui.web.restAPI.CreateDocumentRestlet"
+        enabled="true"
+        useSeam="true">
+      <urlPatterns>
+        <urlPattern>/{repo}/{parentdocid}/createDocument</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+
+    <documentation>
+      Allows deleting documents via Restlet API:
+      GET /nuxeo/restAPI/{repoId}/{docId}/deleteDocumentRestlet
+      GET /nuxeo/restAPI/{repoId}/{docId}/delete
+      GET /nuxeo/restAPI/{repoId}/deleteDocumentByPath?path=/default-domain/workspaces/doc1
+    </documentation>
+    <restletPlugin
+        name="deleteDocumentRestlet"
+        class="org.nuxeo.ecm.platform.ui.web.restAPI.DeleteDocumentRestlet"
+        enabled="true"
+        useSeam="false">
+      <urlPatterns>
+        <urlPattern>/{repo}/{docid}/deleteDocumentRestlet</urlPattern>
+        <urlPattern>/{repo}/{docid}/delete</urlPattern>
+        <urlPattern>/{repo}/deleteDocumentByPath</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+
+    <documentation>
+      Allows to update document properties via Restlet API:
+      GET /nuxeo/restAPI/{repoId}/{docId}/updateDocumentRestlet?prop1=value1
+      GET /nuxeo/restAPI/{repoId}/{docId}/update?prop1=value1
+      example : http://127.0.0.1:8080/nuxeo/restAPI/default/1fee4b3e-8b8e-494e-b0a5-eef5113fb5a7/updateDocumentRestlet?dublincore:description=No%20comment
+    </documentation>
+    <restletPlugin
+        name="updateDocumentRestlet"
+        class="org.nuxeo.ecm.platform.ui.web.restAPI.UpdateDocumentRestlet"
+        enabled="true"
+        useSeam="false">
+      <urlPatterns>
+        <urlPattern>/{repo}/{docid}/updateDocumentRestlet</urlPattern>
+        <urlPattern>/{repo}/{docid}/update</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+
+    <documentation>
+      GET /nuxeo/restAPI/creationContainerList
+      or equivalently with optional query paramaters (where docType is the
+      type of the document to create):
+      GET /nuxeo/restAPI/creationContainerList?docType=File
+    </documentation>
+    <restletPlugin
+        name="creationFolderListRestlet"
+        class="org.nuxeo.ecm.platform.ui.web.restAPI.CreationContainerListRestlet"
+        enabled="true"
+        useSeam="true">
+      <urlPatterns>
+        <urlPattern>/creationContainerList</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+
+    <documentation>
+      GET /nuxeo/restAPI/opensearch?q=keywords
+
+      Perform a document search on the ecm:fulltext index and return the
+      results as a RSS 2.0 file with opensearch.org metadata
+    </documentation>
+    <restletPlugin name="openSearchRestlet"
+        class="org.nuxeo.ecm.platform.ui.web.restAPI.OpenSearchRestlet"
+        enabled="true" useSeam="false">
+      <urlPatterns>
+        <urlPattern>/opensearch</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+
+    <documentation>
+      GET /nuxeo/restAPI/directoryCacheInvalidate
+      GET /nuxeo/restAPI/directoryCacheInvalidate?directory=userDirectory&amp;directory=groupDirectory
+
+      Invalidate the cache of the requested directories or of all directories if not directory name is given as parameter.
+    </documentation>
+    <restletPlugin name="directoryCache"
+        class="org.nuxeo.ecm.platform.ui.web.restAPI.DirectoryCacheRestlet"
+        enabled="true" useSeam="false">
+      <urlPatterns>
+        <urlPattern>/directoryCacheInvalidate</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+
+    <documentation>
+      GET /nuxeo/restAPI/systemLog?token=1234&amp;level=INFO&amp;message=something
+
+      Log something in the system logs of the server. The token has to match
+      the system property org.nuxeo.systemlog.token.
+    </documentation>
+    <restletPlugin name="systemLog"
+        class="org.nuxeo.ecm.platform.ui.web.restAPI.SystemLogRestlet"
+        enabled="true" useSeam="false">
+      <urlPatterns>
+        <urlPattern>/systemLog</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+
+  </extension>
+</component>

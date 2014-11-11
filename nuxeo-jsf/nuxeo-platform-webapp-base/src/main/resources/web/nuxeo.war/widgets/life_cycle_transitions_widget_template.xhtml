@@ -1,0 +1,24 @@
+<div xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <c:if test="#{widget.mode == 'edit'}">
+
+    <h:selectOneMenu value="#{field}"
+      id="#{widget.id}"
+      required="#{widget.required}"
+      styleClass="#{widgetProperty_styleClass}">
+      <f:selectItem itemValue="" itemLabel="#{messages['label.vocabulary.selectValue']}"/>
+      <nxu:selectItems
+                    value="#{nxd:availableLifeCycleTransitions(widgetProperty_lifeCycleName, widgetProperty_currentLifeCycleState)}"
+                    var="item"
+                    itemValue="#{item}"
+                    itemLabel="#{messages[item]}" />
+    </h:selectOneMenu>
+    <h:message for="#{widget.id}" styleClass="errorMessage" />
+
+  </c:if>
+
+</div>
