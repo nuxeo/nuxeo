@@ -1,0 +1,59 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:s="http://jboss.com/products/seam/taglib"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  >
+
+<div class="printButton">
+<ui:include src="/incl/document_actions_upperbuttons.xhtml"/>
+</div>
+
+<div class="printButton">
+  <ui:include src="/incl/liveedit_create_actions.xhtml"/>
+</div>
+
+<div class="breadcrumbs">
+  <h:form>
+  <h:commandLink action="#{breadcrumbActions.navigateToParent}">
+    <nxu:graphicImage value="/img/UpFolder_icon.gif"
+      style="vertical-align:middle"/>
+  </h:commandLink>
+
+  <f:subview rendered="#{!empty backendPath}">
+
+  <nxu:dataList var="pathElement"
+    value="#{backendPath}">
+    <f:verbatim>&amp;gt;&amp;nbsp;</f:verbatim>
+
+  <nxd:restDocumentLink document="#{pathElement.documentModel}" rendered="#{pathElement.link}">
+     <nxh:outputText value="#{nxd:titleOrId(pathElement.documentModel)}"/>
+  </nxd:restDocumentLink>
+  <h:outputText value="#{pathElement.name}" rendered="#{!pathElement.link}"/>
+
+  </nxu:dataList>
+
+<h:panelGroup rendered="false">
+  <!-- Permalink -->
+  <ui:include src="/incl/breadcrumb_permaLink.xhtml" />
+</h:panelGroup>
+
+<h:panelGroup rendered="false">
+  <!-- conversation context switcher (debug) -->
+  <h:selectOneMenu value="#{switcher.conversationIdOrOutcome}">
+    <f:selectItems value="#{switcher.selectItems}"/>
+  </h:selectOneMenu>
+  <h:commandButton action="#{switcher.select}" value="Switch"/>
+  Cid: <h:outputText value="#{conversation.id}"/>
+</h:panelGroup>
+
+  </f:subview>
+  </h:form>
+</div>
+
+<div style="clear:both"></div>
+
+</div>
