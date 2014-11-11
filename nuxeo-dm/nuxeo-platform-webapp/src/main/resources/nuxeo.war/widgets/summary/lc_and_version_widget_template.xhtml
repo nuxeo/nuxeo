@@ -1,0 +1,25 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
+  class="lcAndVersion">
+
+  <table width="100%">
+   <tr>
+      <td class="boldLabel">
+        <h:outputText value="#{messages['label.content.header.currentLifecycleState']}"/>
+      </td>
+      <td>
+        <h:outputText value="#{messages[currentDocument.currentLifeCycleState]}" />
+      </td>
+      <td class="boldLabel">
+        <h:outputText value="#{messages['label.version']}"/>
+      </td>
+      <td>
+        <h:outputText value="#{currentDocumentVersionInfo.versionLabel}"/>
+      </td>
+    </tr>
+  </table>
+
+</div>
