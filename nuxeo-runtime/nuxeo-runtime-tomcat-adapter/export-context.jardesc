@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jardesc>
+<jar path="/opt/apache-tomcat-6.0.18/lib/nuxeo-context.jar"/>
+<options buildIfNeeded="true" compress="true" descriptionLocation="/nuxeo-runtime-tomcat-adapter/export-context.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+<storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+<selectedProjects/>
+<manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+<sealing sealJar="false">
+<packagesToSeal/>
+<packagesToUnSeal/>
+</sealing>
+</manifest>
+<selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+<javaElement handleIdentifier="=nuxeo-runtime-tomcat-adapter/src\/main\/java&lt;org.nuxeo.osgi.application"/>
+<javaElement handleIdentifier="=nuxeo-runtime-tomcat-adapter/src\/main\/java&lt;org.nuxeo.runtime.tomcat"/>
+</selectedElements>
+<fatjar builder="org.eclipse.jdt.ui.plain_jar_builder" launchConfig=""/>
+</jardesc>
