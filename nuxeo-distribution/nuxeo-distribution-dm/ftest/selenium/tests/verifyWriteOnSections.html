@@ -1,0 +1,91 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>verifyWriteOnSections</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">verifyWriteOnSections</td></tr>
+</thead><tbody>
+<!--@Test groups:VerifyWriteOnSections|depends:ManageRightsInSectionsByManager-->
+<tr>
+        <td>open</td>
+        <td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium verifyWriteOnSections</td>
+        <td></td>
+</tr>
+<!--vérification des droits de jdoe-->
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jsmith</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jsmith1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>You are logged as jsmith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Sections</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Create a new section</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>link=Access rights</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>link=Modification</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Modification</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//img[@title="Email"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Modification</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//input[@value="Save"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
