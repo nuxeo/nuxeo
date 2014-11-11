@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.test.repo.repository">
+  <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
+    point="repositories">
+    <repository name="test" />
+  </extension>
+  <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
+    point="repository">
+    <repository name="test" forceReloadTypes="false"
+      factory="org.nuxeo.ecm.core.repository.jcr.JCRRepositoryFactory">
+      <Repository>
+        <FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
+          <param name="path" value="${rep.home}/repository" />
+        </FileSystem>
+        <Security appName="Jackrabbit">
+          <AccessManager
+            class="org.apache.jackrabbit.core.security.SimpleAccessManager">
+          </AccessManager>
+          <LoginModule class="org.apache.jackrabbit.core.security.SimpleLoginModule">
+            <param name="anonymousId" value="anonymous" />
+          </LoginModule>
+        </Security>
+        <Workspaces rootPath="${rep.home}/workspaces"
+          defaultWorkspace="default" />
+        <Workspace name="${wsp.name}">
+          <FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
+            <param name="path" value="${wsp.home}" />
+          </FileSystem>
+          <PersistenceManager
+            class="org.apache.jackrabbit.core.state.obj.ObjectPersistenceManager">
+          </PersistenceManager>
+          <SearchIndex class="org.nuxeo.ecm.core.repository.jcr.jackrabbit.SearchIndex">
+            <param name="path" value="${wsp.home}/index" />
+          </SearchIndex>
+        </Workspace>
+        <Versioning rootPath="${rep.home}/version">
+          <FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
+            <param name="path" value="${rep.home}/version" />
+          </FileSystem>
+          <PersistenceManager
+            class="org.apache.jackrabbit.core.state.obj.ObjectPersistenceManager">
+          </PersistenceManager>
+        </Versioning>
+        <SearchIndex class="org.apache.jackrabbit.core.query.lucene.SearchIndex">
+          <param name="path" value="${rep.home}/repository/index" />
+        </SearchIndex>
+      </Repository>
+    </repository>
+  </extension>
+</component>
