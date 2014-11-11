@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<fragment version="1">
+  <!-- Site Servlet mapping -->
+  <extension target="web#SERVLET">
+    <servlet>
+      <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.webengine.server.resteasy.WebEngineServlet
+      </servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
+      <url-pattern>/site/*</url-pattern>
+    </servlet-mapping>
+  </extension>
+</fragment>
