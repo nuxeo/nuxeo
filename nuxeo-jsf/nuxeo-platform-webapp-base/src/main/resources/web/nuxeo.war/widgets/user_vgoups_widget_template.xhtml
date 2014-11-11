@@ -1,0 +1,17 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <nxu:methodResult name="vgroups" value="#{userManagementActions.getUserVirtualGroups(field_0)}">
+    <h:dataTable value="#{vgroups}"
+      var="item" rendered="#{not empty vgroups}">
+      <h:column>
+            <h:graphicImage value="/icons/group.png" alt="group" />
+            <h:outputText value="#{item}" />
+      </h:column>
+    </h:dataTable>
+  </nxu:methodResult>
+
+</ui:composition>

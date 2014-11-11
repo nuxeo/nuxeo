@@ -1,0 +1,86 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<c:if test="#{widget.mode != 'after_view' and widget.mode != 'tab_content'}">
+
+<nxu:set var="onclick"
+  value="#{nxu:test(not empty action.properties.confirmMessage, actionConfirmMessageJs, '')}#{action.confirm};#{action.properties.onclick};"
+  cache="true">
+<nxu:set var="tabIds"
+  value="#{parentTabActionCategory}:#{action.id}"
+  cache="true">
+
+<c:if test="#{not useAjaxForm}">
+  <nxd:restDocumentLink
+    document="#{fieldOrValue}"
+    repositoryName="#{nxu:test(empty action.properties.repositoryName, widgetProperty_repositoryName, action.properties.repositoryName)}"
+    view="#{nxu:test(empty action.properties.view, widgetProperty_view, action.properties.view)}"
+    pattern="#{nxu:test(empty action.properties.pattern, widgetProperty_pattern, action.properties.pattern)}"
+    tabs="#{tabIds}"
+    addTabInfo="false"
+    accesskey="#{action.accessKey}"
+    id="#{widget.id}"
+    target="#{nxu:test(empty action.properties.target, widgetProperty_target, action.properties.target)}"
+    styleClass="#{actionStyleClass} #{action.properties.styleClass}"
+    onclick="#{onclick}">
+    <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+    <ui:insert name="inside_action" />
+  </nxd:restDocumentLink>
+</c:if>
+
+<c:if test="#{useAjaxForm}">
+
+  <nxd:restDocumentLink
+    document="#{fieldOrValue}"
+    repositoryName="#{nxu:test(empty action.properties.repositoryName, widgetProperty_repositoryName, action.properties.repositoryName)}"
+    view="#{nxu:test(empty action.properties.view, widgetProperty_view, action.properties.view)}"
+    pattern="#{nxu:test(empty action.properties.pattern, widgetProperty_pattern, action.properties.pattern)}"
+    tabs="#{tabIds}"
+    addTabInfo="false"
+    accesskey="#{action.accessKey}"
+    id="#{widget.id}_restLink"
+    resolveOnly="true"
+    var="docUrl">
+    <h:commandLink
+      id="#{widget.id}"
+      action="#{webActions.setCurrentTabIds(tabIds)}"
+      onclick="history.pushState(null, '#{tabIds}', '#{nxu:javaScriptEscape(docUrl)}');#{onclick}"
+      styleClass="#{actionStyleClass} #{action.properties.styleClass}"
+      accessKey="#{action.accessKey}">
+      <f:ajax execute="@this" render="#{ajaxReRender}" />
+      <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+      <ui:insert name="inside_action" />
+    </h:commandLink>
+
+  </nxd:restDocumentLink>
+
+</c:if>
+
+</nxu:set>
+</nxu:set>
+
+</c:if>
+
+<c:if test="#{widget.mode == 'tab_content'}">
+  <c:if test="#{not empty action.link}">
+    <c:choose>
+      <c:when test="#{action.link.startsWith('/')}">
+        <ui:include src="#{action.link}" />
+      </c:when>
+      <c:otherwise>
+        <ui:include src="/#{action.link}" />
+      </c:otherwise>
+    </c:choose>
+  </c:if>
+</c:if>
+
+</ui:composition>

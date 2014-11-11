@@ -1,0 +1,100 @@
+<f:subview
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  id="local_configuration_#{layout.id}">
+
+<c:if test="false">
+  Layout template to be used for local configuration layouts. It wraps the layout
+  template given as parameter into a foldable box. The local configuration
+  can be enabled or disabled through a button on the foldable box.
+
+  Properties to define on the layout:
+  - layoutTemplateToInclude: the layout to use inside the foldable box.
+  - localConfigurationFacet: the facet related to the local configuration this
+    layout handles.
+  - foldableBoxLabel: the label displayed as the title of the foldable box,
+  - helpLabel: the help label for the local configuration handled by this layout,
+    displayed as a tooltip
+  - elementsToReRender: a list of elements to rerender after enabling or
+    disabling this local configuration
+</c:if>
+
+<nxu:set var="layoutTemplateToInclude"
+  value="#{nxu:test(!empty layoutProperty_layoutTemplateToInclude, layoutProperty_layoutTemplateToInclude, '/layouts/layout_default_template.xhtml')}">
+<nxu:set var="localConfPanelId"
+  value="local_configuration_#{layout.id}_panel">
+<nxu:set var="elementsToReRender"
+  value="#{nxu:test(!empty layoutProperty_elementsToReRender, layoutProperty_elementsToReRender, localConfPanelId)}">
+
+  <a4j:outputPanel layout="block" id="#{localConfPanelId}">
+
+    <c:set var="hasLocalConfigurationFacet"
+      value="#{nxu:test(currentDocument.hasFacet(layoutProperty_localConfigurationFacet), true, false)}" />
+    <c:set var="titleClass"
+      value="#{nxu:test(hasLocalConfigurationFacet, 'unfolded', 'foldedDisabled')}" />
+
+    <h:form id="local_configuration_#{layout.id}_form">
+      <div class="foldableBox">
+
+        <h3 class="#{titleClass}">
+
+          <c:if test="#{hasLocalConfigurationFacet}">
+            <a class="foldableHeaderLink" href="#nologo" onclick="return toggleBox(this)">
+              <c:if test="#{not empty layoutProperty_foldableBoxLabel}">
+                <h:outputText value="#{messages[layoutProperty_foldableBoxLabel]}" />
+              </c:if>
+            </a>
+          </c:if>
+          <c:if test="#{not hasLocalConfigurationFacet}">
+            <span>
+              <c:if test="#{not empty layoutProperty_foldableBoxLabel}">
+                <h:outputText value="#{messages[layoutProperty_foldableBoxLabel]}" />
+              </c:if>
+            </span>
+          </c:if>
+
+          <h:graphicImage value="/icons/help.png"
+            styleClass="tipsyShow tipsyGravityN"
+            title="#{messages[layoutProperty_helpLabel]}" />
+
+          <c:if test="#{not empty layoutProperty_localConfigurationFacet}">
+            <a4j:commandLink action="#{localConfigurationActions.toggleConfigurationForCurrentDocument(layoutProperty_localConfigurationFacet)}"
+              immediate="true" render="#{elementsToReRender}" rendered="#{not hasLocalConfigurationFacet}"
+              styleClass="action button" id="#{layout.id}_enable">
+              <h:outputText value="#{messages['label.local.configuration.enable']}"/>
+            </a4j:commandLink>
+            <a4j:commandLink action="#{localConfigurationActions.toggleConfigurationForCurrentDocument(layoutProperty_localConfigurationFacet)}"
+              immediate="true" render="#{elementsToReRender}" rendered="#{hasLocalConfigurationFacet}"
+              styleClass="action button" id="#{layout.id}_disable">
+              <h:outputText value="#{messages['label.local.configuration.disable']}"/>
+            </a4j:commandLink>
+          </c:if>
+
+        </h3>
+
+        <c:if test="#{hasLocalConfigurationFacet}">
+          <div class="boxBody" >
+            <ui:include src="#{layoutTemplateToInclude}" />
+            <a4j:commandButton value="#{messages['command.save']}"
+              styleClass="button" id="#{layout.id}_save"
+              action="#{localConfigurationActions.saveLocalConfiguration}"
+              render="local_configuration_#{layout.id}_form,facesStatusMessagePanel"/>
+          </div>
+        </c:if>
+
+      </div>
+    </h:form>
+
+  </a4j:outputPanel>
+
+</nxu:set>
+</nxu:set>
+</nxu:set>
+
+</f:subview>

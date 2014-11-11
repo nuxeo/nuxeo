@@ -1,0 +1,152 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+  <c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{field_0}</c:if>
+  <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+
+    <c:if test="#{not empty field_0}">
+      <div class="textBlock #{widgetProperty_cssClass}" dir="auto">
+        <c:choose>
+          <c:when test="#{(field_1 == 'text/html') or (empty field_1)}">
+            <nxu:set var="translatedHtml"
+              value="#{noteActions.translateImageLinks(field_0)}" cache="true">
+              <c:if test="#{!empty translatedHtml}">
+                <h:outputText value="#{translatedHtml}" escape="false" />
+              </c:if>
+              <c:if test="#{empty translatedHtml}">
+                <h:outputText value="#{field_0}" escape="false" />
+              </c:if>
+            </nxu:set>
+          </c:when>
+          <c:when test="#{field_1 == 'text/x-web-markdown'}">
+            <h:outputText
+              value="#{richTextEditorActions.convertToHtml(field_0, field_1)}"
+              escape="false" />
+          </c:when>
+          <c:otherwise>
+            <pre>
+            <h:outputText value="#{field_0}" />
+          </pre>
+          </c:otherwise>
+        </c:choose>
+      </div>
+    </c:if>
+
+  </c:if>
+  <c:if test="#{widget.mode == 'edit'}">
+
+    <c:set var="width"
+      value="#{nxu:test(!empty widgetProperty_width, widgetProperty_width, '530')}" />
+    <c:set var="height"
+      value="#{nxu:test(!empty widgetProperty_height, widgetProperty_height, '400')}" />
+    <c:set var="cols"
+      value="#{nxu:test(!empty widgetProperty_cols, widgetProperty_cols, '100')}" />
+    <c:set var="rows"
+      value="#{nxu:test(!empty widgetProperty_rows, widgetProperty_rows, '25')}" />
+    <c:set var="editorSelector"
+      value="#{nxu:test(!empty widgetProperty_editorSelector, widgetProperty_editorSelector, 'mceEditor')}" />
+
+    <nxu:valueHolder id="#{widget.id}_disableHtmlInit"
+      var="disableHtmlInit"
+      defaultValue="#{field_1 != null and field_1 != 'text/html'}">
+      <nxu:set var="disableBinding" value="#{disableHtmlInit}">
+        <a4j:outputPanel id="#{widget.id}_panel" layout="block">
+          <nxu:editor id="#{widget.id}_editor" value="#{field_0}"
+            width="#{width}" cols="#{cols}" height="#{height}"
+            rows="#{rows}" editorSelector="#{editorSelector}"
+            disableHtmlInit="#{disableBinding}" />
+        </a4j:outputPanel>
+      </nxu:set>
+
+      <br />
+      <h:outputText value="#{messages['label.richtext.format']} " />
+      <h:selectOneMenu value="#{field_1}"
+        onchange="changeEditorType(this)"
+        id="#{widget.id}_editorselector" styleClass="#{widget.id}">
+        <f:selectItem itemLabel="#{messages['mimetype.html']}"
+          itemValue="text/html" />
+        <f:selectItem itemLabel="#{messages['mimetype.text']}"
+          itemValue="text/plain" />
+        <f:selectItem itemLabel="#{messages['mimetype.xml']}"
+          itemValue="text/xml" />
+        <f:selectItem itemLabel="#{messages['mimetype.markdown']}"
+          itemValue="text/x-web-markdown" />
+      </h:selectOneMenu>
+
+      <a4j:commandButton value="#{messages['label.fullscreen.toggle']}"
+        onclick="return toggleFullscreen(this);" styleClass="button"
+        id="#{widget.id}_fancybox"
+        style="#{disableHtmlInit?'':'display: none;'}" />
+    </nxu:valueHolder>
+
+    <script>
+          function changeEditorType(cbo) {
+            var value = cbo.value;
+            var id = cbo.id.replace("_editorselector", "");
+            var escId = id.replace(/:/g, "\\:");
+            var disableElt = jQuery('#' + escId + '_disableHtmlInit');
+            var resizeElt = jQuery('#' + escId + '_fancybox');
+            var editorElt = jQuery('#' + escId + '_editor');
+            if (value == "text/html") {
+              addTinyMCE(id + '_editor');
+              disableElt.attr("value", "false");
+              resizeElt.css({
+                "display" : "none"
+              });
+              editorElt.removeClass('disableMCEInit');
+            } else {
+              removeTinyMCE(id + '_editor');
+              disableElt.attr("value", "true");
+              resizeElt.css({
+                "display" : "inline"
+              });
+              editorElt.addClass('disableMCEInit');
+            }
+          }
+
+          function toggleFullscreen(cbo) {
+            var id = cbo.id.replace("_fancybox", "_panel")
+                .replace(/:/g, "\\\:");
+            try {
+              jQuery('<a href="#' + id + '"></a>').fancybox({
+                'autoDimensions' : true,
+                'autoScale' : true,
+                'transitionIn' : 'none',
+                'transitionOut' : 'none',
+                'enableEscapeButton' : true,
+                'centerOnScroll' : true,
+                'scrolling' : 'auto',
+                'fsBtn' : true
+              }).click();
+            } catch (err) {
+              console.error(err);
+            } finally {
+              return false;
+            }
+          }
+        </script>
+
+  </c:if>
+  <c:if test="#{widget.mode == 'pdf'}">
+    <c:choose>
+      <c:when test="#{field_1 == 'text/x-web-markdown'}">
+        <nxp:html>
+        <h:outputText
+          value="#{richTextEditorActions.convertToHtml(field_0, field_1)}"
+          escape="false" />
+        </nxp:html>
+      </c:when>
+      <c:otherwise>
+        <nxp:html>
+        <h:outputText value="#{field_0}" escape="false" />
+        </nxp:html>
+      </c:otherwise>
+    </c:choose>
+  </c:if>
+</div>

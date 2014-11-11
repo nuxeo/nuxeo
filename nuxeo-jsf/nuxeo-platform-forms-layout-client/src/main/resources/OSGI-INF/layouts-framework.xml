@@ -1,0 +1,220 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager">
+  <documentation>
+    The web layout manager provides extension points for pluggable widget types
+    and layouts.
+
+    Layouts are groups of widgets controlling the rendering of (for instance) a
+    document fields display on a page. The layouts and widgets can be displayed
+    in a given mode (create, edit, view, etc...).
+
+    @version 1.0
+    @author Anahide Tchertchian (at@nuxeo.com)
+  </documentation>
+
+  <require>org.nuxeo.ecm.platform.forms.layout.LayoutStore</require>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManagerImpl" />
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager" />
+  </service>
+
+  <extension-point name="widgettypes">
+    <documentation>
+      A widget type defines how a widget will be displayed in a given mode.
+
+      For instance, the text widget type will display a regular text in view
+      mode, and a text input on create or edit modes, with additional message on
+      errors.
+
+      Widget types use facelets features to provide this behaviour. Extensions
+      are defined using a class that must follow the {@see
+      org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeHandler} interface.
+
+      Additional properties can be added to the type registration so that the
+      same class can be reused with a different behaviour given the property
+      value.
+
+      Example of a widget type registration:
+
+      <code>
+        <widgetType name="text">
+          <handler-class>
+            org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TextWidgetTypeHandler
+          </handler-class>
+          <property name="foo">bar</property>
+        </widgetType>
+      </code>
+
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetTypeDescriptor" />
+  </extension-point>
+
+  <extension-point name="layouttypes">
+    <object
+      class="org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutTypeDescriptor" />
+  </extension-point>
+
+  <extension-point name="layouts">
+    <documentation>
+      A layout is a group of widgets that defines the rendering of a document in
+      a given mode.
+
+      Default mode values are:
+
+      - view: the view mode;
+
+      - edit: the edit mode;
+
+      - create: the create mode;
+
+      - any: any mode; this is the default value in case no value is given for a
+      specific mode. When applying to lists of values, values given for this
+      mode will be merged with values given for the specific mode.
+
+      A specific mode is also accepted when specifying a widget mode: "hidden".
+      It is used to avoid rendering the widget at all.
+
+      Layout properties :
+
+      - name: the layout name; this is an identifier for this layout to the
+      layout service and it can be used in a document type definition.
+
+      - templates: a template can be provided to control the layout rendering.
+      Different layouts can be used given the mode. The test for the layout mode
+      can also be done in the template itself.
+
+      - properties: map of properties that will apply to the layout in a given
+      mode.
+
+      - rows/row: rows describe the organization of widgets within the layout.
+      Several widgets can be placed in the same row. When using the default
+      layout template, a table is used to display each row in a table row, and
+      widgets at the same row will be displayed on different columns in this
+      row.
+
+      - columns/column: aliases for rows/row, which is more intuitive when
+      defining layouts representing a table line.
+
+      - widgets: widgets with names used in the layout rows configuration. They
+      can hold specific properties given the widget type.
+
+      Widget generic properties:
+
+      - name: this is the widget identifier within this layout; it can be used
+      to reference this widget in the layout rows.
+
+      - type: the widget type defines how the widget will be displayed in a
+      given mode.
+
+      - labels: labels to use for the widget in a given mode.
+
+      - helpLabels: help labels to use for the widget in a given mode.
+
+      - widgetModes: mode to use for this widget given the layout/parent widget
+      (used to override the parent mode) ; can be useful, for instance, to state
+      that a field will only be displayed as "read-only" whatever the layout
+      mode.
+
+      - translated: true or false, defines if the widget labels and help labels
+      have to be translated (in case these labels should match jsf messages).
+
+      - fields: fields that will be taken into account when displaying/editing a
+      document field.
+
+      - properties: map of properties that will apply to the jsf component built
+      in a given mode by the widget type. For instance, in a text widget, all
+      properties defined in the view mode will be dealt as attributes on a
+      &lt;h:outputText /&gt; tag, and properties defined in the edit mode will
+      be dealt as attributes on a &lt;h:inputText /&gt; tag.
+
+      - subWidgets: list of sub widgets to use provided the widget type knows
+      how to handle them. each sub widget definition is like a widget
+      definition.
+
+      Example of layout using default widget types:
+
+      <code>
+        <layout name="heading">
+          <templates>
+            <template mode="any">
+              /layouts/layout_default_template.xhtml
+            </template>
+          </templates>
+          <properties mode="any">
+            <property name="foo">bar</property>
+          </properties>
+          <rows>
+            <row>
+              <widget>title</widget>
+            </row>
+            <row>
+              <widget>description</widget>
+            </row>
+          </rows>
+          <widget name="title" type="text">
+            <labels>
+              <label mode="any">title</label>
+            </labels>
+            <translated>true</translated>
+            <fields>
+              <field>dc:title</field>
+            </fields>
+            <properties mode="edit">
+              <property name="required">true</property>
+            </properties>
+            <properties mode="create">
+              <property name="required">true</property>
+            </properties>
+          </widget>
+          <widget name="description" type="textarea">
+            <labels>
+              <label mode="any">description</label>
+            </labels>
+            <translated>true</translated>
+            <fields>
+              <field>dc:description</field>
+            </fields>
+          </widget>
+        </layout>
+      </code>
+
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutDescriptor" />
+  </extension-point>
+
+  <extension-point name="widgets">
+
+    <documentation>
+      Since 5.1.7 and 5.2.0, a widget can be defined globally in the
+      application.
+
+      Layouts can reference global widgets in their row definition without
+      having to redefine them in their widgets definitions. The widget with
+      given name will be searched in this global registry only if it is not
+      found in the layout definition.
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetDescriptor" />
+  </extension-point>
+
+  <extension-point name="disabledPropertyRefs">
+
+    <documentation>
+      Since 5.6, makes it possible to define what properties should
+      not be referenced using EL expressions.
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.forms.layout.service.DisabledPropertyRefDescriptor" />
+
+  </extension-point>
+
+</component>

@@ -1,0 +1,86 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+<div id="#{widget.id}"
+  class="#{widgetProperty_styleClass}">
+
+  <nxu:set var="contentViewId" value="#{widget.id}">
+  <nxu:set var="contentViewName" value="#{widgetProperty_contentViewName}">
+
+  <nxu:set var="widgetLabel"
+    value="#{nxu:test(widget.translated, messages[widget.label], widget.label)}"
+    cache="true" resolveTwice="true">
+  <nxu:set var="widgetHelpLabel"
+    value="#{nxu:test(widget.translated, messages[widget.helpLabel], widget.helpLabel)}"
+    cache="true" resolveTwice="true">
+
+    <ui:decorate template="/incl/content_view.xhtml">
+
+      <ui:param name="contentViewTitle" value="#{nxu:test(widget.handlingLabels, widgetLabel, null)}" />
+      <ui:param name="translateContentViewTitle" value="false" />
+      <ui:define name="content_view_header">
+        <c:if test="#{widget.handlingLabels and not empty widget.helpLabel}">
+          <div class="tips">
+            <h:outputText value="#{widgetHelpLabel}" />
+          </div>
+        </c:if>
+      </ui:define>
+
+      <ui:param name="foldable"
+                value="#{widgetProperty_foldable}" />
+      <ui:param name="foldedByDefault"
+                value="#{widgetProperty_foldedByDefault}" />
+      <ui:param name="foldedIfEmpty"
+                value="#{widgetProperty_foldedIfEmpty}" />
+      <ui:param name="foldableBoxStyleClass"
+                value="#{widgetProperty_foldableBoxStyleClass}" />
+      <ui:param name="removeForm"
+                value="#{widgetProperty_removeForm}" />
+      <ui:param name="useAjaxForm"
+                value="#{widgetProperty_useAjaxForm}" />
+      <ui:param name="useAjaxPagination"
+                value="#{widgetProperty_useAjaxPagination}" />
+      <ui:param name="contentViewIconPath"
+                value="#{widgetProperty_contentViewIconPath}" />
+      <ui:param name="showPageSizeSelector"
+                value="#{widgetProperty_showPageSizeSelector}" />
+      <ui:param name="showRefreshCommand"
+                value="#{widgetProperty_showRefreshCommand}" />
+      <ui:param name="showFilterForm"
+                value="#{widgetProperty_showFilterForm}" />
+      <ui:param name="defaultPageSize"
+                value="#{widgetProperty_defaultPageSize}" />
+      <ui:param name="showCSVExport"
+                value="#{widgetProperty_showCSVExport}" />
+      <ui:param name="showPDFExport"
+                value="#{widgetProperty_showPDFExport}" />
+      <ui:param name="showSyndicationLinks"
+                value="#{widgetProperty_showSyndicationLinks}" />
+      <ui:param name="showSlideshow"
+                value="#{widgetProperty_showSlideshow}" />
+      <ui:param name="showEditColumns"
+                value="#{widgetProperty_showEditColumns}" />
+      <ui:param name="showEditRows"
+                value="#{widgetProperty_showEditRows}" />
+      <ui:param name="showSpreadsheet"
+                value="#{widgetProperty_showSpreadsheet}" />
+      <ui:param name="hideTopPaginationControls"
+                value="#{widgetProperty_hideTopPaginationControls}" />
+      <ui:param name="hideEmpty"
+                value="#{widgetProperty_hideEmpty}" />
+      <ui:param name="showTitle" value="#{widgetProperty_showTitle}" />
+      <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
+
+    </ui:decorate>
+
+  </nxu:set>
+  </nxu:set>
+
+  </nxu:set>
+  </nxu:set>
+
+</div>
+</ui:composition>

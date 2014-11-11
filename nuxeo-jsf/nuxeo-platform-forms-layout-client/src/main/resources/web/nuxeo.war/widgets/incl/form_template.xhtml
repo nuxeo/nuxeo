@@ -1,0 +1,41 @@
+<c:if test="true"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+<c:if test="false">
+Reusable template to display a form.
+
+Accepted parameters:
+- addForm: boolean stating if a form should be added (optional, defaults to false)
+- formId: the form id (required if addForm is true)
+- useAjaxForm: boolean stating if form should be ajaxified (optional, defaults to false)
+- disableMultiPartForm: boolean stating if non-ajaxified form should *not* use send
+  multipart request
+- formStyleClass: style class to put on the form (optional)
+
+Templating zone to define:
+- form_template_content: inside the form if a form is defined
+
+</c:if>
+
+<c:if test="#{addForm}">
+
+  <h:form id="#{formId}"
+    enctype="#{useAjaxForm or disableMultipartForm?'':'multipart/form-data'}"
+    onsubmit="#{onFormSubmit}"
+    styleClass="#{formStyleClass}">
+    <ui:insert name="form_template_content" />
+  </h:form>
+
+</c:if>
+
+<c:if test="#{not addForm}">
+  <ui:insert name="form_template_content" />
+</c:if>
+
+</c:if>

@@ -1,0 +1,31 @@
+<c:if test="true"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+<c:if test="#{nxl:isLikePlainMode(widget.mode) or nxl:isLikeViewMode(widget.mode)}">
+#{field}
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+<nxp:html>#{field}</nxp:html>
+</c:if>
+<c:if test="#{widget.mode == 'edit'}">
+
+  <h:selectOneMenu value="#{field}"
+    id="#{widget.id}"
+    required="#{widgetProperty_required}"
+    styleClass="#{widgetProperty_styleClass}">
+    <f:selectItem itemValue="" itemLabel="#{messages['label.vocabulary.selectValue']}"/>
+    <nxu:selectItems
+      value="#{nxd:availableLifeCycleTransitions(widgetProperty_lifeCycleName, widgetProperty_currentLifeCycleState)}"
+      var="item"
+      itemValue="#{item}"
+      itemLabel="#{messages[item]}" />
+  </h:selectOneMenu>
+  <h:message for="#{widget.id}" styleClass="errorMessage" />
+
+</c:if>
+</c:if>

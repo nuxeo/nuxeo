@@ -1,0 +1,49 @@
+<c:if xmlns="http://www.w3.org/1999/xhtml"
+ xmlns:c="http://java.sun.com/jstl/core"
+ test="#{nuxeoLayoutManagerBean.devModeSet}">
+
+<script type="text/javascript">
+  (function() {
+    var nxlDevEnabled = #{nuxeoLayoutManagerBean.devModeSet};
+    function doDevMode() {
+      jQuery(".nxlDevRegion").each(function() {
+        jQuery(this).hover(function(e) {
+          if (nxlDevEnabled &amp;&amp; e.shiftKey) {
+            jQuery(".nxlDevRegion.highlight").removeClass("highlight");
+            var elts = jQuery(this).children(".nxlDevContainer").children();
+            jQuery("#nxlMainDevContainerContent").empty().append(elts.clone());
+            jQuery(".nxFooter").css("margin-bottom", jQuery("#nxlMainDevContainer").outerHeight(true));
+            jQuery("#nxlMainDevContainer").show();
+            jQuery(this).addClass("highlight");
+          }
+        }, function() {
+          if (nxlDevEnabled) {
+            jQuery(".nxlDevRegion.highlight").removeClass("highlight");
+          }
+        });
+      });
+      if (nxlDevEnabled &amp;&amp; jQuery("#nxlMainDevContainer").length === 0) {
+        var html = '<div id="nxlMainDevContainer" style="display:none;">' +
+          '<a id="nxlMainDevContainerClose" href="#">X</a>' +
+          '<div id="nxlMainDevContainerContent"></div>' +
+        '</div>';
+        jQuery("body").append(html);
+        jQuery("#nxlMainDevContainerClose").click(function(e) {
+          jQuery("#nxlMainDevContainer").hide();
+          e.preventDefault();
+          e.stopPropagation();
+        });
+      }
+    }
+    jQuery(document).ready(function() {
+      doDevMode();
+    });
+    jsf.ajax.addOnEvent(function(data) {
+      var ajaxstatus = data.status;
+      if (ajaxstatus == "success") {
+        doDevMode();
+      }
+    });
+  })();
+</script>
+</c:if>

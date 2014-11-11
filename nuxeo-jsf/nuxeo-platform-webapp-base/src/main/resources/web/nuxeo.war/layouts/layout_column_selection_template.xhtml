@@ -1,0 +1,48 @@
+<f:subview
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:a4j="http://richfaces.org/a4j"
+  id="#{layout.id}">
+
+<c:if test="false">
+  Properties to define on the widget:
+  - availableElementsLabel (string message to translate)
+  - selectedElementsLabel (string message to translate)
+  - selectedElementsHelp (string message to translate)
+  - selectSize (integer)
+  - required (boolean)
+  - displayAlwaysSelectedColumns (boolean)
+
+  Properties to define on the layout column:
+  - label (for presentation of the column)
+  - a name on the column, used as an identifier
+</c:if>
+
+  <c:set var="selectionDefaultValue"
+    value="#{nxl:defaultSelectedColumnNames(layout, layoutProperty_displayAlwaysSelectedColumns)}" />
+  <c:set var="selectionReferenceValue"
+    value="#{nxu:test(empty layoutValue, selectionDefaultValue, layoutValue)}" />
+
+  <nxl:widgetType name="template" value="#{layoutValue}" mode="edit"
+    properties="#{layout.properties}"
+    template="/widgets/shuttle_widget_template.xhtml"
+    defaultValue="#{selectionDefaultValue}"
+    showOrderingActions="true"
+    sourceItems="#{nxl:notSelectedColumns(layout, selectionReferenceValue)}"
+    sourceItemVar="layoutColumnVar"
+    sourceItemValue="#{layoutColumnVar.name}"
+    sourceItemLabel="#{messages[layoutColumnVar.properties.label]}"
+    sourceItemOrdering="label"
+    sourceItemCaseSensitive="true"
+    targetItems="#{nxl:selectedColumns(layout, selectionReferenceValue, widgetProperty_displayAlwaysSelectedColumns)}"
+    targetItemVar="layoutColumnVar"
+    targetItemValue="#{layoutColumnVar.name}"
+    targetItemLabel="#{messages[layoutColumnVar.properties.label]}"
+    targetItemDisabled="#{layoutColumnVar.alwaysSelected}"
+    />
+
+</f:subview>

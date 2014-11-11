@@ -1,0 +1,149 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="http://richfaces.org/a4j">
+<div id="#{widget.id}">
+
+<c:if test="#{widget.mode != 'edit'}">
+
+  <ui:repeat value="#{field}" var="item" rendered="#{not empty field}">
+    <div><h:outputText value="#{vocabularyTreeActions.getLabelFor(widget.properties.directoryName, item, widget.properties.selectIdOnly)}" /></div>
+  </ui:repeat>
+
+</c:if>
+
+<c:if test="#{widget.mode == 'edit'}">
+
+  <script type="text/javascript">
+    jQuery(document).ready(function() {
+      var config = {
+        'width'              : '50%',
+        'height'             : '75%',
+        'autoScale'          : false,
+        'autoDimensions'     : false,
+        'transitionIn'       : 'none',
+        'transitionOut'      : 'none',
+        'type'               : 'inline',
+        'enableEscapeButton' : true,
+        'centerOnScroll'     : true
+      };
+      jQuery("##{widget.id}_openPopup").fancybox(config);
+
+      if (jQuery('.#{widget.id}_inputHidden').val()) {
+        jQuery("##{widget.id}_openPopup").hide();
+      } else {
+        jQuery(".#{widget.id}_deleteSingleValueLink").hide();
+      }
+    });
+
+    function set#{widget.id}SingleValue(label, path) {
+      jQuery('##{widget.id}_openPopup').hide();
+      jQuery('.#{widget.id}_outputText').text(label);
+      jQuery('.#{widget.id}_inputHidden').val(path);
+      jQuery('.#{widget.id}_deleteSingleValueLink').show();
+      jQuery.fancybox.close();
+      return false;
+    }
+
+    function remove#{widget.id}SingleValue() {
+      jQuery('##{widget.id}_openPopup').show();
+      jQuery('.#{widget.id}_outputText').text('');
+      jQuery('.#{widget.id}_inputHidden').val('');
+      jQuery('.#{widget.id}_deleteSingleValueLink').hide();
+      return false;
+    }
+
+  </script>
+
+  <a4j:outputPanel id="#{widget.id}_multipleValuePanel"
+    layout="block"
+    ajaxRendered="true"
+    rendered="#{widget.properties.multipleValues}">
+    <div class="clear">
+      <nxu:inputList id="#{widget.id}_list" value="#{field}"
+        model="model">
+        <span class="sticker">
+          <label>
+            <h:outputText value="#{vocabularyTreeActions.getLabelFor(widget.properties.directoryName, model.rowData, widget.properties.selectIdOnly)}" />
+          </label>
+          <a4j:commandLink immediate="true"
+            actionListener="#{editableListBean.performAction}"
+            id="#{widget.id}_delete" render="#{widget.id}_multipleValuePanel"
+            bypassUpdates="true">
+            <img src="#{contextPath}/icons/delete.png" alt="Delete" />
+            <f:param name="for" value="#{widget.id}_list" />
+            <f:param name="index" value="#{model.rowIndex}" />
+            <f:param name="type" value="remove" />
+          </a4j:commandLink>
+        </span>
+      </nxu:inputList>
+    </div>
+  </a4j:outputPanel>
+
+  <f:subview id="#{widget.id}_singleValuePanel" rendered="#{!widget.properties.multipleValues}">
+    <span class="sticker">
+      <label>
+        <h:outputText id="#{widget.id}_outputText" styleClass="#{widget.id}_outputText"
+          value="#{vocabularyTreeActions.getLabelFor(widget.properties.directoryName, field, widget.properties.selectIdOnly)}" />
+      </label>
+      <a4j:commandLink
+        id="#{widget.id}_deleteSingleValueLink"
+        immediate="true"
+        onclick="remove#{widget.id}SingleValue()"
+        styleClass="#{widget.id}_deleteSingleValueLink">
+        <img src="#{contextPath}/icons/delete.png" alt="Delete" />
+      </a4j:commandLink>
+      <h:inputText id="#{widget.id}_inputHidden" styleClass="#{widget.id}_inputHidden" style="display:none" value="#{field}" />
+    </span>
+  </f:subview >
+
+  <a id="#{widget.id}_openPopup" href="##{widget.id}_tree"><img src="#{contextPath}/icons/add_popup.png" alt="Pop up" /></a>
+
+  <div style="display:none">
+    <div id="#{widget.id}_tree">
+      <rich:tree
+        id="#{widget.id}_treeId"
+        iconExpanded="/icons/toggle_minus.png"
+        iconCollapsed="/icons/toggle_plus.png">
+        <rich:treeModelRecursiveAdaptor
+          id="#{widget.id}_recursiveTreeNodesAdaptorId"
+          roots="#{vocabularyTreeActions.getRoots(widget.properties.directoryName, widget.properties.showObsolete, widget.properties.sortByOrdering)}"
+          nodes="#{node.children}"
+          var="node">
+          <rich:treeNode
+            id="#{widget.id}_treeNodeId"
+            highlightedClass="treeNodeHighlightedClass"
+            selectedClass="treeNodeSelectedClass">
+            <a4j:commandLink immediate="true"
+              id="#{widget.id}_addMultipleValueLink"
+              actionListener="#{treeWidgetActions.addSelectionToList}"
+              styleClass="treeLink" render="#{widget.id}_multipleValuePanel"
+              rendered="#{widget.properties.multipleValues}">
+              <f:param name="selectionListId" value="#{widget.id}_list" />
+              <f:param name="selectedPath" value="#{widget.properties.selectIdOnly ? node.id : node.path}" />
+              <h:outputText value="#{node.label}" />
+            </a4j:commandLink>
+            <a4j:commandLink
+              id="#{widget.id}_setSingleValueLink"
+              immediate="true"
+              onclick="set#{widget.id}SingleValue('#{widget.properties.selectIdOnly ? node.label : vocabularyTreeActions.getLabelFor(widget.properties.directoryName, node.path)}', '#{widget.properties.selectIdOnly ? node.id : node.path}')"
+              rendered="#{!widget.properties.multipleValues}"
+              styleClass="treeLink">
+              <h:outputText value="#{node.label}" />
+            </a4j:commandLink>
+          </rich:treeNode>
+        </rich:treeModelRecursiveAdaptor>
+      </rich:tree>
+    </div>
+  </div>
+
+</c:if>
+
+</div>
+</ui:composition>

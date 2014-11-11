@@ -1,0 +1,41 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:nxu="http://nuxeo.org/nxweb/util"
+     xmlns:nxl="http://nuxeo.org/nxforms/layout"
+     xmlns:a4j="http://richfaces.org/a4j">
+
+  <a4j:outputPanel id="usersPanel" layout="block">
+    <div class="tabsContent">
+
+      <!-- create form -->
+      <c:if test="#{userManagementActions.showCreateForm}">
+        <f:subview id="createUserView">
+          <ui:include src="create_user.xhtml"/>
+        </f:subview>
+      </c:if>
+
+      <!-- view form -->
+      <c:if test="#{not empty userManagementActions.selectedUser and userManagementActions.showUserOrGroup}">
+        <f:subview id="viewUserView">
+          <ui:include src="view_user.xhtml"/>
+        </f:subview>
+      </c:if>
+
+      <!-- listing -->
+      <c:if test="#{!userManagementActions.showUserOrGroup and !userManagementActions.showCreateForm}">
+        <f:subview id="usersListingView">
+          <c:if test="#{userManagementActions.listingMode == 'search_only'}">
+            <ui:include src="view_users_listing.xhtml"/>
+          </c:if>
+          <c:if test="#{userManagementActions.listingMode == 'tabbed'}">
+            <ui:include src="view_many_users_listing.xhtml"/>
+          </c:if>
+        </f:subview>
+      </c:if>
+
+    </div>
+  </a4j:outputPanel>
+
+</div>

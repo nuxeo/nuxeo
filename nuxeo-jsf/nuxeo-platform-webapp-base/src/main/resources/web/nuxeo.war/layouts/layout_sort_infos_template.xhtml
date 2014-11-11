@@ -1,0 +1,98 @@
+<f:subview
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:a4j="http://richfaces.org/a4j"
+  id="#{layout.id}">
+  
+<c:if test="false">
+  Binds the value given to the layout tag to the sort info list.
+  Sort info presented are generated from the layout, filtering columns
+  that have a non-empty property named 'sortPropertyName' and a property
+  named 'showInSortInfoSelection' resolving to 'true'.
+  
+  Properties to define on the layout:
+  - newSortInfoTemplate (resolving a bare SortInfo instance)
+  - required (boolean)
+  
+  Properties to define on the layout column:
+  - label (for presentation of the column)
+  - a name on the column, used as an identifier
+</c:if>
+
+  <a4j:region renderRegionOnly="true" id="#{layout.id}_region">
+    <a4j:outputPanel id="#{layout.id}_panel" layout="block">
+
+      <nxu:inputList value="#{layoutValue}" id="#{layout.id}_input" model="model"
+        template="#{layoutProperty_newSortInfoTemplate}"
+        required="#{layoutProperty_required}">
+        <f:validator validatorId="SortInfoListValidator" />
+
+        <h:panelGrid columns="2">
+          <a4j:commandLink immediate="true"
+            actionListener="#{editableListBean.performAction}"
+            id="#{layout.id}_delete" render="#{layout.id}_panel"
+            bypassUpdates="true">
+            <h:graphicImage value="/icons/delete.png" />
+            <f:param name="for" value="#{layout.id}_input" />
+            <f:param name="index" value="#{model.rowIndex}" />
+            <f:param name="type" value="remove" />
+          </a4j:commandLink>
+
+          <h:panelGroup>
+            <h:panelGrid columns="2">
+
+              <h:panelGroup>
+                <h:selectOneMenu value="#{model.rowData.sortColumn}"
+                  required="true" id="#{layout.id}_sort_info_colum">
+                  <nxu:selectItems
+                    value="#{layout.rows}"
+                    var="column"
+                    itemValue="#{column.properties.sortPropertyName}"
+                    itemLabel="#{messages[column.properties.label]}"
+                    itemRendered="#{column.properties.showInSortInfoSelection and not empty column.properties.sortPropertyName}"
+                    ordering="label" caseSensitive="true" />
+                </h:selectOneMenu>
+                <h:message styleClass="errorMessage" for="#{layout.id}_sort_info_colum"
+                  id="#{layout.id}_sort_info_colum_message" />
+              </h:panelGroup>
+
+              <h:panelGroup>
+                <h:selectOneRadio value="#{model.rowData.sortAscending}"
+                  required="true" id="#{layout.id}_sort_info_ascending">
+                  <f:selectItem itemLabel="#{messages['label.search.orderDirectionAsc']}"
+                    itemValue="true" />
+                  <f:selectItem itemLabel="#{messages['label.search.orderDirectionDesc']}"
+                    itemValue="false" />
+                </h:selectOneRadio>
+                <h:message styleClass="errorMessage" for="#{layout.id}_sort_info_ascending"
+                  id="#{layout.id}_sort_info_ascending_message" />
+              </h:panelGroup>
+
+            </h:panelGrid>
+
+          </h:panelGroup>
+
+        </h:panelGrid>
+
+      </nxu:inputList>
+      <h:message styleClass="errorMessage" for="#{layout.id}_input"
+        id="#{layout.id}_message" />
+    </a4j:outputPanel>
+
+    <a4j:commandLink immediate="true"
+      actionListener="#{editableListBean.performAction}"
+      render="#{layout.id}_panel"
+      id="#{layout.id}_add"
+      styleClass="button smallButton">
+      <f:param name="for" value="#{layout.id}_input" />
+      <f:param name="type" value="add" />
+      <h:outputText value="#{messages['command.add']}" />
+    </a4j:commandLink>
+
+  </a4j:region>
+
+</f:subview>

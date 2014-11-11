@@ -1,0 +1,395 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layouts.webapp.test">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="listing_ajax_selection_box" type="listing_ajax_selection_box">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field>selected</field>
+        <field>data.ref</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_icon_type" type="listing_icon_type">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field>data</field>
+        <field>data.ref</field>
+        <field>data.type</field>
+        <field>data.folder</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_title_link" type="listing_title_link">
+      <labels>
+        <label mode="any">label.content.header.title</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data</field>
+        <field>data.ref</field>
+        <field>data.dc.description</field>
+        <field>data.file.content</field>
+        <field>data.file.filename</field>
+      </fields>
+      <properties mode="any">
+        <property name="file_property_name">file:content</property>
+        <property name="file_schema">file</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_lock_icon" type="listing_lock_icon">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field>data.lock</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_modification_date" type="datetime">
+      <labels>
+        <label mode="any">label.content.header.modified</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.modified</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_author" type="listing_author">
+      <labels>
+        <label mode="any">label.content.header.author</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dublincore.creator</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_lifecycle" type="listing_lifecycle">
+      <labels>
+        <label mode="any">label.content.header.currentLifecycleState</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.currentLifeCycleState</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_livedit_link" type="listing_livedit_link">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field>data</field>
+      </fields>
+      <properties mode="any">
+        <property name="file_schema">file</property>
+        <property name="file_field_name">content</property>
+        <property name="filename_field_name">filename</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_version" type="listing_version">
+      <labels>
+        <label mode="any">label.version</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_description" type="text">
+      <labels>
+        <label mode="any">label.dublincore.description</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.description</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_subjects" type="template">
+      <labels>
+        <label mode="any">label.dublincore.subject</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.subjects</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">/widgets/subjects_widget.xhtml</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_rights" type="text">
+      <labels>
+        <label mode="any">label.dublincore.rights</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.rights</field>
+      </fields>
+    </widget>
+
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouttypes">
+
+    <layoutType name="listing">
+      <categories>
+        <category>jsf</category>
+      </categories>
+      <templates>
+        <template mode="any">/layouts/layout_listing_template.xhtml</template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <configuration>
+        <title>Test layout type for a custom type category</title>
+        <properties>
+          <defaultValues mode="any">
+            <property name="showListingHeader">true</property>
+            <property name="showRowEvenOddClass">true</property>
+          </defaultValues>
+          <defaultValues mode="edit_columns">
+            <property name="availableElementsLabel">
+              label.selection.availableColumns
+            </property>
+            <property name="selectedElementsLabel">
+              label.selection.selectedColumns
+            </property>
+            <property name="selectedElementsHelp"></property>
+            <property name="selectSize">10</property>
+            <property name="columnSelectionRequired">true</property>
+            <property name="displayAlwaysSelectedColumns">false</property>
+          </defaultValues>
+          <defaultValues mode="edit_sort_infos">
+            <property name="newSortInfoTemplate">
+              #{documentSearchActions.newSortInfo}
+            </property>
+            <property name="sortInfoSelectionRequired">false</property>
+          </defaultValues>
+        </properties>
+      </configuration>
+    </layoutType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="search_listing_ajax">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="edit_columns">
+          /layouts/layout_column_selection_template.xhtml
+        </template>
+        <template mode="edit_sort_infos">
+          /layouts/layout_sort_infos_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <properties mode="edit_columns">
+        <property name="availableElementsLabel">
+          label.selection.availableColumns
+        </property>
+        <property name="selectedElementsLabel">
+          label.selection.selectedColumns
+        </property>
+        <property name="selectedElementsHelp"></property>
+        <property name="selectSize">10</property>
+        <property name="columnSelectionRequired">true</property>
+        <property name="displayAlwaysSelectedColumns">false</property>
+      </properties>
+      <properties mode="edit_sort_infos">
+        <property name="newSortInfoTemplate">
+          #{documentSearchActions.newSortInfo}
+        </property>
+        <property name="sortInfoSelectionRequired">false</property>
+      </properties>
+      <columns>
+        <column name="selection" alwaysSelected="true">
+          <properties mode="any">
+            <property name="isListingSelectionBox">true</property>
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_ajax_selection_box</widget>
+        </column>
+        <column name="title_link">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:title</property>
+            <property name="label">label.selection.column.title_link</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_title_link</widget>
+        </column>
+        <column name="modification_date">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:modified</property>
+            <property name="defaultSortAscending">false</property>
+            <property name="label">label.content.header.modified</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_modification_date</widget>
+        </column>
+        <column name="lifecycle">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">
+              ecm:currentLifeCycleState
+            </property>
+            <property name="label">
+              label.content.header.currentLifecycleState
+            </property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_lifecycle</widget>
+        </column>
+        <column name="description" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:description</property>
+            <property name="label">description</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_description</widget>
+        </column>
+        <column name="subjects" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="label">label.dublincore.subject</property>
+          </properties>
+          <widget>listing_subjects</widget>
+        </column>
+        <column name="rights" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:rights</property>
+            <property name="label">label.dublincore.rights</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_rights</widget>
+        </column>
+      </columns>
+    </layout>
+
+    <layout name="search_listing_ajax_with_type" type="listing">
+      <columns>
+        <column name="selection" alwaysSelected="true">
+          <properties mode="any">
+            <property name="isListingSelectionBox">true</property>
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_ajax_selection_box</widget>
+        </column>
+        <column name="title_link">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:title</property>
+            <property name="label">label.selection.column.title_link</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_title_link</widget>
+        </column>
+        <column name="modification_date">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:modified</property>
+            <property name="defaultSortAscending">false</property>
+            <property name="label">label.content.header.modified</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_modification_date</widget>
+        </column>
+        <column name="lifecycle">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">
+              ecm:currentLifeCycleState
+            </property>
+            <property name="label">
+              label.content.header.currentLifecycleState
+            </property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_lifecycle</widget>
+        </column>
+        <column name="description" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:description</property>
+            <property name="label">description</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_description</widget>
+        </column>
+        <column name="subjects" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="label">label.dublincore.subject</property>
+          </properties>
+          <widget>listing_subjects</widget>
+        </column>
+        <column name="rights" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:rights</property>
+            <property name="label">label.dublincore.rights</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_rights</widget>
+        </column>
+      </columns>
+    </layout>
+
+  </extension>
+
+</component>

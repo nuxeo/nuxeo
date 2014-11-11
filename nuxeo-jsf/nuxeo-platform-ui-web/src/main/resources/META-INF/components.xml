@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<components xmlns="http://jboss.org/schema/seam/components">
+
+  <component name="org.jboss.seam.core.init">
+    <property name="interceptors">
+      <value>org.jboss.seam.core.SynchronizationInterceptor</value>
+      <value>org.jboss.seam.async.AsynchronousInterceptor</value>
+      <value>org.jboss.seam.ejb.RemoveInterceptor</value>
+
+      <value>org.jboss.seam.persistence.HibernateSessionProxyInterceptor</value>
+      <!-- <value>org.jboss.seam.persistence.EntityManagerProxyInterceptor</value> -->
+
+      <value>org.jboss.seam.core.MethodContextInterceptor</value>
+      <value>org.jboss.seam.core.EventInterceptor</value>
+      <value>org.jboss.seam.core.ConversationalInterceptor</value>
+
+      <!-- <value>org.jboss.seam.bpm.BusinessProcessInterceptor</value> -->
+      <value>org.jboss.seam.core.ConversationInterceptor</value>
+
+      <value>
+        org.nuxeo.ecm.platform.ui.web.util.NuxeoExceptionInterceptor
+      </value>
+      <!-- NXP-5988: patch on bijection interceptor is now inside Seam lib -->
+      <value>org.jboss.seam.core.BijectionInterceptor</value>
+      <!-- <value>org.nuxeo.ecm.platform.ui.web.util.NuxeoBijectionInterceptor</value> -->
+
+      <value>org.jboss.seam.transaction.RollbackInterceptor</value>
+      <value>org.jboss.seam.transaction.TransactionInterceptor</value>
+
+      <!-- <value>org.jboss.seam.webservice.WSSecurityInterceptor</value> -->
+      <!-- <value>org.jboss.seam.security.SecurityInterceptor</value> -->
+    </property>
+  </component>
+
+  <!-- disable "transaction failed" message, a custom event listener
+    handles it, see NuxeoFacesTransactionEvents class -->
+  <component name="org.jboss.seam.transaction.facesTransactionEvents">
+    <property name="transactionFailedMessageEnabled">false</property>
+  </component>
+
+  <!-- disable filters not useful in Nuxeo -->
+  <component name="org.jboss.seam.web.wicketFilter" disabled="true" />
+  <component name="org.jboss.seam.web.authenticationFilter" disabled="true" />
+  <component name="org.jboss.seam.web.identityFilter" disabled="true" />
+  <component name="org.jboss.seam.web.loggingFilter" disabled="true" />
+  <component name="org.jboss.seam.web.multipartFilter" disabled="true" />
+
+  <!-- configure custom implementations for Seam Excel library -->
+  <component name="org.jboss.seam.excel.excelFactory">
+    <property name="implementations">
+      <key>jxl</key>
+      <value>
+        org.nuxeo.ecm.platform.ui.web.component.seam.JXLExcelWorkbook
+      </value>
+    </property>
+  </component>
+
+</components>
