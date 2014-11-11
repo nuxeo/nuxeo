@@ -1,0 +1,83 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<c:if test="false">
+  Template rendering a layout listing and actions, with an enclosing form
+  depending on given parameters.
+
+  Parameters:
+  - documents: the page selections instance, mandatory
+  - providerId: page provider id, used to manage duplicates when rendering
+    the same page provider several times in the same page, optional
+  - layoutName: layout to use for listing rendering, mandatory
+  - selectedResultLayoutColumns: list of result column names to display,
+    optional, defaults to the layout default columns configuration.
+  - removeForm: if set to true, do not enclose the listing with a form
+    (optional, available since 5.5, defaults to false).
+  - useAjaxForm: if removeForm is not set or set to false, use an ajax form if
+    set to true. This will have an impact on selection actions as they will be
+    using ajax calls. (optional, available since 5.6, defaults to false).
+  - useAjaxPagination: use ajax links for page navigation controls when set to
+    true (optional, available since 5.6, defaults to false).
+  - contentIdToBeReRendered: mandatory id(s) of components to re-render
+    when using an ajax form, mandatory if parameter usingAjaxForm is set to
+    true (available since 5.6).
+  - hideTopPaginationControls: only display the bottom page selectors
+    (available since 5.6).
+</c:if>
+
+<c:if test="#{documents != null}">
+
+  <nxu:set var="uniqueFormId"
+    value="#{documents.name}_#{providerId}"
+    cache="true">
+  <nxu:set var="formId"
+    value="#{nxu:test(empty providerId or providerId == 0, documents.name, uniqueFormId)}"
+    cache="true">
+
+    <c:if test="#{not removeForm}">
+      <c:if test="#{not useAjaxForm}">
+        <h:form id="#{formId}">
+          <ui:include src="documents_layout_table_content.xhtml" />
+        </h:form>
+        <f:subview id="#{formId}_buttons">
+          <ui:insert name="buttons" />
+        </f:subview>
+      </c:if>
+      <c:if test="#{useAjaxForm}">
+        <a4j:form id="#{formId}" ajaxSubmit="true"
+          reRender="#{contentIdToBeReRendered}">
+          <ui:include src="documents_layout_table_content.xhtml" />
+        </a4j:form>
+        <f:subview id="#{formId}_buttons">
+          <ui:insert name="buttons" />
+        </f:subview>
+      </c:if>
+    </c:if>
+
+    <c:if test="#{removeForm}">
+      <ui:include src="documents_layout_table_content.xhtml" />
+      <f:subview id="#{formId}_buttons">
+        <ui:insert name="buttons" />
+      </f:subview>
+    </c:if>
+
+  </nxu:set>
+  </nxu:set>
+
+</c:if>
+
+<ui:include src="/incl/popupMenu.xhtml" />
+<script>
+  setupContextMenu("table td div div.popupTarget");
+</script>
+
+</div>

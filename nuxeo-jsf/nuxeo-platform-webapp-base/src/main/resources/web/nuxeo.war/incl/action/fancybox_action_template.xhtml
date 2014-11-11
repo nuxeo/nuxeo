@@ -1,0 +1,128 @@
+<ui:composition
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+<nxu:set var="fancyboxId"
+  value="#{idPrefix}#{action.id}"
+  cache="true">
+
+<nxu:set var="iframe"
+  value="#{action.properties.iframe}"
+  resolveTwice="true" cache="true">
+
+  <f:subview id="#{fancyboxId}_subview">
+
+    <c:if test="#{empty iframe}">
+
+      <c:if test="#{not useButton}">
+        <a4j:commandLink id="#{fancyboxId}_link"
+          ajaxSingle="true"
+          ignoreDupResponses="true" requestDelay="100"
+          onclick="#{actionConfirmMessageJs}#{action.confirm};"
+          oncomplete="#{action.properties.onclick};return false;"
+          styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}"
+          disabled="#{!action.available}"
+          reRender="#{fancyboxId}_ajax_panel">
+          <f:setPropertyActionListener value="#{nxu:test(addForm,'2','1')}"
+            target="#{selectionActions.lookupLevelValue}" />
+          <f:setPropertyActionListener value="#{action.id}"
+            target="#{selectionActions.selectedValue}" />
+          <f:setPropertyActionListener
+            value="#{idPrefix}clickedActionIdHolder"
+            target="#{selectionActions.selectedValueHolder}" />
+          <nxu:actionListenerMethod
+            value="#{selectionActions.onClick}" />
+          <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+          <ui:insert name="inside_action" />
+        </a4j:commandLink>
+      </c:if>
+
+      <c:if test="#{useButton}">
+        <a4j:commandButton id="#{fancyboxId}_link"
+          ajaxSingle="true"
+          ignoreDupResponses="true" requestDelay="100"
+          onclick="#{actionConfirmMessageJs}#{action.confirm};"
+          oncomplete="#{action.properties.onclick};return false;"
+          value="#{messages[action.label]}"
+          styleClass="button #{actionStyleClass} #{action.properties.styleClass}"
+          disabled="#{!action.available}"
+          reRender="#{fancyboxId}_ajax_panel">
+          <f:setPropertyActionListener value="#{nxu:test(addForm,'2','1')}"
+            target="#{selectionActions.lookupLevelValue}" />
+          <f:setPropertyActionListener value="#{action.id}"
+            target="#{selectionActions.selectedValue}" />
+          <f:setPropertyActionListener
+            value="#{idPrefix}clickedActionIdHolder"
+            target="#{selectionActions.selectedValueHolder}" />
+          <nxu:actionListenerMethod
+            value="#{selectionActions.onClick}" />
+          <ui:include src="/incl/action/action_icon_label_template.xhtml">
+            <ui:param name="hideLabel" value="true" />
+          </ui:include>
+          <ui:insert name="inside_action" />
+        </a4j:commandButton>
+      </c:if>
+
+    </c:if>
+
+    <c:if test="#{not empty iframe}">
+
+      <ui:decorate template="fancybox_properties_template.xhtml">
+        <ui:define name="fancybox_properties_include">
+          <nxu:set var="fancyboxJs"
+            value="openFancyBox('#{iframe}', {
+                    width: '#{fancy_width}',
+                    height: '#{fancy_height}',
+                    scrolling: '#{fancy_scrolling}',
+                    autoScale: #{fancy_autoScale},
+                    autoDimensions: #{fancy_autoDimensions},
+                    modal: #{fancy_modal},
+                    centerOnScroll: #{fancy_centerOnScroll},
+                    enableEscapeButton: #{fancy_enableEscapeButton}
+                  });"
+            cache="true">
+            <c:if test="#{not useButton}">
+              <a4j:commandLink id="#{fancyboxId}_link"
+                ajaxSingle="true"
+                ignoreDupResponses="true" requestDelay="100"
+                onclick="#{actionConfirmMessageJs}#{action.confirm};#{action.properties.onclick};#{fancyboxJs}"
+                disabled="#{!action.available}"
+                styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}">
+                <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+                <ui:insert name="inside_action" />
+              </a4j:commandLink>
+            </c:if>
+
+            <c:if test="#{useButton}">
+              <a4j:commandButton id="#{fancyboxId}_link"
+                ajaxSingle="true"
+                ignoreDupResponses="true" requestDelay="100"
+                onclick="#{actionConfirmMessageJs}#{action.confirm};#{action.properties.onclick};#{fancyboxJs}"
+                value="#{messages[action.label]}"
+                disabled="#{!action.available}"
+                styleClass="button #{actionStyleClass} #{action.properties.styleClass}">
+                <ui:include src="/incl/action/action_icon_label_template.xhtml">
+                  <ui:param name="hideLabel" value="true" />
+                </ui:include>
+                <ui:insert name="inside_action" />
+              </a4j:commandButton>
+            </c:if>
+
+          </nxu:set>
+        </ui:define>
+      </ui:decorate>
+
+    </c:if>
+
+  </f:subview>
+
+</nxu:set>
+
+</nxu:set>
+
+</ui:composition>

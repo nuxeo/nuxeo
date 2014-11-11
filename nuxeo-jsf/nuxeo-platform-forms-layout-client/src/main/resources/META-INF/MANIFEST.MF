@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Layout Client Fragment
+Bundle-SymbolicName: org.nuxeo.ecm.platform.forms.layout.client;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: stateless
+Require-Bundle: org.nuxeo.ecm.platform.forms.layout.api,
+ org.nuxeo.ecm.core.api
+Nuxeo-Component: OSGI-INF/layouts-framework.xml,
+ OSGI-INF/layouts-contrib.xml
