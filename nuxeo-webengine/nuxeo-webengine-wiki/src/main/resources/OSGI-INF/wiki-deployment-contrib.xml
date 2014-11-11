@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.wiki.deployment">
+
+	<extension
+		target="org.nuxeo.ecm.webengine.WebEngineComponent"
+		point="install">
+
+	    <install module="wiki">
+	      <copy path="web/wiki" target="/" />
+	    </install>
+
+	</extension>
+
+</component>

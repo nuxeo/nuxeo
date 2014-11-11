@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webengine.config">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    WebEngine Main Configuration
+  </documentation>
+
+  <extension-point name="rendering-extension"
+    target="org.nuxeo.ecm.webengine.WebEngineComponent">
+    <documentation>
+      Contribute the wiki transformer to main rendering engine by overriding the
+      transformer extension point to add custom wiki transformer
+      configuration
+    </documentation>
+    <object class="org.nuxeo.ecm.webengine.rendering.WikiTransformerDescriptor" />
+  </extension-point>
+
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent" point="rendering-extension">
+    <rendering-extension name="script" class="org.nuxeo.ecm.webengine.rendering.ScriptMethod"/>
+    <rendering-extension name="render" class="org.nuxeo.ecm.webengine.rendering.RenderDirective"/>
+    <rendering-extension name="wiki" class="org.nuxeo.ecm.platform.rendering.wiki.WikiTransformer"/>
+    <rendering-extension name="API" class="org.nuxeo.ecm.webengine.rendering.APIHelper"/>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.webengine.rendering.wiki" point="rendering-extension">
+    <rendering-extension name="wiki" serializer="org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer">
+      <!--filter pattern="[A-Z]+[a-z]+[A-Z][A-Za-z]*" replacement="&lt;a href='./$0'&gt;$0&lt;/a&gt;"/-->
+      <filter pattern="NXP-[0-9]+" replacement="&lt;a href='http://jira.nuxeo.org/browse/$0'&gt;$0&lt;/a&gt;"/>
+      <filter class="org.nuxeo.ecm.webengine.rendering.WikiPageLinkResolver"/>
+    </rendering-extension>
+  </extension>
+
+</component>

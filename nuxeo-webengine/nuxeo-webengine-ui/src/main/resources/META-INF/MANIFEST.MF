@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Webengine UI
+Bundle-SymbolicName: org.nuxeo.ecm.webengine.ui;singleton:=true
+Require-Bundle: org.nuxeo.ecm.webengine,
+ org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.directory.api
+Nuxeo-Require: org.nuxeo.ecm.webengine,
+ org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.directory.api

@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-parent</artifactId>
+    <version>5.2.m3</version>
+  </parent>
+
+  <groupId>org.nuxeo.ecm.webengine</groupId>
+  <artifactId>nuxeo-webengine-parent</artifactId>
+  <version>5.2.m3</version>
+  <packaging>pom</packaging>
+  <name>Nuxeo WebEngine</name>
+  <description>Nuxeo WebEngine is the lightweight content-centric web framework.</description>
+
+  <modules>
+    <module>nuxeo-platform-rendering</module>
+    <module>nuxeo-webengine-resteasy-adapter</module>    
+    <module>nuxeo-webengine-core</module>
+    <module>nuxeo-webengine-ui</module>
+    <module>nuxeo-webengine-admin</module>
+    <module>nuxeo-webengine-wiki</module>
+    <module>nuxeo-webengine-server</module>
+    <module>nuxeo-webengine-wiki-jsf</module>
+  </modules>
+
+  <properties>
+    <nuxeo.webengine.version>5.2.m3</nuxeo.webengine.version>
+  </properties>
+
+  <dependencies>
+        <!--this is required to index annotations at build time -->
+    <dependency>
+      <groupId>org.nuxeo.build</groupId>
+      <artifactId>nuxeo-webengine-apt</artifactId>
+      <version>1.0</version>
+      <scope>compile</scope>
+      <!-- workaround for Mac OS X -->
+      <exclusions>
+        <exclusion>
+          <groupId>sun.jdk</groupId>
+          <artifactId>tools</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    
+  </dependencies>
+    
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>javax.script</groupId>
+        <artifactId>script-api</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-all</artifactId>
+        <version>1.5.7</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-rendering</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-core</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-admin</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-ui</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-wiki</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-wiki-jsf</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-resteasy-adapter</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-jetty-adapter</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-launcher</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-client</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-comment</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-versioning-core</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-web-common</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <!-- needed by web-common -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-api</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-login</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <!-- END needed by web-common -->
+
+      <!-- nuxeo-addons -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-shell-commands-base</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <aggregate>true</aggregate>
+          <maxmemory>512m</maxmemory>
+          <!--stylesheetfile>
+            ${basedir}/src/site/resources/css/jdstyle.css
+            </stylesheetfile-->
+          <windowtitle>
+            Nuxeo WebEngine ${project.version} API Documentation
+          </windowtitle>
+          <doctitle>
+            Nuxeo WebEngine ${project.version} API Documentation
+          </doctitle>
+          <header>Nuxeo WebEngine ${project.version}</header>
+          <links>
+            <link>http://doc.nuxeo.org/5.1/apidocs/</link>
+            <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
+            <link>http://java.sun.com/javaee/5/docs/api/</link>
+            <link> http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_0/
+            </link>
+            <link>
+              http://jakarta.apache.org/commons/fileupload/apidocs/
+            </link>
+            <link>
+              http://jakarta.apache.org/commons/httpclient/apidocs/
+            </link>
+            <link>http://jakarta.apache.org/commons/logging/apidocs/</link>
+            <link>http://jakarta.apache.org/commons/io/apidocs/</link>
+            <link>http://junit.sourceforge.net/javadoc/</link>
+            <link>http://logging.apache.org/log4j/docs/api/</link>
+            <link>
+              http://www.opensymphony.com/compass/versions/1.2M2/api/
+            </link>
+            <link>http://jackrabbit.apache.org/api-1/</link>
+            <link>http://www.day.com/maven/jsr170/javadocs/jcr-1.0/</link>
+            <link>http://myfaces.apache.org/tomahawk/apidocs/</link>
+            <link>http://www.restlet.org/documentation/1.0/api/</link>
+            <link>http://www.hibernate.org/hib_docs/v3/api/</link>
+            <link>http://docs.jboss.com/seam/1.1.5.GA/api/</link>
+            <link>http://docs.jboss.com/jbpm/v3.1/javadoc.jbpm/</link>
+            <link>http://docs.jboss.com/jbpm/v3.1/javadoc.identity/</link>
+            <link>http://labs.jboss.com/jbossremoting/docs/api/</link>
+          </links>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <repositories>
+    <repository>
+      <id>nuxeo_release</id>
+      <url>http://archiva.nuxeo.org/archiva/repository/nuxeo_release</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>nuxeo_snapshot</id>
+      <url>http://archiva.nuxeo.org/archiva/repository/nuxeo_snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <site>
+      <id>maven_website</id>
+      <url>scpexe://gironde.nuxeo.com/home/mavenweb/webengine/</url>
+    </site>
+  </distributionManagement>
+
+  <scm>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo-webengine#5.2</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo-webengine#5.2</developerConnection>
+    <url>http://hg.nuxeo.org/nuxeo-webengine#5.2/</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>bstefanescu</id>
+      <name>Bogdan Stefanescu</name>
+      <email>contact@nuxeo.com</email>
+      <organization>Nuxeo SAS</organization>
+      <organizationUrl>http://www.nuxeo.com/en</organizationUrl>
+      <url>http://blogs.nuxeo.com/section/blogs/bogdan_stefanescu</url>
+      <roles>
+        <role>Lead Architect</role>
+        <role>Project Manager</role>
+      </roles>
+    </developer>
+  </developers>
+
+</project>

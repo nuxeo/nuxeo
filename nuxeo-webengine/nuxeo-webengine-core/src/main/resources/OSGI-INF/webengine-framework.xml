@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webengine.WebEngineComponent">
+  <require>org.nuxeo.ecm.webengine.server</require>
+  <implementation
+          class="org.nuxeo.ecm.webengine.WebEngineComponent" />
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Manage templates
+  </documentation>
+
+  <!-- you can change the default rendering engine by setting this property to the engine class name
+  <property name="engine" value="org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine"/>
+  -->
+
+  <service>
+  	<provide
+  		interface="org.nuxeo.ecm.webengine.util.FileChangeNotifier" />
+    <!-- temporary entry remove it -->
+    <provide interface="org.nuxeo.ecm.webengine.WebEngine" />
+  </service>
+
+  <extension-point name="rendering-extension">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Expose the registration of freemarker templates (directives, methods or global shared variables)
+    This way custom tremplates can be registered into the freemarker engine from outside
+    <code>
+      <rendering-extension name="myExtension" class="org.nuxeo.ecm.platform.my.MyExtension"/>
+    </code>
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.rendering.RenderingExtensionDescriptor" />
+  </extension-point>
+
+
+  <extension-point name="guard">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Register global guards. Guards are used to define permissions
+    <code>
+      <guard id="MyGuard" expression="(GUARD1 OR GUARD2) AND user=bogdan">
+
+      </guard>
+    </code>
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.security.GuardDescriptor" />
+  </extension-point>
+
+
+  <extension-point name="install">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Deploy external files as web resources. Can be used by client plugins to deploy
+    web files into the web directory.
+    <code>
+      <resource path="/web" target="/"/>
+    </code>
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.install.Installer" />
+  </extension-point>
+
+  <extension-point name="configuration">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Register a configuration file.
+    <code>
+      <resource path="/nuxeo-web.xml" trackChanges="true" />
+    </code>
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.ConfigurationFileDescriptor" />
+  </extension-point>
+
+  <extension-point name="resource">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Register a JAX-RS root resource
+    <code>
+    <resource path="{lang:[a-z]}" singleton="false" class="org.nuxeo.Resource" />
+    </code>
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.ResourceBinding" />
+  </extension-point>
+
+</component>
