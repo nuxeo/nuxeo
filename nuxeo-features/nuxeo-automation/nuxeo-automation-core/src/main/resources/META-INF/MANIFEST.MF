@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Automation Core
+Bundle-SymbolicName: org.nuxeo.ecm.automation.core;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Require-Bundle: org.nuxeo.ecm.core.api
+Export-Package: org.nuxeo.ecm.automation.core
+Eclipse-LazyStart: true
+Nuxeo-Component: OSGI-INF/AutomationService.xml
