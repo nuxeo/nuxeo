@@ -1,0 +1,48 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+<c:if test="#{currentDocument.isVersionable() and !currentDocument.isFolder()}">
+
+  <table class="dataInput">
+    <tr>
+      <td class="labelColumn">
+        <div class="widgetHelpLabel">
+          <h:outputText value="#{messages['label.version']}"/>
+        </div>
+        <div class="tooltip">
+          #{messages['label.versioning.currentVersion.tooltip']}
+        </div>
+      </td>
+      <td class="fieldColumn">
+        <h:outputText value="#{currentDocumentVersionInfo.versionLabel}"/>
+      </td>
+    </tr>
+    <c:if test="#{renderVersioningOptionsForCurrentDocument}">
+    <tr>
+      <td class="labelColumn">
+        <div class="widgetHelpLabel">
+          <h:outputLabel for="versioningOptionInstanceId"
+            value="#{messages['label.versioning.selectVersioningOption']}" />
+        </div>
+        <div class="tooltip">
+          #{messages['label.versioning.changeVersion.tooltip']}
+        </div>
+      </td>
+      <td class="fieldColumn">
+        <h:selectOneRadio id="versioningOptionInstanceId"
+          value="#{documentVersioning.versioningOptionInstanceId}"
+          required="true" layout="pageDirection"
+          validator="#{documentVersioning.validateOptionSelection}"
+          requiredMessage="#{messages['error.versioning.none_selected']}" >
+          <f:selectItems
+            value="#{documentVersioning.availableVersioningOptionsMap}" />
+        </h:selectOneRadio>
+        <h:message for="versioningOptionInstanceId" styleClass="errorMessage" />
+      </td>
+    </tr>
+    </c:if>
+  </table>
+</c:if>
+</div>
