@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webapp.documentsLists.DocumentsListsService">
+  <implementation
+          class="org.nuxeo.ecm.webapp.documentsLists.DocumentsListsService" />
+  <documentation>
+    The DocumentsLists service registers lists of documents.
+    These lists of documents can be used for :
+      - Clipboard : lists of documents that can be copied or pasted
+      - Workling List : the list of documents user is working on (mass processing)
+      - List of selected document inside a container
+
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+  <extension-point name="list">
+    <object
+      class="org.nuxeo.ecm.webapp.documentsLists.DocumentsListDescriptor" />
+  </extension-point>
+  <documentation>
+    Registry for new Lists
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+</component>
