@@ -1,0 +1,25 @@
+<div class="summary"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <h:form id="document_view">
+    <a4j:region id="documentViewRegion">
+      <a4j:outputPanel id="documentViewPanel">
+
+      <nxl:layout value="#{currentDocument}" mode="view" name="#{currentDocumentSummaryLayout}"/>
+
+    </a4j:outputPanel>
+    </a4j:region>
+  </h:form>
+
+</div>
