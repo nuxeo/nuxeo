@@ -1,0 +1,46 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-ecm</artifactId>
+    <version>5.3.2-I20100423_1432</version>
+  </parent>
+
+  <groupId>org.nuxeo.common</groupId>
+  <artifactId>nuxeo-common</artifactId>
+  <version>1.6.2-I20100423_1432</version>
+  <name>Nuxeo Common</name>
+  <description>Nuxeo Common: utilities.</description>
+  <url>http://www.nuxeo.org/</url>
+
+  <scm>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-common</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-common</developerConnection>
+    <url>http://hg.nuxeo.org/nuxeo/nuxeo-common</url>
+  </scm>
+
+  <distributionManagement>
+    <site>
+      <id>maven_website</id>
+      <url>
+        scpexe://gironde.nuxeo.com/home/mavenweb/site/${project.artifactId}/${project.version}
+      </url>
+    </site>
+  </distributionManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+</project>
