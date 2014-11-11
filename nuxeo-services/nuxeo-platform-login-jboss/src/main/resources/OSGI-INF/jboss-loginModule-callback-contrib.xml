@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.login.jboss">
+
+  <require>org.nuxeo.ecm.platform.login.defaultLMP</require>
+
+  <extension target="org.nuxeo.ecm.platform.login.LoginPluginRegistry"
+      point="callbackFactory">
+    <CallbackFactory name="jboss" class="org.nuxeo.platform.login.jboss.JBossCallbackFactory">
+    </CallbackFactory>
+  </extension>
+
+  <!--  add me as a listener of the repository service -->
+  <extension target="org.nuxeo.runtime.EventService" point="listeners">
+    <listener class="org.nuxeo.platform.login.jboss.JaasCacheFlusher">
+      <topic>usermanager</topic>
+    </listener>
+  </extension>
+
+</component>
