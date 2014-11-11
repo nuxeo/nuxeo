@@ -1,0 +1,32 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+<div class="dropzone" id="CVDZ" context="ContentView">
+
+<ui:remove>
+ Template rendering content views defined on a document
+
+ Parameters:
+ - contentViewCategory: the category define on the document, listing available
+   content views for this category
+
+</ui:remove>
+
+<c:forEach var="contentViewHeader"
+  items="#{documentContentViewActions.getAvailableContentViewsForCurrentDocument(contentViewCategory)}"
+  varStatus="contentViewListStatus">
+
+  <nxu:set var="contentViewId" value="#{contentViewListStatus.index}">
+  <nxu:set var="contentViewName" value="#{contentViewHeader.name}">
+
+    <ui:decorate template="/incl/content_view.xhtml" />
+
+  </nxu:set>
+  </nxu:set>
+
+</c:forEach>
+
+</div>
+</ui:composition>

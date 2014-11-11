@@ -1,0 +1,489 @@
+/*
+Style definitions for grids, layout, containers and widgets
+=Grids -> Align your blocks into columns and rows in the page
+=Standard Widgets -> Text, date, file, checkbox widgets
+=Advanced Widgets -> Containers and layout widgets
+=Listing Widgets -> Small widgets for listing and tables views
+=Specifics -> Specific styles depending on widgets location
+author: lkemen@nuxeo.com
+*/
+
+/* =Grids */
+/*A .gridContainer contains several .gridRow. vertically
+Each .gridRow contains several .gridBox horizontally
+A .gridBox may contain several .widgetPanel vertically. */
+.gridContainer:before, .gridContainer:after,
+.gridRow:before, .gridRow:after {
+  content: " ";
+  display: table }
+
+.gridContainer:after, .gridRow:after {
+  clear: both }
+
+.gridRow {
+  clear: both;
+  padding: 0 }
+.gridBox {
+  box-sizing: border-box;
+  float: left;
+  margin: 0 }
+
+/*The .gridStyle** classes represent the width of each .gridBox container.
+The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
+.gridStyle12 { width: 100% }
+.gridStyle11 { width: 91.66% }
+.gridStyle10 { width: 83.33% }
+.gridStyle9  { width: 75% }
+.gridStyle8  { width: 66.66% }
+.gridStyle7  { width: 58.33% }
+.gridStyle6  { width: 50% }
+.gridStyle5  { width: 41.66% }
+.gridStyle4  { width: 33.33% }
+.gridStyle3  { width: 25% }
+.gridStyle2  { width: 16.66% }
+.gridStyle1  { width: 8.33% }
+
+/* Align center when there is only one column */
+.gridBox:only-child {
+  float: none;
+  margin: 0 auto }
+
+.gridBox h3,
+.gridBox h4 {
+  border-width: 1px;
+  border-style: none none solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  font-size: 1.2em;
+  margin: .7em 0 .5em;
+  padding: .4em 0 }
+
+.gridBox h4 {
+  font-size: 1.1em }
+
+.summaryTitle,
+.gridBox .summaryTitle {
+  border-width: 3px;
+  border-style: solid none none;
+  border-color: #f9f9f9;
+  color: "title.major (__FLAVOR__ color)";
+  display: block;
+  font-size: 1.2em;
+  font-weight: bold;
+  margin: 0 0 .6em;
+  padding: .8em 0 .2em }
+
+.gridBox .foldableBox {
+  margin-right: 1em;
+  padding: 0 }
+
+/* Layout View and Summary Tab Styles - layout view selector list */
+.resultLayoutSelection {
+  margin: 0;
+  padding: 0;
+  display: inline }
+
+.resultLayoutSelection a img {
+  border: 1px solid;
+  border-color: "noborder (__FLAVOR__ border)" }
+
+.resultLayoutSelection a:hover img,
+.resultLayoutSelection.selected img {
+  border: 1px solid;
+  border-color: "neutral.medium (__FLAVOR__ border)" }
+
+.thumbnailContainer {
+  background: none no-repeat scroll center center transparent;
+  height: 11em;
+  margin: 0 -0.8em .7em }
+
+.folderishThumbnail:after {
+  background-color: rgba(255, 255, 255, 0.7);
+  content: url(${basePath}/icons/workspace.gif);
+  display: inline-block;
+  margin: .2em;
+  padding: .2em .4em .1em }
+
+/* Lightbox on thumbnails
+.thumbnailContainer .image-popup {
+  background: url("${basePath}/icons/lightbox_call.png") no-repeat scroll center center transparent;
+  opacity: 0;
+  display: inline-block;
+  height: inherit;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
+  transition: opacity 0.1s ease 0.01s }
+
+.thumbnailContainer:hover .image-popup {
+  opacity: 1 }*/
+
+/* =Standard Widgets */
+/* Widgets styles, spacing between blocks in .gridBox containers */
+.widgetPanel,
+.actionsWidgetPanel {
+  display: block;
+  padding: 0 2em 1.5em 0.1em }
+
+.action_bar .widgetPanel,
+.contextActions .actionsWidgetPanel {
+  padding: 0 }
+
+.contextActions .actionLink.button  {
+  margin: 0;
+  border-left: medium none;
+  line-height: normal }
+
+.contextActions .actionLink.button  {
+  margin: 0;
+  border-left: none;
+  line-height: normal }
+
+.widgetPanel .widgetPanel,
+.widgetPanel .actionsWidgetPanel {
+  padding: 0 }
+
+.widgetTable,
+.containerWidgetTable {
+  width: 100% }
+
+.dataInput .fieldColumn .widgetPanel {
+  padding: 0 }
+
+/* =Advanced Widgets */
+.containerField {
+  padding-bottom: 1.5em }
+
+/* =Listing Widgets */
+.listWidgetPanel {
+  display: block;
+  margin-left: -0.3em }
+
+/* =Specifics */
+.indicators {
+  margin: 0 .2em .5em 0 }
+
+.indicators .widgetPanel div {
+  display: inline;
+  margin: 0 1em 0 0 }
+
+.indicators .widgetPanel img {
+  margin: 0 0 -0.17em }
+
+/* CompactLayout mode */
+/* The .compactLayout class role is to display widgets and containers in
+   a small column like the faceted search, where the margin and padding values
+   are reviewed to provide a compacter display than a default tab layout */
+
+/* Global rules */
+.compactLayout .widgetPanel,
+.compactLayout .containerField,
+.compactLayout .containerWidgetPanel,
+.compactLayout .dataInput .containerLabel span {
+  display: block;
+  clear: both }
+
+.compactLayout .labelColumn,
+.compactLayout .widgetPanel .labelColumn,
+.compactLayout .widgetTable .labelColumn,
+.compactLayout .containerWidgetPanel .labelColumn {
+  font-weight: normal;
+  text-align: left;
+  width: auto }
+
+.compactLayout .dataTableNoBorder td,
+.compactLayout .fieldColumnn.containerField,
+.compactLayout .fieldColumnn.containerField .fieldColumn {
+  padding: 0 }
+
+.compactLayout .widgetLabel {
+  padding: 0 .7em .4em .3em }
+
+.compactLayout input[type="image"],
+.compactLayout input[type="button"] {
+  width: auto }
+
+.compactLayout select {
+  width: 100% }
+
+.compactLayout input[type="text"].rich-calendar-input {
+  font-size: .9em;
+  margin: .1em .3em .5em 0em }
+
+.compactLayout .tinyLabel {
+  color: "gray.dark (__FLAVOR__ color)";
+  display: inline-block;
+  text-align: right;
+  padding: .4em .2em 0;
+  max-width: 30px }
+
+.compactLayout .fieldColumn {
+  padding-left: .1em }
+
+.compactLayout .fieldColumn img {
+  margin: 0 }
+
+.compactLayout .fieldColumn a img {
+  margin: 0 .5em 0 0;
+  vertical-align: middle }
+
+.compactLayout .widgetTable .boldLabel,
+.compactLayout .widgetTable .boldColumn {
+  font-weight: normal }
+
+/* Compact buttons */
+.compactLayout .fieldColumn .button,
+.compactLayout .actionsWidgetPanel .containerField .button {
+  font-weight: bold;
+  margin: 0 .5em .1em 0em;
+  padding: .1em .4em .2em;
+  width: auto }
+
+.compactLayout .sticker {
+  margin: .1em .2em .1em 0 }
+
+.compactLayout .sticker label {
+  color: "black (__FLAVOR__ color)";
+  float: left;
+  font-size: .9em;
+  max-width: 88% }
+
+.compactLayout .sticker a {
+  float: right;
+  vertical-align: top }
+
+.compactLayout .sticker a img {
+  margin: 0;
+  width: 95% }
+
+/* Compact Action bar*/
+.compactLayout .contextActions .actionsWidgetPanel {
+  margin: 0 }
+
+.compactLayout .actionsWidgetPanel .button,
+.compactLayout .actionsWidgetPanel a.button,
+.compactLayout .actionsWidgetPanel input.button {
+  display: inline-block;
+  font-weight: bold;
+  margin: 0 0 .2em .2em;
+  padding: .2em .5em }
+
+.compactLayout .searchFilterActions .widgetPanel .button,
+.compactLayout .searchFilterActions .widgetPanel a.button,
+.compactLayout .searchFilterActions .widgetPanel input.button {
+  float: right;
+  font-weight: bold;
+  margin: .5em 0 1em;
+  padding: .4em .2em .6em;
+  width: 50% }
+
+.compactLayout .searchFilterActions {
+  font-size: 1.15em;
+  padding: .5em 0 }
+
+/* Compact Widgets */
+.compactLayout .widgetPanel {
+  padding: 0 }
+
+.compactLayout .widgetHeader.foldedDisabled {
+  border-style: none none solid;
+  border-width: 1px;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  color: "default (__FLAVOR__ color)";
+  font-size: 1em;
+  font-weight: bold;
+  margin: .5em 0;
+  padding: .4em .3em;
+  text-transform: none }
+
+.compactLayout .containerLabel {
+  width: 30% }
+
+.compactLayout .dataInput .containerLabel span {
+  color: "gray.dark (__FLAVOR__ color)";
+  padding-top: .4em }
+
+/* Compact Tables */
+.compactLayout .dataTableNoBorder.containerWidgetTable {
+  margin-bottom: .5em }
+
+.compactLayout .dataInput,
+.compactLayout .dataTableNoBorder {
+  clear: both;
+  margin-top: 0;
+  width: 100% }
+
+.compactLayout .dataInput td,
+.compactLayout .UserSuggestionInput td,
+.compactLayout .dataTableNoBorder div.UserSuggestionInput td {
+  padding: 0 }
+
+.compactLayout .containerWidgetTable table.nowrap {
+  border-spacing: 0 }
+
+.compactLayout .UserSuggestionInput table {
+  border-spacing: 0;
+  width: 100% }
+
+/* Compact Foldable boxes */
+.compactLayout .foldableBox {
+  margin: .1em 0 .6em }
+
+.compactLayout .containerWidgetPanel .foldedDisabled {
+  padding-left: 0 }
+
+/* InfoView Layout */
+.infoViewLeft {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  background-color: #000;
+  left: 0 }
+
+.infoViewLeft .actionsWidgetPanel {
+  padding: 0 }
+
+.infoViewLeft .note_content_block {
+  background-color: #fff;
+  border-radius: 0;
+  bottom: 0;
+  box-shadow: none;
+  left: 0;
+  margin: 0;
+  overflow: scroll;
+  padding: 1.4em 4em;
+  position: absolute;
+  right: 0;
+  top: 0 }
+
+.infoViewLeft .pictureContainer {
+  height: 100%;
+  left: 0;
+  position: absolute;
+  right: 0;
+  text-align: center }
+
+.infoViewLeft .pictureContainer:before {
+  content: "";
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle }
+
+.infoViewLeft .pictureContainer img {
+  max-height: 100%;
+  max-width: 100%;
+  padding: 0;
+  vertical-align: middle }
+
+.infoViewLeft .video-js {
+  bottom: 0;
+  height: 100% !important;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100% !important }
+
+.infoViewLeft .vjs-default-skin .vjs-big-play-button {
+  left: 45%;
+  top: 45% }
+
+.infoViewLeft #nxw_infoViewAudioPlayer {
+  left: 2em;
+  position: absolute;
+  right: 2em;
+  top: 50% }
+
+.infoViewRight {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
+  bottom: 0;
+  box-shadow: -1px 0 1px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  right: 0;
+  top: 0 }
+
+.infoViewRight .infoViewTitle {
+  background-color: #fff;
+  box-shadow: 0 2px 1px rgba(0, 0, 0, 0.2);
+  font-size: 1.3em;
+  font-weight: bold;
+  padding: 1em;
+  position: fixed;
+  width: 100%;
+  z-index: 60 }
+
+.infoViewRight .documentTitle {
+  width: 22em;
+  word-wrap: normal }
+
+.infoViewLeft .containerSubWidget,
+.infoViewRight .containerSubWidget {
+  margin: 0 }
+
+.infoViewRight .infoViewInfoLayout {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding: 5.5em 0 5.5em;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 50; }
+
+.infoViewRight .infoViewInfoLayout .containerWidgetPanel {
+  background-color: #fff;
+  margin: 0 1em 1em;
+  padding: .5em }
+
+.infoViewRight .containerWidgetPanel .labelColumn {
+  color: #999;
+  width: 30% }
+
+.infoViewRight .quote {
+  border-bottom: 1px solid #eee;
+  padding: 0 .4em .7em }
+
+.infoViewRight .infoBoxTable .labelColumn {
+  padding: 0 .7em .4em .3em }
+
+.compactLayout .infoViewInfoLayout .widgetHeader.foldedDisabled {
+  border: medium none;
+  color: #000;
+  font-size: 1.2em;
+  margin: 0 0 1em;
+  padding: 0 }
+
+.infoViewRight .infoViewActions {
+  background-color: #fff;
+  bottom: 0;
+  box-shadow: 0 -2px 1px rgba(0, 0, 0, 0.2);
+  padding: 1em;
+  position: fixed;
+  width: 100%;
+  z-index: 70 }
+
+.infoViewActions .horizontalAction {
+  padding-right: 1em }
+
+.infoViewDocContainer iframe {
+  border: none }
+
+.infoView {
+  background: url("${basePath}/icons/chevron-left.png") no-repeat scroll center center / 80% auto rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+  height: 8em;
+  position: fixed;
+  top: 45%;
+  width: 2em;
+  z-index: 200 }
+
+.infoView.nxNext {
+  background: url("${basePath}/icons/chevron-right.png") no-repeat scroll center center / 80% auto rgba(0, 0, 0, 0.3);
+  left: 63% }
+
+.infoView.nxPrevious a,
+.infoView.nxNext a {
+  color: transparent;
+  display: inline-block;
+  height: 8em;
+  width: 2em }

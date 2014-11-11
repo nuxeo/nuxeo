@@ -1,0 +1,15 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout" id="#{widget.id}">
+
+  <h:selectOneRadio id="#{widget.id}_field0" value="#{field}" >
+    <f:selectItem id="#{widget.id}_item1" itemLabel="#{messages['label.apriori']}" itemValue="apriori" />
+    <f:selectItem id="#{widget.id}_item2" itemLabel="#{messages['label.aposteriori']}" itemValue="aposteriori" />
+  </h:selectOneRadio>
+  
+</f:subview>

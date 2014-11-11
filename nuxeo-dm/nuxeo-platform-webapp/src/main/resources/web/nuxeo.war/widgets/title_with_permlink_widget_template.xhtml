@@ -1,0 +1,75 @@
+<f:subview
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core">
+  <h1>
+
+    <c:if test="#{field.version}">
+       <c:if test="#{widgetProperty_localize}">
+        <h:outputText value="#{messages[nxd:titleOrId(field)]}"/>
+        (<h:outputText value="#{messages['label.version']}" />
+        <h:outputText value=" #{messages[documentManager.getVersionLabel(field)]}"/>)
+       </c:if>
+       <c:if test="#{!widgetProperty_localize}">
+         <h:outputText value="#{nxd:titleOrId(field)}"/>
+         (<h:outputText value="#{messages['label.version']}" />
+         <h:outputText value=" #{documentManager.getVersionLabel(field)}"/>)
+       </c:if>
+    </c:if>
+    <c:if test="#{! field.version}">
+       <c:if test="#{widgetProperty_localize}">
+        <h:outputText value="#{messages[nxd:titleOrId(field)]}"/>
+       </c:if>
+       <c:if test="#{!widgetProperty_localize}">
+         <h:outputText value="#{nxd:titleOrId(field)}"/>
+       </c:if>
+    </c:if>
+
+    <span title="uid: #{field.id}">
+      <nxd:restDocumentLink document="#{field}" pattern="id" target="_blank">
+        <nxu:graphicImage value="/icons/permalink.png"
+          style="vertical-align:middle"
+          styleClass="tipsyShow tipsyGravityS"
+          alt="#{messages['label.permalink']}"
+          title="#{messages['label.permalink']}"/>
+      </nxd:restDocumentLink>
+    </span>
+
+    <nxu:set var="actions"
+      value="#{webActions.getActionsList('DOCUMENT_HEADER_ACTIONS_LIST')}"
+      cache="true">
+      <c:if test="#{!empty actions}">
+        <c:forEach var="action" items="#{actions}">
+          <nxh:commandLink action="#{action.getLink()}"
+            onclick="#{action.confirm}"
+            immediate="#{action.immediate}">
+            <h:graphicImage value="#{action.icon}"
+              rendered="#{not empty action.icon}"
+              title="#{messages[action.label]}" />
+          </nxh:commandLink>
+        </c:forEach>
+      </c:if>
+    </nxu:set>
+    <nxu:set var="actions"
+      value="#{webActions.getActionsList('DOCUMENT_HEADER_ACTIONS_LIST_HREF')}"
+      cache="true">
+      <c:if test="#{!empty actions}">
+        <c:forEach var="action" items="#{actions}">
+          <nxu:set var="link" value="#{action.getLink()}" resolveTwice="true">
+            <a href="#{link}">
+              <h:graphicImage value="#{action.icon}"
+                rendered="#{not empty action.icon}"
+                title="#{messages[action.label]}" />
+            </a>
+          </nxu:set>
+        </c:forEach>
+      </c:if>
+    </nxu:set>
+
+  </h1>
+
+</f:subview>

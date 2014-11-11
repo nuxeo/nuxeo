@@ -1,0 +1,108 @@
+/*
+Specific styles for the Document Management View
+=Frame -> specifiy left column style
+=Document list -> specifics to document browsing
+=Advanced Search -> for advanced search view
+=Clipboard & Worklist -> styles in the left column
+author: lkemen@nuxeo.com
+*/
+
+/* =Frame */
+.nxMainContainer {
+  min-height: 660px;
+  height: auto!important;
+  height: 660px }
+
+.nxMainContainer .content {
+  padding: 1em 3em 3em;
+  background-color: "neutral.lighter (__FLAVOR__ background)"; }
+
+.nxMainContainer .column {
+  font-size: .85em;
+  min-width: 20em;
+  padding: 1.2em .75em }
+
+.nxMainContainer .tabsContent {
+  background: none #fff;
+  margin: 1px 1px 0;
+  padding: 2em 1.5em }
+
+.tabsContent .tabsContent {
+  padding: 1em 0 }
+
+/* =List of available servers  */
+.serverChoice {
+  float: left }
+
+.serverChoice a {
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 -5px 5px #eee inset;
+  color: #000;
+  display: block;
+  font-weight: bold;
+  margin: 1em;
+  min-height: 150px;
+  padding: 1.5em 1em 1em;
+  text-align: center;
+  text-decoration: none;
+  width: 200px }
+
+.serverChoice a:hover {
+  background: none "color.major.medium (__FLAVOR__ background)";
+  border-color: "button.hover (__FLAVOR__ border)" }
+
+/* =Clipboard & Worklist */
+.userClipboard {
+  margin: 0 0 1.5em }
+
+.userClipboardContent {
+  background-color: #fff;
+  margin: 0;
+  padding: .4em 1em 1em;
+  word-wrap: break-word }
+
+.dropInto,
+.dropIntoClipboardCopy {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
+  border: 1px dashed;
+  border-color: "neutral.light (__FLAVOR__ border)";
+  border-radius: 3px }
+
+#clipboardCopy {
+  padding: .3em }
+
+.clipboardFunctions {
+  border-width: 2px;
+  border-style: solid none none;
+  border-color:"neutral.lighter (__FLAVOR__ border)";
+  margin-top: .5em;
+  padding-top: .9em }
+
+.clipboardFunction {
+  padding: .2em }
+
+.clipboardFunction a,
+.clipboardFunction a:link,
+.clipboardFunction a:visited {
+  color: "gray.medium (__FLAVOR__ color)" }
+
+.clipboardFunction a:hover,
+.clipboardFunction a:active {
+  color: "link (__FLAVOR__ color)" }
+
+.clipboardRemoveItem {
+  bottom: 2px;
+  float: right;
+  position: absolute;
+  right: 0 }
+
+.userClipboard .tabsBar img {
+  opacity: .6;
+  height: 14px;
+  width: 14px }
+
+.userClipboard .tabsBar li:hover img,
+.userClipboard .tabsBar .selected img {
+  opacity: 1 }

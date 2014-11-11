@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <ui:define name="body">
+
+    <ui:include src="/incl/message_banner.xhtml"/>
+
+    <div class="infoView nxPrevious">
+      <a class="" href="#" onclick="previousInfoView(); return false;"></a>
+    </div>
+    <div class="infoView nxNext">
+      <a class="next" href="#" onclick="nextInfoView(); return false;"></a>
+    </div>
+
+    <nxl:layout value="#{currentDocument}" name="gridInfoViewLayout" mode="view" />
+
+    <script type="text/javascript">
+      jQuery(document).ready(function() {
+        jQuery("#fancybox-frame", parent.document).attr("allowFullscreen", true);
+      });
+
+      function previousInfoView() {
+        var urls = parent.nuxeo.infoView.infoViewUrls;
+        var currentUrl = [location.protocol, '//', location.host, location.pathname].join('');
+        var index = urls.indexOf(currentUrl);
+        if (index === 0) {
+          // previous page
+          parent.nuxeo.infoView.previousPageAndOpenInfoView();
+        } else {
+          console.log("current url: " + window.location.href);
+          console.log("prev url: " + urls[index - 1] + "?conversationId=" + currentConversationId);
+          console.log("index of current: " + index);
+          console.log(urls);
+          window.location.href = urls[index - 1] + "?conversationId=" + currentConversationId;
+        }
+      }
+
+      function nextInfoView() {
+        var urls = parent.nuxeo.infoView.infoViewUrls;
+        var currentUrl = [location.protocol, '//', location.host, location.pathname].join('');
+        var index = urls.indexOf(currentUrl);
+        if (index === urls.length - 1) {
+          // next page
+          parent.nuxeo.infoView.nextPageAndOpenInfoView();
+        } else {
+          console.log("current url: " + window.location.href);
+          console.log("next url: " + urls[index + 1] + "?conversationId=" + currentConversationId);
+          console.log("index of current: " + index);
+          console.log(urls);
+          window.location.href = urls[index + 1] + "?conversationId=" + currentConversationId;
+        }
+      }
+    </script>
+  </ui:define>
+
+</nxthemes:composition>

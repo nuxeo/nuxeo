@@ -1,0 +1,48 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:c="http://java.sun.com/jstl/core"  
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  class="clipboard">
+
+<div id="lock_unlock_button" class="lockButton">
+
+<table class="dataInput">
+  <tbody>
+    <tr>
+      <td class="labelColumn"></td>
+      <td class="fieldColumn"><h:commandButton
+        value="#{messages['command.lock']}" styleClass="button"
+        action="#{lockActions.lockCurrentDocument}"
+        rendered="#{lockActions.canLockCurrentDoc}" /></td>
+
+      <td class="fieldColumn"><h:commandButton
+        value="#{messages['command.unlock']}" styleClass="button"
+        action="#{lockActions.unlockCurrentDocument}"
+        rendered="#{lockActions.canUnlockCurrentDoc}" /></td>
+    </tr>
+  </tbody>
+</table>
+
+</div>
+
+<h:panelGroup rendered="${lockActions.currentDocLockDetails != null}">
+<c:forEach var="entry"
+  items="#{lockActions.currentDocLockDetails.entrySet}">
+
+  <h:panelGrid columns="2" styleClass="dataInput"
+    rendered="#{not empty entry.value}"
+    columnClasses="labelColumn, fieldColumn">
+    <h:outputLabel value="#{messages[entry.key]}" />
+    <h:outputText value="#{entry.value}" />
+  </h:panelGrid>
+
+</c:forEach>
+</h:panelGroup>
+
+<div style="clear:both"></div>
+
+</div>

@@ -1,0 +1,174 @@
+/*
+Styles for all the forms.
+=Forms elements
+author: lkemen@nuxeo.com
+*/
+
+/* =Forms elements */
+.required {
+  background: transparent url("${basePath}/icons/required.gif") top right no-repeat;
+  padding: 0 1em 0 0 }
+
+.widgetHelpLabel .widgetLabel.required {
+  background: url("/nuxeo/icons/required.gif") no-repeat scroll right top, url("/nuxeo/icons/help.png") no-repeat scroll right 15px top transparent;
+  padding-right: 2.3em }
+
+optgroup {
+  font-style: normal;
+  font-weight: bold }
+
+option {
+  background-color: white;
+  font-weight: normal }
+
+.field,
+select,
+textarea,
+input[type="text"],
+input[type="file"],
+input[type="password"] {
+  font-family: "default (__FLAVOR__ font)";
+  background: none #fff;
+  box-sizing: border-box;
+  border: 1px solid;
+  border-color: "neutral.light (__FLAVOR__ border)";
+  border-radius: 2px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.07) inset;
+  display: inline-block;
+  font-size: 1em;
+  margin-bottom: .5em;
+  padding: .5em }
+
+input[type="text"],
+input[type="password"],
+input[type="date"],
+textarea {
+  width: 100% }
+
+textarea {
+  min-height: 5.5em }
+
+select {
+  margin: 0 .5em .5em 0;
+  min-width: 14em }
+
+label {
+  padding-right: .4em }
+
+.dataInputText {
+  vertical-align: top }
+
+input[type="file"] {
+  margin-left: .6em }
+
+input[type="radio"],
+input[type="image"],
+input[type="hidden"],
+input[type="checkbox"] {
+  background: none;
+  border: none !important;
+  box-shadow: none;
+  margin-right: .3em }
+
+input:focus,
+select:focus,
+textarea:focus,
+input[type="text"]:focus,
+input[type="password"]:focus {
+  background-color: #fff;
+  border-color: #2e9cff;
+  box-shadow: 0 0 3px #b5dcff;
+  color: "black (__FLAVOR__ color)";
+  outline: 0 none }
+
+select:focus > option:checked,
+select:focus > optgroup > option:checked {
+  background-color: "color.major.stronger (__FLAVOR__ background)" }
+
+/* Placeholders in forms */
+input[placeholder] {
+  color: "gray.medium (__FLAVOR__ color)";
+  text-overflow: ellipsis; }
+
+::-webkit-input-placeholder {
+  color: "gray.medium (__FLAVOR__ color)";
+  text-overflow: ellipsis; }
+
+:-moz-placeholder { /* Firefox 18- */
+  color: "gray.medium (__FLAVOR__ color)";
+  text-overflow: ellipsis; }
+
+::-moz-placeholder {  /* Firefox 19+ */
+  color: "gray.medium (__FLAVOR__ color)";
+  text-overflow: ellipsis; }
+
+:-ms-input-placeholder {
+  color: "gray.medium (__FLAVOR__ color)";
+  text-overflow: ellipsis; }
+
+.contentViewQuickFilterForm input.dataInputText {
+  border-radius: 3px 0 0 3px;
+  border-right: medium none;
+  margin: 0 }
+
+.contentViewQuickFilterForm input.button {
+  border-radius: 0 2px 2px 0;
+  margin: 0;
+  padding: .3em .7em .33em }
+
+/* Document creation form */
+#document_create .buttonsGadget {
+  border-top: 1px solid #eee;
+  margin: 2em -2em -2em;
+  padding: 1em 2em .5em }
+
+#document_create .buttonsGadget .horizontalAction:first-child .button,
+.button.primary,
+input.button.primary {
+  color: #fff;
+  border: 1px solid #00adff;
+  background-color: #00adff;
+  box-shadow: inset 0px 1px 0px rgba(255,255,255,0.3) }
+
+#document_create .buttonsGadget .horizontalAction:first-child .button:hover,
+.button.primary:hover,
+input.button.primary:hover {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 -30px 20px rgba(255, 255, 255, 0.2) inset, inset 0px 1px 0px rgba(255,255,255,0.4);
+  transition: all 150ms ease-in-out 0s }
+
+#document_create .buttonsGadget .horizontalAction:first-child .button:focus,
+.button.primary:focus,
+input.button.primary:focus {
+  border-color: #2e9cff;
+  box-shadow: 0 0 5px #b5dcff;
+  outline: none }
+
+/* in Tables */
+.dataTableNoBorder textarea,
+.dataTableNoBorder input[type="text"] {
+  max-width: 49em }
+
+.chainSelect input[type="image"] {
+  margin: -0.1em 0 0 0.2em;
+  padding: 0;
+  vertical-align: top;
+  float: right; }
+
+input.tagInput {
+  background: url("${basePath}/icons/tag.png") no-repeat scroll 2px center / 12px auto transparent;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  font-size: .95em;
+  padding: .1em .5em .2em 1.8em;
+  max-width: 12em;
+  min-width: 10em }
+
+.dataInput textarea,
+.dataInput input {
+  background-color: #fff }
+
+/* Column Edition*/
+#fancybox-content .listShuttleSelect {
+  min-height: 15em }
+
+.listShuttleTable .listShuttleSelectionActions a {
+  display: block }

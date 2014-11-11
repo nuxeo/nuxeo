@@ -1,0 +1,25 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<ui:remove>
+  Since 5.9.1, accepts a parameter popupMenuId to set the div id.
+</ui:remove>
+
+  <div style="display: none;" class="contextMenu" id="#{popupMenuId}_popupMenu">
+    <ul>
+      <nxu:repeat var="action" items="#{popupHelper.unfiltredPopupActions}">
+        <nxu:set var="link" value="#{action.getLink()}" resolveTwice="true">
+          <li id="ctxMenu_#{action.id}" action="#{link}">
+            <nxu:graphicImage value="#{action.icon}"
+              rendered="#{not empty action.icon}" />
+            <h:outputText value=" #{messages[action.label]}" />
+          </li>
+        </nxu:set>
+      </nxu:repeat>
+    </ul>
+  </div>
+
+</ui:composition>

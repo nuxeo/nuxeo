@@ -1,0 +1,102 @@
+/*
+Styles for all the foldable boxes.
+=Footer -> Corporate footer
+=Connect Banner -> Only visible if your instance is not registered to Nuxeo Connect
+author: lkemen@nuxeo.com
+*/
+
+/* =Footer */
+.nxFooter {
+  background: none "footer (__FLAVOR__ background)";
+  font-size: .8em;
+  width: 100% }
+
+.footerDefaultLinks {
+  padding: 1.4em }
+
+.nxFooter a {
+  color: "link.footer (__FLAVOR__ color)" }
+
+.nxFooter .actionsWidgetPanel {
+  padding: 0 }
+
+.copyrights {
+  color: "link.footer (__FLAVOR__ color)";
+  float: right;
+  filter:alpha(opacity=65);
+  opacity: .65;
+  padding: .2em 2em 0 0 }
+
+.nuxLinks {
+  float: right;
+  padding-left: 2em }
+
+.nuxLinks a {
+  vertical-align: middle }
+
+a.twitt,
+a.linkedin {
+  background: transparent url("${basePath}/icons/icones-metanav.png") no-repeat left top;
+  display: inline-block;
+  height: 16px;
+  margin: 0 .4em;
+  transition: none;
+  width: 16px }
+
+a.linkedin {
+  background: transparent url("${basePath}/icons/icones-metanav.png") no-repeat -16px top }
+
+a.twitt:hover {
+  background-position: left bottom }
+
+a.linkedin:hover {
+  background-position: -16px bottom }
+
+a.twitt .footerLabel,
+a.linkedin .footerLabel {
+  display: none }
+
+ /* =Connect Banner */
+.bannerBottom {
+  font-size: .9em;
+  font-weight: bold;
+  text-align: left;
+  padding: .9em 1.4em .6em }
+
+.bannerMessage a {
+  background-color: #009aea;
+  border-radius: 3px;
+  padding: 0.07em 0.3em;}
+
+.links a:link,
+.links a:visited,
+.bannerBottom .links a {
+  background-color: #009aea;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  display: block;
+  margin: .3em 0;
+  padding: .1em 1em;
+  text-decoration: none;
+  text-transform: uppercase }
+
+.bannerBottom .links a:hover,
+.bannerMessage a:hover {
+  background-color: #00c168;
+  color:#fff;
+  text-decoration: none }
+
+.bannerMessage {
+  padding: .1em }
+
+.unregistered {
+  background-color: #eee }
+
+.unregistered .bannerMessage {
+  float: left;
+  width: 68%; }
+
+.unregistered .links {
+  float: right;
+  width: 31%; }

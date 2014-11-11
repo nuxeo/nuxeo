@@ -1,0 +1,38 @@
+<div class="description_block"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <c:if test="false">
+    Deprecated since 5.9.6.
+  </c:if>
+
+  <c:if test="#{!empty currentDocument.dc.description}">
+    <nxl:widgetType name="textarea" mode="view"
+      value="#{currentDocument.dc.description}"
+      styleClass="documentDescription quote" />
+  </c:if>
+  <c:if test="#{!empty currentDocument.dc.creator}">
+    <span class="createdBy">
+      <h:outputText value="#{messages['label.summary.createdBy'] }" />
+      <a href="#{baseURL}user/#{currentDocument.dc.creator}">
+        #{nxu:userFullName(currentDocument.dc.creator)}
+      </a>
+    </span>
+  </c:if>
+  <c:if test="#{!empty currentDocument.dc.created}">
+    <span class="creationDate nowrap">
+      <h:outputText value="#{currentDocument.dc.created}" />
+    </span>
+  </c:if>
+  <c:if test="#{currentDocumentVersionInfo.available}">
+    <span class="versionNumber">
+      <h:outputFormat value="#{messages['label.version.number']}">
+        <f:param value="#{currentDocumentVersionInfo.versionLabel}" />
+      </h:outputFormat>
+    </span>
+  </c:if>
+
+</div>

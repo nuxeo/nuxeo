@@ -1,0 +1,1066 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layouts.webapp.summary">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <documentation>
+      The widget types from this contribution are intended to be
+      used in the summary view. All these widgets are bound to the
+      currentDocument in the Seam context.
+    </documentation>
+
+    <widgetType name="summary_current_document_actions">
+      <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
+        <deprecatedVersion>5.6</deprecatedVersion>
+        <title>Actions (lock, restore version)</title>
+        <description>
+          <p>
+            This widget displays the actions on the current document
+            (lock/unlock and undelete by default).
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+            </ul>
+          </p>
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/actions_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_custom_actions">
+      <configuration>
+        <sinceVersion>5.4.2</sinceVersion>
+        <deprecatedVersion>5.7</deprecatedVersion>
+        <title>Custom actions</title>
+        <description>
+          <p>This widget displays custom actions on the current document.</p>
+          <p>
+            It will display actions in the category given in the 'category'
+            property (defaults to 'DOCUMENT_SUMMARY_CUSTOM_ACTIONS' when not
+            set). The widget label and help label will be displayed above the
+            actions.
+          </p>
+        </description>
+        <categories>
+          <category>summary</category>
+          <category>tab_designer</category>
+        </categories>
+        <handlingLabels>true</handlingLabels>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout
+              name="summary_current_document_custom_actions_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>category</widget>
+                </row>
+                <row>
+                  <widget>actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget>overallDisplay</widget>
+                </row>
+                <row>
+                  <widget>maxActionsNumber</widget>
+                </row>
+                <row>
+                  <widget>headerStyleClass</widget>
+                </row>
+                <row>
+                  <widget>styleClass</widget>
+                </row>
+                <row>
+                  <widget>subStyleClass</widget>
+                </row>
+                <row>
+                  <widget>moreMenuLabel</widget>
+                </row>
+              </rows>
+              <widget name="category" type="selectOneResource">
+                <labels>
+                  <label mode="any">Category</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The category of actions to use (defaults to
+                    DOCUMENT_SUMMARY_CUSTOM_ACTIONS when not set)
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>category</field>
+                </fields>
+                <widgetModes>
+                  <mode value="edit_demo_preview">hidden</mode>
+                </widgetModes>
+                <properties mode="any">
+                  <property name="resourceName">actionCategories</property>
+                </properties>
+              </widget>
+              <widget name="headerStyleClass" type="text">
+                <labels>
+                  <label mode="any">Header style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Style class for the header, displaying this
+                    widget label. Available since 5.6.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>headerStyleClass</field>
+                </fields>
+              </widget>
+              <widget name="actionsDisplay" type="selectOneListbox">
+                <categories>
+                  <category>widgetTypeConf</category>
+                </categories>
+                <labels>
+                  <label mode="any">Actions display</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to 'buttons', actions will be
+                    displayed as command buttons. If set to 'links', actions
+                    will be displayed as command links. If set to 'icons',
+                    actions will be displayed as icons.
+                    Else (default behaviour),
+                    actions will be displayed as command links and display their
+                    icons when defined.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <!-- still named display here, kept for BBB -->
+                  <field>display</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="Icons and links (default)"
+                    itemValue="icons_links" />
+                  <option itemLabel="Icons" itemValue="icons" />
+                  <option itemLabel="Buttons" itemValue="buttons" />
+                  <option itemLabel="Links" itemValue="links" />
+                </selectOptions>
+              </widget>
+              <widget name="overallDisplay" type="selectOneListbox">
+                <categories>
+                  <category>widgetTypeConf</category>
+                </categories>
+                <labels>
+                  <label mode="any">Overall display</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Overall display of actions, available since
+                    5.6.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>overallDisplay</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="Vertical block (default)" itemValue="" />
+                  <option itemLabel="Horizontal block" itemValue="horizontal_block" />
+                  <option itemLabel="Menu" itemValue="menu" />
+                </selectOptions>
+              </widget>
+              <widget name="styleClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Style class for the global container div.
+                    Available since 5.6.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>styleClass</field>
+                </fields>
+              </widget>
+              <widget name="subStyleClass" type="text">
+                <labels>
+                  <label mode="any">Sub style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Style class for div containing actions.
+                    Available since 5.6.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>subStyleClass</field>
+                </fields>
+              </widget>
+              <widget name="actionStyleClass" type="text">
+                <labels>
+                  <label mode="any">Action style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Style class for each action link. Available
+                    since 5.6.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>subStyleClass</field>
+                </fields>
+              </widget>
+              <widget name="maxActionsNumber" type="int">
+                <labels>
+                  <label mode="any">Maximum number of actions</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Integer indicating the maximum number of
+                    actions to display. When this limit is reached, other
+                    actions are displayed in a menu. Available since 5.6.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>maxActionsNumber</field>
+                </fields>
+              </widget>
+              <widget name="moreMenuLabel" type="text">
+                <labels>
+                  <label mode="any">Label for the "more" menu</label>
+                </labels>
+                <fields>
+                  <field>moreMenuLabel</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/custom_actions_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_description">
+      <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
+        <deprecatedVersion>5.9.6</deprecatedVersion>
+        <title>Description</title>
+        <description>
+          <p>This widget displays the description of the currentDocument.</p>
+          <p>
+            Since 5.6, it also displays the creation date, author and version
+            beneath the description.
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+              <li>currentDocumentVersionInfo: the current document version
+                information</li>
+            </ul>
+          </p>
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/description_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_files">
+      <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
+        <title>Files</title>
+        <description>
+          <p>This widget displays the files held by the currentDocument</p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+              <li>
+                currentDocumentAsBlobHolder: the BlobHolder on the
+                currentDocument
+              </li>
+              <li>
+                conversionActions: the Seam Bean wrapping the
+                conversionService
+              </li>
+              <li>liveEditHelper: the Seam Bean encapsulating LiveEdit</li>
+            </ul>
+          </p>
+        </description>
+        <handlingLabels>true</handlingLabels>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/content_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_view">
+      <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
+        <title>View layout</title>
+        <description>
+          <p>This widget displays the view layouts of the currentDocument</p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+              <li>currentDocumentType: the type of the current document</li>
+            </ul>
+          </p>
+        </description>
+        <handlingLabels>true</handlingLabels>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/metadata_custom_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_dublincore">
+      <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
+        <title>Dublincore</title>
+        <description>
+          <p>
+            This widget displays the dublincore layout of the currentDocument.
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+            </ul>
+          </p>
+        </description>
+        <handlingLabels>true</handlingLabels>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/metadata_dc_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_tagging">
+      <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
+        <title>Tagging</title>
+        <description>
+          This widget displays the tags for the currentDocument and
+          allows to add new ones. It requires the tag service to be deployed.
+        </description>
+        <handlingLabels>true</handlingLabels>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/tagging_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_relations">
+      <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
+        <title>Relations</title>
+        <description>
+          This widget displays the in/out relations for the
+          currentDocument. It requires the Relation service to be deployed.
+        </description>
+        <handlingLabels>true</handlingLabels>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/relations_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_comments">
+      <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
+        <title>Comments</title>
+        <description>
+          This widget displays the comments for the currentDocument.
+          It requires the Comment service to be deployed.
+        </description>
+        <handlingLabels>true</handlingLabels>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/comments_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_publications">
+      <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
+        <title>Publications</title>
+        <description>
+          This widget displays the publications of the
+          currentDocument. It requires the Publisher service to be deployed.
+        </description>
+        <handlingLabels>true</handlingLabels>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/publication_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_lc_and_version">
+      <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
+        <title>Life cycle state and version</title>
+        <description>
+          <p>
+            This widget displays the life-cycle state and version of the
+            currentDocument.
+          </p>
+          <p>
+            Since 5.6, this widget is not used by default, it's replaced by the
+            widget named "summary_current_document_states".
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+              <li>
+                currentDocumentVersionInfo: the current document versionning
+                information
+              </li>
+            </ul>
+          </p>
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/lc_and_version_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_single_tasks">
+      <configuration>
+        <sinceVersion>5.3.2</sinceVersion>
+        <title>Tasks</title>
+        <description>
+          <p>
+            This widget displays the single tasks (out of a process instance)
+            attached to current document model.
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>
+                currentSingleTasks: the single tasks attached to current
+                document
+              </li>
+            </ul>
+          </p>
+        </description>
+        <handlingLabels>true</handlingLabels>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/single_tasks_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_states">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>States</title>
+        <description>
+          <p>
+            This widget displays current document state (life cycle state and
+            lock status)
+          </p>
+        </description>
+        <handlingLabels>true</handlingLabels>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/states_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_contributors">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>Contributors</title>
+        <description>
+          <p>
+            This widget displays the document contributors.
+          </p>
+        </description>
+        <handlingLabels>true</handlingLabels>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/contributors_widget_template.xhtml
+      </property>
+    </widgetType>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="summary_current_document_description" type="summary_current_document_description">
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+      </controls>
+    </widget>
+
+    <widget name="summary_current_document_actions" type="summary_current_document_actions">
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+      </controls>
+    </widget>
+
+    <widget name="summary_current_document_custom_actions" type="summary_current_document_custom_actions">
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+      </controls>
+    </widget>
+
+    <widget name="summary_current_document_files" type="summary_current_document_files">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+        <control name="handleLabels">true</control>
+      </controls>
+    </widget>
+
+    <widget name="summary_current_document_view" type="summary_current_document_view">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+        <control name="handleLabels">true</control>
+      </controls>
+    </widget>
+
+    <widget name="summary_current_document_tagging" type="summary_current_document_tagging">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+        <control name="handleLabels">true</control>
+      </controls>
+      <properties widgetMode="any">
+        <property name="ajaxReRender">MultiTreeView</property>
+        <property name="placeholder">
+          #{messages['label.add.tag.placeholder']}
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="summary_current_document_dublincore" type="summary_current_document_dublincore">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+        <control name="handleLabels">true</control>
+      </controls>
+    </widget>
+
+    <widget name="summary_current_document_relations" type="summary_current_document_relations">
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+      </controls>
+    </widget>
+
+    <widget name="summary_current_document_comments" type="summary_current_document_comments">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+        <control name="handleLabels">true</control>
+      </controls>
+    </widget>
+
+    <widget name="summary_current_document_publications" type="summary_current_document_publications">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+        <control name="handleLabels">true</control>
+      </controls>
+    </widget>
+
+    <widget name="summary_current_document_lc_and_version" type="summary_current_document_lc_and_version">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+        <control name="handleLabels">true</control>
+      </controls>
+    </widget>
+
+    <widget name="summary_current_document_single_tasks" type="summary_current_document_single_tasks">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+        <control name="requireSurroundingForm">true</control>
+      </controls>
+    </widget>
+
+    <widget name="summary_current_document_indicators" type="documentActions">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
+      <properties widgetMode="view">
+        <property name="category">SUMMARY_INDICATORS</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="styleClass">indicators</property>
+      </properties>
+    </widget>
+
+    <widget name="summary_current_document_states" type="summary_current_document_states">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+        <control name="requireSurroundingForm">true</control>
+      </controls>
+    </widget>
+
+    <widget name="summary_current_document_contributors" type="summary_current_document_contributors">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+        <control name="requireSurroundingForm">true</control>
+      </controls>
+    </widget>
+
+    <widget name="summary_note_text" type="richtext_with_mimetype">
+      <fields>
+        <field>note:note</field>
+        <field>note:mime_type</field>
+      </fields>
+      <properties mode="view">
+        <property name="translatedHtml">
+          #{noteActions.translateImageLinks(field_0)}
+        </property>
+        <property name="cssClass">note_content_block</property>
+      </properties>
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+      </controls>
+    </widget>
+
+    <widget name="summary_panel_top" type="documentActions">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <properties widgetMode="any">
+        <property name="category">SUMMARY_PANEL_TOP</property>
+        <property name="styleClass">summaryActions</property>
+      </properties>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+        <control name="gridStyleClass">gridStyle12</control>
+      </controls>
+    </widget>
+
+    <widget name="summary_panel_left" type="documentActions">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <properties widgetMode="any">
+        <property name="category">SUMMARY_PANEL_LEFT</property>
+        <property name="styleClass">summaryActions</property>
+      </properties>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+        <control name="gridStyleClass">gridStyle7</control>
+      </controls>
+    </widget>
+
+    <widget name="summary_panel_right" type="documentActions">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <properties widgetMode="any">
+        <property name="category">SUMMARY_PANEL_RIGHT</property>
+        <property name="styleClass">summaryActions</property>
+      </properties>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+        <control name="gridStyleClass">gridStyle5</control>
+      </controls>
+    </widget>
+
+    <widget name="summary_panel_bottom" type="documentActions">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <properties widgetMode="any">
+        <property name="category">SUMMARY_PANEL_BOTTOM</property>
+        <property name="styleClass">summaryActions</property>
+      </properties>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+        <control name="gridStyleClass">gridStyle12</control>
+      </controls>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <documentation>
+      Actions for stacking widgets inside the summary default
+      widgets.
+
+      @since 5.6
+    </documentation>
+
+    <!-- default widgets on left panel -->
+
+    <action id="summary_note_text" type="widget" order="100">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">summary_note_text</property>
+      </properties>
+      <filter-id>hasNote</filter-id>
+    </action>
+
+    <action id="summary_current_document_files" type="widget" order="200">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_files</property>
+      </properties>
+    </action>
+
+    <action id="summary_current_document_view" type="widget" order="300">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_view</property>
+      </properties>
+      <filter-id>notHasNote</filter-id>
+      <filter-id>denyForFile</filter-id>
+    </action>
+
+    <action id="summary_current_document_dublincore" type="widget" order="350">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_dublincore</property>
+      </properties>
+      <filter-id>hasDublincore</filter-id>
+    </action>
+
+    <action id="summary_current_document_comments" type="widget" order="400">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_comments</property>
+      </properties>
+    </action>
+
+    <action id="summary_current_document_publications" type="widget"
+      order="500">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_publications</property>
+      </properties>
+    </action>
+
+    <action id="summary_current_document_single_tasks" type="widget"
+      order="600">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_single_tasks</property>
+      </properties>
+    </action>
+
+    <!-- end of default widgets on left panel -->
+
+    <!-- default widgets on right panel -->
+
+    <action id="summary_current_document_description" type="widget"
+      order="100">
+      <category>SUMMARY_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_description</property>
+      </properties>
+    </action>
+
+    <action id="summary_current_document_indicators" type="widget" order="150">
+      <category>SUMMARY_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_indicators</property>
+      </properties>
+    </action>
+
+
+
+    <action id="summary_current_document_states" type="widget" order="200">
+      <category>SUMMARY_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_states</property>
+      </properties>
+    </action>
+
+    <action id="summary_current_document_contributors" type="widget"
+      order="300">
+      <category>SUMMARY_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_contributors</property>
+      </properties>
+    </action>
+
+    <action id="summary_current_document_custom_actions" type="widget"
+      order="400">
+      <category>SUMMARY_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_custom_actions</property>
+      </properties>
+    </action>
+
+    <action id="summary_current_document_tagging" type="widget" order="500">
+      <category>SUMMARY_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_tagging</property>
+        <property name="disableMultipartForm">true</property>
+      </properties>
+    </action>
+
+    <action id="summary_current_document_relations" type="widget" order="600">
+      <category>SUMMARY_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_relations</property>
+      </properties>
+    </action>
+
+    <!-- end of default widgets on right panel -->
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <documentation>
+      Default layouts displayed on documents summary view
+    </documentation>
+
+    <layout name="grid_summary_layout">
+      <templates>
+        <template mode="any">
+          /layouts/layout_grid_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>summary_panel_top</widget>
+        </row>
+        <row>
+          <widget>summary_panel_left</widget>
+          <widget>summary_panel_right</widget>
+        </row>
+        <row>
+          <widget>summary_panel_bottom</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <!-- deprecated since 5.6, use a grid layout now -->
+    <layout name="default_summary_layout">
+      <templates>
+        <template mode="any">/layouts/layout_summary_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>summary_current_document_files</widget>
+          <widget>summary_current_document_view</widget>
+          <widget>summary_current_document_comments</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_description</widget>
+          <widget>summary_current_document_states</widget>
+          <widget>summary_current_document_contributors</widget>
+          <widget>summary_current_document_custom_actions</widget>
+          <widget>summary_current_document_tagging</widget>
+          <widget>summary_current_document_relations</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_publications</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_single_tasks</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <!-- deprecated since 5.6, use a grid layout now -->
+    <layout name="note_summary_layout">
+      <templates>
+        <template mode="any">/layouts/layout_summary_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>summary_note_text</widget>
+          <widget>summary_current_document_files</widget>
+          <widget>summary_current_document_comments</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_description</widget>
+          <widget>summary_current_document_states</widget>
+          <widget>summary_current_document_contributors</widget>
+          <widget>summary_current_document_custom_actions</widget>
+          <widget>summary_current_document_tagging</widget>
+          <widget>summary_current_document_relations</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_publications</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_single_tasks</widget>
+        </row>
+      </rows>
+    </layout>
+
+  </extension>
+
+</component>

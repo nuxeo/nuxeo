@@ -1,0 +1,32 @@
+<f:subview
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core">
+  <h1>
+
+    <c:if test="#{fieldOrValue.version}">
+      <c:if test="#{widgetProperty_localize}">
+        <h:outputText value="#{messages[nxd:titleOrId(fieldOrValue)]}"/>
+        (<h:outputText value="#{messages['label.version']}" />
+        <h:outputText value=" #{messages[documentManager.getVersionLabel(fieldOrValue)]}"/>)
+      </c:if>
+      <c:if test="#{!widgetProperty_localize}">
+        <h:outputText value="#{nxd:titleOrId(fieldOrValue)}"/>
+        (<h:outputText value="#{messages['label.version']}" />
+        <h:outputText value=" #{documentManager.getVersionLabel(fieldOrValue)}"/>)
+      </c:if>
+    </c:if>
+    <c:if test="#{!fieldOrValue.version}">
+      <c:if test="#{widgetProperty_localize}">
+        <h:outputText value="#{messages[nxd:titleOrId(fieldOrValue)]}"/>
+      </c:if>
+      <c:if test="#{!widgetProperty_localize}">
+        <h:outputText value="#{nxd:titleOrId(fieldOrValue)}"/>
+      </c:if>
+    </c:if>
+
+  </h1>
+
+</f:subview>

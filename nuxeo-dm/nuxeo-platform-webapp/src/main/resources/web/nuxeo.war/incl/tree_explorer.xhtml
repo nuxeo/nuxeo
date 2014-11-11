@@ -1,0 +1,84 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:rich="http://richfaces.org/rich"
+  class="menu">
+
+<c:if test="#{!empty treeActions.treeRoots}">
+
+  <a4j:region renderRegionOnly="true" id="treeExplorerRegion">
+    <h:form ajaxSubmit="true" id="treeExplorer">
+      <div class="floatR">
+        <a4j:commandLink action="#{treeActions.reset()}" render="treeNav">
+         <h:graphicImage value="/icons/refresh.png"
+          alt="#{messages['label.refresh']}"
+          title="#{messages['label.refresh']}"
+          styleClass="tipsyShow tipsyGravitySW" />
+        </a4j:commandLink>
+      </div>
+      <dl>
+        <dd class="menuForm">
+          <h:panelGroup id="treeNav">
+            <rich:tree
+              toggleListener="#{treeActions.toggleListener}"
+              iconLeaf="#{nxd:iconPath(node.document)}"
+              iconExpanded="#{nxd:iconPath(node.document)}"
+              iconCollapsed="#{nxd:iconPath(node.document)}"
+              rowKeyVar="rowKey"
+              stateVar="nodeState"
+              var="node">
+              <rich:treeModelRecursiveAdaptor
+                roots="#{treeActions.treeRoots}"
+                nodes="#{node.children}"
+                leaf="#{node.children.size lt 1}">
+                <rich:treeNode expanded="#{node.expanded}"
+                  highlightedClass="treeNodeHighlightedClass"
+                  selectedClass="treeNodeSelectedClass"
+                  oncomplete="jQuery('span.popupTarget').contextMenu('treeExplorer_popupMenu');">
+                  <div id="nodeRefTarget:#{node.document.id}"
+                    class="nxDropTarget#{node.isSelected(currentDocument) ? ' selected' : ''}">
+                    <span class="popupTarget" docRef="#{node.document.ref}">
+                      <nxd:restDocumentLink document="#{node.document}"
+                        styleClass="treeLink">
+                        <h:outputText value="#{nxd:titleOrId(node.document)}" />
+                      </nxd:restDocumentLink>
+                    </span>
+                    <nxu:set var="quotaStats" value="#{node.quotaStats}">
+                      <f:subview id="descendantCount" rendered="#{not empty quotaStats}">
+                        <span>
+                          (<h:outputText value="#{quotaStats.total}">
+                            <f:convertNumber groupingUsed="true" />
+                          </h:outputText>)
+                        </span>
+                      </f:subview>
+                    </nxu:set>
+                  </div>
+                </rich:treeNode>
+              </rich:treeModelRecursiveAdaptor>
+            </rich:tree>
+          </h:panelGroup>
+        </dd>
+      </dl>
+    </h:form>
+  </a4j:region>
+
+</c:if>
+
+<ui:include src="/incl/popupMenu.xhtml">
+  <ui:param name="popupMenuId" value="treeExplorer" />
+</ui:include>
+<script>
+  if (window.addEventListener) {
+    window.addEventListener("load", function (e) {window.loaded = true}, true);
+  } else if (window.attachEvent) {
+    window.attachEvent("onload", function (e) {window.loaded = true});
+  }
+  setupContextMenu("span.popupTarget", "treeExplorer_popupMenu");
+</script>
+
+</div>

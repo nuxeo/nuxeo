@@ -1,0 +1,569 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.theme.nuxeo.default">
+
+  <require>org.nuxeo.theme.core</require>
+  <require>org.nuxeo.theme.fragments</require>
+  <require>org.nuxeo.theme.html</require>
+  <require>org.nuxeo.theme.jsf</require>
+
+  <!-- perspectives -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="perspectives">
+
+    <perspective name="multiple_domains">
+      <title>Perspective for multiple domains</title>
+    </perspective>
+
+  </extension>
+
+  <!-- themes -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
+
+    <theme>
+      <src>themes/document-management.xml</src>
+    </theme>
+
+  </extension>
+
+  <!-- views -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+
+    <view name="Nuxeo DM logo (Galaxy Theme)" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/logo_DM_galaxy.xhtml</template>
+    </view>
+
+    <view name="nuxeo5 includes" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/includes.xhtml</template>
+      <resource>dragdrop.js</resource>
+      <resource>seam-remote.js</resource>
+      <resource>bsn.AutoSuggest_2.1.3.js</resource>
+      <resource>foldable-box.js</resource>
+      <resource>window.js</resource>
+      <resource>window_effects.js</resource>
+      <resource>waitdlg.js</resource>
+      <!-- include JS used for D&D and tableSelection -->
+      <resource>utils.js</resource>
+      <!-- include JS for contextual menu -->
+      <resource>jquery.fancybox.js</resource>
+      <resource>jquery.fancybox.style.css</resource>
+      <resource>jquery.tools.cookie.js</resource>
+      <resource>fancybox-popup-utils.js</resource>
+      <resource>contextmenu.js</resource>
+      <resource>jquery.tools.focusfirst.js</resource>
+      <resource>jquery.hotkeys.js</resource>
+      <resource>sarissa-ie-workaround.js</resource>
+      <resource>static-styles.css</resource>
+      <resource>hideableAdminMessage.js</resource>
+      <resource>accessKey.js</resource>
+      <resource>jquery.nuxeo.doubleclickshield.js</resource>
+      <!--resource>jquery.nuxeo.tipsy.js</resource-->
+      <resource>jquery.ambiance.js</resource>
+      <resource>jquery.ambiance.css</resource>
+      <resource>jquery.nuxeo.dropdown.js</resource>
+      <resource>jquery.tipsy.js</resource>
+      <resource>tipsy.css</resource>
+      <resource>jquery.magnific-popup.js</resource>
+      <resource>magnific-popup.css</resource>
+      <resource>nuxeo-lightbox.js</resource>
+      <resource>jquery.nuxeo.cv-lightbox.js</resource>
+      <resource>nuxeo-documents-import.js</resource>
+      <resource>fixmultipartajax.js</resource>
+    </view>
+
+    <view name="Nuxeo header" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/nuxeo_header.xhtml</template>
+      <resource>screen.css</resource>
+    </view>
+
+    <view name="nuxeo5 breadcrumbs" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/breadcrumb.xhtml</template>
+    </view>
+
+    <view name="nuxeo import" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/import.xhtml</template>
+    </view>
+
+    <view name="nuxeo5 tree explorer" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/multi_tree_explorer.xhtml</template>
+    </view>
+
+    <view name="nuxeo5 clip board" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/user_clipboard.xhtml</template>
+      <resource>dragdrop.js</resource>
+    </view>
+
+    <view name="Nuxeo footer" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/nuxeo_footer.xhtml</template>
+    </view>
+
+  </extension>
+
+
+  <!-- resources -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
+
+    <resource name="static-styles.css">
+      <path>css/static-styles.css</path>
+    </resource>
+
+    <resource name="screen.css">
+      <path>css/screen.css</path>
+    </resource>
+
+    <resource name="foldable-box.js">
+      <path>scripts/foldable-box.js</path>
+      <require>effects.js</require>
+    </resource>
+
+    <resource name="window.js">
+      <path>scripts/window.js</path>
+    </resource>
+    <resource name="window_effects.js">
+      <path>scripts/window_effects.js</path>
+    </resource>
+    <resource name="waitdlg.js">
+      <path>waitdialog/waitdlg.js</path>
+    </resource>
+    <resource name="utils.js">
+      <path>scripts/utils.js</path>
+    </resource>
+    <resource name="tableSelections.js">
+      <path>scripts/tableSelections.js</path>
+    </resource>
+    <resource name="contextmenu.js">
+      <path>scripts/contextmenu.js</path>
+    </resource>
+    <resource name="DragAndDrop.js">
+      <path>scripts/DragAndDrop.js</path>
+    </resource>
+    <resource name="hideableAdminMessage.js">
+      <path>scripts/hideableAdminMessage.js</path>
+    </resource>
+    <!-- jquery cookie plugin -->
+    <resource name="jquery.tools.cookie.js">
+      <path>scripts/jquery/cookie.js</path>
+    </resource>
+    <!-- Fancybox -->
+    <resource name="jquery.fancybox.js">
+      <!-- useful for debug -->
+      <!--
+        <path>scripts/jquery/jquery.fancybox.js</path>
+        <shrinkable>false</shrinkable>
+      -->
+      <path>scripts/jquery/jquery.fancybox.pack.js</path>
+    </resource>
+    <resource name="jquery.fancybox.style.css">
+      <path>css/jquery.fancybox.css</path>
+    </resource>
+    <resource name="fancybox-popup-utils.js">
+      <path>scripts/fancybox-popup-utils.js</path>
+    </resource>
+    <!-- Hotkeys (e.g. used to focus the search box using '/') -->
+    <resource name="jquery.hotkeys.js">
+      <path>scripts/jquery/jquery.hotkeys.js</path>
+    </resource>
+    <!-- Helpers for focus on first input of a form -->
+    <resource name="jquery.tools.focusfirst.js">
+      <path>scripts/jquery/jquery.tools.focusfirst.js</path>
+    </resource>
+    <!-- Workaround for jQuery and Sarissa library conflict on IE -->
+    <resource name="sarissa-ie-workaround.js">
+      <path>scripts/sarissa-ie-workaround.js</path>
+    </resource>
+    <!-- Mustache -->
+    <resource name="mustache.js">
+      <path>scripts/mustache/mustache.js</path>
+    </resource>
+    <!-- Simple Access Key helper -->
+    <resource name="accessKey.js">
+      <path>scripts/accessKey.js</path>
+    </resource>
+    <!-- Moment.js -->
+    <resource name="moment.js">
+      <path>scripts/moment.min-1.5.0nx.js</path>
+    </resource>
+    <!-- jquery-ui resources: order plugins according to their dependencies. -->
+    <resource name="jquery.ui.core.js">
+      <path>scripts/jquery/jquery.ui.core.js</path>
+    </resource>
+    <resource name="jquery.ui.widget.js">
+      <path>scripts/jquery/jquery.ui.widget.js</path>
+    </resource>
+    <resource name="jquery.ui.mouse.js">
+      <path>scripts/jquery/jquery.ui.mouse.js</path>
+    </resource>
+    <resource name="jquery.ui.sortable.js">
+      <path>scripts/jquery/jquery.ui.sortable.js</path>
+      <require>jquery.ui.core.js</require>
+      <require>jquery.ui.widget.js</require>
+      <require>jquery.ui.mouse.js</require>
+    </resource>
+    <!-- Double click shield -->
+    <resource name="jquery.nuxeo.doubleclickshield.js">
+      <path>scripts/jquery.nuxeo.doubleclickshield.js</path>
+    </resource>
+    <!-- jQuery Ambiance -->
+    <resource name="jquery.ambiance.js">
+      <path>scripts/jquery/jquery.ambiance.js</path>
+    </resource>
+    <resource name="jquery.ambiance.css">
+      <path>css/jquery.ambiance.css</path>
+    </resource>
+    <resource name="jquery.nuxeo.dropdown.js">
+      <path>scripts/jquery/jquery.nuxeo.dropdown.js</path>
+    </resource>
+    <resource name="jquery.tipsy.js">
+      <path>scripts/jquery/jquery.tipsy.js</path>
+    </resource>
+    <resource name="tipsy.css">
+      <path>css/tipsy.css</path>
+    </resource>
+    <resource name="jquery.nuxeo.tipsy.js">
+      <path>scripts/jquery.nuxeo.tipsy.js</path>
+      <require>jquery.tipsy.js</require>
+    </resource>
+    <resource name="jquery.magnific-popup.js">
+      <path>scripts/jquery/jquery.magnific-popup.js</path>
+    </resource>
+     <resource name="magnific-popup.css">
+      <path>css/magnific-popup.css</path>
+    </resource>
+    <resource name="nuxeo-lightbox.js">
+      <path>scripts/nuxeo-lightbox.js</path>
+    </resource>
+    <resource name="jquery.nuxeo.cv-lightbox.js">
+      <path>scripts/jquery.nuxeo.cv-lightbox.js</path>
+      <require>jquery.magnific-popup.js</require>
+      <require>nuxeo-lightbox.js</require>
+    </resource>
+    <resource name="nuxeo-documents-import.js">
+      <path>scripts/nuxeo-documents-import.js</path>
+    </resource>
+    <resource name="fixmultipartajax.js">
+      <path>scripts/fixmultipartajax.js</path>
+    </resource>
+  </extension>
+
+  <!-- Register mapping between theme pages and resources -->
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+
+    <themePage name="galaxy/print">
+      <defaultFlavor>default</defaultFlavor>
+      <flavors>
+        <flavor>default</flavor>
+      </flavors>
+      <flavors>
+        <flavor>rainbow</flavor>
+      </flavors>
+      <styles>
+        <style>basics</style>
+        <style>buttons_and_actions</style>
+        <style>header</style>
+        <style>body</style>
+        <style>footer</style>
+        <style>grids_and_widgets</style>
+        <style>navigation</style>
+        <style>forms</style>
+        <style>messages_and_tooltips</style>
+        <style>foldable_boxes</style>
+        <style>tabs_content</style>
+        <style>helpers</style>
+        <style>print_generic</style>
+      </styles>
+    </themePage>
+
+    <themePage name="galaxy/popup">
+      <defaultFlavor>default</defaultFlavor>
+      <flavors>
+        <flavor>default</flavor>
+        <flavor>rainbow</flavor>
+      </flavors>
+      <styles>
+        <style>basics</style>
+        <style>buttons_and_actions</style>
+        <style>body</style>
+        <style>grids_and_widgets</style>
+        <style>navigation</style>
+        <style>tables</style>
+        <style>forms</style>
+        <style>popups</style>
+        <style>messages_and_tooltips</style>
+        <style>foldable_boxes</style>
+        <style>richfaces_components</style>
+        <style>tabs_content</style>
+        <style>helpers</style>
+        <style>nuxeo_dm_specific</style>
+      </styles>
+    </themePage>
+
+    <themePage name="galaxy/default">
+      <defaultFlavor>default</defaultFlavor>
+      <flavors>
+        <flavor>default</flavor>
+        <flavor>rainbow</flavor>
+      </flavors>
+      <styles>
+        <style>basics</style>
+        <style>buttons_and_actions</style>
+        <style>header</style>
+        <style>body</style>
+        <style>footer</style>
+        <style>grids_and_widgets</style>
+        <style>navigation</style>
+        <style>tables</style>
+        <style>forms</style>
+        <style>popups</style>
+        <style>breadcrumb</style>
+        <style>messages_and_tooltips</style>
+        <style>foldable_boxes</style>
+        <style>drag_and_drop</style>
+        <style>richfaces_components</style>
+        <style>tabs_content</style>
+        <style>helpers</style>
+        <style>nuxeo_dm_specific</style>
+      </styles>
+    </themePage>
+
+  </extension>
+
+  <!-- Register flavors (collections of presets) -->
+  <extension target="org.nuxeo.theme.styling.service" point="flavors">
+
+    <flavor name="default">
+      <label>label.theme.flavor.nuxeo.default</label>
+      <logo>
+        <path>/img/nuxeo_logo.png</path>
+        <previewPath>/img/nuxeo_preview_logo_black.png</previewPath>
+        <width>113</width>
+        <height>20</height>
+        <title>Nuxeo</title>
+      </logo>
+      <presetsList>
+        <presets category="border" src="themes/palettes/default-borders.properties" />
+        <presets category="background"
+          src="themes/palettes/default-backgrounds.properties" />
+        <presets category="font" src="themes/palettes/default-fonts.properties" />
+        <presets category="color" src="themes/palettes/default-colors.properties" />
+      </presetsList>
+      <palettePreview>
+        <colors>
+          <color>#cfecff</color>
+          <color>#70bbff</color>
+          <color>#4e9ae1</color>
+          <color>#fff</color>
+          <color>#fff</color>
+          <color>#0079a6</color>
+          <color>#00416b</color>
+          <color>#332e2e</color>
+          <color>#cfecff</color>
+        </colors>
+      </palettePreview>
+    </flavor>
+
+    <flavor name="rainbow">
+      <label>label.theme.flavor.nuxeo.rainbow</label>
+      <logo>
+        <path>/img/nuxeo_logo.png</path>
+        <previewPath>/img/nuxeo_preview_logo_black.png</previewPath>
+        <width>113</width>
+        <height>20</height>
+        <title>Nuxeo</title>
+      </logo>
+      <presetsList append="true">
+        <presets category="border" src="themes/palettes/rainbow-borders.properties" />
+        <presets category="background"
+          src="themes/palettes/rainbow-backgrounds.properties" />
+        <presets category="font" src="themes/palettes/rainbow-fonts.properties" />
+        <presets category="color" src="themes/palettes/rainbow-colors.properties" />
+      </presetsList>
+      <palettePreview>
+        <colors>
+          <color>#4a3a6e</color>
+          <color>#feffe6</color>
+          <color>#cfffd1</color>
+          <color>#aafff2</color>
+          <color>#99163e</color>
+          <color>#a9ff70</color>
+          <color>#e74c36</color>
+          <color>#00a2cb</color>
+          <color>#474747</color>
+        </colors>
+      </palettePreview>
+    </flavor>
+
+  </extension>
+
+  <!-- Register style resources (contain indirect references to flavor names, i.e.
+    "__FLAVOR__") -->
+  <extension target="org.nuxeo.theme.styling.service" point="styles">
+    <!-- Global styles -->
+    <style name="breadcrumb">
+      <src>themes/css/breadcrumb.css</src>
+    </style>
+    <style name="buttons_and_actions">
+      <src>themes/css/buttons_and_actions.css</src>
+    </style>
+    <style name="basics">
+      <src>themes/css/basics.css</src>
+    </style>
+    <style name="body">
+      <src>themes/css/body.css</src>
+    </style>
+    <style name="drag_and_drop">
+      <src>themes/css/drag_and_drop.css</src>
+    </style>
+    <style name="foldable_boxes">
+      <src>themes/css/foldable_boxes.css</src>
+    </style>
+    <style name="forms">
+      <src>themes/css/forms.css</src>
+    </style>
+    <style name="grids_and_widgets">
+      <src>themes/css/grids_and_widgets.css</src>
+    </style>
+    <style name="messages_and_tooltips">
+      <src>themes/css/messages_and_tooltips.css</src>
+    </style>
+    <style name="navigation">
+      <src>themes/css/navigation.css</src>
+    </style>
+    <style name="popups">
+      <src>themes/css/popups.css</src>
+    </style>
+    <style name="richfaces_components">
+      <src>themes/css/richfaces_components.css</src>
+    </style>
+    <style name="tables">
+      <src>themes/css/tables.css</src>
+    </style>
+    <style name="tabs_content">
+      <src>themes/css/tabs_content.css</src>
+    </style>
+    <style name="helpers">
+      <src>themes/css/helpers.css</src>
+    </style>
+    <!-- Header and Footer -->
+    <style name="header">
+      <src>themes/css/header.css</src>
+    </style>
+    <style name="footer">
+      <src>themes/css/footer.css</src>
+    </style>
+    <!-- Specific to pages -->
+    <style name="nuxeo_dm_specific">
+      <src>themes/css/nuxeo_dm_specific.css</src>
+    </style>
+    <style name="print_generic">
+      <src>themes/css/print_generic.css</src>
+    </style>
+  </extension>
+
+  <!-- application settings -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="applications">
+
+    <application root="${org.nuxeo.ecm.contextPath}"
+      template-engine="jsf-facelets">
+
+      <negotiation>
+        <strategy>nuxeo5</strategy>
+        <default-engine>default</default-engine>
+        <default-theme>galaxy/default</default-theme>
+        <default-perspective>default</default-perspective>
+        <!-- TODO default collection/flavor... -->
+      </negotiation>
+
+      <!-- Cache control for theme resources (/nxthemes-lib/) -->
+      <resource-caching>
+        <lifetime>36000</lifetime>
+      </resource-caching>
+
+      <!-- Cache control for theme styles (/nxthemes-css/) -->
+      <style-caching>
+        <lifetime>900</lifetime>
+      </style-caching>
+
+      <view id="/create_relation_search_document_popup.xhtml">
+        <theme>galaxy/popup</theme>
+      </view>
+      <view id="/dndFormCollector.xhtml">
+        <theme>galaxy/popup</theme>
+      </view>
+      <view id="/editor_link_search_document.xhtml">
+        <theme>galaxy/popup</theme>
+      </view>
+      <view id="/editor_image_upload.xhtml">
+        <theme>galaxy/popup</theme>
+      </view>
+
+      <view id="/info_view.xhtml">
+        <theme>galaxy/popup</theme>
+      </view>
+
+    </application>
+  </extension>
+
+
+  <!-- negotiation strategy for nuxeo5 -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="negotiations">
+
+    <negotiation object="theme" strategy="nuxeo5">
+      <scheme>org.nuxeo.theme.jsf.negotiation.theme.RequestParameter</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.theme.CookieValue</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.theme.ViewId</scheme>
+      <!-- local theme (specific to nuxeo5) -->
+      <scheme>org.nuxeo.ecm.localconf.LocalTheme</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.theme.DefaultTheme</scheme>
+    </negotiation>
+
+    <negotiation object="perspective" strategy="nuxeo5">
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.perspective.RequestParameter
+      </scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.perspective.CookieValue</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.perspective.ViewId</scheme>
+      <!-- local perspective (specific to nuxeo5) -->
+      <scheme>
+        org.nuxeo.ecm.localconf.LocalPerspective
+      </scheme>
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.perspective.DefaultPerspective
+      </scheme>
+    </negotiation>
+
+    <negotiation object="collection" strategy="nuxeo5">
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.collection.RequestParameter
+      </scheme>
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.collection.CookieValue
+      </scheme>
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.collection.RequestAttribute
+      </scheme>
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.collection.ViewId
+      </scheme>
+      <!-- local flavor/collection (specific to nuxeo5) -->
+      <scheme>
+        org.nuxeo.ecm.localconf.LocalThemeFlavor
+      </scheme>
+      <!-- default flavor/collection (specific to nuxeo5) -->
+      <scheme>
+        org.nuxeo.ecm.webapp.webcontainer.DefaultThemeFlavor
+      </scheme>
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.collection.UnspecifiedCollection
+      </scheme>
+    </negotiation>
+
+  </extension>
+
+</component>

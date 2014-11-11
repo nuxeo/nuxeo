@@ -1,0 +1,331 @@
+/*
+Style all the tables displayed
+author: lkemen@nuxeo.com
+*/
+
+/* Default styles for all the tables */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  max-width: 100% }
+
+table th {
+  color: "black (__FLAVOR__ color)";
+  font-weight: bold;
+  text-align: left;
+  vertical-align: bottom }
+
+table td {
+  vertical-align:top }
+
+/* Table models */
+.dataTable,
+.dataTableLine,
+.dataTableNoBorder,
+.dataOutput,
+.dataList,
+.dataTableNoBorder,
+.dataInput {
+  background-color: #fff;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  clear: both;
+  line-height: 1.3em;
+  margin: 0 0 .8em;
+  width: 100% }
+
+.dataTableNoBorder {
+  max-width: 100em }
+
+.dataInput {
+  max-width: 55em }
+
+.dataTable th,
+.dataTableLine th,
+.dataTableLine th,
+.dataOutput th,
+.dataList th {
+  background-color: "neutral.light (__FLAVOR__ background)";
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-width: 1px;
+  padding: .6em .4em .6em 0 }
+
+.dataRowOdd:hover,
+.dataRowEven:hover,
+.dataTable tr:hover,
+.dataTableLine tr:hover {
+  background-color: "neutral.lighter (__FLAVOR__ background)" }
+
+.dataTable,
+.fieldColumn .dataTable {
+  border-collapse: separate;
+  border-style: solid none none solid;
+  border-radius: 2px;
+  border-width: 1px }
+
+.dataTable th,
+.dataTable td {
+  border-style: none solid solid none;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-width: 1px;
+  padding: .6em .4em }
+
+.dataOutput th:first-child,
+.dataOutput td:first-child,
+.dataTableLine th:first-child,
+.dataTableLine td:first-child {
+  padding-left: .4em }
+
+.dataTableLine th,
+.dataOutput th,
+.dataList th {
+  border-style: none none solid;
+  white-space: nowrap }
+
+.dataTable th a,
+.dataTableLine th a,
+.dataTableNoBorder th a,
+.dataList th a,
+.dataOutput th a {
+  color: "black (__FLAVOR__ color)"; }
+
+.dataTable th a:hover,
+.dataTableLine th a:hover,
+.dataTableNoBorder th a:hover,
+.dataList th a:hover,
+.dataOutput th a:hover {
+  color: "link.hover (__FLAVOR__ color)";
+  text-decoration: none }
+
+.dataTable th img,
+.dataTableLine th img,
+.dataTableNoBorder th img,
+.dataList th img,
+.dataOutput th img {
+  margin: 0 0 0 .2em;
+  padding: 0;
+  vertical-align: bottom }
+
+.dataTableLine,
+.dataTableLine td,
+.dataList,
+.dataList td,
+.dataOutput,
+.dataOutput td {
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-style: solid none;
+  border-width: 1px;
+  padding: .5em .6em .6em 0 }
+
+.dataTableNoBorder,
+.dataTableNoBorder th,
+.dataTableNoBorder td,
+.dataInput,
+.dataInput th,
+.dataInput td {
+  background-color: none;
+  border: none 0;
+  padding: .5em .6em .6em 0 }
+
+.dataTable .dataTable,
+.dataTableLine .dataTableLine,
+.dataTableNoBorder .dataTableNoBorder {
+  margin: 0 }
+
+.dataTable td td,
+.dataTableLine td td,
+.dataOutput td td,
+.dataList td td {
+  border: none 0 }
+
+.dataTable td th,
+.dataTable td td,
+.dataTableLine td th,
+.dataTableLine td td,
+.dataInput td th,
+.dataInput td td,
+.dataOutput td th,
+.dataOutput td td {
+  padding: 0 .3em .5em 0 }
+
+table.smallTable th,
+table.smallTable td {
+  padding: .2em .4em .3em 0 }
+
+th:first-child input[type="checkbox"] {
+  width: 1.9em }
+
+.fieldColumn .dataTable.widgetTable {
+  border: 1px solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)" }
+
+.fieldColumn .dataTable.widgetTable td,
+.fieldColumn .dataTable.widgetTable th {
+  padding: .3em }
+
+.fieldColumn .dataTable tr:hover {
+  background-color: inherit }
+
+.buttonsGadgetNoForm {
+  margin: 0 .4em }
+
+.dataInput .button,
+.dataTableNoBorder .button,
+.buttonsGadgetNoForm .button {
+  margin: 0 1em .4em 0;
+  vertical-align: top }
+
+.dataOutput .button {
+  margin: .2em 1em .2em 0 }
+
+.dataOutput .smallButton {
+  margin: 0 .5em 0 0;
+  padding: .25em .4em }
+
+table.noHover tr:hover {
+  background: none transparent }
+
+/* Specifics */
+.boldColumn {
+  font-weight: bold !important }
+
+.buttonColumn {
+  text-align: center;
+  width: 280px } /* deprecated ? */
+
+.focusColumn {
+  background-color: "neutral.lighter (__FLAVOR__ background)" }
+
+.radioColumn {
+  padding: 0 0 0 .5em;
+  width: 8px } /* deprecated ? */
+
+.iconColumn {
+  text-align: center;
+  width: 1.8em }
+
+.iconColumn img {
+  background: none;
+  position: relative;
+  z-index: 25 }
+
+.actionsColumn {
+  text-align: right }
+.actionsColumn img,
+.actionsColumn a {
+  display: inline-block;
+  margin: 0 0 0 .2em }
+.actionsColumn .smallButton {
+  margin: 0 .2em;
+  padding: .2em .3em }
+
+.dataTableNoHeader th {
+  background-color: transparent }
+
+.buttonsGadget {
+  margin: .4em 0 .4em 12.6em }
+.smallButtonsGadget {
+  margin: 0 0 .4em 7em }
+
+.buttonsGadget .actionsWidgetPanel,
+#selection_buttons .actionsWidgetPanel {
+  padding: 0 }
+
+.buttonsGadget .smallButton:first-child {
+  margin-left: 1.1em }
+
+.buttonsGadget .actionsWidgetPanel {
+  padding-left: .2em }
+
+.iconColumn .nxDraggable {
+  cursor: move }
+
+.labelColumn {
+  font-weight: bold;
+  width: 12em }
+
+.labelColumn span {
+  display: block }
+
+.fieldColumn img {
+  margin: 0 .4em -0.2em .2em }
+
+.fieldColumn + .labelColumn {
+  text-align: right;
+  padding-right: 1em }
+
+#fancybox-content .labelColumn {
+  width: 10em }
+
+.labelColumn .widgetHelpLabel span {
+  display: inherit; }
+
+/* =Generic table styles for Widgets in Layouts */
+.containerSubWidget {
+  margin: 0 .6em .6em 0 }
+
+.dataInput .fieldColumn .containerSubWidget {
+  margin-right: 0 }
+
+.widgetTable .widgetPanel {
+  margin: 0;
+  padding: 0 }
+
+/* Local configuration table styles */
+.palettePreviewLogo {
+  float: left;
+  width: 100px }
+
+table.palettePreviewColors {
+  border-collapse: separate;
+  border-spacing: 3px;
+  display: inline;
+  float: left;
+  vertical-align: middle }
+
+table.palettePreviewColors td {
+  border: 1px solid #777 }
+
+table.palettePreviewColors td div {
+  height: 8px;
+  width: 10px }
+
+/* To clean & remove in 5.8 */
+.dataOutput2Columns {
+  margin-top: .7em;
+  margin-bottom: .4em }
+
+.twoColumns {
+  width: 50% } /* replaced by .fiftyPercent */
+
+.iconColumn .cell {
+  background: none;
+  width: 1.8em }
+
+.dataInputGroup {
+  margin: 0;
+  padding: 0 }
+
+/*  =Relations */
+.relationObjectColumn,
+.relationPredicateColumn,
+.relationCreateLabelColumn {
+  width: 100px }
+
+.relationActionsColumn {
+  text-align: center;
+  width: 60px }
+
+.workflowFieldColumn table,
+.relationCreateFieldColumn table {
+  border: 0 none;
+  margin: 0 }
+
+.vocabularyEntryContent {
+  margin-left: 1.6em }
+
+.vocabularyEntryContent .notEditable {
+  background-color: #fff }
+
+.vocabularyEntryContent .dataInput {
+  border: none;
+  margin-bottom: 1.4em }

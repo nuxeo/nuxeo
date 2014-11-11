@@ -1,0 +1,23 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <script type="text/javascript" src="scripts/jquery.nuxeo.tipsy.js">
+  </script>
+
+  <script>
+    jQuery(document).ready(function() {
+      jQuery('.tipsyShow').initTipsy(500, 5000);
+    });
+    jsf.ajax.addOnEvent(function(data) {
+      var ajaxstatus = data.status;
+      if (ajaxstatus == "success") {
+        // remove all existing tipsy
+        jQuery('.tipsy').remove();
+        jQuery('.tipsyShow').initTipsy(500, 5000);
+      }
+    });
+  </script>
+
+</ui:composition>

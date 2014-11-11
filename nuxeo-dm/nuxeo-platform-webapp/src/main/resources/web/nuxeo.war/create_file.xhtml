@@ -1,0 +1,46 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:s="http://jboss.org/schema/seam/taglib"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich">
+
+  <h3><h:outputText value="#{messages['title.create.file']}" /></h3>
+
+  <h:form enctype="multipart/form-data" id="#{fancyboxFormId}" disableDoubleClickShield="true" >
+
+  <div class="content">
+
+    <p class="popUpDescription" onclick="testAddFileFromPlugin()">
+      <h:outputText value="#{messages['label.selectFileToImport']}"/>
+    </p>
+
+    <rich:fileUpload
+      fileUploadListener="#{FileManageActions.processUpload}"
+      maxFilesQuantity="1"
+      listHeight="60"
+      listWidth="350"
+      immediateUpload="true"
+      locale="#{localeSelector.localeString}"
+      id="upload">
+      <a4j:ajax
+        onbeforesubmit="Seam.Component.getInstance('FileManageActions').removeSingleUploadedFile();"
+        event="clear"/>
+    </rich:fileUpload>
+
+  </div>
+
+  <div class="buttonsGadget">
+    <h:commandButton class="button"
+      value="#{messages['command.upload']}"
+      action="#{FileManageActions.validate}" />
+    <h:commandButton class="button"
+      value="#{messages['command.cancel']}"
+      action="#{navigationContext.goBack()}" immediate="true" />
+  </div>
+
+  </h:form>
+
+</div>
