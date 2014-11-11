@@ -1,0 +1,24 @@
+<div class="metadata_block"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<nxu:set var="hasSpecificFields"
+  value="#{!empty nxd:typeInfo(layoutValue).getLayouts('view', 'any')}"
+  cache="true">
+
+  <c:if test="#{hasSpecificFields}">
+    <h3 class="summaryTitle">
+      <h:outputText value="#{messages['action.view.metadata.specific']}" />
+    </h3>
+
+    <div class="summaryLayout">
+      <nxl:documentLayout value="#{currentDocument}" mode="view" />
+    </div>
+  </c:if>
+
+</nxu:set>
+
+</div>
