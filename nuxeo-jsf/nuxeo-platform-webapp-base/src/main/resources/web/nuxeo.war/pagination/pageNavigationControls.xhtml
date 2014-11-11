@@ -1,0 +1,37 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core">
+
+  <h:panelGroup
+    layout="block" styleClass="pageNavigationControls"
+    rendered="#{provider.nextPageAvailable or provider.previousPageAvailable}">
+
+    <h:commandButton action="#{provider.rewind}"
+                     alt="#{messages['command.navigation.rewind']}"
+                     image="/icons/navigation_first.png" >
+      <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
+    </h:commandButton>
+    <h:commandButton action="#{provider.previous}"
+                     alt="#{messages['command.navigation.previous']}"
+                     image="/icons/navigation_previous.png" >
+      <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
+    </h:commandButton>
+
+    <h:panelGroup styleClass="currentPageStatus">
+      <h:outputText
+        value="#{(provider.resultsCount ge 0 or provider.currentPageIndex ge provider.pageLimit) ? provider.currentPageStatus : nxu:translate('command.navigation.status.unknownPageAmount', provider.currentPageIndex + 1, provider.pageLimit)}" />
+    </h:panelGroup>
+
+    <h:commandButton action="#{provider.next}"
+                     alt="#{messages['command.navigation.next']}"
+                     image="/icons/navigation_next.png" >
+      <f:attribute name="disabled" value="#{not provider.nextPageAvailable}"/>
+    </h:commandButton>
+
+    <h:commandButton action="#{provider.last}"
+                     alt="#{messages['command.navigation.fastforward']}"
+                     image="/icons/navigation_last.png" >
+      <f:attribute name="disabled" value="#{not provider.lastPageAvailable}"/>
+    </h:commandButton>
+  </h:panelGroup>
+
+</div>

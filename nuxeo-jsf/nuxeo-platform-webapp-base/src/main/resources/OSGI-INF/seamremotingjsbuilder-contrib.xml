@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.SeamRemotingJSBuilderComponent.baseContrib">
+
+  <require>org.nuxeo.ecm.platform.ui.web.SeamRemotingJSBuilderComponent</require>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.SeamRemotingJSBuilderComponent" point="remotableSeamBeans">
+      <remotableSeamBeans>
+          <beans>
+              <bean>clipboardActions</bean>
+          </beans>
+      </remotableSeamBeans>
+  </extension>
+
+</component>
