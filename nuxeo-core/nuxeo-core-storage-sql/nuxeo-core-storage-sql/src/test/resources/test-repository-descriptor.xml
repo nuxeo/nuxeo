@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<repository name="foo">
+  <binaryStore path="/foo/bar" />
+  <clustering enabled="true" delay="1234" />
+  <listen>
+    <host>localhost0</host>
+    <port>81810</port>
+    <path>/nuxeo0</path>
+  </listen>
+  <connect>
+    <host>localhost1</host>
+    <port>81811</port>
+    <path>/nuxeo1</path>
+  </connect>
+  <connect>
+    <host>localhost2</host>
+    <port>81812</port>
+    <path>/nuxeo2</path>
+  </connect>
+  <schema>
+    <field type="biig">my:bignote</field>
+    <field type="xyz">foo</field>
+  </schema>
+  <indexing>
+    <fulltext catalog="nuxeo" analyzer="french">
+      <index>
+        <!-- fieldType for all implied -->
+        <excludeField>dc:creator</excludeField>
+      </index>
+      <index name="titraille">
+        <field>dc:title</field>
+        <field>dc:description</field>
+      </index>
+      <index name="blobs">
+        <fieldType>blob</fieldType>
+        <excludeField>foo:bar</excludeField>
+      </index>
+      <index name="pictures" catalog="other" analyzer="martian">
+        <field>picture:views/*/filename</field>
+      </index>
+    </fulltext>
+  </indexing>
+</repository>
