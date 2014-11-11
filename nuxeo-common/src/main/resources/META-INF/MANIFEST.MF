@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-Name: Nuxeo Common
+Bundle-SymbolicName: org.nuxeo.common;singleton:=true
+Bundle-Vendor: Nuxeo
+Provide-Package: org.nuxeo.common,
+ org.nuxeo.common.collections,
+ org.nuxeo.common.debug,
+ org.nuxeo.common.mock.jndi,
+ org.nuxeo.common.persistence,
+ org.nuxeo.common.server,
+ org.nuxeo.common.utils,
+ org.nuxeo.common.utils.i18n,
+ org.nuxeo.common.xmap,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.runtime.util
+Require-Bundle: system.bundle;reprovide=true,
+ org.nuxeo.logging;optional=true;reprovide=true
