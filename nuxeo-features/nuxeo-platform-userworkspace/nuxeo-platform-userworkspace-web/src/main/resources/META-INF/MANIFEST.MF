@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM User Workspace Web Fragment
+Bundle-SymbolicName: org.nuxeo.ecm.platform.userworkspace.web;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Nuxeo
+Bundle-Category: stateless
+Eclipse-LazyStart: false
+Nuxeo-Component: OSGI-INF/userworkspace-actions-contrib.xml

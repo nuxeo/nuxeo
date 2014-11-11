@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.spaces.core.types"
+	version="1.0">
+	<require>org.nuxeo.ecm.core.schema.TypeService
+	</require>
+	<require>org.nuxeo.ecm.core.CoreExtensions
+	</require>
+
+	<documentation>
+		Content type definition for Universe
+
+		@author
+		<a href="mailto:damien.desaintlaurent@leroymerlin.fr">Damien de Saint Laurent</a>
+	</documentation>
+
+
+	<extension target="org.nuxeo.ecm.core.schema.TypeService"
+		point="schema">
+		<documentation>The universe schemas</documentation>
+		<schema name="univers" src="schemas/univers.xsd" />
+		<schema name="space" src="schemas/space.xsd" />
+		<schema name="gadget" src="schemas/gadget.xsd" />
+	</extension>
+
+	<extension target="org.nuxeo.ecm.core.schema.TypeService"
+		point="doctype">
+		<documentation>The core universe types</documentation>
+
+		<doctype name="Univers" extends="Folder">
+			<schema name="common" />
+			<schema name="dublincore" />
+			<schema name="univers" />
+			<schema name="file" />
+			<facet name="Folderish" />
+			<facet name="Indexable" />
+			<facet name="Themable" />
+			<facet name="Searchable" />
+		</doctype>
+	<doctype name="Space" extends="Folder">
+			<schema name="common" />
+			<schema name="dublincore" />
+			<schema name="space" />
+			<schema name="file" />
+			<facet name="Folderish" />
+			<facet name="Indexable" />
+			<facet name="Themable" />
+			<facet name="Searchable" />
+		</doctype>
+	<doctype name="Gadget" extends="Folder">
+			<schema name="common" />
+			<schema name="dublincore" />
+			<schema name="gadget" />
+			<schema name="file" />
+			<facet name="Folderish" />
+			<facet name="Indexable" />
+			<facet name="Themable" />
+			<facet name="Searchable" />
+		</doctype>
+	
+	</extension>
+	
+
+</component>
