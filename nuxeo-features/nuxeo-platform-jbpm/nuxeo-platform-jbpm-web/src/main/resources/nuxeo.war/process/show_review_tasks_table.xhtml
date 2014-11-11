@@ -1,0 +1,203 @@
+<div xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"><c:set
+  var="virtualTasks" value="#{jbpmActions.currentVirtualTasks}" /> <nxu:methodResult
+  name="tasks"
+  value="#{jbpmActions.getCurrentTasks('validate', 'validate-after-reject')}">
+
+  <c:if test="#{not empty virtualTasks or not empty tasks}">
+
+    <div class="closedContent"><h:form id="reviewTasksTable">
+
+      <h3><h:outputText
+        value="#{messages['label.workflow.review.task.list']}" /></h3>
+
+      <c:set var="userSchema" value="#{userManager.userSchemaName}" />
+
+      <table class="dataOutput">
+        <thead>
+          <tr>
+            <f:subview rendered="#{jbpmActions.canManageParticipants}">
+              <th class="iconColum"></th>
+            </f:subview>
+            <th><h:outputText
+              value="#{messages['label.workflow.task.validated']}" /></th>
+            <th><h:outputText
+              value="#{messages['label.workflow.task.principal']}" /></th>
+            <th><h:outputText
+              value="#{messages['label.workflow.task.directive']}" /></th>
+            <th><h:outputText
+              value="#{messages['label.review.user.comment']}" /></th>
+            <th><h:outputText
+              value="#{messages['label.workflow.task.startdate']}" /></th>
+            <th><h:outputText
+              value="#{messages['label.workflow.task.enddate']}" /></th>
+            <th><h:outputText
+              value="#{messages['label.workflow.task.duedate']}" /></th>
+            <th></th>
+            <f:subview rendered="#{jbpmActions.canManageParticipants}">
+              <th class="iconColumn"></th>
+            </f:subview>
+          </tr>
+        </thead>
+        <tbody>
+          <nxu:repeat var="task" value="#{tasks}">
+            <tr>
+              <f:subview rendered="#{jbpmActions.canManageParticipants}">
+                <td class="iconColumn"></td>
+              </f:subview>
+              <td class="iconColumn"><h:graphicImage
+                value="/icons/review_pending.gif"
+                rendered="#{empty task.create}" /> <h:graphicImage
+                value="/icons/review_current_level.gif"
+                rendered="#{!empty task.create and empty task.end}" /> <h:graphicImage
+                value="/icons/review_accepted.png"
+                rendered="#{!empty task.end and task.variablesLocally.validated}" />
+              <h:graphicImage value="/icons/review_refused.png"
+                rendered="#{!empty task.end and !task.variablesLocally.validated}" />
+              </td>
+              <td><nxl:layout name="user_group_prefixed_suggestion"
+                mode="view" value="#{jbpmHelper.getPooledActorIds(task)}" /> <nxu:methodResult
+                name="userInfo"
+                value="#{userSuggestionActions.getPrefixedUserInfo(task.actorId)}">
+                <f:subview rendered="#{userInfo.type == 'USER_TYPE'}">
+                  <h:graphicImage value="/icons/user.gif" alt="user.gif" />
+                  <h:outputText
+                    value="#{nxu:userDisplayName(userInfo.id, userInfo.entry[userSchema].firstName, userInfo.entry[userSchema].lastName)}" />
+                </f:subview>
+                <f:subview rendered="#{userInfo.type == 'GROUP_TYPE'}">
+                  <h:graphicImage value="/icons/group.gif" alt="group.gif" />
+                  <h:outputText value="#{userInfo.id}" />
+                </f:subview>
+                <f:subview rendered="#{empty userInfo.type}">
+                  <h:outputText value="#{task.actorId}" />
+                </f:subview>
+              </nxu:methodResult></td>
+              <td><h:outputText
+                value="#{messages[task.variablesLocally.directive]}" /></td>
+              <td><table><c:forEach var="comment" items="${task.comments}">
+                <f:subview rendered="#{!empty comment}">
+                  <nxu:methodResult name="userInfo"
+                    value="#{userSuggestionActions.getPrefixedUserInfo(comment.actorId)}">
+                    <tr><td>
+                    <f:subview rendered="#{userInfo.type == 'USER_TYPE'}">
+                      <h:outputText
+                        value="#{nxu:userDisplayName(userInfo.id, userInfo.entry[userSchema].firstName, userInfo.entry[userSchema].lastName)}" />
+                    </f:subview>
+                    <f:subview rendered="#{userInfo.type != 'USER_TYPE'}">
+                      <h:outputText value="#{comment.actorId}" />
+                    </f:subview>
+                    </td><td><h:outputText value=": #{comment.message}" /></td></tr>
+                  </nxu:methodResult>
+                </f:subview>
+              </c:forEach></table></td>
+              <td><h:outputText value="#{task.create}">
+                <f:convertDateTime
+                  pattern="#{nxu:dateAndTimeFormater('medium')}"
+                  timeZone="#{timeZone}" />
+              </h:outputText></td>
+              <td><h:outputText value="#{task.end}">
+                <f:convertDateTime
+                  pattern="#{nxu:dateAndTimeFormater('medium')}"
+                  timeZone="#{timeZone}" />
+              </h:outputText></td>
+              <td><h:outputText value="#{task.dueDate}">
+                <f:convertDateTime
+                  pattern="#{nxu:dateAndTimeFormater('medium')}"
+                  timeZone="#{timeZone}" />
+              </h:outputText></td>
+              <td><h:commandLink
+                value="#{messages['label.review.end.task']}"
+                action="#{jbpmActions.validateTask(task, null)}"
+                rendered="#{jbpmActions.getCanEndTask(task)}" /></td>
+              <td><h:commandLink
+                value="#{messages['label.review.reject.task']}"
+                action="#{jbpmActions.rejectTask(task, 'reject')}"
+                rendered="#{jbpmActions.getCanEndTask(task) and task.name != 'validate-after-reject'}" />
+              </td>
+              <f:subview rendered="#{jbpmActions.canManageParticipants}">
+                <td></td>
+              </f:subview>
+            </tr>
+          </nxu:repeat>
+          <nxu:repeat var="virtualTask" value="#{virtualTasks}" index="index">
+            <tr>
+              <c:if test="#{jbpmActions.canManageParticipants}">
+                <td class="iconColum"><h:commandLink
+                  action="#{jbpmActions.removeVirtualTask(index)}"
+                  onclick="return confirmDeleteTask();"
+                  id="removeParticipant_#{index}">
+                  <h:graphicImage value="/icons/action_delete.gif" />
+                </h:commandLink></td>
+              </c:if>
+              <td class="iconColumn"><h:graphicImage
+                value="/icons/review_pending.gif" /></td>
+              <td><nxl:layout name="user_group_prefixed_suggestion"
+                mode="view" value="#{virtualTask.actors}" /></td>
+              <td><h:outputText value="#{messages[virtualTask.directive]}" />
+              </td>
+              <td><h:outputText value="#{virtualTask.comment}" /></td>
+              <td></td>
+              <td></td>
+              <td><h:outputText value="#{virtualTask.dueDate}">
+                <f:convertDateTime
+                  pattern="#{nxu:dateAndTimeFormater('medium')}"
+                  timeZone="#{timeZone}" />
+              </h:outputText></td>
+              <td></td>
+              <td></td>
+              <c:if test="#{jbpmActions.canManageParticipants}">
+                <td class="iconColum"><h:commandLink
+                  action="#{jbpmActions.moveUpVirtualTask(index)}"
+                  rendered="#{index != 0}" id="moveUp_#{index}">
+                  <h:graphicImage value="/icons/arrow_up.gif" />
+                </h:commandLink> <br />
+                <h:commandLink
+                  action="#{jbpmActions.moveDownVirtualTask(index)}"
+                  rendered="#{index +1 != virtualTasks.size()}"
+                  id="moveDown_#{index}">
+                  <h:graphicImage value="/icons/arrow_down.gif" />
+                </h:commandLink></td>
+              </c:if>
+            </tr>
+          </nxu:repeat>
+        </tbody>
+      </table>
+
+      <f:subview
+        rendered="#{jbpmActions.canManageProcess and !jbpmActions.isProcessStarted('choose-participant')}">
+        <div><h:commandButton
+          value="#{messages['label.workflow.start']}"
+          action="#{jbpmActions.startProcess('choose-participant')}"
+          styleClass="button" /></div>
+      </f:subview>
+
+      <h:panelGroup class="dataInputGroup"
+        rendered="#{not empty tasks}">
+        <div><i> <h:outputText
+          value="#{messages['label.review.my.tasks.help']}" /> </i>
+
+        <table class="dataInput">
+          <tr>
+            <td class="labelColumn"><h:outputText class="required"
+              value="#{messages['label.review.user.comment']}" /></td>
+            <td><h:inputTextarea id="taskActionComment" rows="5"
+              cols="50" value="#{jbpmActions.userComment}" /></td>
+          </tr>
+          <tr>
+            <td colspan="6"><h:message styleClass="errorMessage"
+              for="taskActionComment" /></td>
+          </tr>
+        </table>
+        </div>
+      </h:panelGroup>
+    </h:form></div>
+
+  </c:if>
+
+</nxu:methodResult></div>

@@ -1,0 +1,169 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>
+      <@block name="title"></@block>
+    </title>
+
+    <@nxthemes_head />
+    <@nxthemes_resources />
+
+  </head>
+
+<body style="padding: 0; margin: 0">
+
+    <@nxthemes_accesskeys />
+
+    <div id="nxthemesHeader">
+
+      <div id="nxthemesTopButtons">
+
+        <@nxthemes_button identifier="edit canvas"
+          link="javascript:NXThemesEditor.editCanvas()"
+          controlledBy="editor buttons"
+          switchTo="editor perspectives/edit canvas" label="Refresh theme" />
+        
+        <@nxthemes_button identifier="manage presets"
+          controlledBy="editor buttons"
+          switchTo="editor perspectives/manage presets" label="Presets" />
+        
+        <@nxthemes_button identifier="manage styles"
+          controlledBy="editor buttons"
+          switchTo="editor perspectives/manage styles" label="Styles" />
+                    
+        <@nxthemes_button identifier="manage themes"
+          controlledBy="editor buttons"
+          switchTo="editor perspectives/manage themes" label="Manage themes" />
+          
+        <@nxthemes_button identifier="save changes"
+          link="javascript:NXThemesEditor.saveChanges()"
+          label="Save changes" />
+                    
+        <@nxthemes_button identifier="exit"
+          link="javascript:NXThemesEditor.exit()"
+          label="Exit" />
+      </div>
+
+      <!--  theme selector -->
+      <@nxthemes_panel identifier="theme selector"
+        url="${basePath}/nxthemes-editor/themeSelector"
+        controlledBy="editor perspectives,theme switcher"
+        visibleInPerspectives="edit canvas,edit padding" />
+        
+      <@nxthemes_panel identifier="perspective selector"
+        url="${basePath}/nxthemes-editor/perspectiveSelector"
+        controlledBy="editor perspectives,perspective selector"
+        visibleInPerspectives="add fragments,edit canvas,edit padding" />
+
+      <div id="nxthemesEditorInfo">
+        FREEMARKER
+      </div>
+      
+      <div id="nxthemesWaitAnimation" style="display:none">
+        <img src="${basePath}/skin/nxthemes-editor/img/loader.gif" alt="" width="16" height="16" /> loading ...
+      </div>
+
+      <!--  page selector -->
+      <@nxthemes_panel identifier="page selector"
+        url="${basePath}/nxthemes-editor/pageSelector"
+        controlledBy="editor perspectives,page switcher"
+        visibleInPerspectives="edit canvas,edit padding" />
+        
+      <!-- canvas mode selector -->
+      <@nxthemes_panel identifier="canvas mode selector"
+        url="${basePath}/nxthemes-editor/canvasModeSelector"
+        controlledBy="editor perspectives,canvas mode selector"
+        visibleInPerspectives="edit canvas,edit padding" />
+
+      <!--  Status message -->
+      <div id="nxthemesStatusMessage" style="display:none"></div>
+
+    </div>
+
+    <div id="nxthemesEditorArea">
+
+      <@nxthemes_model resource="theme-editor.json" />
+
+      <!--  canvas area -->
+      <div id="nxthemesCanvasArea">
+
+        <@nxthemes_panel identifier="canvas area"
+          url="%{here}?engine=page-editor"
+          loading="nxthemesWaitAnimation"
+          filter="clean up canvas"
+          controlledBy="editor perspectives,link disabler,element mover,layout editor actions,area style actions"
+          visibleInPerspectives="edit canvas,edit padding" />
+      </div>
+
+      <!-- element drag-and-drop -->
+      <@nxthemes_controller resource="element-mover.json" />
+
+      <!-- contextual menu -->
+      <@nxthemes_controller resource="context-menu-actions.json" />
+      <@nxthemes_controller resource="toggle-context-menu.json" />
+      <@nxthemes_view resource="context-menu.json" />
+
+    </div>
+
+    <@nxthemes_controller resource="perspective-selector.json" />
+    
+    <@nxthemes_controller resource="editor-perspectives.json" />
+    <@nxthemes_controller resource="editor-buttons.json" />
+    <@nxthemes_controller resource="canvas-mode-selector.json" />
+    <@nxthemes_controller resource="layout-editor-actions.json" />
+    <@nxthemes_controller resource="area-style-perspectives.json" />
+    <@nxthemes_controller resource="area-style-actions.json" />
+
+    <@nxthemes_controller resource="toolbox-mover.json" />
+
+    <@nxthemes_controller resource="theme-switcher.json" />
+    <@nxthemes_controller resource="page-switcher.json" />
+    
+    <@nxthemes_controller resource="link-disabler.json" />
+
+    <!-- element editor -->
+    <@nxthemes_panel identifier="element editor"
+      url="${basePath}/nxthemes-editor/elementEditor"
+      controlledBy="editor perspectives"
+      visibleInPerspectives="edit element" />
+
+    <!-- element padding editor -->
+    <@nxthemes_panel identifier="element padding"
+      url="${basePath}/nxthemes-editor/elementPadding"
+      controlledBy="editor perspectives,layout editor actions,toolbox mover"
+      visibleInPerspectives="edit padding" />
+
+    <!-- preset manager -->
+    <@nxthemes_panel identifier="preset manager"
+      url="${basePath}/nxthemes-editor/presetManager"
+      controlledBy="editor perspectives"
+      visibleInPerspectives="manage presets" />
+      
+    <!-- style manager -->
+    <@nxthemes_controller resource="style-manager-actions.json" />
+    <@nxthemes_panel identifier="style manager"
+      url="${basePath}/nxthemes-editor/styleManager"
+      controlledBy="editor perspectives,style manager actions"
+      visibleInPerspectives="manage styles" />
+          
+    <!-- theme manager -->
+    <@nxthemes_panel identifier="theme manager"
+      url="${basePath}/nxthemes-editor/themeManager"
+      controlledBy="editor perspectives"
+      visibleInPerspectives="manage themes" />
+
+    <!--  fragment factory -->
+    <@nxthemes_panel identifier="fragment factory"
+      url="${basePath}/nxthemes-editor/fragmentFactory"
+      controlledBy="editor perspectives"
+      visibleInPerspectives="add fragments" />
+
+    <!--  Area style chooser -->
+    <@nxthemes_panel
+      identifier="area style chooser"
+      url="${basePath}/nxthemes-editor/areaStyleChooser"
+      controlledBy="area style perspectives,toolbox mover"
+      visibleInPerspectives="style chooser" />
+
+</body>
+
+</html>

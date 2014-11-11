@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.pictures.tiles.default.config">
+  <documentation>
+    Defines Env configuration for tiling service
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent"
+    point="environment">
+
+  <environment>
+    <parameters>
+      <!-- Gimp path variables -->
+      <parameter name="GimpExecutable">gimp</parameter>
+      <!-- ImageMagick path variables -->
+      <parameter name="IMConvert">convert</parameter>
+      <parameter name="IMIdentify">identify</parameter>
+      <parameter name="IMStream">stream</parameter>
+      <!-- global env variables -->
+      <parameter name="WorkingDirPath">/tmp/</parameter>
+      <!-- Max Disk cache usage in KB -->
+      <parameter name="MaxDiskSpaceUsageForCache">50000</parameter>
+      <!-- GC Interval in Minutes -->
+      <parameter name="GCInterval">10</parameter>
+
+      <!-- Image dimensions threshold tiling activation -->
+      <parameter name="WidthThreshold">1200</parameter>
+      <parameter name="HeightThreshold">1200</parameter>
+    </parameters>
+  </environment>
+
+  </extension>
+  
+  <extension target="org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent"
+    point="imagesToConvert">
+    <imageToConvert extension="bmp" mimeType="image/bmp"/>
+    <imageToConvert extension="gif" mimeType="image/gif"/>
+    
+    <!-- the following are not strictly required but the results is less buggy and faster
+         when the source image is converted to JPEG first -->
+    <imageToConvert extension="tif" mimeType="image/tiff" />
+	<imageToConvert extension="tiff" mimeType="image/tiff" />
+    <imageToConvert extension="png" mimeType="image/png" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent"
+    point="blobProperties">
+    <blobProperties>
+      <blobProperty docType="Picture" >picture:views/item[1]/content</blobProperty>
+    </blobProperties>
+  </extension>
+
+</component>
