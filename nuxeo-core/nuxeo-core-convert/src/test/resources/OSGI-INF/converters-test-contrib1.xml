@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.convert.tests.1">
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
+      point="converter">
+    <converter name="dummy1" class="org.nuxeo.ecm.core.convert.tests.DummyConverter">
+      <sourceMimeType>text/plain</sourceMimeType>
+      <sourceMimeType>text/xml</sourceMimeType>
+      <destinationMimeType>test/me</destinationMimeType>
+    </converter>
+  </extension>
+
+</component>

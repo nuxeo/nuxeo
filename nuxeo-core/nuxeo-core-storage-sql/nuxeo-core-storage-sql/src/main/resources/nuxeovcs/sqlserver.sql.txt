@@ -1,0 +1,1066 @@
+# Copyright (c) 2008-2012 Nuxeo SA (http://nuxeo.com/) and others.
+#
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License v1.0
+# which accompanies this distribution, and is available at
+# http://www.eclipse.org/legal/epl-v10.html
+#
+# Contributors:
+#     Florent Guillaume
+#     Benoit Delbosc
+
+# Variables used:
+# ${idType} VARCHAR(36)
+# ${clusteredIndex} CLUSTERED when clustered indexes are required (Azure)
+# ${md5HashString}
+#   for SQL Server 2005:
+#     SUBSTRING(master.dbo.fn_varbintohexstr(HashBytes('MD5', @string)), 3, 32)
+#   for SQL Server 2008/2012/Azure:
+#     SUBSTRING(CONVERT(VARCHAR(34), HashBytes('MD5', @string), 1), 3, 32)
+# ${reseedAclrModified}
+#   when not Azure: DBCC CHECKIDENT('aclr_modified', RESEED, 0);
+# ${fulltextCatalog} configured catalog
+# ${readPermissions} SELECT 'Browse'  UNION ALL   SELECT 'Read'  UNION ALL   SELECT 'ReadProperties'  UNION ALL   SELECT 'ReadRemove'  UNION ALL   SELECT 'ReadWrite'  UNION ALL   SELECT 'Everything' ;
+# ${usersSeparator} Used to store aclr default is "|", but it depends on the configuration. Note that array parameters always use "|" separator.
+# Conditions used:
+# fulltextEnabled
+# aclOptimizationsEnabled
+# pathOptimizationsEnabled
+
+############################################################
+
+
+#CATEGORY: beforeTableCreation
+
+
+#IF: fulltextEnabled
+#TEST:
+SELECT name FROM sys.fulltext_catalogs WHERE name = '${fulltextCatalog}'
+
+#IF: fulltextEnabled
+#IF: emptyResult
+CREATE FULLTEXT CATALOG [${fulltextCatalog}];
+
+
+############################################################
+
+
+#CATEGORY: afterTableCreation
+
+
+IF OBJECT_ID('dbo.nxTrigCascadeDelete', 'TR') IS NOT NULL
+  DROP TRIGGER dbo.nxTrigCascadeDelete;
+
+CREATE TRIGGER nxTrigCascadeDelete ON [hierarchy]
+INSTEAD OF DELETE AS
+BEGIN
+  SET NOCOUNT ON;
+  WITH subtree(id, parentid) AS (
+    SELECT id, parentid
+    FROM deleted
+  UNION ALL
+    SELECT h.id, h.parentid
+    FROM [hierarchy] h
+    JOIN subtree ON subtree.id = h.parentid
+  )
+  DELETE FROM [proxies]
+    FROM [proxies] p
+    JOIN subtree
+    ON subtree.id = p.targetid;
+  WITH subtree(id, parentid) AS (
+    SELECT id, parentid
+    FROM deleted
+  UNION ALL
+    SELECT h.id, h.parentid
+    FROM [hierarchy] h
+    JOIN subtree ON subtree.id = h.parentid
+  )
+  DELETE FROM [hierarchy]
+    FROM [hierarchy] h
+    JOIN subtree
+    ON subtree.id = h.id;
+END;
+
+
+IF OBJECT_ID('dbo.NX_ACCESS_ALLOWED', 'FN') IS NOT NULL
+  DROP FUNCTION dbo.NX_ACCESS_ALLOWED;
+
+CREATE FUNCTION NX_ACCESS_ALLOWED(@id ${idType}, @users NVARCHAR(4000), @perms NVARCHAR(4000))
+RETURNS TINYINT AS
+BEGIN
+  DECLARE @allusers NVARCHAR(4000);
+  DECLARE @allperms NVARCHAR(4000);
+  DECLARE @first TINYINT;
+  DECLARE @curid ${idType};
+  DECLARE @newid ${idType};
+  DECLARE @gr TINYINT;
+  DECLARE @pe VARCHAR(1000);
+  DECLARE @us VARCHAR(1000);
+  SET @allusers = N'|' + @users + N'|';
+  SET @allperms = N'|' + @perms + N'|';
+  SET @first = 1;
+  SET @curid = @id;
+  WHILE @curid IS NOT NULL BEGIN
+    DECLARE @cur CURSOR;
+    SET @cur = CURSOR FAST_FORWARD FOR
+      SELECT [grant], [permission], [user] FROM [acls]
+      WHERE [id] = @curid ORDER BY [pos];
+    OPEN @cur;
+    FETCH FROM @cur INTO @gr, @pe, @us;
+    WHILE @@FETCH_STATUS = 0 BEGIN
+      IF @allusers LIKE (N'%|' + @us + N'|%') AND @allperms LIKE (N'%|' + @pe + N'|%')
+      BEGIN
+        CLOSE @cur;
+        DEALLOCATE @cur;
+        RETURN @gr;
+      END;
+      FETCH FROM @cur INTO @gr, @pe, @us;
+    END;
+    CLOSE @cur;
+    DEALLOCATE @cur;
+    SET @newid = (SELECT [parentid] FROM [hierarchy] WHERE [id] = @curid);
+    IF @first = 1 AND @newid IS NULL BEGIN
+      SET @newid = (SELECT [versionableid] FROM [versions] WHERE [id] = @curid);
+    END;
+    SET @first = 0;
+    SET @curid = @newid;
+  END;
+  RETURN 0;
+END;
+
+
+IF OBJECT_ID('dbo.NX_IN_TREE', 'FN') IS NOT NULL
+  DROP FUNCTION dbo.NX_IN_TREE;
+
+CREATE FUNCTION NX_IN_TREE(@id ${idType}, @baseid ${idType})
+RETURNS TINYINT AS
+BEGIN
+  DECLARE @curid ${idType};
+  IF @baseid IS NULL OR @id IS NULL OR @baseid = @id RETURN 0;
+  SET @curid = @id;
+  WHILE @curid IS NOT NULL BEGIN
+    SET @curid = (SELECT [parentid] FROM [hierarchy] WHERE [id] = @curid);
+    IF @curid = @baseid RETURN 1;
+  END;
+  RETURN 0;
+END;
+
+
+IF OBJECT_ID('dbo.NX_CLUSTER_INVAL', 'P') IS NOT NULL
+  DROP PROCEDURE dbo.NX_CLUSTER_INVAL;
+
+#IF: clusteringEnabled
+CREATE PROCEDURE NX_CLUSTER_INVAL(@i ${idType}, @f VARCHAR(8000), @k TINYINT)
+AS
+BEGIN
+  DECLARE @nid SMALLINT;
+  DECLARE @cur CURSOR;
+  SET @cur = CURSOR FAST_FORWARD FOR
+    SELECT [nodeid] FROM [cluster_nodes] WHERE [nodeid] <> @@SPID;
+  OPEN @cur;
+  FETCH FROM @cur INTO @nid;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    INSERT INTO [cluster_invals] ([nodeid], [id], [fragments], [kind]) VALUES (@nid, @i, @f, @k);
+    FETCH FROM @cur INTO @nid;
+  END;
+  CLOSE @cur;
+  DEALLOCATE @cur;
+END;
+
+
+# ##### upgrade tag / nxp_tagging (since Nuxeo 5.3.2) #####
+
+#TEST:
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'nxp_tagging' AND TABLE_CATALOG = db_name();
+
+#IF: ! emptyResult
+LOG.INFO Upgrading tags
+
+#IF: ! emptyResult
+IF OBJECT_ID('dbo.NX_UPGRADE_TAGS', 'P') IS NOT NULL
+  DROP PROCEDURE dbo.NX_UPGRADE_TAGS;
+
+#IF: ! emptyResult
+CREATE PROCEDURE NX_UPGRADE_TAGS
+AS
+BEGIN
+  -- make tags placeless
+  UPDATE hierarchy SET parentid = NULL WHERE primarytype = 'Tag' AND isproperty = 0;
+  -- make tagging hierarchy
+  UPDATE nxp_tagging SET id = lower(newid());
+  INSERT INTO hierarchy (id, name, isproperty, primarytype)
+    SELECT tg.id, t.label, 0, 'Tagging'
+      FROM nxp_tagging tg
+      JOIN tag t ON tg.tag_id = t.id;
+  -- make tagging relation
+  INSERT INTO relation (id, source, target)
+    SELECT id, document_id, tag_id FROM nxp_tagging;
+  -- make tagging dublincore (save is_private into coverage just in case)
+  INSERT INTO dublincore (id, title, creator, created, coverage)
+    SELECT tg.id, t.label, tg.author, tg.creation_date, tg.is_private
+      FROM nxp_tagging tg
+      JOIN tag t ON tg.tag_id = t.id;
+  -- drop now useless table
+  DROP TABLE nxp_tagging;
+  -- remove old tags root
+  DELETE FROM hierarchy
+    WHERE name = 'tags' AND primarytype = 'HiddenFolder' AND isproperty = 0
+      AND parentid IN (SELECT id FROM hierarchy WHERE primarytype = 'Root' AND isproperty = 0);
+END;
+
+#IF: ! emptyResult
+EXEC NX_UPGRADE_TAGS
+
+
+
+# ------------------------------------------------------------
+# -- PATH OPTIMIZATIONS
+
+# ------------------------------------------------------------
+# -- ancestors table
+# -- ancestors field contains the list of parents from root to parent
+#TEST:
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'ancestors' AND TABLE_CATALOG = db_name();
+
+#IF: emptyResult
+CREATE TABLE ancestors (
+  hierarchy_id ${idType} NOT NULL,
+  ancestor ${idType},
+  CONSTRAINT ancestors_hierarchy_id_fk FOREIGN KEY (hierarchy_id) REFERENCES hierarchy (id) ON DELETE CASCADE
+);
+
+#TEST:
+SELECT 1 FROM sys.indexes WHERE name = 'ancestors_hierarchy_id_idx'
+
+#IF: emptyResult
+CREATE ${clusteredIndex} INDEX [ancestors_hierarchy_id_idx] ON [dbo].[ancestors] ([hierarchy_id])
+
+#TEST:
+SELECT 1 FROM sys.indexes WHERE name = 'ancestors_ancestor_idx'
+
+#IF: emptyResult
+CREATE INDEX [ancestors_ancestor_idx] ON [dbo].[ancestors] ([ancestor])
+
+
+IF OBJECT_ID('dbo.nx_get_ancestors', 'TF') IS NOT NULL
+  DROP FUNCTION dbo.nx_get_ancestors;
+
+CREATE FUNCTION nx_get_ancestors(@id ${idType})
+RETURNS @output TABLE (ancestor_id ${idType}) AS
+  -- List ancestors of a document
+BEGIN
+  DECLARE @first TINYINT;
+  DECLARE @curid ${idType};
+  DECLARE @newid ${idType};
+  SET @first = 1;
+  SET @curid = @id;
+  WHILE @curid IS NOT NULL BEGIN
+    SET @newid = (SELECT [parentid] FROM [hierarchy] WHERE [id] = @curid);
+    IF @curid IS NOT NULL AND @curid <> @id BEGIN
+      INSERT INTO @output (ancestor_id) VALUES (@curid);
+    END;
+    IF @first = 1 AND @newid IS NULL BEGIN
+      SET @newid = (SELECT [versionableid] FROM [versions] WHERE [id] = @curid);
+    END;
+    SET @first = 0;
+    SET @curid = @newid;
+  END;
+  RETURN;
+END;
+
+IF OBJECT_ID('dbo.nx_init_ancestors', 'P') IS NOT NULL
+  DROP PROCEDURE dbo.nx_init_ancestors;
+
+CREATE PROCEDURE nx_init_ancestors AS
+BEGIN
+  SET NOCOUNT ON;
+  TRUNCATE TABLE ancestors;
+  DECLARE @cur CURSOR;
+  DECLARE @id ${idType};
+  SET @cur = CURSOR FAST_FORWARD FOR
+    SELECT id FROM hierarchy WHERE isproperty=0;
+  OPEN @cur;
+  FETCH FROM @cur INTO @id;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    INSERT INTO ancestors (hierarchy_id, ancestor)
+      SELECT @id, ancestor_id FROM dbo.nx_get_ancestors(@id);
+    FETCH FROM @cur INTO @id;
+  END;
+  CLOSE @cur;
+  DEALLOCATE @cur;
+END;
+
+
+IF OBJECT_ID('dbo.nx_trig_ancestor_insert', 'TR') IS NOT NULL
+  DROP TRIGGER dbo.nx_trig_ancestor_insert;
+
+
+CREATE TRIGGER nx_trig_ancestor_insert ON [hierarchy]
+AFTER INSERT AS
+BEGIN
+  SET NOCOUNT ON;
+  DECLARE @cur CURSOR;
+  DECLARE @id ${idType};
+  SET @cur = CURSOR FAST_FORWARD FOR
+    SELECT id FROM inserted WHERE isproperty = 0;
+  OPEN @cur;
+  FETCH FROM @cur INTO @id;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    INSERT INTO ancestors (hierarchy_id, ancestor)
+      SELECT @id, ancestor_id FROM dbo.nx_get_ancestors(@id);
+    FETCH FROM @cur INTO @id;
+  END;
+  CLOSE @cur;
+  DEALLOCATE @cur;
+END;
+
+
+#IF: ! pathOptimizationsEnabled
+ALTER TABLE [hierarchy] DISABLE TRIGGER nx_trig_ancestor_insert
+
+
+IF OBJECT_ID('dbo.nx_trig_ancestor_update', 'TR') IS NOT NULL
+  DROP TRIGGER dbo.nx_trig_ancestor_update;
+
+
+CREATE TRIGGER nx_trig_ancestor_update ON [hierarchy]
+AFTER UPDATE AS
+BEGIN
+  SET NOCOUNT ON;
+  DECLARE @cur CURSOR;
+  DECLARE @cur2 CURSOR;
+  DECLARE @id ${idType};
+  DECLARE @sid ${idType};
+  SET @cur = CURSOR FAST_FORWARD FOR
+    SELECT OLD.id FROM deleted OLD
+    JOIN [inserted] NEW ON OLD.id = NEW.id
+    WHERE NEW.isproperty = 0 AND OLD.parentid <> NEW.parentid;
+  OPEN @cur;
+  FETCH FROM @cur INTO @id;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    SET @cur2 = CURSOR FAST_FORWARD FOR
+      -- distinct is required because the table is updated between fetches
+      SELECT DISTINCT(hierarchy_id) FROM ancestors WHERE ancestor = @id;
+    OPEN @cur2;
+    FETCH FROM @cur2 INTO @sid;
+    WHILE @@FETCH_STATUS = 0 BEGIN
+      -- delete ancestors
+      DELETE FROM ancestors WHERE hierarchy_id = @sid;
+      -- insert new one
+      INSERT INTO ancestors (hierarchy_id, ancestor)
+        SELECT @sid, ancestor_id FROM dbo.nx_get_ancestors(@sid);
+      FETCH FROM @cur2 INTO @sid;
+    END;
+    CLOSE @cur2;
+    DEALLOCATE @cur2;
+    DELETE FROM ancestors WHERE hierarchy_id = @id;
+    INSERT INTO ancestors (hierarchy_id, ancestor)
+      SELECT @id, ancestor_id FROM dbo.nx_get_ancestors(@id);
+    FETCH FROM @cur INTO @id;
+  END;
+  CLOSE @cur;
+  DEALLOCATE @cur;
+END;
+
+
+#IF: ! pathOptimizationsEnabled
+ALTER TABLE [hierarchy] DISABLE TRIGGER nx_trig_ancestor_update
+
+
+# Init the ancestors if empty
+#IF: pathOptimizationsEnabled
+#TEST:
+SELECT 1 FROM (
+    SELECT hierarchy_id, ROW_NUMBER() OVER (ORDER BY hierarchy_id) AS rownum FROM ancestors
+) AS foo WHERE foo.rownum = 1
+
+
+#IF: pathOptimizationsEnabled
+#IF: emptyResult
+LOG.INFO Initializing ancestors table for path optimization, please wait...
+
+
+#IF: pathOptimizationsEnabled
+#IF: emptyResult
+EXEC nx_init_ancestors
+
+
+# ancestors ids (since Nuxeo 5.5)
+
+IF OBJECT_ID('dbo.NX_ANCESTORS', 'TF') IS NOT NULL
+  DROP FUNCTION dbo.NX_ANCESTORS;
+
+#IF: pathOptimizationsEnabled
+CREATE FUNCTION NX_ANCESTORS(@ids VARCHAR(4000))
+RETURNS @output TABLE (id ${idType}) AS
+BEGIN
+  DECLARE @pos INT;
+  DECLARE @next INT;
+  DECLARE @end INT;
+  DECLARE @id ${idType};
+  SET @pos = 0;
+  SET @next = 1;
+  WHILE @next > 0 BEGIN
+    SET @next = CHARINDEX('|', @ids, @pos + 1);
+    SET @end = CASE WHEN @next > 0 THEN @next ELSE len(@ids) + 1 END;
+    SET @id = SUBSTRING(@ids, @pos + 1, @end - @pos - 1);
+    SET @pos = @next;
+    --
+    INSERT INTO @output (id) SELECT [ancestor] FROM [ancestors] WHERE [hierarchy_id] = @id;
+  END;
+  RETURN;
+END;
+
+#IF: !pathOptimizationsEnabled
+CREATE FUNCTION NX_ANCESTORS(@ids VARCHAR(4000))
+RETURNS @output TABLE (id ${idType}) AS
+BEGIN
+  DECLARE @pos INT;
+  DECLARE @next INT;
+  DECLARE @end INT;
+  DECLARE @id ${idType};
+  SET @pos = 0;
+  SET @next = 1;
+  WHILE @next > 0 BEGIN
+    SET @next = CHARINDEX('|', @ids, @pos + 1);
+    SET @end = CASE WHEN @next > 0 THEN @next ELSE len(@ids) + 1 END;
+    SET @id = SUBSTRING(@ids, @pos + 1, @end - @pos - 1);
+    SET @pos = @next;
+    --
+    WHILE @id IS NOT NULL BEGIN
+      SET @id = (SELECT [parentid] FROM [hierarchy] WHERE [id] = @id);
+      IF @id IS NOT NULL BEGIN
+        INSERT INTO @output (id) VALUES (@id);
+      END;
+    END;
+  END;
+  RETURN;
+END;
+
+
+# ------------------------------------------------------------
+# -- ACLR (aka READ ACL) OPTIMIZATIONS
+
+# ------------------------------------------------------------
+# -- Read acls table
+# -- acl ex: jsmith,administrators,-Everyone
+# -- acl_id = md5(acl)
+#TEST:
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'aclr' AND TABLE_CATALOG = db_name();
+
+#IF: emptyResult
+CREATE TABLE aclr (
+  acl_id CHAR(32) NOT NULL,
+  acl NVARCHAR(4000)
+)
+
+#TEST:
+SELECT 1 FROM sys.indexes WHERE name = 'aclr_acl_id_idx'
+
+#IF: emptyResult
+CREATE ${clusteredIndex} INDEX [aclr_acl_id_idx] ON [dbo].[aclr] ([acl_id])
+
+
+# -- Known users table
+# -- principals ex: {members,jsmith,Everyone}
+# -- user_id = md5(principals)
+#TEST:
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'aclr_user' AND TABLE_CATALOG = db_name();
+
+#IF: emptyResult
+CREATE TABLE aclr_user (
+  user_id CHAR(32) NOT NULL,
+  principals NVARCHAR(4000),
+)
+
+
+#TEST:
+SELECT 1 FROM sys.indexes WHERE name = 'aclr_user_user_id_idx'
+
+#IF: emptyResult
+CREATE ${clusteredIndex} INDEX [aclr_user_user_id_idx] ON [dbo].[aclr_user] ([user_id])
+
+
+# -- Jonction between aclr and aclr_user
+#TEST:
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME =  'aclr_user_map' AND TABLE_CATALOG = db_name();
+
+#IF: emptyResult
+CREATE TABLE aclr_user_map (
+  user_id CHAR(32) NOT NULL,
+  acl_id CHAR(32) NOT NULL
+)
+
+
+#TEST:
+SELECT 1 FROM sys.indexes WHERE name = 'aclr_user_map_user_id_idx'
+
+#IF: emptyResult
+CREATE ${clusteredIndex} INDEX [aclr_user_map_user_id_idx] ON [dbo].[aclr_user_map] ([user_id])
+
+
+#TEST:
+SELECT 1 FROM sys.indexes WHERE name = 'aclr_user_map_acl_id_idx'
+
+#IF: emptyResult
+CREATE INDEX [aclr_user_map_acl_id_idx] ON [dbo].[aclr_user_map] ([acl_id], [user_id])
+
+
+# -- Associate a read acl for each hierarchy entry
+#TEST:
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME =  'hierarchy_read_acl' AND TABLE_CATALOG = db_name();
+
+#IF: emptyResult
+CREATE TABLE hierarchy_read_acl (
+  id ${idType} NOT NULL, -- doc id
+  acl_id CHAR(32),      -- acl id in ACLR
+  CONSTRAINT hierarchy_read_acl_id_fk FOREIGN KEY (id) REFERENCES hierarchy (id) ON DELETE CASCADE
+)
+
+# add index
+#TEST:
+SELECT 1 FROM sys.indexes WHERE name = 'hierarchy_read_acl_acl_id_idx'
+
+#IF: emptyResult
+CREATE ${clusteredIndex} INDEX [hierarchy_read_acl_acl_id_idx] ON [dbo].[hierarchy_read_acl] ([acl_id])
+
+
+# -- Log modified document that require an aclr update
+#TEST:
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'aclr_modified' AND TABLE_CATALOG = db_name();
+
+#IF: emptyResult
+CREATE TABLE aclr_modified (
+  id INT NOT NULL IDENTITY,
+  hierarchy_id ${idType},
+  is_new TINYINT
+)
+
+# add index
+#TEST:
+SELECT 1 FROM sys.indexes WHERE name = 'aclr_modified_is_new_idx';
+
+#IF: emptyResult
+CREATE INDEX [aclr_modified_is_new_idx] ON [dbo].[aclr_modified] ([is_new])
+
+#TEST:
+SELECT 1 FROM sys.indexes WHERE name = 'aclr_modified_id_idx';
+
+#IF: emptyResult
+CREATE ${clusteredIndex} INDEX [aclr_modified_id_idx] ON [dbo].[aclr_modified] ([id])
+
+
+#-- List of permission that grant the read access
+#TEST:
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME =  'aclr_permission' AND TABLE_CATALOG = db_name();
+
+#IF: emptyResult
+CREATE TABLE aclr_permission (
+  permission VARCHAR(256)
+)
+
+# add index
+#TEST:
+SELECT 1 FROM sys.indexes WHERE name = 'aclr_permission_idx';
+
+#IF: emptyResult
+CREATE ${clusteredIndex} INDEX [aclr_permission_idx] ON [dbo].[aclr_permission] ([permission])
+
+
+# dump browse permissions into table
+#TEST:
+SELECT 1 FROM aclr_permission
+
+#IF: emptyResult
+INSERT INTO aclr_permission ${readPermissions};
+
+
+# -- FUNCTIONS --------------------------------------------------
+
+IF OBJECT_ID('dbo.nx_get_local_read_acl', 'FN') IS NOT NULL
+  DROP FUNCTION dbo.nx_get_local_read_acl;
+
+CREATE FUNCTION nx_get_local_read_acl(@id ${idType})
+RETURNS NVARCHAR(4000) AS
+-- Compute the read acl for hierarchy id using a local acl
+BEGIN
+  DECLARE @curid ${idType};
+  DECLARE @op NVARCHAR(250);
+  DECLARE @read_acl NVARCHAR(4000);
+  DECLARE @cur CURSOR;
+  SET @curid = @id;
+  SET @cur = CURSOR FAST_FORWARD FOR
+    SELECT CASE
+       WHEN ([grant] = 0) THEN N'-'
+       WHEN ([grant] = 1) THEN N''
+       ELSE NULL
+      END + [user] AS op
+    FROM acls
+    WHERE [id] = @curid AND
+      [permission] IN (SELECT [permission] FROM aclr_permission)
+    ORDER BY [pos];
+  OPEN @cur;
+  FETCH FROM @cur INTO @op;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    IF @op IS NOT NULL BEGIN
+      IF @read_acl IS NULL
+        SET @read_acl = @op;
+      ELSE
+        SET @read_acl = @read_acl + N'${usersSeparator}' + @op;
+    END;
+    FETCH FROM @cur INTO @op;
+  END;
+  CLOSE @cur;
+  DEALLOCATE @cur;
+  RETURN @read_acl;
+END;
+
+
+IF OBJECT_ID('dbo.nx_get_read_acl', 'FN') IS NOT NULL
+  DROP FUNCTION dbo.nx_get_read_acl;
+
+CREATE FUNCTION nx_get_read_acl(@id ${idType})
+RETURNS NVARCHAR(4000) AS
+-- Compute the merged read acl for a doc id
+BEGIN
+  DECLARE @curid ${idType};
+  DECLARE @newid ${idType};
+  DECLARE @read_acl NVARCHAR(4000);
+  DECLARE @ret NVARCHAR(4000);
+  DECLARE @first TINYINT;
+  SET @curid = @id;
+  SET @first = 1;
+  WHILE @curid IS NOT NULL BEGIN
+    SET @read_acl = (SELECT dbo.nx_get_local_read_acl(@curid));
+    IF @read_acl IS NOT NULL
+      IF @ret IS NULL
+        SET @ret = @read_acl;
+      ELSE
+        SET @ret = @ret + N'${usersSeparator}' + @read_acl;
+    SET @newid = (SELECT parentid FROM hierarchy WHERE [id] = @curid);
+    IF @first = 1 AND @newid IS NULL
+      SET @newid = (SELECT versionableid FROM versions WHERE [id] = @curid)
+    SET @first = 0;
+    SET @curid = @newid;
+  END;
+  IF @ret IS NULL
+    SET @ret = N'_empty';
+  RETURN @ret;
+END;
+
+
+IF OBJECT_ID('dbo.nx_md5', 'FN') IS NOT NULL
+  DROP FUNCTION dbo.nx_md5;
+
+CREATE FUNCTION nx_md5(@string NVARCHAR(4000))
+RETURNS CHAR(32) AS
+BEGIN
+  DECLARE @hash CHAR(32);
+  SET @hash = (${md5HashString});
+  RETURN @hash;
+END;
+
+
+IF OBJECT_ID('dbo.nx_get_read_permissions', 'FN') IS NOT NULL
+  DROP FUNCTION dbo.nx_get_read_permissions;
+
+#IF: aclOptimizationsEnabled
+CREATE FUNCTION nx_get_read_permissions()
+RETURNS NVARCHAR(4000) AS
+BEGIN
+  -- build the list of read permissions
+  DECLARE @ret NVARCHAR(4000);
+  SET @ret = N'';
+  DECLARE @cur CURSOR;
+  SET @cur = CURSOR FAST_FORWARD FOR
+    SELECT permission  FROM aclr_permission;
+  OPEN @cur;
+  DECLARE @perm VARCHAR(250);
+  FETCH FROM @cur INTO @perm;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    SET @ret = @ret + N'|' + @perm;
+    FETCH FROM @cur INTO @perm;
+  END;
+  CLOSE @cur;
+  DEALLOCATE @cur;
+  RETURN @ret;
+END;
+
+
+IF OBJECT_ID('dbo.nx_get_read_acl_id', 'FN') IS NOT NULL
+  DROP FUNCTION dbo.nx_get_read_acl_id;
+
+#IF: aclOptimizationsEnabled
+CREATE FUNCTION nx_get_read_acl_id(@id ${idType})
+RETURNS CHAR(32) AS
+BEGIN
+  DECLARE @hash CHAR(32);
+  SET @hash = dbo.nx_md5(dbo.nx_get_read_acl(@id));
+  RETURN @hash;
+END;
+
+
+IF OBJECT_ID('dbo.nx_list_read_acls_for', 'TF') IS NOT NULL
+  DROP FUNCTION dbo.nx_list_read_acls_for;
+
+#IF: aclOptimizationsEnabled
+CREATE FUNCTION nx_list_read_acls_for(@users NVARCHAR(4000))
+RETURNS @output TABLE (acl_id CHAR(32)) AS
+  -- List matching read acl ids for a list of user/groups
+BEGIN
+  DECLARE @permissions VARCHAR(4000);
+  SET @permissions = dbo.nx_get_read_permissions();
+  INSERT INTO @output (acl_id)
+    SELECT acl_id FROM hierarchy_read_acl
+    GROUP BY acl_id
+    HAVING dbo.NX_ACCESS_ALLOWED(max(id), @users, @permissions) = 1;
+  RETURN;
+END;
+
+
+IF OBJECT_ID('dbo.nx_get_read_acls_for', 'TF') IS NOT NULL
+  DROP FUNCTION dbo.nx_get_read_acls_for;
+
+#IF: aclOptimizationsEnabled
+CREATE FUNCTION nx_get_read_acls_for(@users NVARCHAR(4000))
+RETURNS @output TABLE (acl_id CHAR(32)) AS
+ -- List read acl ids for a list of user/groups, using the cache
+BEGIN
+  DECLARE @user_md5 CHAR(32);
+  SET @user_md5 = dbo.nx_md5(@users);
+  INSERT INTO @output (acl_id)
+    SELECT acl_id FROM aclr_user_map WHERE user_id = @user_md5;
+  RETURN;
+END;
+
+
+# -- TRIGGERS --------------------------------------------------
+IF OBJECT_ID('dbo.nx_trig_acls_modified', 'TR') IS NOT NULL
+  DROP TRIGGER dbo.nx_trig_acls_modified;
+
+CREATE TRIGGER nx_trig_acls_modified ON [acls]
+AFTER INSERT, UPDATE, DELETE AS
+BEGIN
+  SET NOCOUNT ON;
+  INSERT INTO aclr_modified (hierarchy_id, is_new)
+    SELECT DISTINCT(id), 0 FROM inserted;
+  INSERT INTO aclr_modified (hierarchy_id, is_new)
+    SELECT DISTINCT(id), 0 FROM deleted;
+END;
+
+#IF: ! aclOptimizationsEnabled
+ALTER TABLE [acls] DISABLE TRIGGER nx_trig_acls_modified
+
+IF OBJECT_ID('dbo.nx_trig_hierarchy_insert', 'TR') IS NOT NULL
+  DROP TRIGGER dbo.nx_trig_hierarchy_insert;
+
+CREATE TRIGGER nx_trig_hierarchy_insert ON [hierarchy]
+AFTER INSERT AS
+BEGIN
+  SET NOCOUNT ON;
+  INSERT INTO aclr_modified (hierarchy_id, is_new)
+    SELECT DISTINCT(id), 1 FROM inserted
+    WHERE isproperty = 0;
+END;
+
+#IF: ! aclOptimizationsEnabled
+ALTER TABLE [hierarchy] DISABLE TRIGGER nx_trig_hierarchy_insert
+
+IF OBJECT_ID('dbo.nx_trig_hierarchy_update', 'TR') IS NOT NULL
+  DROP TRIGGER dbo.nx_trig_hierarchy_update;
+
+CREATE TRIGGER nx_trig_hierarchy_update ON [hierarchy]
+AFTER UPDATE AS
+BEGIN
+  SET NOCOUNT ON;
+  INSERT INTO aclr_modified (hierarchy_id, is_new)
+    SELECT DISTINCT(id), 0 FROM inserted;
+END;
+
+#IF: ! aclOptimizationsEnabled
+ALTER TABLE [hierarchy] DISABLE TRIGGER nx_trig_hierarchy_update
+
+IF OBJECT_ID('dbo.nx_trig_aclr_modified', 'TR') IS NOT NULL
+  DROP TRIGGER dbo.nx_trig_aclr_modified;
+
+CREATE TRIGGER nx_trig_aclr_modified ON [aclr]
+AFTER INSERT AS
+BEGIN
+  SET NOCOUNT ON;
+  DECLARE @permissions VARCHAR(4000);
+  SET @permissions = dbo.nx_get_read_permissions();
+  INSERT INTO aclr_user_map
+    SELECT u.user_id, NEW.acl_id
+    FROM aclr_user AS u, inserted AS NEW
+    LEFT JOIN hierarchy_read_acl AS h ON NEW.acl_id = h.acl_id
+    GROUP BY u.user_id, u.principals, NEW.acl_id
+    HAVING dbo.NX_ACCESS_ALLOWED(max(h.id), u.principals, @permissions) = 1
+END;
+
+
+#IF: ! aclOptimizationsEnabled
+ALTER TABLE [aclr] DISABLE TRIGGER nx_trig_aclr_modified
+
+IF OBJECT_ID('dbo.nx_trig_hier_read_acl_mod', 'TR') IS NOT NULL
+  DROP TRIGGER dbo.nx_trig_hier_read_acl_mod;
+
+CREATE TRIGGER nx_trig_hier_read_acl_mod ON [hierarchy_read_acl]
+AFTER INSERT, UPDATE AS
+BEGIN
+  SET NOCOUNT ON;
+  -- SQLServer does not support "For Each Row"
+  INSERT INTO aclr
+    SELECT NEW.acl_id, dbo.nx_get_read_acl(NEW.id) FROM
+    (SELECT acl_id, max(id) AS id FROM inserted AS i
+     WHERE acl_id IS NOT NULL AND
+       NOT EXISTS(SELECT 1 FROM aclr AS r WHERE r.acl_id = i.acl_id)
+     GROUP BY acl_id) AS NEW;
+END;
+
+#IF: ! aclOptimizationsEnabled
+ALTER TABLE [hierarchy_read_acl] DISABLE TRIGGER nx_trig_hier_read_acl_mod
+
+
+# -- PROCEDURES --------------------------------------------------
+IF OBJECT_ID('dbo.nx_prepare_user_read_acls', 'P') IS NOT NULL
+  DROP PROCEDURE dbo.nx_prepare_user_read_acls;
+
+#IF: aclOptimizationsEnabled
+CREATE PROCEDURE nx_prepare_user_read_acls @users NVARCHAR(4000) AS
+  -- prepare the read aclr for the user
+BEGIN
+    DECLARE @user_md5 CHAR(32);
+    SET @user_md5 = dbo.nx_md5(@users);
+    IF NOT EXISTS (SELECT 1 FROM aclr_user WHERE user_id = @user_md5) BEGIN
+      INSERT INTO aclr_user VALUES (@user_md5, @users);
+      INSERT INTO aclr_user_map SELECT @user_md5, acl_id FROM dbo.nx_list_read_acls_for(@users) AS acl_id;
+    END;
+END;
+
+
+IF OBJECT_ID('dbo.nx_rebuild_read_acls', 'P') IS NOT NULL
+  DROP PROCEDURE dbo.nx_rebuild_read_acls;
+
+#IF: aclOptimizationsEnabled
+CREATE PROCEDURE nx_rebuild_read_acls
+  -- Rebuild the read acls tables
+AS
+BEGIN
+  TRUNCATE TABLE aclr;
+  TRUNCATE TABLE aclr_user;
+  TRUNCATE TABLE aclr_user_map;
+  TRUNCATE TABLE hierarchy_read_acl;
+  TRUNCATE TABLE aclr_modified;
+  INSERT INTO hierarchy_read_acl
+    SELECT id, dbo.nx_get_read_acl_id(id)
+      FROM (SELECT id FROM hierarchy WHERE isproperty = 0) AS foo;
+END;
+
+
+IF OBJECT_ID('dbo.nx_vacuum_read_acls', 'P') IS NOT NULL
+  DROP PROCEDURE dbo.nx_vacuum_read_acls;
+
+#IF: aclOptimizationsEnabled
+CREATE PROCEDURE nx_vacuum_read_acls
+  -- Remove unused read acls entries
+AS
+BEGIN
+  DELETE FROM aclr WHERE acl_id IN (SELECT r.acl_id FROM aclr r
+    LEFT JOIN hierarchy_read_acl h ON r.acl_id=h.acl_id
+    WHERE h.acl_id IS NULL);
+  TRUNCATE TABLE aclr_user;
+  TRUNCATE TABLE aclr_user_map;
+  TRUNCATE TABLE aclr_modified;
+  ${reseedAclrModified}
+END;
+
+
+IF OBJECT_ID('dbo.nx_update_read_acls', 'P') IS NOT NULL
+  DROP PROCEDURE dbo.nx_update_read_acls;
+
+#IF: aclOptimizationsEnabled
+CREATE PROCEDURE nx_update_read_acls
+  -- Rebuild only necessary read acls
+AS
+BEGIN
+  SET NOCOUNT ON;
+  -- Get the range of modified
+  DECLARE @last INT;
+  SET @last = (SELECT COALESCE(MAX(id), 0) FROM aclr_modified WHERE is_new = 2);
+  DECLARE @top INT;
+  INSERT INTO aclr_modified VALUES (NULL, 2);
+  SET @top = @@IDENTITY
+  --
+  -- 1/ New documents, no new ACL
+  INSERT INTO hierarchy_read_acl
+    SELECT id, dbo.nx_get_read_acl_id(id)
+    FROM (SELECT DISTINCT(hierarchy_id) AS id
+        FROM aclr_modified
+        WHERE is_new = 1 AND id BETWEEN @last AND @top AND
+            EXISTS (SELECT 1 FROM hierarchy WHERE aclr_modified.hierarchy_id=hierarchy.id)) AS uids;
+  --
+  -- 2/ Handles new ACLs, marking read acl with a NULL marker
+  UPDATE hierarchy_read_acl SET acl_id = NULL WHERE id IN (
+    SELECT DISTINCT(hierarchy_id) AS hierarchy_id FROM aclr_modified WHERE is_new = 0 AND id BETWEEN @last AND @top);
+  --
+  -- 3/ Mark all children with the NULL marker
+  WHILE @@rowcount > 0 BEGIN
+    UPDATE hierarchy_read_acl SET acl_id = NULL WHERE id IN (
+      SELECT h.id
+      FROM hierarchy AS h
+      JOIN hierarchy_read_acl AS r ON h.id = r.id
+      WHERE r.acl_id IS NOT NULL
+        AND h.parentid IN (SELECT id FROM hierarchy_read_acl WHERE acl_id IS NULL));
+  END;
+  --
+  -- 4/ Compute the new read ACLs for updated documents
+  UPDATE hierarchy_read_acl SET acl_id = dbo.nx_get_read_acl_id(id) WHERE acl_id IS NULL;
+ END;
+
+
+# -- INIT --------------------------------------------------
+# build the read acls if empty, this takes care of the upgrade
+#IF: aclOptimizationsEnabled
+#TEST:
+SELECT 1 FROM (
+    SELECT acl_id, ROW_NUMBER() OVER (ORDER BY acl_id) AS rownum FROM aclr
+) AS foo WHERE foo.rownum = 1
+
+
+#IF: aclOptimizationsEnabled
+#IF: emptyResult
+LOG.INFO Upgrading to optimized acls
+
+#IF: aclOptimizationsEnabled
+#IF: emptyResult
+EXEC nx_rebuild_read_acls
+
+#IF: aclOptimizationsEnabled
+LOG.INFO Vacuuming tables used by optimized acls
+
+# Vacuum the read acls tables
+#IF: aclOptimizationsEnabled
+EXEC nx_vacuum_read_acls
+
+
+# -- END OF ACLR ------------------------------------------------------------
+
+############################################################
+
+
+#CATEGORY: upgradeVersions
+
+UPDATE hierarchy SET isversion = 1
+  FROM hierarchy JOIN versions ON hierarchy.id = versions.id;
+
+IF OBJECT_ID('dbo.NX_UPGRADE_VERSIONS', 'P') IS NOT NULL
+  DROP PROCEDURE dbo.NX_UPGRADE_VERSIONS;
+
+CREATE PROCEDURE NX_UPGRADE_VERSIONS
+AS
+BEGIN
+  DECLARE @series ${idType};
+  DECLARE @latest TINYINT;
+  DECLARE @latestmajor TINYINT;
+  DECLARE @major TINYINT;
+  DECLARE @cur CURSOR;
+  DECLARE @curid ${idType};
+  DECLARE @curvid ${idType};
+  DECLARE @curmaj BIGINT;
+  DECLARE @curmin BIGINT;
+  SET @series = '-';
+  SET @latest = 0;
+  SET @latestmajor = 0;
+  SET @cur = CURSOR FAST_FORWARD FOR
+    SELECT v.id, v.versionableid, h.majorversion, h.minorversion
+      FROM versions v JOIN hierarchy h ON v.id = h.id
+      ORDER BY v.versionableid, v.created DESC;
+  OPEN @cur;
+  FETCH FROM @cur INTO @curid, @curvid, @curmaj, @curmin;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    IF @curvid <> @series
+    BEGIN
+      -- restart
+      SET @latest = 1;
+      SET @latestmajor = 1;
+      SET @series = @curvid;
+    END;
+    SET @major = CASE WHEN @curmin = 0 THEN 1 ELSE 0 END;
+    UPDATE versions SET
+        label = CONVERT(VARCHAR, @curmaj) + '.' + CONVERT(VARCHAR, @curmin),
+        islatest = @latest,
+        islatestmajor = CASE WHEN @major = 1 and @latestmajor = 1 THEN 1 ELSE 0 END
+      WHERE id = @curid;
+    -- next
+    SET @latest = 0;
+    IF @major = 1 SET @latestmajor = 0;
+    -- loop
+    FETCH FROM @cur INTO @curid, @curvid, @curmaj, @curmin;
+  END;
+  CLOSE @cur;
+  DEALLOCATE @cur;
+END;
+
+EXEC NX_UPGRADE_VERSIONS
+
+DROP PROCEDURE dbo.NX_UPGRADE_VERSIONS;
+
+############################################################
+
+
+#CATEGORY: addClusterNode
+
+# -- delete nodes for sessions that don't exist anymore
+DELETE FROM N FROM [cluster_nodes] N WHERE
+  HAS_PERMS_BY_NAME(null, null, 'VIEW SERVER STATE') = 1
+  AND NOT EXISTS(
+    SELECT 1 FROM sys.dm_exec_sessions S WHERE
+      S.is_user_process = 1 AND N.nodeid = S.session_id);
+
+# Remove orphan invalidations
+DELETE FROM [cluster_invals] WHERE [nodeid] IN (
+  SELECT DISTINCT [cluster_invals].[nodeid]
+    FROM [cluster_invals] LEFT JOIN [cluster_nodes] ON [cluster_invals].[nodeid] = [cluster_nodes].[nodeid]
+    WHERE [cluster_nodes].[nodeid] IS NULL
+)
+
+INSERT INTO [cluster_nodes] (nodeid, created) VALUES (@@SPID, CURRENT_TIMESTAMP);
+
+
+#CATEGORY: removeClusterNode
+
+DELETE FROM [cluster_nodes] WHERE nodeid = @@SPID;
+
+# Remove orphan invalidations
+DELETE FROM [cluster_invals] WHERE [nodeid] IN (
+  SELECT DISTINCT [cluster_invals].[nodeid]
+    FROM [cluster_invals] LEFT JOIN [cluster_nodes] ON [cluster_invals].[nodeid] = [cluster_nodes].[nodeid]
+    WHERE [cluster_nodes].[nodeid] IS NULL
+)
+
+
+############################################################
+
+
+#CATEGORY: upgradeLastContributor
+
+UPDATE dublincore SET lastcontributor = dc_c.item
+  FROM dublincore dc
+    JOIN (SELECT id, max(pos) AS pos FROM dc_contributors GROUP BY id) AS tmp ON (dc.id = tmp.id)
+    JOIN dc_contributors dc_c ON (tmp.id = dc_c.id AND tmp.pos = dc_c.pos)
+  WHERE dc.lastcontributor IS NULL;
+
+
+############################################################
+
+
+#CATEGORY: upgradeLocks
+
+ALTER TABLE locks DROP CONSTRAINT locks_id_hierarchy_fk;
+
+DELETE FROM locks WHERE lock IS NULL;
+
+UPDATE locks SET
+  owner = SUBSTRING(lock, 1, CHARINDEX(':', lock) - 1),
+  created = CONVERT(DATETIME, SUBSTRING(lock, CHARINDEX(':', lock) + 1, 9999), 107)
+  WHERE owner IS NULL
