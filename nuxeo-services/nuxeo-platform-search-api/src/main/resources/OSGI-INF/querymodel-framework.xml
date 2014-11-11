@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService">
+  <implementation
+    class="org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService" />
+  </service>
+
+  <documentation>
+    The QueryModel service registers QueryModelDescriptor instances that
+    are used by the QueryModelActionsBean to build QueryModel instances
+    upon requests.
+
+    A QueryModel is used to perform NXQL queries on the core with search
+    parameters set dynamically. They come in two flavors: stateless and
+    stateful query models:
+
+    - Stateless query models are described by a patterned query and the
+    dynamic parameters are provided as an array by the caller of the
+    ``getDocument(Object[] params)`` method. See the default
+    "/user_dashboard.xhtml" view for sample usage.
+
+    - Stateful query models use an internal non persistent DocumentModel
+    instance to store use editable parameters. Thus the
+    ``getDocument()`` does not take any parameters since they are read
+    from the document model instead. The interpretation of the
+    parameters follow a structure defined by the ``whereClause``
+    attribute of the QueryModelDescriptor class. A parameter *name* can occur
+    several times, possibly with different values within a single where clause.
+
+    Among other things, it's possible to register an escaper to configure
+    which special characters should be escaped in fulltext-like fields (
+    "escaper" attribute) for STATEFUL query models.
+
+    Stateless ones are usually handled by some applicative code that
+    can take care of this. This typically depends on both the search backend and
+    the behaviour expected by the end user.
+
+    @author Olivier Grisel (og@nuxeo.com)
+  </documentation>
+
+  <extension-point name="model">
+    <object
+      class="org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor" />
+  <documentation>
+    Registry for QueryModelDescriptor instances.
+
+    @author Olivier Grisel (og@nuxeo.com)
+  </documentation>
+  </extension-point>
+
+
+</component>
