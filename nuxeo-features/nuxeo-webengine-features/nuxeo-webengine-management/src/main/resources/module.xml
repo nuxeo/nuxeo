@@ -1,0 +1,2 @@
+<?xml version="1.0"?>
+<module name="Management" root-type="Management" path="/mgmt" extends="base" headless="false"/>

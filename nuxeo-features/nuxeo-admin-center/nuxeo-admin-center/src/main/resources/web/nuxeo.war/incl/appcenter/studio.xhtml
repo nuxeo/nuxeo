@@ -1,0 +1,124 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <a4j:outputPanel id="connectAppListing">
+    <div class="actionBar marketplace">
+      <span class="marketplaceLogo"><a target="_blank" href="https://doc.nuxeo.com/display/Studio/Nuxeo+Studio+Documentation+Center"><img src="#{contextPath}/img/nuxeo_studio_logo.png" alt="Nuxeo Studio" /></a></span>
+      <span class="label"><a class="connectLink" target="_blank" href="https://doc.nuxeo.com/display/Studio/Nuxeo+Studio+Documentation+Center"><h:outputText value="#{messages['label.tab.studio.intro']}"/></a></span>
+    </div>
+
+  <div class="actionBar">
+
+      <h:form>
+        <a4j:poll interval="1000" enabled="#{appsViews.isStudioSnapshopUpdateInProgress()}" reRender="connectAppListing"/>
+      </h:form>
+
+        <div class="studioUpdateActions">
+          <h:outputText value="#{messages['label.studio.devmod.title']}" styleClass="boldLabel"/>
+        </div>
+        <div class="studioUpdateActions">
+          <h:outputText value="#{messages['label.studio.devmod.desc1']}"/>
+          <h:outputText value="#{messages['label.studio.devmod.desc2']}"/><br/>
+          <h:outputText value="#{messages['label.studio.devmod.desc3']}"/><br/>
+        </div>
+
+      <h:panelGroup rendered="#{!appsViews.isStudioSnapshopUpdateInProgress()}">
+        <h:form>
+        <div class="studioUpdateActions">
+          <table width="100%"><tr>
+          <td width="70%">
+            <h:outputText value="#{messages['label.studio.update.lastStatus']}"/>
+          <span style="color:green">
+          <h:outputText value="#{appsViews.getStudioInstallationStatus()}" styleClass="boldLabel"/>
+          </span>
+          <c:if test="#{connectServerReachable and registredConnectInstance}">
+            <a4j:commandButton id="updateStudioButton" onclick="showUpdateInProgress()" value="#{messages['admCommand.studio.update']}" actionListener="#{appsViews.installStudioSnapshot()}"  reRender="connectAppListing" styleClass="button"/>
+            <h:outputText value="#{messages['label.studio.update']}"/>
+            <img src="#{contextPath}/img/big_loading.gif" id="studioUpdateWaiter" style="display:none" height="20"/>
+          </c:if>
+          </td>
+          <td style="text-align:center;vertical-align:middle">
+          <c:if test="#{connectServerReachable and registredConnectInstance}">
+          <a target="studio" href="https://connect.nuxeo.com/nuxeo/site/studio/ide"><img src="#{contextPath}/icons/studio32.png"/><h:outputText value="#{messages['action.studio.go']}" styleClass="boldLabel"/>
+          </a>
+          </c:if>
+          </td>
+          </tr>
+          </table>
+        </div>
+        </h:form>
+      </h:panelGroup>
+    </div>
+    <br/>
+    <div class="actionBar">
+        <div class="studioUpdateActions">
+          <h:outputText value="#{messages['label.studio.prodmod.title']}" styleClass="boldLabel"/>
+        </div>
+        <div class="studioUpdateActions">
+          <h:outputText value="#{messages['label.studio.prodmod.desc1']}"/>
+          ( <A href="https://doc.nuxeo.com/display/Studio/Version+Control#VersionControl-creatingtag" target="docnuxeocom" ><h:outputText value="#{messages['label.studio.prodmod.tagLink']}"/></A> )
+          <h:outputText value="#{messages['label.studio.prodmod.desc2']}"/>
+        </div>
+        <h:form>
+        <a4j:commandButton value="#{messages['admCommand.studio.refresh']}" actionListener="#{appsViews.flushCache()}"  reRender="connectAppListing" styleClass="button" />
+        <h:outputText value="#{messages['label.studio.refresh']}"/>
+        </h:form>
+    </div>
+
+    <h:panelGroup rendered="#{appsViews.isStudioSnapshopUpdateInProgress()}" styleClass="boldLabel">
+      <div class="actionBar marketplace">
+       <h:outputText value="#{messages['label.studio.update.inprogress']}"/>
+       <h:outputText value="#{appsViews.getStudioInstallationStatus()}"/>
+      </div>
+    </h:panelGroup>
+
+  <script>
+  <!--
+  function displayConnectIframe() {
+      var margin = 80;
+      var min = 200;
+      jQuery('#connectLoaderWaiter').css('display','none');
+      var h = jQuery(document).height() - jQuery("#beforeIframe").position().top -margin;
+      if (h<min) {
+        h=min;
+      }
+      jQuery("#connectIframe").height(h);
+      jQuery("#connectIframe").css("display","block");
+  }
+  function showUpdateInProgress() {
+    jQuery("input[type='button'][class='button'][id$='updateStudioButton']").attr("disabled",true);
+    jQuery("input[type='button'][class='button'][id$='updateStudioButton']").css("color","#CCCCCC")
+    jQuery('#studioUpdateWaiter').css('display','inline');
+  }
+  -->
+  </script>
+
+  <c:if test="#{connectServerReachable and registredConnectInstance}">
+    <span id="beforeIframe"></span>
+    <iframe id="connectIframe" src="#{contextPath}/site/connectClient/packages/studio" frameborder="0" scrolling="auto" width="100%"
+    style="display:none" onload="javascript:displayConnectIframe();">
+    </iframe>
+
+    <div id="connectLoaderWaiter" style="width:100%;height:100px;text-align:center">
+        <img src="#{contextPath}/img/big_loading.gif"/>
+    </div>
+
+  </c:if>
+   <c:if test="#{not connectServerReachable}">
+    <div class="infoMessage">
+      <h:outputText value="#{messages['adminsubtab.servernotreachable']}" />
+    </div>
+  </c:if>
+
+  <c:if test="#{not registredConnectInstance}">
+    <div class="infoMessage">
+     <h:outputText value="#{messages['adminsubtab.registrationRequired']}" />
+    </div>
+  </c:if>
+
+  </a4j:outputPanel>
+
+</div>
