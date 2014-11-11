@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<component name="FakeRepository">
+
+  <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
+    point="repository">
+    <repository name="demo"
+      factory="org.nuxeo.ecm.platform.relations.io.test.FakeRepositoryFactory" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
+    point="repositories">
+    <repository name="demo" label="Default Repository" />
+  </extension>
+
+</component>
+

@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <ui:define name="page title">Nuxeo 5 EP</ui:define>
+
+  <ui:define name="body">
+    <h:form>
+      <div>
+        <ui:include src="/groupManager_action_tabs.xhtml" />
+        <div style="clear:both"></div>
+      </div>
+
+      <div class="tabsContent">
+
+        <br />
+        <ui:decorate template="/incl/back_link.xhtml">
+          <ui:param name="doAction" value="view_groups" />
+        </ui:decorate>
+
+        <br />
+        <h1>
+          <h:outputText value="#{selectedGroup.name}" />
+        </h1>
+
+        <ui:include src="/incl/message_banner.xhtml" />
+
+        <ui:decorate template="/incl/delete_link.xhtml">
+          <ui:param name="doDelete" value="delete_group" />
+        </ui:decorate>
+
+        <div>
+          <ui:include src="/groupManager_edit_subtabs.xhtml" />
+          <div style="clear:both" />
+        </div>
+
+
+        <div class="tabsContent">
+
+          <table cellspacing="0" cellpadding="0" border="0">
+            <tbody>
+              <tr>
+                <td class="labelColumn">
+                  <h:outputText
+                    value="#{messages['label.groupManager.userMembers']}" />
+                </td>
+                <td>
+                  <table cellspacing="5" cellpadding="0" border="0">
+                    <tbody>
+                      <tr>
+                        <td valign="top" colspan="2">
+                          <ui:include
+                            src="/incl/select_users_search.xhtml">
+                            <ui:param name="searchType"
+                              value="USER_TYPE" />
+                          </ui:include>
+                        </td>
+                      </tr>
+                      <tr class="rightsAddManager">
+                        <td valign="top" align="center">
+                          <ui:include
+                            src="/incl/select_users_results.xhtml">
+                            <ui:param name="searchFrom"
+                              value="USER_MANAGEMENT" />
+                          </ui:include>
+                        </td>
+                        <td valign="top" align="center">
+                          <ui:include
+                            src="/incl/select_users_selection.xhtml">
+                            <ui:param name="searchType"
+                              value="USER_TYPE" />
+                          </ui:include>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+              <tr class="dataInput">
+                <td class="labelColumn">
+                  <h:outputText
+                    value="#{messages['label.groupManager.groupMembers']}" />
+                </td>
+                <td class="fieldColumn">
+                  <h:selectManyListbox
+                    value="#{selectedGroup.memberGroups}">
+                    <f:selectItems
+                      value="#{groupManagerActions.availableGroups}" />
+                  </h:selectManyListbox>
+                </td>
+              </tr>
+              <tr class="dataInput">
+                <td />
+                <td>
+                  <h:commandButton type="submit"
+                    value="#{messages['command.save']}"
+                    action="#{groupManagerActions.updateGroup}"
+                    class="button" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div><!-- inner tabsContent -->
+
+      </div><!-- outer tabsContent -->
+    </h:form>
+
+
+  </ui:define>
+
+</nxthemes:composition>

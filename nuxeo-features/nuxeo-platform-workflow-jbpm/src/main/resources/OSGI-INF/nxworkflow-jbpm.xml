@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.workflow.jbpm">
+
+  <documentation>
+      JBPM workflow engine implementation
+
+      @version 1.0
+      @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+  </documentation>
+
+   <require>org.nuxeo.ecm.platform.workflow.service.WorkflowService</require>
+
+   <extension target="org.nuxeo.ecm.platform.workflow.service.WorkflowService"
+         point="engine">
+
+    <documentation>
+
+      JBPM workflow engine implementation contribution.
+
+      <p/>
+
+      This is the JBPM workflow engine implementation registered within the
+      core workflow engine service.
+
+      <p/>
+      Note, the workflow engine is registered as the default one. It means
+      you will need to override this if you want to deploy another workflow
+      engine implementation as defaults.
+
+    </documentation>
+
+    <engine name="jbpm"
+          default="true"
+        class="org.nuxeo.ecm.platform.workflow.jbpm.JbpmWorkflowEngine"/>
+
+   </extension>
+
+</component>

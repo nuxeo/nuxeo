@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.versioning.service.VersioningService">
+
+  <property name="defaultMajorVersion" value="uid:major_version" />
+  <property name="defaultMinorVersion" value="uid:minor_version" />
+
+  <implementation
+    class="org.nuxeo.ecm.platform.versioning.service.VersioningService" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.versioning.api.VersioningManager" />
+  </service>
+  
+  <extension-point name="rules">
+    <object
+      class="org.nuxeo.ecm.platform.versioning.service.WFBasedRuleDescriptor" />
+    <object
+      class="org.nuxeo.ecm.platform.versioning.service.EditBasedRuleDescriptor" />
+    <object
+      class="org.nuxeo.ecm.platform.versioning.service.AutoBasedRuleDescriptor" />
+  </extension-point>
+
+  <extension-point name="properties">
+    <object
+      class="org.nuxeo.ecm.platform.versioning.service.VersioningPropertiesDescriptor" />
+  </extension-point>
+
+  <require>org.nuxeo.ecm.core.listener.CoreEventListenerService</require>
+  <extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
+    point="listener">
+    <listener name="versioninglistener"
+      class="org.nuxeo.ecm.platform.versioning.listeners.DocVersioningListener" />
+  </extension>
+
+  <!-- Versioning Document Adapter -->
+  <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService"
+    point="adapters">
+    <adapter class="org.nuxeo.ecm.core.api.facet.VersioningDocument"
+      factory="org.nuxeo.ecm.platform.versioning.facet.VersioningAdapterFactory" />
+  </extension>
+
+</component>

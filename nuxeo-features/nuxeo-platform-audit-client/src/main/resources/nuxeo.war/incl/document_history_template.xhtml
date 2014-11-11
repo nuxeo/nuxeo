@@ -1,0 +1,105 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  >
+
+    <h3><h:outputText value="#{messages['title.history']}" /></h3>
+
+    <h:dataTable var="logEntry" value="${logEntries}"
+      class="dataOutput" rowClasses="dataRowEven,dataRowOdd">
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.performedAction']}" />
+        </f:facet>
+        <h:outputText value="#{messages[logEntry.eventId]}" />
+      </h:column>
+      <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.date']}" />
+        </f:facet>
+        <h:outputText value="#{logEntry.eventDate}" >
+          <f:convertDateTime pattern="#{nxu:basicDateFormater()}"
+            timeZone="#{timeZone}" />
+        </h:outputText>
+    </h:column>
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.time']}" />
+      </f:facet>
+        <h:outputText value="#{logEntry.eventDate}" converter="TimeConverter"/>
+      </h:column>
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.username']}" />
+        </f:facet>
+        <h:outputText value="#{nxu:userFullName(logEntry.principalName)}" />
+      </h:column>
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.category']}" />
+        </f:facet>
+        <h:outputText value="#{messages[logEntry.category]}" />
+      </h:column>
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.comment']}" />
+        </f:facet>
+        <h:outputText value="#{messages[logEntriesComments[logEntry.id]]}" />
+
+        <f:subview rendered="#{(logEntriesLinkedDocs[logEntry.id])!=null}">
+        <h:outputText value="   "/>
+         <nxu:graphicImage value="/icons/lock.gif"
+           rendered="#{(logEntriesLinkedDocs[logEntry.id]).brokenDocument}"
+                alt="#{(logEntriesLinkedDocs[logEntry.id]).documentRef}"
+           />
+          <nxd:restDocumentLink document="#{(logEntriesLinkedDocs[logEntry.id]).document}" rendered="#{!(logEntriesLinkedDocs[logEntry.id]).brokenDocument}">
+              <nxu:graphicImage
+                        value="#{nxd:iconPath((logEntriesLinkedDocs[logEntry.id]).document)}" alt="#{(logEntriesLinkedDocs[logEntry.id]).document.type}">
+                        </nxu:graphicImage>
+          </nxd:restDocumentLink>
+        </f:subview>
+
+      </h:column>
+       <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.lifecycle']}" />
+        </f:facet>
+        <h:outputText value="#{messages[logEntry.docLifeCycle]}" />
+      </h:column>
+    </h:dataTable>
+
+   <h:panelGroup rendered="#{currentDocument.versionable}">
+    <h3><h:outputText value="#{messages['title.version']}" /></h3>
+
+    <h:form rendered="${not empty versionList}">
+    <h:dataTable var="versionItem" value="#{versionList}"
+      class="dataOutput" rowClasses="dataRowEven,dataRowOdd">
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.version']}" />
+        </f:facet>
+        <h:outputText value="#{versionItem.description}" />
+      </h:column>
+
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.action']}" />
+        </f:facet>
+
+      <ui:insert name="document_history_buttons" />
+
+      </h:column>
+    </h:dataTable>
+    </h:form>
+
+    <p><h:outputText rendered="${empty versionList}"
+      value="#{messages['label.noversion']}"/></p>
+   </h:panelGroup>
+
+</div>

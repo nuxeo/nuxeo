@@ -1,0 +1,68 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<!-- New Document & others removed
+<ui:include src="/incl/document_actions.xhtml"/>
+-->
+  <h:form id="subscriptions">
+
+  <nxu:dataList
+  var="entry"
+  value="#{groupsSubscriptionsAction.usersByNotificationsForCurrentDocument.entrySet}">
+
+<h:panelGroup rendered="#{not empty entry.value}">
+  <h3>
+  <h:outputText value="#{messages[entry.key]}" />
+  </h3>
+  <h:dataTable
+    class="dataOutput" rowClasses="dataRowEven,dataRowOdd"
+    columnClasses="iconColumn,,"
+  var="user"
+  value="#{entry.value}">
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.content.header.type']}" />
+      </f:facet>
+      <nxu:methodResult name="principalType"
+        value="#{principalListManager.getPrincipalType(user)}">
+        <h:graphicImage value="#{securityActions.iconPathMap[principalType]}"
+          alt="#{securityActions.iconAltMap[principalType]}" />
+      </nxu:methodResult>
+    </h:column>
+  <h:column>
+    <h:outputText value="#{nxu:userFullName(user)}" />
+  </h:column>
+  </h:dataTable>
+</h:panelGroup>
+
+</nxu:dataList>
+
+
+  </h:form>
+
+
+  <h:form><div class="userAndGroupFilter">
+    <ui:include src="/incl/select_users_search.xhtml" />
+
+    <table cellspacing="5" cellpadding="0" border="0" class="rightsAddManager">
+      <tr>
+        <td valign="top" align="center" width="33%">
+          <ui:include src="/incl/select_users_results.xhtml" />
+        </td>
+        <td valign="top" align="center" width="33%">
+          <ui:include src="/incl/select_users_selection.xhtml" />
+        </td>
+        <td width="33%">
+          <ui:include src="/incl/group_subscriptions_action.xhtml" />
+        </td>
+      </tr>
+    </table>
+
+  </div></h:form>
+</div>
