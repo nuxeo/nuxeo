@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component
+    name="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.data3">
+
+  <extension
+      target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
+      point="factoryBinding">
+
+    <factoryBinding name="importData3Factory" factoryName="ImportFactory"
+                     targetType="Workspace">
+      <option name="path">resource:data/test3/hello.pdf</option>
+    </factoryBinding>
+  </extension>
+
+
+</component>
