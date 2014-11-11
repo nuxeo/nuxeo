@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Actions JSF
+Bundle-SymbolicName: org.nuxeo.ecm.actions.jsf;singleton:=true
+Bundle-Localization: bundle
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/action-widgettypes-contrib.xml,
+ OSGI-INF/widgettypes-contrib.xml
