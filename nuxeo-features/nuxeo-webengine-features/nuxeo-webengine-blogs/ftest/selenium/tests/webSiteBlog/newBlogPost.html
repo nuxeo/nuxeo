@@ -1,0 +1,103 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>newBlogPost</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">newBlogPost</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Administrator</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//select[@class=&quot;langSelect&quot;]</td>
+	<td>label=English (United Kingdom)</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@class=&quot;langSubmit&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/site/blogs/testblogsite1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>15000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create entry']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>titleInput</td>
+	<td>testBlogPost2</td>
+</tr>
+<tr>
+	<td>answerOnNextPrompt</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>description</td>
+	<td>Test Description 2</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>richtextEditor_ifr</td>
+	<td>Test Blog Text 2</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>15000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>testBlogPost2</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
