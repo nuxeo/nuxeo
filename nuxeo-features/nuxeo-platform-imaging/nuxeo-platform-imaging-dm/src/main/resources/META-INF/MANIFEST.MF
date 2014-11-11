@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Picture Imaging DM
+Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.dm
+Bundle-Version: 1.0.0
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateless
+Nuxeo-Component: OSGI-INF/actions-contrib.xml,
+ OSGI-INF/imaging-urlservice-contrib.xml,
+ OSGI-INF/theme-contrib.xml
+Eclipse-LazyStart: true
+Require-Bundle: org.nuxeo.ecm.platform.picture.api,
+ org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.actions,
+ org.nuxeo.ecm.webapp.core,
+ org.nuxeo.ecm.platform.types.core,
+ org.nuxeo.ecm.platform.commandline.executor
+Export-Package: org.nuxeo.ecm.platform.picture.web

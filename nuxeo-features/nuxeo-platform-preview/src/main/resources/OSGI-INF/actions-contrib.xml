@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.preview.actions">
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <!-- disable the old tab as we now use the showPreviewPopup action  -->
+    <action id="TAB_PREVIEW" link="/incl/tabs/preview_tab.xhtml"
+      enabled="false" order="200" label="label.document.preview"
+      icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>view_preview</filter-id>
+    </action>
+
+    <action id="POPUP_PREVIEW" link="javascript:doPreview" order="130"
+      enabled="false" label="label.document.preview" icon="/icons/pdf.png">
+      <category>POPUP</category>
+      <filter-id>popup_view_preview</filter-id>
+    </action>
+
+    <action id="showFancyBoxPreviewPopup" link="javascript:doPreviewPopup" order="130"
+      enabled="true" label="label.document.preview" icon="/icons/preview.png">
+      <category>POPUP</category>
+      <filter-id>popup_view_preview</filter-id>
+    </action>
+
+    <action id="showFancyBoxPreview" order="50" type="fancybox"
+      label="label.document.preview" icon="/icons/contextual_menu/preview.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>view_preview</filter-id>
+      <filter-id>not_folder</filter-id>
+      <filter-id>not_anonymous</filter-id>
+      <properties>
+        <property name="iframe">
+          #{previewActions.getCurrentDocumentPreviewPopupURL()}
+        </property>
+      </properties>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="view_preview">
+      <rule grant="true">
+        <condition>#{previewActions.hasPreview}</condition>
+      </rule>
+    </filter>
+
+    <filter id="popup_view_preview">
+      <rule grant="true">
+        <condition>#{previewActions.documentHasPreview(document)}</condition>
+      </rule>
+      <rule grant="false">
+        <facet>Folderish</facet>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>
