@@ -1,0 +1,103 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>createNewEntryTestWebpage</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">createNewEntryTestWebpage</td></tr>
+</thead><tbody>
+<tr>
+        <td>open</td>
+        <td>restAPI/systemLog?token=dolog&amp;level=WARN&amp;message=----- Selenium createNewEntryTestWebpage</td>
+        <td></td>
+</tr>
+<tr>
+    <td>setTimeout</td>
+    <td>30000</td>
+    <td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Administrator</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>site/sites/testWebSite1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>15000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create page']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>titleInput</td>
+	<td>testwebpage2</td>
+</tr>
+<tr>
+	<td>answerOnNextPrompt</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>description</td>
+	<td>ndescription testwebpage2</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>wiki_editor</td>
+	<td>Content for testWebpage2 :The latest downloads include:<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;* the Nuxeo EP, Nuxeo WebEngine and Nuxeo RCP installers.<br />&nbsp;&nbsp;&nbsp;&nbsp;* add-ons and Nuxeo Shell for the Nuxeo EP server.<br />&nbsp;&nbsp;&nbsp;&nbsp;* plugins for your favorite web browser or office suite (currently, Internet Explorer, Firefox and MS-Office).</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>15000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Content for testWebpage2</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>

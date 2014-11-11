@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<structure
+  bundles="bundles/*.jar:bundles/*.rar:bundles/*-fragment.xml:bundles/*-fragments.xml:plugins/*.jar:plugins/*-fragment.xml:plugins/*-fragments.xml">
+  <preprocessor enabled="true"
+    classpath="bundles/nuxeo-common-*.jar:bundles/nuxeo-runtime-deploy-*.jar:bundles/nuxeo-launcher-commons-*.jar" />
+  <context path="" metaDataPath="META-INF" classpath="lib/*.jar" />
+  <properties>
+    <property name="nuxeo.home.dir">${jboss.server.data.dir}/NXRuntime</property>
+    <property name="nuxeo.config.dir">${nuxeo.ear.dir}/config</property>
+  </properties>
+</structure>
