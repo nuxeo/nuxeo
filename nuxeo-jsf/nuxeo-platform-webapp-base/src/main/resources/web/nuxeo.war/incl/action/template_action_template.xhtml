@@ -1,0 +1,16 @@
+<c:if test="true"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+
+  <nxu:set var="actionTemplate" value="#{action.properties.template}"
+    resolveTwice="true">
+    <c:if test="#{not empty actionTemplate}">
+      <ui:include src="#{actionTemplate}">
+        <ui:insert name="inside_action" />
+      </ui:include>
+    </c:if>
+  </nxu:set>
+
+</c:if>
