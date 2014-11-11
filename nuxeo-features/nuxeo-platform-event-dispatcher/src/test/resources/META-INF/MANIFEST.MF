@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Event Service JMS Bridge
+Bundle-SymbolicName: org.nuxeo.ecm.platform.event-bridge.tests;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Bundle-Category: platform
+Require-Bundle: org.nuxeo.ecm.core.event
+Eclipse-LazyStart: true
+

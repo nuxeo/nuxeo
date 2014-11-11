@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component
+    name="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService.extensions">
+
+  <documentation>
+    Default auditable events contributions.
+    @version 1.0
+    @author Julien Anguenot
+  </documentation>
+
+  <require>org.nuxeo.ecm.platform.audit.service.NXAuditEventsService</require>
+
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+      point="event">
+    <documentation>
+      Those default auditable events match Nuxeo core base events.
+      <p/>
+      If you are sending new Nuxeo core events and want them audited, this is the place to
+      declare them NXAudit side.
+    </documentation>
+
+    <event name="documentCreated"/>
+    <event name="documentCreatedByCopy"/>
+    <event name="documentDuplicated"/>
+    <event name="documentMoved"/>
+    <event name="documentRemoved"/>
+    <event name="documentModified"/>
+    <event name="documentLocked"/>
+    <event name="documentUnlocked"/>
+    <event name="documentPublished"/>
+    <event name="documentSecurityUpdated"/>
+    <event name="documentUnPublished"/>
+    <event name="documentSubmitedForPublication"/>
+    <event name="documentPublicationRejected"/>
+    <event name="documentPublicationApproved"/>
+    <event name="lifecycle_transition_event"/>
+  </extension>
+  
+</component>
