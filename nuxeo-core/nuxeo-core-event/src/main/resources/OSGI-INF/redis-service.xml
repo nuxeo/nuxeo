@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.redis.RedisService">
+
+  <documentation>
+     Redis configuration service.
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.redis.RedisService" />
+  </service>
+
+  <implementation class="org.nuxeo.ecm.core.redis.RedisServiceImpl" />
+
+  <extension-point name="configuration">
+
+    <documentation>
+      Extension allowing the configuration of a Redis instance.
+      <p/>
+      Example configuration:
+      <code>
+        <redis disabled="false">
+          <prefix>nuxeo:work:</prefix>
+          <host>localhost</host>
+          <port>6379</port>
+          <password>secret</password>
+          <database>0</database>
+          <timeout>2000</timeout>
+        </redis>
+      </code>
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.redis.RedisConfigurationDescriptor"/>
+
+  </extension-point>
+
+</component>
