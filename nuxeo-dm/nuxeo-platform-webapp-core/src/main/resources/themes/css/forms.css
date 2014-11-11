@@ -1,0 +1,35 @@
+/*
+Styles for all the forms.
+=Forms elements
+=Calendar -> adjust the Calendar icon
+author: lkemen@nuxeo.com
+*/
+
+/* =Forms elements */
+textarea { font-family: "default (__FLAVOR__ font)"; padding: .4em; font-size: .95em }
+.selectDocumentType { margin-top: 1em }
+.checkBox { margin-right: .3em; border: none }
+.required { background: transparent url("${basePath}/icons/required.gif") top right no-repeat; padding: 0 1em 0 0 }
+option { background-color: white }
+optgroup { background-color: background-color: "color.major.light (__FLAVOR__ background)"; }
+
+input, input[type="file"], textarea, select { border: 1px solid #bbb; border-radius: 2px; box-shadow: 1px 1px 2px #e0e0e0 inset; color: #666; display: inline-block; font-size: 1em; line-height: 18px; padding: .3em }
+input[type="file"] { margin-left: .6em }
+input[type="checkbox"], input[type="radio"], input[type="image"], input[type="hidden"] { background: none; border: none !important; box-shadow: none; }
+
+select:focus > option:checked, select:focus > optgroup > option:checked { background-color: "color.major.stronger (__FLAVOR__ background)"; }
+input:focus, textarea:focus { border-color: "color.major.strong (__FLAVOR__ border)"; }
+
+/* in Tables */
+.dataInput textarea, .dataInput .dataInputText { width: 500px }
+.dataInput textarea, .dataInput .dataInputText, .dataInput .dataInputTextNoSize { vertical-align: top }
+.dataInput select { box-shadow: 1px 1px 2px #e0e0e0 inset; min-width: 9em; padding: .3em; vertical-align: top }
+
+.taskPrincipalSelect select { margin: 4em 0 1em 1.4em; padding: .2em .1em .2em .1em }
+
+.chainSelect { margin-top: .3em }
+.chainSelect div { background-color: #fffde4; border: 1px solid #bbb; border-radius: 3px; box-shadow: 1px 1px 2px #E0E0E0 inset; margin: .3em; padding: 0 .3em .4em; max-width: 50%; }
+.chainSelect input[type="image"] { margin: 0 .3em -0.4em 0 }
+
+/* =Calendar */
+.calendarTrigger { cursor: pointer; margin: 0 0 .4em; vertical-align: bottom }
