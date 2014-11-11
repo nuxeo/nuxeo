@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.ui.web.ContentViewService">
+
+  <documentation>
+    The Content View service provides extension points for content view
+    registration.
+
+    @author Anahide Tchertchian (at@nuxeo.com)
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.contentview.jsf.ContentViewServiceImpl" />
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.contentview.jsf.ContentViewService" />
+  </service>
+
+  <extension-point name="contentViews">
+    <documentation>
+      Content Views are referencing resources that will help build a listing on
+      the UI.
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.contentview.jsf.ContentViewDescriptor" />
+  </extension-point>
+
+</component>

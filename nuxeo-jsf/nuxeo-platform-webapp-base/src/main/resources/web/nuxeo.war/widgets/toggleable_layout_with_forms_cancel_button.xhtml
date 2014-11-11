@@ -1,0 +1,88 @@
+<c:if test="true"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <c:choose>
+
+    <c:when test="#{display == 'buttons'}">
+      <a4j:commandButton
+        id="#{widget.id}_#{idPrefix}cancelToggleAction"
+        immediate="true"
+        reRender="#{widget.id}_regionPanel"
+        value="#{cancelActionLabel}"
+        styleClass="button #{widgetProperty_actionStyleClass}">
+        <f:setPropertyActionListener
+          value="#{initialMode}"
+          target="#{selectionActions.selectedValue}" />
+        <f:param name="valueHolderId"
+          value="#{widget.id}_modeValueHolder" />
+        <nxu:actionListenerMethod
+          value="#{selectionActions.onClick}" />
+      </a4j:commandButton>
+    </c:when>
+
+    <c:when test="#{display == 'icons'}">
+      <a4j:commandLink
+        id="#{widget.id}_#{idPrefix}cancelToggleAction"
+        immediate="true"
+        reRender="#{widget.id}_regionPanel"
+        styleClass="actionLink #{widgetProperty_actionStyleClass}">
+        <nxh:graphicImage value="/icons/action_delete_mini.png"
+          title="#{cancelActionLabel}"
+          alt="#{cancelActionLabel}" />
+        <f:param name="valueHolderId"
+          value="#{widget.id}_modeValueHolder" />
+        <f:setPropertyActionListener
+          value="#{initialMode}"
+          target="#{selectionActions.selectedValue}" />
+        <nxu:actionListenerMethod
+          value="#{selectionActions.onClick}" />
+      </a4j:commandLink>
+    </c:when>
+
+    <c:when test="#{display == 'links'}">
+      <a4j:commandLink
+        id="#{widget.id}_#{idPrefix}cancelToggleAction"
+        immediate="true"
+        reRender="#{widget.id}_regionPanel"
+        value="#{cancelActionLabel}"
+        styleClass="actionLink #{widgetProperty_actionStyleClass}">
+        <f:param name="valueHolderId"
+          value="#{widget.id}_modeValueHolder" />
+        <f:setPropertyActionListener
+          value="#{initialMode}"
+          target="#{selectionActions.selectedValue}" />
+        <nxu:actionListenerMethod
+          value="#{selectionActions.onClick}" />
+      </a4j:commandLink>
+    </c:when>
+
+    <c:otherwise>
+      <a4j:commandLink
+        id="#{widget.id}_#{idPrefix}cancelToggleAction"
+        immediate="true"
+        reRender="#{widget.id}_regionPanel"
+        styleClass="actionLink #{widgetProperty_actionStyleClass}">
+        <nxh:graphicImage value="/icons/action_delete_mini.png"
+          title="#{cancelActionLabel}"
+          alt="#{cancelActionLabel}" />
+        <h:outputText value=" #{cancelActionLabel}"
+          styleClass="actionLabel" />
+        <f:param name="valueHolderId"
+          value="#{widget.id}_modeValueHolder" />
+        <f:setPropertyActionListener
+          value="#{initialMode}"
+          target="#{selectionActions.selectedValue}" />
+        <nxu:actionListenerMethod
+          value="#{selectionActions.onClick}" />
+      </a4j:commandLink>
+    </c:otherwise>
+
+  </c:choose>
+
+</c:if>

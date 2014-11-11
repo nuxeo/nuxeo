@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.treeManager.test.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.treeManager" point="plugin">
+
+    <treeManagerPlugin name="navigation">
+      <excludedFacets>
+        <facet name="HiddenInNavigation" />
+      </excludedFacets>
+      <includedFacets>
+        <facet name="Folderish" />
+      </includedFacets>
+      <sortPropertyPath>dc:title</sortPropertyPath>
+      <pageProvider>tree_children</pageProvider>
+    </treeManagerPlugin>
+
+  </extension>
+
+</component>
