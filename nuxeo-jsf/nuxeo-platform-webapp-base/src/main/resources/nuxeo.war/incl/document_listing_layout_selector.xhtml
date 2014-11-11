@@ -1,0 +1,19 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <c:if test="#{currentAvailableListingLayoutNames.size > 1}">
+    <h:form id="listingLayoutSelectForm">
+      <h:selectOneMenu value="#{documentListingActions.layoutForCurrentDocument}"
+        onchange="Element.next(this).click();"
+        id="listingLayoutSelector">
+        <nxu:selectItems value="#{currentAvailableListingLayoutNames}"
+          var="item" itemLabel="#{messages[item]}" itemValue="#{item}" />
+      </h:selectOneMenu>
+      <h:commandButton style="display:none;"
+        id="listingLayoutSelectSubmitButton" />
+    </h:form>
+  </c:if>
+  
+</div>

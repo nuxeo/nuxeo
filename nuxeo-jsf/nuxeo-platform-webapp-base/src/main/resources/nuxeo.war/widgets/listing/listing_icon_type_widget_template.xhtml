@@ -1,0 +1,28 @@
+<f:subview id="#{widget.id}"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <c:if test="false">
+    widget expecting:
+    - field_0 as document model
+    - field_1 as document reference
+    - field_2 as document type
+    - field_3 as boolean if document is a folder    
+  </c:if>
+
+  <div id="docRefTarget:#{field_1}">
+    <div id="docRef:#{field_1}" class="cell popupTarget" docRef="#{field_1}">
+      <nxu:graphicImage
+        value="#{nxd:iconPath(field_0)}" alt="#{field_2}" title="#{field_2}"
+        rendered="#{!empty nxd:iconPath(field_0)}" />
+    </div>
+  </div>
+  <script type="text/javascript">
+    <h:outputText value="new Draggable('docRef:#{field_1}', {revert:true});" />
+    <h:outputText rendered="#{field_3}"
+      value="Droppables.add('docRefTarget:#{field_1}', {accept:'cell', onDrop:function(element){moveElement(element,'docRef:#{field_1}')}, hoverclass:'dropInto'});"/>
+  </script>
+
+</f:subview>
