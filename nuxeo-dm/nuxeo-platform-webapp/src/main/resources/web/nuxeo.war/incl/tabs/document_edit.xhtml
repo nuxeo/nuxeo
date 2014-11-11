@@ -1,0 +1,55 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<h:form enctype="multipart/form-data" id="document_edit">
+
+  <script>
+    jQuery(document).ready(function() {
+      jQuery('#document_edit').focusFirst();
+    });
+  </script>
+
+  <nxl:documentLayout mode="edit" value="#{currentDocument}" />
+  <ui:include src="/incl/document_versioning.xhtml" />
+
+  <table class="dataInput">
+    <tbody>
+      <tr>
+        <td class="labelColumn">
+          <div class="widgetHelpLabel">
+            <h:outputText value="#{messages['label.editComment']}" />
+          </div>
+          <div class="tooltip">
+            #{messages['label.editComment.tooltip']}
+          </div>
+        </td>
+        <td class="fieldColumn">
+          <h:inputTextarea
+            value="#{currentDocument.contextData['request/comment']}" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="buttonsGadget">
+    <nxu:set var="actions"
+      value="#{webActions.getActionsList('EDIT_DOCUMENT_FORM')}"
+      cache="true">
+      <c:forEach var="action" items="#{actions}">
+        <nxh:commandButton action="#{action.getLink()}"
+          immediate="#{action.immediate}"
+          onclick="#{action.confirm}"
+          id="edit_doc_#{action.id}"
+          value="#{messages[action.label]}"
+          styleClass="button" />
+      </c:forEach>
+    </nxu:set>
+  </p>
+
+</h:form>
+
+</div>
