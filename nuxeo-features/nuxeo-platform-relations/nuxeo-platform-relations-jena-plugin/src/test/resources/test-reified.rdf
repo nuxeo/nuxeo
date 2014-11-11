@@ -1,0 +1,25 @@
+<rdf:RDF
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+  <rdf:Description rdf:about="http://www.ecm.org/uid/DOC200600013_02.01">
+    <dcterms:References rdf:resource="http://www.wikipedia.com/Enterprise_Content_Management"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A0">
+    <rdf:subject rdf:resource="http://www.ecm.org/uid/DOC200600015_01.00"/>
+    <rdf:predicate rdf:resource="http://purl.org/dc/terms/IsBasedOn"/>
+    <rdf:object rdf:resource="http://www.ecm.org/uid/DOC200600013_02.01"/>
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+    <dcterms:CreatedBy>Bodie</dcterms:CreatedBy>
+    <dcterms:CreatedBy>Omar</dcterms:CreatedBy>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rdf:subject rdf:resource="http://www.ecm.org/uid/DOC200600013_02.01"/>
+    <rdf:predicate rdf:resource="http://purl.org/dc/terms/References"/>
+    <rdf:object rdf:resource="http://www.wikipedia.com/Enterprise_Content_Management"/>
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+    <dcterms:CreatedBy>Prop Joe</dcterms:CreatedBy>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.ecm.org/uid/DOC200600015_01.00">
+    <dcterms:IsBasedOn rdf:resource="http://www.ecm.org/uid/DOC200600013_02.01"/>
+  </rdf:Description>
+</rdf:RDF>

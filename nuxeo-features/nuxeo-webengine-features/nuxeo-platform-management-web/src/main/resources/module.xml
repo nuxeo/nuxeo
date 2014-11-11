@@ -1,0 +1,3 @@
+<?xml version="1.0"?>
+<module name="ha" root-type="ha" path="/ha" extends="base">
+</module>

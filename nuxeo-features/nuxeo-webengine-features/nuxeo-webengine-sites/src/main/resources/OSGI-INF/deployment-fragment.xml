@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.webengine.sites">
+  <fragment>
+
+    <extension target="application#MODULE">
+      <module>
+        <java>${bundle.fileName}</java>
+      </module>
+    </extension>
+
+    <extension target="faces-config#MANAGED-BEAN">
+      <managed-bean>
+        <managed-bean-name>siteActions</managed-bean-name>
+        <managed-bean-class>
+          org.nuxeo.webengine.sites.SiteActionsBean
+        </managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+      </managed-bean>
+    </extension>
+
+
+    <install>
+      <!--  Unzip the war template -->
+      <unzip from="${bundle.fileName}" to="/">
+        <include>nuxeo.war/**</include>
+      </unzip>
+
+    </install>
+
+    <extension target="faces-config#NAVIGATION">
+
+    </extension>
+
+  </fragment>
+</component>
