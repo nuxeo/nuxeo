@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://project.nuxeo.org/sample/schemas/querynav/"
+  xmlns:smp="http://project.nuxeo.org/sample/schemas/querynav/">
+
+  <xs:element name="subjects" type="xs:string" />
+  <xs:element name="coverage" type="xs:string" />
+
+</xs:schema>

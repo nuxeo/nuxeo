@@ -1,0 +1,25 @@
+  {"id": "element mover",
+   "type": "drag-and-drop",
+   "dragging": {
+     "element": "nxthemesDraggable",
+     "feedback": {
+       "opacity": 1,
+       "clone": true
+     },
+     "source": {
+       "color": "#ff6"
+     },
+     "cursor": "default"
+   },
+   "shifting": {
+     "element": "nxthemesDraggable",
+     "container": "nxthemesContainer"
+   },
+   "dropping": {
+     "action": "move element",
+     "zoomto": {
+       "duration": 200
+     }
+   },
+   "frame": false
+ }

@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM IO Web Client
+Bundle-SymbolicName: org.nuxeo.ecm.platform.io.web;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateless
+Eclipse-LazyStart: false
+Nuxeo-Component: OSGI-INF/actions-contrib.xml
+Require-Bundle: org.nuxeo.ecm.webapp.core
