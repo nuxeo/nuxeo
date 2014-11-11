@@ -1,0 +1,863 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>createUsers</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">createUsers</td></tr>
+</thead><tbody>
+<!--@Test groups:CreateUsers,introduction|depends:CreateStructure-->
+<tr>
+	<td>setTimeout</td>
+	<td>30000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=WARN&amp;message=----- Selenium createUsers</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Administrator</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=Admin Center</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=Users &amp; Groups</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Create a new user</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_username']</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_firstname']</td>
+	<td>John</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_lastname']</td>
+	<td>Doe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_company']</td>
+	<td>Nuxeo</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_firstPassword']</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_secondPassword']</td>
+	<td>foo</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_email']</td>
+	<td>sg+jdoe@nuxeo.com</td>
+</tr>
+<!-- Since 5.7.3 group is a select2 widget-->
+<tr>
+    <td>select2Type</td>
+    <td>css=div[id$='nxw_groups_select2']</td>
+    <td>members</td>
+</tr>
+<tr>
+    <td>waitForSelect2</td>
+    <td>10000</td>
+    <td></td>
+</tr>
+<tr>
+    <td>clickAt</td>
+    <td>css=.select2-result-selectable</td>
+    <td></td>
+</tr>
+<!--  -->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Passwords do not match</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_firstPassword']</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_secondPassword']</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Change password</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='viewUserView:editUserPassword:nxl_user_3:nxw_firstPassword_1']</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='viewUserView:editUserPassword:nxl_user_3:nxw_secondPassword_1']</td>
+	<td>foo</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Passwords do not match</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='viewUserView:editUserPassword:nxl_user_3:nxw_firstPassword_1']</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='viewUserView:editUserPassword:nxl_user_3:nxw_secondPassword_1']</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>sg+jdoe@nuxeo.com</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Back to the list</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Create a new user</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<!-- test unique id -->
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_username']</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_email']</td>
+	<td>sg+jdoe@nuxeo.com</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_firstPassword']</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_secondPassword']</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>User already exists</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_username']</td>
+	<td>jsmith</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_firstname']</td>
+	<td>John</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_lastname']</td>
+	<td>Smith</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_company']</td>
+	<td>Nuxeo</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_email']</td>
+	<td>sg+jsmith@nuxeo.com</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_firstPassword']</td>
+	<td>jsmith1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_secondPassword']</td>
+	<td>jsmith1</td>
+</tr>
+<!-- Since 5.7.3 group is a select2 widget-->
+<tr>
+    <td>select2Type</td>
+    <td>css=div[id$='nxw_groups_select2']</td>
+    <td>members</td>
+</tr>
+<tr>
+    <td>waitForSelect2</td>
+    <td>10000</td>
+    <td></td>
+</tr>
+<tr>
+    <td>clickAt</td>
+    <td>css=.select2-result-selectable</td>
+    <td></td>
+</tr>
+<!--  -->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Change password</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='viewUserView:editUserPassword:nxl_user_3:nxw_firstPassword_1']</td>
+	<td>jsmith1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='viewUserView:editUserPassword:nxl_user_3:nxw_secondPassword_1']</td>
+	<td>jsmith1</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>sg+jsmith@nuxeo.com</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Back to the list</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Create a new user</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_username']</td>
+	<td>bree</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_firstname']</td>
+	<td>Bree</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_lastname']</td>
+	<td>Van de Kaamp</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_company']</td>
+	<td>Nuxeo</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_email']</td>
+	<td>sg+bree@nuxeo.com</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_firstPassword']</td>
+	<td>bree1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_secondPassword']</td>
+	<td>bree1</td>
+</tr>
+<!-- Since 5.7.3 group is a select2 widget-->
+<tr>
+    <td>select2Type</td>
+    <td>css=div[id$='nxw_groups_select2']</td>
+    <td>members</td>
+</tr>
+<tr>
+    <td>waitForSelect2</td>
+    <td>10000</td>
+    <td></td>
+</tr>
+<tr>
+    <td>clickAt</td>
+    <td>css=.select2-result-selectable</td>
+    <td></td>
+</tr>
+<!--  -->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Change password</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='viewUserView:editUserPassword:nxl_user_3:nxw_firstPassword_1']</td>
+	<td>bree1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='viewUserView:editUserPassword:nxl_user_3:nxw_secondPassword_1']</td>
+	<td>bree1</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>sg+bree@nuxeo.com</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Back to the list</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Create a new user</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_username']</td>
+	<td>lbramard</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_firstname']</td>
+	<td>Lucien</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_lastname']</td>
+	<td>Bramard</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_company']</td>
+	<td>Nuxeo</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_firstPassword']</td>
+	<td>lbramard1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_secondPassword']</td>
+	<td>lbramard1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_email']</td>
+	<td>sg+lbramard@nuxeo.com</td>
+</tr>
+<!-- Since 5.7.3 group is a select2 widget-->
+<tr>
+    <td>select2Type</td>
+    <td>css=div[id$='nxw_groups_select2']</td>
+    <td>members</td>
+</tr>
+<tr>
+    <td>waitForSelect2</td>
+    <td>10000</td>
+    <td></td>
+</tr>
+<tr>
+    <td>clickAt</td>
+    <td>css=.select2-result-selectable</td>
+    <td></td>
+</tr>
+<!--  -->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Change password</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='viewUserView:editUserPassword:nxl_user_3:nxw_firstPassword_1']</td>
+	<td>lbramard1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='viewUserView:editUserPassword:nxl_user_3:nxw_secondPassword_1']</td>
+	<td>lbramard1</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>sg+lbramard@nuxeo.com</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Back to the list</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Create a new user</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_username']</td>
+	<td>linnet</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_firstname']</td>
+	<td>Linnet</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_lastname']</td>
+	<td>Scavo</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_company']</td>
+	<td>Nuxeo</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_firstPassword']</td>
+	<td>linnet1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_secondPassword']</td>
+	<td>linnet1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_email']</td>
+	<td>sg+linnet@nuxeo.com</td>
+</tr>
+<!-- Since 5.7.3 group is a select2 widget-->
+<tr>
+    <td>select2Type</td>
+    <td>css=div[id$='nxw_groups_select2']</td>
+    <td>members</td>
+</tr>
+<tr>
+    <td>waitForSelect2</td>
+    <td>10000</td>
+    <td></td>
+</tr>
+<tr>
+    <td>clickAt</td>
+    <td>css=.select2-result-selectable</td>
+    <td></td>
+</tr>
+<!--  -->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Change password</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='viewUserView:editUserPassword:nxl_user_3:nxw_firstPassword_1']</td>
+	<td>linnet1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id='viewUserView:editUserPassword:nxl_user_3:nxw_secondPassword_1']</td>
+	<td>linnet1</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>sg+linnet@nuxeo.com</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
