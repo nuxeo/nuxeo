@@ -1,0 +1,66 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.webengine</groupId>
+    <artifactId>nuxeo-webengine-parent</artifactId>
+    <version>5.4.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-theme-webengine</artifactId>
+  <name>Nuxeo Theme Web Engine</name>
+  <description>Nuxeo Theme: Web Engine add-on for the Nuxeo ECM platform.</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-core</artifactId>
+    </dependency>
+     <dependency>
+        <groupId>org.nuxeo.theme</groupId>
+        <artifactId>nuxeo-theme-core</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.theme</groupId>
+        <artifactId>nuxeo-theme-fragments</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.theme</groupId>
+        <artifactId>nuxeo-theme-html</artifactId>
+      </dependency>
+ 
+    <dependency>
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>jsr311-api</artifactId>
+    </dependency>    
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-rendering</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>net.sourceforge.maven-taglib</groupId>
+        <artifactId>maven-taglib-plugin</artifactId>
+        <configuration>
+          <taglib.src.dir>${project.build.directory}/classes/META-INF</taglib.src.dir>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+
+</project>
