@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <ui:define name="page title">
+    <h:outputText value="#{nuxeoApplicationName} - #{messages[directoryUIActions.currentDirectory.name]}" />
+  </ui:define>
+
+  <ui:define name="body">
+
+    <script type="text/javascript">
+      function confirmDeleteDirectoryEntry() {
+        return confirm("#{messages['label.vocabulary.entry.confirmDelete']}");
+      }
+    </script>
+
+    <c:set var="currentVoc" value="#{directoryUIActions.currentDirectory}" />
+
+    <div>
+      <h:form id="directoryManagementGoBack">
+        <p class="directoryBack">
+          <h:commandLink
+            value="#{messages['command.directoryBack']}"
+            action="view_directories" />
+        </p>
+      </h:form>
+    </div>
+
+    <h3>
+      <h:outputText value="#{messages[currentVoc.name]}" />
+    </h3>
+
+    <ui:include src="/incl/message_banner.xhtml" />
+
+    <c:if test="#{directoryUIActions.selectedDirectoryEntry == null}">
+      <h:form id="showHideAddDirectoryEntry">
+  
+        <h4>
+          <h:commandLink
+            action="#{directoryUIActions.toggleShowAddForm}">
+            <h:graphicImage url="/img/toggle_plus.png"
+              rendered="#{!directoryUIActions.showAddForm}" />
+            <h:graphicImage url="/img/toggle_minus.png"
+              rendered="#{directoryUIActions.showAddForm}" />
+            <h:outputText
+              value="#{messages['title.create.vocabulary.entry']}" />
+          </h:commandLink>
+        </h4>
+      </h:form>
+  
+      <c:if test="#{directoryUIActions.showAddForm}">
+        <div class="tabsContent">
+          <ui:include src="create_directory_entry.xhtml" />
+        </div>
+      </c:if>
+    </c:if>
+
+    <div class="tabsContent">
+
+      <c:if test="#{directoryUIActions.selectedDirectoryEntry != null}">
+        
+        <div class="vocabularyEntryContent">
+          <h:form id="editDirectoryEntry">
+  
+            <nxl:layout name="#{currentVoc.layout}" mode="edit"
+              value="#{directoryUIActions.selectedDirectoryEntry}" />
+  
+            <div class="buttons">
+              <h:commandButton value="#{messages['command.save']}"
+                id="editDirectoryEntryButton"
+                styleClass="button"
+                action="#{directoryUIActions.editSelectedDirectoryEntry}" />
+              <h:commandButton value="#{messages['command.cancel']}"
+                id="cancelEditingDirectoryEntryButton"
+                styleClass="button"
+                action="#{directoryUIActions.resetSelectedDirectoryEntry}"
+                immediate="true" />
+            </div>
+  
+          </h:form>
+
+        </div>
+
+      </c:if>
+
+      <c:if test="#{directoryUIActions.selectedDirectoryEntry == null and not directoryUIActions.showAddForm}">
+        <h:form rendered="#{!empty directoryUIActions.currentDirectoryEntries}"
+          id="viewDirectoryEntries">
+  
+          <table class="dataOutput">
+            <tbody>
+              <nxu:repeat var="entry" value="#{directoryUIActions.currentDirectoryEntries}"
+                index="index">
+                <c:if test="#{index%2 == 0}">
+                  <c:set var="directoryEntryClass" value="dataRowOdd" />
+                </c:if>
+                <c:if test="#{index%2 != 0}">
+                  <c:set var="directoryEntryClass" value="dataRowEven" />
+                </c:if>
+                <c:if test="#{index == 0}">
+                  <nxl:layout name="#{currentVoc.layout}" mode="list_and_header" value="#{entry}" />
+                </c:if>
+                <c:if test="#{index != 0}">
+                  <nxl:layout name="#{currentVoc.layout}" mode="list" value="#{entry}" />
+                </c:if>
+              </nxu:repeat>
+            </tbody>
+          </table>
+  
+        </h:form>
+      </c:if>
+
+    </div>
+
+  </ui:define>
+
+</nxthemes:composition>
