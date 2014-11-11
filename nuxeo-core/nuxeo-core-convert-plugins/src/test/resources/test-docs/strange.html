@@ -1,0 +1,537 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+  <html xmlns="http://www.w3.org/1999/xhtml" lang="fr"
+        xml:lang="fr">
+    <head>
+
+
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15" />
+  <title>Nuxeo: open source ECM - Enterprise Content Management</title>
+
+    <meta type="description"
+          content="Nuxeo se consacre au développement et au support de Nuxeo Platform, logiciel de gestion de contenu dentreprises basé sur Java EE 5. La société développe et met en oeuvre son logiciel selon le modèle open source, sans coût de licence et sur le principe de souscription dépendant des déploiements et non du nombre dutilisateurs. Présente sur ce marché depuis 2001, Nuxeo a fourni des solutions globales dECM à de nombreuses grandes entreprises, ce qui en fait le pionnier et le leader de la révolution de lECM open source." />
+
+  <meta type="keywords" content="open source, opensource, ecm, enterprise content management, GED, GEIDE, ECM, CMS, gestion documentaire, records management, WCM" />
+
+<!--
+  cps test / debug information:
+  cps:path:http://www.nuxeo.com
+  cps:rpath:/sections
+  cps:proxy_id:sections
+  cps:id:815310624__0002
+-->
+
+  <base href="http://www.nuxeo.com/" />
+
+
+  <link rel="stylesheet" type="text/css"
+        href="/nuxeo_css1.css" />
+  <style type="text/css" media="all">@import url(/nuxeo_css2.css);</style>
+  <!--[if IE]><link rel="stylesheet" type="text/css"
+                    href="/msie.css" /><![endif]-->
+  <link rel="stylesheet" type="text/css" media="print"
+        href="/nuxeo_print_css.css" />
+  <meta http-equiv="imagetoolbar" content="no" />
+
+
+    <link rel="Stylesheet" type="text/css"
+          href="/document.css" />
+    <link rel="Stylesheet" type="text/css" href="/forum.css" />
+
+  <style type="text/css" media="all">@import url(/custom.css);</style>
+
+
+  <script type="text/javascript" src="/functions.js"></script>
+  <script type="text/javascript" src="/thumbnailviewer.js"></script>
+
+    <link rel="alternate" type="application/rss+xml"
+          title="RSS" href="http://www.nuxeo.com/news.rss" />
+
+
+
+<meta name="generator" content="CPSSkins 2.3" />
+<!-- Shortcut icon -->
+<link rel="icon" href="/portal_themes/PortalTheme/icons/swoosh.png" type="image/png" />
+<link rel="shortcut icon" href="/portal_themes/PortalTheme/icons/swoosh.png" type="image/png" />
+
+<!-- CSS1 -->
+<link rel="Stylesheet" type="text/css"
+      href="/cpsskins_common.css" />
+<link rel="Stylesheet" type="text/css"
+      href="/portal_themes/PortalTheme/renderCSS" />
+<!-- CSS2 -->
+<style type="text/css" media="all">@import url(/cpsskins_common-css2.css);</style>
+<!-- JavaScript -->
+<script type="text/javascript"
+        src="/portal_themes/PortalTheme/renderJS?page=front"></script>
+<script type="text/javascript"
+        src="http://www.nuxeo.com/cpsskins_renderJS?theme=PortalTheme&amp;page=front"></script>
+
+    </head>
+
+    <body onload="setFocus();" style="margin:0"
+          class="colorblackalveolbody">
+
+
+
+    <table cellpadding="0" cellspacing="0"
+           summary="Blogroll"
+           style="margin-left:auto;margin-right:auto;height:17px;width:1000px;"
+           class="colorblackalveolblogroll">
+       <tr>
+
+
+            <td valign="top">
+
+
+                  <div style="text-align: right;"
+                       class="fontColorFontColor1 fontShapeMainFontShape">
+                    <div class="cpsskinsBox"><div class="body" style="border: none"><div id="blogRoll"> <ul> <li><a href="http://www.nuxeo.org">Community</a></li> <li><a href="http://www.nuxeo.org/discussions/index.jspa">Forums</a></li> <li><a href="http://blogs.nuxeo.com">Blogs</a></li> <li class="selected"><a href="">Corporate</a></li> </ul> </div></div></div>
+
+                  </div>
+
+
+            </td>
+
+
+      </tr>
+    </table>
+
+
+    <table cellpadding="0" cellspacing="0" summary="logo"
+           style="margin-left:auto;margin-right:auto;height:47px;width:1000px;"
+           class="shapeBlackalveolNUXEObar colorBlackalveolNUXEObar">
+       <tr>
+
+
+            <td valign="top">
+
+
+                  <div style=""
+                       class="shapefakestyleforblackbar color">
+                    <table cellpadding="0" cellspacing="0" border="0"
+       width="100%" summary="Cell Block" style=""
+       class="shapefakestyleforblackbar color">
+  <tr>
+
+
+        <td valign="top">
+
+            <div align="left" style="padding:0">
+              <div style="text-align: left;padding:0px 0px 0px 8px;"
+                   class="fontColorFontColor1 fontShapeMainFontShape"><div style="padding:0px 0px 0px 8px;"><div class="cpsskinsBox"><div class="body" style="border: none"><div id="nuxeoLogo"> <a href="/"><img src="/blackmaterial/big_nuxeo_logo.gif" alt="Nuxeo"/></a> </div></div></div></div></div>
+            </div>
+
+        </td>
+
+
+
+
+        <td valign="top">
+
+            <div align="right" style="padding:0">
+              <div style="text-align: right;padding:0px 4px 0px 0px;"
+                   class="fontColorFontColor1 fontShapeMainFontShape shapefakestyleforblacksearchbox"><div style="padding:0px 4px 0px 0px;"><div class="cpsskinsBox"><div class="body" style="border: none"><form method="get" action="search_form"
+      onsubmit="return checkEmptySearch(this);">
+
+  <input id="searchGadget" type="text" name="SearchableText"
+         size="20" />
+  <input class="context searchButton" type="submit"
+         value="Rechercher" />
+  <div>
+
+  </div>
+</form></div></div></div></div>
+            </div>
+
+        </td>
+
+
+  </tr>
+</table>
+
+
+                  </div>
+
+
+            </td>
+
+
+      </tr>
+    </table>
+
+
+    <table cellpadding="0" cellspacing="0" summary="tabs"
+           style="margin-left:auto;margin-right:auto;height:32px;width:1000px;"
+           class="colorblackalveolnavbar">
+       <tr>
+
+
+            <td valign="top">
+
+
+                  <div style="" class="shape color">
+                    <table cellpadding="0" cellspacing="0" border="0"
+       width="100%" summary="nav Block" style=""
+       class="shape color">
+  <tr>
+
+
+        <td valign="top">
+
+            <div align="left" style="padding:0">
+              <div style="text-align: left;"
+                   class="fontColorFontColor1 fontShapeblackalveolFontShape"><div class="cpsskinsBox"><div class="body" style="border: none"><div id="blackNavbar"> <ul> <li><a href="/nuxeo/">Société</a></li> <li><a href="/news/">Actualités</a></li> <li><a href="/produits/">Produits</a></li> <li><a href="/offre/">Services</a></li> <li><a href="/clients/">Clients</a></li> <li><a href="/nuxeo/partenaires/">Partenaires</a></li> <li><a href="/presse/">Presse</a></li> <li><a href="/downloads/">Télécharger</a></li> <li><a href="/nuxeo/contact/">Contact</a></li> </ul> </div></div></div></div>
+            </div>
+
+        </td>
+
+
+
+
+        <td valign="top" width="30px">
+
+            <div align="right" style="padding:10px 12px 0 0">
+              <div style="text-align: right;"
+                   class="fontColorFontColor1 fontShapeMainFontShape"><a href="/en/" title="English version"><img src="/portal_themes/PortalTheme/front/1044140972/9495531/567440855/index_html" width="16" height="11" alt="English version" /></a></div>
+            </div>
+
+        </td>
+
+
+  </tr>
+</table>
+
+
+                  </div>
+
+
+            </td>
+
+
+      </tr>
+    </table>
+
+
+    <table cellpadding="0" cellspacing="0" summary="main"
+           style="margin-left:auto;margin-right:auto;width:1000px;"
+           class="shapegaucheDroit colorblacksimplemain">
+       <tr>
+
+
+            <td valign="top">
+
+                <div style="padding: 15px 0px 0 29px">
+                  <div style="text-align: left;"
+                       class="fontColorFontColor1 fontShapeblackalveolFontShape">
+                    <div class="cpsskinsBox"><div class="body" style="border: none"><div id="homeTextAlveol1"> <h1>Éditeur ECM open source</h1> <p> Depuis sa création en 2000, Nuxeo propose, aux organisations les plus exigeantes, une plateforme d'ECM (Entreprise Content Management) open source robuste et extensible. <a href="/produits/platform/">Nuxeo Platform</a> et les produits de la suite <a href="/produits/">Nuxeo Galaxy</a> apportent une réponse souple, à un coût maîtrisé et sans coûts de licence, aux nouveaux enjeux de la gestion de l'information. <a href="/nuxeo/">&raquo;  en savoir plus</a> </p> </div></div></div>
+
+                  </div>
+                </div>
+
+            </td>
+
+
+
+
+            <td valign="top" style="width:250px">
+
+                <div style="padding: 16px 29px 0 0">
+                  <div style="text-align: left;"
+                       class="fontColorblackboxtitlefront fontShapeblackboxtitlefront">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div style="text-align:left; padding:0"><div class="cpsskinsBox"><div class="blackNewsBox">
+<div class="moreNews"><a href="http://www.nuxeo.com/events/">&raquo; Plus</a></div>
+<h2>Événements à venir</h2>
+<div class="blackNewsblocks">
+<div class="newsdate"><span>Dec<br/></span>1</div>
+<div class="newsblock evenDiv">
+<a href="http://www.nuxeo.com/events/nuxeo-devday/">
+Premier «Nuxeo Developer Day»
+</a>
+<p>
+Maison de la Chimie, Paris 7e
+</p>
+</div>
+<div style="clear:both;"></div>
+<div class="newsdate"><span>Dec<br/></span>9</div>
+<div class="newsblock evenDiv">
+<a href="http://www.nuxeo.com/events/nuxeo-courrier/">
+Présentation de Nuxeo Courrier
+</a>
+<p>
+Salon Dématerialiser
+</p>
+</div>
+<div style="clear:both;"></div>
+<div class="newsdate"><span>Dec<br/></span>11</div>
+<div class="newsblock evenDiv">
+<a href="http://www.nuxeo.com/events/fguillaume-devoxx/">
+Talk Interopérabilité du Directeur R&D
+</a>
+<p>
+Devoxx - Anvers, Belgique
+</p>
+</div>
+<div style="clear:both;"></div>
+</div>
+<div class="xmlExportButtons">
+<a href="
+http://www.nuxeo.com/events/news.rss
+" title="Vers le fil RSS associé"> RSS </a> </div> <div style="clear: right;"></div>
+</div></div></div>
+
+
+
+
+
+
+
+
+                  </div>
+                </div>
+
+            </td>
+
+
+      </tr>
+    </table>
+
+
+    <table cellpadding="0" cellspacing="0"
+           summary="Page Block"
+           style="margin-left:auto;margin-right:auto;width:1000px;"
+           class="shapegaucheDroit colorblacksimplemain">
+       <tr>
+
+
+            <td valign="top" style="width:325px">
+
+                <div style="padding: 25px 0 15px 29px">
+                  <div style="text-align: left;height: "
+                       class="fontColorblackboxtitlefront fontShapeblackboxtitlefront">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div style="text-align:left; padding:0"><div class="cpsskinsBox"><div class="blackNewsBox">
+<div class="moreNews"><a href="http://www.nuxeo.com/news/">&raquo; Plus</a></div>
+<h2>Actu</h2>
+<div class="blackNewsblocks">
+<div class="newsblock evenDiv">20 Nov &bull;
+<a href="http://www.nuxeo.com/news/nuxeo-reussit-levee/">
+Nuxeo réussit une levée de fonds de 2 millions d'Euros et structure sa gouvernance
+</a>
+</div>
+<div style="clear:both;"></div>
+<div class="newsblock evenDiv">18 Nov &bull;
+<a href="http://www.nuxeo.com/news/slides-nuxeo-courrier/">
+Slides de Nuxeo Courrier
+</a>
+</div>
+<div style="clear:both;"></div>
+<div class="newsblock evenDiv">17 Nov &bull;
+<a href="http://www.nuxeo.com/news/nuxeo-oasis-cmis/">
+Nuxeo adhère à OASIS
+</a>
+</div>
+<div style="clear:both;"></div>
+</div>
+<div class="xmlExportButtons">
+<a href="
+http://www.nuxeo.com/news.rss
+" title="Vers le fil RSS associé"> RSS </a> </div> <div style="clear: right;"></div>
+</div></div></div>
+
+
+
+
+
+
+
+
+                  </div>
+                </div>
+
+
+                <div style="padding: 0px 0pt 0pt 29px">
+                  <div style="text-align: left;"
+                       class="fontColorFontColor1 fontShapeMainFontShape">
+                    <div class="cpsskinsBox"><div class="body" style="border: none"><a href="/events/nuxeo-devday/"><img src="http://www.nuxeo.com/portal_cpsportlets/portlet_756632509/downloadFile/image/dev_day_tiers_fr.gif" alt="Nuxeo first developer day" height="78" title="Nuxeo first developer day" width="310" /></a></div></div>
+
+                  </div>
+                </div>
+
+            </td>
+
+
+
+
+            <td valign="top">
+
+                <div style="padding: 0 0 0 15px">
+                  <div style="text-align: left;"
+                       class="fontColorFontColor1 fontShapeMainFontShape">
+                    <div class="cpsskinsBox"><table id="oem_fr" width="614" height="290" border="0" cellpadding="0" cellspacing="0"> <tr> <td colspan="2"> <img src="/material/oem/takoma_fr_01.gif" width="614" height="225" alt=""></td> </tr> <tr> <td rowspan="3"> <img src="/material/oem/takoma_fr_02.gif" width="386" height="65" alt=""></td> <td> <a href="/nuxeo/partenaires/takoma/"> <img src="/material/oem/takoma_fr_03.gif" width="228" height="24" border="0" alt=""></a></td> </tr> <tr> <td> <a href="/nuxeo/partenaires/recrutement-oem/"> <img src="/material/oem/takoma_fr_04.gif" width="228" height="26" border="0" alt=""></a></td> </tr> <tr> <td> <img src="/material/oem/takoma_fr_05.gif" width="228" height="15" alt=""></td> </tr> </table></div>
+
+                  </div>
+                </div>
+
+            </td>
+
+
+      </tr>
+    </table>
+
+
+    <table cellpadding="0" cellspacing="0"
+           summary="Page Block"
+           style="margin-left:auto;margin-right:auto;width:1000px;"
+           class="shapegaucheDroit colorblacksimplemain">
+       <tr>
+
+
+            <td valign="top" style="width:354px">
+
+                <div style="padding: 25px 15px 30px 29px">
+                  <div style="text-align: left;"
+                       class="fontColorblackboxtitlefront fontShapeblackboxtitlefront">
+                    <div class="cpsskinsBox"><div class="body" style="border: none"><div class="blackFrontBox" style="width:310px;"> <h2>Produits</h2> <div class="evenDiv"> <div class="linkAppeal"> <a href="/downloads/">DOWNLOAD!</a> </div> <a href="/produits/platform/">Nuxeo Platform</a> </div> <div class="evenDiv subDiv"> <a href="/produits/platform/ep/">Nuxeo Entreprise Platform</a> </div> <div class="evenDiv subDiv"> <a href="/produits/platform/webengine/">Nuxeo WebEngine</a> </div> <div class="evenDiv subDiv"> <a href="/produits/platform/rcp/">Nuxeo RCP</a> </div> <div class="evenDiv"> <a href="/produits/newswave/">Nuxeo NewsWave</a> </div> <div class="boxEnd">&raquo; Découvrez la <a href="/produits/">suite Galaxy!</a></div> </div></div></div>
+
+                  </div>
+                </div>
+
+            </td>
+
+
+
+
+            <td valign="top" style="width:325px">
+
+                <div style="padding: 25px 0 0 0px">
+                  <div style="text-align: left;"
+                       class="fontColorblackboxtitlefront fontShapeblackboxtitlefront">
+                    <div class="cpsskinsBox"><div class="body" style="border: none"><div class="blackFrontBox"> <h2>Services</h2> <div class="evenDiv"> <div class="linkAppeal"> <a href="/nuxeo/contact/">ABONNEZ-VOUS!</a> </div> <a href="/offre/support/">Nuxeo Connect</a> </div> <div class="evenDiv subDiv"> <a href="/offre/support/project/">Nuxeo Connect Project</a> </div> <div class="evenDiv subDiv"> <a href="/offre/support/production/">Nuxeo Connect Operations</a> </div> <div class="evenDiv"> <div class="linkAppeal"> <a href="/offre/form/integrateur/#inscription">INSCRIVEZ-VOUS!</a> </div> <a href="/offre/form/">Formations</a> </div> <div class="evenDiv"> <a href="/offre/conseil/">Conseil & Développement</a> </div> <div class="boxEnd">&raquo; Découvrez <a href="/offre/">tous nos services</a></div> </div></div></div>
+
+                  </div>
+                </div>
+
+            </td>
+
+
+
+
+            <td valign="top">
+
+                <div style="padding: 25px 29px 0 0">
+                  <div style="text-align: left;"
+                       class="fontColorblackboxtitlefront fontShapeblackboxtitlefront">
+                    <div class="cpsskinsBox"><div class="body" style="border: none"><div class="blackFrontBox"> <h2>écosystème</h2> <div class="evenDiv"> <a href="/clients/">Nos clients</a> </div> <div class="evenDiv"> <a href="/nuxeo/partenaires/">Nos partenaires</a> </div> <div class="evenDiv subDiv"> <a href="/nuxeo/partenaires/#integrator">Intégrateurs</a> </div> <div class="evenDiv subDiv"> <a href="/nuxeo/partenaires/#oem">OEM</a> </div> <div class="evenDiv"> <a href="/nuxeo/communaute/">Communauté</a> </div> <div class="boxEnd">&raquo; Vous souhaitez <a href="/offre/support/#partner">devenir partenaire?</a></div> </div></div></div>
+
+                  </div>
+                </div>
+
+            </td>
+
+
+      </tr>
+    </table>
+
+
+    <table cellpadding="0" cellspacing="0"
+           summary="Page Block"
+           style="margin-left:auto;margin-right:auto;width:1000px;"
+           class="shapegaucheDroit colorblacksimplemain">
+       <tr>
+
+
+            <td valign="top">
+            </td>
+
+
+
+
+            <td valign="top">
+            </td>
+
+
+      </tr>
+    </table>
+
+
+    <table cellpadding="0" cellspacing="0" summary="sitemap"
+           style="margin-left:auto;margin-right:auto;width:1000px;"
+           class="shapegaucheDroit colorblackAlveolColumn">
+       <tr>
+
+
+            <td valign="top">
+
+
+                  <div style="text-align: left;"
+                       class="fontColorblacksitemap fontShapeblackfooter">
+                    <div class="cpsskinsBox"><div class="body" style="border: none"><div class="blackSiteMap"> <table width="100%"> <tr> <td width="20%" valign="top"> <h6>Société</h6> <ul> <li><a href="/nuxeo/">À propos de Nuxeo</a></li> <li><a href="/events/">Événements</a></li> <li><a href="/nuxeo/jobs/">Offres d'emplois</a></li> </ul> </td> <td width="20%" valign="top"> <h6><a href="/produits/">Produits</a></h6> <ul> <li><a href="/produits/platform/">Nuxeo Platform</a> <!-- <ul> <li><a href="/produits/platform/">Nuxeo Platform</a></li> <li><a href="/produits/platform/ep/">Nuxeo EP</a></li> <li><a href="/produits/rcp/">Nuxeo RCP</a></li> <li><a href="/produits/webengine/">Nuxeo WebEngine</a></li> </ul>--> </li> <li><a href="/produits/newswave/">Nuxeo NewsWave</a></li> </ul> </td> <td width="20%" valign="top"> <h6><a href="/offre/">Services</a></h6> <ul> <li><a href="/offre/support/">Nuxeo Connect</a> <!--<ul> <li><a href="/offre/support/project/">Nuxeo Connect Project</a></li> <li><a href="/offre/support/production/">Nuxeo Connect Operations</a></li> </ul>--> </li> <li><a href="/offre/form/">Formations</a></li> <li><a href="/offre/conseil/">Conseil & Développement</a></li> </ul> </td> <td width="20%" valign="top"> <h6><a href="/nuxeo/partenaires/">Partenariats</a></h6> <ul> <li><a href="/nuxeo/partenaires/#integrator">Intégrateurs</a></li> <li><a href="/nuxeo/partenaires/#oem">OEM</a></li> <li><a href="/offre/support/#partner">Devenir partenaire</a></li> </ul> </td> <td width="20%" valign="top"> <h6><a href="/clients/">Clients</h6> <ul> <li><a href="/downloads/#casestudy">Études de cas</a></li> <li><a href="/clients/">Tous nos clients</a></li> </ul> </td> </tr> </table> </div></div></div>
+
+                  </div>
+
+
+            </td>
+
+
+      </tr>
+    </table>
+
+
+    <table cellpadding="0" cellspacing="0" summary="footer"
+           style="margin-left:auto;margin-right:auto;width:1000px;"
+           class="shapegaucheDroit colorblackAlveolFooter">
+       <tr>
+
+
+            <td valign="top">
+
+                <div style="padding: 5px">
+                  <div style="text-align: center;"
+                       class="fontColorblackfooter fontShapeblackfooter">
+                    <div class="cpsskinsBox"><div class="body" style="border: none"><p><span style="font-weight:bold;">Nuxeo</span> @ 18-20 rue Soleillet (BL 13), 75020 PARIS, France | Tél: +33 (0)1 40 33 79 87 | Fax: +33 (0)1 40 33 71 41 | Email: <a href="mailto:contact@nuxeo.com">contact@nuxeo.com</a></p><p> © 2001-2008 Nuxeo. All rights reserved. </p><p> <a href="/nuxeo/legal/">Disclaimer</a> </p> <script type="text/javascript"> var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E")); </script> <script type="text/javascript"> var pageTracker = _gat._getTracker("UA-81135-3");
+pageTracker._trackPageview(); </script></div></div>
+
+                  </div>
+                </div>
+
+            </td>
+
+
+      </tr>
+    </table>
+
+
+    </body>
+  </html>
+
+
+
