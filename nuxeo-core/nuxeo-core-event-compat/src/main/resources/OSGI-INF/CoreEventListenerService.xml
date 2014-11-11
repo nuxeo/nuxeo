@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.listener.CoreEventListenerService">
+   
+  <require>org.nuxeo.ecm.core.event.EventServiceComponent</require>
+  
+  <documentation>
+    Service that deals with synchronous core events and listeners.
+
+    @version 1.0
+    @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+  </documentation>
+
+  <require>org.nuxeo.ecm.core.repository.RepositoryService</require>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.listener.CoreEventListenerService"/>
+  </service>
+
+  <implementation
+      class="org.nuxeo.ecm.core.listener.impl.EventManagerComponent"/>
+
+  <extension-point name="listener">
+    <documentation>
+      Extension point for registering event listeners.
+
+      <p>
+        An event listener has the following properties:
+
+        - name: identifier for this listener. It must be unique within the
+        application.
+
+        - class: the class to use for this event listener, see below for
+        implementation requirements.
+
+        - order: the order in which the listener will be notified of an event.
+        This may be useful if different listeners have to react in a specified
+        order. If no order is given, order 0 is assumed. Negative orders are
+        accepted. Listeners can share the same order, but the notification order
+        will not be reliable.
+
+        - eventId: event ids this listener processes. Multiple values can be
+        defined. If no eventId attributes are defined, the listener is notified
+        for all events. It is then responsible for filtering events it has to
+        process in its notifyEvent method.
+      </p>
+
+      <p>
+        Event listeners must implement the
+        org.nuxeo.ecm.core.listener.EventListener interface and will be notified
+        on each call back : public void notifyEvent(CoreEvent coreEvent); Core
+        Event listeners are synchronous. Thus they should be implemented to
+        rather perform non time consuming heavy computing that would decrease
+        core txn performances.
+      </p>
+
+      <p>
+        Nuxeo core defines a default set of event ids that are defined in :
+        org.nuxeo.ecm.core.api.event.DocumentEventTypes. Though, you can extend
+        them and define your own event ids and listeners reacting on them.
+      </p>
+
+    </documentation>
+    <object
+        class="org.nuxeo.ecm.core.listener.extensions.CoreEventListenerDescriptor"/>
+  </extension-point>
+
+  <!-- Disbaled for now since it is not used -->
+  <!--
+  <extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
+    point="listener">
+    <documentation>
+      Core event listener that forwards core events to the nuxeo runtime event
+      service.
+
+      Order is set to 10 so that forwarding is done before most of other
+      listener operations.
+    </documentation>
+
+    <listener name="nxruntimelistener"
+      class="org.nuxeo.ecm.core.listener.impl.NXRuntimeEventListener"
+      order="10" />
+  </extension>
+    -->
+
+  <!-- extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
+    point="listener">
+    <listener name="testtxlistener"
+      class="org.nuxeo.ecm.core.listener.impl.TestTransactedListener"
+      order="1" />
+  </extension-->
+
+</component>
