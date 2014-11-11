@@ -1,0 +1,69 @@
+<assembly>
+
+  <fileSet id="template">
+    <directory>src/main/resources</directory>
+  </fileSet>
+
+  <artifactSet id="launcher-lib">
+    <artifacts>
+      <artifact group="org.nuxeo.runtime" name="nuxeo-runtime-launcher" version="${nuxeo.runtime.version}" />
+    </artifacts>
+  </artifactSet>
+
+  <artifactSet id="bundles">
+    <artifacts>
+      <artifact group="org.nuxeo.common" name="nuxeo-common" />
+
+      <artifact group="org.nuxeo.runtime" name="nuxeo-runtime" />
+      <artifact group="org.nuxeo.runtime" name="nuxeo-runtime-osgi" />
+
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-api" />
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-schema" />
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-query" />
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-io" />
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-client" version="${nuxeo.core.version}"/>
+
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-shell-commands-base" version="${nuxeo.platform.version}"/>
+    </artifacts>
+  </artifactSet>
+
+
+  <artifactSet id="third-party-libs">
+    <import>*</import>
+    <includes>
+      <artifact group="javax.script" name="script-api" />
+      <artifact group="org.codehaus.groovy" name="groovy-all" />
+      <artifact group="concurrent" />
+      <artifact group="jline" />
+      <artifact group="dom4j" />
+      <artifact group="org.osgi" />
+      <artifact name="commons-logging" />
+      <artifact name="jboss-remoting" />
+      <artifact name="jboss-common" />
+      <artifact group="log4j" name="log4j" />
+    </includes>
+  </artifactSet>
+
+
+  <assemble>
+    <set>template</set>
+    <outputFile>/</outputFile>
+  </assemble>
+
+  <assemble>
+    <set>launcher-lib</set>
+    <outputFile>/</outputFile>
+  </assemble>
+
+  <assemble>
+    <set>third-party-libs</set>
+    <outputFile>lib</outputFile>
+  </assemble>
+
+  <assemble>
+    <set>bundles</set>
+    <outputFile>bundles</outputFile>
+  </assemble>
+
+</assembly>
+

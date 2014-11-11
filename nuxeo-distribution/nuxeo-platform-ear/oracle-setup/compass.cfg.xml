@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<compass-core-config
+  xmlns="http://www.opensymphony.com/compass/schema/core-config"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opensymphony.com/compass/schema/core-config
+           http://www.opensymphony.com/compass/schema/compass-core-config.xsd">
+
+  <compass name="default">
+
+    <connection>
+    <!-- IMPORTANT. This connection setting is a sample.
+    It will be overridden by the compass backend's extension point for
+    NXRuntime. To avoid overriding it the latest contribution to the
+    extension point should be:
+
+     <extension target="org.nuxeo.ecm.core.search.backend.compass.CompassBackend"
+             point="connection">
+      <default/>
+    </extension>
+     -->
+
+      <jdbc managed="true"
+        dialectClass="org.apache.lucene.store.jdbc.dialect.OracleDialect"
+        deleteMarkDeletedDelta="3600000">
+        <dataSourceProvider>
+          <jndi lookup="java:/nxsearch-compass" />
+        </dataSourceProvider>
+      </jdbc>
+    </connection>
+
+    <transaction commitBeforeCompletion="true"
+      factory="org.compass.core.transaction.JTASyncTransactionFactory">
+      <batchInsertSettings maxBufferedDocs="100" />
+    </transaction>
+
+    <converters>
+      <converter name="date"
+        type="org.compass.core.converter.basic.CalendarConverter" />
+      <converter name="int"
+        type="org.compass.core.converter.basic.IntConverter">
+        <setting name="format" value="#0000000000" />
+      </converter>
+      <converter name="long"
+        type="org.compass.core.converter.basic.LongConverter">
+        <setting name="format" value="#00000000000000000000" />
+      </converter>
+    </converters>
+
+    <searchEngine>
+      <analyzer name="lowerWhitespace" type="CustomAnalyzer"
+        analyzerClass="org.nuxeo.ecm.core.search.backend.compass.LowerWhitespaceAnalyzer" />
+      <analyzer name="french" type="CustomAnalyzer"
+        analyzerClass="org.nuxeo.ecm.core.search.backend.compass.lucene.analysis.fr.FrenchAnalyzer"/>
+      <optimizer scheduleInterval="300" schedule="true"/>
+    </searchEngine>
+
+    <mappings>
+      <resource location="nxdocument.cpm.xml" />
+    </mappings>
+
+  </compass>
+</compass-core-config>

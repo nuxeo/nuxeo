@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<datasources>
+  <!-- 
+    Link datasource to point to NuxeoDS.
+    See unified-nuxeo-ds.xml to set a different database
+  -->
+
+  <!-- 
+    <mbean code="org.jboss.naming.NamingAlias"
+    name="jboss.jca:name=nxworkflowjbpm,service=DataSourceBinding">
+    <attribute name="ToName">java:/NuxeoDS</attribute>
+    <attribute name="FromName">java:/nxworkflowjbpm</attribute>
+    </mbean>
+  -->
+
+  <!-- derby conf does not work for now -->
+
+  <local-tx-datasource>
+    <jndi-name>nxworkflowjbpm</jndi-name>
+    <connection-url>
+      jdbc:hsqldb:${jboss.server.data.dir}${/}hypersonic${/}nxworkflowjbpm
+    </connection-url>
+    <driver-class>org.hsqldb.jdbcDriver</driver-class>
+    <user-name>sa</user-name>
+    <password></password>
+  </local-tx-datasource>
+
+  <mbean code="org.jboss.jdbc.HypersonicDatabase"
+    name="jboss:service=Hypersonic,database=nxworkflowjbpm">
+    <attribute name="Database">nxworkflowjbpm</attribute>
+    <attribute name="InProcessMode">true</attribute>
+  </mbean>
+
+</datasources>
