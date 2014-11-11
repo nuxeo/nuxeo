@@ -1,0 +1,288 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+<c:if test="false">
+  This template is deprecated
+</c:if>
+
+<h3><h:outputText value="#{messages['label.search.form.simple']}" /></h3>
+
+<h:outputText value="#{messages['label.search.form.desc']}" class="infoMessage" />
+
+<h:inputHidden value="#{searchActions.searchTypeId}">
+  <f:attribute name="value" value="FORM" />
+</h:inputHidden>
+
+<br />
+
+<script language="javascript">
+  function popupSearch(searchFieldId, url) {
+    popup = window.open(url+'&amp;fieldId='+searchFieldId, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=712, height=480');
+    if(!popup.opener) {
+      popup.opener = window;
+    }
+    return false;
+  }
+</script>
+
+<c:set var="doc" value="#{searchDocumentModel}" />
+
+<table class="dataInput">
+  <tbody>
+    <tr>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.search.all_words']}" />
+      </td>
+      <td class="fieldColumn" colspan="3">
+        <h:inputText value="#{doc.advanced_search.fulltext_all}"
+            styleClass="dataInputText" />
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.dublincore.title']}" />
+      </td>
+      <td class="fieldColumn" colspan="3">
+        <h:inputText value="#{doc.advanced_search.title}"
+            styleClass="dataInputText" />
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.dublincore.description']}" />
+      </td>
+      <td class="fieldColumn" colspan="3">
+        <h:inputText value="#{doc.advanced_search.description}"
+          styleClass="dataInputText" />
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.dublincore.subject']}" />
+      </td>
+      <td class="fieldColumn" colspan="3">
+        <a4j:region id="keyword_region">
+      <nxdir:chainSelect size="2" value="#{doc.advanced_search.subjects}"
+        id="keyword_editselect" multiSelect="true" multiParentSelect="true"
+        allowBranchSelection="false">
+        <nxdir:chainSelectListbox index="0" size="4" directoryName="topic"
+          localize="true" id="keyword_topic">
+          <a4j:support event="onchange" reRender="keyword_subtopic" />
+        </nxdir:chainSelectListbox>
+        <nxdir:chainSelectListbox id="keyword_subtopic" size="4" index="1"
+          directoryName="subtopic" localize="true" />
+        <a4j:commandButton value="#{messages['command.add']}"
+          styleClass="button" immediate="true"
+          actionListener="#{chainSelectActions.add}"
+          reRender="keyword_status" id="keyword_add" />
+        <br />
+        <nxdir:chainSelectStatus display="value"
+          entryCssStyle="background-color: #DDEEFF"
+          label="#{messages['label.chainSelect.selection']}"
+          id="keyword_status">
+          <f:facet name="removeButton">
+            <a4j:commandButton actionListener="#{chainSelectActions.delete}"
+              immediate="true" reRender="keyword_status"
+              image="/icons/toggle_minus.png" id="keyword_delete" />
+          </f:facet>
+        </nxdir:chainSelectStatus>
+      </nxdir:chainSelect>
+    </a4j:region>
+    <h:message styleClass="errorMessage" for="keyword_editselect"
+      id="keyword_message" />
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.dublincore.rights']}" />
+      </td>
+      <td class="fieldColumn" colspan="3">
+        <h:inputText value="#{doc.advanced_search.rights}"
+          styleClass="dataInputText" />
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.dublincore.source']}" />
+      </td>
+      <td class="fieldColumn" colspan="3">
+        <h:inputText value="#{doc.advanced_search.source}"
+          styleClass="dataInputText" />
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.dublincore.coverage']}" />
+      </td>
+      <td class="fieldColumn" colspan="3">
+        <nxdir:chainSelect size="2" multiSelect="true" multiParentSelect="true"
+          allowBranchSelection="false" value="#{doc.advanced_search.coverage}"
+          id="coverage">
+          <nxdir:chainSelectListbox id="continent" index="0" size="4"
+            directoryName="continent" localize="true">
+            <a4j:support event="onchange" reRender="country,coverageSelection" />
+          </nxdir:chainSelectListbox>
+
+          <nxdir:chainSelectListbox id="country" size="4" directoryName="country"
+            index="1" localize="true">
+          </nxdir:chainSelectListbox>
+
+          <a4j:commandButton value="#{messages['command.add']}" styleClass="button"
+            immediate="true" actionListener="#{chainSelectActions.add}"
+            reRender="coverageSelection" />
+
+          <br />
+          <nxdir:chainSelectStatus id="coverageSelection" display="value"
+            entryCssStyle="background-color: #DDEEFF"
+            label="#{messages['label.chainSelect.selection']}">
+            <f:facet name="removeButton">
+              <a4j:commandButton actionListener="#{chainSelectActions.delete}"
+                immediate="true" reRender="coverageSelection"
+                image="/icons/toggle_minus.png" />
+            </f:facet>
+          </nxdir:chainSelectStatus>
+        </nxdir:chainSelect>
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.dublincore.creationDate']}" />
+        <h:outputText value=" #{messages['label.search.between']}" />
+      </td>
+      <td class="fieldColumn">
+        <nxu:inputDateTime value="#{doc.advanced_search.created_min}"
+          showsTime="true" format="#{nxu:basicDateFormater()}" />
+      </td>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.search.and']}" />
+      </td>
+      <td class="fieldColumn">
+        <nxu:inputDateTime value="#{doc.advanced_search.created_max}"
+          showsTime="true" format="#{nxu:basicDateFormater()}" />
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.dublincore.modificationDate']}" />
+        <h:outputText value=" #{messages['label.search.between']}" />
+      </td>
+      <td class="fieldColumn">
+        <nxu:inputDateTime value="#{doc.advanced_search.modified_min}"
+          format="#{nxu:basicDateFormater()}" />
+      </td>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.search.and']}" />
+      </td>
+      <td class="fieldColumn">
+        <nxu:inputDateTime value="#{doc.advanced_search.modified_max}"
+          format="#{nxu:basicDateFormater()}" />
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.dublincore.issueDate']}" />
+        <h:outputText value=" #{messages['label.search.between']}" />
+      </td>
+      <td class="fieldColumn">
+        <nxu:inputDateTime value="#{doc.advanced_search.issued_min}"
+          format="#{nxu:basicDateFormater()}" />
+      </td>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.search.and']}" />
+      </td>
+      <td class="fieldColumn">
+        <nxu:inputDateTime value="#{doc.advanced_search.issued_max}"
+          format="#{nxu:basicDateFormater()}" />
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.dublincore.validationDate']}" />
+        <h:outputText value=" #{messages['label.search.between']}" />
+      </td>
+      <td class="fieldColumn">
+        <nxu:inputDateTime value="#{doc.advanced_search.valid_min}"
+          format="#{nxu:basicDateFormater()}" />
+      </td>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.search.and']}" />
+      </td>
+      <td class="fieldColumn">
+        <nxu:inputDateTime value="#{doc.advanced_search.valid_max}"
+          format="#{nxu:basicDateFormater()}" />
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.dublincore.expirationDate']}" />
+        <h:outputText value=" #{messages['label.search.between']}" />
+      </td>
+      <td class="fieldColumn">
+        <nxu:inputDateTime value="#{doc.advanced_search.expired_min}"
+          format="#{nxu:basicDateFormater()}" />
+      </td>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.search.and']}" />
+      </td>
+      <td class="fieldColumn">
+        <nxu:inputDateTime value="#{doc.advanced_search.expired_max}"
+          format="#{nxu:basicDateFormater()}" />
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.dublincore.format']}" />
+      </td>
+      <td class="fieldColumn" colspan="3">
+        <h:inputText value="#{doc.advanced_search.format}"
+          styleClass="dataInputText" />
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.advanced_search.searchpath']}" />
+      </td>
+      <td class="fieldColumn" colspan="3">
+        <h:inputText value="#{doc.advanced_search.searchpath}"
+          styleClass="dataInputText" id="searchscope" />
+        <nxu:set var="url" value="#{contextPath}/search/choose_searchscope_popup.faces">
+          <nxu:set var="urlWithConversation"
+            value="#{restHelper.addCurrentConversationParameters(url)}">
+            <input type="button" value="#{messages['command.advancedsearch.browse']}" class="button"
+              onclick="javascript:popupSearch(this.previousSibling.previousSibling.id, '#{urlWithConversation}');" />
+          </nxu:set>
+        </nxu:set>
+        <f:subview rendered="false">
+          Example of how to put local search tree in an existing form
+          <ui:include src="/search/search_path_tree_explorer.xhtml" />
+        </f:subview>
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.dublincore.language']}" />
+      </td>
+      <td class="fieldColumn" colspan="3">
+        <h:inputText value="#{doc.advanced_search.language}"
+          styleClass="dataInputText" />
+      </td>
+    </tr>
+    <tr>
+      <td class="labelColumn">
+        <h:selectBooleanCheckbox value="#{deleteActions.searchDeletedDocuments}"
+          rendered="#{deleteActions.trashManagementEnabled}" />
+      </td>
+      <td class="fieldColumn" colspan="3">
+        <h:outputText value="#{messages['label.search.deleted.documents']}" />
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+</div>
