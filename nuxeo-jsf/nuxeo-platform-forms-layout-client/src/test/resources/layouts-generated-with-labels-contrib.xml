@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="myproject.dublincore.generatedContrib">
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="layouts">
+    <layout name="dublincore">
+      <rows>
+        <row>
+          <widget>contributors</widget>
+        </row>
+        <row>
+          <widget>coverage</widget>
+        </row>
+        <row>
+          <widget>created</widget>
+        </row>
+        <row>
+          <widget>creator</widget>
+        </row>
+        <row>
+          <widget>description</widget>
+        </row>
+        <row>
+          <widget>expired</widget>
+        </row>
+        <row>
+          <widget>format</widget>
+        </row>
+        <row>
+          <widget>issued</widget>
+        </row>
+        <row>
+          <widget>language</widget>
+        </row>
+        <row>
+          <widget>modified</widget>
+        </row>
+        <row>
+          <widget>rights</widget>
+        </row>
+        <row>
+          <widget>source</widget>
+        </row>
+        <row>
+          <widget>subjects</widget>
+        </row>
+        <row>
+          <widget>title</widget>
+        </row>
+        <row>
+          <widget>valid</widget>
+        </row>
+      </rows>
+      <!--TODO: contributors-->
+      <widget name="coverage" type="text">
+        <labels>
+          <label mode="any">label.widget.dublincore.coverage</label>
+        </labels>
+        <fields>
+          <field>dc:coverage</field>
+        </fields>
+        <properties mode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="created" type="datetime">
+        <labels>
+          <label mode="any">label.widget.dublincore.created</label>
+        </labels>
+        <fields>
+          <field>dc:created</field>
+        </fields>
+        <properties mode="any">
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
+          <property name="format">#{nxu:basicDateFormatter()}</property>
+        </properties>
+      </widget>
+      <widget name="creator" type="text">
+        <labels>
+          <label mode="any">label.widget.dublincore.creator</label>
+        </labels>
+        <fields>
+          <field>dc:creator</field>
+        </fields>
+        <properties mode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="description" type="text">
+        <labels>
+          <label mode="any">label.widget.dublincore.description</label>
+        </labels>
+        <fields>
+          <field>dc:description</field>
+        </fields>
+        <properties mode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="expired" type="datetime">
+        <labels>
+          <label mode="any">label.widget.dublincore.expired</label>
+        </labels>
+        <fields>
+          <field>dc:expired</field>
+        </fields>
+        <properties mode="any">
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
+          <property name="format">#{nxu:basicDateFormatter()}</property>
+        </properties>
+      </widget>
+      <widget name="format" type="text">
+        <labels>
+          <label mode="any">label.widget.dublincore.format</label>
+        </labels>
+        <fields>
+          <field>dc:format</field>
+        </fields>
+        <properties mode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="issued" type="datetime">
+        <labels>
+          <label mode="any">label.widget.dublincore.issued</label>
+        </labels>
+        <fields>
+          <field>dc:issued</field>
+        </fields>
+        <properties mode="any">
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
+          <property name="format">#{nxu:basicDateFormatter()}</property>
+        </properties>
+      </widget>
+      <widget name="language" type="text">
+        <labels>
+          <label mode="any">label.widget.dublincore.language</label>
+        </labels>
+        <fields>
+          <field>dc:language</field>
+        </fields>
+        <properties mode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="modified" type="datetime">
+        <labels>
+          <label mode="any">label.widget.dublincore.modified</label>
+        </labels>
+        <fields>
+          <field>dc:modified</field>
+        </fields>
+        <properties mode="any">
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
+          <property name="format">#{nxu:basicDateFormatter()}</property>
+        </properties>
+      </widget>
+      <widget name="rights" type="text">
+        <labels>
+          <label mode="any">label.widget.dublincore.rights</label>
+        </labels>
+        <fields>
+          <field>dc:rights</field>
+        </fields>
+        <properties mode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="source" type="text">
+        <labels>
+          <label mode="any">label.widget.dublincore.source</label>
+        </labels>
+        <fields>
+          <field>dc:source</field>
+        </fields>
+        <properties mode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <!--TODO: subjects-->
+      <widget name="title" type="text">
+        <labels>
+          <label mode="any">label.widget.dublincore.title</label>
+        </labels>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties mode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="valid" type="datetime">
+        <labels>
+          <label mode="any">label.widget.dublincore.valid</label>
+        </labels>
+        <fields>
+          <field>dc:valid</field>
+        </fields>
+        <properties mode="any">
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
+          <property name="format">#{nxu:basicDateFormatter()}</property>
+        </properties>
+      </widget>
+    </layout>
+  </extension>
+</component>

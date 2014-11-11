@@ -1,0 +1,49 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <nxu:set var="cvpcfp"
+    value="#{nxu:jsfTagIdEscape(contentViewPanelId)}">
+    <a4j:jsFunction name="#{cvpcfp}NP" action="#{provider.next}"
+      reRender="#{contentIdToBeReRendered}"
+      oncomplete="jQuery('div[id$=#{contentViewPanelId}]').openLightBoxAfterNP();" />
+    <a4j:jsFunction name="#{cvpcfp}PP" action="#{provider.previous}"
+      reRender="#{contentIdToBeReRendered}"
+      oncomplete="jQuery('div[id$=#{contentViewPanelId}]').openLightBoxAfterPP();" />
+
+    <script>
+      jQuery.extend(true, jQuery.magnificPopup.defaults, {
+        tClose: "#{messages['label.lightbox.close']}",
+        tLoading: "#{messages['label.lightbox.loading']}",
+        gallery: {
+          tPrev: "#{messages['label.lightbox.galleyr.previous']}",
+          tNext: "#{messages['label.lightbox.gallery.next']}",
+          tCounter: ""
+        },
+        image: {
+          tError: "#{messages['label.lightbox.image.error']}"
+        },
+        ajax: {
+          tError: "#{messages['label.lightbox.ajax.error']}"
+        }
+      });
+
+      jQuery(document).ready(function() {
+        jQuery("div[id$=#{contentViewPanelId}]").initNxCv({
+          nxHasPreviousPage : #{provider.previousPageAvailable},
+          nxHasNextPage : #{provider.nextPageAvailable},
+          endOfPageCallback : #{cvpcfp}NP,
+          startOfPageCallback : #{cvpcfp}PP,
+        });
+      });
+    </script>
+
+  </nxu:set>
+
+</div>
