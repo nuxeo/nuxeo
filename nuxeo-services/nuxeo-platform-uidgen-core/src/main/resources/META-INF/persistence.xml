@@ -1,0 +1,8 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="1.0">
+   <persistence-unit name="NXUIDSequencer">
+       <jta-data-source>java:/nxuidsequencer</jta-data-source>
+       <properties>
+         <property name="hibernate.hbm2ddl.auto">update</property>
+       </properties>
+   </persistence-unit>
+</persistence>

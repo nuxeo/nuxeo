@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXPlatformConvertPlugins
+Bundle-SymbolicName: org.nuxeo.ecm.platform.convert;singleton:=true
+Bundle-Localization: plugin
+Require-Bundle: org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.convert,
+ org.nuxeo.ecm.platform.commandline.executor
+Bundle-Vendor: Nuxeo
+Bundle-Category: runtime
+Nuxeo-Component: OSGI-INF/convert-service-contrib.xml,
+ OSGI-INF/commandline-pdf2html-contrib.xml,
+ OSGI-INF/commandline-pdf2image-contrib.xml,
+ OSGI-INF/ooo-server-daemon-framework.xml

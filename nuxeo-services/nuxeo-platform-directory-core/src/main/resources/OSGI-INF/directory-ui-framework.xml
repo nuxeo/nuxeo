@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.ui.DirectoryUIManager">
+
+  <implementation class="org.nuxeo.ecm.directory.ui.DirectoryUIManagerImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.directory.api.ui.DirectoryUIManager" />
+  </service>
+
+  <extension-point name="directories">
+    <documentation>
+      This extension point can be used to register directory ui information.
+      <p />
+      Example:
+      <code>
+        <directory name="continent" layout="vocabulary" sortField="label">
+          <deleteConstraint
+            class="org.nuxeo.ecm.directory.api.ui.HierarchicalDirectoryUIDeleteConstraint">
+            <property name="targetDirectory">country</property>
+            <property name="targetDirectoryField">parent</property>
+          </deleteConstraint>
+        </directory>
+        <directory name="country" layout="country_vocabulary"
+          sortField="parent" />
+      </code>
+      <p />
+      Here the layouts "vocabulary" and "country_vocabulary" have to be
+      registered as layouts. The delete constraint uses a standard class that
+      checks if no child entry references a parent entry before granting
+      deletion of the parent entry. Any other delete constraint can be set,
+      provided it follows the
+      <em>org.nuxeo.ecm.directory.api.ui.DirectoryUIDeleteConstraint</em>
+      interface.
+    </documentation>
+
+    <object class="org.nuxeo.ecm.directory.api.ui.DirectoryUIDescriptor" />
+  </extension-point>
+
+</component>

@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Web Common framework
+Bundle-SymbolicName: org.nuxeo.ecm.platform.web.common;singleton:=true
+Require-Bundle: org.nuxeo.ecm.platform.ui.api,
+ org.nuxeo.ecm.platform.url.api
+Nuxeo-Component: OSGI-INF/authentication-framework.xml,
+ OSGI-INF/authentication-contrib.xml,
+ OSGI-INF/web-request-controller-framework.xml,
+ OSGI-INF/web-request-controller-contrib.xml,
+ OSGI-INF/exception-handling-service.xml,
+ OSGI-INF/exception-handling-contrib.xml,
+ OSGI-INF/ajax-proxy-framework.xml,
+ OSGI-INF/ajax-proxy-contrib.xml
