@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.relations.web.contentview.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="relation_search">
+
+      <title>label.search.results</title>
+      <translateTitle>true</translateTitle>
+
+      <emptySentence>label.content.empty.search</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
+
+      <coreQueryPageProvider>
+        <parameter>#{currentDocument.id}</parameter>
+        <property name="coreSession">#{documentManager}</property>
+        <whereClause docType="RelationSearch">
+          <predicate parameter="ecm:path" operator="STARTSWITH">
+            <field schema="relation_search" name="ecm_path" />
+          </predicate>
+
+          <predicate parameter="dc:title" operator="FULLTEXT">
+            <field schema="relation_search" name="dc_title" />
+          </predicate>
+
+          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+            <field schema="relation_search" name="ecm_fulltext" />
+          </predicate>
+
+          <fixedPart>
+            ecm:uuid != ? AND ecm:mixinType != 'HiddenInNavigation' AND
+            ecm:mixinType != 'Folderish' AND ecm:isCheckedInVersion = 0 AND
+            ecm:currentLifeCycleState !='deleted'
+          </fixedPart>
+        </whereClause>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>5</pageSize>
+      </coreQueryPageProvider>
+
+      <searchLayout name="relation_search" />
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+
+      <resultLayouts>
+        <layout name="relation_document_listing" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png" />
+      </resultLayouts>
+
+    </contentView>
+
+  </extension>
+
+</component>

@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.jbpm.web.layouts">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+    <widget name="actors" type="template">
+      <fields>
+        <field>actors</field>
+      </fields>
+      <labels>
+        <label mode="any">label.review.select.reviewers</label>
+      </labels>
+      <translated>true</translated>
+      <properties mode="any">
+        <property name="template">
+          /widgets/user_prefixed_suggestion_widget_template.xhtml
+        </property>
+      </properties>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+      </properties>
+    </widget>
+    <widget name="right" type="template">
+      <fields>
+        <field>parameters.right</field>
+      </fields>
+      <labels>
+        <label mode="any">label.review.right</label>
+      </labels>
+      <translated>true</translated>
+      <properties mode="any">
+        <property name="template">
+          /widgets/workflow_task_right_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+    <widget name="right_task" type="template">
+      <fields>
+        <field>variablesLocally.right</field>
+      </fields>
+      <labels>
+        <label mode="any">label.review.right</label>
+      </labels>
+      <translated>true</translated>
+      <properties mode="any">
+        <property name="template">
+          /widgets/workflow_task_right_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+    <widget name="directive" type="template">
+      <fields>
+        <field>directive</field>
+      </fields>
+      <labels>
+        <label mode="any">label.review.directive</label>
+      </labels>
+      <translated>true</translated>
+      <properties mode="any">
+        <property name="template">
+          /widgets/directive_widget_template.xhtml
+        </property>
+      </properties>
+      <widgetModes>
+        <mode value="edit">#{jbpmActions.canManageParticipants ? 'edit' : 'view'}</mode>
+      </widgetModes>
+    </widget>
+    <widget name="directive_task" type="template">
+      <fields>
+        <field>variablesLocally.directive</field>
+      </fields>
+      <labels>
+        <label mode="any">label.review.directive</label>
+      </labels>
+      <translated>true</translated>
+      <properties mode="any">
+        <property name="template">
+          /widgets/directive_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+    <widget name="jbpm_dueDate" type="template">
+      <fields>
+        <field>dueDate</field>
+      </fields>
+      <labels>
+        <label mode="any">label.review.duedate</label>
+      </labels>
+      <translated>true</translated>
+      <properties mode="any">
+        <property name="template">
+          /widgets/duedate_widget_template.xhtml
+        </property>
+      </properties>
+      <widgetModes>
+        <mode value="edit">#{jbpmActions.canManageParticipants ? 'edit' : 'view'}</mode>
+      </widgetModes>
+    </widget>
+    <widget name="jbpm_comment" type="textarea">
+      <fields>
+        <field>comment</field>
+      </fields>
+      <labels>
+        <label mode="any">label.review.user.comment</label>
+      </labels>
+      <translated>true</translated>
+      <widgetModes>
+        <mode value="edit">#{jbpmActions.canManageParticipants ? 'edit' : 'view'}</mode>
+      </widgetModes>
+    </widget>
+    <widget name="delete_virtualTask" type="template">
+      <properties mode="any">
+        <property name="template">
+          /widgets/delete_virtualTask_widget_template.xhtml
+        </property>
+      </properties>
+      <widgetModes>
+        <mode value="any">#{jbpmActions.canManageParticipants ? 'view' : 'hidden'}</mode>
+      </widgetModes>
+    </widget>
+    <widget name="jbpm_comments" type="template">
+      <fields>
+        <field>comments</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">
+          /widgets/jbpm_comments_widget_template.xhtml
+        </property>
+      </properties>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+    <widget name="icon_task" type="template">
+      <fields>
+        <field></field>
+      </fields>
+      <properties mode="any">
+        <property name="template">
+          /widgets/icon_task_widget_template.xhtml
+        </property>
+      </properties>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+    <widget name="icon_virtualTask" type="template">
+      <fields>
+        <field></field>
+      </fields>
+      <properties mode="any">
+        <property name="template">
+          /widgets/icon_task_widget_template.xhtml
+        </property>
+        <property name="isVirtual">true</property>
+      </properties>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+    <widget name="move_virtualTask" type="template">
+      <fields>
+        <field></field>
+      </fields>
+      <properties mode="any">
+        <property name="template">
+          /widgets/move_virtualTask_widget_template.xhtml
+        </property>
+      </properties>
+      <widgetModes>
+        <mode value="any">#{jbpmActions.canManageParticipants ? 'view' : 'hidden'}</mode>
+      </widgetModes>
+    </widget>
+    <widget name="pooledActors_task" type="template">
+      <fields>
+        <field></field>
+      </fields>
+      <properties mode="any">
+        <property name="template">
+          /widgets/pooled_actors_widget_template.xhtml
+        </property>
+      </properties>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+    <widget name="actorId_task" type="template">
+      <fields>
+        <field>actorId</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">
+          /widgets/user_prefixed_suggestion_widget_template.xhtml
+        </property>
+      </properties>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+    <widget name="actors_virtualTask" type="template">
+      <fields>
+        <field>actors</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">
+          /widgets/user_prefixed_suggestion_widget_template.xhtml
+        </property>
+      </properties>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+    <widget name="jbpm_create_date" type="datetime">
+      <fields>
+        <field>create</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:dateAndTimeFormater('medium')}</property>
+      </properties>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+    <widget name="jbpm_end_date" type="datetime">
+      <fields>
+        <field>end</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:dateAndTimeFormater('medium')}</property>
+      </properties>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+    <widget name="task_end" type="template">
+      <fields>
+        <field></field>
+      </fields>
+      <properties mode="any">
+        <property name="template">
+          /widgets/manage_task_widget_template.xhtml
+        </property>
+        <property name="review">end</property>
+      </properties>
+      <widgetModes>
+        <mode value="any">edit</mode>
+      </widgetModes>
+    </widget>
+    <widget name="task_cancel" type="template">
+      <fields>
+        <field></field>
+      </fields>
+      <properties mode="any">
+        <property name="template">
+          /widgets/manage_task_widget_template.xhtml
+        </property>
+        <property name="review">cancel</property>
+      </properties>
+      <widgetModes>
+        <mode value="any">edit</mode>
+      </widgetModes>
+    </widget>
+    <widget name="task_reject" type="template">
+      <fields>
+        <field></field>
+      </fields>
+      <properties mode="any">
+        <property name="template">
+          /widgets/manage_task_widget_template.xhtml
+        </property>
+        <property name="review">reject</property>
+      </properties>
+      <widgetModes>
+        <mode value="any">edit</mode>
+      </widgetModes>
+    </widget>
+    <widget name="empty" type="text">
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+    <widget name="empty_hidden_withoutManageRight" type="text">
+      <widgetModes>
+        <mode value="any">#{jbpmActions.canManageParticipants ? 'view' : 'hidden'}</mode>
+      </widgetModes>
+    </widget>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="add_workflow_task">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>actors</widget>
+        </row>
+        <row>
+          <widget>right</widget>
+        </row>
+        <row>
+          <widget>directive</widget>
+        </row>
+        <row>
+          <widget>jbpm_dueDate</widget>
+        </row>
+        <row>
+          <widget>jbpm_comment</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="tasks_listing">
+      <templates>
+        <template mode="any">/layouts/layout_listing_template.xhtml</template>
+      </templates>
+      <properties>
+        <property name="showListingHeader">false</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>empty_hidden_withoutManageRight</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>icon_task</widget>
+        </column>
+        <column>
+          <widget>actorId_task</widget>
+          <widget>pooledActors_task</widget>
+        </column>
+        <column>
+          <widget>right_task</widget>
+        </column>
+        <column>
+          <widget>directive_task</widget>
+        </column>
+        <column>
+          <widget>jbpm_comments</widget>
+        </column>
+        <column>
+          <widget>jbpm_create_date</widget>
+        </column>
+        <column>
+          <widget>jbpm_end_date</widget>
+        </column>
+        <column>
+          <widget>jbpm_dueDate</widget>
+        </column>
+        <column>
+          <widget>task_end</widget>
+        </column>
+        <column>
+          <widget>task_reject</widget>
+        </column>
+        <column>
+          <widget>task_cancel</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>empty</widget>
+        </column>
+      </columns>
+    </layout>
+
+    <layout name="virtualTasks_listing">
+      <templates>
+        <template mode="any">/layouts/layout_listing_template.xhtml</template>
+      </templates>
+      <properties>
+        <property name="showListingHeader">false</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>delete_virtualTask</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>icon_virtualTask</widget>
+        </column>
+        <column>
+          <widget>actors_virtualTask</widget>
+        </column>
+        <column>
+          <widget>right</widget>
+        </column>
+        <column>
+          <widget>directive</widget>
+        </column>
+        <column>
+          <widget>jbpm_comment</widget>
+        </column>
+        <column>
+          <widget>empty</widget>
+        </column>
+        <column>
+          <widget>empty</widget>
+        </column>
+        <column>
+          <widget>jbpm_dueDate</widget>
+        </column>
+        <column>
+          <widget>empty</widget>
+        </column>
+        <column>
+          <widget>empty</widget>
+        </column>
+        <column>
+          <widget>empty</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>move_virtualTask</widget>
+        </column>
+      </columns>
+    </layout>
+
+  </extension>
+
+</component>

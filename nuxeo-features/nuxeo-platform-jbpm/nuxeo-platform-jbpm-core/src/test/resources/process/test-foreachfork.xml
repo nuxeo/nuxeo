@@ -1,0 +1,23 @@
+<process-definition name="foreach-test">
+  <start-state>
+    <task swimlane="initiator" />
+    <transition to="fork each participant" />
+  </start-state>
+  <node name="fork each participant">
+    <action class="org.nuxeo.ecm.platform.jbpm.core.node.ForeachFork">
+      <var>participant</var>
+      <list>participants</list>
+    </action>
+    <transition to="validate node" />
+  </node>
+  <task-node name="validate node">
+    <task name="validate">
+      <assignment actor-id="participant.name" />
+    </task>
+    <transition to="participants join" />
+  </task-node>
+  <join name="participants join">
+    <transition to="end" />
+  </join>
+  <end-state name="end" />
+</process-definition>

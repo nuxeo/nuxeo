@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<fragment version="1">
+
+  <require>org.nuxeo.ecm.platform.lang</require>
+  <require>org.nuxeo.ecm.webapp.core</require>
+
+  <install>
+
+    <!--  Unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+
+  </install>
+
+
+  <extension target="faces-config#NAVIGATION">
+
+    <navigation-case>
+      <from-outcome>subjects_virtual_navigation</from-outcome>
+      <to-view-id>/subjects_virtual_navigation.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>coverage_virtual_navigation</from-outcome>
+      <to-view-id>/coverage_virtual_navigation.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+  </extension>
+
+  <extension target="pages#PAGES">
+
+    <page view-id="/coverage_virtual_navigation.xhtml">
+      breadcrumb=label.virtualnavigation.coverage
+    </page>
+
+    <page view-id="/subjects_virtual_navigation.xhtml">
+      breadcrumb=label.virtualnavigation.subjects
+    </page>
+
+  </extension>
+
+</fragment>
