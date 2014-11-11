@@ -1,0 +1,105 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:c="http://java.sun.com/jstl/core" id="a1"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:s="http://jboss.com/products/seam/taglib">
+  <c:if test="#{clipboardActions.initialized}">
+
+
+<h:form rendered="#{!currentUser.anonymous}">
+
+  <s:cache key="#{clipboardActions.cacheKey}" enabled="false">
+
+  <h:panelGroup id="ClipboardListView">
+    <!-- Top of the rounded box -->
+
+    <div class="userClipboard">
+          <div class="tabsBar">
+          <nxu:dataList var="docList" layout="unorderedList"
+        value="#{clipboardActions.descriptorsForAvailableLists}"
+        itemStyleClass="#{nxu:test(clipboardActions.currentSelectedListName == docList.name, 'selected', '')}">
+          <h:commandLink value="" action="#{clipboardActions.selectList}">
+            <f:param name="listIdToSelect" value="#{docList.name}" />
+            <h:outputText value="#{messages[docList.title]}" />
+          </h:commandLink>
+        </nxu:dataList>
+
+     </div>
+
+     <div style="clear:both;"></div>
+
+     <div class="userClipboardContent">
+
+
+      <div id="clipboardCopy">
+
+      <nxu:dataList var="copiedDocument"
+        value="#{clipboardActions.currentSelectedList}">
+        <div id="docRef:#{copiedDocument.ref}" class="cell">
+          <span class="clipboardRemoveItem">
+           <h:commandLink
+              actionListener="#{clipboardActions.removeWorkListItem(copiedDocument.ref)}"
+              >
+              <nxu:graphicImage value="/icons/action_delete_mini.gif" />
+            </h:commandLink>
+          </span>
+          <nxu:graphicImage
+          value="#{nxd:iconPath(copiedDocument)}" styleClass="iconImage" />
+          <nxd:restDocumentLink document="#{copiedDocument}">
+          <h:outputText
+          value="#{nxd:titleOrId(copiedDocument)}" />
+          </nxd:restDocumentLink></div>
+        <script type="text/javascript">
+              <h:outputText value="new Draggable('docRef:#{copiedDocument.ref}', {revert:true});"/>
+        </script>
+      </nxu:dataList>
+
+      <div class="clipboardEmptyMessage">
+        <h:outputText
+        value="#{messages['label.clipboard.empty']}"
+        rendered="#{clipboardActions.workListEmpty}" />
+      </div>
+
+      </div>
+      <div class="clipboardFunctions">
+      <nxu:dataList var="cb_action" value="#{clipboardActions.actionsForCurrentList}" >
+        <div class="clipboardFunction">
+         <nxh:commandLink action="#{cb_action.getLink()}">
+            <nxu:graphicImage value="#{cb_action.icon}"
+              styleClass="smallIcon" />
+            <h:outputText value=" #{messages[cb_action.label]}" />
+          </nxh:commandLink>
+        </div>
+      </nxu:dataList>
+      </div>
+
+      </div>
+
+      <!-- Bottom of the rounded box -->
+
+      <p class="nobottomgap"></p>
+
+      </div>
+
+      <div class="bottom-left"></div>
+      <div class="bottom-right"></div>
+
+
+
+  </h:panelGroup>
+  </s:cache>
+</h:form>
+
+  <h:panelGroup id="ClipboardDroppable">
+    <script type="text/javascript">
+    <h:outputText value="Droppables.add('clipboardCopy', {accept:'cell', onDrop:function(element){copyElement(element)}, hoverclass:'dropIntoClipboardCopy'});"/>
+  </script>
+    </h:panelGroup>
+
+
+</c:if></div>

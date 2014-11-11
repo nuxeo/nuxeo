@@ -1,0 +1,25 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
+  id="#{widget.id}">
+
+  <c:if test="false">
+ Widget rendering the last contributor name.
+ To have a transparent update, the widget needs the contributors list as second field
+ to display the lastest.
+
+ Fields:
+ - field_0: dc.lastContributor as a String
+  </c:if>
+
+  <div>
+   <c:set var="username"
+          value="#{field_0}" />
+   <h:outputText value="#{nxu:userFullName(username)}"
+                 title="#{username}"
+                 onmouseover="tooltip.show(username, 500);"
+                 onmouseout="tooltip.hide();"/>
+  </div>
+
+</f:subview>
