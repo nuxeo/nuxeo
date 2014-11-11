@@ -1,0 +1,54 @@
+/*
+Basics styles for Print
+author: lkemen@nuxeo.com
+*/
+
+body { color: #000; font-family: Arial, Helvetica, sans-serif }
+h1,h2,h3,h4,h5,h6 { font-weight: bold; margin: .2em 0 .6em; padding: 0 }
+h1 { font-size: 140% }
+h2 { font-size: 130% }
+h3 { font-size: 120% }
+h4, h5, h6 { font-size: 110% }
+
+div { background-color: #fff; float: none }
+
+img { padding: .2em .5em }
+
+a:link, a:visited { background: transparent; color: #000; text-decoration: none }
+
+/* Page layout */
+.nxMainContainer { margin: 0 auto; width: 95% }
+.nxMainContainer content { padding: 1.5em }
+
+/* Breadcrumb */
+.breadcrumbs { float:left; font-size: .8em; margin-bottom: 1.8em }
+
+/* Tables */
+.fieldColumn { padding-left: 5px }
+.dataOutput th, .dataList th { background-color: #eee; padding: .4em .5em; text-align: left;  }
+.dataOutput .iconColumn img, .dataInput .iconColumn img, .dataList .iconColumn img { display: block }
+.dataInput, .dataOutput, .dataOutput2Columns, .dataList { border: 1px solid #dbdbdb; border-collapse: collapse }
+.dataOutput td, .dataList td, .dataInput td { border-width: 1px; border-style: solid none; border-color: #dbdbdb; padding: .5em .3em }
+.dataOutput2Columns td { padding: .5em .3em; vertical-align: top }
+.dataOutput thead th { white-space: nowrap }
+
+/* Images */
+.smallIcon { height: 16px; width: 16px }
+
+/* Document view*/
+.tabsContent { padding: 1.5em 0 }
+.currentDocumentDescription { padding: .3em 0}
+.summary_div_0 img { max-width: 15cm; max-height: 15cm }
+.note_content_block { border: 1px solid #ddd; padding: 1em }
+.content_block, .metadata_block, .comments_block, .entitiesBlock, .relation_block, .summary_div_2, .summary_div_3 { margin: 1em 0 }
+.content_block { page-break-after: always }
+.metadata_block .dataInput { width: 100% }
+.summary .summary_div_0 .description_block, .summary .summary_div_1, .content_block .actionsColumn { display: none }
+
+/* Workflow */
+.reviewers, .reviewTable .dataInput, .abandonProcess { display: none }
+.reviewTable { padding-top: 1em }
+.reviewTable .dataOutput table td { border: none }
+
+/* Display:none :) for inputs, tabs, actions, tips, layout selector, rss links, filter, action icons, ... */
+input, .tabsBar, .action_bar, .tooltip, .listingLayoutSelector, .syndicationLinks, .foldableLightBox, .contentViewHeaderSortTooltip img, h1 img, .pageNavigationControls, .popupTarget img { display: none }
