@@ -1,0 +1,115 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+<nxu:set var="category"
+  value="#{nxu:test(empty widgetProperty_category, 'DOCUMENT_SUMMARY_CUSTOM_ACTIONS', widgetProperty_category)}"
+  cache="true">
+<nxu:set var="actions"
+  value="#{webActions.getActionsList(category)}"
+  cache="true">
+
+  <c:if test="#{not empty actions}">
+
+    <c:choose>
+      <c:when test="#{widget.translated}">
+        <c:if test="#{!empty widget.label}">
+          <h3 class="summaryTitle">
+            <c:if test="#{!empty widget.helpLabel}">
+              <h:graphicImage value="/icons/lightbulb.png"
+                styleClass="layoutHelpLabel"
+                title="#{messages[widget.helpLabel]}" />
+            </c:if>
+            <h:outputText value=" #{messages[widget.label]}" />
+          </h3>
+        </c:if>
+      </c:when>
+      <c:otherwise>
+        <c:if test="#{!empty widget.label}">
+          <h3 class="summaryTitle">
+            <c:if test="#{!empty widget.helpLabel}">
+              <h:graphicImage value="/icons/lightbulb.png"
+                styleClass="layoutHelpLabel"
+                title="#{widget.helpLabel}" />
+            </c:if>
+            <h:outputText value=" #{widget.label}" />
+          </h3>
+        </c:if>
+      </c:otherwise>
+    </c:choose>
+
+    <div class="actions_block">
+      <c:choose>
+        <c:when test="#{widgetProperty_display == 'buttons'}">
+          <nxu:dataList layout="simple"
+            var="action" value="#{actions}">
+            <div>
+              <nxh:commandButton action="#{action.getLink()}"
+                immediate="#{action.immediate}"
+                id="#{widget.id}_#{action.id}"
+                value="#{messages[action.label]}"
+                styleClass="button" />
+            </div>
+          </nxu:dataList>
+        </c:when>
+        <c:when test="#{widgetProperty_display == 'links'}">
+          <nxu:dataList layout="simple"
+            var="action" value="#{actions}">
+            <div>
+              <nxh:commandLink action="#{action.getLink()}"
+                immediate="#{action.immediate}"
+                id="#{widget.id}_#{action.id}"
+                value="#{messages[action.label]}"
+                styleClass="button" />
+            </div>
+          </nxu:dataList>
+        </c:when>
+        <c:when test="#{widgetProperty_display == 'icons'}">
+          <nxu:dataList layout="simple"
+            var="action" value="#{actions}">
+            <div>
+              <nxh:commandLink action="#{action.getLink()}"
+                id="#{widget.id}_#{action.id}"
+                immediate="#{action.immediate}">
+                <h:graphicImage value="#{action.icon}"
+                  title="#{messages[action.label]}"
+                  alt="#{messages[action.label]}"
+                  styleClass="smallIcon" />
+              </nxh:commandLink>
+            </div>
+          </nxu:dataList>
+        </c:when>
+        <c:otherwise>
+          <nxu:dataList layout="simple"
+            var="action" value="#{actions}">
+            <div>
+              <nxh:commandLink action="#{action.getLink()}"
+                id="#{widget.id}_#{action.id}"
+                immediate="#{action.immediate}">
+                <h:graphicImage value="#{action.icon}"
+                  title="#{messages[action.label]}"
+                  alt="#{messages[action.label]}"
+                  styleClass="smallIcon"
+                  rendered="#{not empty action.icon}" />
+                <h:outputText  value=" #{messages[action.label]}" />
+              </nxh:commandLink>
+            </div>
+          </nxu:dataList>
+        </c:otherwise>
+      </c:choose>
+    </div>
+
+  </c:if>
+
+</nxu:set>
+</nxu:set>
+
+<script>
+  jQuery(document).ready(function() {
+    jQuery("img.layoutHelpLabel[title]").tooltip({delay:1000, predelay:250, offset: [0, 100], position: 'center center'});
+  });
+</script>
+
+</div>
