@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory">
+
+  <ui:define name="page title"><h:outputText value="#{nuxeoApplicationName} - #{messages['label.groupManager.groups']}" /></ui:define>
+
+  <ui:define name="body">
+
+    <div>
+      <ui:include src="/incl/userManager_action_tabs.xhtml">
+        <ui:param name="currentUserTab" value="groups" />
+      </ui:include>
+      <div style="clear: both"></div>
+    </div>
+
+    <div class="tabsContent">
+      <br />
+
+      <h:form>
+        <p class="directoryBack">
+          <h:commandLink immediate="true"
+            value="#{messages['command.directoryBack']}"
+            action="view_groups" />
+        </p>
+      </h:form>
+
+      <ui:include src="/incl/message_banner.xhtml" />
+
+      <br />
+
+      <h1>
+        <h:outputText styleClass="label"
+          value="#{groupManagerActions.selectedGroup.id}" />
+      </h1>
+
+      <c:if test="#{not groupManagerActions.selectedGroupReadOnly}">
+      <h:form id="deleteGroupForm" rendered="#{groupManagerActions.allowDeleteGroup and notReadOnly}">
+        <script type="text/javascript">
+        function confirmDeleteGroup() {
+          return confirm("#{messages['label.userManager.confirmDeleteGroup']}");
+        }
+        </script>
+        <div class="action_bar">
+          <ul>
+            <li class="selected">
+              <h:commandLink
+                action="#{groupManagerActions.deleteGroup}"
+                onclick="return confirmDeleteGroup();">
+                <h:graphicImage value="/icons/action_delete.gif" />
+                <h:outputText value="#{messages['command.delete']}" />
+              </h:commandLink>
+            </li>
+          </ul>
+        </div>
+        <div style="clear: both" />
+      </h:form>
+  </c:if>
+
+      <div class="tabsBar subtabsBar">
+        <h:form>
+          <ul>
+            <li class="#{nxu:test(currentGroupSubTab == 'view', 'selected', '')}">
+              <h:commandLink action="view_group">
+                 <h:outputText value="#{messages['label.groupManager.viewGroup']}" />
+              </h:commandLink>
+            </li>
+            <c:if test="#{not groupManagerActions.selectedGroupReadOnly}">
+            <f:subview rendered="#{groupManagerActions.allowEditGroup and notReadOnly}">
+              <li class="#{nxu:test(currentGroupSubTab == 'edit', 'selected', '')}">
+                <h:commandLink action="#{groupManagerActions.editGroup}">
+                   <h:outputText value="#{messages['label.groupManager.editGroup']}" />
+                </h:commandLink>
+              </li>
+            </f:subview>
+            </c:if>
+          </ul>
+        </h:form>
+      </div>
+      <div style="clear: both" />
+
+      <div class="tabsContent">
+
+        <ui:insert name="mainContent" />
+
+      </div>
+
+    </div>
+
+  </ui:define>
+
+</nxthemes:composition>
