@@ -1,0 +1,21 @@
+ <span xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:f="http://java.sun.com/jsf/core"
+  >
+
+ <f:subview rendered="false">
+  XXX AT: this link is broken, should use nxd:restDocumentLink instead
+ </f:subview>
+ <h:outputLink value="#{URLMaker.documentPermLink}" rendered="#{currentDocument!=null}" onclick="return false;">
+    <h:outputText value="#{messages['label.permalink']}"/>
+  </h:outputLink>
+  <!-- Link for paralelle navigation -->
+  <h:outputLink value="#{paralleleNavigationHelper.currentDocumentFullUrl}" rendered="#{currentDocument!=null}" target="_blank">
+    <nxu:graphicImage value="/icons/external.gif"
+      style="vertical-align:middle"
+      alt="#{messages['permalink.newTab']}"
+      title="#{messages['permalink.newTab']}"/>
+  </h:outputLink>
+
+</span>
