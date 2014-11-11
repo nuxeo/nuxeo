@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<connection-factories>
+  <tx-connection-factory>
+    <jndi-name>NXRepository/default</jndi-name>
+    <xa-transaction/>
+    <track-connection-by-tx/>
+    <adapter-display-name>Nuxeo SQL Repository DataSource</adapter-display-name>
+    <rar-name>nuxeo.ear#nuxeo-core-storage-sql-ra-5.7-SNAPSHOT.rar</rar-name>
+    <connection-definition>org.nuxeo.ecm.core.storage.sql.Repository</connection-definition>
+    <config-property name="name">default</config-property>
+    <config-property name="xaDataSource" type="java.lang.String">oracle.jdbc.xa.client.OracleXADataSource</config-property>
+    <config-property name="property" type="java.lang.String">URL=jdbc:oracle:thin:@localhost:1521:XE</config-property>
+    <config-property name="property" type="java.lang.String">User=oracle</config-property>
+    <config-property name="property" type="java.lang.String">Password=oracle</config-property>
+    <max-pool-size>20</max-pool-size>
+  </tx-connection-factory>
+</connection-factories>

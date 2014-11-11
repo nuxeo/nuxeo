@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.api.thumbnail.adapter">
+  <documentation>
+    Adapters contribution for thumbnail
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService"
+    point="adapters">
+    <adapter
+      class="org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter"
+      factory="org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapterFactory" />
+  </extension>
+
+</component>
