@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.security.defaultPolicies">
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="policies">
+
+    <documentation>
+      The lock security policy checks if a lock is set on the document, in case
+      it denies write access to everyone except to the user who locked it.
+
+      @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+    </documentation>
+    <policy name="lock" class="org.nuxeo.ecm.core.security.LockSecurityPolicy"
+      order="10" />
+
+  </extension>
+
+</component>
