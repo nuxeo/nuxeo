@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/common/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/common/">
+
+  <xs:include schemaLocation="base.xsd" />
+
+  <xs:element name="title" type="xs:string" />
+  <xs:element name="description" type="xs:string"/>
+  <xs:element name="rights" type="xs:string"/>
+  <xs:element name="source" type="xs:string"/>
+  <xs:element name="nature" type="nxs:stringList"/>
+  <xs:element name="coverage" type="nxs:stringList"/>
+  <xs:element name="subjects" type="nxs:stringList"/>
+  <xs:element name="created_min" type="xs:date" />
+  <xs:element name="created_max" type="xs:date" />
+  <xs:element name="modified_min" type="xs:date"/>
+  <xs:element name="modified_max" type="xs:date"/>
+  <xs:element name="issued_min" type="xs:date"/>
+  <xs:element name="issued_max" type="xs:date"/>
+  <xs:element name="valid_min" type="xs:date"/>
+  <xs:element name="valid_max" type="xs:date"/>
+  <xs:element name="expired_min" type="xs:date"/>
+  <xs:element name="expired_max" type="xs:date"/>
+  <xs:element name="format" type="xs:string"/>
+  <xs:element name="language" type="xs:string"/>
+  <xs:element name="isCheckedInVersion" type="xs:boolean" default="false"/>
+  <xs:element name="searchpath" type="nxs:stringList" />
+  <!--
+  <xs:element name="subjects" type="nxs:subjectList"/>
+  <xs:element name="contributors" type="nxs:contributorList"/>
+   -->
+
+  <xs:element name="currentLifeCycleState" type="xs:string" />
+  <xs:element name="currentLifeCycleStates" type="nxs:stringList" />
+
+  <xs:element name="fulltext_none" type="xs:string" />
+  <xs:element name="fulltext_all" type="xs:string" />
+  <xs:element name="fulltext_phrase" type="xs:string" />
+  <xs:element name="fulltext_one_of" type="xs:string" />
+  <xs:element name="sortColumn" type="xs:string" />
+  <xs:element name="sortAscending" type="xs:boolean" />
+
+</xs:schema>
