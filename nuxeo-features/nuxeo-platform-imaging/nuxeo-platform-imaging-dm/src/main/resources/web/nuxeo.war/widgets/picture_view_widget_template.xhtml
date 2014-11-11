@@ -1,0 +1,26 @@
+<f:subview id="#{widget.id}"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <c:set var="pictureView" value="#{nxu:test(!empty widgetProperty_pictureView, widgetProperty_pictureView, 'Medium')}" />
+  <c:set var="blobPropertyName" value="#{pictureView}:content" />
+
+  <c:if test="#{value.hasFacet('Picture')}">
+    <nxu:set var="image_url"
+     value="#{nxd:fileUrl('downloadPicture', value, blobPropertyName, value.dublincore.modified)}"
+     cache="true">
+      <c:if test="#{not empty image_url}">
+        <div class="pictureContainer">
+          <nxu:graphicImage styleClass="fullMaxWidth" value="#{image_url}"
+            title="#{value.title}" alt="#{value.title}"
+            width="#{widgetProperty_width}" height="#{widgetProperty_height}" />
+        </div>
+      </c:if>
+    </nxu:set>
+  </c:if>
+
+</f:subview>

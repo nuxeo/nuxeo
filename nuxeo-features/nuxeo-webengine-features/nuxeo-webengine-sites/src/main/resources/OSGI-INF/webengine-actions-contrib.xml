@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.platform.webengine.sites.actions">
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+
+    <action id="TAB_WEBVIEW" link="/incl/tabs/workspace_view.xhtml" enabled="true"
+      order="30" label="action.webcontainer.preview" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>isWebContainer</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="create" append="true">
+      <rule grant="true">
+        <permission>AddChildren</permission>
+        <type>WebSite</type>
+        <type>WebPage</type>
+      </rule>
+    </filter>
+
+    <filter id="importFile" append="true">
+      <rule grant="true">
+        <permission>AddChildren</permission>
+        <type>WebSite</type>
+      </rule>
+    </filter>
+
+    <filter id="isWebContainer">
+   	  <rule grant="true">
+        <facet>WebView</facet>
+      </rule>
+    </filter>
+
+  </extension>
+</component>

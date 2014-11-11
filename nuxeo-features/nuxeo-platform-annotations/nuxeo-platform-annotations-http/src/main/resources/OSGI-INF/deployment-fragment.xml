@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<fragment version="1">
+  <extension target="web#FILTER-MAPPING">
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/Annotations/*</url-pattern>
+    </filter-mapping>
+  </extension>
+  <extension target="web#SERVLET">
+    <servlet>
+      <servlet-name>Annotation Servlet</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.platform.annotations.http.AnnotationsServlet
+      </servlet-class>
+      <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Annotation Servlet</servlet-name>
+      <url-pattern>/Annotations/*</url-pattern>
+    </servlet-mapping>
+    <servlet>
+      <servlet-name>Annotation Body Servlet</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.platform.annotations.http.AnnotationsBodyServlet
+      </servlet-class>
+      <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Annotation Body Servlet</servlet-name>
+      <url-pattern>/Annotations/body/*</url-pattern>
+    </servlet-mapping>
+  </extension>
+
+  <install>
+
+    <delete path="${bundle.fileName}.tmp" />
+    <mkdir path="${bundle.fileName}.tmp" />
+    <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp">
+      <include>OSGI-INF/**</include>
+    </unzip>
+
+    <delete path="${bundle.fileName}.tmp" />
+
+  </install>
+</fragment>
