@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Query
+Bundle-SymbolicName: org.nuxeo.ecm.core.query;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Bundle-ClassPath: .
+Export-Package: org.nuxeo.ecm.core.query,
+ org.nuxeo.ecm.core.query.sql,
+ org.nuxeo.ecm.core.query.sql.model,
+ org.nuxeo.ecm.core.query.sql.parser,
+ java_cup.runtime,
+ org.joda.time
+Nuxeo-Require: org.nuxeo.ecm.core.api
+Require-Bundle: cup.java-cup, joda-time.joda-time, org.nuxeo.ecm.core.api
