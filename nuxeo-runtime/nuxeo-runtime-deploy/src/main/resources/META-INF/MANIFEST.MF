@@ -1,0 +1,21 @@
+Export-Package: org.nuxeo.runtime.deployment.preprocessor.install.commands,
+ org.nuxeo.runtime.deployment.preprocessor.template,
+ org.nuxeo.runtime.deployment.preprocessor.install,
+ org.nuxeo.runtime.deployment.preprocessor,
+ org.nuxeo.runtime.deployment.preprocessor.install.filters
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-deploy
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Import-Package: org.apache.commons.logging,
+ org.nuxeo.common,
+ org.nuxeo.common.collections,
+ org.nuxeo.common.utils,
+ org.nuxeo.common.xmap,
+ org.nuxeo.common.xmap.annotation,
+ org.w3c.dom
+Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-deploy;singleton:=true
