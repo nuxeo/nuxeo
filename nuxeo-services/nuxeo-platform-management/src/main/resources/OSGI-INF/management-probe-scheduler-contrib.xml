@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.platform.management.probes.ProbeSchedulerContrib">
+
+  <extension 
+  	target="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService"
+  	point="schedule">
+  	<schedule id="probeSchedule">
+          <username>ProbeScheduler</username>
+          <password></password>
+          <eventId>probeSchedule</eventId>
+          <eventCategory>default</eventCategory>
+          <cronExpression>0 0/5 * * * ?</cronExpression>
+     </schedule>
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.management.probes.ProbeComponent"
+    point="probes">
+    <usecase name="repository"
+      class="org.nuxeo.ecm.platform.management.probes.impl.RepositoryProbe"
+      serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
+    <usecase name="repositoryTest"
+      class="org.nuxeo.ecm.platform.management.probes.impl.RepositoryTestProbe"
+      serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
+  </extension>
+  
+</component>

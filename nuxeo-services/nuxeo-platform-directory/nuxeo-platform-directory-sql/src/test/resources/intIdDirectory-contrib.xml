@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.idschema">
+
+    <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+        <schema name="intIdSchema" src="sqldirectoryschema/intIdSchema.xsd"/>
+    </extension>
+
+    <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+        point="directories">
+
+        <directory name="testIdDirectory">
+
+            <schema>intIdSchema</schema>
+
+            <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
+            <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
+            <dbUser>sa</dbUser>
+            <dbPassword></dbPassword>
+
+            <table>users</table>
+            <idField>id</idField>
+            <autoincrementIdField>false</autoincrementIdField>
+            <createTablePolicy>always</createTablePolicy>
+
+        </directory>
+    </extension>
+
+</component>
