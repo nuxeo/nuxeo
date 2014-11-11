@@ -1,0 +1,69 @@
+/*
+For all status messages, tooltips and tips paragraphs.
+=Messages -> feedback, info, warning and error messages
+=Small help messages -> for small help words, e.g. in forms
+=Tips -> tooltips on rollovers, and tips paragraphs
+author: lkemen@nuxeo.com
+*/
+
+/* =Messages */
+.facesStatusMessage { top: 1em; right: 1em; position: fixed; z-index: 10000 }
+.facesStatusMessage ul, .infoFeedback ul, .warningFeedback ul, .errorFeedback ul { list-style-type: none; max-height: 30em;	min-width: 15em; text-align: center }
+
+.errorMessage, .infoMessage, .warningMessage, .infoFeedback  {
+  background-color: #e6f1ff;
+  border-color: "neutral.medium (__FLAVOR__ border)";
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 7px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  color: "black (__FLAVOR__ color)";
+  display: block;
+  font-weight: bold;
+  list-style: none;
+  margin: 0;
+  padding: 1em }
+
+.errorMessage, .errorFeedback { background-color:"warning (__FLAVOR__ background)"; border-color:"error (__FLAVOR__ border)" }
+.warningMessage, .warningFeedback { background-color: "info (__FLAVOR__ background)"; border-color:"warning (__FLAVOR__ border)" }
+
+.success { color: "normal.status (__FLAVOR__ color)"; font-weight: bold }
+.error, .warning { color: "warning.status (__FLAVOR__ color)"; font-weight: bold }
+
+.successLink { color: "normal.status (__FLAVOR__ color)" }
+.errorLink, .warningLink { color: "warning.status (__FLAVOR__ color)" }
+
+/* =Small help messages */
+.detail, .help { color: "gray.medium (__FLAVOR__ color)"; font-size: .9em }
+div.detail, p.detail { margin: .1em 0 .7em }
+
+/* =Tips */
+.widgetHelpLabel { border-bottom: 1px dashed #ffcc1d;
+  cursor: help;
+  display: inline;
+  padding-bottom: .2em }
+.tooltip { background-color: #fff;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  box-shadow: 0 0 3px #aaa;
+  color: #000;
+  display: none;
+  font-weight: normal;
+  max-width: 14em;
+  padding: .6em .8em .8em;
+  white-space: normal;
+  z-index: 2000 }
+.dropArea { border: 1px dashed;  border-color: "neutral.light (__FLAVOR__ border)";
+  border-radius: 3px;
+  box-shadow: none;
+  color: "gray.medium (__FLAVOR__ color)";
+  padding: .8em;
+  text-align: center }
+.tips { border: 1px solid;  border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-radius: 3px;
+  box-shadow: none;
+  color: "gray.medium (__FLAVOR__ color)";
+  display: block;
+  margin: .1em 0 .5em;
+  padding: .8em;
+  text-align: center }

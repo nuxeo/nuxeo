@@ -1,0 +1,13 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util" class="menu">
+
+  <c:forEach var="treeModel"
+    items="#{directoryTreeManager.directoryTrees}">
+    <ui:include src="/incl/single_directory_tree_explorer.xhtml" />
+  </c:forEach>
+
+</div>
