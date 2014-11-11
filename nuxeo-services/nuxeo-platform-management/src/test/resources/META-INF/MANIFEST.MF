@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo platform management test
+Bundle-SymbolicName: org.nuxeo.ecm.platform.management.test;singleton=true
+Bundle-Vendor: Nuxeo
+Provide-Package: org.nuxeo.ecm.platform.management.test
+Nuxeo-Require: org.nuxeo.ecm.core.api, 
+ org.nuxeo.ecm.core.event,
+Nuxeo-Component: test-event-listener-contrib.xml
