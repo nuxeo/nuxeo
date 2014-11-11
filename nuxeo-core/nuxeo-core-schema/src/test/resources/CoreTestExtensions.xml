@@ -1,0 +1,19 @@
+<component name="org.nuxeo.ecm.core.test">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="schema-lib" src="schema/schema-lib.xsd"/> <!-- includes first -->
+    <schema name="schema1" src="schema/schema.xsd"/>
+    <schema name="schema2" src="schema/schema2.xsd"/>
+  </extension>
+
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="myDoc" extends="Document">
+      <schema name="schema2"/>
+      <facet name="viewable"/>
+      <facet name="writable"/>
+    </doctype>
+  </extension>
+
+
+</component>
