@@ -1,0 +1,91 @@
+/*
+Style all the tables displayed
+author: lkemen@nuxeo.com
+*/
+
+table thead th { padding: .3em; text-align: left }
+
+.dataList { background: white; border-collapse: collapse; margin: 0 }
+.dataList td {
+  border-width: 1px; border-style: solid none; border-color: "neutral.light (__FLAVOR__ border)";
+  padding: .4em .3em }
+.dataOutput thead th, .dataList thead th {
+  background-color: "neutral.light (__FLAVOR__ background)";
+  border-width: 1px; border-style: none none solid; border-color: "neutral.light (__FLAVOR__ border)";
+  color: "gray.dark (__FLAVOR__ color)";
+  padding: .6em .3em;
+  text-align: left;
+  white-space: nowrap }
+.dataList thead th a:hover { text-decoration: underline }
+
+.dataInput { margin-top: .4em }
+.dataInput td, .rightsAddManager .dataInput td { border: 0 solid; padding: .6em .3em }
+.dataInput td td, .dataInput td td td { padding: .3em .4em }
+.dataInput .button { margin: 0 1em 0 0 }
+.archiveTabContent .dataInput { border: none; margin-bottom: 1.4em }
+.dataInputGroup { margin: 0; padding: 0; vertical-align: top }
+
+.dataOutput, .dataOutput2Columns {
+  border-collapse: collapse;
+  margin-top: .7em;
+  margin-bottom: .4em }
+.dataOutput td {
+  border-width: 1px; border-style: solid none; border-color: "neutral.light (__FLAVOR__ border)";
+  padding: .4em .3em }
+.dataOutput td table td { border: 0 none transparent }
+.dataOutput, .dataOutput2Columns, .dataList { width: 100% }
+.dataOutput2Columns td { padding: .4em .3em; vertical-align: top }
+table.dataOutput thead th a, table.dataOutput thead th a:hover, table.dataOutput thead th a:active, table.dataOutput thead th a:visited { color: "gray.dark (__FLAVOR__ color)" }
+.dataOutput .button { margin: .2em 1em .2em 0 !important }
+table.dataOutput th a img { margin: 0 0 0 .2em; padding: 0; vertical-align: bottom }
+
+.boldColumn { font-weight: bold !important }
+.buttonColumn { text-align: center; width: 280px }
+.focusColumn { background-color: "neutral.lighter (__FLAVOR__ background)" }
+.radioColumn {
+  padding: 0 0 0 .5em;
+  vertical-align: top;
+  width: 8px }
+.iconColumn { text-align: center; width: 1.8em }
+.iconColumn .cell { background: none; width: 40px }
+.iconColumn .dropInto { background-color: "neutral.light (__FLAVOR__ background)" }
+.iconColumn img { background: none; position: relative; z-index: 25 }
+.twoColumns { width: 50% }
+.fieldColumn { padding-left: .5em }
+.fieldColumn img { margin: 0 .4em; vertical-align: top }
+
+.buttonsGadgetNoForm .button { margin-right: 1em }
+.buttonsGadget { margin: .4em 0 .4em 3.2em }
+.smallButtonsGadget { margin: 0 0 .4em 7em }
+
+.labelColumn { font-weight: bold; text-align: right; vertical-align: top; width: 11em }
+.labelColumn span { display: block; padding-right: 1em }
+.labelColumn .widgetHelpLabel span { display: inline }
+.workflowLabelColumn { width: 120px }
+
+.relationCommentList td { border: 0 none }
+.relationObjectColumn { vertical-align: top; width: 100px }
+.relationCommentColumn { vertical-align: top }
+.relationActionsColumn { text-align: center; vertical-align: top; width: 60px }
+.relationCreateFieldColumn, .fieldColumn, .workflowFieldColumn { vertical-align: top }
+.relationCreateFieldColumn table, .fieldColumn table, .workflowFieldColumn table { border: 0 none; margin: 0; vertical-align: top }
+
+.selectDocumentType td { padding: .3em }
+.selectDocumentType td a img { margin-right: .4em; vertical-align: top }
+
+.vocabularyEntryContent { margin-left: 1.6em }
+.vocabularyEntryContent .notEditable { background-color: #fff }
+.vocabularyEntryContent .dataInput { border: none; margin-bottom: 1.4em }
+
+table.trashTable tbody tr:hover { background-color: "info (__FLAVOR__ background)" }
+
+.listShuttleTable { margin-left: 3em }
+
+.dataRowOdd:hover, .dataRowEven:hover {	background-color: "color.major.medium (__FLAVOR__ background)" }
+
+/* Local configuration table styles */
+.palettePreviewLogo { float: left ;width: 100px }
+table.palettePreviewColors { border-collapse: separate; border-spacing: 3px; display: inline; float: left; vertical-align: middle }
+table.palettePreviewColors td { border: 1px solid #777 }
+table.palettePreviewColors td div { height: 8px; width: 10px }
+td.flavorPreview, td.flavorWaiter { vertical-align: top }
