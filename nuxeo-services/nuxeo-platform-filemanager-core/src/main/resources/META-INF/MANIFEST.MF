@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXFileManager
+Bundle-SymbolicName: org.nuxeo.ecm.platform.filemanager.core
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Bundle-Category: runtime
+Require-Bundle: org.nuxeo.ecm.platform.mimetype.api,
+ org.nuxeo.ecm.platform.types.api,
+ org.nuxeo.ecm.platform.filemanager.api,
+ org.nuxeo.ecm.platform.search.api
+Nuxeo-Component: OSGI-INF/nxfilemanager-service.xml,
+ OSGI-INF/nxfilemanager-plugins-contrib.xml,
+ OSGI-INF/nxfilemanager-querymodel-contrib.xml
