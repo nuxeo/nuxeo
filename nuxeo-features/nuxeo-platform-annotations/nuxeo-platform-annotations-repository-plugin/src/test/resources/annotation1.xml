@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<r:RDF xmlns:r="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+       xmlns:a="http://www.w3.org/2000/10/annotation-ns#"
+       xmlns:d="http://purl.org/dc/elements/1.1/"
+       xmlns:h="http://www.w3.org/1999/xx/http#">
+ <r:Description>
+  <r:type r:resource="http://www.w3.org/2000/10/annotation-ns#Annotation"/>
+  <r:type r:resource="http://www.w3.org/2000/10/annotationType#Comment"/>
+  <a:annotates r:resource="docUrl"/>
+  <a:context>docUrl#xpointer(id("Main")/p[2])
+  </a:context>
+  <d:title>Annotation of Sample Page</d:title>
+  <d:creator>Ralph Swick</d:creator>
+  <a:created>1999-10-14T12:10Z</a:created>
+  <d:date>1999-10-14T12:10Z</d:date>
+  <a:body>
+   <r:Description>
+    <h:ContentType>text/html</h:ContentType>
+    <h:ContentLength>289</h:ContentLength>
+    <h:Body r:parseType="Literal">
+     <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+       <title>Ralph's HTML Annotation</title>
+      </head>
+      <body>
+       <p>This is an <em>important</em> concept; see
+       <a href="http://serv1.example.com/other/page.html">other page</a>.</p>
+      </body>
+     </html>
+    </h:Body>
+   </r:Description>
+  </a:body>
+ </r:Description>
+</r:RDF>

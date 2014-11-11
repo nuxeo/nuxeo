@@ -1,0 +1,97 @@
+<f:subview xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:f="http://java.sun.com/jsf/core">
+
+ <c:choose>
+      <c:when test="#{connectUpdateStatusInfo.registered}">
+
+       <c:if test="false"> Instance is registered, but we can not check the status from the server side </c:if>
+
+       <c:if test="#{currentNuxeoPrincipal!=null and currentNuxeoPrincipal.isAdministrator()}">
+         <div style="display:none" id="connectExpiredMessageBanner">
+          <div class="bannerBottom unregistered">
+           <div class="bannerMessage">
+
+            <p>Nuxeo #{connectUpdateStatusInfo.distributionName} version: #{connectUpdateStatusInfo.distributionVersion}. Your Nuxeo #{connectUpdateStatusInfo.distributionName} instance has been registered to Nuxeo Connect but your registration status can not be validated.</p>
+            <p>
+            <span class="bold" id="connectHotFixesCountMsg" style="display:none"><a target="marketplace" href="https://connect.nuxeo.com/nuxeo/site/marketplace/hotfixes/#{connectUpdateStatusInfo.distributionLabel}"><span id="connectHotFixesCount">3</span> hotfix(es) published since this release.</a></span>
+            </p>
+            <p><a href="mailto:connect-support@nuxeo.com?subject=Issue%20in%20Connect%20contract%20#{connectUpdateStatusInfo.identifier}"> Contact connect-support@nuxeo.com to reactivate Nuxeo Connect</a></p>
+           </div>
+           <div class="clear" />
+          </div>
+         </div>
+
+         <script>
+         <!--
+         jQuery(document).ready(function(){
+             var script = document.createElement( 'script' );
+             script.type = 'text/javascript';
+             script.src = '#{connectUpdateStatusInfo.feedUrl}';
+             jQuery("body").append(script);
+          });
+         function displayConnectUpdateStatus(registrationStatus) {
+           if (registrationStatus.registered!=true) {
+                 jQuery(document).ready(function(){
+                     if (registrationStatus.nbPkgs>0) {
+                       jQuery("#connectHotFixesCount").html(""+registrationStatus.nbPkgs);
+                       jQuery("#connectHotFixesCountMsg").css("display","block");
+                     }
+                     jQuery("#connectExpiredMessageBanner").css("display","block");
+                 });
+           }
+         }
+         -->
+         </script>
+       </c:if>
+
+      </c:when>
+      <c:otherwise>
+
+         <c:if test="false"> Instance is not registered </c:if>
+
+         <div class="bannerBottom unregistered" >
+           <div class="bannerMessage">
+            <p><h:outputText value="#{messages['label.nuxeo.connect.footer.instance.status']}" />
+            <span class="bold" id="connectHotFixesCountMsg" style="display:none"><a target="marketplace" href="https://connect.nuxeo.com/nuxeo/site/marketplace/hotfixes/#{connectUpdateStatusInfo.distributionLabel}"><span id="connectHotFixesCount">3</span> hotfix(es) published since this release.</a></span></p>
+            <p><h:outputText value="#{messages['label.nuxeo.connect.footer.version']} #{connectUpdateStatusInfo.distributionVersion}. #{messages['label.nuxeo.connect.footer.instance.invitation']}"/>
+            </p>
+           </div>
+           <div class="links">
+            <a href="https://doc.nuxeo.com/x/l4FH" target="_blank">
+            &gt; <h:outputText value=" #{messages['label.nuxeo.connect.footer.helper']}"/></a>
+            <a href="https://connect.nuxeo.com/nuxeo/site/connect/trial/form?source=unregisteredClientBanner&#38;product=#{connectUpdateStatusInfo.distributionLabel}" target="_blank"> 
+            &gt; <h:outputText value=" #{messages['label.nuxeo.connect.footer.subscribe']}"/>
+            </a>
+           </div>
+           <div class="clear" />
+        </div>
+
+        <script>
+        <!--
+        jQuery(document).ready(function(){
+            var script = document.createElement( 'script' );
+            script.type = 'text/javascript';
+            script.src = '#{connectUpdateStatusInfo.feedUrl}';
+            jQuery("body").append(script);
+        });
+        function displayConnectUpdateStatus(nbPkg) {
+                  jQuery(document).ready(function(){
+                  if (nbPkg>0) {
+                   jQuery("#connectHotFixesCount").html(""+nbPkg);
+                   jQuery("#connectHotFixesCountMsg").css("display","block");
+                  }
+                 });
+         }
+         -->
+        </script>
+
+
+      </c:otherwise>
+
+ </c:choose>
+
+
+
+</f:subview>
