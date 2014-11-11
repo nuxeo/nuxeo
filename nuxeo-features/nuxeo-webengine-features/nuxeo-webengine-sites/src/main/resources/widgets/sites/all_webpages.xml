@@ -1,0 +1,13 @@
+<div class="allWebPagesBlock">
+  <#if (!nxthemesInfo.model.items.empty)>
+    <h4>${Context.getMessage("title.all.webpages")}</h4>
+  </#if>
+  <ul>  
+    <#list nxthemesInfo.model.items as item>
+      <div class="allWebPagesResume">
+        <div class="documentInfo"><a href="${This.path}/${item.path}"> ${item.name?xml} </a></div>
+        <div style="clear:both;"></div> 
+      </div>
+    </#list>
+  </ul>
+</div>

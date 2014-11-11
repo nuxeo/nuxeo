@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo-spaces-core
+Bundle-SymbolicName: org.nuxeo.ecm.spaces.core;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Leroy Merlin
+Provide-Package: org.nuxeo.ecm.spaces.core
+Require-Bundle: org.nuxeo.ecm.core,
+ org.nuxeo.ecm.spaces.api
+Nuxeo-Component: OSGI-INF/spaces-manager-service.xml,
+ OSGI-INF/spaces-adapter-contrib.xml,
+ OSGI-INF/spaces-core-contrib.xml,
+ OSGI-INF/spaces-factory-service.xml
