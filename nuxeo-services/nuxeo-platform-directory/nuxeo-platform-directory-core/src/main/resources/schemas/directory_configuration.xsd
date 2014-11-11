@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/directoryConfiguration/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/directoryConfiguration/">
+
+  <xs:element name="suffix" type="xs:string" />
+
+</xs:schema>
