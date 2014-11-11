@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.theme.webwidgets">
+  <documentation>
+    @author Jean-Marc Orliaguet (jmo@chalmers.se)
+  </documentation>
+
+  <require>org.nuxeo.theme.core</require>
+  <require>org.nuxeo.theme.webwidgets.Service</require>
+
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="request-configuration">
+    <path value="/nxthemes-webwidgets" stateful="false" autoTx="true" />
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="models">
+
+    <model name="web widget region">
+      <class>org.nuxeo.theme.webwidgets.RegionModel</class>
+    </model>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="fragments">
+
+    <fragment name="web widget area">
+      <class>org.nuxeo.theme.webwidgets.AreaFragment</class>
+      <model-type>web widget region</model-type>
+      <dynamic>false</dynamic>
+    </fragment>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.webwidgets.Service"
+    point="providers">
+
+    <provider name="default">
+      <description>Non-persistent provider that stores web widgets in the user session, meant for testing.</description>
+      <class>org.nuxeo.theme.webwidgets.providers.DefaultProvider</class>
+    </provider>
+
+    <provider name="persistent">
+      <description>Provider that stores web widgets in a persistent database.</description>
+      <class>org.nuxeo.theme.webwidgets.providers.PersistentProvider</class>
+    </provider>
+
+    <provider name="persistent per user">
+      <description>Provider that stores web widgets in a persistent database, per user.</description>
+      <class>org.nuxeo.theme.webwidgets.providers.PersistentProviderPerUser</class>
+    </provider>
+
+  </extension>
+
+</component>
+

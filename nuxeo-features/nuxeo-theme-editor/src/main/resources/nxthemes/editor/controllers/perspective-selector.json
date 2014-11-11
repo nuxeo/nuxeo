@@ -1,0 +1,7 @@
+    {"id": "perspective selector",
+     "type": "behaviour",
+     "rules": {
+       "form select": {
+         "change": "select perspective"
+       }
+    }}
