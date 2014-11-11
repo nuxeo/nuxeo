@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>testDeleteCaseItem</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">testDeleteCaseItem</td></tr>
+</thead><tbody>
+<tr>
+	<td>setTimeout</td>
+	<td>120000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>retrieveCurrentDateInfo</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>jdoe</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>My Mailboxes</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Test Mailbox</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Test Mailbox</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Draft</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>mouseDown</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Case</td>
+	<td></td>
+</tr>
+<tr>
+	<td>retrieveTestFolderPath</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_cm_case:nxw_title</td>
+	<td>Case 1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Create</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Case saved</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Case 1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>mouseDown</td>
+	<td>addCaseItem</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>	<td>selectDocumentTypeForCreationForm:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:0:selectDocumentTypeForCreationCategoryTitleLink</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_cm_document:nxw_title</td>
+	<td>To delete</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>document_create:nxl_cm_document:nxw_document_type</td>
+	<td>Article</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Create</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>Link=To delete</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=To delete</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Edit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>document_edit:nxl_cm_document:nxw_contactsParticipants:nxw_contactsParticipants_add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_edit:nxl_cm_document:nxw_contactsParticipants:nxw_contactsParticipants_list:0:nxw_contactsParticipants_name</td>
+	<td>Name1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_edit:nxl_cm_document:nxw_contactsParticipants:nxw_contactsParticipants_list:0:nxw_contactsParticipants_surname</td>
+	<td>Surname1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_edit:nxl_cm_document:nxw_contactsParticipants:nxw_contactsParticipants_list:0:nxw_contactsParticipants_service</td>
+	<td>Service1</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>document_edit:nxl_cm_document:nxw_contactsSenders:nxw_contactsSenders_add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>4000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_edit:nxl_cm_document:nxw_contactsSenders:nxw_contactsSenders_list:0:nxw_contactsSenders_name</td>
+	<td>Name2</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_edit:nxl_cm_document:nxw_contactsSenders:nxw_contactsSenders_list:0:nxw_contactsSenders_surname</td>
+	<td>Surname2</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_edit:nxl_cm_document:nxw_contactsSenders:nxw_contactsSenders_list:0:nxw_contactsSenders_service</td>
+	<td>Service2</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_edit:nxl_cm_document:nxw_document_dateInputDate</td>
+	<td>${currentMonth}/${currentDay}/${currentYear} 12:00 PM</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_edit:nxl_cm_document:nxw_receive_dateInputDate</td>
+	<td>${currentMonth}/${currentDay}/${currentYear} 12:00 PM</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_edit:nxl_cm_document:nxw_reference</td>
+	<td>Test Mail reference</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@type='file']</td>
+	<td></td>
+</tr>
+<tr>
+    <td>storeExpression</td>
+    <td>javascript{storedVars.testfolderpath + 'hello.pdf';}</td>
+    <td>importUrl</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@type='file']</td>
+	<td>${importUrl}</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>document_edit:edit_doc_EDIT_CURRENT_DOCUMENT</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>CaseItem modified</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>To delete</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>Link=To delete</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Test Mailbox</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Draft</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@title='Select all / deselect all']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>//input[@value='Permanent delete']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Permanent delete']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Permanently delete selected document(s)?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>This folder contains no document.</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
