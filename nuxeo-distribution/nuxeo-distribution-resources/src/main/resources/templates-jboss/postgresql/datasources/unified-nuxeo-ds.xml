@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources>
+  <xa-datasource>
+    <jndi-name>NuxeoDS</jndi-name>
+    <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
+    <xa-datasource-property name="ServerName">${nuxeo.db.host}</xa-datasource-property>
+    <xa-datasource-property name="PortNumber">${nuxeo.db.port}</xa-datasource-property>
+    <xa-datasource-property name="DatabaseName">${nuxeo.db.name}</xa-datasource-property>
+    <xa-datasource-property name="User">${nuxeo.db.user}</xa-datasource-property>
+    <xa-datasource-property name="Password">${nuxeo.db.password}</xa-datasource-property>
+    <max-pool-size>${nuxeo.db.max-pool-size}</max-pool-size>  
+    <track-connection-by-tx/>
+  </xa-datasource>
+</datasources>

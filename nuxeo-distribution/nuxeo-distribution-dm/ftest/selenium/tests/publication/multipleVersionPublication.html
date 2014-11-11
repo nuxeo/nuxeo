@@ -1,0 +1,1188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>multipleVersionPublication</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">multipleVersionPublication</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium multipleVersionPublication</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/workspaces/testworkspace1/testfolder1@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>mouseDown</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Note</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>note to be versionned and published</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_description</td>
+	<td>the description</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>document_create:button_create</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Publish</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>publishTreeForm:publishTree:publishRecursiveAdaptor:0::publishTreeNode:handle:img:collapsed</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0::publishTreeNode:handle:img:collapsed</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0::publishCommandLink</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Edit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>document_edit:versioningOptionInstanceId:2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_edit:nxl_heading:nxw_title</td>
+	<td>note to be versionned and published v2</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Save&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/sections/testsection1/testsection2/note-to-be-versionned-an@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>1.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>2.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>This document is published</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>bree</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>bree1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/sections/testsection1/testsection2/note-to-be-versionned-an@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>This document is published</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/workspaces/testworkspace1/testfolder1/note-to-be-versionned-an@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Publish</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>publishTreeForm:publishTree:publishRecursiveAdaptor:0::publishTreeNode:handle:img:collapsed</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0::publishTreeNode:handle:img:collapsed</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0::publishCommandLink</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>1.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>2.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/sections/testsection1/testsection2@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>1.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>2.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=note to be versionned and published</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>This document is published</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/sections/testsection1/testsection2@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=note to be versionned and published v2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertTextPresent</td>
+	<td>This document is waiting for a publication approval</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>linnet</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>linnet1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/sections/testsection1/testsection2@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>1.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>2.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/sections/testsection1/testsection2/note-to-be-versionned-an@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>This document is published</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>1.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>2.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Dashboard</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Publish document</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=note to be versionned and published v2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_view:nxl_note_summary_layout:rejectPublishingComment</td>
+	<td>doc is ok</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Approve&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/sections/testsection1/testsection2@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>2.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>1.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Dashboard</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Your dashboard is empty. There are no tasks that require your intervention.</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>linnet</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>linnet1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/sections/testsection1/testsection2@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=note to be versionned and published v2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>2.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>1.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>This document is published</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/sections/testsection1/testsection2@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>CHILDREN_DOCUMENT_LIST:nxl_document_listing:nxw_listing_selection_box_with_current_document</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>//input[@value=&quot;Unpublish&quot;]</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Unpublish&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>This folder contains no document.</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/workspaces/testworkspace1/testfolder1@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>CHILDREN_DOCUMENT_LIST:nxl_document_listing_1:nxw_listing_selection_box_with_current_document_1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>//input[@value=&quot;Delete&quot;]</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>chooseOkOnNextConfirmation</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Delete&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Delete selected document(s)?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Trash</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>CHILDREN_DOCUMENT_LIST:nxl_document_listing:nxw_listing_selection_box_with_current_document</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>//input[@value=&quot;Permanent delete&quot;]</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Permanent delete&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Permanently delete selected document(s)?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<!--We redo the same test but publication will be done by publishing over instead of validating a task-->
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/workspaces/testworkspace1/testfolder1@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>mouseDown</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Note</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>note to be versionned and published</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_description</td>
+	<td>the description</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>document_create:button_create</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Publish</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>publishTreeForm:publishTree:publishRecursiveAdaptor:0::publishTreeNode:handle:img:collapsed</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0::publishTreeNode:handle:img:collapsed</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0::publishCommandLink</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Edit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>document_edit:versioningOptionInstanceId:2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_edit:nxl_heading:nxw_title</td>
+	<td>note to be versionned and published v2</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Save&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/sections/testsection1/testsection2/note-to-be-versionned-an@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>1.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>2.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>This document is published</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>bree</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>bree1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/sections/testsection1/testsection2/note-to-be-versionned-an@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>This document is published</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/workspaces/testworkspace1/testfolder1/note-to-be-versionned-an@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Publish</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>publishTreeForm:publishTree:publishRecursiveAdaptor:0::publishTreeNode:handle:img:collapsed</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0::publishTreeNode:handle:img:collapsed</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0::publishCommandLink</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>1.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>2.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/sections/testsection1/testsection2@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>1.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>2.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=note to be versionned and published</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>This document is published</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/sections/testsection1/testsection2@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=note to be versionned and published v2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertTextPresent</td>
+	<td>This document is waiting for a publication approval</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>linnet</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>linnet1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/sections/testsection1/testsection2@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>1.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>2.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/sections/testsection1/testsection2/note-to-be-versionned-an@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>This document is published</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>1.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>2.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Dashboard</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Publish document</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=note to be versionned and published v2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>This document is waiting for a publication approval</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/workspaces/testworkspace1/testfolder1/note-to-be-versionned-an@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Publish</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>publishTreeForm:publishTree:publishRecursiveAdaptor:0::publishTreeNode:handle:img:collapsed</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0::publishTreeNode:handle:img:collapsed</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0::publishCommandLink</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertTextPresent</td>
+	<td>2.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertTextNotPresent</td>
+	<td>1.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/sections/testsection1/testsection2@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>2.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>1.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Dashboard</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Your dashboard is empty. There are no tasks that require your intervention.</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>linnet</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>linnet1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/sections/testsection1/testsection2@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=note to be versionned and published v2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>2.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>1.0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>This document is published</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/sections/testsection1/testsection2@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>CHILDREN_DOCUMENT_LIST:nxl_document_listing:nxw_listing_selection_box_with_current_document</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>//input[@value=&quot;Unpublish&quot;]</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Unpublish&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertTextPresent</td>
+	<td>This folder contains no document.</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default/default-domain/workspaces/testworkspace1/testfolder1@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>CHILDREN_DOCUMENT_LIST:nxl_document_listing_4:nxw_listing_selection_box_with_current_document_4</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>//input[@value=&quot;Delete&quot;]</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>chooseOkOnNextConfirmation</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Delete&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Delete selected document(s)?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Trash</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>CHILDREN_DOCUMENT_LIST:nxl_document_listing:nxw_listing_selection_box_with_current_document</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>//input[@value=&quot;Permanent delete&quot;]</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Permanent delete&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Permanently delete selected document(s)?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

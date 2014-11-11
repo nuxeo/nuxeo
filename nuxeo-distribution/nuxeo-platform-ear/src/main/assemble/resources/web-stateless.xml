@@ -1,0 +1,22 @@
+<assembly>
+  <id>resources-web-stateless</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>src/main/resources_common</directory>
+      <outputDirectory>/</outputDirectory>
+<!--      <useDefaultExcludes>true</useDefaultExcludes>-->
+      <excludes>
+        <exclude>**/unified-nuxeo-ds.xml</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+      <directory>src/main/resources_web-stateless</directory>
+      <outputDirectory>/</outputDirectory>
+<!--      <useDefaultExcludes>true</useDefaultExcludes>-->
+    </fileSet>
+  </fileSets>
+</assembly>
