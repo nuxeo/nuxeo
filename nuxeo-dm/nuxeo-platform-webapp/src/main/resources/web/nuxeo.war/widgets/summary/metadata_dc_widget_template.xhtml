@@ -1,0 +1,14 @@
+<div class="metadata_block"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <h3 class="summaryTitle">
+    <h:outputText value="#{messages['action.view.metadata.common']}" />
+  </h3>
+
+  <c:if test="#{currentDocument.hasSchema('dublincore')}">
+    <nxl:layout value="#{currentDocument}" name="dublincore" mode="view" />
+  </c:if>
+
+</div>
