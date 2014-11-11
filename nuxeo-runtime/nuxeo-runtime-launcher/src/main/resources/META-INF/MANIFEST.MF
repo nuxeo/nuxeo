@@ -1,0 +1,15 @@
+Export-Package: org.nuxeo.runtime.launcher,
+ org.nuxeo.osgi.application;launcher=split
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: org.nuxeo.runtime.launcher
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Import-Package: javax.annotation;version="1.0",
+ org.apache.commons.logging
+Require-Bundle: org.nuxeo.osgi; visibility:="reexport"
+Bundle-SymbolicName: org.nuxeo.runtime.launcher;singleton:=true
+Main-Class: org.nuxeo.runtime.launcher.Main
