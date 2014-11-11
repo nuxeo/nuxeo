@@ -1,0 +1,84 @@
+<process-definition name="review_approbation">
+  <swimlane name="initiator" />
+
+  <start-state>
+    <task swimlane='initiator' name="start" />
+    <transition to='choose participants node' />
+  </start-state>
+
+  <task-node name="choose participants node">
+    <task name="choose-participant" swimlane="initiator" />
+    <transition to="condition on participants" />
+  </task-node>
+
+  <!-- add rights -->
+  <decision name="condition on participants">
+    <event type="node-enter">
+
+      <script>
+        <variable name="participant" />
+        <expression><![CDATA[executionContext.setVariable("previousActorId", (participant == null ? Collections.singletonList(executionContext.getJbpmContext().getActorId()) : participant.actors))]]></expression>
+      </script>
+    </event>
+    <transition to="setup rights">
+      <script>
+        <variable name="participants" />
+        <variable name="participant" access="write" />
+        <expression><![CDATA[participant = participants.remove(0)]]></expression>
+      </script>
+    </transition>
+    <transition condition="#{empty participants}" to="follow transition" />
+  </decision>
+
+  <node name="setup rights">
+    <action
+      class="org.nuxeo.ecm.platform.jbpm.core.helper.AddRightsActionHandler">
+      <list>participants</list>
+    </action>
+    <transition to="validate node" />
+  </node>
+
+  <task-node name="validate node">
+    <task name="validate">
+      <event type="task-create">
+        <action
+          class="org.nuxeo.ecm.platform.jbpm.core.helper.TaskNotificationHandler" />
+      </event>
+      <controller
+        class="org.nuxeo.ecm.platform.jbpm.core.node.VirtualTaskInstanceController" />
+      <assignment pooled-actors="#{participant.actors}" />
+    </task>
+    <transition name="validate" to="condition on participants">
+    </transition>
+    <transition name="reject" to="validate after reject node" />
+  </task-node>
+
+  <task-node name="validate after reject node">
+    <task name="validate-after-reject">
+      <event type="task-create">
+        <action
+          class="org.nuxeo.ecm.platform.jbpm.core.helper.RejectedTaskNotificationHandler" />
+      </event>
+      <controller
+        class="org.nuxeo.ecm.platform.jbpm.core.node.ValidateRejectController" />
+      <assignment pooled-actors="#{contextInstance.variables['previousActorId']}" />
+    </task>
+    <transition to="condition on participants" />
+  </task-node>
+
+  <node name="follow transition">
+    <action
+      class="org.nuxeo.ecm.platform.jbpm.core.helper.LifecycleTransitionActionHandler" />
+    <transition to="end" />
+  </node>
+  <end-state name="end">
+    <event type="node-enter">
+      <action
+        class="org.nuxeo.ecm.platform.jbpm.core.helper.RemoveRightsActionHandler" />
+      <action class="org.nuxeo.ecm.platform.jbpm.core.helper.SendEventActionHandler">
+        <eventName>workflowProcessEnded</eventName>
+        <recipients>initiator</recipients>
+      </action>
+    </event>
+  </end-state>
+</process-definition>
