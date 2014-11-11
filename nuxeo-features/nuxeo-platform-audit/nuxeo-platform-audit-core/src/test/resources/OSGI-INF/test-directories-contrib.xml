@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.audit.directoryContrib">
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+    point="directories">
+
+    <directory name="eventTypes">
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+
+      <schema>vocabulary</schema>
+
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>eventTypes</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/event-types.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+    <directory name="eventCategories">
+
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+
+      <schema>vocabulary</schema>
+
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>eventCategories</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/event-categories.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+  </extension>
+</component>
