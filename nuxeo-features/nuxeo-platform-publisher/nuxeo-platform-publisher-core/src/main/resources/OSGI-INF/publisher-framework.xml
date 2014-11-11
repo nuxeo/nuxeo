@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+
+<component
+    name="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl">
+  <implementation
+      class="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"/>
+
+  <documentation>
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide
+        interface="org.nuxeo.ecm.platform.publisher.api.PublisherService"/>
+    <provide
+        interface="org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager"/>
+  </service>
+
+
+  <extension-point name="tree">
+    <documentation>
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+        class="org.nuxeo.ecm.platform.publisher.descriptors.PublicationTreeDescriptor"/>
+  </extension-point>
+
+  <extension-point name="treeInstance">
+    <documentation>
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+        class="org.nuxeo.ecm.platform.publisher.descriptors.PublicationTreeConfigDescriptor"/>
+  </extension-point>
+
+  <extension-point name="factory">
+    <documentation>
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+        class="org.nuxeo.ecm.platform.publisher.descriptors.PublishedDocumentFactoryDescriptor"/>
+  </extension-point>
+
+  <extension-point name="validatorsRule">
+    <documentation>
+      @author Thomas Roger(troger@nuxeo.com)
+    </documentation>
+    <object
+        class="org.nuxeo.ecm.platform.publisher.rules.ValidatorsRuleDescriptor"/>
+  </extension-point>
+
+
+</component>
