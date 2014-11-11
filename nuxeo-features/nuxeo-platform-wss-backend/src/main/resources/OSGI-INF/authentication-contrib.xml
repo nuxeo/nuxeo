@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.wss.auth.config">
+
+  <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="authenticators">
+    <authenticationPlugin name="BASIC_AUTH" enabled="true"
+        class="org.nuxeo.ecm.platform.ui.web.auth.plugins.BasicAuthenticator">
+      <parameters>
+        <parameter name="ForcePromptURL_WSS">_vti_bin</parameter>
+      </parameters>
+    </authenticationPlugin>
+  </extension>
+
+</component>

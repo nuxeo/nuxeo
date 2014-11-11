@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:widget="http://www.netvibes.com/ns/">
+<head>
+
+<title>Last created documents</title>
+
+<meta name="author" content="Nuxeo" />
+<meta name="version" content="0.9.0" />
+<meta name="autoRefresh" content="20" />
+
+<widget:preferences>
+
+    <preference name="nb_docs" type="range"
+        label="Number of items to display" defaultValue="10" step="1" min="1"
+        max="25" />
+
+</widget:preferences>
+
+<script type="text/javascript">
+  var LastDocuments = {}
+
+  LastDocuments.display = function(json) {
+
+    widget.log('LastDocuments.display');
+
+    var body =  "<table class='dataOutput'>";
+    body += "<tbody>";
+    
+    for(var i=0; i < json.length; i++) {
+
+        body += "  <tr class='dataRowEven'>";
+        body +="    <td><a href='" + json[i].url + "'>" + json[i].title + "</a></td>";
+        body +="    <td>" + json[i].created + "</td>";
+        body +="    <td>" + json[i].creator + "</td>";
+        body +="  </tr>";
+
+    }
+
+    body += "</tbody>";
+    body += "</table>";
+
+    widget.setBody(body);
+
+  }
+
+  widget.onLoad = function() {
+    widget.log('LastDocuments.onLoad');
+    var nb_docs = widget.getValue('nb_docs');
+    var url = nxthemesBasePath + '/nxthemes-webwidgets-samples/lastdocuments?nb_docs=' + nb_docs + 
+                                 '&path=' + nxthemesPath;
+    UWA.Data.getJson(url, LastDocuments.display);
+  }
+
+  widget.onRefresh = widget.onLoad;
+
+</script>
+
+</head>
+<body>
+<p>Loading Documents List...</p>
+</body>
+</html>
