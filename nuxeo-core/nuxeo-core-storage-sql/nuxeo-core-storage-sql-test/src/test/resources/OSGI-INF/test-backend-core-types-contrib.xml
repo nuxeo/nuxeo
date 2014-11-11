@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.tests.backend.core-types">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="testschema" src="schemas/testschema.xsd" prefix="tst" />
+    <schema name="testschema2" src="schemas/testschema2.xsd" prefix="tst2" />
+    <schema name="age" src="schemas/age.xsd" prefix="age" />
+    <!-- tags not in core -->
+    <schema name="tag" src="schemas/tag.xsd" prefix="tag"/>
+    <schema name="templates" src="schemas/templates.xsd" prefix="tmpl"/>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="Root" extends="Document" />
+    <doctype name="TestDoc" extends="Document">
+      <schema name="testschema" />
+      <prefetch>testschema</prefetch>
+    </doctype>
+    <doctype name="TestDoc2" extends="Document">
+      <schema name="testschema2" />
+      <prefetch>tst2:title</prefetch>
+    </doctype>
+    <doctype name="TestDoc3" extends="Document">
+      <schema name="testschema" />
+      <prefetch>tst:subjects</prefetch>
+    </doctype>
+    <doctype name="OFolder" extends="TestDoc">
+      <facet name="Orderable"/>
+    </doctype>
+    <doctype name="Relation2" extends="Relation">
+      <schema name="testschema"/>
+    </doctype>
+    <!-- tags not in core -->
+    <doctype name="Tag" extends="Document">
+      <schema name="tag"/>
+      <schema name="dublincore"/>
+    </doctype>
+    <doctype name="Tagging" extends="Relation">
+    </doctype>
+    <!-- facet test -->
+    <facet name="Fooable" /> <!-- no content -->
+    <facet name="Aged">
+      <schema name="age" />
+    </facet>
+    <facet name="Templated"> <!-- complex list -->
+      <schema name="templates" />
+    </facet>
+    <doctype name="DocWithAge" extends="Document">
+      <facet name="Aged" />
+    </doctype>
+  </extension>
+
+</component>
