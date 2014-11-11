@@ -1,0 +1,25 @@
+<c:if test="true"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<c:if test="false">
+Reusable template to display a widget label, with help message.
+
+Accepted parameters:
+- widget: the widget instance (required)
+- isEditMode: boolean indicating if widget is in edit mode (to display
+  required field indicators), optional
+- hideHelp: boolean indicating if widget help should be hidden, optional
+- labelStyleClass: CSS style class for the label item, optional
+</c:if>
+
+  <ui:include src="/widgets//incl/label_template.xhtml">
+    <ui:param name="label" value="#{widget.label}" />
+    <ui:param name="helpLabel" value="#{widget.helpLabel}" />
+    <ui:param name="translated" value="#{widget.translated}" />
+    <ui:param name="required" value="#{widget.required}" />
+  </ui:include>
+
+</c:if>
