@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.webapp.layouts.users.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="users_listing">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_template.xhtml
+        </template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_userName</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_firstName</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_lastName</widget>
+        </column>
+      </columns>
+    </layout>
+
+    <layout name="groups_listing">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_template.xhtml
+        </template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_groupName</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_groupLabel</widget>
+        </column>
+      </columns>
+    </layout>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="listing_userName" type="singleUserSuggestion">
+      <labels>
+        <label mode="any">label.userManager.user</label>
+      </labels>
+      <fields>
+        <field>data.id</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+      <properties widgetMode="view">
+        <property name="userSuggestionSearchType">USER_TYPE</property>
+        <property name="firstLabelField">firstName</property>
+        <property name="secondLabelField">lastName</property>
+        <property name="hideFirstLabel">true</property>
+        <property name="hideSecondLabel">true</property>
+        <property name="displayAction">edit</property>
+        <property name="hideIcon">true</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_firstName" type="text">
+      <labels>
+        <label mode="any">label.userManager.firstName</label>
+      </labels>
+      <fields>
+         <field>data.user.firstName</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="listing_lastName" type="text">
+      <labels>
+        <label mode="any">label.userManager.lastName</label>
+      </labels>
+      <fields>
+         <field>data.user.lastName</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="listing_email" type="text">
+      <labels>
+        <label mode="any">email</label>
+      </labels>
+      <fields>
+         <field>data.user.email</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="listing_groupName" type="singleUserSuggestion">
+      <labels>
+        <label mode="any">label.groupManager.groupName</label>
+      </labels>
+      <fields>
+         <field>data.group.groupname</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+      <properties widgetMode="view">
+        <property name="userSuggestionSearchType">GROUP_TYPE</property>
+        <property name="hideFirstLabel">true</property>
+        <property name="displayAction">edit</property>
+        <property name="hideIcon">true</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_groupLabel" type="text">
+      <labels>
+        <label mode="any">label.groupManager.groupLabel</label>
+      </labels>
+      <fields>
+         <field>data.group.grouplabel</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+
+  </extension>
+
+</component>
