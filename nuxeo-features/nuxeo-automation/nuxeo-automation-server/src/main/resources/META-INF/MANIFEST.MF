@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Automation Server
+Bundle-SymbolicName: org.nuxeo.ecm.automation.server;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Require-Bundle: org.nuxeo.ecm.core.api
+Export-Package: org.nuxeo.ecm.automation.server
+Eclipse-LazyStart: true
+Nuxeo-WebModule: org.nuxeo.ecm.automation.server.jaxrs.AutomationModule
+Nuxeo-Component: OSGI-INF/AutomationServer.xml, OSGI-INF/auth-contrib.xml
