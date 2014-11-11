@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes">
+
+  <ui:define name="page title">
+    <h:outputText value="#{nuxeoApplicationName} - #{messages['title.search.results']}"/>
+  </ui:define>
+
+  <ui:define name="body">
+
+    <ui:include src="/incl/message_banner.xhtml"/>
+
+    <div id="content">
+
+      <nxu:set var="contentViewId" value="advanced_search">
+      <nxu:set var="contentViewName" value="advanced_search">
+
+        <ui:decorate template="/incl/content_view.xhtml">
+          <ui:param name="selectedResultLayoutColumns"
+            value="#{documentSearchActions.selectedLayoutColumns}" />
+          <ui:param name="contentViewSortInfos"
+            value="#{documentSearchActions.searchSortInfos}" />
+          <ui:define name="empty_folder_label">
+            <h:outputText value="#{messages['label.content.empty.search']}"
+              rendered="#{documents.rowCount == 0 and not provider.hasError()}" />
+          </ui:define>
+          <ui:define name="content_view_header_before_selector">
+            <div class="action_bar">
+              <h3>
+                <h:outputText value="#{messages['label.search.results']}" />
+              </h3>
+            </div>
+          </ui:define>
+          <ui:define name="content_view_header_after_selector" />
+          <ui:define name="syndication_buttons">
+            <c:if test="false">syndication currently broken with content views</c:if>
+            <ui:include src="/incl/syndication_buttons.xhtml">
+              <ui:param name="type" value="search" />
+            </ui:include>
+          </ui:define>
+        </ui:decorate>
+
+      </nxu:set>
+      </nxu:set>
+
+    </div>
+
+  </ui:define>
+</nxthemes:composition>
