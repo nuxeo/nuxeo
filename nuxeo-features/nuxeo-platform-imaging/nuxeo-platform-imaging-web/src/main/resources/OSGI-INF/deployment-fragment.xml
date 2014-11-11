@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<fragment>
+
+  <!-- comment that to disable filter based auth -->
+  <extension target="web#STD-AUTH-FILTER">
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/nxpicsfile/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+  </extension>
+
+  <extension target="faces-config#NAVIGATION">
+    <!-- generic pages -->
+
+    <navigation-case>
+      <from-outcome>create_picture</from-outcome>
+      <to-view-id>/create_picture.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>create_picturebook</from-outcome>
+      <to-view-id>/create_picturebook.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_picture</from-outcome>
+      <to-view-id>/view_picture.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_book</from-outcome>
+      <to-view-id>/view_book.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+  </extension>
+
+  <extension target="application#MODULE">
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+
+  </install>
+
+</fragment>

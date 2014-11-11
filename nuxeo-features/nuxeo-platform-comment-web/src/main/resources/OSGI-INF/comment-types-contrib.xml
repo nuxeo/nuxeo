@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Think about updating the life cycle doc types mapping in GeideLifeCycleExtensions.xml-->
+
+<component name="org.nuxeo.ecm.platform.comment.types">
+
+  <require>org.nuxeo.ecm.platform.types.TypeService</require>
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService"
+      point="types">
+    <type id="Domain" coretype="Domain">
+      <subtypes>
+        <type>CommentRoot</type>
+      </subtypes>
+    </type>
+
+    <type id="CommentRoot" coretype="CommentRoot">
+      <label>CommentRoot</label>
+      <icon>/icons/folder.gif</icon>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>Folder</type>
+        <type>HiddenFolder</type>
+      </subtypes>
+      <layout>
+        <widget jsfcomponent="h:inputText" schemaname="dublincore"
+            fieldname="title" required="true"/>
+        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
+            fieldname="description"/>
+      </layout>
+    </type>
+
+    <type id="Comment" coreType="Comment">
+      <label>label.document.comment</label>
+      <icon>/img/icons/comment.gif</icon>
+      <default-view>comment_view</default-view>
+      <create-view>comment_create</create-view>
+    </type>
+  </extension>
+
+</component>

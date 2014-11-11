@@ -1,0 +1,57 @@
+
+      body {
+        font: 0.8em arial, helvetica, sans-serif;
+      }
+
+      #header ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      #header li {
+        float: left;
+        background: url(../images/tabright.gif) top right no-repeat;
+        margin: 0;
+      }
+
+      #header a {
+        display: block;
+        background: url(../images/tableft.gif) top left no-repeat;
+        color: #ffc;
+        text-decoration: none;
+        padding: 0.6em 1em 0.25em;
+      }
+
+      #header a:hover {
+        color: white;
+      }
+
+      #header #selected {
+        font-weight: bold;
+        background-image: url(../images/tabrightactive.gif);
+      }
+
+      #header #selected a {
+        background-image: url(../images/tableftactive.gif);
+        color: white;
+      }
+
+      #content {
+        clear: both;
+        color: white;
+        background: #c60;
+        padding: 1em;
+      }
+
+      p {
+        margin: 0 0 1em 0;
+      }
+
+      h1 {
+        color: #c60;
+        font: small-caps italic bold 1.2em arial, helvetica, sans-seif;
+        //letter-spacing: 3em;
+        padding: 0 0 1em 0;
+        margin: 0;
+      }
