@@ -1,0 +1,169 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.core</groupId>
+    <artifactId>nuxeo-core-storage-sql-parent</artifactId>
+    <version>1.6.2-I20100426_1059</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>nuxeo-core-storage-sql-ra</artifactId>
+  <packaging>rar</packaging>
+  <name>Nuxeo Core SQL Storage JCA Resource Adapter</name>
+  <description>Nuxeo Core: SQL Storage JCA Resource Adapter.</description>
+
+  <properties>
+    <raXml-jboss>src/main/resources/META-INF/jboss/ra.xml</raXml-jboss>
+    <raXml-j2ee>src/main/resources/META-INF/sun/ra.xml</raXml-j2ee>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>jboss</groupId>
+          <artifactId>jboss-common</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jboss</groupId>
+          <artifactId>jboss-remoting</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-schema</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-query</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- TODO: Use the dep from the central repo -->
+    <dependency>
+      <groupId>javax.ressource</groupId>
+      <artifactId>jca-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.components</groupId>
+      <artifactId>geronimo-connector</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jta_1.1_spec</artifactId>
+    </dependency>
+
+    <!-- for activator -->
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi-core</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <excludes>
+          <exclude>META-INF/jboss/ra.xml</exclude>
+          <exclude>META-INF/sun/ra.xml</exclude>
+        </excludes>
+      </resource>
+    </resources>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-rar-plugin</artifactId>
+        <configuration>
+          <rarSourceDirectory>${project.build.outputDirectory}</rarSourceDirectory> <!-- little workaround to include class files -->
+          <manifestFile>${project.build.directory}/classes/META-INF/MANIFEST.MF</manifestFile>
+          <raXmlFile>${raXml-jboss}</raXmlFile>
+        </configuration>
+        <executions>
+          <execution>
+            <id>j2ee</id>
+            <goals>
+              <goal>rar</goal>
+            </goals>
+            <configuration>
+              <raXmlFile>${raXml-j2ee}</raXmlFile>
+              <finalName>${project.build.finalName}-j2ee</finalName>
+            </configuration>
+          </execution>
+          <execution>
+            <id>jboss</id>
+            <goals>
+              <goal>rar</goal>
+            </goals>
+            <configuration>
+              <raXmlFile>${raXml-jboss}</raXmlFile>
+              <finalName>${project.build.finalName}</finalName>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-artifacts</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>${project.build.directory}/${artifactId}-${version}.rar</file>
+                  <type>jar</type>
+                </artifact>
+                <artifact>
+                  <file>${project.build.directory}/${artifactId}-${version}-j2ee.rar</file>
+                  <type>rar</type>
+                  <classifier>j2ee</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.directory}/${artifactId}-${version}-j2ee.rar</file>
+                  <type>jar</type>
+                  <classifier>j2ee</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
