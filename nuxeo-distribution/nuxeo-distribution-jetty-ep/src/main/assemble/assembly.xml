@@ -1,0 +1,176 @@
+<assembly>
+
+  <zipEntrySet id="base-template">
+    <artifact>org.nuxeo.ecm.distribution:nuxeo-distribution-server:${project.version}:zip</artifact>
+  </zipEntrySet>
+
+  <fileSet id="template">
+    <directory>src/main/resources</directory>
+  </fileSet>
+
+  <artifactSet id="bundles">
+    <artifacts>
+
+      <artifact group="org.nuxeo.runtime" name="nuxeo-runtime-deploy" version="${nuxeo.runtime.version}"/>
+      <artifact group="org.nuxeo.runtime" name="nuxeo-runtime-jetty-adapter" version="${nuxeo.runtime.version}"/>
+
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-storage-sql" version="${nuxeo.core.version}"/>
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-storage-sql-extensions" version="${nuxeo.core.version}"/>
+
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-actions-core"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-audit-client"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-commandline-executor"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-convert"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-default-config"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-filemanager-api"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-filemanager-core"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-filemanager-core-listener"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-forms-layout-api"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-forms-layout-client"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-jbpm-api"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-lang"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-mimetype-api"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-mimetype-core"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-placeful-api"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-placeful-core"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-placeful-theme"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-relations-io"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-relations-web"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-search-api"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-search-backend-core"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-search-core"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-syndication"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-ui-api"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-ui-web"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-ui-web-compat"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-url-api"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-url-core"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-webapp" version="${project.version}"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-webapp-base" version="${project.version}"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-webapp-core" version="${project.version}"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-webapp-types" version="${project.version}"/>
+
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-theme-jsf" version="${nuxeo.theme.version}"/>
+
+    </artifacts>
+  </artifactSet>
+
+  <artifactSet id="third-party-libs">
+    <artifacts>
+      <!-- Synchro Added packages -->
+      <artifact group="javax.activation" name="activation" />
+      <artifact group="apache-httpclient" name="commons-httpclient" />
+      <artifact group="commons-codec" name="commons-codec" />
+      <artifact group="metro.webservices" name="webservices-api" />
+      <artifact group="metro.webservices" name="webservices-rt" />
+      <artifact group="metro.webservices" name="webservices-tools" />
+      <!-- End Synchro Added packages -->
+      
+      <artifact group="javax.servlet" name="servlet-api" />
+      <artifact group="org.mortbay.jetty" name="jetty" />
+      <artifact group="org.mortbay.jetty" name="jetty-plus" />
+      <artifact group="org.mortbay.jetty" name="jetty-naming" />
+      <artifact group="org.mortbay.jetty" name="jetty-annotations" />
+      <artifact group="org.mortbay.jetty" name="jetty-util" />
+      <artifact group="jotm" name="jotm" />
+      <artifact group="javax.ejb" name="ejb-api" />
+      <artifact group="javax.transaction" name="jta" />  
+
+      <artifact group="ant" name="ant" />  
+      <artifact group="bsh" name="bsh" />  
+      <artifact group="commons-el" name="commons-el" />  
+      <artifact group="commons-digester" name="commons-digester" />  
+      <artifact group="org.jboss.el" name="jboss-el" />  
+
+      <artifact group="org.jboss.seam" name="jboss-seam" />  
+      <artifact group="org.jboss.seam" name="jboss-seam-debug" />  
+      <artifact group="org.jboss.seam" name="jboss-seam-mail" />  
+      <artifact group="org.jboss.seam" name="jboss-seam-ui" />  
+      <artifact group="org.jboss.seam" name="jboss-seam-remoting" />  
+
+      <artifact group="org.jbpm.jbpm3" name="jbpm-jpdl" />  
+
+      <artifact group="org.openoffice" name="ridl" />  
+      <artifact group="org.openoffice" name="juh" />  
+      <artifact group="org.openoffice" name="unoil" />  
+      <artifact group="org.openoffice" name="jurt" />  
+      <artifact group="com.artofsolving" name="jodconverter" />  
+      <artifact group="com.thoughtworks.xstream" name="xstream" />  
+      <artifact group="pdfbox" name="pdfbox" />  
+
+      <artifact group="org.richfaces.framework" name="richfaces-api" />  
+      <artifact group="org.richfaces.framework" name="richfaces-impl" />  
+      <artifact group="org.richfaces.ui" name="richfaces-ui" />  
+      <artifact group="org.richfaces.framework" name="richfaces-api" />  
+      <artifact group="javax.script" name="script-api" />  
+      <artifact group="org.apache.lucene" name="lucene-analyzers" />  
+
+      <artifact group="com.sun.facelets" name="jsf-facelets" />  
+      <artifact group="javax.faces" name="jsf-api" />
+      <artifact group="javax.faces" name="jsf-impl" />
+
+      <artifact group="org.mortbay.jetty" name="jsp-api-2.1" />  
+      <artifact group="org.mortbay.jetty" name="jsp-2.1" />  
+
+      <artifact group="jboss" name="javassist" />  
+
+      <artifact group="com.h2database" name="h2" />  
+
+      <artifact group="org.eclipse.jdt" name="core" />  
+      
+      <artifact group="com.sun.xml" name="relaxngDatatype" />
+      <artifact group="com.sun.xml" name="xsom" />
+      <artifact group="cup" name="java-cup" />
+      <artifact group="joda-time" name="joda-time" />
+      <artifact group="org.wikimodel" name="wem" />
+      
+      <artifact group="com.hp.hpl.jena" name="jena" />
+      <artifact group="com.hp.hpl.jena" name="arq" />
+      <artifact group="com.hp.hpl.jena" name="iri" />
+      <artifact group="com.ibm.icu" name="icu4j" />
+      
+      <artifact group="rome" name="rome" />
+      <artifact group="jdom" name="jdom" />
+      
+      <artifact group="jmimemagic" name="jmimemagic" />
+      <artifact group="org.apache.poi" name="ooxml-schemas" />
+      <artifact group="org.apache.poi" name="poi" />
+      <artifact group="org.apache.poi" name="poi-ooxml" />
+      <artifact group="org.apache.poi" name="poi-scratchpad" />
+      <artifact group="org.apache" name="xmlbeans" />
+      <artifact group="oro" name="oro" />
+      <artifact group="opensymphony" name="quartz-all" />
+    </artifacts>
+  </artifactSet>
+
+  <assemble>
+    <set>base-template</set>
+    <set>template</set>
+    <outputFile>/</outputFile>
+  </assemble>
+
+  <assemble>
+    <set>third-party-libs</set>
+    <outputFile>lib</outputFile>
+  </assemble>
+
+  <assemble>
+    <set>bundles</set>
+    <outputFile>bundles</outputFile>
+  </assemble>
+
+  <assemble>  
+    <delete>true</delete>
+    <outputFile>config</outputFile>
+    <file>login-anonymous-config.xml</file>
+  </assemble>
+
+  <assemble>  
+    <delete>true</delete>
+    <outputFile>lib</outputFile>  
+    <file>el-api-unknown.jar</file>
+    <file>el-ri-unknown.jar</file>        
+  </assemble>
+
+</assembly>
