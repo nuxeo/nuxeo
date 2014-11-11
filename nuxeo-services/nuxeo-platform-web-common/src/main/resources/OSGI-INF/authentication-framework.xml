@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
+  <implementation
+          class="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" />
+  <documentation>
+    The pluggable authentication service defines a plugin API for the Nuxeo Authentication Filter.
+    This service let you :
+      - define new Authentication Plugins
+      - define authentication chains
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+  
+  <service>
+      <provide interface="org.nuxeo.runtime.api.login.LoginAs" />
+  </service>
+
+  <extension-point name="authenticators">
+  <documentation>
+    Registry for Authentication Plugins.
+    Authentication plugins are responsible for :
+     - generating the authentication prompt (if needed)
+     - get the user identity
+     - set the LoginModule that will be used for Login
+
+    Authentication plugin must implement the NuxeoAuthenticationPlugin interface.
+
+    Default implementation of Authentication Plugins are :
+     - Form based authentication
+     - HTTP Basic Authentication
+
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPluginDescriptor" />
+  </extension-point>
+
+  <extension-point name="chain">
+  <documentation>
+    Defines the chain of AuthenticationPlugin to use when trying to authenticate.
+    = The authentication Plugins are tried in the chain order.
+
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationChainDescriptor" />
+  </extension-point>
+
+ <extension-point name="startURL">
+  <documentation>
+    Defines a list of URL prefix that is considered safe to start a new session.
+    Typically, in default webapp you will have :
+      - GET url patterns
+      - nxstartup.faces
+      - RSS/ATOM get URL
+
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ui.web.auth.service.StartURLPatternDescriptor" />
+  </extension-point>
+
+ <extension-point name="propagator">
+  <documentation>
+    Contribute a App Server specific security propagation handler.
+    Usefull to externalize dependencies on JBossSX
+
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPropagatorDescriptor" />
+  </extension-point>
+
+ <extension-point name="callBackHandlerFactory">
+  <documentation>
+    Contribute a App Server specific JAAS CallBackHandler Factory
+    Usefull to externalize dependencies on JBossSX
+
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ui.web.auth.service.CallbackHandlerFactoryDescriptor" />
+  </extension-point>
+
+ <extension-point name="sessionManager">
+  <documentation>
+    Contribute a SessionManager to handle Session and url manipulation
+
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ui.web.auth.service.SessionManagerDescriptor" />
+  </extension-point>
+
+ <extension-point name="openUrl">
+  <documentation>
+    Contribute pattern to define urls that can be accessed without authentication
+
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ui.web.auth.service.OpenUrlDescriptor" />
+  </extension-point>
+
+
+ <extension-point name="specificChains">
+  <documentation>
+    Contribute specific authentication chain for specific urls or request headers.
+    This is usefull to be able to change the authentication plugins used for a dedicated protocol (WSS, WebDav ...)
+
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ui.web.auth.service.SpecificAuthChainDescriptor" />
+  </extension-point>
+
+
+  <extension-point name="preFilter">
+  <documentation>
+    Contribute a filter class that will be executer just before the default Authentification Filter
+    This is pretty much the same as a standard filter, but you don't have to configure
+    all it's mapping since it will always be executed just before the default auth filter.
+
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ui.web.auth.service.AuthPreFilterDescriptor" />
+  </extension-point>
+
+</component>
