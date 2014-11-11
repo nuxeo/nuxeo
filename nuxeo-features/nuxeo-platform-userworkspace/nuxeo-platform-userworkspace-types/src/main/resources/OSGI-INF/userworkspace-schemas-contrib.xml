@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.userworkspace.coreTypes">
+
+  <require>org.nuxeo.ecm.core.schema.TypeService</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+
+    <doctype name="UserWorkspacesRoot" extends="Folder">
+      <facet name="SuperSpace"/>
+      <facet name="HiddenInNavigation"/>
+    </doctype>
+
+  </extension>
+
+</component>
