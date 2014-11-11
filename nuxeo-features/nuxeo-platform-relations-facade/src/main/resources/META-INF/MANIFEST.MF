@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Relations
+Bundle-SymbolicName: org.nuxeo.ecm.relations.facade;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateful
+Require-Bundle: org.nuxeo.ecm.relations, org.nuxeo.ecm.core.api
+Nuxeo-Component: OSGI-INF/relation-platform-contrib.xml

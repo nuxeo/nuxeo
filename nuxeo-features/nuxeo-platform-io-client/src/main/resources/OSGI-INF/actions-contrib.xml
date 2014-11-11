@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.platform.io.web">
+
+  <documentation>
+    IO client action contributions.
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="xmlExport" link="#{importExportAction.doExportDocument()}" enabled="true"
+      order="17" label="action.xml.export" icon="/icons/xml.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>not_folder</filter-id>
+    </action>
+
+   <action id="xmlTreeExport" link="#{importExportAction.doExportFolder()}" enabled="true"
+      order="17" label="action.xmltree.export" icon="/icons/zip.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter id="exportFolder">
+          <rule grant="true">
+            <facet>Folderish</facet>
+          </rule>
+      </filter>
+    </action>
+
+    <action id="WORKLIST_XMLEXPORT"
+      link="#{importExportAction.exportCurrentList()}" enabled="true"
+      label="command.clipboard.xmlZipExport" icon="/icons/action_export_zip.gif">
+      <category>DEFAULT_LIST</category>
+      <filter id="currentWorkListIsNotEmptyXML">
+        <rule grant="false">
+          <condition>#{clipboardActions.workListEmpty}</condition>
+        </rule>
+      </filter>
+    </action>
+
+  </extension>
+
+</component>

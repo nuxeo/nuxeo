@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forum.DefaultWorkflowRulesContributions">
+
+  <require>
+    org.nuxeo.ecm.platform.workflow.document.service.WorkflowRulesService</require>
+
+  <extension
+    target="org.nuxeo.ecm.platform.workflow.document.service.WorkflowRulesService"
+    point="docTypeRule">
+
+    <docTypeRule docType="Post">
+      <workflowDefinition>forum_review_moderation</workflowDefinition>
+    </docTypeRule>
+
+  </extension>
+
+</component>

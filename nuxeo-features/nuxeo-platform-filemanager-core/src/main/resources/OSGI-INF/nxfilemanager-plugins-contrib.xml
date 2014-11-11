@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.filemanager.service.FileManagerService.Plugins">
+
+  <documentation>
+    Component to carry default extension points.
+  </documentation>
+
+  <extension
+    target="org.nuxeo.ecm.platform.filemanager.service.FileManagerService"
+    point="plugins">
+    <documentation>
+      Simple plugin for the file manager. Creates a Note document from
+      any text-based content.
+    </documentation>
+    <plugin name="Noteplugin"
+      class="org.nuxeo.ecm.platform.filemanager.service.extension.NotePlugin">
+      <filter>text/plain</filter>
+      <filter>text/html</filter>
+      <filter>application/xhtml+xml</filter>
+      <filter>application/xml</filter>
+      <filter>text/xml</filter>
+    </plugin>
+
+    <documentation>
+      Use a query model to find the list of all Workspaces the user has
+      the right to create new document into.
+    </documentation>
+    <creationContainerListProvider
+      name="defaultCreationContainerListProvider"
+      class="org.nuxeo.ecm.platform.filemanager.service.extension.DefaultCreationContainerListProvider" />
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.filemanager.service.FileManagerService"
+    point="unicity">
+    <documentation>
+      Unicity Service enabled using sha-256 on field file:content.
+    </documentation>
+    <unicitySettings>
+      <algo>sha-256</algo>
+      <enabled>true</enabled>
+      <field>file:content</field>
+    </unicitySettings>
+  </extension>
+</component>
+

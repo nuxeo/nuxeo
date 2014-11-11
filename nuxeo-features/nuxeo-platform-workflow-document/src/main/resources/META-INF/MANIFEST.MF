@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Workflow Document Core
+Bundle-SymbolicName: org.nuxeo.ecm.platform.workflow.document;singleton:=true
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: false
+Bundle-Category: web,stateful
+Require-Bundle: org.nuxeo.ecm.platform.workflow.api,
+ org.nuxeo.ecm.platform.workflow.document.api
+Nuxeo-Component: OSGI-INF/nxworkflow-document-rules.xml,
+ OSGI-INF/nxworkflow-document-security-policy.xml,
+ OSGI-INF/nxworkflow-document-security-policy-default.xml
