@@ -1,0 +1,39 @@
+<c:if test="true"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+  
+<c:if test="false">
+Reusable template to display a widget label, with help message.
+  
+Accepted parameters:
+- widget: the widget instance (required)
+- isEditMode: boolean indicating if widget is in edit mode (to display
+  required field indicators), optional
+- hideHelp: boolean indicating if widget help should be hidden, optional
+- labelStyleClass: CSS style class for the label item, optional
+</c:if>
+
+  <nxu:set var="widgetLabel"
+    value="#{nxu:test(widget.translated, messages[widget.label], widget.label)}">
+  <nxu:set var="widgetHelpLabel"
+    value="#{nxu:test(widget.translated, messages[widget.helpLabel], widget.helpLabel)}">
+
+    <c:if test="#{empty widget.helpLabel or hideHelp}">
+      <h:outputText value="#{widgetLabel}"
+        styleClass="widgetLabel #{labelStyleClass} #{nxu:test(widget.required and isEditMode, 'required', '')}" />
+    </c:if>
+    <c:if test="#{not empty widget.helpLabel and not hideHelp}">
+      <div class="widgetHelpLabel">
+        <h:outputText value="#{widgetLabel}"
+          styleClass="widgetLabel #{labelStyleClass} #{nxu:test(widget.required and isEditMode, 'required', '')}" />
+      </div>
+      <div class="tooltip">
+        #{widgetHelpLabel}
+      </div>
+    </c:if>
+
+  </nxu:set>
+  </nxu:set>
+
+</c:if>
