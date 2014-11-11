@@ -1,0 +1,36 @@
+#
+# we have duplicated most of the "built-in" shindig components here because
+# we don't want to use all of them and if we choose to use their list we
+# end up with things we don't want...
+#
+
+#features/analytics/feature.xml
+features/auth-refresh/feature.xml
+features/caja/feature.xml
+#features/core.io/feature.xml
+nxfeatures/core.io/feature.xml
+features/core/feature.xml
+features/dynamic-height/feature.xml
+features/flash/feature.xml
+features/locked-domain/feature.xml
+features/minimessage/feature.xml
+#features/opensocial-0.6/feature.xml
+#features/opensocial-0.7/feature.xml
+features/opensocial-base/feature.xml
+features/opensocial-current/feature.xml
+features/opensocial-jsonrpc/feature.xml
+features/opensocial-reference/feature.xml
+features/opensocial-rest/feature.xml
+features/opensocial-templates/feature.xml
+features/rpc/feature.xml
+features/setprefs/feature.xml
+features/settitle/feature.xml
+#features/skins/feature.xml
+#features/tabs/feature.xml
+#features/views/feature.xml
+features/pubsub/feature.xml
+
+# List each feature you want to support here
+nxfeatures/jquery/feature.xml
+nxfeatures/effects/feature.xml
+nxfeatures/ui/feature.xml
