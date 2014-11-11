@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources>
+  <!-- DEFAULT UNIFIED DATASOURCE CONFIGURATION -->
+  <!--
+    This is the default unified datasource configuration. All datasources from nuxeo
+    points to this datasource so it will use only 1 database.
+    To use another database than Derby, comment out the following section and uncomment
+    your database configuration or add it if not present.
+    If you wish to use a different database for a service, comment out the link in the relevant
+    xxx-ds.xml file and add a datasource configuration.
+  -->
+  <!-- nuxeo datasource -->
+
+  <!-- Configuration for Postgres -->
+
+    <local-tx-datasource>
+    <jndi-name>NuxeoDS</jndi-name>
+    <connection-url>jdbc:postgresql://localhost:5432/nuxeo</connection-url>
+    <driver-class>org.postgresql.Driver</driver-class>
+    <user-name>nuxeo</user-name>
+    <password>password</password>
+    <check-valid-connection-sql>;</check-valid-connection-sql>
+    </local-tx-datasource>
+
+</datasources>

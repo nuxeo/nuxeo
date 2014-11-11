@@ -1,0 +1,46 @@
+<components xmlns="http://jboss.com/products/seam/components"
+  xmlns:core="http://jboss.com/products/seam/core"
+  xmlns:mail="http://jboss.com/products/seam/mail">
+
+  <component name="org.jboss.seam.core.init">
+    <property name="debug">false</property>
+    <property name="myFacesLifecycleBug">false</property>
+    <property name="jndiPattern">nuxeo/#{ejbName}/local</property>
+  </component>
+
+  <component name="org.jboss.seam.core.manager">
+    <!-- 30 min conversation timeout -->
+    <property name="conversationTimeout">1800000</property>
+    <!-- 1s concurrent request timeout -->
+    <!-- 
+      <property name="concurrentRequestTimeout">1000</property>
+    -->
+  </component>
+
+  <!--
+    <core:jbpm>
+    <core:pageflow-definitions>
+    %{PAGEFLOW}%
+    </core:pageflow-definitions>
+    </core:jbpm>
+  -->
+
+  <!-- Mail configuration -->
+  <mail:mailSession sessionJndiName="java:/Mail" />
+
+  <!-- Multipart configuration sample showing seam default values.
+    maxRequestSize set to 0 means no limit and it should be set in
+    bytes: set it to 1000000 for 1Mb -->
+  <!-- 
+    <component class="org.jboss.seam.web.MultipartFilter">
+    <property name="createTempFiles">false</property>
+    <property name="maxRequestSize">0</property>
+    </component>
+  -->
+  <!-- create temp files by default otherwise server could have
+    a hard time with big files -->
+  <component class="org.jboss.seam.web.MultipartFilter">
+    <property name="createTempFiles">true</property>
+  </component>
+
+</components>

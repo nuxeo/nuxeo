@@ -1,0 +1,110 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.distribution</groupId>
+    <artifactId>nuxeo-distribution</artifactId>
+    <version>5.2.1-I20090811_0306</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>nuxeo-distribution-jboss</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo JBoss Distribution</name>
+  <description>Packages Nuxeo EP or DM EAR with JBoss</description>
+
+  <properties>
+    <application.name>nuxeo-ep</application.name>
+    <application.version>${version}</application.version>
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>nuxeo-dm-jboss</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
+    <profile>
+      <id>nuxeo-ep-jboss</id>
+    </profile>
+  </profiles>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.jboss</groupId>
+      <artifactId>jboss-as</artifactId>
+      <type>zip</type>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+        <artifactId>maven-antrun-extended-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <configuration>
+              <tasks>
+                <resolveArtifact groupId="org.jboss" artifactId="jboss-as"
+                  type="zip" property="jboss" />
+                <unzip src="${jboss}" dest="${project.build.directory}/jboss" />
+                <ant antfile="build.xml" target="patch">
+                  <property name="jboss.dir" value="${project.build.directory}/jboss" />
+                </ant>
+                <ant antfile="build.xml" target="copy-lib">
+                  <property name="jboss.dir" value="${project.build.directory}/jboss" />
+                </ant>
+                <copy todir="${project.build.directory}/jboss" >
+                  <fileset dir="${basedir}/src/main/resources/jboss/"/>
+                </copy>
+                <chmod dir="${project.build.directory}/jboss/bin" perm="750"
+                  includes="*.sh" />
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-nuxeo-plugin</artifactId>
+        <extensions>false</extensions>
+        <executions>
+          <execution>
+            <id>assemble-app</id>
+            <phase>package</phase>
+            <goals>
+              <goal>assembly</goal>
+            </goals>
+            <configuration>
+              <runPreprocessor>false</runPreprocessor>
+              <format>zip</format>
+              <zipRoot>${application.name}-${application.version}</zipRoot>
+              <outputDirectory>target</outputDirectory>
+              <targetFile>${application.name}-${application.version}</targetFile>
+              <descriptor>${basedir}/src/main/assemble/assembly.xml</descriptor>
+            </configuration>
+          </execution>
+          <execution>
+            <id>attach-app</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+            <configuration>
+              <file>${project.build.directory}/${application.name}-${application.version}.zip</file>
+              <type>zip</type>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project name="nxserver_gf3" default="assemble">
+
+  <property name="final.zip" value="nxserver.zip" />
+  <property name="stage" value="target/stage" />
+  <property name="out" value="target/stage/nxserver" />
+  
+  <target name="assemble">
+    <resolveArtifact artifactId="nuxeo-distribution-server" property="nxserver-base.zip"/>
+
+	<mkdir dir="${out}"/>		   
+    <unzip src="${nxserver-base.zip}" dest="${out}" />
+	
+    <copy todir="${out}" overwrite="true">
+	  <fileset dir="src/main/resources/commons"/>
+	</copy>
+	
+	<resolveArtifact artifactId="nuxeo-runtime-gf3-adapter" todir="${out}/bundles" /> 
+	<resolveArtifact artifactId="h2" todir="${out}/lib" /> 
+	<resolveArtifact groupId="javax.xml.stream" artifactId="stax-api" todir="${out}/lib" /> 
+	<resolveArtifact groupId="org.codehaus.woodstox" artifactId="wstx-asl" todir="${out}/lib" />    
+	<resolveArtifact groupId="org.glassfish.jdbc.jdbc-ra.jdbc-ra-distribution" artifactId="jdbc-ra" property="jdbc-ra" />
+	<unzip src="${jdbc-ra}" dest="${out}">
+      <patternset>
+	    <exclude name="META-INF/**" />
+      </patternset>
+    </unzip>
+	
+    <profile name="ra">
+	  <echo>Entering Profile RA (commons)</echo>
+      <copy todir="${out}" overwrite="true">
+		<fileset dir="src/main/resources/ra"/>
+	  </copy>	  
+	</profile>
+
+    <profile-group default="jcr">
+	  <profile name="vcs">
+	    <echo>Entering Profile VCS</echo>
+		<!-- temporary hack: remove already deployed jcr connector - this should be modified in base distribution-->
+		<delete>
+		  <fileset dir="${out}/bundles" includes="nuxeo-core-jcr-*.jar" />
+		  <fileset file="${out}/config/default-versioning-config.xml" />
+		</delete>
+		<!-- END temp hack -->
+	    <resolveArtifact artifactId="nuxeo-core-storage-sql" todir="${out}/bundles" />
+	    <resolveArtifact artifactId="nuxeo-core-storage-sql-extensions" todir="${out}/bundles" />
+		<copy todir="${out}" overwrite="true">
+		  <fileset dir="src/main/resources/vcs">
+		    <patternset>
+		       <exclude name="ra/**"/>
+		    </patternset>
+		  </fileset>
+		</copy>		   
+	    <profile name="ra">
+		   <echo>Entering Profile VCS + RA</echo>
+	       <copy todir="${out}" overwrite="true" >
+		     <fileset dir="src/main/resources/vcs/ra" />
+		   </copy>
+		   <resolveArtifact artifactId="nuxeo-core-storage-sql-ra" property="rar"/>
+		   <unzip src="${rar}" dest="${out}/bundles/nuxeo-repository.rar">
+             <patternset>
+	           <include name="org/**" />
+             </patternset>
+           </unzip>
+	    </profile>		
+	  </profile>
+	  <profile name="jcr">
+	    <echo>Entering Profile JCR</echo>
+	    <resolveArtifact artifactId="nuxeo-core-jcr-connector" todir="${out}/bundles" />
+		<copy todir="${out}" overwrite="true">
+		  <fileset dir="src/main/resources/jcr">
+		    <patternset>
+			  <exclude name="ra/**"/>
+			</patternset>
+		  </fileset>
+		</copy>
+	    <profile name="ra">
+	       <echo>Entering Profile JCR + RA</echo>
+	       <copy todir="${out}" overwrite="true" >
+		     <fileset dir="src/main/resources/jcr/ra" />
+		   </copy>
+		   <resolveArtifact artifactId="nuxeo-core-jca" property="rar"/>
+		   <unzip src="${rar}" dest="${out}/bundles/nuxeo-repository.rar">
+             <patternset>
+	           <include name="org/**" />
+             </patternset>
+           </unzip>
+	    </profile>
+	  </profile>
+	</profile-group>
+	
+	<chmod dir="${out}" perm="ugo+rx" includes="*.sh" />			   
+	<zip file="target/${final.zip}" basedir="${stage}" />
+	<attachArtifact file="target/${final.zip}" />
+
+  </target>
+   
+</project>

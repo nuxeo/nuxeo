@@ -1,0 +1,16 @@
+// disable security restrictions on upload
+// The url is set at runtime by the run.sh script
+user_pref("signed.applets.codebase_principal_support", true);
+user_pref("capability.principal.codebase.p0.granted", "UniversalFileRead");
+user_pref("capability.principal.codebase.p0.id", "http://localhost:8080");
+user_pref("capability.principal.codebase.p0.subjectName", "");
+
+// set english as default language
+user_pref("general.useragent.locale", "en");
+user_pref("intl.accept_languages", "en");
+
+// Speed up firefox by pipelining requests on a single connection
+user_pref("network.http.keep-alive", true);
+user_pref("network.http.pipelining", true);
+user_pref("network.http.proxy.pipelining", true);
+user_pref("network.http.pipelining.maxrequests", 8);
