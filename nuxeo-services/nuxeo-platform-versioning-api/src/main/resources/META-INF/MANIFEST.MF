@@ -1,0 +1,24 @@
+Export-Package: org.nuxeo.ecm.platform.versioning.api,
+ org.nuxeo.ecm.platform.versioning.facet
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Category: runtime
+Bundle-Name: Nuxeo Versioning API
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: false
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Import-Package: javax.annotation;version="1.0",
+ org.apache.commons.logging,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.adapter,
+ org.nuxeo.ecm.core.api.facet,
+ org.nuxeo.ecm.core.api.repository,
+ org.nuxeo.ecm.core.utils,
+ org.nuxeo.ecm.directory;api=split,
+ org.nuxeo.runtime.api
+Bundle-SymbolicName: org.nuxeo.ecm.platform.versioning.api
