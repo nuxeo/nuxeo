@@ -1,0 +1,26 @@
+<component name="org.nuxeo.ecm.core.jms.CoreEventPublisher" version="1.0">
+  <documentation>
+    The jms publisher for core events
+
+    @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+  </documentation>
+
+  <extension
+      target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
+      point="listener">
+
+    <documentation>
+      Core event listener contributions that deals with forwarding
+      Nuxeo core events on a JMS dedicated topic using the
+      JMSMessageProducerService.
+
+      Order is 499 so that it is notified after most of listeners. and before the deprecated jmsListener
+    </documentation>
+
+    <listener name="jmsPublisher"
+        class="org.nuxeo.ecm.core.jms.JMSEventListener"
+        order="499"/>
+
+  </extension>
+
+</component>
