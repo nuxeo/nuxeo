@@ -1,0 +1,57 @@
+/*
+Navigation tabs, subtabs, and back links
+Header links to navigate between pages are styled in header.css
+=Tabs -> default tabs and subtabs
+=Navigation controls -> used to paginate document lists
+=Back Arrow -> link to go back to the previous view
+author: lkemen@nuxeo.com
+*/
+
+/* =Tabs */
+.tabsBar {
+  background: none "neutral.medium (__FLAVOR__ background)";
+  border-width: 1px; border-style: solid;
+  border-color: "neutral.light (__FLAVOR__ border)";
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 10px 8px #fff inset;
+  float: left;
+  margin-top: .4em;
+  width: 100% }
+.tabsBar ul {
+  list-style: none outside none;
+  margin: 0;
+  padding: 0 1em 0 0 }
+.tabsBar li {
+  float: left;
+  padding: 0 }
+.tabsBar a,.tabsBar a:visited {
+  background: transparent;
+  border-width: 1px; border-style: none solid none none; border-color: "neutral.lighter (__FLAVOR__ border)";
+  color: "link (__FLAVOR__ color)";
+  display: block;
+  float: left;
+  padding: .3em .5em .4em;
+  text-decoration:none;
+  text-shadow: 1px 1px 0 #fff }
+.tabsBar li.selected a,.tabsBar li a:hover,.tabsBar li.selected a:visited {
+  background: none "color.major.stronger (__FLAVOR__ background)";
+  color: #fff;
+  text-shadow: 1px 1px 0 #000 }
+
+.column .tabsBar { border-style: solid solid none; border-width: 1px; border-color: "neutral.lighter (__FLAVOR__ border)"; border-radius: 0 0 0 0; box-shadow: 0 0 0 transparent, 0 10px 8px #fff inset }
+.column .tabsBar li.selected a { background-color: "tabs.selected (__FLAVOR__ background)"; color: "tabs.selected (__FLAVOR__ color)"; text-shadow: none }
+
+.subtabsBar { background: none transparent; border-style: none none solid; border-width: 1px; border-color: "subtabs.selected (__FLAVOR__ border)"; border-radius: 0; box-shadow: 0 0 0 transparent; font-size: .9em; margin-top: 1em }
+.subtabsBar li { margin: 0 0 -0.1em .3em }
+.subtabsBar a,.subtabsBar a:visited { background: none "color.major.light (__FLAVOR__ background)"; border-width: 1px; border-style: solid; border-color: "neutral.lighter (__FLAVOR__ border)";border-radius: 2px 2px 0 0; color: "link (__FLAVOR__ color)"; padding: .19em .4em }
+.subtabsBar li.selected a,.subtabsBar li a:hover,.subtabsBar li.selected a:visited {
+   background: none "subtabs.selected (__FLAVOR__ background)"; border-color: "subtabs.selected (__FLAVOR__ border)" "subtabs.selected (__FLAVOR__ border)" "noborder (__FLAVOR__ border)"; border-style: solid; border-width: 1px; color: "subtabs.selected (__FLAVOR__ color)"; padding: .2em .4em .3em; text-shadow: none }
+
+/* =Navigation controls */
+.pageNavigationControls, #pageNavigationControls { border-width: 1px; border-style: none none solid; border-color: "neutral.lighter (__FLAVOR__ border)"; margin: 0 0 .4em; padding: .2em 0 0; text-align: center }
+.pageNavigationControls span, #pageNavigationControls span { color: "gray.dark (__FLAVOR__ color)"; font-weight: bold; margin: 1em .5em; vertical-align: top }
+.pageNavigationControls input, #pageNavigationControls input { border: medium none; box-shadow: none; margin-left: .4em }
+.pageNavigationControls input[disabled=disabled], #pageNavigationControls input[disabled=disabled] { cursor: default; filter: alpha(opacity=50); opacity: .4 }
+
+/* =Back Arrow */
+.directoryBack { background: url("${basePath}/icons/arrow_left.gif") no-repeat scroll 3px 1px transparent; padding: .2em .2em .2em 2em }
