@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Annotations Test
+Bundle-SymbolicName: org.nuxeo.ecm.annotations.test;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateful
+Require-Bundle: org.nuxeo.ecm.platform.annotations.api
+Nuxeo-Component: OSGI-INF/test-ann-contrib.xml
+

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.webengine.sites.ecm.types">
+
+  <require>org.nuxeo.ecm.platform.types.TypeService</require>
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+
+    <type id="Comment" coretype="Comment">
+      <icon>/icons/forum_post.gif</icon>
+      <label>label.document.post</label>
+      <bigIcon>/icons/forum_100.png</bigIcon>
+      <description>Comment.description</description>
+      <category>SimpleDocument</category>
+    </type>
+
+    <type id="WebSite">
+      <label>WebSite</label>
+      <icon>/icons/folder.gif</icon>
+      <bigIcon>/icons/website_100.png</bigIcon>
+      <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <category>Collaborative</category>
+      <description>WebSite.description</description>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>WebPage</type>
+        <type>ContextualLink</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>webcontainer</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>webcontainer</layout>
+        <layout>dublincore</layout>
+      </layouts>
+    </type>
+
+    <type id="WebPage" coretype="WebPage">
+      <label>Web Page</label>
+      <icon>/icons/page_white_world.png</icon>
+      <bigIcon>/icons/webpage_100.png</bigIcon>
+      <icon-expanded>/icons/web_folder.png</icon-expanded>
+      <category>SimpleDocument</category>
+      <description>WebPage.description</description>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>WebPage</type>
+        <type>ContextualLink</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>webpage</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>webpage</layout>
+        <layout>dublincore</layout>
+      </layouts>
+    </type>
+
+    <!-- ContextualLink doc type definition  -->
+    <type id="ContextualLink" coretype="ContextualLink">
+      <label>Contextual Link</label>
+      <icon>/icons/file.gif</icon>
+      <bigIcon>/icons/contextuallink_100.png</bigIcon>
+      <description>ContextualLink.description</description>
+      <category>SimpleDocument</category>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>contextualLink</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>contextualLink</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <layouts mode="view">
+        <layout>contextualLink</layout>
+      </layouts>
+    </type>
+
+    <type id="Workspace" coretype="Workspace">
+      <subtypes>
+        <type>WebSite</type>
+      </subtypes>
+    </type>
+
+    <type id="Folder" coretype="Folder">
+      <subtypes>
+        <type>WebSite</type>
+      </subtypes>
+    </type>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+    point="types">
+    <types>
+      <type name="WebSite">default</type>
+      <type name="WebPage">default</type>
+      <type name="ContextualLink">default</type>
+    </types>
+  </extension>
+
+</component>

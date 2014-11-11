@@ -1,0 +1,81 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"><f:subview>
+  <table class="dataInput" border="0">
+    <tbody>
+      <tr>
+        <td class="labelColumn"><h:outputText
+          value="#{messages['label.picture.headline']}" /></td>
+        <td class="fieldColumn"><h:outputText
+          value="#{currentDocument.picture.headline}" /></td>
+      </tr>
+      <tr>
+        <td class="labelColumn"><h:outputText
+          value="#{messages['label.picture.subheadline']}" /></td>
+        <td class="fieldColumn"><h:outputText
+          value="#{currentDocument.picture.subheadline}" /></td>
+      </tr>
+      <tr>
+        <td class="labelColumn"><h:outputText
+          value="#{messages['label.picture.byline']}" /></td>
+        <td class="fieldColumn"><h:outputText
+          value="#{currentDocument.picture.byline}" /></td>
+      </tr>
+      <tr>
+        <td class="labelColumn"><h:outputText
+          value="#{messages['label.picture.dateline']}" /></td>
+        <td class="fieldColumn"><h:outputText
+          value="#{currentDocument.picture.dateline}" > <f:converter
+          converterId="DateTimeConverter" /> </h:outputText></td>
+      </tr>
+      <tr>
+        <td class="labelColumn"><h:outputText
+          value="#{messages['label.picture.slugline']}" /></td>
+        <td class="fieldColumn"><h:outputText
+          value="#{currentDocument.picture.slugline}" /></td>
+      </tr>
+      <tr>
+        <td class="labelColumn"><h:outputText
+          value="#{messages['label.picture.credit']}" /></td>
+        <td class="fieldColumn"><h:outputText
+          value="#{currentDocument.picture.credit}" /></td>
+      </tr>
+      <tr>
+        <td class="labelColumn"><h:outputText
+          value="#{messages['label.picture.language']}" /></td>
+        <td class="fieldColumn"><h:outputText
+          value="#{currentDocument.picture.language}" /></td>
+      </tr>
+      <tr>
+        <td class="labelColumn"><h:outputText
+          value="#{messages['label.picture.source']}" /></td>
+        <td class="fieldColumn"><h:outputText
+          value="#{currentDocument.picture.source}" /></td>
+      </tr>
+      <tr>
+        <td class="labelColumn"><h:outputText
+          value="#{messages['label.picture.origin']}" /></td>
+        <td class="fieldColumn"><h:outputText
+          value="#{currentDocument.picture.origin}" /></td>
+      </tr>
+      <tr>
+        <td class="labelColumn"><h:outputText
+          value="#{messages['label.picture.genre']}" /></td>
+        <td class="fieldColumn"><h:outputText
+          value="#{currentDocument.picture.genre}" /></td>
+      </tr>
+      <tr>
+        <td class="labelColumn"><h:outputText
+          value="#{messages['label.picture.caption']}" /></td>
+        <td class="fieldColumn"><h:outputText
+          value="#{currentDocument.picture.caption}" /></td>
+      </tr>
+      <tr>
+        <td class="labelColumn"><h:outputText
+          value="#{messages['label.picture.typage']}" /></td>
+        <td class="fieldColumn"><h:outputText
+          value="#{currentDocument.picture.typage}" /></td>
+      </tr>
+    </tbody>
+  </table>
+</f:subview></div>
