@@ -1,0 +1,25 @@
+Export-Package: org.nuxeo.ecm.platform.ui.web.auth.jboss
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Category: web,
+ stateless
+Bundle-Name: Nuxeo Web Authentication Jboss extension
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.platform.web.common
+Bundle-Vendor: Nuxeo
+Bundle-Version: 0.0.0.SNAPSHOT
+Nuxeo-Component: OSGI-INF/authentication-jboss-contrib.xml
+Bundle-ManifestVersion: 2
+Import-Package: javax.security.auth,
+ javax.security.auth.callback,
+ javax.security.auth.login,
+ org.jboss.security,
+ org.jboss.security.auth.callback,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.platform.api.login,
+ org.nuxeo.ecm.platform.ui.web.auth,
+ org.nuxeo.ecm.platform.ui.web.auth.interfaces
+Bundle-SymbolicName: org.nuxeo.ecm.platform.ui.web.auth.jboss

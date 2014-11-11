@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Bundle-Name: Nuxeo Platform Query API Fragment
+Bundle-SymbolicName: org.nuxeo.ecm.platform.query.api;singleton:=true
+Nuxeo-Component: OSGI-INF/pageprovider-framework.xml
