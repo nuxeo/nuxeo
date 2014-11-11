@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://nuxeo.org/schemas/oauth/consumer"
+  xmlns:oauthconsumer="http://nuxeo.org/schemas/oauth/consumernamespace">
+
+
+  <xs:element name="consumerKey" type="xs:string"/>
+  <xs:element name="consumerSecret" type="xs:string"/>
+  <xs:element name="publicKey" type="xs:string"/>
+  <xs:element name="callbackURL" type="xs:string"/>
+
+  <xs:element name="description" type="xs:string"/>
+  <xs:element name="signedFetchSupport" type="xs:string"/>
+  <xs:element name="dedicatedLogin" type="xs:string"/>
+
+  <xs:element name="enabled" type="xs:boolean"/>
+
+  <xs:element name="allowBypassVerifier" type="xs:boolean"/>
+
+</xs:schema>
