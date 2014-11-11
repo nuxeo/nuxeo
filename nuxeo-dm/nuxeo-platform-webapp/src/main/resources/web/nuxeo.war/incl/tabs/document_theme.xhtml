@@ -1,0 +1,72 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:s="http://jboss.com/products/seam/taglib">
+
+<h3><h:outputText value="#{messages['title.header.localThemeConfiguration']}" /></h3>
+
+<h:form>
+<s:validateAll>
+<table class="dataInput" border="0">
+<tbody>
+   <tr>
+      <td class="labelColumn"><h:outputText
+        value="#{messages['label.theme.local.theme']}" /></td>
+      <td class="fieldColumn">
+        <h:panelGroup id="localThemePanel1">
+          <h:selectOneMenu value="#{localThemeActions.theme}">
+            <f:selectItem itemValue="" itemLabel="(#{messages['label.theme.local.notSpecified']})" />
+            <f:selectItems value="#{localThemeActions.availableThemes}" />
+            <a4j:support event="onchange"
+                                ajaxSingle="true" reRender="localThemePanel2" />
+          </h:selectOneMenu>
+       </h:panelGroup>
+     </td>
+   </tr>
+   <tr>
+     <td class="labelColumn"><h:outputText
+        value="#{messages['label.theme.local.page']}" /></td>
+     <td class="fieldColumn">
+       <h:panelGroup id="localThemePanel2">
+           <h:selectOneMenu value="#{localThemeActions.page}">
+             <f:selectItems value="#{localThemeActions.availablePages}" />
+           </h:selectOneMenu>
+       </h:panelGroup>
+     </td>
+   </tr>
+   <tr>
+     <td class="labelColumn"><h:outputText
+        value="#{messages['label.theme.local.perspective']}" /></td>
+     <td class="fieldColumn">
+       <h:panelGroup id="localThemePanel3">
+           <h:selectOneMenu value="#{localThemeActions.perspective}">
+             <f:selectItem itemValue="" itemLabel="(#{messages['label.perspective.local.notSpecified']})" />
+             <f:selectItems value="#{localThemeActions.availablePerspectives}" />
+           </h:selectOneMenu>
+       </h:panelGroup>
+     </td>
+   </tr>
+   <tr>
+     <td></td>
+     <td>
+       <h:commandButton
+          value="#{messages['command.save']}"
+          class="button"
+          action="#{localThemeActions.save}" />
+
+       <h:commandButton
+           value="#{messages['command.delete']}"
+           class="button"
+           style="margin-left: 5px"
+           rendered="#{localThemeActions.configured}"
+           action="#{localThemeActions.delete}" />
+     </td>
+   </tr>
+   </tbody>
+   </table>
+</s:validateAll>
+</h:form>
+
+</div>

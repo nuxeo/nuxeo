@@ -1,0 +1,126 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<ui:insert name="user">
+
+  <h:form id="userServicesSearchForm">
+    <div class="searchService">
+
+      <c:if test="#{userServicesContext.searchEnabled}">
+        <h:inputText value="#{documentSearchActions.simpleSearchKeywords}" size="15"
+          class="directoryFilter"
+          onkeydown="if (event.keyCode == 13) {Element.next(Element.next(this)).select();} else return true;"
+          id="simpleSearchKeywordsInput"
+          required="true" requiredMessage="#{messages['feedback.search.noKeywords']}"
+          validator="#{documentSearchActions.validateSimpleSearchKeywords}" />
+        <h:commandButton action="search_results_simple"
+          value="#{messages['command.search']}" styleClass="button"
+          id="simpleSearchSubmitButton" />
+
+        <nxu:set var="actions"
+          value="#{webActions.getActionsList('SEARCH_ACTIONS')}"
+          cache="true">
+          <nxu:dataList layout="simple"
+            var="action"
+            value="#{actions}"
+            id="searchActionsTable">
+            <span class="advancedSearchLink">
+              <nxh:commandLink action="#{action.getLink()}"
+                value="#{messages[action.label]}"
+                immediate="true"
+                id="searchActionsButton" />
+            </span>
+          </nxu:dataList>
+        </nxu:set>
+      </c:if>
+    </div>
+  </h:form>
+      
+  <h:form id="userServicesForm">
+    <div class="searchService">
+  
+      <nxu:set var="actions"
+        value="#{webActions.getActionsList('SEARCH_LINKS')}"
+        cache="true">
+        <nxu:dataList layout="simple"
+                      var="action"
+                      value="#{actions}"
+                      rowIndexVar="row"
+                      rowCountVar="rowCount"
+                      id="searchLinksActionsTable">
+          <h:outputText value=" | " rendered="#{row!=rowCount}"/>
+          <h:outputLink value="#{baseURL}#{action.getLink()}"
+            id="searchLinksActionLink">
+            <h:outputText value="#{messages[action.label]}" />
+          </h:outputLink>
+        </nxu:dataList>
+      </nxu:set>
+
+    </div>
+
+
+    <div class="userActions">
+
+      <h:outputText value="#{messages['label.loggedAsUser']}" />
+
+      <nxu:set var="actions"
+        value="#{webActions.getActionsList('USER_SERVICES')}"
+        cache="true">
+        <nxu:dataList layout="simple"
+                      var="action"
+                      value="#{actions}"
+                      rowIndexVar="row"
+                      rowCountVar="rowCount"
+                      id="userServicesActionsTable">
+          <h:outputText value=" | " rendered="#{row!=rowCount}"/>
+          <nxh:commandLink action="#{action.getLink()}"
+            id="userServicesActionCommandLink">
+            <h:outputText value="#{messages[action.label]}" />
+          </nxh:commandLink>
+        </nxu:dataList>
+      </nxu:set>
+
+      <nxu:set var="actions"
+        value="#{webActions.getActionsList('USER_SERVICES_BOTTOM')}"
+        cache="true">
+        <nxu:dataList layout="simple"
+                      var="action"
+                      value="#{actions}"
+                      rowIndexVar="row"
+                      rowCountVar="rowCount"
+                      id="userServicesBottomActionsTable">
+          <h:outputText value=" | " rendered="#{row!=rowCount}"/>
+
+          <nxh:commandLink action="#{action.getLink()}"
+            rendered="#{fn:startsWith(action.link,'#')}"
+            id="userServicesBottomActionCommandLink">
+            <h:outputText value="#{messages[action.label]}" />
+          </nxh:commandLink>
+
+          <h:outputLink value="#{baseURL}#{action.link}"
+            rendered="#{!(fn:startsWith(action.link,'#'))}"
+            id="userServicesBottomActionLink">
+            <h:outputText value="#{messages[action.label]}" />
+          </h:outputLink>
+
+        </nxu:dataList>
+      </nxu:set>
+
+    </div>
+
+  </h:form>
+  
+    <c:if test="#{adminMessageActivated}">
+    <div style="text-align: center; padding: 5px 5px 5px 25px; border: 1px solid rgb(170, 187, 255); background: url('icons/info.gif') no-repeat 3px center #fff; font: normal 12px Arial,sans-serif; margin:3px;">
+         <h:outputText value="#{adminMessage}"/>
+    </div>
+  </c:if>
+  
+</ui:insert>
+
+</div>

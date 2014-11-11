@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+  <ui:define name="page title">
+    <h:outputText value="#{nuxeoApplicationName} - #{messages['title.email.document']}"/>
+  </ui:define>
+
+  <ui:define name="body">
+      <ui:include src="/incl/message_banner.xhtml"/>
+    <div>
+
+    <h:panelGroup rendered="#{currentDocument.version}">
+      <h1>
+      <h:outputText value="#{nxd:titleOrId(versionedActions.sourceDocument)}"/>
+      (version
+      <h:outputText value=" #{currentDocument.uid.major_version}"/>.
+      <h:outputText value="#{currentDocument.uid.minor_version}"/>)
+      </h1>
+    </h:panelGroup>
+    <h:panelGroup rendered="#{! currentDocument.version}">
+      <h1><h:outputText value="#{nxd:titleOrId(currentDocument)}"/></h1>
+    </h:panelGroup>
+
+  <h3>
+    <h:outputText value="#{messages['label.email.addNewUserToSendTo']}"/>
+  </h3>
+
+  <h:form>
+    <h:outputText value="#{messages['label.email.search.users']}"
+         class="rightsAddLabel" />
+      <h:inputText value="#{principalListManager.searchFilter}" class="directoryFilter" style="margin:0px;">
+        <a4j:support
+            event="onkeyup"
+            reRender="suggestedEntries"/>
+      </h:inputText>
+      <h:inputHidden value="#{principalListManager.searchType}">
+         <f:attribute name="value" value="USER_TYPE" />
+      </h:inputHidden>
+
+    <table cellspacing="10" cellpadding="0" border="0" >
+    <tbody>
+      <tr>
+       <td valign="top" align="center" nowrap="nowrap">
+         <h:panelGroup id="suggestedEntries">
+           <h4><h:outputText value="#{messages['label.email.searchResults']}"
+                 rendered="#{principalListManager.displaySearchResults}"/>
+           </h4>
+
+            <h:outputText value="#{messages['label.security.emptysearch']}"
+                 class="infoFeedback" rendered="#{!principalListManager.displaySearchResults}"/>
+        <h:dataTable
+                rendered="#{principalListManager.displaySearchResults}"
+              var="entry" class="dataOutput" rowClasses="dataRowEven,dataRowOdd"
+              value="#{principalListManager.suggestedEntries}">
+              <h:column>
+              <f:facet name="header">
+                <h:outputText value="#{messages['label.content.header.type']}" />
+              </f:facet>
+              <h:graphicImage value="#{entry['icon']}"/>
+              </h:column>
+              <h:column>
+                  <f:facet name="header">
+                    <h:outputText value="#{messages['label.username']}" />
+                  </f:facet>
+                  <h:outputText value="#{entry['label']}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="#{messages['label.action']}" />
+              </f:facet>
+              <a4j:commandLink value="#{messages['label.security.addUsername']}" action="#{principalListManager.addToSelectedUsers(entry['id'])}" reRender="selectedUsersAndGroups"/>
+            </h:column>
+        </h:dataTable>
+        <br/>
+        <h:outputText value="#{messages['label.security.searchOverFlow']}"
+          class="infoFeedback" rendered="#{principalListManager.searchOverflow}"/>
+
+    </h:panelGroup>
+    </td>
+  </tr>
+  <tr>
+    <td valign="top" align="center" nowrap="nowrap">
+    <h:panelGroup id="selectedUsersAndGroups">
+        <h4><h:outputText value="#{messages['label.email.selectedUsers']}" /></h4>
+           <h:dataTable
+               class="dataOutput" rowClasses="dataRowEven,dataRowOdd"
+               var="user"
+              value="#{principalListManager.selectedUsers}"
+              rendered="#{!principalListManager.selectedUserListEmpty}">
+          <h:column>
+          <f:facet name="header">
+            <h:outputText value="#{messages['label.username']}" />
+          </f:facet>
+          <h:outputText value="#{user}" />
+        </h:column>
+        <h:column>
+          <f:facet name="header">
+            <h:outputText value="#{messages['label.action']}" />
+          </f:facet>
+          <a4j:commandLink value="#{messages['label.security.delUsername']}" action="#{principalListManager.removeFromSelectedUsers(user)}" reRender="selectedUsersAndGroups"/>
+        </h:column>
+        </h:dataTable>
+        <br/>
+        <h:outputText value="#{messages['label.security.selectedUserListEmpty']}"
+           class="clipboardEmptyMessage"
+          rendered="#{principalListManager.selectedUserListEmpty}"/>
+
+           <a4j:commandButton value="#{messages['label.security.resetUserList']}"
+          rendered="#{!principalListManager.selectedUserListEmpty}"
+            styleClass="button rightsAddButton"
+            action="#{principalListManager.resetSelectedUserList}"
+            reRender="selectedUsersAndGroups"
+            />
+
+    </h:panelGroup>
+    </td>
+  </tr>
+  <tr>
+    <td nowrap="nowrap">
+      <table>
+      <tbody>
+        <tr>
+          <td>
+            <h:outputText value="#{messages['label.email.subject']}"
+                  class="rightsAddLabel" />
+              <h:inputText
+                id="h_inputText"
+                value="#{emailSenderAction.mailSubject}"
+                class="rightsAddSelect"/>
+            <h:message styleClass="errorMessage" for="h_inputText" />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <nxu:editor
+                id="nxu_editor"
+                rendered="true"
+                required="false"
+                value="#{emailSenderAction.mailContent}"/>
+           </td>
+        </tr>
+        <tr>
+          <td align="center">
+            <h:commandButton value="#{messages['command.email.send']}"
+              styleClass="button rightsAddButton"
+                action="#{emailSenderAction.send}" />
+          </td>
+        </tr>
+      </tbody>
+      </table>
+    </td>
+    </tr>
+  </tbody>
+  </table>
+
+  </h:form>
+
+</div>
+</ui:define>
+</nxthemes:composition>
