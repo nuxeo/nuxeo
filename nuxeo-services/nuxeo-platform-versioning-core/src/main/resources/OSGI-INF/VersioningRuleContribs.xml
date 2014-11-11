@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.versioning.rules">
+  <documentation>
+    Default versioning rules contributed to versioning service. These rules are
+    designated for default provided document types (File, Note).
+
+    @version 1.0
+    @author Dragos Mihalache
+  </documentation>
+
+  <require>org.nuxeo.ecm.platform.versioning.service.VersioningService</require>
+
+  <!-- Default versioning rules -->
+  <extension
+    target="org.nuxeo.ecm.platform.versioning.service.VersioningService"
+    point="rules">
+
+    <versioningRuleEdit name="edit_project" lifecycleState="project"
+      action="ask_user">
+      <option value="no_inc" default="true" />
+      <option value="inc_minor" />
+      <option value="inc_major" />
+    </versioningRuleEdit>
+
+    <versioningRuleEdit name="edit_approved" lifecycleState="approved"
+      action="ask_user">
+      <option value="inc_minor" lifecycleTransition="backToProject" />
+      <option value="inc_major" lifecycleTransition="backToProject"
+        default="true" />
+    </versioningRuleEdit>
+
+    <versioningRuleEdit name="edit_obsolete" lifecycleState="obsolete"
+      action="ask_user">
+      <option value="inc_minor" lifecycleTransition="backToProject" />
+      <option value="inc_major" lifecycleTransition="backToProject"
+        default="true" />
+    </versioningRuleEdit>
+
+    <versioningRuleEdit name="edit_any" lifecycleState="*"
+      action="ask_user">
+      <includeDocType>File</includeDocType>
+      <includeDocType>Note</includeDocType>
+      <option value="no_inc" default="true" />
+      <option value="inc_minor" />
+      <option value="inc_major" />
+    </versioningRuleEdit>
+
+    <!-- Automatic rule -->
+
+    <versioningRuleAuto name="auto_any" lifecycleState="*"
+      action="inc_minor">
+    </versioningRuleAuto>
+
+  </extension>
+
+</component>
