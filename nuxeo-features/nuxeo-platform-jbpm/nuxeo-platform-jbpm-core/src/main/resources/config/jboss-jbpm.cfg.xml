@@ -1,0 +1,51 @@
+<jbpm-configuration>
+  <string name='resource.hibernate.cfg.xml' value='config/jboss-jbpm-hibernate.cfg.xml' />
+  <jbpm-context>
+    <service name="persistence">
+      <factory>
+        <bean class="org.jbpm.persistence.db.DbPersistenceServiceFactory">
+          <field name="isTransactionEnabled">
+            <false />
+          </field>
+          <field name="isCurrentSessionEnabled">
+            <true />
+          </field>
+        </bean>
+      </factory>
+    </service>
+    <service name="tx" factory="org.jbpm.tx.TxServiceFactory" />
+    <service name="authentication"
+      factory="org.jbpm.security.authentication.DefaultAuthenticationServiceFactory" />
+    <service name="scheduler" factory="org.jbpm.scheduler.db.DbSchedulerServiceFactory" />
+  </jbpm-context>
+  <bean name="jbpm.job.executor" class="org.nuxeo.ecm.platform.jbpm.core.service.NuxeoJobExecutor">
+    <field name="jbpmConfiguration">
+      <ref bean="jbpmConfiguration" />
+    </field>
+    <field name="name">
+      <string value="JbpmJobExecutor" />
+    </field>
+    <field name="nbrOfThreads">
+      <int value="1" />
+    </field>
+    <field name="idleInterval">
+      <int value="5000" />
+    </field>
+    <field name="maxIdleInterval">
+      <int value="3600000" />
+    </field> <!-- 1 hour -->
+    <field name="historyMaxSize">
+      <int value="20" />
+    </field>
+    <field name="maxLockTime">
+      <int value="600000" />
+    </field> <!-- 10 minutes -->
+    <field name="lockMonitorInterval">
+      <int value="60000" />
+    </field> <!-- 1 minute -->
+    <field name="lockBufferTime">
+      <int value="5000" />
+    </field> <!-- 5 seconds -->
+  </bean>
+  
+</jbpm-configuration>

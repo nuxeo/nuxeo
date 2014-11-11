@@ -1,0 +1,43 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <h:form id="subscriptions">
+
+    <nxu:dataList var="entry"
+      value="#{groupsSubscriptionsAction.usersByNotificationsForCurrentDocument.entrySet}">
+    
+      <h:panelGroup rendered="#{not empty entry.value}">
+
+        <h3>
+          <h:outputText value="#{messages[entry.key]}" />
+        </h3>
+
+        <nxl:layout name="user_group_prefixed_suggestion" mode="view"
+          value="#{entry.value}" /> 
+
+      </h:panelGroup>
+    
+    </nxu:dataList>
+
+  </h:form>
+
+  <h:form id="add_subscriptions">
+
+    <div class="userAndGroupFilter">
+
+      <nxl:layout name="user_group_prefixed_suggestion" mode="create"
+        value="#{groupsSubscriptionsAction.selectedEntries}" /> 
+      <ui:include src="/incl/group_subscriptions_action.xhtml" />
+
+    </div>
+
+  </h:form>
+
+</div>
