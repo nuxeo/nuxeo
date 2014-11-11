@@ -1,0 +1,27 @@
+Export-Package: org.nuxeo.ecm.core.convert.cache,
+ org.nuxeo.ecm.core.convert.extension,
+ org.nuxeo.ecm.core.convert.service
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.nuxeo.ecm.core.convert.service.CacheCGTaskActivator
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Category: core
+Bundle-Name: org.nuxeo.ecm.core.convert
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 5.4.2.qualifier
+Eclipse-BuddyPolicy: dependent
+Nuxeo-Component: OSGI-INF/convert-service-framework.xml
+Bundle-ManifestVersion: 2
+Import-Package: org.apache.commons.logging,
+ org.nuxeo.common.utils,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.blobholder,
+ org.nuxeo.ecm.core.api.impl.blob,
+ org.nuxeo.ecm.core.convert.api,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.model,
+ org.osgi.framework
+Bundle-SymbolicName: org.nuxeo.ecm.core.convert
