@@ -1,0 +1,3 @@
+username, password, firstName, lastName, company, email, intField, dateField
+"Administrator","Administrator","","","blabla","Administrator@example.com",10,1982-03-25 16:30:47.123
+"user_1","pass_1","f","l","__NULL__","e@m",3,2007-09-07 14:36:28.000

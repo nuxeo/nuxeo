@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Directory Facade
+Bundle-SymbolicName: org.nuxeo.ecm.platform.directory.facade
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateful
+Require-Bundle: org.nuxeo.ecm.directory.api, org.nuxeo.ecm.directory
+Export-Package: org.nuxeo.ecm.platform.directory.ejb
+Nuxeo-Component: OSGI-INF/DirectoryManager-platform-contrib.xml
+Eclipse-LazyStart: false
