@@ -1,0 +1,23 @@
+Export-Package: org.nuxeo.ecm.platform.directory.ejb
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Category: web,
+ stateful
+Bundle-Localization: plugin
+Bundle-Name: Nuxeo Directory Facade
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: false
+Bundle-Version: 0.0.0.SNAPSHOT
+Nuxeo-Component: OSGI-INF/DirectoryManager-platform-contrib.xml
+Bundle-ManifestVersion: 2
+Import-Package: javax.annotation;version="1.0",
+ javax.ejb,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.runtime.api
+Bundle-SymbolicName: org.nuxeo.ecm.platform.directory.facade
+Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Require-Bundle: org.nuxeo.ecm.directory

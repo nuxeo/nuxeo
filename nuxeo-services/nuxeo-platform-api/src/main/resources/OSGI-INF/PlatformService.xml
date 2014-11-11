@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.api.PlatformService" version="1.0">
+  <documentation>
+    A service defining the platform services and repositories to be exposed to
+    the client
+
+    @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.api.PlatformService"/>
+
+  <extension-point name="servers">
+    <documentation>
+      Define an extension point to register new platform servers. Platform
+      servers are parts of the same application that are deployed on different
+      JVMs
+      <p/>
+      Each server may expose a set of services and repositories.
+      <p/>
+      Exposed services are defined as bindings between the service class and a
+      JNDI name where the service (bean service) can be located remotely. If the
+      client try to get a service not defined by any server the platform will
+      try to lookup it using the local NXRuntime.
+      <p/>
+      The extension should use the format:
+      <code>
+        <server name="core" host="localhost" port="1099" jndiPrefix="nuxeo/"
+            jndiSuffix="/remote"
+            jndiContextFactory="org.nuxeo.ecm.platform.api.DefaultJndiContextFactory"
+            serviceConnector="org.nuxeo.ecm.platform.api.DefaultServiceConnector"
+            repositoryConnector="org.nuxeo.ecm.platform.api.DefaultRepositoryConnector">
+
+          <service class="org.nuxeo.ecm.platform.type.TypeManager"
+              jndiName="%TypeManager" private="false"/>
+          ...
+          <repository name="demo" connector="connectorClass"
+              description="A description"/>
+          ...
+        </server>
+      </code>
+      All attributes other than name are optional and have as default values the
+      values in the example above. The host attribute is optional only if you
+      are contributing new service and repository bindings to a server delcared
+      by other bundle.
+      <p/>
+      <ul>
+        <li>
+          The jndiSuffix and jndiPrefix are used to generate the final JNDI name
+          if the specified jndiName begins with a %. In this case the final JNDI
+          name will be computed as follow: jndiPrefix+jndiName+jndiSuffix where
+          jndiname is the specified name without the % character.
+        </li>
+        <li>
+          The jndiContextFactory is used to create the JNDI InitialContext. By
+          default a JNP INitialContext is created
+        </li>
+        <li>host and port represents the JNDI server host and port</li>
+        <li>
+          The connector classes are used to lookup and connect to services and/or
+          repositories exposed by the server
+        </li>
+      </ul>
+      <p/>
+      A repository is defined by an unique name in the system, a connector class
+      and a description suitable to be displayed in an UI. The connector is
+      optional and the default one is
+      org.nuxeo.ecm.platform.api.DefaultRepositoryConnector
+      <p/>
+      The private attribute of a service means that rthe service is intentended
+      to be of internal use for the container server. Such services are not
+      exposed by the platform to the client. So ECM.getPlatform().getService(..)
+      for such a service will return null.
+      <p/>
+      For example private services can be used to access repositories
+      (SoreSession services). CoreServices are never used directly - buit only
+      in a repository session conetxt. So it is used internally by the server to
+      create repository sessions and it is not exposed to the outside. This is
+      also may avoid conflicts when several servers expose the same service. You
+      can make all services private and only the needed one public.
+    </documentation>
+
+    <object class="org.nuxeo.ecm.platform.api.ServerDescriptor"/>
+  </extension-point>
+
+</component>
