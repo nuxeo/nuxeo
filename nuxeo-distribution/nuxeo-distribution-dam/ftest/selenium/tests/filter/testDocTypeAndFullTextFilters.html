@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>testSearchFilters</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">testSearchFilters</td></tr>
+</thead><tbody>
+  <tr>
+    <td>setTimeout</td>
+    <td>12000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>open</td>
+    <td>/nuxeo/logout</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>type</td>
+    <td>username</td>
+    <td>Administrator</td>
+  </tr>
+  <tr>
+    <td>type</td>
+    <td>password</td>
+    <td>Administrator</td>
+  </tr>
+  <tr>
+    <td>clickAndWait</td>
+    <td>Submit</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>clickAndWait</td>
+    <td>link=DAM</td>
+    <td></td>
+  </tr>
+<!-- verify labels on search menu groups and items are there - see messages*.properties files -->
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>Keywords</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>Library</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>All documents</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>Office file</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>Image</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>Video</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>Sound</td>
+    <td></td>
+  </tr>
+<!-- verify image and file doc types on the first screen are there -->
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>Extra ...nd</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>P-01</td>
+    <td></td>
+  </tr>
+<!-- now do a full text search to restrict to items with the word 'extra' -->
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>type</td>
+    <td>filterForm:fulltextFilter</td>
+    <td>extra</td>
+  </tr>
+  <tr>
+    <td>keyDown</td>
+    <td>filterForm:fulltextFilter</td>
+    <td>\13</td>
+  </tr>
+  <tr>
+    <td>keyUp</td>
+    <td>filterForm:fulltextFilter</td>
+    <td>\13</td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>Extra ...nd</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextNotPresent</td>
+    <td>P-01</td>
+    <td></td>
+  </tr>
+<!-- switch to list view -->
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>toggleList:showList</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+<!-- verify our switch to list view worked -->
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>Extra Wide With Ext...r Seems To End</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextNotPresent</td>
+    <td>P-01</td>
+    <td></td>
+  </tr>
+<!-- select just videos ( + fulltext 'extra' search) -->
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>iconfilterForm:Video</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>No documents match your search criteria</td>
+    <td></td>
+  </tr>
+<!-- add audio (+ video + fulltext 'extra' search) -->
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>iconfilterForm:Audio</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>No documents match your search criteria</td>
+    <td></td>
+  </tr>
+<!-- add Files ( + audio + video + fulltext 'extra' search) -->
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>iconfilterForm:File</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>No documents match your search criteria</td>
+    <td></td>
+  </tr>
+<!-- Add Images: at this point, it reverts to 'All' doctypes and fulltext 'Extra' search -->
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>iconfilterForm:Picture</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>Extra Wide With Ext...r Seems To End</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextNotPresent</td>
+    <td>P-01</td>
+    <td></td>
+  </tr>
+<!-- Remove full text search filter -->
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>type</td>
+    <td>filterForm:fulltextFilter</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>keyDown</td>
+    <td>filterForm:fulltextFilter</td>
+    <td>\13</td>
+  </tr>
+  <tr>
+    <td>keyUp</td>
+    <td>filterForm:fulltextFilter</td>
+    <td>\13</td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>Extra Wide With Ext...r Seems To End</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>P-02</td>
+    <td></td>
+  </tr>
+<!-- Click on 'All' types: should be no change -->
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>iconfilterForm:All</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>Extra Wide With Ext...r Seems To End</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>P-01</td>
+    <td></td>
+  </tr>
+<!-- test toggle of filters: add Images -->
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>iconfilterForm:Picture</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>Extra Wide With Ext...r Seems To End</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextNotPresent</td>
+    <td>P-01</td>
+    <td></td>
+  </tr>
+<!-- test toggle of filters: add Files ( + Images) -->
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>iconfilterForm:File</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>Extra Wide With Ext...r Seems To End</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>P-01</td>
+    <td></td>
+  </tr>
+<!-- test toggle of filters: remove Images ( leaving just Files) -->
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>iconfilterForm:Picture</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextNotPresent</td>
+    <td>Extra Wide With Ext...r Seems To End</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>P-01</td>
+    <td></td>
+  </tr>
+<!-- test toggle of filters: remove Files ( reverts to 'All') -->
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>iconfilterForm:File</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>Extra Wide With Ext...r Seems To End</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>P-01</td>
+    <td></td>
+  </tr>
+<!-- test video files: add just Videos -->
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>iconfilterForm:Video</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>sample.mp4</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextNotPresent</td>
+    <td>sampleWAV</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextNotPresent</td>
+    <td>P-01</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextNotPresent</td>
+    <td>Cerato...ta</td>
+    <td></td>
+  </tr>
+<!-- test audio files: add just Audio files -->
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>iconfilterForm:Video</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>watchA4jRequests</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>iconfilterForm:Audio</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>waitForA4jRequest</td>
+    <td>10000</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>sampleWAV</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextNotPresent</td>
+    <td>sample.mp4</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextNotPresent</td>
+    <td>P-01</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextNotPresent</td>
+    <td>Cerato...ta</td>
+    <td></td>
+  </tr>
+<!-- Collapse 'Library' filter -->
+  <tr>
+    <td>click</td>
+    <td>iconfilterForm:docTypes</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextNotPresent</td>
+    <td>Office files</td>
+    <td></td>
+  </tr>
+<!-- Expand 'Library' filter -->
+  <tr>
+    <td>click</td>
+    <td>iconfilterForm:docTypes</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td></td>
+    <td>Office files</td>
+  </tr>
+</tbody></table>
+</body>
+</html>
