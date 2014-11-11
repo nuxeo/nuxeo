@@ -1,0 +1,21 @@
+<f:subview id="#{widget.id}"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{nxu:userFullName(field)}</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+  <div class="#{widget.id}">
+    <h:outputText value="#{nxu:userFullName(field)}"
+      alt="#{field}" title="#{field}" />
+  </div>
+  <script>
+    jQuery(".#{widget.id} span").tooltip();
+  </script>
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:html>#{nxu:userFullName(field)}</nxp:html>
+</c:if>
+</f:subview>
