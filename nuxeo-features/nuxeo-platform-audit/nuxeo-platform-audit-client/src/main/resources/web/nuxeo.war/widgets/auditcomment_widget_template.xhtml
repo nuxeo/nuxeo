@@ -1,0 +1,48 @@
+<f:subview id="#{widget.id}"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{messages[field_0.comment]}</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+
+  <h:outputText value="#{messages[field_0.comment]}" />
+  <c:if test="#{not empty field_0.linkedDoc}">
+    <h:outputText value="   "/>
+    <nxu:graphicImage value="/icons/broken_file.png"
+      rendered="#{field_0.linkedDoc.brokenDocument}"
+      title="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']}"
+      alt="#{field_0.linkedDoc.documentRef}" />
+    <nxd:restDocumentLink
+      document="#{field_0.linkedDoc.document}"
+      rendered="#{!field_0.linkedDoc.brokenDocument}">
+      <nxu:graphicImage
+        value="#{nxd:iconPath(field_0.linkedDoc.document)}"
+        alt="#{field_0.linkedDoc.document.type}">
+      </nxu:graphicImage>
+    </nxd:restDocumentLink>
+  </c:if>
+
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+<nxp:html>
+  <h:outputText value="#{messages[field_0.comment]}" />
+  <c:if test="#{not empty field_0.linkedDoc}">
+    <h:outputText value="   "/>
+    <nxu:graphicImage value="/icons/broken_file.png"
+      rendered="#{field_0.linkedDoc.brokenDocument}"
+      alt="#{field_0.linkedDoc.documentRef}" />
+    <nxd:restDocumentLink
+      document="#{field_0.linkedDoc.document}"
+      rendered="#{!field_0.linkedDoc.brokenDocument}">
+      <nxu:graphicImage
+        value="#{nxd:iconPath(field_0.linkedDoc.document)}"
+        alt="#{field_0.linkedDoc.document.type}">
+      </nxu:graphicImage>
+    </nxd:restDocumentLink>
+  </c:if>
+</nxp:html>
+</c:if>
+</f:subview>
