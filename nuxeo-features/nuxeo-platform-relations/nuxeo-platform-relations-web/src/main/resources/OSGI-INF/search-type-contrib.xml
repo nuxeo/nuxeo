@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.relations.web.type.contrib">
+
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="relation_search" src="schemas/relation_search.xsd" prefix="rel_srch" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="RelationSearch" extends="Document">
+      <schema name="relation_search" />
+    </doctype>
+  </extension>
+
+</component>

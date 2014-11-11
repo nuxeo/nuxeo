@@ -1,0 +1,32 @@
+    {"id": "style menu",
+     "area": "nxthemesStyleManager",
+     "widget": {
+       "type": "contextmenu",
+       "noIcon": "/skin/nxthemes-editor/img/noicon-16.png",
+       "arrow":  "/skin/nxthemes-editor/img/arrow-16.png",
+       "showDisabledItems": true,
+       "targetType": "named style",
+       "items": [
+         {"type": "title"
+         },
+         {"type": "submenu",
+          "label": "Make inherit from",
+          "icon": "/skin/nxthemes-editor/img/inherit-16.png",
+          "visible": "can inherit",
+          "items": [
+            {"type": "selection",
+             "action": "set style inheritance",
+             "choices": "styles"
+            }
+          ]
+         },
+         {"type": "item",
+          "label": "Remove inheritance",
+          "icon": "/skin/nxthemes-editor/img/delete-16.png",
+          "action": "remove style inheritance",
+          "visible": "inherits"
+         }
+       ]
+     },
+     "controllers": ["toggle context menu", "context menu actions"]
+    }
