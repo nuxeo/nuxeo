@@ -1,0 +1,29 @@
+<f:subview id="#{widget.id}"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+
+  <div class="popupTarget" docRef="#{field_1}">
+
+    <h:outputText value="#{messages['label.mail.title']}: " styleClass="boldLabel" />
+    <nxd:restDocumentLink document="#{field_0}">
+      <span id="title_#{field_1}">
+        #{nxd:titleOrId(field_0)}
+      </span>
+    </nxd:restDocumentLink>
+
+    <nxd:restDocumentLink document="#{field_0}"
+      newConversation="true" target="_blank">
+      <nxu:graphicImage value="/icons/external.gif"
+        style="vertical-align:middle"
+        alt="#{messages['permalink.newTab']}"
+        title="#{messages['permalink.newTab']}" />
+    </nxd:restDocumentLink>
+
+  </div>
+
+
+</f:subview>
