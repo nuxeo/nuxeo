@@ -1,0 +1,57 @@
+<assembly>
+
+  <zipEntrySet id="base-template">
+    <artifact>org.nuxeo.ecm.distribution:nuxeo-distribution-server:${project.version}:zip</artifact>
+  </zipEntrySet>
+
+  <fileSet id="template">
+    <directory>src/main/resources</directory>
+  </fileSet>
+
+  <artifactSet id="bundles">
+    <artifacts>
+      <artifact group="org.nuxeo.runtime" name="nuxeo-runtime-jetty-adapter" version="${nuxeo.runtime.version}"/>
+
+      <artifact group="org.nuxeo.ecm.automation" name="nuxeo-automation-core" version="${nuxeo.features.version}"/>
+      <artifact group="org.nuxeo.ecm.automation" name="nuxeo-automation-jsf" version="${nuxeo.features.version}" />
+      <artifact group="org.nuxeo.ecm.automation" name="nuxeo-automation-server" version="${nuxeo.features.version}" />
+
+    </artifacts>
+  </artifactSet>
+
+  <artifactSet id="third-party-libs">
+    <artifacts>
+      <artifact group="javax.servlet" name="servlet-api" version="2.4"/>
+      <artifact group="org.mortbay.jetty" name="jetty" version="6.1H.7"/>
+      <artifact group="org.mortbay.jetty" name="jetty-plus" version="6.1H.7"/>
+      <artifact group="org.mortbay.jetty" name="jetty-naming" version="6.1H.7"/>
+      <artifact group="org.mortbay.jetty" name="jetty-annotations" version="6.1H.7"/>
+      <artifact group="org.mortbay.jetty" name="jetty-util" version="6.1H.7"/>
+      <artifact group="jotm" name="jotm" version="2.0.10"/>
+      <artifact group="javax.ejb" name="ejb-api" version="3.0" />
+      <artifact group="javax.transaction" name="jta" />
+      <artifact group="com.sun.xml" name="relaxngDatatype"/>
+      <artifact group="com.sun.xml" name="xsom" />
+      <artifact group="cup" name="java-cup" />
+      <artifact group="javassist" name="javassist" version="3.6"/> <!-- unresolved ??? -->
+      <artifact group="org.mvel" name="mvel2" />
+    </artifacts>
+  </artifactSet>
+
+  <assemble>
+    <set>base-template</set>
+    <set>template</set>
+    <outputFile>/</outputFile>
+  </assemble>
+
+  <assemble>
+    <set>third-party-libs</set>
+    <outputFile>lib</outputFile>
+  </assemble>
+
+  <assemble>
+    <set>bundles</set>
+    <outputFile>bundles</outputFile>
+  </assemble>
+
+</assembly>
