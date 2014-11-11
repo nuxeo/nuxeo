@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.picture.filemanager.contrib">
+
+  <extension
+      target="org.nuxeo.ecm.platform.filemanager.service.FileManagerService"
+      point="plugins">
+    <documentation>
+      Simple plugin for the file manager. Creates an Image document from
+      any graphic file.
+    </documentation>
+    <plugin name="Imageplugin"
+            class="org.nuxeo.ecm.platform.picture.extension.ImagePlugin"
+            order="10">
+      <filter>image/jpeg</filter>
+      <filter>image/gif</filter>
+      <filter>image/png</filter>
+      <filter>image/tiff</filter>
+      <filter>image/bmp</filter>
+      <filter>image/x-ms-bmp</filter>
+      <!-- RAW images mime type -->
+      <filter>image/x-canon-cr2</filter>
+      <filter>image/x-canon-crw</filter>
+      <filter>image/x-nikon-nef</filter>
+      <filter>image/x-adobe-dng</filter>
+      <filter>image/x-panasonic-raw</filter>
+      <filter>image/x-fuji-raf</filter>
+      <filter>image/x-sigma-x3f</filter>
+      <filter>image/x-pentax-pef</filter>
+      <filter>image/x-kodak-dcr</filter>
+      <filter>image/x-kodak-kdc</filter>
+      <filter>image/x-sony-sr2</filter>
+      <filter>image/x-sony-arw</filter>
+      <filter>image/x-sony-srf</filter>
+      <filter>image/x-minolta-mrw</filter>
+      <filter>image/x-olympus-orf</filter>
+      <filter>image/x-raw-epson</filter>
+      <filter>image/x-portable-pixmap</filter>
+
+      <filter>image/raw</filter>
+      <filter>image/x-raw</filter>
+
+      <filter>application/illustrator</filter>
+      <filter>image/photoshop</filter>
+      <filter>application/postscript</filter>
+    </plugin>
+  </extension>
+
+</component>

@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.webengine.sites.utils;api=split;mandatory:=api;version="5.3.2.SNAPSHO
+ T"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Name: WebEngine Sites Module API
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1278068624379
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.platform.webengine.sites.api
+Import-Package: javax.annotation;version="1.0",
+ org.nuxeo.common.collections,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.model,
+ org.nuxeo.ecm.directory;api=split,
+ org.nuxeo.ecm.platform.relations.api,
+ org.nuxeo.ecm.platform.relations.api.impl,
+ org.nuxeo.ecm.platform.relations.api.util,
+ org.wikimodel.wem,
+ org.wikimodel.wem.common

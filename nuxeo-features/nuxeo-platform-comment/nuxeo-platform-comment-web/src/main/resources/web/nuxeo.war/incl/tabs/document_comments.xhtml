@@ -1,0 +1,69 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html">
+
+
+  <h3>
+    <h:form>
+      <h:commandLink actionListener="#{commentManagerActions.toggleCreateForm}">
+        <h:graphicImage url="/icons/toggle_plus.png" rendered="#{!commentManagerActions.showCreateForm}" />
+        <h:graphicImage url="/icons/toggle_minus.png" rendered="#{commentManagerActions.showCreateForm}" />
+        <h:outputText value="#{messages['label.comments.add']}" />
+      </h:commandLink>
+    </h:form>
+  </h3>
+
+  <h:form id="createForm" rendered="#{commentManagerActions.showCreateForm and commentManagerActions.savedReplyCommentId == null}">
+    <ui:include src="/incl/create_comment_form.xhtml" />
+  </h:form>
+
+  <h:form>
+    <nxu:dataList var="threadEntry" value="#{documentThreadedComments}"
+      styleClass="commentsOutput" rowIndexVar="rowIndex">
+      <h:panelGroup rendered="#{documentThreadedComments.size > 0}" layout="block"
+        style="margin-left:#{threadEntry.depth*25}px;"
+        styleClass="#{nxu:test(rowIndex % 2 == 1, 'dataRowOdd commentBlock', 'dataRowEven commentBlock')}">
+        <div class="commentActions">
+          <h:commandLink value="#{messages['command.comments.reply']}"
+            action="#{commentManagerActions.beginComment}">
+            <f:param name="replyCommentId" value="#{threadEntry.comment.id}"/>
+          </h:commandLink>
+          <h:outputText value=" | "/>
+          <h:commandLink action="#{commentManagerActions.deleteComment}"
+            value="#{messages['command.delete']}"
+            rendered="#{threadEntry.comment.comment.author == commentManagerActions.principalName or commentManagerActions.principalIsAdmin}">
+            <f:param name="deleteCommentId" value="#{threadEntry.comment.id}"/>
+          </h:commandLink>
+        </div>
+
+        <div class="commentAuthor">
+          <h:outputText value="#{nxu:userFullName(threadEntry.comment.comment.author)}"/>
+
+          <h:outputText value=" "/>
+          <span class="commentCreationDate">
+            <h:outputText value="#{threadEntry.comment.comment.creationDate}" >
+              <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+                timeZone="#{timeZone}" />
+            </h:outputText>
+          </span>
+        </div>
+        <div class="commentQuote">
+          <h:outputText value="#{threadEntry.comment.comment.text}" escape="false"/>
+        </div>
+
+        <f:subview id="createForm" rendered="#{commentManagerActions.commentStarted
+          and threadEntry.comment.id==commentManagerActions.savedReplyCommentId }">
+          <ui:include src="/incl/create_comment_form.xhtml" />
+        </f:subview>
+
+
+      </h:panelGroup>
+    </nxu:dataList>
+    </h:form>
+
+</div>
