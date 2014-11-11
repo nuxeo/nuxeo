@@ -1,0 +1,567 @@
+/* Calendar styles
+----------------------------------------------- */
+/* Default attributes of table container for entire calendar */
+.jscalendar-DB-table-style {
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 11px;
+  border: 2px solid #0066cc !important;
+  background-color: #ffffff;
+  width: 250px !important;
+}
+
+/* Default attributes of DIV containing table container for entire calendar.
+ * You probably don't want to alter this style.
+ */
+.jscalendar-DB-div-style {
+  z-index: + 999;
+  position: absolute;
+  visibility: hidden;
+  width: 250px !important;
+}
+
+/* Default attributes used in calendar title (month and year columns).*/
+.jscalendar-DB-title-style {
+  padding: 2px;
+  font-family: Verdana, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  color: #FFF;
+  background: #0000aa;
+  text-align: center;
+}
+
+/* Default attributes used in calendar title background.*/
+.jscalendar-DB-title-background-style {
+  background-color: #0000AA;
+}
+
+/* Normal appearance of controls in calendar title. */
+/* Note: The right, left and down icons are images, jscalendar-DBich must be edited if you need to change them. */
+.jscalendar-DB-title-control-normal-style {
+  border-style: solid;
+  border-width: 1px;
+  border-color: #0000aa;
+  cursor: pointer;
+  color: #8dc0ff;
+  background: #0000aa;
+  padding: 2px 2px 3px 2px;
+  margin: 0;
+}
+
+/* Normal appearance of images in calendar title. */
+/* Note: The right, left and down icons are images, jscalendar-DBich must be edited if you need to change them. */
+.jscalendar-DB-title-img-normal-style {
+  cursor: pointer;
+}
+
+/* Moused-over (selected) appearance of controls in calendar title. */
+.jscalendar-DB-title-control-select-style {
+  border-style: solid;
+  border-width: 1px;
+  border-color: #FFF;
+  cursor: pointer;
+  padding: 2px 2px 3px 2px;
+  margin: 0;
+  background: #0000aa;
+}
+
+/* Moused-over (selected) appearance of controls in calendar title. */
+.jscalendar-DB-title-img-select-style {
+  cursor: pointer;
+}
+
+/* Default attributes of drop down lists (month and year). */
+.jscalendar-DB-dropdown-style {
+  font-family: Verdana, sans-serif;
+  font-size: 11px;
+  color: #333;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #a0a0a0;
+  background-color: #FFF;
+  cursor: pointer;
+}
+
+/* Default attributes selected (mouse-over) item in drop down lists (month and year). */
+.jscalendar-DB-dropdown-select-style {
+  background-color: #FFCa31;
+}
+
+/* Default attributes unselected (mouse-off) item in drop down lists (month and year). */
+.jscalendar-DB-dropdown-normal-style {
+  background-color: inherit;
+}
+
+/* Default attributes of calendar body (weekday titles and numbers). */
+.jscalendar-DB-body-style {
+  background-color: #FFF;
+  font-family: Verdana, sans-serif;
+  font-size: 11px;
+}
+
+/* Attributes of current day in calendar body. */
+.jscalendar-DB-current-day-style {
+  color: #0066cc;
+  font-weight: bold;
+  font-size: 120%;
+  text-decoration: none;
+}
+
+/* Attributes of end-of-week days (Sundays) in calendar body. */
+.jscalendar-DB-end-of-weekday-style {
+  color: #999;
+  text-decoration: none;
+}
+
+/* Attributes of all other days in calendar body. */
+.jscalendar-DB-normal-day-style {
+  color: black;
+  text-decoration: none;
+  padding: 2px;
+  text-align: center;
+  margin: 0;
+}
+
+.jscalendar-DB-would-be-selected-day-style {
+  background-color: #ffcc31;
+}
+
+/* Attributes of border around selected day in calendar body. */
+.jscalendar-DB-selected-day-style {
+  border-style: solid;
+  border-width: 1px;
+  border-color: #0066cc;
+}
+
+/* Default attributes of designated holidays. */
+.jscalendar-DB-holiday-style {
+  background-color: #757575;
+}
+
+/* Attributes of today display at bottom on calendar */
+.jscalendar-DB-today-style {
+  padding: 0;
+  color: #333;
+  background-color: #FFF;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* Attributes of today display label at bottom on calendar */
+.jscalendar-DB-today-lbl-style {
+  padding: 5px;
+  text-align: center;
+  background: transparent;
+}
+
+/* Attributes of week number division (divider.gif) */
+.jscalendar-DB-weeknumber-div-style {
+  background-color: #99ccff;
+  padding: 0;
+}
+
+/* WaitDialog styles */
+
+.dialog {
+  display: block;
+  position: absolute;
+}
+
+.dialog table.table_window  {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.dialog table.table_window td , .dialog table.table_window th {
+  padding: 0;
+}
+
+.dialog .title_window {
+  -moz-user-select: none;
+}
+
+.overlay_waiter {
+  background-color: #CCCCFF;
+  filter:alpha(opacity=60);
+  -moz-opacity: 0.6;
+  opacity: 0.6;
+}
+
+.waiter_content {
+  float:left;
+  margin:auto;
+  text-align:center;
+  background: no-repeat center center;
+  font: 13px arial;
+  border-width:0px;
+  border-style:solid;
+}
+
+#waiter_message {
+  color: #444;
+  font-size: 10px;
+  line-height: 12px;
+  text-align: center;
+}
+
+#waiter_close {
+  color: #444;
+  font-size: 9px;
+  line-height: 100%;
+  text-align: right;
+}
+
+/* PART I: Detailed Day Renderer */
+div.schedule-detailed-default table {
+  background: no;
+}
+
+div.schedule-detailed-default {
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgb( 153, 153, 153 );
+  position: relative;
+  width: 100%;
+  left: 0;
+  right: 0;
+}
+
+div.schedule-detailed-default table.background {
+  background-color: rgb( 255, 255, 255 );
+}
+
+div.schedule-detailed-default td.gutter {
+  background-color: rgb( 181, 200, 207 );
+  color: rgb( 0, 0, 0 );
+  text-align: right;
+  vertical-align: top;
+}
+
+div.schedule-detailed-default table.background td.header, div.schedule-detailed-default table.foreground td.header {
+  font-family: Verdana, Arial, Helvetica, Sans-Serif;
+  font-size: 10px;
+  color: rgb( 0, 0, 0 );
+  text-align: center;
+  vertical-align: middle;
+}
+
+div.schedule-detailed-default table.background td.header {
+  background-color:#0069dc;
+}
+
+div.schedule-detailed-default td.header span.date, div.schedule-detailed-default td.header span.holiday {
+  text-align: center;
+  display: block;
+  font: bold 11px Verdana, sans-serif;
+  color: #FFF;
+}
+
+div.schedule-detailed-default td.header span.date {
+}
+
+div.schedule-detailed-default td.header span.holiday {
+}
+
+div.schedule-detailed-default td.gutter span.hours {
+  font-size: 26px;
+}
+
+div.schedule-detailed-default td.gutter span.minutes {
+  font-size: 13px;
+}
+
+div.schedule-detailed-default table.background td.even,
+  div.schedule-detailed-default table.background td.uneven,
+  div.schedule-detailed-default table.background td.free {
+  font-family: Verdana, Arial, Helvetica, Sans-Serif;
+  font-size: 10px;
+  text-align: center;
+}
+
+div.schedule-detailed-default table.background td.uneven {
+  background-color: rgb( 240, 240, 240 );
+  color: rgb( 240, 240, 240 );
+}
+
+div.schedule-detailed-default table.background td.even {
+  background-color: rgb( 235, 235, 235 );
+  color: rgb( 235, 235, 235 );
+}
+
+div.schedule-detailed-default table.background td.free {
+  background-color: rgb( 221, 221, 221 );
+  color: rgb( 221, 221, 221 );
+}
+
+div.schedule-detailed-default .entry, div.schedule-detailed-default div.entry-selected {
+  background-color: rgb( 255, 255, 255 );
+  text-align: center;
+  font-family: Verdana, Arial, Helvetica, Sans-Serif;
+  font-size: 11px;
+  vertical-align: middle;
+  border-color: rgb( 153, 153, 153 );
+  text-decoration: none;
+}
+
+div.schedule-detailed-default a.entry:hover,
+  div.schedule-detailed-default div.entry-selected {
+  border-color: rgb( 153, 0, 0 );
+}
+
+div.schedule-detailed-default div.entry-selected div.text {
+  border-left: solid rgb( 153, 0, 0 ) 5.0px;
+}
+
+div.schedule-detailed-default .entry span.subtitle,
+  div.schedule-detailed-default .entry-selected span.subtitle {
+  font-style: italic;
+  font-size: 9px;
+}
+
+div.schedule-detailed-default .entry span.title,
+  div.schedule-detailed-default .entry-selected span.title {
+  font-size: 11px;
+}
+
+/* PART II: Compact Renderer */
+div.schedule-compact-default table {
+  background: no;
+}
+
+div.schedule-compact-default {
+  position: relative;
+  width: 100%;
+  left: 0;
+  background-color: #454545;
+}
+
+div.schedule-compact-default table.day {
+  background-color: rgb( 255, 255, 255 );
+}
+
+div.schedule-compact-default table.day td.header {
+  background-color:#0069dc;
+  font: bold 11px Verdana, sans-serif;
+  color: #FFF;
+  text-align: left;
+  vertical-align: middle;
+  padding: 3px;
+
+}
+
+div.schedule-compact-default td.content div {
+  background-color:#fff;
+}
+
+div.schedule-compact-default td.content td {
+  color: rgb( 0, 0, 0 );
+  text-align: left;
+  font-family: Verdana, Arial, Helvetica, Sans-Serif;
+  font-size: 11px;
+  padding: 1px;
+  border-color: rgb( 255, 255, 255 );
+  border-width: 1.0px;
+  border-style: solid;
+  background-color: transparent;
+}
+
+div.schedule-compact-default a {
+  color: #0066cc;
+  text-decoration: none;
+  text-align: left;
+  font-family: Verdana, Arial, Helvetica, Sans-Serif;
+  font-size: 11px;
+}
+
+div.schedule-compact-default table.day td.day div.contentview div table td {
+  background-color: #F2F7FC;
+}
+
+div.schedule-compact-default td.content div table {
+  padding: 4px;
+}
+
+div.schedule-compact-default td.content td.selected {
+  background-color: rgb( 153, 0, 0 );
+  border-color: rgb( 153, 0, 0 );
+  color: rgb( 255, 255, 255 );
+}
+
+div.schedule-compact-default td.inactive-day td.content {
+  background: #FFF;
+  visibility: visible;
+}
+
+div.schedule-compact-default td.inactive-day td.content td, div.schedule-compact-default td.inactive-day td.content div {
+  background-color: #f1f2f3;
+  background-image: none;
+  border-color: red;
+}
+
+div.schedule-compact-default td.inactive-day td.content td.selected {
+  background-color: rgb( 153, 0, 0 );
+  border-color: rgb( 153, 0, 0 );
+  color: rgb( 255, 255, 255 );
+}
+
+div.schedule-compact-default td.inactive-day td.header, div.schedule-compact-default td.weekend td.header {
+  background-color: #767676;
+  visibility: visible;
+}
+
+
+/* Hides from IE5-mac \*/
+* html .buggybox {
+  height: 1%;
+}
+
+/* End hide from IE5-mac */
+
+
+/* Righ click context menu classes 
+   (some css properties not friend with xml theme file) */
+
+#contextMenu {
+  position: absolute;
+  visibility: hidden;
+  background-color: #DDDDDD;
+  background-style: solid;
+  border-style: solid;
+  border-width: 2px;
+  border-color: black;
+  color: green;
+  top: 0;
+  left: 0;
+}
+
+.ctxMenuStyle {
+      list-style: none;
+      padding: 1px;
+      margin: 0px;
+      background-color: #232323;
+      width: 100px;
+      font: 9px 'Lucida Grande', Verdana, Arial, sans-serif;
+
+}
+.ctxMenuItemStyle {
+      margin: 0px;
+      color: #e7e7e7;
+      display: block;
+      cursor: default;
+      padding: 3px;
+      border-bottom: 1px solid #232323;
+      background-color:#3a3d40;
+}
+.ctxMenuItemHoverStyle {
+      margin: 0px;
+      color: #ffffff;
+      display: block;
+      cursor: default;
+      padding: 3px;
+      border-bottom: 1px solid #4e9ae1;
+      background-color: #4e9ae1;
+}
+
+.ctxMenuItemStyle a {
+      text-decoration:none;
+      color: #e7e7e7;
+}
+
+.ctxMenuItemHoverStyle a {
+      text-decoration:none;
+      color: #fff;
+}
+
+.ctxMenuImg {
+      vertical-align:middle;
+      padding:1px;
+      padding-right:4px;
+}
+.ctxMenuShadow {
+  background-color:#000;
+  position:absolute;
+  opacity:0.2;
+  z-index:499;
+}
+
+/* modal Panel from RichFaces*/
+.rich-mpnl-mask-div {
+  opacity:0.1;
+}
+
+h3.documentTypes {
+ padding:0;
+ margin:15px 0px 5px 0px;
+ color:#333;
+ border-bottom:1px solid #C2C2C2;
+}
+
+.documentType {
+ margin:10px 0px;
+ width:200px;
+}
+
+.documentType img {
+ float:left;
+ margin-right:5px
+}
+
+.documentType a, a:link, .documentType a:visted, .documentType a:hover {
+ font-weight:bold;
+ color:#0066CC;
+ text-decoration:none;
+}
+
+a.documentTypeLink {
+ color:#063C9F;
+ font-family:Lucida Grande,Verdana,sans-serif;
+ font-size:12px;
+ font-weight:bold;
+ text-decoration:none;
+}
+
+.documentType span {
+  color:#454545;
+}
+
+input.button {
+ font:11px 'Lucida Grande', Verdana, Arial, sans-serif;
+ color:#333333;
+ border:1px solid #bfc5cb;
+ background-color:#cecfd1;
+ margin:5px 10px 10px 0px;
+ padding:2px 5px 2px 5px;
+ cursor:pointer;
+}
+
+input.button:hover {
+color:#000;
+border-color:#92999e;
+}
+
+.imagingPanelDownloadLink {
+color:#0066CC;
+display:block;
+font-family:Lucida Grande,Verdana,sans-serif;
+font-size:12px;
+font-weight:bold;
+padding:5px 0px 2px 0px;
+}
+
+#tooltip {
+  position:absolute;
+  display:block;
+}
+
+#tooltipContent {
+  display:block; 
+  padding:2px 12px 3px 7px; 
+  margin-left:5px; 
+  background:#FFFFAA; 
+  color:#000000;
+  border: 1px #333333;
+  border-style:solid;
+}

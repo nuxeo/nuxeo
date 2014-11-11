@@ -1,0 +1,1681 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<theme name="galaxy" template-engines="jsf-facelets">
+  <layout>
+    <page name="default">
+      <section>
+        <cell>
+          <!-- logo -->
+          <fragment type="generic fragment"/>
+        </cell>
+        <cell>
+          <!-- user services -->
+          <fragment type="generic fragment"/>
+        </cell>
+        <cell>
+          <!-- Include -->
+          <fragment type="generic fragment"/>
+        </cell>
+      </section>
+      <section>
+        <cell>
+          <!-- NXP-6413: keep multiple_domains perspective as BBB -->
+          <!-- tree view -->
+          <fragment perspectives="default,multiple_domains" type="generic fragment"/>
+          <!-- clip board -->
+          <fragment perspectives="default,multiple_domains" type="generic fragment"/>
+          <!-- calendar -->
+          <fragment perspectives="view_calendar" type="generic fragment"/>
+        </cell>
+        <cell>
+          <!-- breadcrumbs -->
+          <fragment type="generic fragment"/>
+          <!-- main area -->
+          <fragment type="region fragment"/>
+        </cell>
+      </section>
+      <section>
+        <cell>
+          <!-- copyrights -->
+          <fragment type="generic fragment"/>
+        </cell>
+      </section>
+    </page>
+    <page name="popup">
+      <section>
+        <cell>
+          <!-- main area -->
+          <fragment type="region fragment"/>
+        </cell>
+        <cell>
+          <!-- Include -->
+          <fragment type="generic fragment"/>
+        </cell>
+      </section>
+    </page>
+    <page name="print">
+      <section>
+        <cell>
+          <!-- includes -->
+          <fragment type="generic fragment"/>
+          <!-- breadcrumbs -->
+          <fragment type="generic fragment"/>
+          <!-- main area -->
+          <fragment type="region fragment"/>
+        </cell>
+      </section>
+    </page>
+  </layout>
+  <properties element="page[1]/section[2]/cell[2]/fragment[2]">
+    <name>body</name>
+    <defaultBody/>
+    <defaultSrc/>
+  </properties>
+  <properties element="page[2]/section[1]/cell[1]/fragment[1]">
+    <name>body</name>
+    <defaultBody/>
+    <defaultSrc/>
+  </properties>
+  <properties element="page[3]/section[1]/cell[1]/fragment[3]">
+    <name>body</name>
+    <defaultBody/>
+    <defaultSrc/>
+  </properties>
+  <formats>
+    <layout element="page[1]">
+      <margin>0</margin>
+      <padding>0</padding>
+    </layout>
+    <layout element="page[1]/section[1]">
+      <height>36px</height>
+      <width>100%</width>
+      <overflow>auto</overflow>
+    </layout>
+    <layout element="page[1]/section[1]/cell[1]">
+      <width>18%</width>
+      <text-align>center</text-align>
+    </layout>
+    <layout element="page[1]/section[1]/cell[2]">
+      <width>82%</width>
+      <padding>0px 10px 0px 0px</padding>
+    </layout>
+    <layout element="page[1]/section[1]/cell[3]">
+      <width>0%</width>
+    </layout>
+    <layout element="page[1]/section[2]">
+      <height>100%</height>
+      <width>100%</width>
+    </layout>
+    <layout element="page[1]/section[2]/cell[1]">
+      <width>18%</width>
+      <padding>5px</padding>
+    </layout>
+    <layout element="page[1]/section[2]/cell[2]">
+      <width>82%</width>
+      <padding>0</padding>
+    </layout>
+    <layout element="page[1]/section[3]">
+      <width>100%</width>
+    </layout>
+    <layout element="page[1]/section[3]/cell[1]">
+      <width>100%</width>
+      <text-align>right</text-align>
+    </layout>
+    <layout element="page[2]">
+      <margin>0</margin>
+      <padding>0</padding>
+    </layout>
+    <layout element="page[2]/section[1]">
+      <width>100%</width>
+    </layout>
+    <layout element="page[2]/section[1]/cell[1]"/>
+    <layout element="page[2]/section[1]/cell[2]">
+      <width>0%</width>
+    </layout>
+    <layout element="page[3]">
+      <padding>20px</padding>
+    </layout>
+    <layout element="page[3]/section[1]">
+      <width>100%</width>
+    </layout>
+    <layout element="page[3]/section[1]/cell[1]"/>
+    <widget element="">
+      <view>theme view</view>
+      <icon>${org.nuxeo.ecm.contextPath}/icons/favicon.png</icon>
+      <charset>utf-8</charset>
+    </widget>
+    <widget element="page[1]|page[2]|page[3]">
+      <view>page frame</view>
+    </widget>
+    <widget element="page[1]/section[1]|page[1]/section[2]|page[1]/section[3]|page[2]/section[1]|page[3]/section[1]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[1]/section[1]/cell[1]|page[1]/section[1]/cell[2]|page[1]/section[1]/cell[3]|page[1]/section[3]/cell[1]|page[2]/section[1]/cell[1]|page[3]/section[1]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[1]/section[1]/cell[1]/fragment[1]">
+      <view>Nuxeo DM logo (Galaxy Theme)</view>
+    </widget>
+    <widget element="page[1]/section[1]/cell[2]/fragment[1]">
+      <view>User services (Galaxy theme)</view>
+    </widget>
+    <widget element="page[1]/section[1]/cell[3]/fragment[1]">
+      <view>nuxeo5 includes</view>
+    </widget>
+    <widget element="page[1]/section[2]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[1]/section[2]/cell[2]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[1]/section[2]/cell[1]/fragment[1]">
+      <view>nuxeo5 tree explorer</view>
+    </widget>
+    <widget element="page[1]/section[2]/cell[1]/fragment[2]">
+      <view>nuxeo5 clip board</view>
+    </widget>
+    <widget element="page[1]/section[2]/cell[2]/fragment[1]">
+      <view>nuxeo5 breadcrumbs</view>
+    </widget>
+    <widget element="page[1]/section[2]/cell[2]/fragment[2]|page[2]/section[1]/cell[1]/fragment[1]">
+      <view>facelet region</view>
+    </widget>
+    <widget element="page[1]/section[3]/cell[1]/fragment[1]">
+      <view>Nuxeo DM footer (Galaxy Theme)</view>
+    </widget>
+    <widget element="page[2]/section[1]/cell[2]/fragment[1]">
+      <view>nuxeo5 includes</view>
+    </widget>
+    <!-- Page 3 : print page -->
+    <widget element="page[3]/section[1]/cell[1]/fragment[1]">
+      <view>nuxeo5 includes</view>
+    </widget>
+    <widget element="page[3]/section[1]/cell[1]/fragment[2]">
+      <view>nuxeo5 breadcrumbs</view>
+    </widget>
+    <widget element="page[3]/section[1]/cell[1]/fragment[3]">
+      <view>facelet region</view>
+    </widget>
+    <!-- buttons -->
+    <style name="default buttons">
+      <selector path="input.button">
+        <font preset="default (Galaxy fonts)"/>
+        <color preset="buttons (Galaxy colors)" />
+        <border preset="buttons (Galaxy borders)"/>
+        <background preset="buttons (Galaxy backgrounds)"/>
+        <margin>5px 10px 10px 0px</margin>
+        <padding>2px 5px 2px 5px</padding>
+        <cursor>pointer</cursor>
+      </selector>
+      <selector path="input.button:hover">
+        <color preset="buttons.hover (Galaxy colors)" />
+        <border preset="buttons.hover (Galaxy borders)" />
+      </selector>
+      <selector path="input.button[disabled=disabled], input.button[disabled=disabled]:hover">
+        <color preset="buttons.disabled (Galaxy colors)" />
+        <border preset="buttons (Galaxy borders)"/>
+        <cursor>default</cursor>
+      </selector>
+    </style>
+    <style name="header style" inherit="default buttons">
+      <selector path=".searchService, .userActions">
+        <font preset="small (Galaxy fonts)"/>
+        <color preset="header.text (Galaxy colors)" />
+        <line-height>185%</line-height>
+      </selector>
+      <selector path=".searchService">
+        <vertical-align>middle</vertical-align>
+        <float>right</float>
+        <padding>2px 2px 0px 0px</padding>
+      </selector>
+      <selector path=".userActions">
+        <padding-top>11px</padding-top>
+      </selector>
+      <selector path=".directoryFilter, .searchField">
+        <border preset="dataInput (Galaxy borders)" />
+        <background preset="search (Galaxy backgrounds)"/>
+        <margin>0 5px 10px 0</margin>
+        <padding>3px 3px 3px 20px</padding>
+        <font-size>11px</font-size>
+      </selector>
+      <selector path="a, a:link, a:visited">
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path="a:hover, a:active">
+        <text-decoration>underline</text-decoration>
+      </selector>
+      <selector path="a, a:link, a:visited, a:hover, a:active">
+        <color preset="header.link (Galaxy colors)" />
+      </selector>
+      <selector path="img">
+        <margin-left>5px</margin-left>
+        <margin-right>2px</margin-right>
+        <vertical-align>middle</vertical-align>
+      </selector>
+      <selector path=".advancedSearchLink">
+        <margin>0 2px 0 0</margin>
+        <padding>0</padding>
+        <line-height>1%</line-height>
+      </selector>
+      <selector path=".userServices .button">
+        <margin-right>4px</margin-right>
+      </selector>
+      <selector path="form">
+        <margin>0</margin>
+        <padding>0</padding>
+      </selector>
+    </style>
+    <style name="breadcrumbs style">
+      <selector path="">
+        <border-bottom preset="breadcrumb (Galaxy borders)"/>
+        <background preset="breadcrumb (Galaxy backgrounds)"/>
+        <padding>3px 7px</padding>
+      </selector>
+      <selector path="div">
+        <font preset="small (Galaxy fonts)"/>
+        <margin>0</margin>
+        <line-height>1.25em</line-height>
+        <padding>0</padding>
+      </selector>
+      <selector path="a">
+        <color preset="breadcrumblink (Galaxy colors)" />
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path="a:visited">
+        <color preset="breadcrumblink (Galaxy colors)" />
+      </selector>
+      <selector path="a:active">
+        <color preset="breadcrumblink (Galaxy colors)" />
+      </selector>
+      <selector path="a:hover">
+        <color preset="breadcrumblink (Galaxy colors)" />
+        <text-decoration>underline</text-decoration>
+      </selector>
+      <selector path=".breadcrumbs a, .breadcrumbs a:link, .breadcrumbs a:visited">
+        <font-weight>normal</font-weight>
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path=".breadcrumbs a:hover, .breadcrumbs a:active">
+        <font-weight>normal</font-weight>
+        <text-decoration>underline</text-decoration>
+      </selector>
+      <selector path=".printButton">
+        <float>right</float>
+        <padding-right>1px</padding-right>
+      </selector>
+      <selector path=".printButton div a img">
+        <margin-left>5px</margin-left>
+        <height>16px</height>
+        <width>16px</width>
+      </selector>
+      <selector path=".printButton .liveEditCreateButtons">
+        <margin-right>5px</margin-right>
+        <border-right preset="tablelines (Galaxy borders)" />
+        <padding-right>8px</padding-right>
+      </selector>
+      <selector path=".breadcrumbs">
+        <font-size>9px</font-size>
+        <padding>5px 4px 0px 0px</padding>
+        <float>left</float>
+      </selector>
+      <selector path=".printButton form, .breadcrumbs form">
+        <padding>0</padding>
+        <margin>0</margin>
+      </selector>
+    </style>
+    <style inherit="default buttons" name="default tabs">
+      <selector path=".tabsBar">
+        <border-bottom preset="tabsbar (Galaxy borders)"/>
+        <width>100%</width>
+        <margin-top>5px</margin-top>
+        <line-height>normal</line-height>
+        <float>left</float>
+      </selector>
+      <selector path=".tabsBar ul">
+        <margin>0</margin>
+        <padding>0px 10px 0 0</padding>
+        <list-style>none</list-style>
+      </selector>
+      <selector path=".tabsBar li">
+        <margin-right>5px</margin-right>
+        <margin>0</margin>
+        <padding>0</padding>
+        <float>left</float>
+      </selector>
+      <selector path=".tabsBar a, .tabsBar a:hover, .tabsBar a:visited">
+        <color preset="tablink (Galaxy colors)" />
+        <border preset="tabisnotselected (Galaxy borders)"/>
+        <background preset="white (Galaxy backgrounds)"/>
+        <text-decoration>none</text-decoration>
+        <font-weight>normal</font-weight>
+        <display>block</display>
+        <padding>3px 7px</padding>
+        <float>left</float>
+      </selector>
+      <selector path=".tabsBar li.selected a, .tabsBar li.selected a:hover, .tabsBar li.selected a:visited">
+        <color preset="tablink.active (Galaxy colors)" />
+        <border preset="tabiselected (Galaxy borders)"/>
+        <background preset="tabiselected (Galaxy backgrounds)"/>
+      </selector>
+      <selector path=".tabsBar li a:hover">
+        <color preset="tablink.active (Galaxy colors)" />
+        <background preset="tabiselected (Galaxy backgrounds)"/>
+      </selector>
+      <selector path=".subtabsBar">
+        <border-bottom preset="subtabsbar (Galaxy borders)"/>
+        <font preset="default (Galaxy fonts)"/>
+      </selector>
+      <selector path=".subtabsBar a, .subtabsBar a:hover, .subtabsBar a:visited">
+        <color preset="subtablink (Galaxy colors)" />
+        <border preset="subtabisnotselected (Galaxy borders)"/>
+      </selector>
+      <selector path=".subtabsBar li a:hover">
+        <color preset="subtablink.active (Galaxy colors)" />
+        <background preset="subtabiselected (Galaxy backgrounds)"/>
+      </selector>
+      <selector path=".subtabsBar li.selected a, .subtabsBar li.selected a:hover, .subtabsBar li.selected a:visited">
+        <color preset="subtablink.active (Galaxy colors)" />
+        <border preset="subtabiselected (Galaxy borders)"/>
+        <background preset="subtabiselected (Galaxy backgrounds)"/>
+      </selector>
+    </style>
+    <style inherit="default tabs" name="common style 1">
+      <selector path="h1, h2, h3, h4, h5, h6, form, p">
+        <margin>0</margin>
+        <padding>0</padding>
+      </selector>
+      <selector path="input">
+        <margin>0</margin>
+      </selector>
+      <selector path=".pageNavigationControls span">
+        <color preset="navigation.control (Galaxy colors)" />
+        <vertical-align>top</vertical-align>
+        <font-weight>bold</font-weight>
+        <margin>10px 5px</margin>
+        <font-size>13px</font-size>
+      </selector>
+      <selector path=".directoryBack">
+        <background preset="back (Galaxy backgrounds)"/>
+        <padding>2px 2px 2px 20px</padding>
+      </selector>
+      <selector path=".errorMessage">
+        <color preset="default.text (Galaxy colors)" />
+        <border preset="dataInput (Galaxy borders)" />
+        <background preset="warning (Galaxy backgrounds)"/>
+        <width>480px</width>
+        <margin>2px 0 2px 0</margin>
+        <padding>3px 3px 3px 23px</padding>
+        <display>block</display>
+        <list-style>none</list-style>
+      </selector>
+      <selector path=".taskActions">
+        <width>470px</width>
+      </selector>
+      <selector path=".infoMessage">
+        <color preset="default.text (Galaxy colors)" />
+        <border preset="blue.border (Galaxy borders)" />
+        <background preset="info (Galaxy backgrounds)"/>
+        <margin-bottom>5px</margin-bottom>
+        <padding>5px 5px 5px 23px</padding>
+        <display>block</display>
+      </selector>
+      <selector path=".rightsAddManager td">
+        <border preset="tabiselected (Galaxy borders)" />
+        <background-color preset="white (Galaxy backgrounds)"/>
+        <margin>0 10px 0 10px</margin>
+        <padding>10px</padding>
+      </selector>
+      <selector path=".massEditForm foldableBox">
+        <margin-right>15px</margin-right>
+      </selector>
+      <selector path=".wizardFrame">
+        <border preset="blue.sky (Galaxy borders)" />
+        <width>800px</width>
+        <padding>0 5px !important</padding>
+      </selector>
+      <selector path=".error">
+        <color preset="warning.message (Galaxy colors)" />
+        <font-weight>bold</font-weight>
+      </selector>
+      <selector path=".archiveTabContent">
+        <margin-left>18px</margin-left>
+      </selector>
+      <selector path=".iconColumn">
+        <width>20px</width>
+        <text-align>center</text-align>
+      </selector>
+      <selector path=".iconColumn .dropInto">
+        <background-color preset="blue.sky (Galaxy backgrounds)"/>
+      </selector>
+      <selector path=".wizardFrame .wizardFinish h4 img">
+        <margin-right>10px</margin-right>
+        <float>left</float>
+      </selector>
+      <selector path=".dataInputGroup">
+        <vertical-align>top</vertical-align>
+        <margin>0</margin>
+        <padding>0</padding>
+      </selector>
+      <selector path=".relationActionsColumn">
+        <width>60px</width>
+        <vertical-align>top</vertical-align>
+        <text-align>center</text-align>
+      </selector>
+      <selector path="table.dataOutput thead th a, table.dataOutput thead th a:hover, table.dataOutput thead th a:active, table.dataOutput thead th a:visited">
+        <color preset="tableheader (Galaxy colors)" />
+      </selector>
+      <selector path=".boldColumn">
+        <font-weight>bold !important</font-weight>
+      </selector>
+      <selector path=".facesStatusMessage ul, .infoFeedback ul, .warningFeedback ul, .errorFeedback ul">
+        <list-style-type>none</list-style-type>
+        <width>200px</width>
+        <padding>10px</padding>
+      </selector>
+      <selector path=".vocabularyEntryContent .notEditable">
+        <color preset="default.text (Galaxy colors)" />
+        <background-color preset="white (Galaxy backgrounds)"/>
+      </selector>
+      <selector path=".warningMessage">
+        <background preset="warning (Galaxy backgrounds)"/>
+        <width>500px</width>
+        <margin>2px 0 2px 0</margin>
+        <border preset="dataInput (Galaxy borders)" />
+        <color preset="default.text (Galaxy colors)" />
+        <margin-bottom>12px</margin-bottom>
+        <display>block</display>
+        <padding>5px 5px 5px 23px</padding>
+        <list-style>none</list-style>
+      </selector>
+      <selector path=".vocabularyEntryContent .dataInput">
+        <border>none</border>
+        <margin-bottom>15px</margin-bottom>
+      </selector>
+      <selector path=".buttonColumn">
+        <width>280px</width>
+        <text-align>center</text-align>
+      </selector>
+      <selector path=".radioColumn">
+        <width>8px</width>
+        <vertical-align>top</vertical-align>
+        <padding>0 0 0 5px</padding>
+      </selector>
+      <selector path=".focusColumn">
+        <background-color preset="blue.sky (Galaxy backgrounds)"/>
+      </selector>
+      <selector path="a:visited">
+        <color preset="link.visited (Galaxy colors)" />
+      </selector>
+      <selector path=".dataInput textarea, .dataInput .dataInputText">
+        <width>500px</width>
+      </selector>
+      <selector path=".selectDocumentType td">
+        <padding>3px</padding>
+      </selector>
+      <selector path=".vocabularyEntryContent">
+        <margin-left>18px</margin-left>
+      </selector>
+      <selector path=".dataOutput, .dataOutput2Columns, .dataList">
+        <width>100%</width>
+      </selector>
+      <selector path=".wizardFrame .templatePreview">
+        <border preset="blue.sky (Galaxy borders)" />
+        <padding>10px !important</padding>
+      </selector>
+      <selector path=".dataList td">
+        <border-bottom preset="tablelines (Galaxy borders)"/>
+        <border-top preset="tablelines (Galaxy borders)"/>
+        <padding>5px 3px</padding>
+      </selector>
+      <selector path=".dataOutput td table td">
+        <border>0px none transparent</border>
+      </selector>
+      <selector path=".currentItemDescription">
+        <color preset="default.text (Galaxy colors)" />
+        <font-size>13px</font-size>
+        <display>block</display>
+      </selector>
+      <selector path=".dataInput">
+        <margin-top>5px</margin-top>
+      </selector>
+      <selector path="div">
+        <font preset="default (Galaxy fonts)"/>
+        <margin>0</margin>
+        <line-height>1.25em</line-height>
+        <padding>0</padding>
+      </selector>
+      <selector path=".contentViewTitle">
+        <margin>10px 10px 10px 0</margin>
+        <line-height>normal</line-height>
+        <float>left</float>
+      </selector>
+      <selector path=".listingLayoutSelector">
+        <float>right</float>
+        <margin>11px 0 10px 7px</margin>
+        <text-align>right</text-align>
+      </selector>
+      <selector path=".listingLayoutSelector .contentViewPageSelectorDesc">
+        <float>left</float>
+        <padding>2px 3px 0 0</padding>
+      </selector>
+      <selector path=".listingLayoutSelector .langSelect">
+        <float>left</float>
+        <margin>0px 0 10px</margin>
+      </selector>
+      <selector path=".calendarTrigger">
+        <cursor>pointer</cursor>
+        <vertical-align>bottom</vertical-align>
+        <margin>0 0 5px</margin>
+      </selector>
+      <!-- rich faces tree -->
+      <selector path=".dr-tree-h-ic-div">
+        <margin-left>8px</margin-left>
+        <padding-left>10px</padding-left>
+      </selector>
+      <selector path=".treeNodeHighlightedClass">
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path=".treeNodeSelectedClass">
+        <border>none</border>
+      </selector>
+      <!-- Rich Faces fileUpload -->
+      <selector path=".rich-fileupload-list-decor">
+        <margin>10px 0px</margin>
+      </selector>
+      <selector path=".rich-fileupload-button, .rich-fileupload-button-border">
+        <padding>2px</padding>
+      </selector>
+      <selector path=".rich-fileupload-button-light, .rich-fileupload-button-press">
+        <padding>1px</padding>
+      </selector>
+      <selector path=".rich-fileupload-button-content">
+        <padding>2px 6px 2px 19px</padding>
+      </selector>
+      <!-- End of Rich Faces fileUpload -->
+      <selector path=".rightsAddSelect">
+        <border preset="dataInput (Galaxy borders)" />
+        <margin-top>0px</margin-top>
+      </selector>
+      <selector path=".dataList thead th">
+        <border-bottom preset="tablelines (Galaxy borders)"/>
+        <color preset="tableheader (Galaxy colors)" />
+        <background preset="tablethead (Galaxy backgrounds)"/>
+        <padding>5px 3px</padding>
+        <text-align>left</text-align>
+      </selector>
+      <selector path=".dataList thead th a, .dataList thead th a:link">
+        <color preset="tableheader (Galaxy colors)" />
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path=".dataList thead th a:visited">
+        <color preset="tableheader (Galaxy colors)" />
+      </selector>
+      <selector path=".dataList thead th a:active">
+        <color preset="tableheader (Galaxy colors)" />
+      </selector>
+      <selector path=".dataList thead th a:hover">
+        <color preset="tableheader (Galaxy colors)" />
+        <text-decoration>underline</text-decoration>
+      </selector>
+      <selector path=".relationPredicateColumn">
+        <width>100px</width>
+        <vertical-align>top</vertical-align>
+      </selector>
+      <selector path=".selectDocumentType">
+        <margin-top>10px</margin-top>
+      </selector>
+      <selector path=".archiveTabContent .notEditable">
+        <color preset="default.text (Galaxy colors)" />
+        <border>none</border>
+        <background-color preset="white (Galaxy backgrounds)"/>
+      </selector>
+      <selector path=".twoColumns">
+        <width>50%</width>
+      </selector>
+      <selector path=".dataInput .button">
+        <margin>0 10px 0 0</margin>
+      </selector>
+      <selector path=".wizardFrame .templatePreview .templatePreviewDescription">
+        <font-style>italic</font-style>
+      </selector>
+      <selector path=".pageNavigationControls">
+        <border preset="blue.sky.mini (Galaxy borders)" />
+        <margin>5px 0px</margin>
+        <padding>7px</padding>
+        <text-align>center</text-align>
+      </selector>
+      <selector path=".dataList">
+        <background>white</background>
+        <border-collapse>collapse</border-collapse>
+        <margin>0</margin>
+      </selector>
+      <selector path=".dataInput .fieldColumn table.mceEditor .mceToolbarBottom">
+        <background-color preset="blue.sky (Galaxy backgrounds)"/>
+      </selector>
+      <selector path=".wizardFrame .wizardButtonBar">
+        <text-align>right</text-align>
+      </selector>
+      <selector path=".buttonsGadgetNoForm .button">
+        <margin-right>10px</margin-right>
+      </selector>
+      <selector path=".iconColumn .cell">
+        <background>none</background>
+        <width>40px</width>
+      </selector>
+      <selector path="a, a:link">
+        <color preset="link (Galaxy colors)" />
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path="a:active">
+        <color preset="link (Galaxy colors)" />
+      </selector>
+      <selector path="a:hover">
+        <color preset="link.hover (Galaxy colors)" />
+        <text-decoration>underline</text-decoration>
+      </selector>
+      <selector path="table">
+        <margin>0</margin>
+      </selector>
+      <selector path=".pictureBookItem">
+        <height>160px</height>
+        <border preset="blue.sky.mini (Galaxy borders)" />
+        <width>140px</width>
+        <background-color preset="blue.sky (Galaxy backgrounds)"/>
+        <margin>10px 20px 10px 0px</margin>
+        <float>left</float>
+        <text-align>center</text-align>
+      </selector>
+      <selector path=".itemSelected">
+        <border preset="orange (Galaxy borders)" />
+        <background-color preset="selected.orange (Galaxy backgrounds)"/>
+      </selector>
+      <selector path=".pictureBookItem .cell">
+        <height>110px</height>
+        <padding-top>15px</padding-top>
+        <text-align>center</text-align>
+      </selector>
+      <selector path=".pictureBookItem .cell a">
+        <height>100px</height>
+        <width>100px</width>
+        <display>block</display>
+        <padding>20px</padding>
+      </selector>
+      <selector path=".pictureBookItemTitle">
+        <font preset="small (Galaxy fonts)"/>
+        <background-color preset="big.blue (Galaxy backgrounds)"/>
+        <padding>5px 0</padding>
+      </selector>
+      <selector path=".pictureBookItemTitle a, .pictureBookItemTitle a:hover, .pictureBookItemTitle a:visited">
+        <color preset="link (Galaxy colors)" />
+      </selector>
+      <selector path=".slideshowContent">
+        <padding>10px 0px 5px 0px</padding>
+      </selector>
+      <selector path=".slideshowContent h3">
+        <padding>8px 0px 5px 70px</padding>
+      </selector>
+      <selector path=".slideShowControl">
+        <margin>0px 0px 10px</margin>
+      </selector>
+      <selector path=".slideShowControl input">
+        <margin>0px 3px</margin>
+        <padding>0px</padding>
+      </selector>
+      <selector path=".slideShowControl input.button[disabled=disabled]">
+        <background preset="disabled (Galaxy backgrounds)"/>
+        <border-color>#ccc #999 #999 #ccc</border-color>
+        <cursor>default</cursor>
+      </selector>
+      <selector path=".slideShowControl .indexPicture">
+        <margin>0px 3px 4px 0px</margin>
+      </selector>
+      <selector path=".slideShowControl span">
+        <color preset="navigation.control (Galaxy colors)" />
+        <font-weight>bold</font-weight>
+        <font-size>13px</font-size>
+        <padding-right>10px</padding-right>
+      </selector>
+      <selector path=".rightsAdd">
+        <margin>10px 0 10px 0</margin>
+      </selector>
+      <selector path=".foldableBox">
+        <border preset="tabisnotselected (Galaxy borders)"/>
+        <margin-bottom>20px</margin-bottom>
+      </selector>
+      <selector path=".foldableBox h3">
+        <border-bottom preset="tabiselected (Galaxy borders)"/>
+        <color preset="foldablebox.titles (Galaxy colors)" />
+        <background preset="tabiselected (Galaxy backgrounds)"/>
+        <padding>3px 3px 3px 18px</padding>
+        <font-size>11px</font-size>
+      </selector>
+      <selector path=".foldableBox h3.folded">
+        <background preset="folded (Galaxy backgrounds)"/>
+        <height>18px</height>
+      </selector>
+      <selector path=".foldableBox h3.foldedDisabled">
+        <background>#d2d2d2 none</background>
+        <height>18px</height>
+        <color>#555</color>
+        <border-bottom>1px solid #d2d2d2</border-bottom>
+      </selector>
+      <selector path=".foldableBox h3 span, .foldableBox h3 a:link, .foldableBox h3 a:visited, .foldableBox h3 a:hover, .foldableBox h3 a:visited:hover">
+        <color preset="foldablebox.titles (Galaxy colors)" />
+        <float>left</float>
+        <padding-right>10px</padding-right>
+      </selector>
+      <selector path=".foldableBox h3.unfolded">
+        <background preset="unfolded (Galaxy backgrounds)"/>
+        <clear>both</clear>
+        <height>18px</height>
+      </selector>
+      <selector path=".foldableBox h3 a">
+        <color preset="foldablebox.titles (Galaxy colors)" />
+        <display>block</display>
+      </selector>
+      <selector path=".foldableBox h3 a.action, .foldableBox h3 a.action:visited, .foldableBox h3 a.action:hover, .foldableBox h3 a.action:visited:hover">
+        <background-color>#EFEFEF</background-color>
+        <border>1px solid #CECECE</border>
+        <color>#333333</color>
+        <float>right</float>
+        <font-weight>normal</font-weight>
+        <padding>1px 3px</padding>
+      </selector>
+      <selector path=".foldableBox .boxBody">
+        <clear>both</clear>
+        <padding>10px</padding>
+      </selector>
+      <selector path=".relationCreateFieldColumn, .fieldColumn, .workflowFieldColumn">
+        <vertical-align>top</vertical-align>
+      </selector>
+      <selector path=".commentQuote">
+        <font preset="default (Galaxy fonts)" />
+        <margin>5px 0 5px 0</margin>
+      </selector>
+      <selector path=".warningFeedback">
+        <font preset="big.default (Galaxy fonts)"/>
+        <color preset="default.text (Galaxy colors)" />
+        <border preset="warningfeedback (Galaxy borders)" />
+        <background preset="warning (Galaxy backgrounds)"/>
+        <padding>7px 7px 7px 24px</padding>
+      </selector>
+      <selector path=".vocabularyEntryContent .currentDocumentInformation">
+      </selector>
+      <selector path=".rightsAddLabel">
+        <font-weight>bold</font-weight>
+        <padding>0 5px 0 0px</padding>
+      </selector>
+      <selector path=".archiveTabContent .currentDocumentInformation">
+        <background-color preset="blue.sky (Galaxy backgrounds)"/>
+      </selector>
+      <selector path=".buttonsGadget">
+        <margin>5px 0px 5px 135px</margin>
+      </selector>
+      <selector path=".errorFeedback">
+        <font preset="big.default (Galaxy fonts)"/>
+        <color preset="default.text (Galaxy colors)" />
+        <border preset="warningfeedback (Galaxy borders)" />
+        <background preset="warning (Galaxy backgrounds)"/>
+        <padding>7px 7px 7px 24px</padding>
+      </selector>
+      <selector path=".wizardFrame .templatePreview img">
+        <border preset="preview (Galaxy borders)" />
+        <float>left</float>
+      </selector>
+      <selector path=".dataInput td">
+        <border>0px solid #FFF</border>
+        <padding>7px 4px</padding>
+      </selector>
+      <selector path=".dataInput td td, .dataInput td td td">
+        <padding>3px 4px</padding>
+      </selector>
+      <selector path=".dataInput textarea, .dataInput .dataInputText, .dataInput .dataInputTextNoSize">
+        <font preset="default (Galaxy fonts)"/>
+        <border preset="dataInput (Galaxy borders)" />
+        <vertical-align>top</vertical-align>
+        <padding>4px</padding>
+      </selector>
+      <selector path="h4, h5, h6">
+        <font preset="title4+ (Galaxy fonts)"/>
+        <color preset="summary.titles (Galaxy colors)" />
+        <margin>10px 0px 5px 0px</margin>
+      </selector>
+      <selector path=".relationCommentList">
+        <background>transparent</background>
+      </selector>
+      <selector path=".infoFeedback">
+        <font preset="big.default (Galaxy fonts)"/>
+        <color preset="default.text (Galaxy colors)" />
+        <border preset="infofeedback (Galaxy borders)" />
+        <background preset="info (Galaxy backgrounds)"/>
+        <padding>7px 7px 7px 24px</padding>
+      </selector>
+      <selector path=".pageNavigationControls input">
+        <margin-left>5px</margin-left>
+      </selector>
+      <selector path=".relationCreateLabelColumn">
+        <width>100px</width>
+      </selector>
+      <selector path=".commentAuthor">
+        <color preset="comments.details (Galaxy colors)" />
+        <background preset="comment (Galaxy backgrounds)"/>
+        <font-weight>bold</font-weight>
+        <padding>5px 3px 3px 24px</padding>
+      </selector>
+      <selector path=".serverChoice">
+        <margin-right>30px</margin-right>
+        <width>200px</width>
+        <margin-top>20px</margin-top>
+        <float>left</float>
+        <text-align>center</text-align>
+      </selector>
+      <selector path=".dataInput .fieldColumn table.mceEditor">
+        <background preset="blue.sky (Galaxy backgrounds)"/>
+        <border preset="gray.light (Galaxy borders"/>
+      </selector>
+      <selector path="table.dataOutput thead th">
+        <border-bottom preset="tablelines (Galaxy borders)"/>
+        <color preset="tableheader (Galaxy colors)" />
+        <background preset="tablethead (Galaxy backgrounds)"/>
+        <padding>5px 3px</padding>
+        <text-align>left</text-align>
+      </selector>
+      <selector path=".relationCommentList td">
+        <border>0px none</border>
+      </selector>
+      <selector path=".facesStatusMessage">
+        <position>absolute</position>
+        <left>48%</left>
+        <top>40%</top>
+      </selector>
+      <selector path=".currentDocumentDescription">
+        <padding>4px 0</padding>
+      </selector>
+      <selector path=".rightsAddTitle">
+        <border preset="blue.border (Galaxy borders)" />
+        <background preset="blue.light (Galaxy backgrounds)"/>
+        <padding>5px</padding>
+        <text-align>center</text-align>
+      </selector>
+      <selector path=".dataOutput, .dataOutput2Columns">
+        <border-collapse>collapse</border-collapse>
+        <margin-bottom>5px</margin-bottom>
+        <margin-top>7px</margin-top>
+      </selector>
+      <selector path=".dataOutput2Columns td">
+        <vertical-align>top</vertical-align>
+      </selector>
+      <selector path=".selectDocumentType td a img">
+        <margin-right>4px</margin-right>
+        <vertical-align>top</vertical-align>
+      </selector>
+      <selector path=".commentCreationDate">
+        <font-weight>normal</font-weight>
+      </selector>
+      <selector path="table thead th">
+        <padding>3px</padding>
+        <text-align>left</text-align>
+      </selector>
+      <selector path=".fieldColumn img">
+        <margin>0px 4px</margin>
+        <vertical-align>top</vertical-align>
+      </selector>
+      <selector path=".relationCreateFieldColumn table, .fieldColumn table, .workflowFieldColumn table">
+        <border>0px none #fff</border>
+        <vertical-align>top</vertical-align>
+        <margin>0 0 0 0</margin>
+      </selector>
+      <selector path=".archiveTabContent .dataInput">
+        <border>none</border>
+        <margin-bottom>15px</margin-bottom>
+      </selector>
+      <selector path=".closedContent">
+        <background preset="white (Galaxy backgrounds)"/>
+        <margin>15px 0px 0px 0px</margin>
+        <padding>0px 10px 10px 10px</padding>
+        <border preset="blue.border (Galaxy borders)"/>
+      </selector>
+      <selector path=".dataOutput td">
+        <border-bottom preset="tablelines (Galaxy borders)"/>
+        <border-top preset="tablelines (Galaxy borders)"/>
+        <padding>5px 3px</padding>
+      </selector>
+      <selector path=".dataOutput2Columns td">
+        <vertical-align>top</vertical-align>
+        <padding>5px 3px</padding>
+      </selector>
+      <selector path=".selectDocumentType td a img">
+        <margin-right>4px</margin-right>
+        <vertical-align>top</vertical-align>
+      </selector>
+      <selector path=".relationObjectColumn">
+        <width>100px</width>
+        <vertical-align>top</vertical-align>
+      </selector>
+      <selector path=".labelColumn">
+        <width>120px</width>
+        <vertical-align>top</vertical-align>
+        <font-weight>bold</font-weight>
+      </selector>
+      <selector path=".labelColumn span">
+        <padding-right>8px</padding-right>
+        <display>block</display>
+      </selector>
+      <selector path=".required">
+        <background preset="required (Galaxy backgrounds)"/>
+        <padding>0 10px 0 0</padding>
+      </selector>
+      <selector path=".rightsAddManager .labelColumn">
+        <width>80px</width>
+      </selector>
+      <selector path=".smallButtonsGadget">
+        <margin>0 0 5px 100px</margin>
+      </selector>
+      <selector path=".workflowLabelColumn">
+        <width>120px</width>
+      </selector>
+      <selector path="h2">
+        <color preset="titles (Galaxy colors)" />
+        <font preset="title 2 (Galaxy fonts)"/>
+        <padding>0.5em 1em 0.5em 0</padding>
+      </selector>
+      <selector path=".dataInput select">
+        <border preset="dataInput (Galaxy borders)" />
+        <vertical-align>top</vertical-align>
+        <padding>2px 1px 2px 1px</padding>
+      </selector>
+      <selector path=".dataInput .fieldColumn table.mceEditor .mceEditorIframe">
+        <background-color preset="white (Galaxy backgrounds)" />
+        <border preset="preview (Galaxy borders)" />
+        <padding>5px</padding>
+      </selector>
+      <selector path=".action_bar">
+        <margin>10px 10px 10px 0</margin>
+        <line-height>normal</line-height>
+        <float>left</float>
+      </selector>
+      <selector path=".action_bar ul">
+        <margin>0</margin>
+        <padding>0px 10px 0 0</padding>
+        <list-style>none</list-style>
+      </selector>
+      <selector path=".action_bar li">
+        <margin>0</margin>
+        <padding>0</padding>
+        <float>left</float>
+      </selector>
+      <selector path=".action_bar img">
+        <display>none</display>
+      </selector>
+      <selector path=".action_bar a">
+        <background preset="buttons (Galaxy backgrounds)"/>
+        <font preset="default (Galaxy fonts)"/>
+        <float>left</float>
+        <text-decoration>none</text-decoration>
+        <border preset="buttons (Galaxy borders)"/>
+        <color preset="buttons (Galaxy colors)" />
+        <padding>4px 7px</padding>
+        <margin-right>10px</margin-right>
+        <cursor>pointer</cursor>
+      </selector>
+      <selector path=".action_bar a:hover">
+        <color preset="buttons.hover (Galaxy colors)" />
+        <border preset="buttons.hover (Galaxy borders)" />
+      </selector>
+      <selector path=".tabsContent">
+        <margin>0px</margin>
+        <padding>5px 10px 10px 10px</padding>
+      </selector>
+      <selector path=".tabsContent table.trashTable thead th">
+        <background-color preset="orange.lite (Galaxy backgrounds)" />
+      </selector>
+      <selector path="table.trashTable tbody tr.dataRowOdd">
+        <background-color preset="orange.odd (Galaxy backgrounds)" />
+      </selector>
+      <selector path="textarea">
+        <padding>5px</padding>
+      </selector>
+      <selector path=".rightsAddManager">
+        <background preset="addmanager (Galaxy backgrounds)"/>
+        <width>100%</width>
+        <margin>3px 0 0 0</margin>
+      </selector>
+      <selector path=".userAndGroupSearch">
+        <margin>0</margin>
+      </selector>
+      <selector path=".userAndGroupFilter">
+        <margin>15px 0 0 0</margin>
+      </selector>
+      <selector path=".buttonsGadgetNoForm">
+        <margin>0px 5px</margin>
+      </selector>
+      <selector path=".dataOutput .button">
+        <margin>2px 10px 2px 0px !important</margin>
+      </selector>
+      <selector path=".commentBlock">
+        <margin-bottom>8px</margin-bottom>
+        <margin-top>7px</margin-top>
+        <padding>2px 10px 2px 0px</padding>
+      </selector>
+      <selector path="h1">
+        <color preset="titles (Galaxy colors)" />
+        <font preset="title1 (Galaxy fonts)"/>
+        <overflow>auto</overflow>
+      </selector>
+      <selector path=".dataRowEven">
+        <background preset="white (Galaxy backgrounds)"/>
+      </selector>
+      <selector path=".relationCommentColumn">
+        <vertical-align>top</vertical-align>
+      </selector>
+      <selector path=".taskAssign">
+        <border preset="blue.border (Galaxy borders)" />
+        <background preset="blue.light (Galaxy backgrounds)"/>
+        <margin>5px 0px 10px 0px</margin>
+        <display>block</display>
+        <padding>5px</padding>
+        <text-align>center</text-align>
+      </selector>
+      <selector path=".commentActions">
+        <margin-right>4px</margin-right>
+        <font-size>10px</font-size>
+        <padding>3px</padding>
+        <float>right</float>
+      </selector>
+      <selector path=".iconColumn img">
+        <position>relative</position>
+        <background>none</background>
+        <z-index>25</z-index>
+      </selector>
+      <selector path="h3">
+        <color preset="titles (Galaxy colors)" />
+        <font preset="title3 (Galaxy fonts)"/>
+        <margin>0</margin>
+        <padding>13px 0px 10px 0px</padding>
+      </selector>
+      <selector path=".directoryFilter, .searchField">
+        <border preset="dataInput (Galaxy borders)" />
+        <background preset="search (Galaxy backgrounds)"/>
+        <margin>0 5px 10px 0</margin>
+        <padding>3px 3px 3px 20px</padding>
+        <font-size>11px</font-size>
+      </selector>
+      <selector path=".taskPrincipalSelect select">
+        <border preset="dataInput (Galaxy borders)" />
+        <margin>5px 0px 10px 15px</margin>
+        <padding>2px 1px 2px 1px</padding>
+      </selector>
+      <selector path=".dataRowOdd">
+        <background preset="tableevenlines (Galaxy backgrounds)"/>
+      </selector>
+      <selector path="table.dataOutput th a img">
+        <vertical-align>bottom</vertical-align>
+        <margin>0 0 0 2px</margin>
+        <padding>0</padding>
+      </selector>
+      <selector path="table.dataInput td.fieldColumn label">
+        <vertical-align>top</vertical-align>
+      </selector>
+      <!-- Style for Resume Tab -->
+      <selector path="h3.summaryTitle">
+        <border-bottom preset="summary (Galaxy borders)" />
+        <color preset="summary.titles (Galaxy colors)" />
+        <font preset="title3 (Galaxy fonts)"/>
+        <margin>0px 0px 10px 0px</margin>
+        <padding>17px 0px 3px 0px</padding>
+      </selector>
+      <selector path=".dublincore_block table.floatingLeftTable">
+        <margin-right>100px</margin-right>
+        <float>left</float>
+      </selector>
+      <selector path=".labelColumnLeftAlign">
+        <font-weight>bold</font-weight>
+        <padding-right>30px</padding-right>
+      </selector>
+      <selector path=".boldLabel">
+        <font-weight>bold</font-weight>
+      </selector>
+      <selector path=".rank_block, .publication_block, .attachments">
+        <margin-top>15px</margin-top>
+      </selector>
+      <selector path=".content_block table">
+        <width>100%</width>
+        <margin-bottom>10px</margin-bottom>
+      </selector>
+      <selector path=".content_block td">
+        <vertical-align>top</vertical-align>
+        <padding>0</padding>
+      </selector>
+      <selector path=".content_block .labelColumn">
+        <width>100px</width>
+      </selector>
+      <selector path=".content_block .actionsColumn">
+        <width>20%</width>
+        <vertical-align>top</vertical-align>
+      </selector>
+      <selector path=".content_block img">
+        <padding>0px 5px</padding>
+      </selector>
+      <selector path=".note_content_block">
+        <padding>15px</padding>
+        <border>1px solid #D7D7D7</border>
+        <margin-top>20px</margin-top>
+      </selector>
+      <selector path=".relation_block">
+      </selector>
+      <selector path=".lockFile_block, .restoreFile_block">
+        <padding>0px 0px 10px</padding>
+      </selector>
+      <selector path=".summary_locked">
+        <color preset="warning.message (Galaxy colors)" />
+        <font-weight>bold</font-weight>
+      </selector>
+      <selector path=".summary_unlocked">
+        <color preset="thumbsup.message (Galaxy colors)" />
+        <font-weight>bold</font-weight>
+      </selector>
+      <selector path=".lockDetail, .DetailList">
+        <padding-top>5px</padding-top>
+      </selector>
+      <selector path=".lcAndVersion">
+        <border>1px solid #dedede</border>
+        <padding>3px</padding>
+      </selector>
+      <selector path=".actions_block">
+        <border>1px solid #DEDEDE</border>
+        <padding>10px 7px 3px</padding>
+        <margin>10px 0</margin>
+      </selector>
+      <selector path=".comments_block .commentBlock">
+        <border>none</border>
+      </selector>
+      <selector path=".comments_block .commentQuote">
+        <margin>5px 0 5px 24px</margin>
+      </selector>
+      <selector path=".metadata_block .dataInput td">
+        <padding>3px</padding>
+      </selector>
+      <selector path=".layoutViewMode">
+        <margin>0px</margin>
+        <padding>0px</padding>
+      </selector>
+      <selector path=".layoutViewMode li">
+        <display>inline</display>
+      </selector>
+      <selector path=".layoutViewMode a img">
+        <border>1px solid #fff</border>
+      </selector>
+      <selector path=".layoutViewMode a:hover img, .layoutViewMode li.selected img">
+        <border>1px solid #aaa</border>
+      </selector>
+      <selector path=".summary_div_0">
+        <float>left</float>
+        <width>62%</width>
+      </selector>
+      <selector path=".summary_div_1">
+        <float>right</float>
+        <width>33%</width>
+        <padding>10px 0</padding>
+      </selector>
+      <selector path=".summary_div_1 h3.summaryTitle">
+        <color preset="summary.titles (Galaxy colors)" />
+        <font-size>12px</font-size>
+      </selector>
+      <selector path=".summary_div_2">
+        <clear>both</clear>
+      </selector>
+      <selector path=".bigIcon">
+        <width>50px</width>
+      </selector>
+      <selector path=".smallIcon">
+        <width>16px</width>
+        <height>16px</height>
+      </selector>
+      <selector path="div.syndicationButton">
+        <background preset="rss (Galaxy backgrounds)"/>
+        <margin-bottom>5px</margin-bottom>
+        <margin-top>10px</margin-top>
+        <font-size>9px</font-size>
+        <float>right</float>
+      </selector>
+      <selector path=".syndicationContainer">
+        <height>30px</height>
+      </selector>
+      <selector path="div.syndicationButton div.syndicationLinks">
+        <color preset="syndication.link (Galaxy colors)" />
+        <font preset="small (Galaxy fonts)"/>
+        <padding>2px 4px</padding>
+      </selector>
+      <selector path="div.syndicationButton div.syndicationLinks a">
+        <color preset="syndication.link (Galaxy colors)" />
+        <text-decoration>none</text-decoration>
+      </selector>
+      <!-- Advanced Search -->
+      <selector path=".listShuttleTable .listShuttleSelectionActions a">
+        <display>block</display>
+      </selector>
+      <!-- Popup search document relation -->
+      <selector path=".genericPopUp">
+        <background-color>white</background-color>
+        <position>absolute</position>
+        <width>400px</width>
+        <border>1px solid #b5bcc6</border>
+        <z-index>10000</z-index>
+        <display>none</display>
+      </selector>
+      <selector path=".genericPopUp .closePopUpHeader">
+        <text-align>right</text-align>
+        <border-bottom>1px dotted #dedede</border-bottom>
+        <background-color>#f6f8ff</background-color>
+        <padding>3px</padding>
+      </selector>
+      <selector path=".genericPopUp .closePopUpHeader .closePopUp">
+        <float>right</float>
+        <cursor>pointer</cursor>
+      </selector>
+      <selector path=".genericPopUp .closePopUpHeader .popUpTitle">
+        <float>left</float>
+        <font-size>110%</font-size>
+      </selector>
+      <selector path=".genericPopUp .popUpContent">
+        <overflow>auto</overflow>
+        <height>390px</height>
+        <padding>10px</padding>
+      </selector>
+      <!-- huge popUp -->
+      <selector path=".bigPopUp">
+        <width>80%</width>
+        <height>70%</height>
+      </selector>
+    </style>
+    <style name="tree and clipboard column" inherit="common style 1">
+      <selector path="div,dd,dt,dl,img,p,h1,h2,h3,h4,h5,form,hr,fieldset">
+        <margin>0</margin>
+        <padding>0</padding>
+      </selector>
+      <selector path=".treeLink a, .treeLink a:link, .treeLink a:visited">
+        <font-weight>normal</font-weight>
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path=".treeLink a:hover, .treeLink a:active">
+        <font-weight>normal</font-weight>
+        <text-decoration>underline</text-decoration>
+      </selector>
+      <selector path=".treeLink img">
+        <margin-left>4px</margin-left>
+        <margin-right>4px</margin-right>
+        <vertical-align>top</vertical-align>
+        <margin-top>3px</margin-top>
+      </selector>
+      <selector path="a">
+        <color preset="link (Galaxy colors)" />
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path="a:visited">
+        <color preset="link.visited (Galaxy colors)" />
+      </selector>
+      <selector path="a:active">
+        <color preset="link (Galaxy colors)" />
+      </selector>
+      <selector path="a:hover">
+        <color preset="link.hover (Galaxy colors)" />
+        <text-decoration>underline</text-decoration>
+      </selector>
+      <selector path=".cell">
+        <margin-bottom>2px</margin-bottom>
+        <padding>2px</padding>
+      </selector>
+      <selector path=".cell img, .clipboardFunction img">
+        <vertical-align>middle</vertical-align>
+      </selector>
+      <selector path=".cell .iconImage">
+        <margin-right>4px</margin-right>
+      </selector>
+      <selector path=".dropInto">
+        <background-color preset="blue.sky (Galaxy backgrounds)" />
+      </selector>
+      <selector path=".dropIntoClipboardCopy">
+        <background preset="clipboardcopy (Galaxy backgrounds)" />
+      </selector>
+      <selector path="#clipboardCopy">
+        <padding>3px</padding>
+      </selector>
+      <selector path=".clipboardFunctions">
+        <padding-top>10px</padding-top>
+        <border-top preset="clipboard (Galaxy borders)" />
+      </selector>
+      <selector path=".clipboardFunction">
+        <padding>2px 2px 2px 2px</padding>
+      </selector>
+      <selector path=".clipboardRemoveItem">
+        <float>right</float>
+      </selector>
+      <selector path=".userClipboard h4">
+        <height>16px</height>
+        <border-bottom preset="dotted (Galaxy borders)" />
+        <color preset="summary.titles (Galaxy colors)" />
+        <margin-bottom>2px</margin-bottom>
+        <margin-top>0px</margin-top>
+        <font-size>12px</font-size>
+        <padding>8px 2px 2px 2px</padding>
+      </selector>
+      <selector path=".userClipboardContent">
+        <margin>0px</margin>
+        <padding>10px 0 10px 3px</padding>
+      </selector>
+      <selector path=".userClipboard">
+        <height>1%</height>
+        <background-color preset="white (Galaxy backgrounds)"/>
+        <margin>10px 0px 10px 0px</margin>
+        <font preset="small (Galaxy fonts)" />
+      </selector>
+      <selector path=".userClipboard div">
+        <font preset="small (Galaxy fonts)" />
+      </selector>
+      <selector path=".clipboardFunctions">
+        <padding-top>10px</padding-top>
+        <border-top preset="clipboard (Galaxy borders)" />
+      </selector>
+      <selector path=".clipboardFunction">
+        <padding>2px 2px 2px 2px</padding>
+      </selector>
+      <selector path=".clipboardEmptyMessage">
+        <color preset="clipboard.message (Galaxy colors)" />
+        <font-style>italic</font-style>
+        <font-size>9px</font-size>
+        <padding>0 2px 2px 2px</padding>
+        <text-align>center</text-align>
+      </selector>
+      <selector path=".smallIcon">
+        <width>16px</width>
+        <height>16px</height>
+      </selector>
+      <selector path=".menu dl">
+        <margin>0px</margin>
+      </selector>
+      <selector path=".menu dd">
+        <margin>0px</margin>
+        <padding>10px 0px</padding>
+      </selector>
+      <selector path=".menuForm, .menuForm div, .menu, .menu div, .tagCloudBlock, .tagCloudBlock div">
+        <font preset="default (Galaxy fonts)" />
+      </selector>
+      <selector path="td.dr-tree-h-text, td.dr-tree-h-text span, td.dr-tree-h-text a.treeLink">
+        <white-space>normal</white-space>
+      </selector>
+      <!-- Faceted Search -->
+      <selector path=".facetedSearchActionBar">
+        <border-bottom>1px solid #cacaca</border-bottom>
+        <padding>2px</padding>
+      </selector>
+      <selector path=".facetedSearchActionBar a">
+        <float>left</float>
+        <padding-top>3px</padding-top>
+      </selector>
+      <selector path=".facetedSearchActionBar input.button">
+        <padding>0 5px 0 7px</padding>
+        <margin>0 0 0 5px</margin>
+        <float>right</float>
+        <font-weight>bold</font-weight>
+        <width>auto</width>
+      </selector>
+      <selector path="#facetedSearchSelectorDiv, #savedFacetedSearchSelectorDiv">
+        <padding>0 0 5px</padding>
+        <margin>0</margin>
+        <border-bottom>1px solid #f1f1f1</border-bottom>
+      </selector>
+      <selector path="#facetedSearchSelectorDiv p, #savedFacetedSearchSelectorDiv p">
+        <color>#323232</color>
+        <font>bold 11px "Lucida Grande", Helvetica, sans-serif</font>
+        <background-color>#ecf6ff</background-color>
+        <border-bottom>1px solid #cacaca</border-bottom>
+        <border-top>1px solid #fff</border-top>
+        <padding>3px</padding>
+      </selector>
+      <selector path=".facetedSearchBlock .labelColumn">
+        <font-weight>normal</font-weight>
+        <width>70px</width>
+      </selector>
+      <selector path=".facetedSearchBlock .tinyLabel">
+        <width>24px</width>
+        <display>inline-block</display>
+        <text-align>right</text-align>
+      </selector>
+      <selector path=".facetedSearchBlock .dataInput">
+        <width>100%</width>
+      </selector>
+      <selector path=".facetedSearchBlock .dataInput td">
+        <padding>3px 4px 5px 0</padding>
+      </selector>
+      <selector path=".facetedSearchBlock input, .facetedSearchBlock select">
+        <width>100%</width>
+      </selector>
+      <selector path=".facetedSearchBlock .dataInputTextDate">
+        <width>45px</width>
+        <font-size>9px</font-size>
+        <margin>0 5px 3px 3px</margin>
+      </selector>
+      <selector path=".facetedSearchBlock .widgetContent">
+        <border-bottom>1px solid #dcdcdc</border-bottom>
+      </selector>
+      <selector path=".facetedSearchBlock h5">
+        <color>#323232</color>
+        <font>bold 11px "Lucida Grande", Helvetica, sans-serif</font>
+        <background-color>#f1f2f3</background-color>
+        <border-bottom>1px solid #cacaca</border-bottom>
+        <border-top>1px solid #fff</border-top>
+        <padding>3px</padding>
+      </selector>
+      <selector path=".facetedSearchBlock .widgetContent .labelOpenPopUp">
+        <color>#323232</color>
+        <font>normal 10px "Lucida Grande", Helvetica, sans-serif</font>
+        <margin>0 0 5px</margin>
+        <display>block</display>
+        <padding>0 0 1px</padding>
+        <border-bottom>1px solid #cacaca</border-bottom>
+      </selector>
+      <selector path="#saveFacetedSearchForm input">
+        <margin-left>3px</margin-left>
+      </selector>
+      <selector path=".facetedSearchPopUp">
+        <background-color>white</background-color>
+        <position>absolute</position>
+        <top>15%</top>
+        <left>25%</left>
+        <width>400px</width>
+        <border>1px solid #b5bcc6</border>
+        <z-index>10000</z-index>
+        <display>none</display>
+      </selector>
+      <selector path=".facetedSearchPopUp .closePopUpHeader">
+        <text-align>right</text-align>
+        <border-bottom>1px dotted #dedede</border-bottom>
+        <background-color>#f6f8ff</background-color>
+        <padding>3px</padding>
+      </selector>
+      <selector path=".facetedSearchPopUp .closePopUpHeader .closePopUp">
+        <float>right</float>
+        <cursor>pointer</cursor>
+      </selector>
+      <selector path=".facetedSearchPopUp .closePopUpHeader .popUpTitle">
+        <float>left</float>
+        <font-size>110%</font-size>
+      </selector>
+      <selector path=".facetedSearchPopUp .popUpContent">
+        <overflow>auto</overflow>
+        <height>390px</height>
+        <padding>10px</padding>
+      </selector>
+      <selector path=".facetedSearchBlock .dataInput .facetedSearchPopUp td, .facetedSearchBlock .thin td">
+        <padding>1px</padding>
+      </selector>
+      <selector path=".facetedSearchBlock .widgetContent .labelOpenPopUp .labelTool">
+        <float>right</float>
+        <cursor>pointer</cursor>
+      </selector>
+      <selector path=".facetedSearchBlock table.thin">
+        <margin>0 0 7px 0</margin>
+      </selector>
+      <selector path=".UserSuggestionInput table">
+        <width>100%</width>
+      </selector>
+    </style>
+    <style name="common style 2">
+      <selector path="h1,h2,h3,h4">
+        <margin>0</margin>
+        <padding>0</padding>
+      </selector>
+      <selector path="input">
+        <display>none</display>
+      </selector>
+      <selector path=".dataOutput .iconColumn img, .dataInput .iconColumn img, .dataList .iconColumn img">
+        <display>block</display>
+      </selector>
+      <selector path=".fieldColumn">
+        <padding-left>5px</padding-left>
+      </selector>
+      <selector path=".dataOutput th, .dataList th">
+        <color preset="tableheader (Galaxy colors)" />
+        <background-color preset="gray.lite (Galaxy backgrounds)" />
+        <padding>4px 5px</padding>
+        <text-align>left</text-align>
+      </selector>
+      <selector path="div">
+        <font preset="default (Galaxy fonts)" />
+        <background-color preset="white (Galaxy backgrounds)"/>
+        <float>none</float>
+      </selector>
+      <selector path="a:link, a:visited">
+        <color preset="default.text (Galaxy colors)" />
+        <background>transparent</background>
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path=".dataInput, .dataOutput, .dataOutput2Columns, .dataList">
+        <border preset="gray.light (Galaxy borders)" />
+        <border-collapse>collapse</border-collapse>
+      </selector>
+      <selector path="ul">
+        <display>none</display>
+      </selector>
+      <selector path=".dataOutput td, .dataList td">
+        <border-bottom preset="tablelines (Galaxy borders)"/>
+        <border-top preset="tablelines (Galaxy borders)"/>
+        <padding>5px 3px</padding>
+      </selector>
+      <selector path=".dataOutput2Columns td">
+        <vertical-align>top</vertical-align>
+        <padding>5px 3px</padding>
+      </selector>
+      <selector path="img">
+        <display>none</display>
+      </selector>
+      <selector path=".breadcrumbs">
+        <margin-bottom>10px</margin-bottom>
+        <font preset="small (Galaxy fonts)" />
+        <float>left</float>
+      </selector>
+      <selector path=".syndicationLinks">
+        <display>none</display>
+      </selector>
+    </style>
+    <!-- commmon to both fragments -->
+    <style element="page[3]/section[1]/cell[1]/fragment[2]|page[3]/section[1]/cell[1]/fragment[3]" inherit="common style 2"/>
+    <!-- General -->
+    <style element="page[1]|page[2]">
+      <selector path="img" view="page frame">
+        <border>0</border>
+      </selector>
+    </style>
+    <!-- Banner -->
+    <style element="page[1]/section[1]">
+      <selector path="" view="section frame">
+        <border-bottom preset="topbar (Galaxy borders)"/>
+        <background preset="topbar (Galaxy backgrounds)"/>
+      </selector>
+    </style>
+    <!-- Logo -->
+    <style element="page[1]/section[1]/cell[1]/fragment[1]">
+      <selector path="form" view="Nuxeo DM logo (Galaxy Theme)">
+        <margin>0</margin>
+        <padding>0</padding>
+      </selector>
+      <selector path="img, a" view="Nuxeo DM logo (Galaxy Theme)">
+        <outline>none</outline>
+      </selector>
+    </style>
+    <!-- user services -->
+    <style element="page[1]/section[1]/cell[2]/fragment[1]" inherit="header style" />
+    <!-- Left side -->
+    <style element="page[1]/section[2]">
+      <selector path="" view="section frame">
+        <border-top preset="whitethin (Galaxy borders)"/>
+      </selector>
+    </style>
+    <style element="page[1]/section[2]/cell[1]">
+      <selector path="" view="cell frame">
+        <border-right preset="leftcolumn (Galaxy borders)"/>
+      </selector>
+    </style>
+    <style element="page[1]/section[2]/cell[1]/fragment[1]" inherit="tree and clipboard column" />
+    <style element="page[1]/section[2]/cell[1]/fragment[2]" inherit="tree and clipboard column" />
+    <!-- Main cell -->
+    <style element="page[1]/section[2]/cell[2]|page[2]/section[1]/cell[1]">
+      <selector path="" view="cell frame">
+        <background preset="maincell (Galaxy backgrounds)"/>
+        <border-left preset="whitethin (Galaxy borders)"/>
+      </selector>
+    </style>
+    <style element="page[1]/section[2]/cell[2]/fragment[1]" inherit="breadcrumbs style"/>
+    <!-- Footer -->
+    <style element="page[1]/section[3]">
+      <selector path="" view="section frame">
+        <border-top preset="topbar (Galaxy borders)"/>
+      </selector>
+    </style>
+    <style element="page[1]/section[3]/cell[1]/fragment[1]" inherit="common style 1">
+      <selector path="form, p" view="Nuxeo DM footer (Galaxy Theme)">
+        <margin>5px 0px 0px 0px</margin>
+        <padding>0</padding>
+      </selector>
+      <selector path="" view="Nuxeo DM footer (Galaxy Theme)">
+        <font preset="small (Galaxy fonts)"/>
+        <color preset="footer.text (Galaxy colors)" />
+        <padding>5px 15px 5px 5px</padding>
+      </selector>
+      <selector path="div" view="Nuxeo DM footer (Galaxy Theme)">
+        <margin>0</margin>
+        <line-height>1.25em</line-height>
+        <padding>0</padding>
+        <font preset="small (Galaxy fonts)"/>
+      </selector>
+      <selector path="a" view="Nuxeo DM footer (Galaxy Theme)">
+        <color preset="link (Galaxy colors)" />
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path="a:visited" view="Nuxeo DM footer (Galaxy Theme)">
+        <color preset="link.visited (Galaxy colors)" />
+      </selector>
+      <selector path="a:active" view="Nuxeo DM footer (Galaxy Theme)">
+        <color preset="link (Galaxy colors)" />
+      </selector>
+      <selector path="a:hover" view="Nuxeo DM footer (Galaxy Theme)">
+        <color preset="link.hover (Galaxy colors)" />
+        <text-decoration>underline</text-decoration>
+      </selector>
+      <selector path="select.langSelect" view="Nuxeo DM footer (Galaxy Theme)">
+        <margin>9px 5px 0px 5px</margin>
+      </selector>
+      <selector path="input.button" view="Nuxeo DM footer (Galaxy Theme)">
+        <margin>5px 0px 5px 10px</margin>
+      </selector>
+    </style>
+    <!-- main fragment for default page & popup -->
+    <style element="page[1]/section[2]/cell[2]/fragment[2]|page[2]/section[1]/cell[1]/fragment[1]" inherit="common style 1">
+      <selector path="" view="facelet region">
+        <padding>7px</padding>
+      </selector>
+    </style>
+  </formats>
+  <presets>
+    <preset category="image" name="site.logo" label="Site logo" description="Site logo image (max: 120x40 pixels)">url(nuxeo DM/nuxeo_5.2_logo.png)</preset>
+  </presets>
+</theme>

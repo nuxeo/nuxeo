@@ -1,0 +1,73 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes">
+
+<c:if test="#{! empty typesMap.entrySet}">
+  <h:form id="selectDocumentTypeForCreationForm">
+    <rich:modalPanel id="selectDocTypePanel"  autosized="true"
+      onmaskclick="Richfaces.hideModalPanel('selectDocTypePanel')">
+
+      <f:facet name="header">
+        <h:outputText value="#{messages['title.availableDocumentTypes']}" />
+      </f:facet>
+
+      <f:facet name="controls">
+        <h:panelGroup>
+          <h:graphicImage value="/icons/action_delete_mini.gif"
+            id="hideDocTypePanel" />
+          <rich:componentControl for="selectDocTypePanel"
+            attachTo="hideDocTypePanel" operation="hide" event="onclick" />
+        </h:panelGroup>
+      </f:facet>
+
+      <h:outputText value="#{messages['help.chooseDocumentType']}" />
+
+      <table cellspacing="2">
+        <tr>
+        <nxu:dataList var="typesList" value="#{typesMap.entrySet}"
+          id="selectDocumentTypeForCreationTable">
+          <td style="vertical-align : top;width : 300px; padding:0px 20px 0px 0px;">
+            <div>
+              <h3 class="documentTypes">
+                <h:outputText value="#{messages[typesList.key]}" />
+              </h3>
+              <table>
+                <tr>
+                  <nxu:dataList value="#{typesList.value}" var="typeColumn"
+                    id="selectDocumentTypeForCreationCategory">
+                    <td valign="top">
+                      <nxu:dataList value="#{typeColumn}" var="type"
+                        id="selectDocumentTypeForCreationCategoryTable">
+                        <div class="documentType">
+                          <h:commandLink action="#{documentActions.createDocument(type.id)}"
+                            id="selectDocumentTypeForCreationCategoryImageLink">
+                            <h:graphicImage height="32" width="32" value="#{type.bigIcon}"
+                              rendered="#{!empty type.bigIcon}" />
+                          </h:commandLink>
+                          <h:commandLink class="documentTypeLink"
+                            action="#{documentActions.createDocument(type.id)}"
+                            id="selectDocumentTypeForCreationCategoryTitleLink">
+                            <h:outputText value="#{messages[type.label]}" />
+                          </h:commandLink>
+                          <div style="clear: both;"></div>
+                        </div>
+                      </nxu:dataList>
+                    </td>
+                  </nxu:dataList>
+                </tr>
+              </table>
+            </div>
+          </td>
+        </nxu:dataList>
+        </tr>
+      </table>
+    </rich:modalPanel>
+  </h:form>
+</c:if>
+
+</div>

@@ -1,0 +1,265 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.theme.nuxeo.default">
+
+  <require>org.nuxeo.theme.core</require>
+  <require>org.nuxeo.theme.fragments</require>
+  <require>org.nuxeo.theme.html</require>
+  <require>org.nuxeo.theme.jsf</require>
+
+  <!-- perspectives -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="perspectives">
+
+    <perspective name="view_calendar">
+      <title>Calendar management mode</title>
+    </perspective>
+
+    <perspective name="multiple_domains">
+      <title>Perspective for multiple domains</title>
+    </perspective>
+
+  </extension>
+
+  <!--  themes -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
+
+    <theme>
+      <src>themes/theme-galaxy.xml</src>
+    </theme>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="banks">
+    <bank name="nuxeo" url="${nuxeo.loopback.url}/site/theme-banks/nuxeo" />
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
+    <import src="themes/collections/nuxeo-DM.zip" bank="nuxeo" collection="nuxeo DM" />
+    <import src="themes/collections/Galaxy.zip" bank="nuxeo" collection="Galaxy" />
+  </extension>
+
+  <!-- fragments -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="fragments">
+
+    <!-- see http://jira.nuxeo.org/browse/NXP-982 -->
+    <!-- fragment name="nuxeo5 actions fragment">
+      <class>org.nuxeo.ecm.webapp.theme.fragment.ActionFragment</class>
+      <model-type>menu item</model-type>
+      <dynamic>true</dynamic>
+      </fragment-->
+
+  </extension>
+
+  <!-- views -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+
+    <view name="Nuxeo DM logo (Galaxy Theme)" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/logo_DM_galaxy.xhtml</template>
+    </view>
+
+    <view name="nuxeo5 includes" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/includes.xhtml</template>
+      <resource>dragdrop.js</resource>
+      <resource>seam-remote.js</resource>
+      <resource>bsn.AutoSuggest_2.1.3.js</resource>
+      <resource>foldable-box.js</resource>
+      <!-- include JS used for waiter -->
+      <resource>effects.js</resource>
+      <resource>window.js</resource>
+      <resource>window_effects.js</resource>
+      <resource>waitdlg.js</resource>
+      <!-- include JS used for D&D and tableSelection -->
+      <resource>utils.js</resource>
+      <!-- include JS for contextual menu -->
+      <resource>jquery.js</resource>
+      <resource>contextmenu.js</resource>
+    </view>
+
+    <view name="User services (Galaxy theme)" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/user_services_galaxy.xhtml</template>
+      <resource>screen.css</resource>
+    </view>
+
+    <view name="nuxeo5 breadcrumbs" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/breadcrumb.xhtml</template>
+    </view>
+
+    <view name="nuxeo5 tree explorer" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/tree_explorer.xhtml</template>
+    </view>
+
+
+    <view name="nuxeo5 directory tree explorer"
+      template-engine="jsf-facelets">
+      <!-- Fragment (not enabled in the default theme)
+        that displays trees of [x]vocabularies to perform queries
+        based on a hierarchical meta data. See the DirectoryTreeService
+        extension point for more info on how to use this fragment.
+      -->
+      <format-type>widget</format-type>
+      <template>incl/directory_tree_explorer.xhtml</template>
+    </view>
+
+    <view name="nuxeo5 clip board" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/user_clipboard.xhtml</template>
+      <resource>dragdrop.js</resource>
+    </view>
+
+    <view name="Nuxeo DM footer (Galaxy Theme)"
+      template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/footer_galaxy.xhtml</template>
+    </view>
+
+  </extension>
+
+
+  <!-- resources -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
+
+    <resource name="screen.css">
+      <path>css/screen.css</path>
+    </resource>
+
+    <resource name="foldable-box.js">
+      <path>scripts/foldable-box.js</path>
+      <require>effects.js</require>
+    </resource>
+
+    <resource name="window.js">
+      <path>scripts/window.js</path>
+    </resource>
+    <resource name="window_effects.js">
+      <path>scripts/window_effects.js</path>
+    </resource>
+    <resource name="waitdlg.js">
+      <path>waitdialog/waitdlg.js</path>
+    </resource>
+    <resource name="utils.js">
+      <path>scripts/utils.js</path>
+    </resource>
+    <resource name="tableSelections.js">
+      <path>scripts/tableSelections.js</path>
+    </resource>
+    <resource name="contextmenu.js">
+      <path>scripts/contextmenu.js</path>
+    </resource>
+    <resource name="DragAndDrop.js">
+      <path>scripts/DragAndDrop.js</path>
+    </resource>
+  </extension>
+
+
+  <!-- application settings -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="applications">
+
+    <application root="${org.nuxeo.ecm.contextPath}"
+      template-engine="jsf-facelets">
+
+      <negotiation>
+        <strategy>nuxeo5</strategy>
+        <default-engine>default</default-engine>
+        <default-theme>galaxy/default</default-theme>
+        <default-perspective>default</default-perspective>
+      </negotiation>
+
+      <!-- Cache control for theme resources (/nxthemes-lib/) -->
+      <resource-caching>
+        <lifetime>36000</lifetime>
+      </resource-caching>
+
+      <!-- Cache control for theme styles (/nxthemes-css/) -->
+      <style-caching>
+        <lifetime>900</lifetime>
+      </style-caching>
+
+      <view id="/create_relation_search_document_popup.xhtml">
+        <theme>galaxy/popup</theme>
+      </view>
+      <view id="/view_calendar.xhtml">
+        <perspective>view_calendar</perspective>
+      </view>
+      <view id="/print.xhtml">
+        <perspective>print</perspective>
+      </view>
+      <view id="/editor_link_search_document.xhtml">
+        <theme>galaxy/popup</theme>
+      </view>
+      <view id="/editor_image_upload.xhtml">
+        <theme>galaxy/popup</theme>
+      </view>
+      <view id="/search/choose_searchscope_popup.xhtml">
+        <theme>galaxy/popup</theme>
+      </view>
+    </application>
+  </extension>
+
+
+  <!-- negotiation strategy for nuxeo5-->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="negotiations">
+
+    <negotiation object="engine" strategy="nuxeo5">
+      <scheme>org.nuxeo.theme.jsf.negotiation.engine.RequestParameter</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.engine.CookieValue</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.engine.ViewId</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.engine.DefaultEngine</scheme>
+    </negotiation>
+
+    <negotiation object="mode" strategy="nuxeo5">
+      <scheme>org.nuxeo.theme.jsf.negotiation.mode.RequestParameter</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.mode.CookieValue</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.mode.ViewId</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.mode.UnspecifiedMode</scheme>
+    </negotiation>
+
+    <negotiation object="theme" strategy="nuxeo5">
+      <scheme>org.nuxeo.theme.jsf.negotiation.theme.RequestParameter</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.theme.CookieValue</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.theme.ViewId</scheme>
+      <!-- local theme (specific to nuxeo5) -->
+      <scheme>org.nuxeo.ecm.webapp.theme.negotiation.LocalTheme</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.theme.DefaultTheme</scheme>
+    </negotiation>
+
+    <negotiation object="perspective" strategy="nuxeo5">
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.perspective.RequestParameter
+      </scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.perspective.CookieValue</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.perspective.ViewId</scheme>
+      <!-- local perspective (specific to nuxeo5) -->
+      <scheme>org.nuxeo.ecm.webapp.theme.negotiation.LocalPerspective</scheme>
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.perspective.DefaultPerspective
+      </scheme>
+    </negotiation>
+
+  </extension>
+
+
+  <!-- Styles presets -->
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="presets">
+
+    <palette name="Galaxy borders"
+      src="themes/palettes/galaxy-borders.properties" category="border" />
+    <palette name="Galaxy backgrounds"
+      src="themes/palettes/galaxy-backgrounds.properties" category="background" />
+    <palette name="Galaxy fonts" src="themes/palettes/galaxy-fonts.properties"
+      category="font" />
+    <palette name="Galaxy colors" src="themes/palettes/galaxy-colors.properties"
+      category="color" />
+
+  </extension>
+
+
+</component>
