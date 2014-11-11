@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jboss-app
+    PUBLIC "-//JBoss//DTD J2EE Application 1.3V2//EN"
+    "http://www.jboss.org/j2ee/dtd/jboss-app_3_2.dtd">
+
+<jboss-app>
+   <!-- 
+      Use an isolated ClassLoader - this solves problems in JBoss admin-console 
+      Note that parentdelegation must be true otherwise there are errors at startup - 
+      may be because of a Nuxeo library that is overwiding a JBoss one.
+   -->
+   <loader-repository>
+     org.nuxeo:loader=nuxeo.ear
+     <loader-repository-config>java2ParentDelegation=true</loader-repository-config>
+   </loader-repository>
+
+</jboss-app>
