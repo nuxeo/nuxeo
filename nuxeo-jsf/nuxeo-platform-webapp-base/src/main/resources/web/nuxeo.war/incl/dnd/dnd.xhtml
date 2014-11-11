@@ -1,0 +1,18 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+ xmlns:c="http://java.sun.com/jstl/core">
+
+  <ui:include src="/incl/dnd/dnd-ui.xhtml" />
+  
+  <script>    
+    jQuery(document).ready(function(){
+      // init Browser DnD import
+      jQuery(".dropzone").nxDropZone({
+        url : "#{contextPath}/site/automation/batch/",
+        uploadRateRefreshTime : 500,
+        numConcurrentUploads : 3,
+        dropContext : ctx
+      });
+    });
+  </script>
+  
+</div>

@@ -1,0 +1,215 @@
+<c:if test="true"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+<c:set var="displaySubLabels" value="#{not widgetProperty_hideSubLabels}" />
+<c:set var="showHeader" value="#{widget.handlingLabels and (not empty widget.subWidgets or widgetProperty_showIfEmpty)}" />
+<c:set var="containerWidgetProps" value="#{widget.properties}" />
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">
+  <c:if test="#{showHeader}">
+    <c:if test="#{widget.translated}">#{messages[widget.label]}</c:if>
+    <c:if test="#{not widget.translated}">#{widget.label}</c:if>
+  </c:if>
+  <nxl:subWidget>
+    <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
+    <c:set var="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_requireSurroundingForm}" />
+    <ui:decorate template="/widgets/incl/form_template.xhtml">
+      <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_requireSurroundingForm}" />
+      <ui:param name="formId" value="#{widget.id}_form" />
+      <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
+      <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
+      <ui:define name="form_template_content">
+        <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+      </ui:define>
+    </ui:decorate>
+  </nxl:subWidget>
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:html>
+    <c:if test="#{showHeader}">
+      <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+    </c:if>
+    <nxl:subWidget>
+      <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
+      <ui:decorate template="/widgets/incl/form_template.xhtml">
+        <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_requireSurroundingForm}" />
+        <ui:param name="formId" value="#{widget.id}_form" />
+        <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
+        <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
+        <ui:define name="form_template_content">
+          <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+        </ui:define>
+      </ui:decorate>
+    </nxl:subWidget>
+  </nxp:html>
+</c:if>
+<c:if test="#{not nxl:isLikePlainMode(widget.mode) and widget.mode != 'pdf'}">
+
+  <c:set var="isEditMode" value="#{widget.mode == 'edit'}" />
+
+  <ui:decorate template="/widgets/incl/foldable_box_template.xhtml">
+    <ui:param name="hideHeader" value="#{not showHeader or empty widget.label}" />
+    <ui:param name="foldable" value="#{widgetProperty_foldable}" />
+    <ui:param name="foldedByDefault" value="#{widgetProperty_foldedByDefault}" />
+    <ui:param name="foldableStyleClass" value="widgetPanel containerWidgetPanel #{widgetProperty_styleClass}" />
+    <ui:param name="headerStyleClass" value="widgetHeader #{nxu:test(widgetProperty_foldable and not empty widget.label, '', 'summaryTitle')} #{widgetProperty_headerStyleClass}" />
+
+    <ui:define name="foldable_box_header_content">
+      <ui:include src="/widgets/incl/widget_label_template.xhtml">
+        <ui:param name="labelStyleClass"
+          value="#{widgetProperty_headerStyleClass}" />
+        <ui:param name="hideHelp" value="true" />
+      </ui:include>
+    </ui:define>
+
+    <ui:define name="foldable_box_content">
+
+      <c:if test="#{showHeader and not empty widget.helpLabel}">
+        <nxu:set var="widgetHelpLabel"
+          value="#{nxu:test(widget.translated, messages[widget.helpLabel], widget.helpLabel)}"
+          cache="true">
+          <div class="tips">
+            <h:outputText value="#{widgetHelpLabel}" />
+          </div>
+        </nxu:set>
+      </c:if>
+
+      <c:choose>
+
+        <c:when test="#{widgetProperty_display == 'table'}">
+          <table class="dataTable widgetTable containerWidgetTable #{widgetProperty_subStyleClass}">
+            <thead>
+              <c:if test="#{displaySubLabels}">
+                <tr>
+                  <nxl:subWidget>
+                    <th class="boldColumn containerLabel">
+                      <c:if test="#{not widget.handlingLabels}">
+                        <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                          <ui:param name="labelStyleClass"
+                            value="boldLabel #{widgetProperty_subLabelStyleClass}" />
+                        </ui:include>
+                      </c:if>
+                    </th>
+                  </nxl:subWidget>
+                </tr>
+              </c:if>
+            </thead>
+            <tbody>
+              <tr>
+                <nxl:subWidget>
+                  <td class="fieldColumnn containerField">
+                    <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
+                    <ui:decorate template="/widgets/incl/form_template.xhtml">
+                      <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_requireSurroundingForm}" />
+                      <ui:param name="formId" value="#{widget.id}_form" />
+                      <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
+                      <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
+                      <ui:param name="formStyleClass" value="subWidgetForm" />
+                      <ui:define name="form_template_content">
+                        <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+                      </ui:define>
+                    </ui:decorate>
+                  </td>
+                </nxl:subWidget>
+              </tr>
+            </tbody>
+          </table>
+        </c:when>
+
+        <c:when test="#{widgetProperty_display == 'inline'}">
+          <nxl:subWidget>
+            <span class="containerSubWidget #{widgetProperty_subStyleClass}">
+              <c:if test="#{displaySubLabels and not widget.handlingLabels}">
+                <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                  <ui:param name="labelStyleClass"
+                    value="boldLabel #{widgetProperty_subLabelStyleClass}" />
+                </ui:include>
+                <h:outputText value=" " />
+              </c:if>
+              <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
+              <ui:decorate template="/widgets/incl/form_template.xhtml">
+                <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_requireSurroundingForm}" />
+                <ui:param name="formId" value="#{widget.id}_form" />
+                <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
+                <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
+                <ui:param name="formStyleClass" value="subWidgetForm" />
+                <ui:define name="form_template_content">
+                  <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+                </ui:define>
+              </ui:decorate>
+            </span>
+          </nxl:subWidget>
+        </c:when>
+
+        <c:when test="#{widgetProperty_display == 'block_top'}">
+          <nxl:subWidget>
+            <div class="containerSubWidget #{widgetProperty_subStyleClass}">
+              <c:if test="#{displaySubLabels and not widget.handlingLabels}">
+                <div>
+                  <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                    <ui:param name="labelStyleClass"
+                      value="boldLabel #{widgetProperty_subLabelStyleClass}" />
+                  </ui:include>
+                </div>
+              </c:if>
+              <div>
+                <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
+                <ui:decorate template="/widgets/incl/form_template.xhtml">
+                  <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_requireSurroundingForm}" />
+                  <ui:param name="formId" value="#{widget.id}_form" />
+                  <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
+                  <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
+                  <ui:param name="formStyleClass" value="subWidgetForm" />
+                  <ui:define name="form_template_content">
+                    <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+                  </ui:define>
+                </ui:decorate>
+              </div>
+            </div>
+          </nxl:subWidget>
+        </c:when>
+
+        <c:otherwise>
+          <table class="dataTableNoBorder widgetTable containerWidgetTable #{widgetProperty_subStyleClass}">
+            <tbody>
+              <nxl:subWidget>
+                <tr>
+                  <c:if test="#{displaySubLabels}">
+                    <td class="boldColumn containerLabel">
+                      <c:if test="#{not widget.handlingLabels}">
+                        <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                          <ui:param name="labelStyleClass"
+                            value="boldLabel #{widgetProperty_subLabelStyleClass}" />
+                        </ui:include>
+                      </c:if>
+                    </td>
+                  </c:if>
+                  <td class="fieldColumnn containerField">
+                    <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
+                    <ui:decorate template="/widgets/incl/form_template.xhtml">
+                      <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_requireSurroundingForm}" />
+                      <ui:param name="formId" value="#{widget.id}_form" />
+                      <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
+                      <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
+                      <ui:param name="formStyleClass" value="subWidgetForm" />
+                      <ui:define name="form_template_content">
+                        <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+                      </ui:define>
+                    </ui:decorate>
+                  </td>
+                </tr>
+              </nxl:subWidget>
+            </tbody>
+          </table>
+        </c:otherwise>
+
+      </c:choose>
+
+    </ui:define>
+  </ui:decorate>
+
+</c:if>
+</c:if>
