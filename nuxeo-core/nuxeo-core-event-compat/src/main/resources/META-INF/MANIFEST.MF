@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Core
+Bundle-SymbolicName: org.nuxeo.ecm.core.event.compat;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Bundle-Category: core
+Eclipse-LazyStart: true
+Nuxeo-Component: OSGI-INF/CompatibilityListener.xml,
+ OSGI-INF/CoreEventListenerService.xml
+Require-Bundle: org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.event
+Nuxeo-RequiredBy: org.nuxeo.ecm.core 
+Export-Package: org.nuxeo.ecm.core.event.compat,
+ org.nuxeo.ecm.core.jms,
+ org.nuxeo.ecm.core.listener,
+ org.nuxeo.ecm.core.listener.extensions,
+ org.nuxeo.ecm.core.listener.impl,
+ org.nuxeo.ecm.core.repository

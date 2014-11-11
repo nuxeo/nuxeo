@@ -1,0 +1,22 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.core</groupId>
+    <artifactId>nuxeo-core-parent</artifactId>
+    <version>5.3.2-HF08</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>nuxeo-core-storage-jcr-parent</artifactId>
+  <name>Nuxeo Core JCR Storage Parent</name>
+  <description>Nuxeo Core: JCR Storage Parent.</description>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>nuxeo-core-jca</module>
+    <module>nuxeo-core-jcr-connector</module>
+    <module>nuxeo-core-jcr-connector-test</module>
+  </modules>
+
+</project>
