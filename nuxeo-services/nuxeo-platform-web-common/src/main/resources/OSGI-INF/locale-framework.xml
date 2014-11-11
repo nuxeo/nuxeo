@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.web.common.locale">
+  <implementation
+    class="org.nuxeo.ecm.platform.web.common.locale.LocaleComponent" />
+  <documentation>
+    Provide locale and timezone.
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.web.common.locale.LocaleProvider" />
+  </service>
+  <extension-point name="providers">
+    <documentation>
+      This extension will provide the unique locale provider to be used.
+      Adding a requirement to the existing default implementation is
+      mandatory to make sure it is overriden.
+      Implementation class should
+      implement {@see
+      org.nuxeo.ecm.platform.web.common.locale.LocaleProvider}
+      An
+      example:
+      <code>
+        <component
+          name="org.nuxeo.ecm.platform.profile.locale.contrib.example">
+          <require>org.nuxeo.ecm.platform.web.common.locale.default.contrib
+          </require>
+          <extension target="org.nuxeo.ecm.platform.web.common.locale"
+            point="providers">
+            <provider
+              class="org.nuxeo.ecm.user.center.profile.localeProvider.UserLocaleProvider" />
+          </extension>
+        </component>
+      </code>
+      @author Sun Seng David TAN (stan@nuxeo.com)
+      @author Stephane Lacoin
+      (slacoin@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.web.common.locale.LocaleProviderDescriptor" />
+  </extension-point>
+
+</component>
