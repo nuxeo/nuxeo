@@ -1,0 +1,47 @@
+Export-Package: org.nuxeo.ecm.directory.ldap,
+ org.nuxeo.ecm.directory.ldap.dns,
+ org.nuxeo.ecm.directory.ldap.filter
+Private-Package: org.nuxeo.ecm.directory.ldap.dns,
+ org.nuxeo.ecm.directory.ldap.filter
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Localization: bundle
+Bundle-Name: Nuxeo ECM LDAP Directory
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: true
+Bundle-Version: 0.0.0.SNAPSHOT
+Nuxeo-Component: OSGI-INF/LDAPDirectoryFactory.xml,
+ OSGI-INF/management-contrib.xml
+Bundle-ManifestVersion: 2
+Import-Package: javax.annotation;version="1.0",
+ javax.naming,
+ javax.naming.directory,
+ org.apache.commons.lang,
+ org.apache.commons.logging,
+ org.apache.directory.server.core.configuration,
+ org.apache.directory.server.core.jndi,
+ org.apache.directory.server.core.partition,
+ org.apache.directory.shared.ldap.filter,
+ org.apache.directory.shared.ldap.name,
+ org.apache.directory.shared.ldap.schema,
+ org.nuxeo.common.utils,
+ org.nuxeo.common.xmap,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.impl,
+ org.nuxeo.ecm.core.api.model,
+ org.nuxeo.ecm.core.management.statuses,
+ org.nuxeo.ecm.core.schema,
+ org.nuxeo.ecm.core.schema.types,
+ org.nuxeo.ecm.core.utils,
+ org.nuxeo.osgi,
+ org.nuxeo.runtime,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.model
+Bundle-SymbolicName: org.nuxeo.ecm.directory.ldap;singleton:=true
+Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Require-Bundle: org.nuxeo.ecm.directory

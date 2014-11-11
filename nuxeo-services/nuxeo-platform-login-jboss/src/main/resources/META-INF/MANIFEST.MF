@@ -1,0 +1,17 @@
+Export-Package: 
+Private-Package: org.nuxeo.platform.login.jboss
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Category: jboss4
+Bundle-Name: Nuxeo Login Module Jboss extension
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 0.0.0.SNAPSHOT
+Nuxeo-Component: OSGI-INF/jboss-loginModule-callback-contrib.xml,
+  OSGI-INF/JBossLoginConfig.xml
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.platform.login.jboss
+Import-Package: org.apache.commons.logging,
+ org.jboss.security,
+ org.nuxeo.ecm.core.api

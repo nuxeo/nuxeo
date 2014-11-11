@@ -1,0 +1,23 @@
+Private-Package: org.nuxeo.ecm.platform.mimetype.ejb,
+ org.nuxeo.ecm.platform.mimetype.ejb.interfaces.local
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: NXMimeType Facade
+Bundle-Localization: plugin
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.platform.mimetype.core
+Bundle-Vendor: Nuxeo
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/mimetype-platform-contrib.xml
+Import-Package: javax.ejb;version="3.0.0",
+ org.nuxeo.common,
+ org.nuxeo.common.utils,
+ org.nuxeo.ecm.core,
+ org.nuxeo.ecm.core.api,
+ org.nuxeo.runtime.api
+Bundle-SymbolicName: org.nuxeo.ecm.platform.mimetype.facade
+Export-Package: org.nuxeo.ecm.platform.mimetype.ejb,
+ org.nuxeo.ecm.platform.mimetype.ejb.interfaces.local
