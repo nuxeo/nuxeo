@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Client Base Commands
+Bundle-SymbolicName: org.nuxeo.ecm.shell.commands;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Eclipse-LazyStart: true
+Nuxeo-Component: OSGI-INF/shell-commandline-service.xml,
+ OSGI-INF/shell-commands-contrib.xml
+Require-Bundle: org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.schema,
+ org.nuxeo.ecm.core.query,
+ org.nuxeo.ecm.core.client
