@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<repository name="foo">
+  <clustering enabled="true" delay="1234" />
+  <schema>
+    <field type="biig">my:bignote</field>
+    <field type="xyz">foo</field>
+  </schema>
+  <indexing>
+    <queryMaker class="java.lang.Integer" />
+    <queryMaker class="java.lang.Long" />
+    <fulltext catalog="nuxeo" analyzer="french">
+      <index>
+        <!-- fieldType for all implied -->
+        <excludeField>dc:creator</excludeField>
+      </index>
+      <index name="titraille">
+        <field>dc:title</field>
+        <field>dc:description</field>
+      </index>
+      <index name="blobs">
+        <fieldType>blob</fieldType>
+        <excludeField>foo:bar</excludeField>
+      </index>
+      <index name="pictures" catalog="other" analyzer="martian">
+        <field>picture:views/*/filename</field>
+      </index>
+    </fulltext>
+  </indexing>
+</repository>
