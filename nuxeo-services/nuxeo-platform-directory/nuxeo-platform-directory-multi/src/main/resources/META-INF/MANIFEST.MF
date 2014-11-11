@@ -1,0 +1,27 @@
+Export-Package: org.nuxeo.ecm.directory.multi
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: Nuxeo ECM Multi Directory
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/multidirectory-service.xml
+Import-Package: javax.annotation;version="1.0",
+ org.apache.commons.logging,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.impl,
+ org.nuxeo.ecm.core.api.model,
+ org.nuxeo.ecm.core.schema,
+ org.nuxeo.ecm.core.schema.types,
+ org.nuxeo.osgi,
+ org.nuxeo.runtime,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.model
+Bundle-SymbolicName: org.nuxeo.ecm.directory.multi;singleton:=true
+Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Require-Bundle: org.nuxeo.ecm.directory
