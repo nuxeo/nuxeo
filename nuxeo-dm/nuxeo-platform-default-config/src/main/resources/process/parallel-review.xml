@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<process-definition name="review_parallel">
+  <swimlane name="initiator" />
+  <start-state name="start state">
+    <task swimlane="initiator" name="start" />
+    <transition name="start process" to="choose participants node" />
+  </start-state>
+  <task-node name="choose participants node">
+    <task name="choose-participant" swimlane="initiator" />
+    <transition name="to fork each participant" to="setup rights" />
+  </task-node>
+  <node name="setup rights">
+    <action
+      class="org.nuxeo.ecm.platform.jbpm.core.helper.AddRightsActionHandler">
+      <list>participants</list>
+    </action>
+    <transition to="fork each participant" />
+  </node>
+  <node name="fork each participant">
+    <action class="org.nuxeo.ecm.platform.jbpm.core.node.ForeachFork">
+      <var>participant</var>
+      <list>participants</list>
+    </action>
+    <transition to="validate node">
+      <script>
+        <expression><![CDATA[executionContext.setVariable("participants",null)]]></expression>
+      </script>
+    </transition>
+  </node>
+  <task-node name="validate node">
+    <task name="validate">
+      <event type="task-create">
+        <action
+          class="org.nuxeo.ecm.platform.jbpm.core.helper.TaskNotificationHandler" />
+      </event>
+      <controller
+        class="org.nuxeo.ecm.platform.jbpm.core.node.VirtualTaskInstanceController" />
+      <assignment pooled-actors="#{participant.actors}" />
+    </task>
+    <transition name="valid" to="participants join" />
+    <transition name="reject" to="participants join">
+      <script>
+        <expression><![CDATA[executionContext.setVariable("rejected", true)]]></expression>
+      </script>
+    </transition>
+  </task-node>
+  <join name="participants join">
+    <transition to="do follow transition" />
+  </join>
+  <decision name="do follow transition">
+    <transition to="end" condition="#{contextInstance.variables['rejected']}" />
+    <transition to="follow transition"
+      condition="#{!contextInstance.variables['rejected']}" />
+  </decision>
+  <node name="follow transition">
+    <action
+      class="org.nuxeo.ecm.platform.jbpm.core.helper.LifecycleTransitionActionHandler" />
+    <transition to="end" />
+  </node>
+  <end-state name="end">
+    <event type="node-enter">
+      <action
+        class="org.nuxeo.ecm.platform.jbpm.core.helper.RemoveRightsActionHandler" />
+      <action class="org.nuxeo.ecm.platform.jbpm.core.helper.SendEventActionHandler">
+        <eventName>workflowProcessEnded</eventName>
+        <recipients>initiator</recipients>
+      </action>
+    </event>
+  </end-state>
+</process-definition>
