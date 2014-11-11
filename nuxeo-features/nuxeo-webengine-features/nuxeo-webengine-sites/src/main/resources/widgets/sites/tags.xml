@@ -1,0 +1,58 @@
+<script type="text/javascript">
+  function showAddTagForm(){
+    var e = document.getElementById("addTag");
+    if(e.style.display == 'block')
+      e.style.display = 'none';
+    else
+      e.style.display = 'block';
+  }
+
+  function isTagLabelSet() {
+        var title = document.getElementById('tagLabel');
+        if (title) {
+            if (title.value == "") {
+                alert("Please insert a valid title.");
+                return false;
+            }
+        }
+        return true;
+    }
+
+  function rUSureToDelete(){
+     return confirm("Are you sure you want to delete tag ?");
+  }
+</script>
+
+<div class="contextualLinks">
+  <#if (!nxthemesInfo.model.items.empty)>
+    <h4>${Context.getMessage("title.tags.pages")}</h4>
+  </#if>
+  <ul>
+    <#list nxthemesInfo.model.items as item>
+      <div class="contextualLinkBlock">
+        <#if (!item.isPrivate)>
+          <div class="contextualLinkText">
+            <img src="${skinPath}/images/tag_blue.png" alt="${item.label}" />
+            ${item.label?xml}
+            <#if (item.canModify)>
+             [<a href='${This.path}/@tag/removeTagging?taggingId=${item.label}' onclick="return rUSureToDelete();">X</a>]
+            </#if>
+          </div>
+          </#if>
+      </div>
+    </#list>
+  </ul>
+</div>
+
+<div class="addCommentLink">
+  <a class="addComment" onclick="showAddTagForm();">${Context.getMessage("label.page.add.tags")}</a>
+</div>
+
+<form id="addTagForm" name="addTagForm" method="POST" onsubmit="return isTagLabelSet();"
+  action="${This.path}/@tag/addTagging" accept-charset="utf-8">
+
+  <div id="addTag" class="addWebComment" style="display: none">
+    <input type="text" id="tagLabel" name="tagLabel" value="" /><input type="submit" name="post_tag" value="OK" id="post_tag" class="button" />
+  </div>
+
+</form>

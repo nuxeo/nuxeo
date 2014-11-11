@@ -1,0 +1,24 @@
+<div class="tagCloudBlock"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <c:choose>
+   <c:when test="#{tagServiceEnabled}">
+      <h:form id="tagCloudForm">
+        <nxu:dataList id="tagCloudTable"
+          value="#{tagCloudOnAllDocuments}" var="tag"
+          rendered="#{not empty tagCloudOnAllDocuments}">
+
+            <h:commandLink value="#{tag.label}"
+              action="#{tagActions.listDocumentsForTag(tag.label)}" style="font-size: #{tag.weight}%"/>
+
+        </nxu:dataList>
+      </h:form>
+   </c:when>
+   <c:otherwise>
+      Current Server configuration does not allow to activate the Tag feature.
+   </c:otherwise>
+  </c:choose>
+</div>

@@ -1,0 +1,22 @@
+Export-Package: org.nuxeo.ecm.platform.comment.api,
+ org.nuxeo.ecm.platform.comment.impl,
+ org.nuxeo.ecm.platform.comment.workflow.services,
+ org.nuxeo.ecm.platform.comment.workflow.utils
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: Nuxeo Comment API project
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/CommentableAdapter.xml
+Import-Package: javax.annotation;version="1.0",
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.adapter,
+ org.nuxeo.ecm.directory;api=split,
+ org.nuxeo.ecm.platform.relations.api,
+ org.nuxeo.runtime.api
+Bundle-SymbolicName: org.nuxeo.ecm.platform.comment.api;singleton=true
