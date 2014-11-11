@@ -1,0 +1,176 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.webapp.querymodel.DefaultQueryModels">
+
+  <documentation>
+    Default QueryModel contributions used to fetch document lists.
+
+    @author <a href="mailto:og@nuxeo.com">Olivier Grisel</a>
+  </documentation>
+
+  <extension
+    target="org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService"
+    point="model">
+
+    <queryModel name="CURRENT_DOC_CHILDREN">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:isCheckedInVersion
+        = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sortable value="true" defaultSortColumn="dc:title"
+        defaultSortAscending="true" />
+      <max>20</max>
+    </queryModel>
+
+    <queryModel name="CURRENT_DOC_DELETED_CHILDREN">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:isCheckedInVersion
+        = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:currentLifeCycleState = 'deleted'
+      </pattern>
+      <sortable value="true" defaultSortColumn="dc:title"
+        defaultSortAscending="true" />
+      <max>20</max>
+    </queryModel>
+
+    <queryModel name="CURRENT_DOC_ORDERED_CHILDREN">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:isCheckedInVersion
+        = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:currentLifeCycleState != 'deleted' ORDER BY ecm:pos
+      </pattern>
+      <sortable value="false" />
+      <max>20</max>
+    </queryModel>
+
+    <!-- This query model may be used to list children in the tree navigation
+      
+      Note the "ecm:isProxy = 0" predicate optimization that is required to
+      simplify greatly the request performed by the tree manager when
+      browsing on folders with a lot of files when using the Visible SQL Storage.
+    -->
+    <queryModel name="TREE_CHILDREN">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:isProxy = 0 AND
+        ecm:mixinType = 'Folderish' AND ecm:mixinType != 'HiddenInNavigation'
+        AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
+        'deleted'
+      </pattern>
+      <sortable value="true" defaultSortColumn="dc:title"
+        defaultSortAscending="true" />
+      <max>50</max>
+    </queryModel>
+
+    <queryModel name="TREE_ORDERED_CHILDREN">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:isProxy = 0 AND
+        ecm:mixinType = 'Folderish' AND ecm:mixinType != 'HiddenInNavigation'
+        AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
+        'deleted' ORDER BY ecm:pos
+      </pattern>
+      <sortable value="false" />
+      <max>50</max>
+    </queryModel>
+
+    <queryModel name="SIMPLE_SEARCH">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:fulltext LIKE ? AND ecm:mixinType !=
+        'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
+        ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <max>20</max>
+      <sortable value="true" />
+    </queryModel>
+
+    <queryModel name="ADVANCED_SEARCH" docType="AdvancedSearch">
+      <max>20</max>
+      <whereClause>
+
+        <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+          <field schema="advanced_search" name="fulltext_all" />
+        </predicate>
+
+        <predicate parameter="ecm:isCheckedInVersion" operator="=">
+          <field schema="advanced_search" name="isCheckedInVersion" />
+        </predicate>
+
+        <predicate parameter="ecm:path" operator="STARTSWITH">
+          <field schema="advanced_search" name="searchpath" />
+        </predicate>
+
+        <predicate parameter="dc:title" operator="FULLTEXT">
+          <field schema="advanced_search" name="title" />
+        </predicate>
+
+        <predicate parameter="dc:description" operator="FULLTEXT">
+          <field schema="advanced_search" name="description" />
+        </predicate>
+
+        <predicate parameter="dc:rights" operator="LIKE">
+          <field schema="advanced_search" name="rights" />
+        </predicate>
+
+        <predicate parameter="dc:source" operator="LIKE">
+          <field schema="advanced_search" name="source" />
+        </predicate>
+
+        <predicate parameter="dc:coverage" operator="IN">
+          <field schema="advanced_search" name="coverage" />
+        </predicate>
+
+        <predicate parameter="dc:subjects" operator="IN">
+          <field schema="advanced_search" name="subjects" />
+        </predicate>
+
+        <predicate parameter="dc:created" operator="BETWEEN">
+          <field schema="advanced_search" name="created_min" />
+          <field schema="advanced_search" name="created_max" />
+        </predicate>
+
+        <predicate parameter="dc:modified" operator="BETWEEN">
+          <field schema="advanced_search" name="modified_min" />
+          <field schema="advanced_search" name="modified_max" />
+        </predicate>
+
+        <predicate parameter="dc:issued" operator="BETWEEN">
+          <field schema="advanced_search" name="issued_min" />
+          <field schema="advanced_search" name="issued_max" />
+        </predicate>
+
+        <predicate parameter="dc:valid" operator="BETWEEN">
+          <field schema="advanced_search" name="valid_min" />
+          <field schema="advanced_search" name="valid_max" />
+        </predicate>
+
+        <predicate parameter="dc:expired" operator="BETWEEN">
+          <field schema="advanced_search" name="expired_min" />
+          <field schema="advanced_search" name="expired_max" />
+        </predicate>
+
+        <predicate parameter="dc:format" operator="LIKE">
+          <field schema="advanced_search" name="format" />
+        </predicate>
+
+        <predicate parameter="dc:language" operator="LIKE">
+          <field schema="advanced_search" name="language" />
+        </predicate>
+
+        <predicate parameter="ecm:currentLifeCycleState" operator="IN">
+          <field schema="advanced_search" name="currentLifeCycleStates" />
+        </predicate>
+      </whereClause>
+
+      <sortColumn>
+        <field schema="advanced_search" name="sortColumn" />
+      </sortColumn>
+
+      <sortAscending>
+        <field schema="advanced_search" name="sortAscending" />
+      </sortAscending>
+
+    </queryModel>
+
+  </extension>
+
+</component>
