@@ -1,0 +1,42 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+<c:if test="false">
+  This template is deprecated
+</c:if>
+
+<f:subview rendered="#{currentNuxeoPrincipal.administrator}">
+  <h:outputText value="#{messages['label.search.form.enterNXQL']}"/>
+  <h:form id="nxqlSearchForm">
+    <h:inputHidden value="#{searchActions.searchTypeId}">
+      <f:attribute name="value" value="NXQL"/>
+    </h:inputHidden>
+    <h:inputText value="#{searchActions.nxql}" size="80"/>
+    <br/>
+    <h:commandButton value="#{messages['command.search']}"
+      action="#{searchActions.performSearch}" class="button"/>
+  </h:form>
+
+  <f:subview>
+    <div>
+      <h3>
+        <h:outputText value="#{messages['label.search.reindex']}"/>
+      </h3>
+      <h:form id="reIndexForm">
+        <h:panelGrid columns="2" styleClass="dataInput"
+          columnClasses="labelColumn, labelColumn, fieldColumn">
+          <h:outputText value="#{messages['label.search.reindexPath']}"/>
+          <h:inputText value="#{searchActions.reindexPath}" size="80"/>
+        </h:panelGrid>
+        <h:commandButton value="#{messages['command.search.reindex']}"
+          action="#{searchActions.reindexDocuments}" class="button"/>
+      </h:form>
+    </div>
+  </f:subview>
+</f:subview>
+
+</div>
