@@ -1,0 +1,156 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.sql.storage">
+
+  <implementation
+      class="org.nuxeo.ecm.directory.sql.SQLDirectoryDescriptor"/>
+
+  <require>org.nuxeo.ecm.directory.sql.SQLDirectoryFactory</require>
+
+  <implementation
+      class="org.nuxeo.ecm.directory.sql.SQLDirectoryDescriptor"/>
+
+  <require>org.nuxeo.ecm.directory.sql.SQLDirectoryFactory</require>
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+      point="directories">
+
+    <directory name="userDirectory_tenanta">
+
+      <schema>user</schema>
+
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+
+      <table>users</table>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>test-usermanagerimpl-multitenant/directories/users_tenanta.csv</dataFile>
+      <createTablePolicy>always</createTablePolicy>
+
+      <references>
+        <tableReference field="groups" directory="groupDirectory_tenanta"
+            table="user2group" sourceColumn="userId"
+            targetColumn="groupId" dataFile="test-usermanagerimpl-multitenant/directories/user2group_tenanta.csv"
+            master="true"/>
+      </references>
+
+    </directory>
+
+    <directory name="userDirectory_tenantb">
+
+      <schema>user</schema>
+
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+
+      <table>users_tenanta</table>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>test-usermanagerimpl-multitenant/directories/users_tenantb.csv</dataFile>
+      <createTablePolicy>always</createTablePolicy>
+
+      <references>
+        <tableReference field="groups" directory="groupDirectory_tenantb"
+            table="user2group" sourceColumn="userId"
+            targetColumn="groupId" dataFile="test-usermanagerimpl-multitenant/directories/user2group_tenantb.csv"
+            master="true"/>
+      </references>
+    </directory>
+
+    <directory name="groupDirectory_tenanta">
+
+      <schema>group</schema>
+
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+
+      <table>groups1</table>
+      <idField>groupname</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>test-usermanagerimpl-multitenant/directories/groups_multitenant_tenanta.csv</dataFile>
+      <createTablePolicy>always</createTablePolicy>
+
+      <references>
+        <inverseReference field="members" directory="userDirectory_tenanta"
+            dualReferenceField="groups"/>
+        <tableReference field="subGroups" directory="groupDirectory_tenanta"
+            table="group2group" sourceColumn="childGroupId"
+            targetColumn="parentGroupId"/>
+        <inverseReference field="parentGroups"
+            directory="groupDirectory_tenanta" dualReferenceField="subGroups"/>
+      </references>
+    </directory>
+
+    <directory name="groupDirectory_tenantb">
+
+      <schema>group</schema>
+
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+
+      <table>groups2</table>
+      <idField>groupname</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>test-usermanagerimpl-multitenant/directories/groups_multitenant_tenantb.csv</dataFile>
+      <createTablePolicy>always</createTablePolicy>
+
+      <references>
+        <inverseReference field="members" directory="userDirectory_tenantb"
+            dualReferenceField="groups"/>
+        <tableReference field="subGroups" directory="groupDirectory_tenantb"
+            table="group2group" sourceColumn="childGroupId"
+            targetColumn="parentGroupId"/>
+        <inverseReference field="parentGroups"
+            directory="groupDirectory_tenantb" dualReferenceField="subGroups"/>
+      </references>
+    </directory>
+
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.directory.multi.MultiDirectoryFactory"
+    point="directories">
+
+    <directory name="userDirectory">
+      <schema>user</schema>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+
+      <source name="source1">
+        <subDirectory name="userDirectory_tenanta" />
+      </source>
+      <source name="source2">
+        <subDirectory name="userDirectory_tenantb" />
+      </source>
+    </directory>
+
+    <directory name="groupDirectory">
+
+      <schema>group</schema>
+      <idField>groupname</idField>
+      <source name="source1">
+        <subDirectory name="groupDirectory_tenanta" />
+      </source>
+      <source name="source2">
+        <subDirectory name="groupDirectory_tenantb" />
+      </source>
+
+    </directory>
+
+
+  </extension>
+
+</component>
