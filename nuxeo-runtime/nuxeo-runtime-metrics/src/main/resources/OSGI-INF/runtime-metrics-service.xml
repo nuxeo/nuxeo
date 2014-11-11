@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.metrics.MetricsService">
+
+  <documentation>
+    Define CodeHale Metrics configuration.
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.runtime.metrics.MetricsService" />
+  </service>
+
+  <require>org.nuxeo.runtime.management.ServerLocator</require>
+  
+  <implementation class="org.nuxeo.runtime.metrics.MetricsServiceImpl" />
+
+  <extension-point name="configuration">
+    <documentation>
+      The default configuration use metrics.* framework properties but
+      you can override the configuration using a EP like this:
+
+      <extension target="org.nuxeo.runtime.metrics.MetricsService" point="configuration">
+      <metrics>
+        <graphiteReporter enabled="true" periodInSecond="20"
+          host="graphite.server.name" port="2003" prefix="servers.${hostname}.nuxeo."/>
+        <csvReporter enabled="true" periodInSecond="10" outputDir="${metrics.csv.dir}" />
+        <log4jInstrumentation enabled="true" />
+        <tomcatInstrumentation enabled="true" />
+      </metrics>
+      </extension>
+
+    </documentation>
+    <object class="org.nuxeo.runtime.metrics.MetricsDescriptor" />
+  </extension-point>
+
+</component>
