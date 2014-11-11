@@ -1,0 +1,60 @@
+<div class="summary"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <h:form id="document_view">
+    <a4j:region id="documentViewRegion">
+      <a4j:outputPanel id="documentViewPanel">
+      <div>
+        <ui:include src="/incl/summary/locked.xhtml" />
+        <c:if test="#{currentDocument.hasSchema('dublincore')}">
+          <ui:include src="/incl/summary/description.xhtml" />
+        </c:if>
+
+        <div style="clear:both;"></div>
+      </div>
+
+      <div>
+        <ui:include src="/incl/tagging.xhtml" />
+
+        <div style="clear:both;"></div>
+      </div>
+
+      <div>
+        <ui:include src="/incl/summary/content.xhtml" />
+        <c:if test="#{(!empty currentDocumentIncomingRelations) || (!empty currentDocumentOutgoingRelations)}">
+          <ui:include src="/incl/summary/relation.xhtml" />
+        </c:if>
+        <div style="clear:both;"></div>
+      </div>
+
+      <ui:include src="/incl/summary/metadata.xhtml" />
+
+      <c:if test="#{deleteActions.trashManagementEnabled and deleteActions.canRestoreCurrentDoc}">
+        <h3>
+          <h:outputText value="#{messages['label.summary.restoreDeletedDocument']}" />
+        </h3>
+        <h:commandButton value="#{messages['command.undeleteDocs']}"
+          styleClass="button" action="#{deleteActions.restoreCurrentDocument}" />
+      </c:if>
+
+      <ui:include src="/incl/summary/publication.xhtml"/>
+
+      <c:if test="#{currentDocument.hasFacet('Commentable') and (documentThreadedComments.size > 0)}">
+        <ui:include src="/incl/summary/comments.xhtml" />
+      </c:if>
+    </a4j:outputPanel>
+    </a4j:region>
+  </h:form>
+
+</div>
