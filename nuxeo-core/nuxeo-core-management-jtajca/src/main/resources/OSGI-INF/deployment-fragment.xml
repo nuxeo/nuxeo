@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <extension target="web#FIRST-FILTER">
+
+    <filter>
+      <display-name>Log4j Web MDC Filter</display-name>
+      <filter-name>Log4JWebFilter</filter-name>
+      <filter-class>org.nuxeo.ecm.core.management.jtajca.internal.Log4jWebFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+      <filter-name>Log4JWebFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+  </extension>
+
+</fragment>

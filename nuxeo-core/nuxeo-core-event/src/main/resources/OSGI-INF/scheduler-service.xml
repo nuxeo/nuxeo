@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.scheduler.SchedulerService">
+  <alias>org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService</alias>
+
+  <documentation>
+     Core scheduler registry service.
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.scheduler.SchedulerService" />
+  </service>
+
+  <implementation class="org.nuxeo.ecm.core.scheduler.SchedulerServiceImpl" />
+
+  <extension-point name="schedule">
+
+    <documentation>
+      Extension allowing the registration of schedules.
+      This is similar to a cron job sending events. Note that
+      contrary to UNIX cron there is an additional "seconds" field
+      in the cron expression.
+      <p/>
+      A scheduler definition contains information about what event is sent,
+      when, and under what identity.
+      <p/>
+      For instance :
+      <code>
+        <schedule id="mySchedule">
+          <username>Administrator</username>
+          <event>myEvent</event>
+          <eventCategory>default</eventCategory>
+          <!-- Every first of the month at 3am -->
+          <cronExpression>0 0 3 1 * ?</cronExpression>
+        </schedule>
+      </code>
+
+      @see org.quartz.CronTrigger
+      @see http://www.quartz-scheduler.org/docs/api/1.8.1/org/quartz/CronExpression.html
+      @see http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.scheduler.ScheduleImpl"/>
+
+  </extension-point>
+
+</component>

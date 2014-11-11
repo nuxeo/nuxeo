@@ -1,0 +1,16 @@
+-- character uuid to bigint migration for Oracle
+-- v0.3 2013-03-04
+
+BEGIN
+  -- log migration phase
+
+  -- drop index first
+  nx_execute('DROP INDEX "NXP_LOGS_LOG_DOC_UUID_IDX"');
+  -- migrate data
+  UPDATE nxp_logs SET nxp_logs.log_doc_uuid =
+    (SELECT nid FROM nx_idmap WHERE nx_idmap.id = nxp_logs.log_doc_uuid)
+    WHERE EXISTS
+      (SELECT 1 FROM nx_idmap WHERE nx_idmap.id = nxp_logs.log_doc_uuid);
+  -- recreate index
+  nx_execute('CREATE INDEX "NXP_LOGS_LOG_DOC_UUID_IDX" ON "NXP_LOGS"("LOG_DOC_UUID")');
+END;
