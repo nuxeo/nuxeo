@@ -1,0 +1,33 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf" rendered="#{field_0.docUUID!=null}">
+
+
+    <c:if test="#{nxl:isLikePlainMode(widget.mode)}"><h:outputText value="#{field_0.repositoryId}"/>:<h:outputText value="#{field_0.docUUID}" />
+     (<h:outputText value="#{field_0.docType}" />)
+    <h:outputText value="#{field_0.docPath}" /></c:if>
+    <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+       <h:panelGroup rendered="#{field_0.docUUID!=null}">
+        <h:outputText value="#{field_0.repositoryId}"/>:
+        <h:outputText value="#{field_0.docUUID}" />
+        (<h:outputText value="#{field_0.docType}" />) <br/>
+        <h:outputText value="#{field_0.docPath}" />
+       </h:panelGroup>
+    </c:if>
+    <c:if test="#{widget.mode == 'pdf'}">
+      <nxp:html>
+       <h:panelGroup rendered="#{field_0.docUUID!=null}">
+        <h:outputText value="#{field_0.repositoryId}"/>:
+        <h:outputText value="#{field_0.docUUID}" />
+        (<h:outputText value="#{field_0.docType}" />) <br/>
+        <h:outputText value="#{field_0.docPath}" />
+       </h:panelGroup>
+       </nxp:html>
+    </c:if>
+</f:subview>
