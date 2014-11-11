@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Publisher Service Web
+Bundle-SymbolicName: org.nuxeo.ecm.platform.publisher.web;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateless
+Bundle-Version: 1.0.0
+Require-Bundle: org.nuxeo.ecm.platform.publisher.api,
+  org.nuxeo.ecm.webapp.core
+Nuxeo-Component: OSGI-INF/actions-contrib.xml,
+ OSGI-INF/nxtreemanager-contrib.xml
