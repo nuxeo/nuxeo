@@ -1,0 +1,29 @@
+<div xmlns:h="http://java.sun.com/jsf/html">
+
+ <!-- this was ripped off from spacecontainer.xhtml -->
+
+
+<script type="text/javascript" language="javascript" src="#{contextPath}/opensocial/gadgets/js/rpc.js?c=1"></script>
+
+    <script type="text/javascript">
+
+   function getGwtParams(){
+     var w = document.documentElement.clientWidth;
+      return "{docRef:'#{personalDashboardContainerIdRef}', clientUrl: top.nxBaseUrl, windowWidth: "+w+", nxBaseUrl: top.nxBaseUrl, userLanguage: '#{localeSelector.language}' }";
+   }
+
+    function loading_show(){}
+
+    function loading_remove(){}
+
+  </script>
+
+    <iframe src="javascript:''" id="__gwt_historyFrame"
+    style="width: 0; height: 0; border: 0"></iframe>
+
+  <script type="text/javascript" language="javascript" src="#{contextPath}/org.nuxeo.opensocial.container.ContainerEntryPoint/org.nuxeo.opensocial.container.ContainerEntryPoint.nocache.js"></script>
+  <div id="containerPanel" style="background-color:white">
+  <div id="gwtContainer" style="padding-left:20px"/>
+  </div>
+
+</div>
