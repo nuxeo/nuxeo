@@ -1,0 +1,1263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>testDocumentRouteCreation</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">testDocumentRouteCreation</td></tr>
+</thead><tbody>
+<!-- Jdoe Create Route -->
+<!-- Create step A -->
+<!-- Distribution Step to Test Mailbox Child -->
+<!-- Create step B -->
+<!-- Distribution Task to Test Personal Mailbox For Opinion -->
+<!-- Create step C1.1 -->
+<!-- Generic Distribution Task to Test Mailbox For Opinion -->
+<!-- Create step C1.2 -->
+<!-- Generic Distribution Task to Test Mailbox For signature -->
+<!-- Create step C2.1 -->
+<!-- Personal Distribution Task to Bree For opinion -->
+<!-- Create step C2.2.1 -->
+<!-- Personal Distribution Task to Bree For signature -->
+<!-- Create step C2.2.2 -->
+<!-- Personal Distribution Task to Jdoe For signature -->
+<!-- Create step C2.3 -->
+<!-- Personal Distribution Task to Jdoe For Validation -->
+<!-- Create step D -->
+<!-- Distribution Task to Jsmith For opinion
+<!-- Create step E -->
+<!-- Distribution Step to Linnet -->
+<!-- Create condtional stepFolder F  -->
+<!-- DecisionalDistributionTask  to Linnet , If Linnet approves this one then-->
+<!-- DistributionTask  F1 , is executed and JSmith  receives the task -->
+<!-- else -->
+<!-- DistributionTask  F2 , is executed and Linnet receives the task-->
+<!-- Add doc to route -->
+<!-- Execute route -->
+<tr>
+	<td>setTimeout</td>
+	<td>120000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id=&quot;virtualNavTreeTab:virtualNavTreeList:3:virtualNavTreeLink&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Routes - John Doe (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Routes - John Doe (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Route</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>RouteDoc</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<!-- Create step A -->
+<!-- Distribution Step to Test Mailbox Child -->
+<tr>
+	<td>click</td>
+	<td>link=Add first step</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Distribution step</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>A</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggest']</td>
+	<td>Test Mailbox Child</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Test Mailbox Child</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Routes - John Doe (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=RouteDoc</td>
+	<td></td>
+</tr>
+<!-- Create step B -->
+<!-- Distribution Task to Test Personal Mailbox For Opinion -->
+<tr>
+	<td>click</td>
+	<td>//a[@id='dm_route_elements:nxl_document_routing_route_content:nxw_dr_listing_step_actions:nxw_dr_listing_step_actions_add:ADD_STEP_AFTER']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Distribution task</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>B</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggest']</td>
+	<td>Test personal Mailbox</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Test personal Mailbox</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>document_create:nxl_routing_task:nxw_type</td>
+	<td>label=For opinion</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Routes - John Doe (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=RouteDoc</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//a[@id='dm_route_elements:nxl_document_routing_route_content_1:nxw_dr_listing_step_actions_1:nxw_dr_listing_step_actions_1_add:ADD_STEP_AFTER']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Fork</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>C</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>document_create:nxl_step_folder:nxw_execution_type</td>
+	<td>label=parallel</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//a[@id='dm_route_elements:nxl_document_routing_route_content_2:nxw_dr_listing_step_actions_2:nxw_dr_listing_step_actions_2_add:ADD_STEP_BETWEEN']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Fork</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>C1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<!-- Create step C1.1 -->
+<!-- Distribution Task to Test Mailbox For Opinion -->
+<tr>
+	<td>click</td>
+	<td>//a[@id='dm_route_elements:nxl_document_routing_route_content_2:nxw_dr_listing_step_actions_2:nxw_dr_listing_step_actions_2_add:ADD_STEP_BETWEEN']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Distribution task</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>C1.1</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>document_create:nxl_routing_task:nxw_type</td>
+	<td>label=For opinion</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggest']</td>
+	<td>Test Mailbox</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Test Mailbox</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<!-- Create step C1.2 -->
+<!-- Distribution Task to Test Mailbox For signature -->
+<tr>
+	<td>click</td>
+	<td>//a[@id='dm_route_elements:nxl_document_routing_route_content_2:nxw_dr_listing_step_actions_2:nxw_dr_listing_step_actions_2_add:ADD_STEP_AFTER']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Distribution task</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>C1.2</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>document_create:nxl_routing_task:nxw_type</td>
+	<td>label=For signature</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggest']</td>
+	<td>Test Mailbox</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Test Mailbox</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Routes - John Doe (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=RouteDoc</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=C</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Fork</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>C2</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<!-- Create step C2.1 -->
+<!-- Personal Distribution Task to Bree For opinion -->
+<tr>
+	<td>click</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Distribution task</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>C2.1</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>document_create:nxl_routing_task:nxw_type</td>
+	<td>label=For opinion</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggest']</td>
+	<td>Bree Van de Kaamp</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Bree Van de Kaamp (Nuxeo)</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Routes - John Doe (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=RouteDoc</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=C</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=C2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Fork</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>C2.2</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>document_create:nxl_step_folder:nxw_execution_type</td>
+	<td>label=parallel</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<!-- Create step C2.2.1 -->
+<!-- Personal Distribution Task to Bree For signature -->
+<tr>
+	<td>click</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Distribution task</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>C2.2.1</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>document_create:nxl_routing_task:nxw_type</td>
+	<td>label=For signature</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggest']</td>
+	<td>Bree Van de Kaamp</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Bree Van de Kaamp (Nuxeo)</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Routes - John Doe (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=RouteDoc</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=C</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=C2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=C2.2</td>
+	<td></td>
+</tr>
+<!-- Create step C2.2.2 -->
+<!-- Distribution Task to Jdoe For signature -->
+<tr>
+	<td>click</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Distribution task</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>C2.2.2</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>document_create:nxl_routing_task:nxw_type</td>
+	<td>label=For signature</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggest']</td>
+	<td>John Doe</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>John Doe (Nuxeo)</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Routes - John Doe (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=RouteDoc</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=C</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=C2</td>
+	<td></td>
+</tr>
+<!-- Create step C2.3 -->
+<!-- Distribution Task to Jdoe For Validation -->
+<tr>
+	<td>click</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Distribution task</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>C2.3</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>document_create:nxl_routing_task:nxw_type</td>
+	<td>label=For validation</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggest']</td>
+	<td>John Doe</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>John Doe (Nuxeo)</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Routes - John Doe (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=RouteDoc</td>
+	<td></td>
+</tr>
+<!-- Create step D -->
+<!-- Distribution Task to Jsmith, Test Personal Mailbox For opinion -->
+<tr>
+	<td>click</td>
+	<td>//a[@id='dm_route_elements:nxl_document_routing_route_content_2:nxw_dr_listing_document_route_folder_element_type:nxw_dr_listing_document_route_folder_element_type:nxw_dr_listing_document_route_folder_element_type_add:ADD_STEP_AFTER']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Distribution task</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>D</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggest']</td>
+	<td>John Smith</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>John Smith (Nuxeo)</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>document_create:nxl_routing_task:nxw_type</td>
+	<td>label=For opinion</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Routes - John Doe (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=RouteDoc</td>
+	<td></td>
+</tr>
+<!-- Create step E -->
+<!-- Distribution Step to Linnet -->
+<tr>
+	<td>click</td>
+	<td>//a[@id='dm_route_elements:nxl_document_routing_route_content_8:nxw_dr_listing_step_actions_8:nxw_dr_listing_step_actions_8_add:ADD_STEP_AFTER']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Distribution step</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>E</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggest']</td>
+	<td>Linnet Scavo</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Linnet Scavo (Nuxeo)</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Routes - John Doe (Nuxeo)</td>
+	<td></td>
+</tr>
+<!--create conditional Stepf folder F, if Linnet approves, then Smith will get an email -->
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=RouteDoc</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=ConditionalStepFolder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>F</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=DecisionalDistributionTask</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Edit</td>
+	<td></td>
+</tr>
+<!--Edit decitional step-->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='document_edit:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggest']</td>
+	<td>Linnet Scavo</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='document_edit:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Linnet Scavo (Nuxeo)</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='document_edit:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>document_edit:nxl_routing_task:nxw_type</td>
+	<td>label=For opinion</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<!--end of decisional task-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Routes - John Doe (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=RouteDoc</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=F</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Option 1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Distribution task</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>F.1</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggest']</td>
+	<td>John Smith</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>John Smith (Nuxeo)</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>document_create:nxl_routing_task:nxw_type</td>
+	<td>label=For opinion</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Routes - John Doe (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=RouteDoc</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=F</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Option 2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Distribution task</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>F.2</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggest']</td>
+	<td>Linnet Scavo</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Linnet Scavo (Nuxeo)</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='document_create:nxl_all_mailboxes_routing_task:nxw_distribution_mailbox_mailbox_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>document_create:nxl_routing_task:nxw_type</td>
+	<td>label=For opinion</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Routes - John Doe (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=RouteDoc</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<!---end conditional step F-->
+<tr>
+	<td>verifyTextPresent</td>
+	<td>A</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>B</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>C</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>D</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>E</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>F</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
