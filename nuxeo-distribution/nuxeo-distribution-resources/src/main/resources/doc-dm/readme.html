@@ -1,0 +1,145 @@
+<html>
+<body>
+  <h1>Nuxeo Document Management 5.7-SNAPSHOT Release Notes</h1>
+
+  <p>Welcome to Nuxeo Document Management (DM) 5.7-SNAPSHOT.</p>
+
+  <p>You can always download the latest releases of Nuxeo DM based on the Nuxeo Enterprise Platform from <a href="http://www.nuxeo.com/en/downloads">http://www.nuxeo.com/en/downloads</a>.</p>
+
+  <h2>Requirements</h2>
+
+  <p>Nuxeo DM 5.5 need Java. Please install and set up the recommended <a href="http://java.sun.com/javase/downloads/index.jsp">Sun Java Development Kit (JDK) 6</a> if it's not already installed on your computer.</p>
+
+  <p>Nuxeo is also compliant with the older Java 5, but support for it is likely to be dropped in a future release.</p>
+
+  <p>We've also had success running Nuxeo DM on the OpenJDK 6 (the default version of Java installed on most Linux distributions). We don't consider the OpenJDK as a supported platform yet, but we welcome your feedback if you encounter any trouble with it.</p>
+
+  <p>It won't work with any previous release of Java (e.g. Java 1.4).</p>
+
+  <p>Under Windows, virus scan should be configured to avoid scanning Nuxeo's installation folder. More details on <a href="https://doc.nuxeo.com/x/ngQz"> this FAQ entry </a>.
+  </p>
+
+  <h2>Getting Started</h2>
+
+  <p>After you have installed the Nuxeo DM:</p>
+
+  <p> Either follow the Quick installation steps described on the online <a href="https://doc.nuxeo.com/x/UQJc">Installation and Administration Guide </a> or the instructions below. </p>
+  <ol>
+    <li>Go to your installation directory.</li>
+
+    <li>Start the server:
+      <ul><li>under Linux/Unix/MacOS, run "<tt>./bin/nuxeoctl start</tt>" to use only the terminal or "<tt>./bin/nuxeoctl gui start</tt>" to display the Control Panel (run "<tt>./bin/nuxeoctl help</tt>" for list of available commands).</li>
+      <li>under Windows if you installed Nuxeo from the .zip file, run "<tt>bin\nuxeoctl.bat</tt>".</li>
+      <li>under Windows if you installed Nuxeo from the .exe file, either run "<tt>bin\nuxeoctl.bat</tt>" or use the "nuxeo" Windows service.</li>
+      </ul>
+    </li>
+
+    <li>Point your browser to http://localhost:8080/nuxeo/.</li>
+
+    <li>Configure your server using the displayed Startup Wizard.</li>
+
+    <li>When the server is restarted, log in using the "Administrator" login and the "Administrator" password (no quotes, of course, but capital &quot;A&quot;).</li>
+  </ol>
+
+  <p>For setup and configuration, you should refer to the <a href="https://doc.nuxeo.com/x/PwA7"> Setup pages </a> of the Installation and Administration Guide.<br/>
+  </p>
+
+  <h2>Complementary features</h2>
+
+  <p>The following features depend on the environment where you installed Nuxeo DM.</p>
+  <ul>
+    <li>PDF transformation:  this feature requires OpenOffice started as server, complete the installation by following <a href="https://doc.nuxeo.com/x/zgJc">the OpenOffice instructions on the related software page</a>.</li>
+    <li>Preview and annotations: requires install of third-party software <a href="http://sourceforge.net/projects/pdftohtml/">&quot;pdftohtml&quot;</a>, see <a href="https://doc.nuxeo.com/x/zgJc">the pdftohtml instructions on the related software page</a>.</li>
+    <li>Image tiling<b>: </b>requires install of third-party software <a href="http://www.imagemagick.org/script/index.php">&quot;ImageMagick&quot;</a>, see <a href="https://doc.nuxeo.com/x/zgJc">the ImageMagick instructions on the related software page</a>.</li>
+    <li>Drag and drop plugins:  <a href="https://download.nuxeo.com/browser/firefox/nuxeo-dragdrop-ff-extension.xpi">Firefox</a>, <a href="http://download.nuxeo.org/desktop-integration/drag-drop/msie/">Internet Explorer</a>.</li>
+    <li>Desktop integration thanks to LiveEdit: see the <a href="http://www.nuxeo.com/en/downloads/desktop-integration">plugins download page</a>.</li>
+  </ul>
+
+  <h2>About Nuxeo DM</h2>
+
+  <p>Nuxeo DM is a robust, extensible, global Enterprise Content Management (ECM) solution available as Open Source Software (OSS). Nuxeo imagined, developed and is releasing Nuxeo DM, helped by a vibrant community of professional and individual contributors.</p>
+
+<p>Nuxeo DM is the ultimate ready to go collaborative document management application available on the market. Based on our popular open source ECM platform Nuxeo EP, Nuxeo DM benefits from its flexibility, feature scope, scalability and IS integration capabilities. Nuxeo DM provides organizations with the application they need to enable their teams to work more efficiently either on a project-basis or on longer term business processes. Nuxeo DM brings them the ability to create, share, annotate, store and retrieve any types of documents in their usual desktop environment. <br><br>Nuxeo DM main features (details features are listed <a href="http://www.nuxeo.com/en/products/dm/features/">here</a>):</p>
+
+  <ul>
+    <li><b>Capture:</b> With Nuxeo DM, you can create your documents using your day-to-day favorite tools (MS Office, Mail, etc.) or or you can batch import your exiting documents (drag and drop, form and import, email capture).</li>
+
+    <li><b>Share &amp; Collaborate:</b> Save time by finding the right information when you need it ! Empower your co-workers to share, access, enrich and store high quality content in a single place. Nuxeo DM can manage all of your organization's documents and IP assets in a scalable and secured document repository.
+Create and enrich documents within collaborative workspaces, follow their validation process via customizable workflows, publish in one or any hierarchy you chose.
+Join our existing customers, take all the benefits from our collaborative open source content management solutions.</li>
+
+    <li><b>Process &amp; Review:</b> Customize your documents life cycle, quickly adapt workflows to reflect internal procedures and to meet your legal compliancy requirements.
+Nuxeo DM can handle the way you work!</li>
+
+    <li><b>Publish &amp; Archive:</b> Keep track of any and all changes that have happened within the document repository.
+Nuxeo DM allows you to publish the validated documents you have created to a larger audience, and the audit trail offers the legal compliance that your organization requires.</li>
+
+    <li><b>Search &amp; Find:</b> With Nuxeo DM search features, you can easily find your documents through their content or their metadata.
+Save time: you can save and reuse your most frequent queries.</li>
+
+  </ul>
+
+  <p>This release note presents the main features of the platform, through a default web client.</p>
+
+  <h2>Known Issues</h2>
+
+  <p>Please go to the <a href="http://jira.nuxeo.org/browse/NXP?report=com.atlassian.jira.plugin.system.project:versions-panel">Jira issue tracker</a> for the Nuxeo ECM Platform project on jira.nuxeo.org to check the
+  <a href="https://jira.nuxeo.org/browse/NXP/fixforversion/">currently bugs and issues with this release</a>.
+  </p>
+
+  <h2>Documentation and Help</h2>
+
+  <p>You will find documentation on the <a href="http://doc.nuxeo.com/">the Nuxeo community site</a>.</p>
+
+  <p>More specifically :</p>
+
+  <ul>
+    <li>The <a href="https://doc.nuxeo.com/x/aYEk">Nuxeo User Guide</a></li>
+
+    <li>How to develop with Nuxeo - <a href="http://doc.nuxeo.org/current/books/nuxeo-learning/html/">The Tutorial (draft)</a></li>
+
+    <li>The <a href="https://doc.nuxeo.com/x/PIAO">Nuxeo Technical Documentation Center</a></li>
+
+    <li>The <a href="https://doc.nuxeo.com/x/G4AO">Nuxeo Administration Guide</a></li>
+
+  </ul>
+
+  <h2>Licenses</h2>
+
+  <p>Nuxeo EP and Nuxeo DM are copyright 2006-2011 Nuxeo SA. They are released under the LGPL license. Nuxeo EP includes third-party libraries, licensed under compatible open source licenses.</p>
+
+  <h2>Acknowledgments</h2>
+
+  <p>This release contains code developed by the Nuxeo Team (Alain, Anahide, Benjamin, Bogdan, Eric, Eugen, Julien, Lise, Olivier, Solen, Stefane, Thierry, Tibo...), the Leroy Merlin team and Jean-Marc from Chalmers University in Goteborg. Many more people have suggested improvement, spotted issues or contributed bugfixes on the mailing list.</p>
+
+  <p>The following translations are contributions from the community:</p>
+  <p>
+    Arabic: Taieb Felfel<br>
+    Basque: Jose Luis de la Rosa<br>
+    Catalan: Jose Luis de la Rosa<br>
+    Chinese: Line Lu<br>
+    English: Nuxeo Team<br>
+    French: Nuxeo Team<br>
+    Galician: Jose Luis de la Rosa<br>
+    German: Georges Racinet<br>
+    Greek: Nina Bagouli<br>
+    Italian: Mirto Silvio Busico, Samuele Innocenti, Stefane Fermigier<br>
+    Japanese: Damien Dupraz, Hiromi Kimura<br>
+    Polish: Adam Lozy<br>
+    Portuguese: Jose Luis de la Rosa<br>
+    Brazilian: Rogerio J. Gentil<br>
+    Russian: Jane Smorodnik<br>
+    Spanish: Daniel Tellez, Jose Luis de la Rosa<br>
+    Vietnamese: Le Tuan Dat and Daniel Tellez
+  </p>
+
+  <p>This release contains open source libraries developed by the JBoss Group, the Apache Foundation, Sun Microsystems, HP, the OSGi Alliance, the JMock project, the JFlex project, the Cup project, etc.</p>
+
+  <p>This project is developed using tools that include: Eclipse, JUnit, Ant, Maven, Jira, Hudson, YourKit Java Profiler (thanks to free licenses donated by YourKit), etc.</p>
+
+  <h2>About Nuxeo</h2>
+
+  <p>Nuxeo provides a modular, extensible Java-based <a href="http://www.nuxeo.com/en/products/ep">open source software platform for enterprise content management</a> and packaged applications for <a href="http://www.nuxeo.com/en/products/document-management">document management</a>, <a href="http://www.nuxeo.com/en/products/dam">digital asset management</a> and <a href="http://www.nuxeo.com/en/products/case-management">case management</a>. Designed by developers for developers, the Nuxeo platform offers modern architecture, a powerful plug-in model and extensive packaging capabilities for building content applications.</p>
+
+</body>
+</html>

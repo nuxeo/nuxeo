@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>testFiling</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">testFiling</td></tr>
+</thead><tbody>
+<tr>
+	<td>setTimeout</td>
+	<td>120000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>jdoe</td>
+	<td></td>
+</tr>
+<!-- Verify automatic mailbox creation -->
+<tr>
+	<td>click</td>
+	<td>virtualNavTreeTab:virtualNavTreeList:1:virtualNavTreeLink</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>Cl - John Doe</td>
+	<td></td>
+</tr>
+<!-- Verify Manual mailbox creation -->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Classification folder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Create a new classification root&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>Manual Classification Root</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>document_create:create_doc_CREATE_DOCUMENT</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>virtualNavTreeTab:virtualNavTreeList:1:virtualNavTreeLink</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>Manual Classification Root</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>virtualNavTreeTab:virtualNavTreeList:0:virtualNavTreeLink</td>
+	<td></td>
+</tr>
+<!-- add Bree to delegation -->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Delegation</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='mailbox_delegation:nxl_cm_mailbox_managers:nxw_mailbox_users_suggest']</td>
+	<td>bree</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='mailbox_delegation:nxl_cm_mailbox_managers:nxw_mailbox_users_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Bree Van de Kaamp</td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id='mailbox_delegation:nxl_cm_mailbox_managers:nxw_mailbox_users_suggestionBox']/div[1]/div/table/tbody/tr/td/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='mailbox_delegation:nxl_cm_mailbox_managers:nxw_mailbox_users_suggestionBox:suggest']/x:tbody/x:tr/x:td</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>Bree Van de Kaamp</td>
+	<td>1000</td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Bree Van de Kaamp</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+<!-- Log in as Bree -->
+<tr>
+	<td>open</td>
+	<td>/nuxeo/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>bree</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>bree1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>bree</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>link=John Doe (Nuxeo)</td>
+	<td>John Doe (Nuxeo)</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=John Doe (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Classification folder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Cl - John Doe (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>link=Cl - John Doe (Nuxeo)</td>
+	<td>Cl - John Doe (Nuxeo)</td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Manual Classification Root</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Cl - John Doe (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Create a new classification folder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Create a new classification folder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>classification folder</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>document_create:create_doc_CREATE_DOCUMENT</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>virtualNavTreeTab:virtualNavTreeList:1:virtualNavTreeLink</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>My classification trees</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Cl - John Doe (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>classification folder</td>
+	<td></td>
+</tr>
+<!-- delete Manual Classification Root -->
+<tr>
+	<td>click</td>
+	<td>virtualNavTreeTab:virtualNavTreeList:0:virtualNavTreeLink</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>My Mailboxes</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=John Doe (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Classification folder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>mailbox_plans_content:nxl_document_listing_ajax_1:nxw_listing_ajax_selection_box_with_current_document_1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>mailbox_plans_content:clipboardActionsTable_0_0:3:clipboardActionsButton</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>mailbox_plans_content:clipboardActionsTable_0_0:3:clipboardActionsButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Delete selected document(s)?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>Manual Classification Root</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+<!-- Log in as John -->
+<tr>
+	<td>open</td>
+	<td>/nuxeo/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jsmith</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jsmith1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>jsmith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>Cl - John Doe (Nuxeo)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>

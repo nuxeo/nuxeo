@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<connection-factories>
+  <tx-connection-factory>
+    <jndi-name>NXRepository/default</jndi-name>
+    <xa-transaction/>
+    <track-connection-by-tx/>
+    <adapter-display-name>Nuxeo SQL Repository DataSource</adapter-display-name>
+    <rar-name>nuxeo.ear#nuxeo-core-storage-sql-ra-5.7-SNAPSHOT.rar</rar-name>
+    <connection-definition>org.nuxeo.ecm.core.storage.sql.Repository</connection-definition>
+    <config-property name="name">default</config-property>
+    <min-pool-size>${nuxeo.vcs["min-pool-size"]}</min-pool-size>
+    <max-pool-size>${nuxeo.vcs["max-pool-size"]}</max-pool-size>
+
+<#if "${nuxeo.db.type}" == "postgresql">
+    <config-property name="xaDataSource" type="java.lang.String">org.postgresql.xa.PGXADataSource</config-property>
+    <config-property name="property" type="java.lang.String">ServerName=${nuxeo.db.host}</config-property>
+    <config-property name="property" type="java.lang.String">PortNumber/Integer=${nuxeo.db.port}</config-property>
+    <config-property name="property" type="java.lang.String">DatabaseName=${nuxeo.db.name}</config-property>
+    <config-property name="property" type="java.lang.String">User=${nuxeo.db.user}</config-property>
+    <config-property name="property" type="java.lang.String">Password=${nuxeo.db.password}</config-property>
+<#elseif "${nuxeo.db.type}" == "oracle">
+    <config-property name="xaDataSource" type="java.lang.String">oracle.jdbc.xa.client.OracleXADataSource</config-property>
+    <config-property name="property" type="java.lang.String">URL=${nuxeo.db.jdbc.url}</config-property>
+    <config-property name="property" type="java.lang.String">User=${nuxeo.db.user}</config-property>
+    <config-property name="property" type="java.lang.String">Password=${nuxeo.db.password}</config-property>
+    <isSameRM-override-value>false</isSameRM-override-value>
+    <!-- Oracles XA datasource cannot reuse a connection outside a transaction once enlisted in a global transaction and vice-versa -->
+    <no-tx-separate-pools></no-tx-separate-pools>
+<#elseif "${nuxeo.db.type}" == "mssql">
+    <config-property name="xaDataSource" type="java.lang.String">net.sourceforge.jtds.jdbcx.JtdsDataSource</config-property>
+    <config-property name="property" type="java.lang.String">ServerName=${nuxeo.db.host}</config-property>
+    <config-property name="property" type="java.lang.String">PortNumber/Integer=${nuxeo.db.port}</config-property>
+    <config-property name="property" type="java.lang.String">DatabaseName=${nuxeo.db.name}</config-property>
+    <config-property name="property" type="java.lang.String">User=${nuxeo.db.user}</config-property>
+    <config-property name="property" type="java.lang.String">Password=${nuxeo.db.password}</config-property>
+    <config-property name="property" type="java.lang.String">UseCursors=true</config-property>
+<#elseif "${nuxeo.db.type}" == "mysql">
+    <config-property name="xaDataSource" type="java.lang.String">com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</config-property>
+    <config-property name="property" type="java.lang.String">URL=${nuxeo.db.jdbc.url}</config-property>
+    <config-property name="property" type="java.lang.String">User=${nuxeo.db.user}</config-property>
+    <config-property name="property" type="java.lang.String">Password=${nuxeo.db.password}</config-property>
+<#else>
+    <config-property name="xaDataSource" type="java.lang.String">org.h2.jdbcx.JdbcDataSource</config-property>
+    <config-property name="property" type="java.lang.String">URL=${nuxeo.db.jdbc.url}</config-property>
+    <config-property name="property" type="java.lang.String">User=${nuxeo.db.user}</config-property>
+    <config-property name="property" type="java.lang.String">Password=${nuxeo.db.password}</config-property>
+</#if>
+  </tx-connection-factory>
+</connection-factories>
