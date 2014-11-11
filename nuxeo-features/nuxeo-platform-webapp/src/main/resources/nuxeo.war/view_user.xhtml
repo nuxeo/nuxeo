@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory">
+
+  <ui:define name="page title">Nuxeo 5 EP</ui:define>
+
+  <ui:define name="body">
+    <h:form>
+      <div>
+        <ui:include src="/userManager_action_tabs.xhtml" />
+        <div style="clear: both"></div>
+      </div>
+
+      <div class="tabsContent">
+        <br />
+
+        <ui:decorate template="/incl/back_link.xhtml">
+          <ui:param name="doAction" value="view_users" />
+        </ui:decorate>
+        <ui:include src="/incl/message_banner.xhtml" />
+
+        <br />
+        <h1>
+          <h:outputText class="label" value="#{selectedUser.name}" />
+        </h1>
+
+        <ui:decorate template="/incl/delete_link.xhtml">
+          <ui:param name="doDelete" value="delete_user" />
+        </ui:decorate>
+
+        <div>
+          <ui:include src="/userManager_view_subtabs.xhtml" />
+          <div style="clear: both" />
+        </div>
+
+        <div class="tabsContent">
+
+          <table class="dataInput">
+            <tbody>
+              <tr>
+                <td colspan="2">
+                  <c:if test="#{empty userManagerActions.changeableUserType.layout}">
+                    <nxl:layout name="user" mode="view" value="#{selectedUser.model}" />
+                  </c:if>
+                  <c:if test="#{!empty userManagerActions.changeableUserType.layout}">
+                    <h:dataTable var="field"
+                      value="#{userManagerActions.changeableUserType.layout}"
+                      class="dataInput" columnClasses="labelColumn, fieldColumn">
+                      <h:column>
+                        <h:outputText value="#{messages[field.fieldName]}" />
+                      </h:column>
+
+                      <h:column>
+
+                        <h:outputText
+                          value="#{selectedUser.model[field.schemaName][field.fieldName]}"
+                          rendered="${field.jsfComponent=='h:inputText' || field.jsfComponent=='h:inputTextReadOnly'}" />
+
+                        <h:outputText
+                          value="#{selectedUser.model[field.schemaName][field.fieldName]}"
+                          rendered="${field.jsfComponent=='h:inputTextarea'}" />
+
+                        <h:outputText
+                          value="#{selectedUser.model[field.schemaName][field.fieldName]}"
+                          rendered="${field.jsfComponent=='nxu:editor'}" escape="false" />
+
+                        <h:outputText
+                          value="#{selectedUser.model[field.schemaName][field.fieldName]}"
+                          rendered="${field.jsfComponent=='t:inputCalendar'}">
+                          <f:convertDateTime pattern="#{nxu:basicDateFormater()}"
+                            timeZone="#{timeZone}" />
+                        </h:outputText>
+
+                        <nxdir:directoryEntryOutput
+                          value="#{selectedUser.model[field.schemaName][field.fieldName]}"
+                          directoryName="#{field.directory}"
+                          rendered="${field.jsfComponent=='nxdir:selectOneListbox'}" />
+
+                        <nxu:dataList var="item"
+                          value="#{selectedUser.model[field.schemaName][field.fieldName]}"
+                          layout="simple"
+                          rendered="${field.jsfComponent=='nxdir:selectManyListbox'}">
+                          <div>
+                            <nxdir:directoryEntryOutput value="#{item}"
+                              directoryName="#{field.directory}" />
+                          </div>
+                        </nxu:dataList>
+
+                      </h:column>
+                    </h:dataTable>
+                  </c:if>
+                </td>
+              </tr>
+              <tr>
+                <td class="labelColumn">
+                  <h:outputText
+                    value="#{messages['label.userManager.userGroups']}" />
+                </td>
+                <td class="fieldColumn">
+                  <nxu:dataList var="group"
+                    value="#{selectedUser.groups}" layout="simple"
+                    rowCountVar="rowCount" rowIndexVar="rowIndex">
+                    <h:outputText value="#{group}" />
+                    <h:outputText value=", " rendered="#{rowIndex + 1 &lt; rowCount}" />
+                  </nxu:dataList>
+                </td>
+              </tr>
+
+              <tr>
+                <td colspan="2"></td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+        <!-- inner tabsContent -->
+      </div>
+      <!-- outer tabsContent -->
+
+    </h:form>
+  </ui:define>
+
+</nxthemes:composition>

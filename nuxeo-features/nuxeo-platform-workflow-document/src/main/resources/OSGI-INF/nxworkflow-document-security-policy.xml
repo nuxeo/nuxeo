@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService">
+
+    <documentation>
+      Core workflow related security policy service.
+
+      @version 1.0
+      @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+    </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService"/>
+
+    <extension-point name="workflowDocumentSecurityPolicy">
+
+      <documentation>
+
+        Extension allowing the contribution of security policies related to workflows.
+
+        <p/>
+        A security policy decides of the distributions of ACEs to workflow
+        participants of a given workflow instance.
+
+        <p/>
+        You must implement : org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicy.
+        For this you can extend : org.nuxeo.ecm.platform.workflow.document.api.security.policy.AbstractWorkflowDocumentSecurityPolicy.
+
+        <p/>
+        Note, security policy are often part of the business logic beside
+        a workflow.
+
+      </documentation>
+
+      <object class="org.nuxeo.ecm.platform.workflow.document.service.extensions.WorkflowDocumentSecurityPolicyDescriptor"/>
+
+    </extension-point>
+
+    <extension-point name="workflowDocumentSecurityPolicyRelation">
+
+      <documentation>
+
+        Extension allowing the contributions of workflow to security policy
+        mappings
+
+        <p/>
+        The idea here is to bind a contributed security policies to given
+        workflow.
+
+        <p/>
+        It allows to customize the behavior related to security for a document
+        bound to one or several workflows.
+
+        <p/> Note that each workflow instance has a dedicated ACL on the document. Thus, this is no problem to bind
+        several workflow instances on the same document with different security policies.
+
+      </documentation>
+
+      <object class="org.nuxeo.ecm.platform.workflow.document.service.extensions.WorkflowDocumentSecurityPolicyRelationDescriptor"/>
+
+    </extension-point>
+
+</component>

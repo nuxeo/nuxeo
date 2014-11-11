@@ -1,0 +1,9 @@
+<component name="org.nuxeo.ecm.platform.relations.search.contrib">
+
+  <extension target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+    point="resourceType">
+    <resourceType name="relations"
+      factoryClass="org.nuxeo.ecm.platform.relations.search.resources.indexing.RelationIndexableResourceFactory"/>
+  </extension>
+
+</component>

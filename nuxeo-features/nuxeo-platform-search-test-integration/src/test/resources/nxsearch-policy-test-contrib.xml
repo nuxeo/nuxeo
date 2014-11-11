@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.paltform.searchPolicy.test.contrib">
+
+  <extension target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+    point="policies">
+
+    <policy name="access"
+      class="org.nuxeo.ecm.core.search.security.AccessLevelSearchPolicy"
+      order="20" />
+
+  </extension>
+
+</component>

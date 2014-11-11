@@ -1,0 +1,19 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+	 xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:h="http://java.sun.com/jsf/html">
+     
+	<f:subview rendered="#{doAction=='view_users'}">
+		<p class="directoryBack">
+      		<h:commandLink type="submit" immediate="true"
+        		value="#{messages['command.directoryBack']}" action="view_users"
+        	/>
+    	</p>
+	</f:subview>
+	<f:subview rendered="#{doAction=='view_groups'}">
+		<p class="directoryBack">
+      		<h:commandLink type="submit" immediate="true"
+        		value="#{messages['command.directoryBack']}" action="view_groups"
+        	/>
+    	</p>
+	</f:subview>
+</div>
