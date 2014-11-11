@@ -1,0 +1,33 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  class="syndicationButton">
+
+  <f:subview rendered="#{type=='document'}">
+    <div class="syndicationLinks">
+      <h:outputLink value="#{fullSyndicationDocumentUrl}rss_2.0" >
+        <h:outputText value="#{messages['label.syndication.rss']}"/>
+      </h:outputLink>
+      <h:outputText value=" | " />
+      <h:outputLink value="#{fullSyndicationDocumentUrl}atom_0.3">
+        <h:outputText value="#{messages['label.syndication.atom']}"/>
+      </h:outputLink>
+    </div>
+  </f:subview>
+
+  <f:subview rendered="#{(type=='search') and (searchActions.latestNxql!=null)}">
+     <div class="syndicationLinks">
+      <h:outputLink value="#{fullSyndicationSearchUrl}rss_2.0" >
+        <h:outputText value="#{messages['label.syndication.rss']}"/>
+      </h:outputLink>
+      <h:outputText value=" | " />
+      <h:outputLink value="#{fullSyndicationSearchUrl}atom_0.3">
+          <h:outputText value="#{messages['label.syndication.atom']}"/>
+      </h:outputLink>
+    </div>
+  </f:subview>
+
+</div>

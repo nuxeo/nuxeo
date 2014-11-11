@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Tag Web
+Bundle-SymbolicName: org.nuxeo.ecm.platform.tag.web
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateless
+Require-Bundle: org.nuxeo.ecm.platform.tag.api,
+ org.nuxeo.ecm.webapp.ui
+Export-Package: org.nuxeo.ecm.platform.tag.web
+Nuxeo-Component: OSGI-INF/navtree-contrib.xml
+
+
