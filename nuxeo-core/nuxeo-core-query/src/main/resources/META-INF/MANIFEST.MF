@@ -1,0 +1,22 @@
+Export-Package: org.nuxeo.ecm.core.query,
+ org.nuxeo.ecm.core.query.sql,
+ org.nuxeo.ecm.core.query.sql.model,
+ org.nuxeo.ecm.core.query.sql.parser
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: org.nuxeo.ecm.core.query
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 5.4.2.qualifier
+Bundle-ManifestVersion: 2
+Import-Package: java_cup.runtime,
+ org.joda.time,
+ org.joda.time.base,
+ org.joda.time.format,
+ org.nuxeo.common.collections,
+ org.nuxeo.common.utils,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.impl
+Bundle-SymbolicName: org.nuxeo.ecm.core.query;singleton:=true
