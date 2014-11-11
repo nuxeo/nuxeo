@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.theme.styling.tests.themeStylingContrib2">
+
+  <!-- adds a new style to an already configured page -->
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+    <themePage name="testStyling/default">
+      <styles append="true">
+        <style>nuxeo_dm_default2</style>
+      </styles>
+      <resources append="true">
+        <resource>jquery.fancybox.style.css</resource>
+      </resources>
+    </themePage>
+  </extension>
+
+  <extension target="org.nuxeo.theme.styling.service" point="styles">
+    <!-- override print css -->
+    <style name="print_default">
+      <src>themes/css/print_default2.css</src>
+    </style>
+    <!-- define new css -->
+    <style name="nuxeo_dm_default2">
+      <src>themes/css/nuxeo_dm_default2.css</src>
+    </style>
+  </extension>
+
+  <!-- define new resource -->
+  <extension target="org.nuxeo.theme.styling.service" point="resources">
+    <resource name="jquery.fancybox.style.css">
+      <path>css/jquery.fancybox.css</path>
+    </resource>
+  </extension>
+
+</component>
