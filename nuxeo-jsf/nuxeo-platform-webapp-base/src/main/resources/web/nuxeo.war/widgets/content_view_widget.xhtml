@@ -1,0 +1,30 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  id="#{widget.id}">
+
+<script type="text/javascript">
+function confirmDeleteDocuments() {
+    return confirm("#{messages['label.documents.confirmDeleteDocuments']}");
+}
+function confirmUndeleteDocuments() {
+    return confirm("#{messages['label.documents.confirmUndeleteDocuments']}");
+}
+function confirmDeleteDocumentsForever() {
+    return confirm("#{messages['label.documents.confirmDeleteDocumentsForever']}");
+}
+</script>
+
+  <nxu:set var="contentViewId" value="#{widget.id}">
+  <nxu:set var="contentViewName" value="#{widgetProperty_contentViewName}">
+
+    <ui:decorate template="/incl/content_view.xhtml" />
+
+  </nxu:set>
+  </nxu:set>
+
+</f:subview>
