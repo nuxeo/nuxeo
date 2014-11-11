@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="filemanager.core.listener.unicity" version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <documentation>
+      Listen for Core event DOCUMENT_UPDATED and DOCUMENT_CREATED and check for existing duplicated blobs in the db
+     </documentation>
+    <listener name="unicityListener" async="true" postCommit="true" class="org.nuxeo.ecm.platform.filemanager.core.listener.AsynchronousUnicityCheckListener" priority="140">
+    </listener>
+  </extension>
+
+</component>
