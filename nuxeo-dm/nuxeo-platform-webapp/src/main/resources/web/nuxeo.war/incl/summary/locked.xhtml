@@ -1,0 +1,29 @@
+<div class="lockFile_block" id='lock_unlock_button'
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <c:if test="#{!empty currentDocumentLockDetails}">
+    <h:outputText value="#{messages['label.summary.locked.intro']} " /> 
+    <h:outputText value="#{messages['label.summary.locked']}" styleClass="summary_locked" />
+    <c:if test="#{currentDocumentCanBeUnlocked}">
+      <h:outputText value=" | " />
+      <h:commandLink value="#{messages['command.unlock']}"
+        action="#{lockActions.unlockCurrentDocument}"/>
+    </c:if>
+    <div class="lockDetail">
+      <h:outputText value="#{messages['label.summary.by']} #{currentDocumentLockDetails['document.locker']}, "/>
+      <h:outputText value="#{messages['label.summary.the']} #{currentDocumentLockDetails['document.lock.time']}"/>
+    </div>
+  </c:if>
+
+  <c:if test="#{empty currentDocumentLockDetails}">
+    <h:outputText value="#{messages['label.summary.locked.intro']} "/> 
+    <h:outputText class="summary_unlocked" value="#{messages['label.summary.unlocked']} "/>
+    <c:if test="#{currentDocumentCanBeLocked}" >
+      <h:outputText value=" | " />
+      <h:commandLink value="#{messages['command.lock']}"
+        action="#{lockActions.lockCurrentDocument}"/>
+    </c:if>
+  </c:if>
+
+</div>
