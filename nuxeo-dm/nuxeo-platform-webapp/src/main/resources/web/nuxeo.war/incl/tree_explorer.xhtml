@@ -1,0 +1,76 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:rich="http://richfaces.org/rich"
+  class="menu">
+
+<c:if test="#{!empty treeActions.treeRoots}">
+
+  <a4j:region renderRegionOnly="true">
+     <a4j:form ajaxSubmit="true">
+     <div style="float:right">
+         <a4j:commandLink action="#{treeActions.reset}" reRender="treeNav">
+           <h:graphicImage value="/img/refresh.png"
+            alt="#{messages['label.refresh']}"
+            title="#{messages['label.refresh']}" />
+         </a4j:commandLink>
+     </div>
+    <dl>
+      <dd class="menuForm">
+          <h:panelGroup id="treeNav">
+            <rich:tree
+              adviseNodeOpened="#{treeActions.adviseNodeOpened}"
+              changeExpandListener="#{treeActions.changeExpandListener}"
+              icon="#{nodeState.isExpanded(rowKey)?nxd:iconExpandedPath(node.document):nxd:iconPath(node.document)}"
+              iconLeaf="#{nxd:iconPath(node.document)}"
+              iconExpanded="/icons/toggle_minus.png"
+              iconCollapsed="/icons/toggle_plus.png"
+              rowKeyVar="rowKey"
+              stateVar="nodeState">
+              <rich:recursiveTreeNodesAdaptor
+                roots="#{treeActions.treeRoots}"
+                nodes="#{node.children}"
+                var="node">
+                <rich:treeNode
+                  highlightedClass="treeNodeHighlightedClass"
+                  selectedClass="treeNodeSelectedClass"
+                   oncomplete="jQuery('span.popupTarget').contextMenu('popupMenu');">
+                  <div id="docRefTarget:#{node.document.id}">
+                    <span class="popupTarget" docRef="#{node.document.ref}">
+                      <nxd:restDocumentLink document="#{node.document}"
+                        styleClass="treeLink">
+                        <h:outputText value="#{nxd:titleOrId(node.document)}" />
+                      </nxd:restDocumentLink>
+                      <script type="text/javascript">
+                        <h:outputText rendered="#{node.document.folder}"
+                          value="Droppables.add('docRefTarget:#{node.document.id}', {accept:'cell', onDrop:function(element){moveElement(element,'docRef:#{node.document.id}')}, hoverclass:'dropInto'});"/>
+                      </script>
+                    </span>
+                  </div>
+                </rich:treeNode>
+              </rich:recursiveTreeNodesAdaptor>
+            </rich:tree>
+          </h:panelGroup>
+      </dd>
+    </dl>
+   </a4j:form>
+  </a4j:region>
+
+</c:if>
+
+<ui:include src="/incl/popupMenu.xhtml"/>
+<script>
+  if (window.addEventListener) {
+    window.addEventListener("load", function (e) {window.loaded = true}, true);
+  } else if (window.attachEvent) {
+    window.attachEvent("onload", function (e) {window.loaded = true});
+  }
+  setupContextMenu("span.popupTarget");
+</script>
+
+</div>
