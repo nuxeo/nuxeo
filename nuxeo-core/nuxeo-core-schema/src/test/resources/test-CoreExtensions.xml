@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.CoreExtensions">
+
+  <extension target="org.nuxeo.ecm.core.CoreService"
+    point="sessionFactory">
+    <factory class="org.nuxeo.ecm.core.api.local.LocalSessionFactory" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="common" src="schema/common.xsd" />
+    <schema name="core-types" src="schema/core-types.xsd" />
+    <schema name="dublincore" src="schema/dublincore.xsd" prefix="dc" />
+    <schema name="file" src="schema/file.xsd" />
+    <schema name="note" src="schema/note.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="File" extends="Document">
+      <schema name="common" />
+      <schema name="file" />
+      <schema name="dublincore" />
+      <facet name="Downloadable" />
+      <facet name="Versionable" />
+    </doctype>
+    <doctype name="Note" extends="Document">
+      <schema name="common" />
+      <schema name="note" />
+      <schema name="dublincore" />
+      <facet name="Versionable" />
+    </doctype>
+    <doctype name="Folder" extends="Document">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <facet name="Folderish" />
+    </doctype>
+    <doctype name="Root" extends="Folder"></doctype>
+    <doctype name="Workspace" extends="Document">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="file" />
+      <facet name="Folderish" />
+    </doctype>
+    <doctype name="Domain" extends="Document">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <facet name="Folderish" />
+    </doctype>
+    <doctype name="Section" extends="Document">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <facet name="Folderish" />
+    </doctype>
+    <doctype name="ContentRoot" extends="Document">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <facet name="Folderish" />
+    </doctype>
+  </extension>
+
+</component>
