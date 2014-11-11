@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.web.common.adminStatusListener.contrib">
+
+  <extension target="org.nuxeo.runtime.EventService" point="listeners">
+    <listener class="org.nuxeo.ecm.platform.web.common.admin.AdministrativeStatusListener">
+      <topic>administrativeStatus</topic>
+    </listener>
+  </extension>
+
+</component>
