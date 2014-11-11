@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.publishing.querymodel.QueryModels">
+
+  <extension
+    target="org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService"
+    point="model">
+
+    <queryModel name="DOMAIN_SECTIONS">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:path STARTSWITH ? and ecm:primaryType = ? AND ecm:mixinType != 'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+
+      <sortable value="true" defaultSortColumn="ecm:path"
+        defaultSortAscending="true" />
+    </queryModel>
+
+  </extension>
+
+</component>

@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.lifecycle.LifeCycleService">
+
+  <documentation>
+      Service that deals with life cycle.
+
+      @version 1.0
+      @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.lifecycle.impl.LifeCycleServiceImpl"/>
+
+  <extension-point name="lifecycle">
+
+   <documentation>
+      Extension point for registering life cycle definition.
+
+      <p/>
+
+      A life cycle is a state-transition model described as an XML document.
+
+      <p/>
+
+      A life cycle within Nuxeo Core describes only the states and the transitions
+      without any security policy whatsoever. For instance, the workflow service
+      (or BPM service) will be responsible of the security policy and actors
+      involved.
+
+   </documentation>
+
+   <object class="org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleDescriptor"/>
+
+  </extension-point>
+
+  <extension-point name="lifecyclemanager">
+
+    <documentation>
+    Extension point for registering life cycle manager.
+
+    <p/>
+
+    Life cycle manager are responsible of the life cycle properties storage and
+    are bound to a life cycle.
+
+    <p/>
+
+    Nuxeo core default life cycle manager is a JCR life cycle manager. It means
+    the life cycle properties for a given document will be stored in the JCR
+    along with the other document properties. You may define another type of
+    life cycle manager such as an SQL life cycle manager that would store the
+    life  cycle properties in a SQL DB aside the JCR.
+
+    <p/>
+
+    The life cycle properties are :
+
+      <ul>
+        <li><i>currentLifeCycleState</i> : the current life cycle state</li>
+        <li><i>lifeCyclePolicy</i> : the life cycle policy applied</li>
+      </ul>
+
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleManagerDescriptor"/>
+
+  </extension-point>
+
+  <extension-point name="types">
+
+    <documentation>
+    Extension point for registering document type to life cycle mappings.
+
+    <p/>
+    For instance, you can specify that a documen type <i>File</i> will follow a
+    <i>default</i> life cycle where <i>default</i> is the name of a registered
+    life cycle.
+
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleTypesDescriptor"/>
+
+  </extension-point>
+
+</component>

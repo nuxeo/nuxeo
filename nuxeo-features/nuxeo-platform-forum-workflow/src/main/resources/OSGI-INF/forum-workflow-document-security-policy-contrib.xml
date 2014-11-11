@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.forum.DefaultWorkflowSecurityPolicyContributions">
+
+  <documentation>
+
+    TODO
+
+    @version 1.0 @author
+    <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+  </documentation>
+
+  <extension
+    target="org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService"
+    point="workflowDocumentSecurityPolicy">
+
+    <documentation>
+
+      TODO
+
+    </documentation>
+
+    <workflowDocumentSecurityPolicy name="forum_review_moderation"
+      class="org.nuxeo.ecm.platform.forum.workflow.security.policy.PostModerationWorkflowSecurityPolicy" />
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService"
+    point="workflowDocumentSecurityPolicyRelation">
+
+    <documentation>
+
+      Contribute security policies to workflow definitions associations for NXP.
+
+    </documentation>
+
+    <workflowDocumentSecurityPolicyRelation for="forum_review_moderation">
+      <workflowName>forum_review_moderation</workflowName>
+    </workflowDocumentSecurityPolicyRelation>
+
+  </extension>
+
+</component>

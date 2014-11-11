@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.search.backend.compass">
+
+  <extension target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+    point="searchEngineBackend">
+
+    <searchEngineBackend name="compass" default="true"
+      class="org.nuxeo.ecm.core.search.backend.compass.CompassBackend"/>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.search.backend.compass.CompassBackend"
+             point="connection">
+          <file path="nxsearch-compass"/>
+  </extension>
+
+</component>

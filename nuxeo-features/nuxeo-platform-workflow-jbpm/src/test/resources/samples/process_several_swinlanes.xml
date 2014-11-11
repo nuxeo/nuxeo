@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process-definition xmlns="urn:jbpm.org:jpdl-3.1" name="sample">
+	
+	<swimlane name="role2">
+   		<assignment expression="user(ernie)"/>
+	</swimlane>
+	
+	<swimlane name="role">
+   		<assignment expression="user(bert)"/>
+	</swimlane>
+
+   <start-state name="Node_0">
+      <event type="node-enter">
+         <action class="org.nuxeo.ecm.platform.workflow.jbpm.TestActionHandler"/>
+      </event>
+      <task name="start" swimlane="role"/>
+      <transition name="" to="Node_1"/>
+   </start-state>
+
+   <task-node name="Node_1" create-tasks="false" signal="first-wait">
+      <event type="node-enter">
+         <action class="org.nuxeo.ecm.platform.workflow.jbpm.TestActionHandler"/>
+      </event>
+      <task name="task_1" swimlane="role">
+	  </task>
+      <transition name="" to="Node_2"/>
+   </task-node>
+
+   <task-node name="Node_2" create-tasks="false">
+      <event type="node-enter">
+         <action class="org.nuxeo.ecm.platform.workflow.jbpm.TestActionHandler"/>
+      </event>
+      <task name="task_2" swimlane="role">
+	  </task>
+      <transition name="" to="end"/>
+   </task-node>
+
+   <end-state name="end"/>	
+
+</process-definition>

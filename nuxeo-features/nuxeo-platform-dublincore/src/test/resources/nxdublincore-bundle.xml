@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="DublinCoreStorageService">
+
+	<implementation class="org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService"/>
+
+	<require>org.nuxeo.ecm.core.listener.CoreEventListenerService</require>
+
+	<extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
+			   point="listener">
+		<listener name="dclistener"
+						  class="org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener"/>
+	</extension>
+
+</component>
+
+

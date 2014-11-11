@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.workflow.service.WorkflowServiceTestExtensions">
+
+  <require>org.nuxeo.ecm.platform.workflow.service.WorkflowService</require>
+
+  <extension target="org.nuxeo.ecm.platform.workflow.service.WorkflowService"
+         point="engine">
+    <engine name="fake"
+          default="true"
+        class="org.nuxeo.ecm.platform.workflow.FakeWorkflowEngine"/>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.workflow.service.WorkflowService"
+         point="engine">
+    <engine name="wrongKlassEngine"
+          default="false"
+        class="org.nuxeo.ecm.platform.workflow.XXXXX"/>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.workflow.service.WorkflowService"
+         point="definition">
+    <definition>
+      <engineName>fake</engineName>
+      <mimetype>text/xml</mimetype>
+      <definitionPath>fake.xml</definitionPath>
+    </definition>
+  </extension>
+
+</component>

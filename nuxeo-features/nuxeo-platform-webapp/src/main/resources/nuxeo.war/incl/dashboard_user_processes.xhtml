@@ -1,0 +1,83 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <h:panelGroup rendered="#{!currentUser.anonymous}">
+    <div class="foldableBox">
+
+      <h3 class="unfolded">
+        <a href="#nogo" onclick="return toggleBox(this)">
+          <h:outputText
+            value="#{messages['title.dashboard.userProcesses']}" />
+        </a>
+      </h3>
+      <div class="boxBody">
+      <a4j:region renderRegionOnly="true">
+        <h:form id="dashboardDocumentProcessTable">
+          <a4j:outputPanel rendered="#{! empty dashboardActions_documentProcessItems}">
+            <h:outputText value="#{messages['label.user.processes']}"
+              class="infoMessage" />
+            <h:dataTable var="item"
+              value="${dashboardActions_documentProcessItems}"
+              rowClasses="dataRowEven,dataRowOdd"
+              styleClass="dataList">
+              <h:column>
+                <f:facet name="header">
+                  <h:outputText
+                    value="#{messages['label.workflow.name']}" />
+                </f:facet>
+                <h:outputText
+                  value="#{messages[item.processInstanceName]}" />
+              </h:column>
+              <h:column>
+                <f:facet name="header">
+                  <h:outputText
+                    value="#{messages['label.workflow.task.startdate']}" />
+                </f:facet>
+                <h:outputText
+                  value="#{item.processInstanceStartDate}">
+                  <f:convertDateTime
+                    pattern="#{nxu:dateAndTimeFormater('medium')}"
+                    timeZone="#{timeZone}" />
+                </h:outputText>
+              </h:column>
+              <h:column>
+                <f:facet name="header">
+                  <h:outputText
+                    value="#{messages['label.workflow.task.startdate']}" />
+                </f:facet>
+                <h:outputText
+                  value="#{item.processInstanceStartDate}">
+                  <f:convertDateTime
+                    pattern="#{nxu:dateAndTimeFormater('medium')}"
+                    timeZone="#{timeZone}" />
+                </h:outputText>
+              </h:column>
+            </h:dataTable>
+          </a4j:outputPanel>
+
+          <div class="emptyDashboardContent">
+            <h:outputText class="emptyDashBoardLabel"
+              value="#{messages['label.dashboard.user.document.process.empty']}"
+              rendered="#{empty dashboardActions_documentProcessItems}" />
+          </div>
+          
+          <div class="buttonsGroup">
+            <h:commandButton type="submit"
+              value="#{messages['label.browse.back']}"
+              styleClass="button"
+              action="#{navigationContext.goBack()}" />
+            <a4j:commandButton value="#{messages['label.refresh']}"
+              action="#{dashboardActions.refreshDocumentProcessItems}"
+              reRender="dashboardDocumentProcessTable"
+              styleClass="button" />
+          </div>
+        </h:form>
+      </a4j:region>
+      </div>
+    </div>
+  </h:panelGroup>
+</div>

@@ -1,0 +1,8 @@
+<component name="org.nuxeo.ecm.platform.workflow.web.adapter" version="1.0">
+  <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService"
+    point="adapters">
+    <adapter
+      class="org.nuxeo.ecm.platform.workflow.web.adapter.ProcessDocument"
+      factory="org.nuxeo.ecm.platform.workflow.web.adapter.ProcessDocumentAdapterFactory"/>
+  </extension>
+</component>
