@@ -1,0 +1,8 @@
+## Edit this file to customize your configuration ##
+#custom.target=
+
+# Set list of templates to include, comma separated values.
+nuxeo.template.includes=common
+
+org.nuxeo.ecm.instance.description=Nuxeo ECM customized
+nuxeo.server.http.port=8080
