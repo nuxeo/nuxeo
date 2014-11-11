@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.publisher.contrib">
+
+  <extension
+      target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
+      point="validatorsRule">
+
+    <validatorsRule name="CoreValidatorsRule"
+                    class="org.nuxeo.ecm.platform.publisher.rules.DefaultValidatorsRule"/>
+
+  </extension>
+
+  <extension
+      target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
+      point="factory">
+
+    <publishedDocumentFactory name="CoreProxy"
+                              class="org.nuxeo.ecm.platform.publisher.impl.core.CoreProxyFactory"/>
+    <publishedDocumentFactory name="LocalFile"
+                              class="org.nuxeo.ecm.platform.publisher.impl.localfs.FSPublishedDocumentFactory"/>
+    <publishedDocumentFactory name="RemoteDocModel"
+                              class="org.nuxeo.ecm.platform.publisher.remoting.server.SimpleExternalDocumentModelFactory"/>
+    <publishedDocumentFactory name="ClientProxyFactory"
+                              class="org.nuxeo.ecm.platform.publisher.remoting.client.ClientProxyFactory"/>
+
+  </extension>
+
+  <extension
+      target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
+      point="tree">
+
+    <publicationTree name="CoreTree"
+                     class="org.nuxeo.ecm.platform.publisher.impl.core.SectionPublicationTree"/>
+    <publicationTree name="RootSectionsCoreTree"
+                     class="org.nuxeo.ecm.platform.publisher.impl.core.RootSectionsPublicationTree"/>
+    <publicationTree name="LocalFSTree"
+                     class="org.nuxeo.ecm.platform.publisher.impl.localfs.LocalFSPublicationTree"/>
+    <publicationTree name="ClientForRemoteTree"
+                     class="org.nuxeo.ecm.platform.publisher.remoting.client.ClientRemotePublicationTree"/>
+    <publicationTree name="CoreTreeWithExternalDocs"
+                     class="org.nuxeo.ecm.platform.publisher.remoting.server.CoreTreeWithExternalDocs"/>
+
+  </extension>
+
+  <extension
+      target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
+      point="treeInstance">
+
+    <publicationTreeConfig name="DefaultSectionsTree" tree="RootSectionsCoreTree"
+                           factory="CoreProxy" localSectionTree="true"
+                           title="label.publication.tree.local.sections" >
+      <parameters>
+        <!-- <parameter name="RootPath">/default-domain/sections</parameter> -->
+        <parameter name="RelativeRootPath">/sections</parameter>
+        <parameter name="enableSnapshot">true</parameter>
+        <parameter name="iconExpanded">/icons/folder_open.gif</parameter>
+        <parameter name="iconCollapsed">/icons/folder.gif</parameter>
+      </parameters>
+    </publicationTreeConfig>
+
+  </extension>
+
+</component>

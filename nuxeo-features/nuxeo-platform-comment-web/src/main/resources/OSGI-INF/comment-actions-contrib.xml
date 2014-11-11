@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.comment.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+    <action id="view_comments" link="/incl/tabs/document_comments.xhtml"
+      enabled="true" order="80" label="action.view.comments">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>commentable</filter-id>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>not_anonymous</filter-id>
+    </action>
+
+    <!--  add the comment creation button -->
+    <action id="newComment" link="#{commentManagerActions.addComment}"
+      enabled="true" label="command.add">
+      <category>COMMENT_ACTIONS</category>
+    </action>
+
+    <action id="cancelComment" link="#{commentManagerActions.cancelComment}"
+      enabled="true" label="command.cancel">
+      <category>COMMENT_ACTIONS</category>
+    </action>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+    <filter id="comment">
+      <rule grant="true">
+        <type>Comment</type>
+      </rule>
+    </filter>
+
+    <filter id="commentable">
+      <rule grant="true">
+        <facet>Commentable</facet>
+      </rule>
+    </filter>
+
+    <filter id="canAddComment">
+      <rule grant="true">
+        <permission>AddChildren</permission>
+      </rule>
+    </filter>
+  </extension>
+
+</component>

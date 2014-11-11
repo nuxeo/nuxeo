@@ -1,0 +1,231 @@
+/* $Id: docbook.css,v 1.17 2006/12/02 22:32:06 pblankenbaker Exp $
+
+   CSS formats for docbook generation
+*/
+
+/* Adjust docbook <note></note> areas */
+
+div.note span.important {
+  color: black;
+  background-color : red;
+  font-weight: bold;
+  font-size: 12pt;
+}
+
+/* Adjust docbook <table></table> areas */
+
+div.table th {
+  background: #000030;
+  color: white;
+}
+
+div.table td {
+  background: #ddddff;
+  color: black;
+}
+
+div.table td.even {
+  color: black;
+  background-color : white;
+}
+
+div.table td.odd {
+  color: black;
+  background-color : #ddddff;
+}
+
+div.table td.total {
+  color: black;
+  font-weight: bold;
+  font-size: 12pt;
+  background-color : #FFFF66;
+}
+
+/* <note></note> <warning></warning> and <error></error> sections */
+
+div.note {
+  background-color : #eeffff;
+}
+
+div.caution {
+  background-color : #fcfdab;
+}
+
+div.warning {
+  background-color : #ffffaa;
+}
+
+div.error {
+  background-color : #ffeeee;
+}
+
+/* Adjustments to docbook <screen></screen> areas */
+
+pre.screen {
+  color: #33FF33;
+  background-color : black;
+  border-style: solid;
+  border-width: 4px;
+  border-color: darkgray;
+
+  margin: 24pt;
+  overflow: auto;
+
+/*  height: 25%; */
+}
+
+pre.screen b {
+  color: yellow;
+}
+
+.userinput {
+  color: yellow;
+}
+
+/* Adjust docbook <programlisting></programlisting> areas */
+
+pre.programlisting {
+  border-style: solid;
+  border-width: 4px;
+  border-color: green;
+  background: url(../images/computer_paper.png);
+
+  margin: 24pt;
+  overflow: auto;
+
+/*  height: 25%; */
+}
+
+/* Adjust docbook <command></command> areas */
+.command {
+  font-weight : bold;
+}
+
+/* Adjust the header/footer regions */
+
+div.navheader table {
+  color: #f7f0d7;
+  background-color : #000030;
+  padding: 5px;
+  margin-top: 10px;
+  width: 100%;
+  border: 2pt solid #a0a0d0;
+  font-size: 8pt;
+}
+
+div.navheader table tr td a {
+  color: white;
+  background-color: inherit;
+}
+
+div.navheader table tr td a :visited {
+  color: white;
+  background-color: inherit;
+}
+
+div.navfooter table{
+  color: #f7f0d7;
+  background-color : #000030;
+  padding: 5px;
+  margin-top: 10px;
+  width: 100%;
+  border: 2pt solid #a0a0d0;
+  font-size: 8pt;
+}
+
+div.navfooter table tr td a {
+  color: white;
+  background-color: inherit;
+}
+
+div.navfooter table tr td a :visited {
+  color: white;
+  background-color: inherit;
+}
+
+/* <acronym> */
+
+.acronym {
+  font-weight: bold;
+}
+
+/* <application> */
+
+.application {
+  font-weight: bold;
+}
+
+/* <guibutton> look similar to NST WUI buttons */
+
+.guibutton {
+  font-family: arial,sans-serif;
+  font-weight: bold;
+  font-size: 75%;
+  color: #AAAA11;
+  background-color: #003366;
+  padding-left: 4pt;
+  padding-right: 4pt;
+  border-style: outset;
+  border-left-width: medium;
+  border-left-color: #253C62;
+  border-top-width: medium;
+  border-top-color: #658CB2;
+  border-right-width: medium;
+  border-right-color: #000020;
+  border-bottom-width: medium;
+  border-bottom-color: #003366;
+}
+
+/* Inprotect components (use <emphasis role="CLASS">TEXT</emphasis>) */
+
+.inprotectlabel {
+  font-family: Verdana;
+  font-size: 10pt;
+  color: #666666;
+  background-color: #ffffff;
+}
+
+.inprotectnavlink {
+ color: #808080;
+ background-color: inherit;
+ text-decoration: none;
+ font-family: Arial;
+ font-size: 10pt;
+ font-weight: bold;
+}
+
+.inprotectlink {
+ font-family: Verdana;
+ font-size: 10pt;
+ color: #6797BF;
+ background-color: inherit;
+}
+
+.inprotectinput {
+  font-family: Verdana;
+  font-size: 10pt;
+  font-weight: bold;
+  color: #666666;
+  background-color: #ffffff;
+}
+
+.inprotectbutton {
+  font-family: Verdana;
+  font-size: 10pt;
+  font-weight: bold;
+  color: #666666;
+  background-color: #f6f4f1;
+  padding-left: 4pt;
+  padding-right: 4pt;
+  border-style: outset;
+  border-left-width: 2px;
+  border-top-width: 2px;
+  border-right-width: 2px;
+  border-bottom-width: 2px;
+/*
+  border-left-color: #253C62;
+  border-top-color: #658CB2;
+  border-right-color: #000020;
+  border-bottom-color: #003366;
+*/
+}
