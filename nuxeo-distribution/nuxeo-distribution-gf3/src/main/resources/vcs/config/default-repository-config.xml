@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="default-repository-config">
+  <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
+    point="repository">
+    <repository name="default"
+      factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
+      <repository name="default">
+        <xa-datasource>org.apache.derby.jdbc.EmbeddedXADataSource</xa-datasource>
+        <property name="createDatabase">create</property>
+        <!-- Directory name mentioned in SQLRepositoryTestCase -->
+        <property name="databaseName">nxrepository</property>
+        <property name="user">sa</property>
+        <property name="password"></property>
+                                                      
+        <indexing>
+          <!-- for H2 (Lucene Analyzer): -->
+          <fulltext analyzer="org.apache.lucene.analysis.fr.FrenchAnalyzer"/>
+          <!-- for PostgreSQL (Text Search Configuration):
+          <fulltext analyzer="english"/>
+          -->
+        </indexing>
+      </repository>
+    </repository>
+  </extension>
+</component>
