@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.actions.test.override">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="TAB_VIEW" link="view2" label="View2" icon="/icons/view2.gif"
+      confirm="newConfirm">
+      <category>OVERRIDE</category>
+      <!-- duplicate view category to test merging -->
+      <category>view</category>
+      <!-- add new filters to test merging -->
+      <filter-id>newFilterId1</filter-id>
+      <filter id="newFilter2" />
+    </action>
+
+    <action id="TAB_VIEW" confirm=" ">
+      <!-- new nested filter to test merging -->
+      <filter id="newFilter3">
+        <rule grant="false">
+          <type>WorkspaceRoot</type>
+          <type>SectionRoot</type>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="TAB_VIEW">
+      <!-- add another external filter id to test merging -->
+      <filter-id>newFilterId4</filter-id>
+    </action>
+
+  </extension>
+
+</component>
