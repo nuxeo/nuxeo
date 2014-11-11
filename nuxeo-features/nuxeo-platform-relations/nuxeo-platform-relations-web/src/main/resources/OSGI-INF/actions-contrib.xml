@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.actions.relations.web">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="TAB_RELATIONS" link="/incl/tabs/document_relations.xhtml"
+      enabled="true" label="action.view.relations" order="55" type="rest_document_link">
+      <category>VIEW_ACTION_LIST</category>
+      <filter id="view_relations">
+        <rule grant="true">
+          <permission>Read</permission>
+        </rule>
+        <rule grant="false">
+          <facet>Folderish</facet>
+        </rule>
+        <rule grant="false">
+          <type>Server</type>
+        </rule>
+      </filter>
+    </action>
+
+  </extension>
+
+</component>

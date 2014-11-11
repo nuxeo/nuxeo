@@ -1,0 +1,39 @@
+<component name="org.nuxeo.ecm.directory.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="DirectoriesManager" link="directory/view_directories.xhtml" label="title.vocabularies"
+      order="50">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>directoriesManagementAccess</filter-id>
+      <filter-id>not_readonly</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="directoriesManagementAccess">
+      <rule grant="true">
+        <condition>currentUser.administrator</condition>
+        <condition>currentUser.isMemberOf('powerusers')</condition>
+      </rule>
+    </filter>
+
+    <!--  This filter is designed to be evaluated via
+          #{directoryUIActions.checkContextualDirectoryFilter('readOnlyDirectory')}
+          the filter context contains the name of the current directory being displayed
+
+          You can override this filter to implement a custom logic
+     -->
+    <filter id="readOnlyDirectory">
+      <rule grant="true">
+        <condition>#{directoryUIActions.isReadOnly(directoryName)}</condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

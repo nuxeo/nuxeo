@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+
+<project name="Nuxeo Annotations" default="copy-gwt" basedir=".">
+  <property file="build.properties" />
+  <property name="mvn.opts" value="-Dmaven.test.skip=true" />
+  <property name="jboss.config" value="default" />
+  <property name="jboss.dir" value="/opt/jboss" />
+  <property name="jboss.nuxeo.ear" value="${jboss.dir}/server/${jboss.config}/deploy/nuxeo.ear" />
+  <property name="project.name" value="nuxeo-annot" />
+
+  <target name="copy-gwt" depends="make-gwt" description="Copy gwt's javascript to the JBoss server.">
+    <copy todir="${jboss.nuxeo.ear}/nuxeo.war" overwrite="true">
+      <fileset dir="${project.name}-web/target/classes/nuxeo.war" />
+    </copy>
+    <copy todir="${jboss.nuxeo.ear}/plugins" overwrite="true" flatten="true">
+      <fileset dir="${basedir}/${project.name}-web">
+        <include name="*/target/*.jar" />
+        <exclude name="*/target/*-sources.jar" />
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="make-gwt" description="Build Gwt Module">
+    <exec executable="mvn" failonerror="true" dir="./${project.name}-web">
+      <arg value="clean" />
+      <arg value="install" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+  <target name="deploy" depends="make,copy-to-jboss" description="Deploy the application to JBoss" />
+
+  <target name="make" description="Make the application">
+    <exec executable="mvn" failonerror="true">
+      <arg value="clean" />
+      <arg value="install" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+  <target name="copy-to-jboss" description="Copy the application's modules to JBoss">
+    <copy todir="${jboss.nuxeo.ear}/plugins" overwrite="true" flatten="true">
+      <fileset dir="${basedir}">
+        <include name="*/target/*.jar" />
+        <exclude name="*/target/*-sources.jar" />
+      </fileset>
+    </copy>
+  </target>
+
+</project>
