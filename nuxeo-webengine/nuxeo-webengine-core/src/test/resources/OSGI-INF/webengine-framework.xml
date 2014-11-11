@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webengine.WebEngineComponent">
+  <implementation
+          class="org.nuxeo.ecm.webengine.WebEngineComponent" />
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Manage templates
+  </documentation>
+
+  <!-- you can change the default rendering engine by setting this property to the engine class name
+  <property name="engine" value="org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine"/>
+  -->
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.webengine.WebEngine" />
+    <provide
+      interface="org.nuxeo.ecm.webengine.util.FileChangeNotifier" />
+  </service>
+
+  <extension-point name="rendering-template">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Expose the registration of freemarker templates (directives, methods or global shared variables)
+    This way, custom templates can be registered into the freemarker engine from outside. Ex:
+    <code>
+      <template name="wiki" class="org.nuxeo.ecm.platform.wiki.WikiTransformer"/>
+    </code>
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.rendering.RenderingTemplateDescriptor" />
+  </extension-point>
+
+  <extension-point name="transformer">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Expose the registration of rendering transformers contributions.
+    This extension point will generally be extended by other components
+    with specific transformer configuration.
+    <code>
+      <transformer name="wiki" class="org.nuxeo.ecm.platform.wiki.WikiTransformer"/>
+    </code>
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.rendering.TransformerDescriptor" />
+  </extension-point>
+
+  <extension-point name="webObject">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Expose the registration of site object descriptors
+    <code>
+      <object id="WebFolder" extends="default">
+        <requestHandler>org.nuxeo.ecm.webengine.DefaultRequestHandler</requestHandler><!-- this is the default value -->
+        <actions>
+          <action id="update" enabled="true" permissions=".|WRITE"
+            script="/my/optional/script/path" handler="myOptionalActionHandler"/>
+        </actions>
+      </object>
+    </code>
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.WebObjectDescriptor" />
+  </extension-point>
+
+  <extension-point name="binding">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Binds web objects to document types. Bindings are used at runtime
+    to adapt a document to a web object given the document type
+    <code>
+      <binding type="Folder" object="WebFolder"/>
+    </code>
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.WebObjectBindingDescriptor" />
+  </extension-point>
+
+  <extension-point name="guard">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Register global guards. Guards are used to define permissions
+    <code>
+      <guard id="MyGuard" expression="(GUARD1 OR GUARD2) AND user=bogdan">
+      </guard>
+    </code>
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.security.GuardDescriptor" />
+  </extension-point>
+
+  <extension-point name="transformer" target="org.nuxeo.ecm.webengine.WebEngineComponent">
+    <object
+      class="org.nuxeo.ecm.webengine.rendering.WikiTransformerDescriptor" />
+  </extension-point>
+
+  <extension-point name="application">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Register global guards. Guards are used to define permissions
+    <code>
+      <webapp id="nuxeo-web">
+        <roots>
+          <root priority="0">default</root>
+          <root priority="1">wiki</root>
+        </roots>
+        <errorPage>error.ftl</errorPage>
+        <indexPage>index.ftl</indexPage>
+        <defaultPage>default.ftl</defaultPage>
+        <bindings>
+          <binding type="Folder" object="MyWebFolder"/>
+        </bindings>
+        <repository>demo</repository>
+        <mappings>
+          <mapping pattern="/.*">
+            <root>/</root>
+            <script>index.ftl</script>
+          </mapping>
+        </mappings>
+      </webapp>
+    </code>
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.WebApplicationDescriptor" />
+  </extension-point>
+
+</component>
