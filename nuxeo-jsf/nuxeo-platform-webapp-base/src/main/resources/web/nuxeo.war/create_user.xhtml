@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <ui:define name="page title"><h:outputText value="#{nuxeoApplicationName}"/></ui:define>
+
+  <ui:define name="body">
+    <ui:include src="/incl/message_banner.xhtml" />
+
+    <div>
+      <ui:include src="/incl/userManager_action_tabs.xhtml">
+        <ui:param name="currentUserTab" value="users" />
+      </ui:include>
+      <div style="clear: both"></div>
+    </div>
+
+    <div class="tabsContent">
+
+      <h3>
+        <h:outputText value="#{messages['title.createUser']}" />
+      </h3>
+
+      <h:form id="createUser" rendered="#{userManagerActions.allowCreateUser and notReadOnly}">
+        <nxl:layout name="user" mode="create" value="#{userManagerActions.newUser}" />
+        <table class="dataInput">
+          <tbody>
+            <tr>
+              <td>
+                <h:commandButton
+                  id="button_create"
+                  value="#{messages['command.save']}"
+                  action="#{userManagerActions.createUser}" class="button" />
+                <h:commandButton
+                  action="#{userManagerActions.viewUsers}" immediate="true"
+                  value="#{messages['command.cancel']}" class="button" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </h:form>
+
+    </div>
+
+  </ui:define>
+
+</nxthemes:composition>

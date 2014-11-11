@@ -1,0 +1,140 @@
+<f:subview
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  id="#{layout.id}">
+
+<c:if test="false">
+  Layout template applying to an item instance of PageSelections&lt;DocumentModel&gt; named "documents"
+
+  Other needed parameters are:
+  - provider: instance of a PageProvider&lt;DocumentModel&gt; to handle sort
+  - layoutListingStatus: iteration status, used to print table header
+    matching widget label.
+</c:if>
+
+<nxu:set var="hasSeveralSorts"
+  value="#{provider.getSortInfos().size() > 1}"
+  cache="true">
+
+<c:if test="#{showListingHeader and layout.properties.showListingHeader}">
+  <thead>
+    <tr>
+      <nxl:layoutColumn>
+        <th>
+          <c:choose>
+            <c:when test="#{layoutColumn.properties.isListingSelectionBox}">
+              <h:selectBooleanCheckbox id="#{layoutColumn.widgets[0].name}_header"
+                title="#{messages['tooltip.content.select.all']}"
+                value="#{documents.selected}">
+                <a4j:support event="onclick"
+                  action="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, documents.selected)}"
+                  onclick="javascript:handleAllCheckBoxes('#{contentView.name}', this.checked)"
+                  reRender="ajax_selection_buttons" />
+              </h:selectBooleanCheckbox>
+            </c:when>
+            <c:when test="#{layoutColumn.properties.isListingSelectionBoxWithCurrentDocument}">
+              <h:selectBooleanCheckbox id="#{layoutColumn.widgets[0].name}_header"
+                title="#{messages['tooltip.content.select.all']}"
+                value="#{documents.selected}">
+                <a4j:support event="onclick"
+                  onclick="javascript:handleAllCheckBoxes('#{contentView.name}', this.checked)"
+                  action="#{documentListingActions.checkCurrentDocAndProcessSelectPage(contentView.name, contentView.selectionListName, documents.selected, currentDocument.ref)}"
+                  reRender="ajax_selection_buttons" />
+              </h:selectBooleanCheckbox>
+            </c:when>
+            <c:when test="#{layoutColumn.properties.useFirstWidgetLabelAsColumnHeader}">
+              <c:choose>
+                <c:when test="#{provider.sortable and !empty layoutColumn.properties.sortPropertyName}">
+                  <nxu:set var="ascIndex"
+                    value="#{provider.getSortInfoIndex(layoutColumn.properties.sortPropertyName, true)}"
+                    cache="true">
+                  <nxu:set var="descIndex"
+                    value="#{provider.getSortInfoIndex(layoutColumn.properties.sortPropertyName, false)}"
+                    cache="true">
+                    <h:commandLink immediate="true"
+                      action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, nxu:test(ascIndex != -1, false, true), true)}"
+                      id="#{layoutColumn.widgets[0].name}_header_sort">
+                      <h:outputText value="#{layoutColumn.widgets[0].label}"
+                        rendered="#{!layoutColumn.widgets[0].translated}" />
+                      <h:outputText value="#{messages[layoutColumn.widgets[0].label]}"
+                        rendered="#{layoutColumn.widgets[0].translated}" />
+                    </h:commandLink>
+                    <f:verbatim>&amp;nbsp;</f:verbatim>
+                    <c:if test="#{ascIndex != -1}">
+                      <h:commandLink immediate="true"
+                        action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, false, false)}"
+                        id="#{layoutColumn.widgets[0].name}_header_sort_desc">
+                        <h:graphicImage value="/icons/sort_selected_down.png" />
+                        <c:if test="#{hasSeveralSorts}">
+                          #{ascIndex + 1}
+                        </c:if>
+                      </h:commandLink>
+                    </c:if>
+                    <c:if test="#{descIndex != -1}">
+                      <h:commandLink immediate="true"
+                        action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, true, false)}"
+                        id="#{layoutColumn.widgets[0].name}_header_sort_asc">
+                        <h:graphicImage value="/icons/sort_selected_up.png" />
+                        <c:if test="#{hasSeveralSorts}">
+                          #{descIndex + 1}
+                        </c:if>
+                      </h:commandLink>
+                    </c:if>
+                    <c:if test="#{ascIndex == -1 and descIndex == -1}">
+                      <h:commandLink immediate="true"
+                        action="#{provider.addSortInfo(layoutColumn.properties.sortPropertyName, true)}"
+                        id="#{layoutColumn.widgets[0].name}_header_sort_add">
+                        <h:graphicImage value="/icons/sort_selected_down.png" />
+                      </h:commandLink>
+                    </c:if>
+                  </nxu:set>
+                  </nxu:set>
+                </c:when>
+                <c:otherwise>
+                  <h:outputText value="#{layoutColumn.widgets[0].label}"
+                    rendered="#{!layoutColumn.widgets[0].translated}" />
+                  <h:outputText value="#{messages[layoutColumn.widgets[0].label]}"
+                    rendered="#{layoutColumn.widgets[0].translated}" />
+                </c:otherwise>
+              </c:choose>
+            </c:when>
+          </c:choose>
+        </th>
+      </nxl:layoutColumn>
+      <c:if test="#{provider.sortable}">
+        <th>
+          <h:graphicImage value="/icons/lightbulb.png"
+            onmouseover="tooltip.show('#{messages['contentview.sort.help']}', 200, 'topleft');"
+            onmouseout="tooltip.hide();" />
+        </th>
+      </c:if>
+    </tr>
+  </thead>
+</c:if>
+
+</nxu:set>
+
+<c:set var="trStyleClass" value="#{nxu:test(layoutListingStatus.index%2 ==0, 'dataRowEven', 'dataRowOdd')}" />
+<tr class="#{nxu:test(layout.properties.showRowEvenOddClass, trStyleClass, '')}">
+  <nxl:layoutColumn>
+    <td class="#{layoutColumn.properties.columnStyleClass}">
+      <nxl:layoutColumnWidget>
+        <nxl:widget widget="#{widget}" value="#{value}" />
+        <c:if test="#{layoutColumn.size > 1 and layoutColumn.size > widgetIndex + 1 and widgetIndex > 0}">
+          <br />
+        </c:if>
+      </nxl:layoutColumnWidget>
+    </td>
+  </nxl:layoutColumn>
+  <c:if test="#{provider.sortable}">
+    <td class="iconColumn">
+    </td>
+  </c:if>
+</tr>
+
+</f:subview>

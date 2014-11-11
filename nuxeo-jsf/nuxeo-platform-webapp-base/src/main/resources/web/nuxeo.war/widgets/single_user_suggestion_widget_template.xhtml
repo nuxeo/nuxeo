@@ -1,0 +1,135 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:corresp="http://com.nuxeo.projects.correspondence/"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  
+<c:set var="userSchema" value="#{userManager.userSchemaName}" />
+  
+<c:if test="#{widget.mode != 'edit'}">
+
+  <h:outputText value="#{field_0}"
+    converter="#{userSuggestionActions.userConverter}">
+    <f:attribute name="prefixed" value="false" />
+    <f:attribute name="userDirectory" value="#{userManager.userDirectoryName}" />
+    <f:attribute name="userSchema" value="#{userManager.userSchemaName}" />
+    <f:attribute name="firstNameField" value="firstName" />
+    <f:attribute name="lastNameField" value="lastName" />
+  </h:outputText>
+
+</c:if>
+
+<c:if test="#{widget.mode == 'edit'}">
+
+  <c:set var="minChars"
+    value="#{nxu:test(!empty widget.properties.minChars, widget.properties.minChars, '3')}" />
+  <c:set var="frequency"
+    value="#{nxu:test(!empty widget.properties.frequency, widget.properties.frequency, '0')}" />
+  <c:set var="requestDelay"
+    value="#{nxu:test(!empty widget.properties.requestDelay, widget.properties.requestDelay, '100')}" />
+  <c:set var="searchType"
+    value="#{nxu:test(!empty widget.properties.userSuggestionSearchType, widget.properties.userSuggestionSearchType, '')}" />
+  <c:set var="maxSearchResults"
+    value="#{nxu:test(!empty widget.properties.userSuggestionMaxSearchResults, widget.properties.userSuggestionMaxSearchResults, 0)}" />
+  <c:set var="suggestionWidth" value="${nxu:test(!empty widget.properties.width, widget.properties.width, '400')}" />
+
+  <a4j:region renderRegionOnly="true" id="#{widget.id}_ajax_region">
+    <h:panelGrid id="#{widget.id}_panel" columns="2">
+
+      <h:panelGroup id="#{widget.id}_suggestionGroup">
+        <span id="#{widget.id}_suggestDiv">
+          <h:inputText id="#{widget.id}_suggest"
+            onkeydown="if (event.keyCode == 13) {return false;}" />
+        </span>
+        <a4j:status>
+          <f:facet name="start">
+            <h:graphicImage value="/img/standart_waiter.gif" />
+          </f:facet>
+        </a4j:status>
+        <rich:suggestionbox id="#{widget.id}_suggestionBox"
+          for="#{widget.id}_suggest" tokens=""
+          suggestionAction="#{userSuggestionActions.getSuggestions}"
+          var="result" fetchValue=""
+          nothingLabel="#{messages['label.suggestion.noSearchResultsOrSearchOverflow']}"
+          minChars="#{minChars}" frequency="#{frequency}"
+          width="#{suggestionWidth}"
+          requestDelay="#{requestDelay}">
+          <f:param name="userSuggestionSearchType" value="#{searchType}" />
+          <f:param name="userSuggestionMaxSearchResults"
+            value="#{maxSearchResults}" />
+          <a4j:support event="onselect"
+            focus="#{widget.id}_suggest" bypassUpdates="true"
+            reRender="#{widget.id}_selectionGroup"
+            id="#{widget.id}_listRegion_select">
+            <f:setPropertyActionListener value="#{result.id}"
+              target="#{suggestionActions.selectedValue}" />
+            <nxu:actionListenerMethod value="#{suggestionActions.addSingleBoundSelection}" /> 
+            <f:param name="suggestionSelectionOutputId"
+              value="#{widget.id}_selectionOutput" />
+            <f:param name="suggestionSelectionHiddenId"
+              value="#{widget.id}" />
+            <f:param name="suggestionSelectionDeleteId"
+              value="#{widget.id}_selectionReset" />
+            <f:param name="userSuggestionSearchType" value="#{searchType}" />
+            <f:param name="userSuggestionMaxSearchResults"
+              value="#{maxSearchResults}" />
+          </a4j:support>
+          <h:column>
+            <f:subview rendered="#{result.type == 'USER_TYPE'}"
+              id="#{widget.id}_user_result">
+              <h:graphicImage value="/icons/user.gif" alt="user.gif" />
+              <h:outputText
+                value="#{nxu:userDisplayName(result.id, result.entry[userSchema].firstName, result.entry[userSchema].lastName)}" />
+            </f:subview>
+            <f:subview rendered="#{result.type == 'GROUP_TYPE'}"
+              id="#{widget.id}_group_result">
+              <h:graphicImage value="/icons/group.gif" alt="group.gif" />
+              <h:outputText value="#{result.id}" />
+            </f:subview>
+            <f:subview rendered="#{empty result.type}" id="#{widget.id}_result">
+              <h:outputText value="#{item}" />
+            </f:subview>
+          </h:column>
+        </rich:suggestionbox>
+        <br />
+        <h:outputFormat value="#{messages['label.suggestion.help.minChars']}">
+          <f:param value="#{minChars}" />
+        </h:outputFormat>
+      </h:panelGroup>
+
+      <h:panelGroup id="#{widget.id}_selectionGroup">
+        <a4j:commandLink id="#{widget.id}_selectionReset"
+          actionListener="#{suggestionActions.clearSingleSelection}"
+          ignoreDupResponses="true" ajaxSingle="true" bypassUpdates="true"
+          reRender="#{widget.id}_selectionGroup"
+          rendered="#{!empty field_0}">
+          <h:graphicImage value="/icons/action_delete.gif" />
+          <f:param name="suggestionSelectionOutputId"
+            value="#{widget.id}_selectionOutput" />
+          <f:param name="suggestionSelectionHiddenId"
+            value="#{widget.id}" />
+          <f:param name="suggestionSelectionDeleteId"
+            value="#{widget.id}_selectionReset" />
+        </a4j:commandLink>
+        <h:outputText id="#{widget.id}_selectionOutput" value="#{field_0}"
+          converter="#{userSuggestionActions.userConverter}">
+          <f:attribute name="prefixed" value="false" />
+          <f:attribute name="userDirectory" value="#{userManager.userDirectoryName}" />
+          <f:attribute name="userSchema" value="#{userManager.userSchemaName}" />
+          <f:attribute name="firstNameField" value="firstName" />
+          <f:attribute name="lastNameField" value="lastName" />
+        </h:outputText>
+        <h:inputHidden id="#{widget.id}" value="#{field_0}"
+          required="#{widget.required}" />
+      </h:panelGroup>
+      <h:message for="#{widget.id}" styleClass="errorMessage" />
+
+    </h:panelGrid>
+
+  </a4j:region>
+
+</c:if></div>
