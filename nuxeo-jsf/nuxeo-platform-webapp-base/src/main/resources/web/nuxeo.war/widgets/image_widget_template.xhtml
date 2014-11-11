@@ -1,0 +1,49 @@
+<div xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{field.filename}</c:if>
+<c:if test="#{widget.mode == 'edit'}">
+
+  <c:set var="acceptedExtensions"
+    value="#{nxu:test(!empty widgetProperty_acceptedExtensions, widgetProperty_acceptedExtensions, '.jpg, .jpeg, .png, .gif')}" />
+
+  <nxu:inputFile id="#{widget.id}" value="#{field}"
+    filename="#{field.filename}" required="#{widget.required}" editFilename="false"
+    onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}">
+    <nxu:validateFileMimetype extensions="#{acceptedExtensions}" hidden="true" />
+  </nxu:inputFile>
+  <h:message styleClass="errorMessage" for="#{widget.id}"
+    id="#{widget.id}_message" />
+
+</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+
+  <c:if test="#{not empty field}">
+    <nxu:set var="image_url"
+     value="#{nxd:fileUrl('downloadFile', value, widget.fieldDefinitions[0].propertyName, field.filename)}"
+     cache="true">
+      <nxu:graphicImage value="#{image_url}"
+        title="#{field.filename}" alt="#{field.filename}"
+        width="#{widgetProperty_width}" height="#{widgetProperty_height}" />
+    </nxu:set>
+  </c:if>
+
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <c:if test="#{not empty field}">
+    <nxp:html>
+      <nxu:set var="image_url"
+       value="#{nxd:fileUrl('downloadFile', value, widget.fieldDefinitions[0].propertyName, field.filename)}"
+       cache="true">
+      <nxu:graphicImage value="#{image_url}"
+        title="#{field.filename}" alt="#{field.filename}"
+        width="#{widgetProperty_width}" height="#{widgetProperty_height}" />
+      </nxu:set>
+    </nxp:html>
+  </c:if>
+</c:if>
+</div>
