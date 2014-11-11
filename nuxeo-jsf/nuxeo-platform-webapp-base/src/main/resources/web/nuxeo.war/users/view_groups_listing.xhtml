@@ -1,0 +1,42 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:a4j="http://richfaces.org/a4j">
+
+  <ui:composition template="view_groups_listing_template.xhtml">
+
+    <ui:param name="groupListStyleClass" value="tabsContent" />
+
+    <ui:define name="groups_search_method">
+      <a4j:region id="search_groups_region">
+        <!-- search form -->
+        <a4j:form id="searchForm">
+          <h:inputText id="searchText"
+            value="#{groupManagementActions.searchString}"
+            onkeydown="if(event.keyCode == 13 ||event.keyCode == 9 ){return false;}"
+            styleClass="directoryFilter">
+            <a4j:support event="onkeyup" reRender="groupsListingPanel"
+              requestDelay="1000" action="#{contentViewActions.refreshAndRewind(contentViewName)}"
+              ignoreDupResponses="true" eventsQueue="groupSearchQueue" />
+          </h:inputText>
+          <f:verbatim>&amp;nbsp;</f:verbatim>
+          <a4j:commandButton id="searchButton"
+            value="#{messages['command.search']}"
+            action="#{contentViewActions.refreshAndRewind(contentViewName)}" styleClass="button"
+            reRender="groupsPanel" />
+          <a4j:commandButton id="clearButton"
+            value="#{messages['command.clearSearch']}"
+            action="#{groupManagementActions.clearSearch}" styleClass="button"
+            reRender="groupsPanel" />
+          <a4j:status>
+            <f:facet name="start">
+              <h:graphicImage value="/img/standart_waiter.gif" />
+            </f:facet>
+          </a4j:status>
+        </a4j:form>
+      </a4j:region>
+    </ui:define>
+
+  </ui:composition>
+</div>
