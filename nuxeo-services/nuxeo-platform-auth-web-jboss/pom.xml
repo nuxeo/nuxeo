@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-services-parent</artifactId>
+    <version>5.3.0</version>
+  </parent>
+
+  <artifactId>nuxeo-platform-auth-web-jboss</artifactId>
+  <name>Nuxeo JbossSX Web Authentication</name>
+  <description>
+    Nuxeo Enterprise Platform: plugin to use JBossSX from the WebAuthentication
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-web-common</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jbosssx</artifactId>
+    </dependency>
+  </dependencies>
+
+</project>

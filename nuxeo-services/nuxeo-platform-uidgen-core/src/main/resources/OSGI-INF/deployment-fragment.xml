@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<fragment>
+
+  <!--	<require>NXCore.jar</require> -->
+  <!-- 	<require>nxuidsequencer-ds.xml</require>  -->
+
+  <extension target="application#MODULE">
+    <module>
+      <ejb>${bundle.fileName}</ejb>
+    </module>
+
+    <module>
+      <java>datasources/nxuidsequencer-ds.xml</java>
+    </module>
+  </extension>
+
+</fragment>
+
