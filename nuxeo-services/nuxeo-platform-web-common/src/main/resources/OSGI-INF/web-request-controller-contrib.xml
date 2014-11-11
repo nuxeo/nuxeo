@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService.defaultContrib">
+
+	<extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
+		point="filterConfig">
+
+    <filterConfig name="BigFileDownloaderRequest" cached="true" private="true"
+      transactional="true" synchonize="true">
+      <pattern>/nuxeo/nxbigfile/.*</pattern>
+    </filterConfig>
+
+    <filterConfig name="nxfile" cached="true" private="true"
+      transactional="false" synchonize="false">
+      <pattern>/nuxeo/nxfile.*</pattern>
+    </filterConfig>
+
+		<filterConfig name="img" cached="true" cacheTime="3600">
+			<pattern>/nuxeo/img.*</pattern>
+		</filterConfig>
+
+		<filterConfig name="icons" cached="true" cacheTime="3600">
+			<pattern>/nuxeo/icons.*</pattern>
+		</filterConfig>
+
+    <filterConfig name="js" cached="true" cacheTime="3600">
+      <pattern>/nuxeo/js.*</pattern>
+    </filterConfig>
+
+    <filterConfig name="waitdialog" cached="true" cacheTime="3600">
+      <pattern>/nuxeo//waitdialog.*</pattern>
+    </filterConfig>
+
+	</extension>
+
+</component>
