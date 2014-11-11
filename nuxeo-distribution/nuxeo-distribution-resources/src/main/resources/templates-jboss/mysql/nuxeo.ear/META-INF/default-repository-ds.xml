@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<connection-factories>
+  <tx-connection-factory>
+    <jndi-name>NXRepository/default</jndi-name>
+    <xa-transaction />
+    <track-connection-by-tx />
+    <adapter-display-name>Nuxeo SQL Repository DataSource</adapter-display-name>
+    <rar-name>nuxeo.ear#nuxeo-core-storage-sql-ra-5.4.1-HF11.rar</rar-name>
+    <connection-definition>org.nuxeo.ecm.core.storage.sql.Repository</connection-definition>
+    <config-property name="name">default</config-property>
+    <max-pool-size>${nuxeo.vcs.max-pool-size}</max-pool-size>
+    
+    <config-property name="xaDataSource" type="java.lang.String">com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</config-property>
+    <config-property name="property" type="java.lang.String">URL=jdbc:mysql://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}?relaxAutoCommit=true</config-property>
+    <config-property name="property" type="java.lang.String">User=${nuxeo.db.user}</config-property>
+    <config-property name="property" type="java.lang.String">Password=${nuxeo.db.password}</config-property>
+  </tx-connection-factory>
+</connection-factories>
