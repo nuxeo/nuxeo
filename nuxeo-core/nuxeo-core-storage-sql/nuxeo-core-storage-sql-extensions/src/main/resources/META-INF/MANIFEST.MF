@@ -1,0 +1,25 @@
+Export-Package: org.nuxeo.ecm.core.storage.sql.db
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: org.nuxeo.ecm.core.storage.sql.extensions
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 5.4.1.qualifier
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql.extensions;singleton:=true
+Import-Package: org.apache.commons.logging,
+ org.apache.lucene.analysis;version="2.3.2",
+ org.apache.lucene.analysis.fr;version="2.3.2",
+ org.apache.lucene.document;version="2.3.2",
+ org.apache.lucene.index;version="2.3.2",
+ org.apache.lucene.queryParser;version="2.3.2",
+ org.apache.lucene.search;version="2.3.2",
+ org.apache.lucene.store;version="2.3.2",
+ org.h2.api,
+ org.h2.message,
+ org.h2.store.fs,
+ org.h2.tools,
+ org.h2.util,
+ org.h2.value
+Eclipse-RegisterBuddy: org.nuxeo.ecm.core.storage.sql 

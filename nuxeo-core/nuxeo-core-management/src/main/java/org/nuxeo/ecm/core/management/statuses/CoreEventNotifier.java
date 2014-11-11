@@ -1,0 +1,62 @@
+/*
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ */
+
+package org.nuxeo.ecm.core.management.statuses;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.SimplePrincipal;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.InlineEventContext;
+import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
+import org.nuxeo.runtime.api.Framework;
+
+public class CoreEventNotifier implements Notifier {
+
+    @Override
+    public void notifyEvent(String eventName, String instanceIdentifier,
+            String serviceIdentifier) {
+
+        Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+
+        eventProperties.put("category",
+                AdministrativeStatusManager.ADMINISTRATIVE_EVENT_CATEGORY);
+        eventProperties.put(
+                AdministrativeStatusManager.ADMINISTRATIVE_EVENT_INSTANCE,
+                instanceIdentifier);
+        eventProperties.put(
+                AdministrativeStatusManager.ADMINISTRATIVE_EVENT_SERVICE,
+                serviceIdentifier);
+
+        EventContext ctx = new InlineEventContext(new SimplePrincipal(
+                SecurityConstants.SYSTEM_USERNAME), eventProperties);
+
+        Event event = ctx.newEvent(eventName);
+        try {
+            Framework.getService(EventProducer.class).fireEvent(event);
+        } catch (Exception e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+}
