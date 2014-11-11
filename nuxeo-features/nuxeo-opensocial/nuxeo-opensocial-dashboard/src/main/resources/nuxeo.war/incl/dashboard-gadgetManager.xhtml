@@ -1,0 +1,36 @@
+<div xmlns:c="http://java.sun.com/jstl/core"><c:if
+  test="#{!opensocialDashboard.anonymous}">
+  <div id="getGadgetManager"><a href="#" id="openGadgetManager">#{messages['dashboard.opensocial.addAGadget']}</a></div>
+  <div id="gadgetManager" style="display: none;">
+
+  <div id="closeGadgetManager"><a href="#"
+    id="closeLinkGadgetManager">#{messages['dashboard.opensocial.close']}</a></div>
+  <div id="gadgetManagerContainer">
+  <div id="listCategories">
+  <c:forEach
+    items="#{dashboardGadgetCategories}" var="category">
+    <div class="button-container"><a class="nv-category"
+      category="#{category}">#{messages[category]}</a></div>
+  </c:forEach></div>
+  <div id="listGadgets">
+  <ul class="option" id="tabGadgets">
+    <c:forEach items="#{dashboardGadgets}" var="gadget">
+      <li class="invisible">
+      <c:set var="gadgetLabelKey" value="label.gadget.#{gadget.name}"/>
+      <c:set var="gadgetDescKey" value="desc.gadget.#{gadget.name}"/>
+      <div class="nameGadget">#{messages[gadgetLabelKey]}</div>
+      <a href="#_" name="#{gadget.name}" class="typeGadget"
+        category="#{gadget.category}"
+        style="background-image: url(#{gadget.iconUrl})" title="#{messages[gadgetDescKey]}"></a>
+      <div class="directAdd"><a href="#"
+        class="directAddLink linkAdd" name="#{gadget.name}"> <span
+        class="addGadgetButton">#{messages['dashboard.opensocial.add']}</span>
+      </a></div>
+      </li>
+    </c:forEach>
+  </ul>
+  </div>
+  </div>
+
+  </div>
+</c:if></div>
