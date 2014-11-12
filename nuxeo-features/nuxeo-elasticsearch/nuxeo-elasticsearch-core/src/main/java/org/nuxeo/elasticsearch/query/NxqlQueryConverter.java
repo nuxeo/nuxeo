@@ -246,15 +246,17 @@ final public class NxqlQueryConverter {
                 || "NOT LIKE".equals(op) || "NOT ILIKE".equals(op)) {
             // ILIKE will work only with a correct mapping
             String likeValue = ((String) value).replace("%", "*");
+            String fieldName = name;
             if (op.contains("ILIKE")) {
                 likeValue = likeValue.toLowerCase();
+                fieldName = name + ".lowercase";
             }
             if (StringUtils.countMatches(likeValue, "*") == 1
                     && likeValue.endsWith("*")) {
-                query = QueryBuilders.matchPhrasePrefixQuery(name,
+                query = QueryBuilders.matchPhrasePrefixQuery(fieldName,
                         likeValue.replace("*", ""));
             } else {
-                query = QueryBuilders.regexpQuery(name,
+                query = QueryBuilders.regexpQuery(fieldName,
                         likeValue.replace("*", ".*"));
             }
             if (op.startsWith("NOT")) {
