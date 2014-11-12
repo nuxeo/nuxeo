@@ -113,18 +113,33 @@ public class TestMapping {
         startTransaction();
         DocumentModelList ret = ess
                 .query(new NxQueryBuilder(session)
-                        .nxql("SELECT * FROM Document WHERE dc:description LIKE '%case%'"));
+                        .nxql("SELECT * FROM Document WHERE dc:description ILIKE '%Case%'"));
         Assert.assertEquals(3, ret.totalSize());
 
         ret = ess
                 .query(new NxQueryBuilder(session)
-                        .nxql("SELECT * FROM Document WHERE dc:description LIKE 'upper%'"));
+                        .nxql("SELECT * FROM Document WHERE dc:description ILIKE 'Upper%'"));
         Assert.assertEquals(1, ret.totalSize());
 
         ret = ess
                 .query(new NxQueryBuilder(session)
-                        .nxql("SELECT * FROM Document WHERE dc:description = 'mixed case desc'"));
+                        .nxql("SELECT * FROM Document WHERE dc:description ILIKE 'mixED case desc'"));
         Assert.assertEquals(1, ret.totalSize());
+
+        // case sensitive for other operation
+        ret = ess
+                .query(new NxQueryBuilder(session)
+                        .nxql("SELECT * FROM Document WHERE dc:description LIKE '%Case%'"));
+        Assert.assertEquals(0, ret.totalSize());
+        ret = ess
+                .query(new NxQueryBuilder(session)
+                        .nxql("SELECT * FROM Document WHERE dc:description LIKE 'Upper%'"));
+        Assert.assertEquals(0, ret.totalSize());
+        ret = ess
+                .query(new NxQueryBuilder(session)
+                        .nxql("SELECT * FROM Document WHERE dc:description LIKE 'UPPER%'"));
+        Assert.assertEquals(1, ret.totalSize());
+
     }
 
 }
