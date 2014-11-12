@@ -101,8 +101,17 @@
         }
       },
       "dc:description" : {
-         "type" : "string",
-         "analyzer" : "lowercase_analyzer"
+        "type" : "multi_field",
+        "fields" : {
+          "dc:description" : {
+            "index" : "not_analyzed",
+            "type" : "string"
+           },
+          "lowercase" : {
+             "analyzer" : "lowercase_analyzer",
+             "type" : "string"
+           }
+        }
       },
       "ecm:binarytext*" : {
          "type" : "string",

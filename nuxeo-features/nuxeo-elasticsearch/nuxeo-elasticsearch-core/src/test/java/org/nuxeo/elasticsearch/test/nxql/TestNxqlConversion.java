@@ -233,7 +233,14 @@ public class TestNxqlConversion {
         String old = es;
         es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1 ILIKE 'foo%'").toString();
-        Assert.assertEquals(old, es);
+        Assert.assertEquals("{\n" +
+                "  \"match\" : {\n" +
+                "    \"f1.lowercase\" : {\n" +
+                "      \"query\" : \"foo\",\n" +
+                "      \"type\" : \"phrase_prefix\"\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
         es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1 NOT LIKE 'foo%'").toString();
         assertEqualsEvenUnderWindows("{\n" +
