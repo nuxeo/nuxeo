@@ -18,6 +18,8 @@
  */
 package org.nuxeo.runtime.jtajca;
 
+import java.util.Hashtable;
+
 import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.NamingException;
@@ -48,5 +50,12 @@ public class NamingContextFacade extends NamingContext {
         }
     }
 
+    @Override
+    public Hashtable getEnvironment() {
+        Hashtable env = super.getEnvironment();
+        env.put("java.naming.factory.initial", NamingContextFactory.class.getName());
+        env.put("java.naming.factory.url.pkgs", NuxeoContainer.class.getPackage().getName());
+        return env;
+    }
 
 }

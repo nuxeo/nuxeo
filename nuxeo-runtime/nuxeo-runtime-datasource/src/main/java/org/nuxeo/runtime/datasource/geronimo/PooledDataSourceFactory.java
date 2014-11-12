@@ -24,6 +24,7 @@ import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerFactory;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.jtajca.NuxeoContainer.ConnectionManagerWrapper;
+import org.tranql.connector.NoExceptionsAreFatalSorter;
 import org.tranql.connector.jdbc.JDBCDriverMCF;
 import org.tranql.connector.jdbc.LocalDataSourceWrapper;
 import org.tranql.connector.jdbc.TranqlDataSource;
@@ -108,11 +109,12 @@ public class PooledDataSourceFactory implements
             if (user.isEmpty()) {
                 user = refAttribute(ref, "user", "");
                 if (!user.isEmpty()) {
-                    LogFactory.getLog(PooledDataSourceFactory.class).warn("wrong attribute 'user' in datasource descriptor, should use 'username' instead");
+                    LogFactory.getLog(PooledDataSourceFactory.class).warn(
+                            "wrong attribute 'user' in datasource descriptor, should use 'username' instead");
                 }
             }
             String password = refAttribute(ref, "password", "");
-            String dsname = refAttribute(ref,  "dataSourceJNDI", "");
+            String dsname = refAttribute(ref, "dataSourceJNDI", "");
             if (!dsname.isEmpty()) {
                 javax.sql.DataSource ds = DataSourceHelper.getDataSource(dsname);
                 LocalDataSourceWrapper wrapper = new LocalDataSourceWrapper(ds);
@@ -122,6 +124,8 @@ public class PooledDataSourceFactory implements
             }
             String name = refAttribute(ref, "driverClassName", null);
             String url = refAttribute(ref, "url", null);
+            String sqlExceptionSorter = refAttribute(ref, "sqlExceptionSorter",
+                    NoExceptionsAreFatalSorter.class.getName());
             boolean commitBeforeAutocommit = Boolean.valueOf(
                     refAttribute(ref, "commitBeforeAutocommit", "true")).booleanValue();
             JDBCDriverMCF factory = new JDBCDriverMCF();
@@ -129,6 +133,7 @@ public class PooledDataSourceFactory implements
             factory.setUserName(user);
             factory.setPassword(password);
             factory.setConnectionURL(url);
+            factory.setExceptionSorterClass(sqlExceptionSorter);
             factory.setCommitBeforeAutocommit(commitBeforeAutocommit);
             return factory;
         }

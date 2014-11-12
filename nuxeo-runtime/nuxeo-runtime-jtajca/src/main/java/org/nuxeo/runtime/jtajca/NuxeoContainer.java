@@ -147,27 +147,16 @@ public class NuxeoContainer {
         }
         installContext = new InstallContext();
         log.trace("Installing nuxeo container", installContext);
+        rootContext = new NamingContext();
         parentContext = InitialContextAccessor.getInitialContext();
         if (parentContext != null) {
-            jndiPrefix = detectJNDIPrefix(parentContext);
-            if (parentContext instanceof NamingContext) {
-                rootContext = parentContext;
-            } else if (InitialContextAccessor.isWritable(parentContext, jndiPrefix)){
-                rootContext = parentContext;
-            } else {
-                rootContext = new NamingContextFacade(parentContext);
-                jndiPrefix = "java:comp/env/";
-            }
+            installTransactionManager(parentContext);
         } else {
-            rootContext = new NamingContext();
-        }
-        if (rootContext instanceof NamingContext) {
             addDeepBinding(nameOf("TransactionManager"), new Reference(
                     TransactionManager.class.getName(),
                     NuxeoTransactionManagerFactory.class.getName(), null));
+            installTransactionManager(rootContext);
         }
-        log.info("Using JNDI prefix: " + jndiPrefix);
-        installTransactionManager();
     }
 
     protected static void installTransactionManager(
@@ -477,12 +466,9 @@ public class NuxeoContainer {
         }
     }
 
-    public static <T> T lookup(String name, Class<T> type)
+    public static <T> T lookup(Context context, String name, Class<T> type)
             throws NamingException {
-        if (rootContext == null) {
-            throw new NamingException("no naming context available");
-        }
-        Object resolved = rootContext.lookup(name);
+        Object resolved = context.lookup(detectJNDIPrefix(context).concat(name));
         if (resolved instanceof Reference) {
             try {
                 resolved = NamingManager.getObjectInstance(resolved,
@@ -496,28 +482,23 @@ public class NuxeoContainer {
         return type.cast(resolved);
     }
 
-    public static <T> T lookupDataSource(String name, Class<T> type)
+    protected static void installTransactionManager(Context context)
             throws NamingException {
-        return lookup(nameOf("jdbc/".concat(name)), type);
-    }
-
-    protected static void installTransactionManager()
-            throws NamingException {
-        TransactionManager actual = lookup(nameOf("TransactionManager"), TransactionManager.class);
+        TransactionManager actual = lookup(context, "TransactionManager", TransactionManager.class);
         if (tm != null) {
             return;
         }
         tm = actual;
         tmRecoverable = wrapTransactionManager(tm);
         ut = new UserTransactionImpl(tm);
-        tmSynchRegistry = lookup(nameOf("TransactionSynchronizationRegistry"),
+        tmSynchRegistry = lookup(context, "TransactionSynchronizationRegistry",
                 TransactionSynchronizationRegistry.class);
     }
 
     protected static ConnectionManagerWrapper lookupConnectionManager(
             String repositoryName) throws NamingException {
-        ConnectionManager cm = lookup(
-                nameOf("ConnectionManager/".concat(repositoryName)),
+        ConnectionManager cm = lookup(rootContext,
+                "ConnectionManager/".concat(repositoryName),
                 ConnectionManager.class);
         if (cm instanceof ConnectionManagerWrapper) {
             return (ConnectionManagerWrapper) cm;

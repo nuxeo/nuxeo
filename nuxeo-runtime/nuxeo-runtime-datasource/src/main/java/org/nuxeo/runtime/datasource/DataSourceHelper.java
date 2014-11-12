@@ -44,7 +44,6 @@ public class DataSourceHelper {
         return NuxeoContainer.nameOf("jdbc");
     }
 
-
     /**
      * Look up a datasource JNDI name given a partial name.
      * <p>
@@ -88,18 +87,20 @@ public class DataSourceHelper {
 
     public static <T> T getDataSource(String name, Class<T> clazz)
             throws NamingException {
-        return NuxeoContainer.lookupDataSource(relativize(name), clazz);
+        return NuxeoContainer.lookup(NuxeoContainer.getRootContext(),
+                getDataSourceJNDIName(name), clazz);
     }
 
-    public static Map<String,DataSource> getDatasources() throws NamingException {
+    public static Map<String, DataSource> getDatasources()
+            throws NamingException {
         String prefix = getDataSourceJNDIPrefix();
-        Context naming =  NuxeoContainer.getRootContext();
+        Context naming = NuxeoContainer.getRootContext();
         if (naming == null) {
             throw new NamingException("No root context");
         }
-        Context jdbc = (Context)naming.lookup(prefix);
+        Context jdbc = (Context) naming.lookup(prefix);
         Enumeration<NameClassPair> namesPair = jdbc.list("");
-        Map<String,DataSource> datasourcesByName = new HashMap<String,DataSource>();
+        Map<String, DataSource> datasourcesByName = new HashMap<String, DataSource>();
         while (namesPair.hasMoreElements()) {
             NameClassPair pair = namesPair.nextElement();
             String name = pair.getName();
@@ -107,8 +108,8 @@ public class DataSourceHelper {
                 name = prefix + "/" + name;
             }
             Object ds = naming.lookup(name);
-            if (ds instanceof DataSource){
-                datasourcesByName.put(name, (DataSource)ds);
+            if (ds instanceof DataSource) {
+                datasourcesByName.put(name, (DataSource) ds);
             }
         }
         return datasourcesByName;
@@ -120,8 +121,7 @@ public class DataSourceHelper {
      *
      * @since TODO
      */
-    public static String getDataSourceRepositoryJNDIName(
-            String repositoryName) {
+    public static String getDataSourceRepositoryJNDIName(String repositoryName) {
         return getDataSourceJNDIName(ConnectionHelper.getPseudoDataSourceNameForRepository(repositoryName));
     }
 }

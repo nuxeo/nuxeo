@@ -53,6 +53,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.datasource.DataSourceHelper;
+import org.nuxeo.runtime.jtajca.NamingContextFactory;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -156,6 +158,8 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
             String dsname = props.getProperty(Environment.DATASOURCE);
             dsname = DataSourceHelper.getDataSourceJNDIName(dsname);
             props.put(Environment.DATASOURCE, dsname);
+            props.put(Environment.JNDI_CLASS, NamingContextFactory.class.getName());
+            props.put(Environment.JNDI_PREFIX.concat(".").concat(javax.naming.Context.URL_PKG_PREFIXES), NuxeoContainer.class.getPackage().getName());
         }
         return createEntityManagerFactory(properties);
     }
