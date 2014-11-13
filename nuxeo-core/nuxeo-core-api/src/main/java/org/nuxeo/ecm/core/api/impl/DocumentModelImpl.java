@@ -1008,7 +1008,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @SuppressWarnings("unchecked")
     private <T> T findAdapter(Class<T> itf) {
-        DocumentAdapterService svc = Framework.getService(DocumentAdapterService.class);
+        DocumentAdapterService svc = Framework.getLocalService(DocumentAdapterService.class);
         if (svc != null) {
             DocumentAdapterDescriptor dae = svc.getAdapterDescriptor(itf);
             if (dae != null) {
