@@ -98,7 +98,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 
 .folderishThumbnail:after {
   background-color: rgba(255, 255, 255, 0.7);
-  content: url(${basePath}/icons/workspace.gif);
+  content: url(${basePath}/icons/folder.gif);
   display: inline-block;
   margin: .2em;
   padding: .2em .4em .1em }
