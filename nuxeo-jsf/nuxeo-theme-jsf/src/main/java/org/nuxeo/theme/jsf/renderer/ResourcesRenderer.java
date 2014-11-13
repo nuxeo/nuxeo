@@ -45,7 +45,9 @@ import com.sun.faces.renderkit.html_basic.ScriptStyleBaseRenderer;
         @ResourceDependency(library = "javax.faces", name = "jsf.js"),
         @ResourceDependency(library = "org.richfaces", name = "jquery.js"),
         @ResourceDependency(library = "org.richfaces", name = "richfaces.js"),
-        @ResourceDependency(library = "org.richfaces", name = "richfaces-queue.js") })
+        @ResourceDependency(library = "org.richfaces", name = "richfaces-queue.js"),
+        @ResourceDependency(library = "org.nuxeo", name = "widget-utils.js"),
+        @ResourceDependency(library = "org.nuxeo.select2", name = "select2.js")})
 public class ResourcesRenderer extends ScriptStyleBaseRenderer {
 
     @Override

@@ -19,8 +19,6 @@ package org.nuxeo.ecm.platform.ui.web.renderer;
 import java.io.IOException;
 import java.util.Iterator;
 
-import javax.faces.application.ResourceDependencies;
-import javax.faces.application.ResourceDependency;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
@@ -35,9 +33,6 @@ import com.sun.faces.renderkit.html_basic.SelectManyCheckboxListRenderer;
 /**
  * @since 6.0
  */
-@ResourceDependencies({
-        @ResourceDependency(library = "org.richfaces", name = "jquery.js"),
-        @ResourceDependency(library = "org.nuxeo", name = "widget-utils.js") })
 public class NxSelectManyCheckboxListRenderer extends
         SelectManyCheckboxListRenderer {
 
