@@ -16,6 +16,9 @@ author: lkemen@nuxeo.com
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
   padding: 2em }
 
+#nxw_homeTabs_tab_content .foldableBox .pageNavigationControls:first-of-type {
+  display: none }
+
 /* =Override GWT styles*/
 body,
 table td,
