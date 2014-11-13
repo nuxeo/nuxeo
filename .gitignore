@@ -30,3 +30,5 @@ dependency-tree.log
 .settings
 target
 marketplace
+nuxeo-webengine/nuxeo-webengine-gwt/war/
+
