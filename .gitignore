@@ -31,4 +31,5 @@ dependency-tree.log
 .idea
 target
 marketplace
+nuxeo-webengine/nuxeo-webengine-gwt/war/
 
