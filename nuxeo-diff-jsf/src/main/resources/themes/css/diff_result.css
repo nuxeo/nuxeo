@@ -6,9 +6,11 @@ authors: ataillefer@nuxeo.com, lkemen@nuxeo.com
 /* =Header */
 #diffHeader { margin-bottom: .8em; padding: 0 .5em .5em .5em }
 #diffHeader .dataInput { margin-top: 0 }
+#diffHeader .contentDiffColumn { padding-right: 0 }
 #diffHeader h2 { padding: 0 }
 #diffHeader a.docLink, #diffHeader a.docLink:link, #diffHeader a.docLink:hover { color: #000 }
 #diffHeader .diffSubTitle { padding-left: .3em; font-style: italic }
+.contentDiffColumn a.docLink:link { display: block; margin-right: 0; white-space: nowrap; width: 90% }
 
 /* =Foldable boxes */
 .docDiffResult .foldableBox .boxBody { padding: .5em }

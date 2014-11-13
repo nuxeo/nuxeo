@@ -68,21 +68,23 @@ ul.changelist { padding-left: 1em }
 
 body { margin: 0 }
 
-.button { background-color: #efefef;
-    border: 1px solid #c9c9c9;
-    border-radius: 3px;
-    box-shadow: 0 8px 3px rgba(255, 255, 255, 0.5) inset, 1px 1px 0 #efefef;
-    color: #000;
-    cursor: pointer;
-    font-size: .7em;
-    font-weight: bold;
-    margin: .3em .5em;
-    padding: .3em .7em;
-    text-align: center;
-    text-decoration: none;
-    text-shadow: 1px 1px 0 #fff }
-.button:hover { background-color: #cfecff;
-	border: 1px solid #aaa }
+.button { background: none #fff;
+  border-radius: 2px;
+  border: 1px solid #c9c9c9;
+  color: #000;
+  cursor: pointer;
+  display: inline-block;
+  font-size: .7rem;
+  font-weight: bold;
+  line-height: 1.3em;
+  margin: 0 .5em .5em 0;
+  padding: .4em .9em;
+  text-decoration: none;
+  white-space: nowrap }
+
+.button:hover { border: 1px solid #aaa;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 150ms ease-in-out 0s }
 
 /* Nuxeo styles */
 
