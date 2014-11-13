@@ -15,8 +15,8 @@
 package org.nuxeo.ecm.core.api.adapter;
 
 import java.util.Collection;
-import java.util.Hashtable;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -66,7 +66,7 @@ public class DocumentAdapterService extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) {
-        adapters = new Hashtable<Class<?>, DocumentAdapterDescriptor>();
+        adapters = new ConcurrentHashMap<Class<?>, DocumentAdapterDescriptor>();
     }
 
     @Override
