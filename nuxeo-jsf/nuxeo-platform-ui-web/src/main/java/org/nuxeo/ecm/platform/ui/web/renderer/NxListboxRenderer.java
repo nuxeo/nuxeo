@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.faces.application.ResourceDependencies;
-import javax.faces.application.ResourceDependency;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
@@ -33,9 +31,6 @@ import com.sun.faces.renderkit.html_basic.ListboxRenderer;
 /**
  * @since 6.0
  */
-@ResourceDependencies({
-        @ResourceDependency(library = "org.richfaces", name = "jquery.js"),
-        @ResourceDependency(library = "org.nuxeo.select2", name = "select2.js") })
 public class NxListboxRenderer extends ListboxRenderer {
 
     public static final String RENDERER_TYPE = "org.nuxeo.NxListboxRenderer";
