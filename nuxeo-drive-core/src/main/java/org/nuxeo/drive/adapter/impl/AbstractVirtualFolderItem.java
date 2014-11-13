@@ -65,6 +65,7 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem
     }
 
     /*----------------------- FolderItem -----------------------*/
+    @Override
     public abstract List<FileSystemItem> getChildren() throws ClientException;
 
     /*--------------------- FileSystemItem ---------------------*/
