@@ -85,11 +85,15 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
             writer.startElement("script", editorComp);
             writer.writeAttribute("type", "text/javascript", null);
             String scriptContent = String.format(
-                    "initTinyMCE('%s', '%s', '%s', '%s', '%s', '%s')",
+                    "initTinyMCE('%s', '%s', '%s', '%s', '%s', '%s');",
                     editorComp.getWidth(), editorComp.getHeight(), clientId,
                     pluginsOptions.get("plugins"), locale.getLanguage(),
                     toolbarPluginsOptions.get("toolbar"));
+            String scriptContent2 = String.format(
+                    " A4J.AJAX.AddListener({onbeforeajax: function() {tinyMCE.getInstanceById('%s').save();}});",
+                    clientId);
             writer.writeText(scriptContent, null);
+            writer.writeText(scriptContent2, null);
             writer.endElement("script");
         }
 
